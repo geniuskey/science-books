@@ -174,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "용액",
       "총괄성"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -367,6 +366,13 @@ SB.registerCourse({
    "figures": 5,
    "drills": 2
   },
+  "solutions": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 3,
+   "drills": 2
+  },
   "kinetics": {
    "problems": 15,
    "examples": 7,
@@ -417,7 +423,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 13,
+ "published": 14,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
