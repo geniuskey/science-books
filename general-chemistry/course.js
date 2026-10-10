@@ -277,8 +277,7 @@ SB.registerCourse({
      "tags": [
       "착물",
       "결정장"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -408,6 +407,13 @@ SB.registerCourse({
    "figures": 4,
    "drills": 2
   },
+  "coordination-chemistry": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 3,
+   "figures": 4,
+   "drills": 2
+  },
   "periodic-table": {
    "problems": 0,
    "examples": 0,
@@ -423,7 +429,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 14,
+ "published": 15,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
