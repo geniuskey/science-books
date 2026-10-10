@@ -233,10 +233,10 @@ for entry in catalog["courses"]:
     pos = 0
     for part in course["parts"]:
         for ch in part["chapters"]:
+            pos += 1  # 매니페스트 순서(장이 공개될 때마다 바뀌지 않도록)
             f = cdir / "chapters" / f"{ch['slug']}.html"
             if not f.exists():
                 continue
-            pos += 1
             t, d = page_meta(f)
             url = f"{curl}chapters/{ch['slug']}.html"
             seo(f, t, d, url, [("SciBook", SITE), (course["title"], curl), (f"{ch['num']} {ch['title']}", url)],
