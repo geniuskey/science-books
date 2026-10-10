@@ -1,0 +1,22 @@
+name: check
+on:
+  push:
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: 생성 파일 최신 여부·콘텐츠 규칙
+        run: python3 tools/build.py --check
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - name: 스모크 테스트 (JS·KaTeX 오류, 360px 넘침, 연습문제 위젯)
+        run: |
+          npm i --no-save playwright@1.64.0 katex@0.16.9 three@0.147.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 8000 &
+          sleep 1
+          SB_CDN_DIR=$PWD/node_modules node tools/smoke.mjs http://localhost:8000

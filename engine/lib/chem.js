@@ -252,7 +252,7 @@
    *   pt.set({prop:'ie1'}), pt.select('Fe')
    */
   Chem.periodicTable = function (container, opts = {}) {
-    if (typeof container === "string") container = document.querySelector(container);
+    if (typeof container === "string") container = document.getElementById(container) || document.querySelector(container);
     const st = Object.assign({ prop: "cat", info: true, selected: null }, opts);
     container.innerHTML = `<div class="pt-wrap" style="padding:14px 14px 4px"><div class="ptable" role="grid" aria-label="주기율표"></div></div><div class="pt-legend"></div><div class="pt-scale"></div><div class="pt-scale-l"></div>${st.info ? '<div class="pt-info" aria-live="polite"></div>' : ""}`;
     const grid = container.querySelector(".ptable");

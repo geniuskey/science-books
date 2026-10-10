@@ -306,8 +306,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "data-tables",
@@ -318,8 +317,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -343,9 +341,23 @@ SB.registerCourse({
    "sims": 3,
    "figures": 2,
    "drills": 1
+  },
+  "periodic-table": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 1,
+   "figures": 0,
+   "drills": 0
+  },
+  "data-tables": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 0,
+   "figures": 0,
+   "drills": 0
   }
  },
- "published": 1,
+ "published": 3,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });

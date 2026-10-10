@@ -13,16 +13,18 @@ import path from "node:path";
 const base = process.argv[2] || "http://localhost:8000";
 const filter = process.argv[3] || "";
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+// 저장소 밖에서 실행할 때는 SB_ROOT로 저장소 경로를 지정한다.
+const repo = process.env.SB_ROOT || root;
 const cdn = process.env.SB_CDN_DIR;
 const shots = process.env.SB_SHOTS;
 
 function pages() {
   const out = ["index.html"];
-  for (const d of fs.readdirSync(root)) {
-    const cj = path.join(root, d, "course.json");
+  for (const d of fs.readdirSync(repo)) {
+    const cj = path.join(repo, d, "course.json");
     if (!fs.existsSync(cj)) continue;
     out.push(`${d}/index.html`);
-    const chd = path.join(root, d, "chapters");
+    const chd = path.join(repo, d, "chapters");
     if (fs.existsSync(chd)) for (const f of fs.readdirSync(chd).sort()) if (f.endsWith(".html")) out.push(`${d}/chapters/${f}`);
   }
   return out.filter((p) => p.includes(filter));
