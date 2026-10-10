@@ -40,8 +40,7 @@ SB.registerCourse({
      "tags": [
       "원자",
       "명명법"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "stoichiometry",
@@ -92,8 +91,7 @@ SB.registerCourse({
      "tags": [
       "에너지",
       "엔탈피"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +119,7 @@ SB.registerCourse({
      "tags": [
       "주기율",
       "경향"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "chemical-bonding",
@@ -133,8 +130,7 @@ SB.registerCourse({
      "tags": [
       "결합",
       "루이스"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "molecular-geometry",
@@ -175,8 +171,7 @@ SB.registerCourse({
      "tags": [
       "용액",
       "총괄성"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -228,8 +223,7 @@ SB.registerCourse({
       "완충",
       "적정",
       "Ksp"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -280,8 +274,7 @@ SB.registerCourse({
      "tags": [
       "착물",
       "결정장"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -334,6 +327,13 @@ SB.registerCourse({
    "figures": 5,
    "drills": 2
   },
+  "atoms-molecules-ions": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2
+  },
   "aqueous-reactions": {
    "problems": 14,
    "examples": 9,
@@ -348,9 +348,30 @@ SB.registerCourse({
    "figures": 2,
    "drills": 1
   },
+  "thermochemistry": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2
+  },
   "quantum-atom": {
    "problems": 16,
    "examples": 10,
+   "sims": 4,
+   "figures": 4,
+   "drills": 1
+  },
+  "periodic-properties": {
+   "problems": 13,
+   "examples": 7,
+   "sims": 4,
+   "figures": 3,
+   "drills": 1
+  },
+  "chemical-bonding": {
+   "problems": 14,
+   "examples": 8,
    "sims": 4,
    "figures": 4,
    "drills": 1
@@ -360,6 +381,13 @@ SB.registerCourse({
    "examples": 7,
    "sims": 4,
    "figures": 5,
+   "drills": 2
+  },
+  "solutions": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 3,
    "drills": 2
   },
   "kinetics": {
@@ -376,6 +404,13 @@ SB.registerCourse({
    "figures": 4,
    "drills": 2
   },
+  "aqueous-equilibria": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 3,
+   "figures": 3,
+   "drills": 2
+  },
   "thermodynamics": {
    "problems": 13,
    "examples": 9,
@@ -387,6 +422,13 @@ SB.registerCourse({
    "problems": 14,
    "examples": 9,
    "sims": 4,
+   "figures": 4,
+   "drills": 2
+  },
+  "coordination-chemistry": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 3,
    "figures": 4,
    "drills": 2
   },
@@ -405,7 +447,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 11,
+ "published": 18,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
