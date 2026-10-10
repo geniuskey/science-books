@@ -92,8 +92,7 @@ SB.registerCourse({
      "tags": [
       "에너지",
       "엔탈피"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -343,6 +342,13 @@ SB.registerCourse({
    "figures": 2,
    "drills": 1
   },
+  "thermochemistry": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2
+  },
   "quantum-atom": {
    "problems": 16,
    "examples": 10,
@@ -435,7 +441,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 16,
+ "published": 17,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
