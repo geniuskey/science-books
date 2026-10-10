@@ -227,8 +227,7 @@ SB.registerCourse({
       "완충",
       "적정",
       "Ksp"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -382,6 +381,13 @@ SB.registerCourse({
    "figures": 4,
    "drills": 2
   },
+  "aqueous-equilibria": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 3,
+   "figures": 3,
+   "drills": 2
+  },
   "thermodynamics": {
    "problems": 13,
    "examples": 9,
@@ -411,7 +417,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 12,
+ "published": 13,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
