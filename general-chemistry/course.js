@@ -29,8 +29,7 @@ SB.registerCourse({
      "tags": [
       "기초",
       "측정"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "atoms-molecules-ions",
@@ -65,8 +64,7 @@ SB.registerCourse({
      "tags": [
       "용액",
       "산화환원"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -112,8 +110,7 @@ SB.registerCourse({
      "tags": [
       "양자",
       "오비탈"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "periodic-properties",
@@ -167,8 +164,7 @@ SB.registerCourse({
      "tags": [
       "분자 간 힘",
       "상평형"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "solutions",
@@ -197,8 +193,7 @@ SB.registerCourse({
      "tags": [
       "속도론",
       "활성화 에너지"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "equilibrium",
@@ -221,8 +216,7 @@ SB.registerCourse({
      "tags": [
       "산염기",
       "pH"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "aqueous-equilibria",
@@ -252,8 +246,7 @@ SB.registerCourse({
      "tags": [
       "엔트로피",
       "깁스 에너지"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "electrochemistry",
@@ -276,8 +269,7 @@ SB.registerCourse({
      "tags": [
       "방사능",
       "핵"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "coordination-chemistry",
@@ -335,12 +327,68 @@ SB.registerCourse({
   }
  ],
  "stats": {
+  "matter-measurement": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 3,
+   "figures": 5,
+   "drills": 2
+  },
+  "aqueous-reactions": {
+   "problems": 14,
+   "examples": 9,
+   "sims": 4,
+   "figures": 5,
+   "drills": 2
+  },
   "gases": {
    "problems": 13,
    "examples": 7,
    "sims": 3,
    "figures": 2,
    "drills": 1
+  },
+  "quantum-atom": {
+   "problems": 16,
+   "examples": 10,
+   "sims": 4,
+   "figures": 4,
+   "drills": 1
+  },
+  "liquids-solids": {
+   "problems": 14,
+   "examples": 7,
+   "sims": 4,
+   "figures": 5,
+   "drills": 2
+  },
+  "kinetics": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 4,
+   "drills": 2
+  },
+  "acids-bases": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 4,
+   "drills": 2
+  },
+  "thermodynamics": {
+   "problems": 13,
+   "examples": 9,
+   "sims": 4,
+   "figures": 4,
+   "drills": 1
+  },
+  "nuclear-chemistry": {
+   "problems": 14,
+   "examples": 9,
+   "sims": 4,
+   "figures": 4,
+   "drills": 2
   },
   "periodic-table": {
    "problems": 0,
@@ -357,7 +405,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 3,
+ "published": 11,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });

@@ -473,12 +473,25 @@
   SB.math = function (el) {
     el = el || document.body;
     if (katexReady && window.renderMathInElement) {
-      renderMathInElement(el, { delimiters: MATH_DELIMS, throwOnError: false, ignoredClasses: ["no-math"] });
+      renderMathInElement(el, { delimiters: MATH_DELIMS, throwOnError: false, strict: "ignore", ignoredClasses: ["no-math"] });
+      fitMath(el);
     } else katexQueue.push(el);
   };
+  /** 부모보다 넓은 인라인 수식은 그 자리에서 가로 스크롤되게 한다(모바일 가로 넘침 방지). */
+  function fitMath(root) {
+    (root || document).querySelectorAll("main .katex").forEach((k) => {
+      if (k.closest(".katex-display")) return;
+      k.classList.remove("katex-wide");
+      const box = k.parentElement && k.parentElement.closest("p, li, td, div, span.step, figcaption");
+      const limit = box ? box.getBoundingClientRect().right : document.documentElement.clientWidth;
+      if (k.getBoundingClientRect().right > Math.min(limit, document.documentElement.clientWidth) + 1) k.classList.add("katex-wide");
+    });
+  }
+  let fitT = 0;
+  addEventListener("resize", () => { clearTimeout(fitT); fitT = setTimeout(() => katexReady && fitMath(document), 150); });
   /** TeX 문자열 → HTML (KaTeX 준비 전이면 원문) */
   SB.tex = function (tex, display) {
-    if (window.katex) { try { return katex.renderToString(tex, { throwOnError: false, displayMode: !!display }); } catch (e) {} }
+    if (window.katex) { try { return katex.renderToString(tex, { throwOnError: false, strict: "ignore", displayMode: !!display }); } catch (e) {} }
     return display ? `\\[${tex}\\]` : `\\(${tex}\\)`;
   };
   function loadScript(src) {

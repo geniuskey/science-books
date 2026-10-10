@@ -57,7 +57,7 @@ for (const p of pages()) {
       const r = await page.evaluate(() => {
         const sw = document.scrollingElement.scrollWidth, cw = document.documentElement.clientWidth;
         const wide = [];
-        if (sw > cw + 1) document.querySelectorAll("main *").forEach((el) => { const b = el.getBoundingClientRect(); if (b.right > cw + 1 && getComputedStyle(el).position !== "fixed" && !el.closest(".katex-display,.table-wrap,.formula,.rxn,.ptable,pre")) wide.push(el.tagName + "." + el.className + "#" + el.id); });
+        if (sw > cw + 1) document.querySelectorAll("main *").forEach((el) => { if (el.closest(".katex, .katex-display,.table-wrap,.formula,.rxn,.ptable,pre")) return; const b = el.getBoundingClientRect(); const pb = el.parentElement.getBoundingClientRect(); if (b.right > cw + 1 && pb.right <= cw + 1) wide.push(el.tagName + "." + (el.getAttribute("class") || "") + "#" + el.id); });
         const blank = [...document.querySelectorAll(".sim canvas")].filter((c) => c.width === 0 || c.height === 0).map((c) => c.id);
         const unrendered = [...document.querySelectorAll("main p, main li, main td, main .formula")].filter((e) => /\\\(|\$\$/.test(e.textContent)).length;
         return {
