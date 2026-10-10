@@ -254,8 +254,7 @@ SB.registerCourse({
      "tags": [
       "전지",
       "네른스트"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "nuclear-chemistry",
@@ -400,6 +399,13 @@ SB.registerCourse({
    "figures": 4,
    "drills": 1
   },
+  "electrochemistry": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2
+  },
   "nuclear-chemistry": {
    "problems": 14,
    "examples": 9,
@@ -429,7 +435,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 15,
+ "published": 16,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
