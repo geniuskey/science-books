@@ -43,11 +43,15 @@ SB.registerCatalog({
   {
    "id": "general-physics",
    "field": "physics",
-   "status": "planned",
+   "status": "writing",
+   "manifest": "general-physics/course.json",
    "title": "일반물리학",
    "en": "General Physics",
-   "level": "대학 1학년",
-   "description": "운동학과 뉴턴 법칙, 에너지·운동량, 회전, 진동과 파동, 열, 전기와 자기, 빛 — 미적분 기반 일반물리 전 과정."
+   "level": "대학 1학년 · 일반물리학 I·II",
+   "description": "운동과 힘, 에너지와 운동량, 회전, 진동과 파동, 열, 전기와 자기, 빛, 상대성까지 — 미적분 기반 대학 1학년 일반물리 전 과정을 끌고, 던지고, 부딪쳐 보며 익히는 인터랙티브 교과서.",
+   "url": "https://science.euiyun.com/general-physics/",
+   "published": 1,
+   "total": 35
   },
   {
    "id": "organic-chemistry",
