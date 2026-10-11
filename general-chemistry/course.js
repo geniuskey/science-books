@@ -40,8 +40,7 @@ SB.registerCourse({
      "tags": [
       "원자",
       "명명법"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "stoichiometry",
@@ -52,8 +51,7 @@ SB.registerCourse({
      "tags": [
       "몰",
       "반응식"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "aqueous-reactions",
@@ -131,8 +129,7 @@ SB.registerCourse({
      "tags": [
       "결합",
       "루이스"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "molecular-geometry",
@@ -144,8 +141,7 @@ SB.registerCourse({
       "VSEPR",
       "혼성",
       "3D"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -327,6 +323,20 @@ SB.registerCourse({
    "figures": 5,
    "drills": 2
   },
+  "atoms-molecules-ions": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2
+  },
+  "stoichiometry": {
+   "problems": 13,
+   "examples": 9,
+   "sims": 3,
+   "figures": 4,
+   "drills": 2
+  },
   "aqueous-reactions": {
    "problems": 14,
    "examples": 9,
@@ -361,6 +371,20 @@ SB.registerCourse({
    "sims": 4,
    "figures": 3,
    "drills": 1
+  },
+  "chemical-bonding": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 4,
+   "drills": 1
+  },
+  "molecular-geometry": {
+   "problems": 14,
+   "examples": 7,
+   "sims": 4,
+   "figures": 5,
+   "drills": 2
   },
   "liquids-solids": {
    "problems": 14,
@@ -447,7 +471,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 18,
+ "published": 22,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
