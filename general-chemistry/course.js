@@ -320,161 +320,276 @@ SB.registerCourse({
    "examples": 8,
    "sims": 3,
    "figures": 5,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "atoms-molecules-ions": {
    "problems": 15,
    "examples": 7,
    "sims": 4,
    "figures": 6,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "stoichiometry": {
    "problems": 13,
    "examples": 9,
    "sims": 3,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "aqueous-reactions": {
    "problems": 14,
    "examples": 9,
    "sims": 4,
    "figures": 5,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "gases": {
    "problems": 13,
    "examples": 7,
    "sims": 3,
    "figures": 2,
-   "drills": 1
+   "drills": 1,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "thermochemistry": {
    "problems": 15,
    "examples": 8,
    "sims": 4,
    "figures": 6,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 1,
+   "predicts": 0,
+   "hero": 0
   },
   "quantum-atom": {
    "problems": 16,
    "examples": 10,
    "sims": 4,
    "figures": 4,
-   "drills": 1
+   "drills": 1,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "periodic-properties": {
    "problems": 13,
    "examples": 7,
    "sims": 4,
    "figures": 3,
-   "drills": 1
+   "drills": 1,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "chemical-bonding": {
    "problems": 14,
    "examples": 8,
    "sims": 4,
    "figures": 4,
-   "drills": 1
+   "drills": 1,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 1,
+   "predicts": 0,
+   "hero": 0
   },
   "molecular-geometry": {
    "problems": 14,
    "examples": 7,
    "sims": 4,
    "figures": 5,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "liquids-solids": {
    "problems": 14,
    "examples": 7,
    "sims": 4,
    "figures": 5,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "solutions": {
    "problems": 14,
    "examples": 8,
    "sims": 4,
    "figures": 3,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "kinetics": {
    "problems": 15,
    "examples": 7,
    "sims": 4,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "equilibrium": {
    "problems": 14,
    "examples": 8,
    "sims": 4,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "acids-bases": {
    "problems": 14,
    "examples": 8,
    "sims": 4,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "aqueous-equilibria": {
    "problems": 15,
    "examples": 8,
    "sims": 3,
    "figures": 3,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "thermodynamics": {
    "problems": 13,
    "examples": 9,
    "sims": 4,
    "figures": 4,
-   "drills": 1
+   "drills": 1,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "electrochemistry": {
    "problems": 14,
    "examples": 8,
    "sims": 4,
    "figures": 6,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "nuclear-chemistry": {
    "problems": 14,
    "examples": 9,
    "sims": 4,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "coordination-chemistry": {
    "problems": 15,
    "examples": 8,
    "sims": 3,
    "figures": 4,
-   "drills": 2
+   "drills": 2,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "periodic-table": {
    "problems": 0,
    "examples": 0,
    "sims": 1,
    "figures": 0,
-   "drills": 0
+   "drills": 0,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "data-tables": {
    "problems": 0,
    "examples": 0,
    "sims": 0,
    "figures": 0,
-   "drills": 0
+   "drills": 0,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   },
   "glossary": {
    "problems": 0,
    "examples": 0,
    "sims": 0,
    "figures": 0,
-   "drills": 0
+   "drills": 0,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
  "published": 23,

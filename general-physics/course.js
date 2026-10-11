@@ -495,7 +495,12 @@ SB.registerCourse({
    "examples": 5,
    "sims": 4,
    "figures": 5,
-   "drills": 2
+   "drills": 2,
+   "minis": 3,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
   }
  },
  "published": 1,
