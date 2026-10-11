@@ -194,15 +194,16 @@ SB.drill("drill-q", () => {
 
 ### 엔진 `SB` (engine/js/scibook.js)
 - `SB.canvas(idOrEl, (ctx,w,h)=>{}, {aspect:0.5, height, minHeight, maxHeight})` → `{ctx,w,h,redraw()}`. HiDPI, 리사이즈·테마 변경 시 자동 다시 그림(배경은 `--canvas-bg`).
-- `SB.chart(ctx, box|null, {x:[a,b], y:[a,b], logX, logY, xLabel, yLabel, series:[{data:[[x,y]],color,width,dash,fill}], vlines:[{x,color,label,dash,row}], hlines:[{y,…}], points:[{x,y,color,r,label}], bands:[{x0,x1,color}], xFmt, yFmt, xTicks, yTicks})` → `{X,Y,box}`. 기본 여백 왼쪽 58, 아래 46px.
+- `SB.chart(ctx, box|null, {x:[a,b], y:[a,b], logX, logY, xLabel, yLabel, series:[{data:[[x,y]],color,width,dash,fill}], vlines:[{x,color,label,dash,row}], hlines:[{y,…}], points:[{x,y,color,r,label}], bands:[{x0,x1,color}], hbands:[{y0,y1,color}], xFmt, yFmt, xTicks, yTicks})` → `{X,Y,box}`. 기본 여백 왼쪽 58, 아래 46px.
 - `SB.loop(idOrEl, (dt,t)=>{})` 화면에 보일 때만 도는 rAF 루프 `{start,stop,toggle,running}`.
-- `SB.range(id, fmt, onInput)` → getter `get()`, `get.set(v)`(onInput 호출), `get.el`. 출력은 `id-out` 요소.
+- `SB.range(id, fmt, onInput)` → getter `get()`, `get.set(v)`(onInput 호출), `get.set(v, true)`(표시만 갱신), `get.el`. 출력은 `id-out` 요소.
 - `SB.seg(id, onChange)` → getter, `get.set(v)`.  `SB.stat(id, html)`.
 - `SB.palette()` → `{bg,text,dim,faint,grid,axis,border,surface,accent,accent2,ok,warn,bad,red,green,blue,series[]}`. `SB.color('accent-soft')`, `SB.onTheme(cb)`, `SB.isDark()`.
 - `SB.fmt(x,digits)`, `SB.si(x,'J')`, `SB.clamp/lerp/map`, `SB.randn()`, `SB.poisson(λ)`, `SB.wl2rgb(nm)`, `SB.C = {h,c,q,k,NA,R,me,eps0,g}`.
 - `SB.three(idOrEl, {camera:[x,y,z], target, fov, autoRotate, minDistance, maxDistance})` → `T = {THREE, scene, camera, renderer, controls, onFrame(cb), label(html,[x,y,z]), material(color,opts)}`.
 - `SB.drill(id, gen)`, `SB.math(el)`(동적으로 넣은 HTML의 수식 렌더), `SB.tex(tex, display)` → HTML 문자열.
 - `SB.parseNum(str)`, `SB.near(v, ans, tol)`.
+- 컨트롤 라벨에 아래첨자(`k<sub>f</sub>`)를 써도 된다(엔진이 감싼다). 한 캔버스의 draw에서 다른 캔버스를 redraw하면 생성 순서에 주의(먼저 만든 캔버스는 즉시 한 번 그려진다).
 - 캔버스 글꼴: `ctx.font = "12px " + SB.color("font")` 또는 `SB.color("mono")`.
 
 ### 화학 `Chem` (engine/lib/chem.js, elements.js 필요)

@@ -5,7 +5,7 @@
 
 | 순서 | 과목 (id) | 분야 | 학년 | 공유 lib | 상태 |
 |---|---|---|---|---|---|
-| 1 | 일반화학 `general-chemistry` | 화학 | 1 | elements, chem | 집필 중 |
+| 1 | 일반화학 `general-chemistry` | 화학 | 1 | elements, chem | 초판 공개 |
 | 2 | 일반물리학 `general-physics` | 물리 | 1 | phys(신규) | 예정 |
 | 3 | 유기화학 `organic-chemistry` | 화학 | 2 | elements, chem, (+ mol2d 신규) | 예정 |
 | 4 | 정역학 `statics` | 공학 역학 | 2 | phys, mech(신규) | 예정 |

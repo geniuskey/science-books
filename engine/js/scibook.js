@@ -16,7 +16,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/";
   const SB = (window.SB = {});
   SB.version = VERSION;
@@ -245,7 +245,7 @@
    * opts: { x:[min,max], y:[min,max], logX, logY, xLabel, yLabel, xTicks, yTicks,
    *         xFmt, yFmt, series:[{data:[[x,y],...], color, width, dash, fill, label}],
    *         vlines:[{x,color,label,dash,row}] (row: 라벨 줄 번호, 겹침 방지), hlines:[{y,color,label,dash}], points:[{x,y,color,r,label}],
-   *         bands:[{x0,x1,color}] }
+   *         bands:[{x0,x1,color}], hbands:[{y0,y1,color}] }
    * 반환: { X(v)->px, Y(v)->px, box }
    */
   SB.chart = function (ctx, box, opts) {
@@ -272,6 +272,7 @@
     ctx.lineWidth = 1;
     // bands
     (opts.bands || []).forEach((b) => { ctx.fillStyle = b.color; ctx.fillRect(X(b.x0), box.y, X(b.x1) - X(b.x0), box.h); });
+    (opts.hbands || []).forEach((b) => { ctx.fillStyle = b.color; const a = Y(b.y0), c = Y(b.y1); ctx.fillRect(box.x, Math.min(a, c), box.w, Math.abs(a - c)); });
     // grid + ticks
     const xt = opts.xTicks || ticks(x0, x1, opts.logX, 6);
     const yt = opts.yTicks || ticks(y0, y1, opts.logY, 5);
@@ -329,7 +330,7 @@
     el.addEventListener("input", () => update(true));
     update(false);
     const get = () => Number(el.value);
-    get.set = (v) => { el.value = v; update(true); };
+    get.set = (v, silent) => { el.value = v; update(!silent); };   // silent=true: 표시만 갱신, onInput 호출 안 함
     get.el = el;
     return get;
   };

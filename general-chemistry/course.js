@@ -5,7 +5,7 @@ SB.registerCourse({
  "en": "General Chemistry",
  "field": "chemistry",
  "level": "대학 1학년 · 일반화학 I·II",
- "status": "writing",
+ "status": "published",
  "description": "원자와 몰에서 출발해 결합·분자 구조, 기체와 용액, 열역학, 속도론, 평형, 산·염기, 전기화학, 핵화학까지 — 대학 1학년 일반화학 전 과정을 수식과 시뮬레이터로 직접 실험하며 익히는 인터랙티브 교과서.",
  "lead": "화학은 ‘보이지 않는 입자의 수를 세고, 그 입자들이 에너지를 주고받는 방식’을 다루는 학문이다. 이 책은 표준 대학 일반화학 강의(일반화학 I·II, 약 30주)의 범위를 그대로 따르되, 모든 핵심 개념을 손으로 움직여 볼 수 있는 시뮬레이터와 자동 채점 연습문제로 바꾸었다.",
  "accent": {
@@ -309,8 +309,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "정리"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   }
@@ -469,9 +468,16 @@ SB.registerCourse({
    "sims": 0,
    "figures": 0,
    "drills": 0
+  },
+  "glossary": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 0,
+   "figures": 0,
+   "drills": 0
   }
  },
- "published": 22,
+ "published": 23,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });

@@ -162,6 +162,64 @@ for entry in catalog["courses"]:
         text = replace_block(text, "toc", "".join(parts_html) + "\n    ", idx)
         write(idx, text)
 
+
+    # ---- 용어집: chapters/glossary.html 의 <!-- sb:glossary --> 구역을 각 장의 .term 표기에서 생성
+    gpath = cdir / "chapters" / "glossary.html"
+    if gpath.exists():
+        terms = {}
+        for part in course["parts"]:
+            for ch in part["chapters"]:
+                f = cdir / "chapters" / f"{ch['slug']}.html"
+                if not f.exists() or ch["slug"] == "glossary":
+                    continue
+                src = f.read_text(encoding="utf-8")
+                main_start = src.find('<main class="chapter')
+                for m in re.finditer(r'<span class="term">(.*?)</span>(?:\s*<span class="en">\((.*?)\)</span>)?', src):
+                    if m.start() < main_start:
+                        continue
+                    ko = html.unescape(strip_tags(m.group(1)))
+                    if not ko or len(ko) > 30:
+                        continue
+                    key = ko.replace(" ", "")
+                    if key in terms:
+                        continue
+                    sec = list(re.finditer(r'<section[^>]*\sid="([^"]+)"', src[:m.start()]))
+                    blk_start = max(src.rfind("<p", 0, m.start()), src.rfind("<li", 0, m.start()), src.rfind('<div class="def', 0, m.start()))
+                    ends = [e for e in (src.find("</p>", m.end()), src.find("</li>", m.end()), src.find("</div>", m.end())) if e > 0]
+                    block = html.unescape(strip_tags(src[blk_start:min(ends)])) if blk_start >= 0 and ends else ko
+                    sents = re.split(r"(?<=[다요])\.\s+", block)
+                    sent = next((x for x in sents if ko in x), sents[0]).strip()
+                    if not sent.endswith("."):
+                        sent += "."
+                    if len(sent) > 240:
+                        sent = sent[:237].rsplit(" ", 1)[0] + "…"
+                    terms[key] = {"ko": ko, "en": strip_tags(m.group(2) or ""), "def": sent, "slug": ch["slug"], "num": ch["num"],
+                                  "title": ch["title"], "sec": sec[-1].group(1) if sec else ""}
+        CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
+        def initial(w):
+            c = w[0]
+            if "가" <= c <= "힣":
+                return CHO[(ord(c) - 0xAC00) // 588].replace("ㄲ", "ㄱ").replace("ㄸ", "ㄷ").replace("ㅃ", "ㅂ").replace("ㅆ", "ㅅ").replace("ㅉ", "ㅈ")
+            return "A–Z" if c.isascii() and c.isalpha() else "기타"
+        items = sorted(terms.values(), key=lambda t: t["ko"])
+        out = [f'\n<p class="gl-count">용어 {len(items)}개 · 각 용어는 처음 정의된 장으로 연결된다.</p>']
+        cur = None
+        for t in items:
+            ini = initial(t["ko"])
+            if ini != cur:
+                if cur is not None:
+                    out.append("</div>")
+                out.append(f'<h3 class="gl-ini" id="gl-{ini}">{ini}</h3><div class="gl-list">')
+                cur = ini
+            href = f'{t["slug"]}.html' + (f'#{t["sec"]}' if t["sec"] else "")
+            out.append(f'<div class="gl-item" data-q="{esc(t["ko"] + " " + t["en"])}"><h4>{esc(t["ko"])}'
+                       f'{f"<span class=\"en\">{esc(t["en"])}</span>" if t["en"] else ""}</h4><p>{esc(t["def"])}</p>'
+                       f'<a class="ch" href="{href}">{esc(t["num"])}장 {esc(t["title"])} →</a></div>')
+        if cur is not None:
+            out.append("</div>")
+        gtext = gpath.read_text(encoding="utf-8")
+        write(gpath, replace_block(gtext, "glossary", "\n".join(out) + "\n", gpath))
+
 # ---- catalog.js
 write(ROOT / "catalog.js", "/* 생성 파일 — catalog.json·course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
       f"SB.registerCatalog({json.dumps({'site': catalog['site'], 'fields': catalog['fields'], 'courses': courses}, ensure_ascii=False, indent=1)});\n")

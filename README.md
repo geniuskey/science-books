@@ -5,7 +5,7 @@
 
 | 교과서 | 주소 | 상태 |
 |---|---|---|
-| 일반화학 (General Chemistry) | `/general-chemistry/` | 집필 중 — 6부 20장 + 부록 3 |
+| 일반화학 (General Chemistry) | `/general-chemistry/` | 초판 — 6부 20장 + 부록 3 |
 | 일반물리학 · 유기화학 · 정역학 · 동역학 · 유체역학 | — | 예정 ([로드맵](docs/ROADMAP.md)) |
 
 ## 구조

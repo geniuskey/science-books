@@ -30,14 +30,14 @@ SB.registerCatalog({
   {
    "id": "general-chemistry",
    "field": "chemistry",
-   "status": "writing",
+   "status": "published",
    "manifest": "general-chemistry/course.json",
    "title": "일반화학",
    "en": "General Chemistry",
    "level": "대학 1학년 · 일반화학 I·II",
    "description": "원자와 몰에서 출발해 결합·분자 구조, 기체와 용액, 열역학, 속도론, 평형, 산·염기, 전기화학, 핵화학까지 — 대학 1학년 일반화학 전 과정을 수식과 시뮬레이터로 직접 실험하며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/general-chemistry/",
-   "published": 22,
+   "published": 23,
    "total": 23
   },
   {
