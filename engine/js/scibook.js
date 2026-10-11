@@ -16,10 +16,11 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.0";
+  const VERSION = "2.0.0";
   const KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/";
   const SB = (window.SB = {});
   SB.version = VERSION;
+  SB.hooks = [];   // 레이아웃 생성 직후 호출: (root, slug) => {}
 
   /* 엔진 위치(…/engine/)와 플랫폼 루트(…/)를 이 스크립트의 src에서 알아낸다. */
   const me = document.currentScript && document.currentScript.src;
@@ -199,7 +200,7 @@
         ctx.fillStyle = SB.color("canvas-bg");
         ctx.fillRect(0, 0, st.w, st.h);
       }
-      try { draw && draw(ctx, st.w, st.h); } finally { ctx.restore(); }
+      try { draw && draw(ctx, st.w, st.h, st); } finally { ctx.restore(); }
     };
     st.resize = resize;
     if (window.ResizeObserver) {
@@ -228,7 +229,10 @@
     }
     function kick() { if (!raf && running && visible) { last = 0; raf = requestAnimationFrame(frame); } }
     if (window.IntersectionObserver && el) {
-      new IntersectionObserver((es) => { visible = es[0].isIntersecting; kick(); }).observe(el);
+      const io = new IntersectionObserver((es) => { visible = es[es.length - 1].isIntersecting; kick(); });
+      io.observe(el);
+      // 엔진이 레이아웃을 만들며 본문을 옮기면 관찰 상태가 '안 보임'에 머물 수 있다 → 레이아웃 후 다시 관찰
+      (SB._observers = SB._observers || []).push([io, el]);
     }
     kick();
     return {
@@ -887,6 +891,8 @@
       });
     }
 
+    (SB._observers || []).forEach(([io, el]) => { io.unobserve(el); io.observe(el); });
+    (SB.hooks || []).forEach((f) => { try { f(main || document.body, curSlug || page); } catch (e) { console.error(e); } });
     initQuiz(document, curSlug || page);
 
     // ---- footer
@@ -1015,4 +1021,267 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
+})();
+
+/* ==========================================================================
+   SciBook 인터랙션 모듈 (엔진 2.0)
+   글 속에서 바로 만지고 보는 요소를 싸게 만들기 위한 부품.
+   - SB.tangle  : 본문 속 드래그 숫자(explorable explanation)
+   - SB.drag    : 캔버스 위 드래그 핸들(포인터·터치 공통)
+   - .steps     : 단계별로 펼쳐지는 SVG 그림(자동 초기화)
+   - .predict   : 예측하고 나서 시뮬레이터 열기(자동 초기화)
+   - SB.arrow, SB.spring, SB.dashLine, SB.label : 캔버스 그리기 도구
+   - SB.play    : 재생/일시정지 버튼과 루프 연결
+   ========================================================================== */
+(function () {
+  "use strict";
+  const SB = window.SB;
+
+  /* ------------------------------------------------------------ 드래그 숫자 */
+  /**
+   * 본문 속 드래그 숫자.
+   *   <p id="tg-range">각도 <span class="tn" data-var="th" data-min="5" data-max="85" data-step="1">45</span>°로 쏘면
+   *      사거리는 <span class="tn-out" data-out="R"></span> m.</p>
+   *   SB.tangle("tg-range", (v) => ({ R: (v.v0**2*Math.sin(2*v.th*Math.PI/180)/9.8).toFixed(1) }), { onChange(v){ cv.redraw(); } })
+   * 값 읽기: t.get() → {th:45,...}, t.set('th', 30)
+   * 숫자는 좌우로 끌거나(1px = step 단위 가속), 포커스 후 ←/→ 키로 바꾼다.
+   */
+  SB.tangle = function (rootId, compute, opts = {}) {
+    const root = typeof rootId === "string" ? document.getElementById(rootId) : rootId;
+    if (!root) return null;
+    const vars = {}, els = {};
+    root.querySelectorAll(".tn[data-var]").forEach((el) => {
+      const k = el.dataset.var;
+      const min = Number(el.dataset.min ?? -Infinity), max = Number(el.dataset.max ?? Infinity), step = Number(el.dataset.step || 1);
+      const dec = (String(el.dataset.step || "1").split(".")[1] || "").length;
+      const unit = el.dataset.unit || "";
+      vars[k] = Number(el.textContent);
+      (els[k] = els[k] || []).push(el);
+      el.tabIndex = 0;
+      el.setAttribute("role", "slider");
+      el.setAttribute("aria-valuemin", min); el.setAttribute("aria-valuemax", max);
+      el.title = "좌우로 끌거나 ←/→ 키로 값을 바꿔 보세요";
+      const fmt = (v) => (opts.fmt && opts.fmt[k] ? opts.fmt[k](v) : v.toFixed(dec)) + unit;
+      el._fmt = fmt; el._lim = [min, max, step];
+      let sx = 0, sv = 0, drag = false;
+      el.addEventListener("pointerdown", (e) => { drag = true; sx = e.clientX; sv = vars[k]; el.setPointerCapture(e.pointerId); el.classList.add("on"); e.preventDefault(); });
+      el.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const dx = e.clientX - sx;
+        const n = Math.sign(dx) * Math.floor(Math.pow(Math.abs(dx) / 4, 1.25));
+        set(k, sv + n * step);
+      });
+      const end = () => { drag = false; el.classList.remove("on"); };
+      el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { set(k, vars[k] + step); e.preventDefault(); }
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { set(k, vars[k] - step); e.preventDefault(); }
+      });
+    });
+    function set(k, v) {
+      const [min, max, step] = els[k][0]._lim;
+      v = Math.round(SB.clamp(v, min, max) / step) * step;
+      v = Number(v.toFixed(10));
+      if (v === vars[k] && root._init) return;
+      vars[k] = v;
+      els[k].forEach((el) => { el.textContent = el._fmt(v); el.setAttribute("aria-valuenow", v); });
+      update();
+    }
+    function update() {
+      const out = compute ? compute(Object.assign({}, vars)) || {} : {};
+      for (const key in out) root.querySelectorAll(`[data-out="${key}"]`).forEach((o) => (o.innerHTML = out[key]));
+      if (opts.onChange) opts.onChange(Object.assign({}, vars), out);
+    }
+    Object.keys(els).forEach((k) => els[k].forEach((el) => (el.textContent = el._fmt(vars[k]))));
+    root._init = true;
+    update();
+    return { get: () => Object.assign({}, vars), set, update };
+  };
+
+  /* ------------------------------------------------------------ 캔버스 드래그 */
+  /**
+   * 캔버스 위 드래그 핸들.
+   *   SB.drag(cv, {
+   *     handles: () => [{ id:'tip', x:px, y:py, r:12 }],   // 현재 핸들 위치(CSS px)
+   *     move: (id, x, y, e) => { …상태 갱신… },             // 드래그 중
+   *     down: (id, x, y) => {}, up: (id) => {},             // 선택
+   *     free: true  // 핸들 밖을 눌러도 move(null, x, y) 호출(예: 클릭 위치에 놓기)
+   *   })
+   * cv는 SB.canvas가 돌려준 객체 또는 canvas 요소. 이동 후 자동으로 cv.redraw() 한다.
+   */
+  SB.drag = function (cv, o) {
+    const canvas = cv.canvas || cv;
+    canvas.style.touchAction = "none";
+    let active = null;
+    const pos = (e) => { const b = canvas.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+    const hit = (x, y) => {
+      const hs = (o.handles && o.handles()) || [];
+      let best = null, bd = Infinity;
+      hs.forEach((h) => { const d = Math.hypot(h.x - x, h.y - y); if (d <= (h.r || 14) + 6 && d < bd) { bd = d; best = h.id; } });
+      return best;
+    };
+    canvas.addEventListener("pointerdown", (e) => {
+      const [x, y] = pos(e);
+      active = hit(x, y);
+      if (active == null && !o.free) return;
+      canvas.setPointerCapture(e.pointerId);
+      if (o.down) o.down(active, x, y, e);
+      if (o.move) o.move(active, x, y, e);
+      cv.redraw && cv.redraw();
+      e.preventDefault();
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      const [x, y] = pos(e);
+      if (active == null && !(o.free && e.buttons)) { canvas.style.cursor = hit(x, y) != null ? "grab" : o.free ? "crosshair" : ""; return; }
+      canvas.style.cursor = "grabbing";
+      if (o.move) o.move(active, x, y, e);
+      cv.redraw && cv.redraw();
+    });
+    const end = (e) => { if (o.up) o.up(active, e); active = null; canvas.style.cursor = ""; };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    return { get active() { return active; } };
+  };
+
+  /* ------------------------------------------------------------ 캔버스 그리기 도구 */
+  /** 화살표: SB.arrow(ctx, x1,y1, x2,y2, {color, width, head, label, dash, labelPos:'end'|'mid'}) */
+  SB.arrow = function (ctx, x1, y1, x2, y2, o = {}) {
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    ctx.save();
+    ctx.strokeStyle = ctx.fillStyle = o.color || SB.color("accent");
+    ctx.lineWidth = o.width || 2.2; ctx.lineCap = "round";
+    if (o.dash) ctx.setLineDash(o.dash);
+    if (len > 0.5) {
+      const h = Math.min(o.head || 9, len * 0.6), a = Math.atan2(y2 - y1, x2 - x1);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * h * 0.8, y2 - Math.sin(a) * h * 0.8); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - h * Math.cos(a - 0.42), y2 - h * Math.sin(a - 0.42));
+      ctx.lineTo(x2 - h * Math.cos(a + 0.42), y2 - h * Math.sin(a + 0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    if (o.label) {
+      const t = o.labelPos === "mid" ? 0.5 : 1;
+      const lx = x1 + (x2 - x1) * t, ly = y1 + (y2 - y1) * t;
+      const a = Math.atan2(y2 - y1, x2 - x1), off = o.labelOff || 14;
+      SB.label(ctx, o.label, lx + Math.cos(a - Math.PI / 2) * off * (o.labelSide || 1) + (t === 1 ? Math.cos(a) * 8 : 0), ly + Math.sin(a - Math.PI / 2) * off * (o.labelSide || 1) + (t === 1 ? Math.sin(a) * 8 : 0), { color: o.color, bold: true });
+    }
+    ctx.restore();
+  };
+  /** 글자(배경 테두리로 가독성 확보): SB.label(ctx, '텍스트', x, y, {color, size, align, bold, bg}) */
+  SB.label = function (ctx, text, x, y, o = {}) {
+    ctx.save();
+    ctx.font = `${o.bold ? "600 " : ""}${o.size || 12}px ${o.mono ? SB.color("mono") : SB.color("font")}`;
+    ctx.textAlign = o.align || "center"; ctx.textBaseline = o.baseline || "middle";
+    ctx.lineWidth = 3.5; ctx.strokeStyle = o.bg || SB.color("canvas-bg"); ctx.lineJoin = "round";
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = o.color || SB.color("text");
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  };
+  /** 용수철: SB.spring(ctx, x1,y1, x2,y2, {coils:10, amp:8, color, width}) */
+  SB.spring = function (ctx, x1, y1, x2, y2, o = {}) {
+    const n = o.coils || 10, amp = o.amp || 8, L = Math.hypot(x2 - x1, y2 - y1), a = Math.atan2(y2 - y1, x2 - x1);
+    ctx.save(); ctx.translate(x1, y1); ctx.rotate(a);
+    ctx.strokeStyle = o.color || SB.color("text-dim"); ctx.lineWidth = o.width || 1.8; ctx.lineJoin = "round";
+    const lead = Math.min(10, L * 0.1);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(lead, 0);
+    for (let i = 0; i <= n * 2; i++) ctx.lineTo(lead + ((L - 2 * lead) * i) / (n * 2), i === 0 || i === n * 2 ? 0 : (i % 2 ? -amp : amp));
+    ctx.lineTo(L, 0); ctx.stroke(); ctx.restore();
+  };
+  /** 점선: SB.dashLine(ctx, x1,y1,x2,y2, color, dash=[4,4]) */
+  SB.dashLine = function (ctx, x1, y1, x2, y2, color, dash) {
+    ctx.save(); ctx.strokeStyle = color || SB.color("text-faint"); ctx.lineWidth = 1.2; ctx.setLineDash(dash || [4, 4]);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
+  };
+  /** 재생 버튼: SB.play('btn-id', loop) → 버튼 글자가 ▶ 재생 / ❚❚ 정지로 바뀐다. loop는 SB.loop 반환값 */
+  SB.play = function (id, loop, o = {}) {
+    const b = typeof id === "string" ? document.getElementById(id) : id;
+    if (!b) return;
+    const sync = () => (b.textContent = loop.running ? (o.pause || "❚❚ 정지") : (o.play || "▶ 재생"));
+    b.addEventListener("click", () => { loop.toggle(); sync(); });
+    sync();
+    return sync;
+  };
+
+  /* ------------------------------------------------------------ 단계별 그림 */
+  /**
+   *   <figure class="diagram steps" data-steps="4">
+   *     <svg> … <g data-step="2">두 번째 단계부터 보임</g> … </svg>
+   *     <ol class="steps-cap"><li>1단계 설명</li><li>2단계 설명</li>…</ol>
+   *     <figcaption>…</figcaption>
+   *   </figure>
+   * data-step="n" 인 요소는 n단계부터 보인다. data-only="n" 은 n단계에서만 보인다.
+   * 엔진이 ◀ ▶ ⟲ 자동재생 버튼을 붙인다.
+   */
+  function initSteps(root) {
+    root.querySelectorAll(".steps").forEach((fig) => {
+      const caps = [...fig.querySelectorAll(".steps-cap > li")];
+      const n = Number(fig.dataset.steps) || caps.length || Math.max(1, ...[...fig.querySelectorAll("[data-step]")].map((e) => Number(e.dataset.step)));
+      let k = 1, timer = 0;
+      const bar = document.createElement("div");
+      bar.className = "steps-bar";
+      bar.innerHTML = `<button type="button" class="btn" data-a="prev" aria-label="이전 단계">◀</button><span class="steps-dots"></span><button type="button" class="btn" data-a="next" aria-label="다음 단계">▶</button><button type="button" class="btn" data-a="auto">⟲ 자동 재생</button><span class="steps-now" aria-live="polite"></span>`;
+      const svg = fig.querySelector("svg, canvas");
+      (svg || fig.firstElementChild).after(bar);
+      const dots = bar.querySelector(".steps-dots");
+      dots.innerHTML = Array.from({ length: n }, (_, i) => `<button type="button" aria-label="${i + 1}단계">${i + 1}</button>`).join("");
+      const now = bar.querySelector(".steps-now");
+      function show(i) {
+        k = SB.clamp(i, 1, n);
+        fig.querySelectorAll("[data-step]").forEach((e) => e.classList.toggle("st-hide", Number(e.dataset.step) > k));
+        fig.querySelectorAll("[data-only]").forEach((e) => e.classList.toggle("st-hide", Number(e.dataset.only) !== k));
+        caps.forEach((c, j) => c.classList.toggle("on", j === k - 1));
+        [...dots.children].forEach((d, j) => d.classList.toggle("on", j < k));
+        now.innerHTML = caps[k - 1] ? caps[k - 1].innerHTML : `${k} / ${n}`;
+        fig.dispatchEvent(new CustomEvent("step", { detail: { step: k, total: n } }));
+      }
+      bar.addEventListener("click", (e) => {
+        const b = e.target.closest("button"); if (!b) return;
+        if (b.parentElement === dots) { stop(); show([...dots.children].indexOf(b) + 1); return; }
+        const a = b.dataset.a;
+        if (a === "prev") { stop(); show(k - 1); }
+        if (a === "next") { stop(); show(k + 1); }
+        if (a === "auto") { if (timer) stop(); else { if (k >= n) show(1); timer = setInterval(() => { if (k >= n) stop(); else show(k + 1); }, Number(fig.dataset.interval) || 1800); b.textContent = "❚❚ 멈춤"; } }
+      });
+      function stop() { clearInterval(timer); timer = 0; bar.querySelector('[data-a="auto"]').textContent = "⟲ 자동 재생"; }
+      show(Number(fig.dataset.start) || 1);
+      fig._steps = { show, get step() { return k; } };
+    });
+  }
+
+  /* ------------------------------------------------------------ 예측 후 실험 */
+  /**
+   *   <div class="predict" data-for="sim-drop">
+   *     <p>질문: 두 공 중 어느 것이 먼저 떨어질까?</p>
+   *     <div class="opts"><button class="opt">A</button><button class="opt" data-correct>동시에</button></div>
+   *     <div class="quiz-exp">왜 그런지 한 줄 설명(시뮬레이터에서 확인)</div>
+   *   </div>
+   *   <div class="sim" id="sim-drop"> … </div>   ← 예측 전에는 흐리게 잠긴다(‘건너뛰기’ 가능)
+   */
+  function initPredict(root) {
+    root.querySelectorAll(".predict").forEach((p) => {
+      const target = p.dataset.for && document.getElementById(p.dataset.for);
+      p.insertAdjacentHTML("afterbegin", '<span class="predict-tag">PREDICT · 먼저 예측해 보세요</span>');
+      if (target) {
+        target.classList.add("locked");
+        const ov = document.createElement("div");
+        ov.className = "lock-ov";
+        ov.innerHTML = '<div><b>먼저 위에서 결과를 예측해 보세요.</b><br><button type="button" class="btn">예측 없이 열기</button></div>';
+        target.appendChild(ov);
+        ov.querySelector("button").addEventListener("click", () => unlock());
+      }
+      function unlock() { if (target) { target.classList.remove("locked"); const o = target.querySelector(".lock-ov"); if (o) o.remove(); target.dispatchEvent(new CustomEvent("unlock")); } }
+      const opts = [...p.querySelectorAll("button.opt")];
+      opts.forEach((b) => b.addEventListener("click", () => {
+        opts.forEach((o) => { o.disabled = true; if (o.hasAttribute("data-correct")) o.classList.add("right"); });
+        if (!b.hasAttribute("data-correct")) b.classList.add("wrong");
+        p.classList.add("done");
+        unlock();
+        if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "nearest" }), 250);
+      }));
+    });
+  }
+
+  SB.hooks.push((root) => { initSteps(root); initPredict(root); });
 })();

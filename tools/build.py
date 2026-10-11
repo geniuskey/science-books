@@ -93,6 +93,11 @@ for entry in catalog["courses"]:
                 "sims": len(re.findall(r'class="sim[" ]', src)),
                 "figures": len(re.findall(r"<figure[ >]", src)),
                 "drills": len(re.findall(r'class="drill[" ]', src)),
+                "minis": len(re.findall(r'class="mini[" ]', src)),
+                "tangles": len(re.findall(r'class="tangle[" ]', src)),
+                "steps": len(re.findall(r'class="[^"]*\bsteps\b[^"]*"', src)) - len(re.findall(r'class="steps-', src)),
+                "predicts": len(re.findall(r'class="predict[" ]', src)),
+                "hero": 1 if 'class="hero-live"' in src else 0,
             }
             stats[ch["slug"]] = st
             # --- 콘텐츠 규칙 검증
@@ -145,6 +150,8 @@ for entry in catalog["courses"]:
                 if st:
                     bits = []
                     if st["sims"]: bits.append(f"시뮬레이터 {st['sims']}")
+                    inter = st["minis"] + st["tangles"] + st["steps"] + st["predicts"]
+                    if inter: bits.append(f"인터랙티브 {inter}")
                     if st["examples"]: bits.append(f"예제 {st['examples']}")
                     if st["problems"]: bits.append(f"문제 {st['problems']}")
                     counts = f'<div class="counts">{" · ".join(bits)}</div>'
@@ -156,7 +163,7 @@ for entry in catalog["courses"]:
                     f'\n      <{tag} class="ch-card{" planned" if planned else ""}" data-slug="{ch["slug"]}"{href}>'
                     f'<span class="num">{"APPENDIX " if part.get("appendix") else "CHAPTER "}{esc(ch["num"])} {badge}</span>'
                     f'<h3>{esc(ch["title"])}</h3><p>{esc(ch["desc"])}</p>{counts}<div class="tags">{tags}</div></{tag}>')
-            sem = f'<small>{"일반화학 I" if part.get("semester") == 1 else "일반화학 II"}</small>' if part.get("semester") else ""
+            sem = f'<small>{course["title"]} {"I" if part.get("semester") == 1 else "II"}</small>' if part.get("semester") else ""
             parts_html.append(f'\n    <div class="course-part"><h3>{esc(part["title"])} {sem}</h3><div class="ch-grid">{"".join(cards)}\n    </div></div>')
         text = idx.read_text(encoding="utf-8")
         text = replace_block(text, "toc", "".join(parts_html) + "\n    ", idx)

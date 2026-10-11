@@ -1,7 +1,21 @@
 # 챕터 작성 가이드 (SciBook 공통)
 
 이 문서는 모든 과목에 공통인 챕터 작성 규칙이다. 본보기 챕터는
-[`general-chemistry/chapters/gases.html`](../general-chemistry/chapters/gases.html)이다. **새 챕터를 쓰기 전에 반드시 이 파일을 처음부터 끝까지 읽는다.**
+[`general-physics/chapters/motion-2d.html`](../general-physics/chapters/motion-2d.html)(인터랙션 기준)과 [`general-chemistry/chapters/gases.html`](../general-chemistry/chapters/gases.html)(기본 구성)이다. **새 챕터를 쓰기 전에 반드시 이 파일을 처음부터 끝까지 읽는다.**
+
+
+## 0. 인터랙션 기준 (엔진 2.0, 모든 새 장과 보강 작업에 적용)
+
+독자가 **읽는 시간보다 만지는 시간이 많은** 교과서를 목표로 한다. 본보기: [`general-physics/chapters/motion-2d.html`](../general-physics/chapters/motion-2d.html).
+
+- **장 머리 라이브 애니메이션** `.hero-live` 1개: 장의 핵심 현상이 첫 화면에서 저절로 움직이고, 누르거나 끌면 반응한다.
+- **모든 절(h2 section)에 인터랙티브 요소 최소 2개.** 정적인 글·그림만 있는 절은 없다.
+- 장 전체 기준(최소): 시뮬레이터 `.sim` 4개 이상, 미니 실험 `.mini` 3개 이상, 드래그 숫자 문단 `.tangle` 2개 이상, 단계별 그림 `.steps` 2개 이상, 예측→실험 `.predict` 2개 이상, 드릴 2개. 정적 SVG 그림도 3개 이상 유지하되, 움직일 수 있는 그림은 `.steps`나 `.mini`로 만든다.
+- **직접 조작**: 슬라이더만이 아니라 캔버스 위의 물체·화살표·점을 끌어서(`SB.drag`) 바꾸게 한다. 시뮬레이터의 절반 이상에 드래그 조작을 넣는다.
+- **목표·도전**: 시뮬레이터 하나 이상에 "과녁 맞히기", "목표값 만들기" 같은 게임형 과제를 넣는다.
+- 그래프는 실시간으로 움직이는 점·자취와 함께 보여 준다(값만 바뀌는 정적 그래프 지양).
+- 수식 바로 옆에서 그 수식을 만질 수 있게 한다: 핵심 공식마다 `.tangle` 또는 `.mini`를 둔다.
+- 성능: 화면 밖에서는 `SB.loop`가 멈춘다. 입자 수는 수백 개 이내. 360px 폭에서도 조작 가능해야 한다(핸들 반지름 ≥ 12px).
 
 ## 1. 원칙
 
@@ -14,7 +28,7 @@
 - 외부 라이브러리는 엔진이 제공하는 것만: KaTeX(+mhchem, 엔진이 자동 로드), three.js r147(3D가 필요할 때만). 이미지 파일 대신 인라인 SVG/canvas.
 - 색은 CSS 변수(`var(--accent)`, `var(--text-dim)` …)나 `SB.palette()`만 쓴다. 라이트/다크 모두에서 읽혀야 한다. 물리적 색(불꽃 반응색, 지시약 색, 파장색)만 고정색 허용.
 - 폭 360px에서 가로 스크롤이 생기면 안 된다. SVG는 `viewBox`만 주고 width/height 속성을 생략한다. 넓은 표는 `.table-wrap`으로 감싼다.
-- 분량 가이드(한 장): 본문 5–7절, 그림(SVG) 3개 이상, 시뮬레이터 2–4개, 예제 5–8개, 드릴 1–2개, 연습문제 10–15개(난이도 1·2·3 고루, 선택형 1–2개 포함), 퀴즈 4–5문항, 핵심 정리 5–7항목. 대략 700–1100줄.
+- 분량 가이드(한 장): 본문 4–7절, 0절의 인터랙션 기준 충족, 예제 5–8개, 연습문제 12–15개(난이도 1·2·3 고루, 선택형 2개 포함), 퀴즈 4–5문항, 핵심 정리 5–7항목. 대략 1000–1600줄.
 
 ## 2. 파일 구조와 head 템플릿
 
@@ -33,6 +47,7 @@
 <link rel="stylesheet" href="../../engine/css/scibook.css">
 <script src="../../engine/js/scibook.js"></script>
 <script src="../course.js"></script>
+<!-- 물리 과목: <script src="../../engine/lib/phys.js"></script> -->
 <!-- 화학 과목: 원소 데이터와 화학 라이브러리 -->
 <script src="../../engine/lib/elements.js"></script>
 <script src="../../engine/lib/chem.js"></script>
@@ -75,6 +90,69 @@
 따라서 figcaption은 `<b>그림 …</b>` 없이 설명만 쓴다. h2에 번호를 쓰지 않는다.
 
 ## 4. 컴포넌트
+
+
+### 엔진 2.0 인터랙션 부품
+
+**장 머리 애니메이션**
+```html
+<div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">누르거나 끌어 보세요</span></div>   <!-- .chapter-hero 안, lead 다음 -->
+```
+**드래그 숫자 문단** — 밑줄 숫자를 좌우로 끌면 결과가 즉시 바뀐다(캔버스를 함께 둘 수 있다).
+```html
+<div class="tangle" id="tg-x">
+  <p>속력 <span class="tn" data-var="v" data-min="5" data-max="40" data-step="1" data-unit=" m/s">20</span>로 던지면
+     <span class="tn-out" data-out="R"></span> 날아간다.</p>
+  <canvas id="cv-tg"></canvas>   <!-- 선택 -->
+</div>
+```
+```js
+let cv = null;
+SB.tangle("tg-x", (v) => ({ R: (v.v * v.v / 9.8).toFixed(1) + " m" }), { onChange: () => cv && cv.redraw() });
+cv = SB.canvas("cv-tg", (ctx, w, h) => { /* … */ }, { aspect: 0.3 });
+```
+**미니 실험** — 본문 흐름 속 가벼운 그림 + 컨트롤 1–3개.
+```html
+<figure class="mini" id="mini-x">
+  <div class="mini-view"><canvas id="cv-x"></canvas></div>
+  <div class="mini-ctrl"><label class="ctrl"><span>값 <output id="x-a-out"></output></span><input type="range" id="x-a" min="0" max="10" value="5"></label><button class="btn" id="x-play" type="button"></button><span class="readout" id="x-r"></span></div>
+  <figcaption><span class="mini-tag">MINI LAB</span>무엇을 보라는지 한두 문장.</figcaption>
+</figure>
+```
+나란히 두려면 `<div class="mini-row">` 안에 `.mini` 두 개.
+
+**단계별 그림** — `data-step="n"`은 n단계부터, `data-only="n"`은 n단계에서만 보인다. 엔진이 ◀ ▶ 자동 재생 버튼을 붙인다.
+```html
+<figure class="diagram steps" data-steps="3">
+  <svg viewBox="0 0 800 300">… <g data-step="2">…</g> <g data-only="3">…</g></svg>
+  <ol class="steps-cap"><li>1단계 설명</li><li>2단계</li><li>3단계</li></ol>
+  <figcaption>…</figcaption>
+</figure>
+```
+**예측 → 실험** — 답을 고르기 전에는 `data-for` 시뮬레이터가 흐리게 잠긴다.
+```html
+<div class="predict" data-for="sim-drop">
+  <p>질문?</p>
+  <div class="opts"><button class="opt">보기</button><button class="opt" data-correct>정답</button></div>
+  <div class="quiz-exp">시뮬레이터에서 무엇을 확인할지.</div>
+</div>
+<div class="sim" id="sim-drop">…</div>
+```
+**캔버스 드래그**
+```js
+const cv = SB.canvas("cv-a", (ctx, w, h, self) => { …; self._tip = [tx, ty]; });   // 그리기 함수 안에서는 self 사용
+SB.drag(cv, { handles: () => [{ id: "tip", x: cv._tip[0], y: cv._tip[1], r: 14 }], move: (id, x, y) => { /* 상태 갱신 */ } });
+// free:true 이면 빈 곳을 눌러도 move(null, x, y)/down(null, x, y) 호출
+```
+**그리기 도구**: `SB.arrow(ctx,x1,y1,x2,y2,{color,width,label,dash})`, `SB.label(ctx,text,x,y,{color,size,bold,mono})`(배경 테두리 있는 글자), `SB.spring(ctx,x1,y1,x2,y2,{coils,amp})`, `SB.dashLine(...)`, `SB.play(btnId, loop)`(재생/정지 버튼), `SB.chart(..., {hbands:[{y0,y1,color}]})`.
+드래그 핸들은 흰 원 + 강조색 테두리(반지름 8–10px)로 그려 "끌 수 있음"을 보여 준다.
+
+### 물리 `Phys` (engine/lib/phys.js)
+- `Phys.world(ctx, w, h, {x:[a,b], y:[c,d], pad:[l,r,t,b], equal, alignX, alignY})` → `W.X(x), W.Y(y), W.ix(px), W.iy(py), W.s, W.grid(), W.axes({xLabel,yLabel,step}), W.ground(y), W.arrow(p, d, {scale,color,label}), W.dot(p,{r,color,label}), W.path(pts,{color,width,dash,fill}), W.text(t,p)`.
+- `Phys.V.{add,sub,mul,dot,cross,len,norm,rot,polar,angle}`, `Phys.deg(°)`, `Phys.rad2deg`.
+- `Phys.rk4(deriv, y, t, dt)`, `Phys.integrate(deriv, y0, t0, t1, dt, stop)` → `[{t, y}]`.
+- `Phys.block(ctx,cx,cy,w,h,{label,angle})`, `Phys.fbd(ctx,cx,cy,[{v:[Fx,Fy],label}],{scale})`, `Phys.trail(n)`.
+- `Phys.Efield(charges,x,y)`, `Phys.potential(...)`, `Phys.fieldLines(charges,{perCharge,bounds})`, `Phys.thinLens(f,so)`, `Phys.snell(n1,n2,θ)`, `Phys.diverge(t)`, `Phys.const`.
 
 ### 정의·법칙 상자
 ```html
@@ -193,7 +271,7 @@ SB.drill("drill-q", () => {
 ## 5. JS 헬퍼
 
 ### 엔진 `SB` (engine/js/scibook.js)
-- `SB.canvas(idOrEl, (ctx,w,h)=>{}, {aspect:0.5, height, minHeight, maxHeight})` → `{ctx,w,h,redraw()}`. HiDPI, 리사이즈·테마 변경 시 자동 다시 그림(배경은 `--canvas-bg`).
+- `SB.canvas(idOrEl, (ctx,w,h,self)=>{}, {aspect:0.5, height, minHeight, maxHeight})` → `{ctx,w,h,redraw()}`. HiDPI, 리사이즈·테마 변경 시 자동 다시 그림(배경은 `--canvas-bg`). **생성 즉시 한 번 그려지므로**, 그리기 함수 안에서 반환값 변수(`cv`)를 쓰지 말고 넷째 인자 `self`를 쓴다(TDZ 오류 방지).
 - `SB.chart(ctx, box|null, {x:[a,b], y:[a,b], logX, logY, xLabel, yLabel, series:[{data:[[x,y]],color,width,dash,fill}], vlines:[{x,color,label,dash,row}], hlines:[{y,…}], points:[{x,y,color,r,label}], bands:[{x0,x1,color}], hbands:[{y0,y1,color}], xFmt, yFmt, xTicks, yTicks})` → `{X,Y,box}`. 기본 여백 왼쪽 58, 아래 46px.
 - `SB.loop(idOrEl, (dt,t)=>{})` 화면에 보일 때만 도는 rAF 루프 `{start,stop,toggle,running}`.
 - `SB.range(id, fmt, onInput)` → getter `get()`, `get.set(v)`(onInput 호출), `get.set(v, true)`(표시만 갱신), `get.el`. 출력은 `id-out` 요소.
