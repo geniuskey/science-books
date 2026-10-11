@@ -471,8 +471,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -483,8 +482,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "정리"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   }
@@ -501,9 +499,33 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 2,
    "hero": 1
+  },
+  "constants-units": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 1,
+   "figures": 0,
+   "drills": 0,
+   "minis": 0,
+   "tangles": 1,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
+  },
+  "glossary": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 0,
+   "figures": 0,
+   "drills": 0,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 1,
+ "published": 3,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
