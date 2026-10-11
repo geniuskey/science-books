@@ -201,8 +201,7 @@ SB.registerCourse({
      "tags": [
       "평형",
       "르샤틀리에"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "acids-bases",
@@ -384,6 +383,13 @@ SB.registerCourse({
    "figures": 4,
    "drills": 2
   },
+  "equilibrium": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 4,
+   "drills": 2
+  },
   "acids-bases": {
    "problems": 14,
    "examples": 8,
@@ -441,7 +447,7 @@ SB.registerCourse({
    "drills": 0
   }
  },
- "published": 17,
+ "published": 18,
  "total": 23,
  "url": "https://science.euiyun.com/general-chemistry/"
 });
