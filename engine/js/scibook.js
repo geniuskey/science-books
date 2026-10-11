@@ -901,6 +901,15 @@
       <span class="t-mono" title="엔진 버전">engine ${VERSION}</span>`;
     body.appendChild(foot);
 
+    // 컨트롤 라벨: <span>k<sub>f</sub> <output></span> 처럼 섞인 내용이 flex 항목으로 쪼개지지 않게 글자 부분을 한 덩어리로 감싼다.
+    document.querySelectorAll(".ctrl > span").forEach((sp) => {
+      const nodes = [...sp.childNodes].filter((n) => !(n.nodeType === 1 && n.tagName === "OUTPUT"));
+      if (nodes.length < 2) return;
+      const w = document.createElement("span");
+      sp.insertBefore(w, nodes[0]);
+      nodes.forEach((n) => w.appendChild(n));
+    });
+
     // simulator deep links
     document.querySelectorAll(".sim[id] > .sim-head").forEach((head) => {
       if (head.querySelector(".sim-link")) return;
