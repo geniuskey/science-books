@@ -50,7 +50,7 @@ def esc(s) -> str:
 
 
 def strip_tags(s: str) -> str:
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s)).strip()
+    return re.sub(r"\s+", " ", re.sub(r"</?[A-Za-z!][^>]*>", "", s)).strip()
 
 
 # ---------------------------------------------------------------- catalog
