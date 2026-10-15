@@ -50,7 +50,7 @@ SB.registerCatalog({
    "level": "대학 1학년 · 일반물리학 I·II",
    "description": "운동과 힘, 에너지와 운동량, 회전, 진동과 파동, 열, 전기와 자기, 빛, 상대성까지 — 미적분 기반 대학 1학년 일반물리 전 과정을 끌고, 던지고, 부딪쳐 보며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/general-physics/",
-   "published": 14,
+   "published": 17,
    "total": 35
   },
   {

@@ -400,40 +400,40 @@ SB.registerCourse({
    "hero": 1
   },
   "periodic-properties": {
-   "problems": 13,
+   "problems": 16,
    "examples": 7,
-   "sims": 4,
-   "figures": 3,
-   "drills": 1,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 0,
-   "predicts": 0,
-   "hero": 0
+   "sims": 7,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   },
   "chemical-bonding": {
-   "problems": 14,
+   "problems": 19,
    "examples": 8,
-   "sims": 4,
-   "figures": 4,
-   "drills": 1,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 1,
-   "predicts": 0,
-   "hero": 0
+   "sims": 7,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 2,
+   "steps": 5,
+   "predicts": 4,
+   "hero": 1
   },
   "molecular-geometry": {
-   "problems": 14,
+   "problems": 19,
    "examples": 7,
-   "sims": 4,
-   "figures": 5,
+   "sims": 7,
+   "figures": 10,
    "drills": 2,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 0,
-   "predicts": 0,
-   "hero": 0
+   "minis": 3,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
   },
   "liquids-solids": {
    "problems": 17,
@@ -448,16 +448,16 @@ SB.registerCourse({
    "hero": 1
   },
   "solutions": {
-   "problems": 14,
+   "problems": 18,
    "examples": 8,
-   "sims": 4,
-   "figures": 3,
+   "sims": 7,
+   "figures": 12,
    "drills": 2,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 0,
-   "predicts": 0,
-   "hero": 0
+   "minis": 6,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
   },
   "kinetics": {
    "problems": 15,

@@ -139,8 +139,7 @@ SB.registerCourse({
      "tags": [
       "토크",
       "각운동량"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "equilibrium-elasticity",
@@ -191,8 +190,7 @@ SB.registerCourse({
      "tags": [
       "압력",
       "베르누이"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "mechanical-waves",
@@ -232,8 +230,7 @@ SB.registerCourse({
      "tags": [
       "열",
       "열전달"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "kinetic-theory-first-law",
@@ -585,6 +582,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "rotation-dynamics": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 7,
+   "figures": 10,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 5,
+   "steps": 4,
+   "predicts": 5,
+   "hero": 1
+  },
   "gravitation": {
    "problems": 15,
    "examples": 12,
@@ -609,6 +618,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "fluids": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 4,
+   "hero": 1
+  },
   "sound": {
    "problems": 15,
    "examples": 8,
@@ -617,6 +638,18 @@ SB.registerCourse({
    "drills": 2,
    "minis": 5,
    "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "temperature-heat": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
    "steps": 2,
    "predicts": 3,
    "hero": 1
@@ -646,7 +679,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 14,
+ "published": 17,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
