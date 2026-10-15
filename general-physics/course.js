@@ -128,8 +128,7 @@ SB.registerCourse({
      "tags": [
       "회전",
       "관성 모멘트"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "rotation-dynamics",
@@ -577,6 +576,18 @@ SB.registerCourse({
    "predicts": 4,
    "hero": 1
   },
+  "rotation-kinematics": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 9,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -602,7 +613,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 10,
+ "published": 11,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });

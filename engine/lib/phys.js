@@ -95,7 +95,7 @@
     };
     W.axes = (a = {}) => {
       const st = a.step || niceStep(x1 - x0), sty = a.stepY || a.step || niceStep(y1 - y0);
-      const fx = a.xFmt || ((v) => String(Number(v.toPrecision(4)))), fy = a.yFmt || fx;
+      const df = (v) => String(Number(v.toPrecision(4))), fx = a.xFmt || df, fy = a.yFmt || df;
       ctx.save(); ctx.strokeStyle = P.axis; ctx.fillStyle = P.dim; ctx.lineWidth = 1.2; ctx.font = "11px " + SB.color("mono");
       const ax = SB.clamp(0, x0, x1), ay = SB.clamp(0, y0, y1);
       ctx.beginPath(); ctx.moveTo(W.X(x0), W.Y(ay)); ctx.lineTo(W.X(x1), W.Y(ay)); ctx.moveTo(W.X(ax), W.Y(y0)); ctx.lineTo(W.X(ax), W.Y(y1)); ctx.stroke();
