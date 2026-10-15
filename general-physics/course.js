@@ -201,8 +201,7 @@ SB.registerCourse({
      "tags": [
       "파동",
       "정상파"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "sound",
@@ -630,6 +629,18 @@ SB.registerCourse({
    "predicts": 4,
    "hero": 1
   },
+  "mechanical-waves": {
+   "problems": 15,
+   "examples": 5,
+   "sims": 6,
+   "figures": 9,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
   "sound": {
    "problems": 15,
    "examples": 8,
@@ -679,7 +690,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 17,
+ "published": 18,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
