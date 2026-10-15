@@ -150,8 +150,7 @@ SB.registerCourse({
      "tags": [
       "평형",
       "탄성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "gravitation",
@@ -593,6 +592,18 @@ SB.registerCourse({
    "predicts": 5,
    "hero": 1
   },
+  "equilibrium-elasticity": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "gravitation": {
    "problems": 15,
    "examples": 12,
@@ -690,7 +701,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 18,
+ "published": 19,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
