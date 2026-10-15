@@ -28,8 +28,7 @@ SB.registerCourse({
      "tags": [
       "기초",
       "벡터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "straight-line-motion",
@@ -40,8 +39,7 @@ SB.registerCourse({
      "tags": [
       "운동학",
       "그래프"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "motion-2d",
@@ -63,8 +61,7 @@ SB.registerCourse({
      "tags": [
       "힘",
       "자유 물체도"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "applying-newton",
@@ -75,8 +72,7 @@ SB.registerCourse({
      "tags": [
       "마찰",
       "경사면"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -93,8 +89,7 @@ SB.registerCourse({
      "tags": [
       "일",
       "에너지"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "energy-conservation",
@@ -105,8 +100,7 @@ SB.registerCourse({
      "tags": [
       "보존",
       "퍼텐셜"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "momentum",
@@ -117,8 +111,7 @@ SB.registerCourse({
      "tags": [
       "충돌",
       "질량 중심"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -488,6 +481,30 @@ SB.registerCourse({
   }
  ],
  "stats": {
+  "units-vectors": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 9,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "straight-line-motion": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "motion-2d": {
    "problems": 13,
    "examples": 5,
@@ -498,6 +515,66 @@ SB.registerCourse({
    "tangles": 2,
    "steps": 2,
    "predicts": 2,
+   "hero": 1
+  },
+  "newtons-laws": {
+   "problems": 14,
+   "examples": 6,
+   "sims": 6,
+   "figures": 9,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "applying-newton": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "work-energy": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "energy-conservation": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 9,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "momentum": {
+   "problems": 18,
+   "examples": 10,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
    "hero": 1
   },
   "constants-units": {
@@ -525,7 +602,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 3,
+ "published": 10,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
