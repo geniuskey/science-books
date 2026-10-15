@@ -200,6 +200,12 @@ for entry in catalog["courses"]:
                         sent += "."
                     if len(sent) > 240:
                         sent = sent[:237].rsplit(" ", 1)[0] + "…"
+                    # 잘린 문장 안에서 수식 구분자가 짝을 잃으면 마지막 여는 구분자 앞에서 자른다
+                    for o_, c_ in (("\\(", "\\)"), ("$$", None)):
+                        if c_ and sent.count(o_) != sent.count(c_):
+                            sent = sent[:sent.rfind(o_)].rstrip() + "…"
+                        elif not c_ and sent.count(o_) % 2:
+                            sent = sent[:sent.rfind(o_)].rstrip() + "…"
                     terms[key] = {"ko": ko, "en": strip_tags(m.group(2) or ""), "def": sent, "slug": ch["slug"], "num": ch["num"],
                                   "title": ch["title"], "sec": sec[-1].group(1) if sec else ""}
         CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
