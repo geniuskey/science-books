@@ -239,8 +239,7 @@ SB.registerCourse({
      "tags": [
       "기체",
       "제1법칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "second-law",
@@ -317,8 +316,7 @@ SB.registerCourse({
      "tags": [
       "회로",
       "키르히호프"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -676,6 +674,30 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "kinetic-theory-first-law": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
+  "current-circuits": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -701,7 +723,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 19,
+ "published": 21,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
