@@ -180,8 +180,7 @@ SB.registerCourse({
      "tags": [
       "진동",
       "공명"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "fluids",
@@ -598,6 +597,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "oscillations": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "sound": {
    "problems": 15,
    "examples": 8,
@@ -635,7 +646,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 13,
+ "published": 14,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
