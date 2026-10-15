@@ -390,14 +390,14 @@ SB.registerCourse({
   "quantum-atom": {
    "problems": 16,
    "examples": 10,
-   "sims": 4,
-   "figures": 4,
-   "drills": 1,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 0,
-   "predicts": 0,
-   "hero": 0
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   },
   "periodic-properties": {
    "problems": 13,
@@ -436,16 +436,16 @@ SB.registerCourse({
    "hero": 0
   },
   "liquids-solids": {
-   "problems": 14,
+   "problems": 17,
    "examples": 7,
-   "sims": 4,
-   "figures": 5,
+   "sims": 6,
+   "figures": 12,
    "drills": 2,
-   "minis": 0,
-   "tangles": 0,
-   "steps": 0,
-   "predicts": 0,
-   "hero": 0
+   "minis": 4,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
   },
   "solutions": {
    "problems": 14,

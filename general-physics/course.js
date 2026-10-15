@@ -163,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "중력",
       "궤도"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -217,8 +216,7 @@ SB.registerCourse({
      "tags": [
       "음파",
       "도플러"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -588,6 +586,30 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "gravitation": {
+   "problems": 15,
+   "examples": 12,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "sound": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -613,7 +635,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 11,
+ "published": 13,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/"
 });
