@@ -123,7 +123,7 @@ for entry in catalog["courses"]:
             dup = sorted({i for i in ids if ids.count(i) > 1})
             if dup:
                 errors.append(f"{rel}: 중복 id {dup[:8]}")
-            if st["problems"] < 5 and ch["slug"] not in ("periodic-table", "data-tables", "glossary"):
+            if st["problems"] < 5 and ch["slug"] not in ("periodic-table", "data-tables", "glossary", "constants-units"):
                 warnings.append(f"{rel}: 연습문제가 {st['problems']}개입니다(권장 8개 이상)")
     course["stats"] = stats
     course["published"] = len(stats)
