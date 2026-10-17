@@ -317,9 +317,13 @@ for entry in catalog["courses"]:
                 continue
             t, d = page_meta(f)
             url = f"{curl}chapters/{ch['slug']}.html"
+            # Preserve authored metadata: a rebuild in another timezone or on a later
+            # day must not make otherwise identical generated files fail --check.
+            modified = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})"', f.read_text(encoding="utf-8"))
             seo(f, t, d, url, [("SciBook", SITE), (course["title"], curl), (f"{ch['num']} {ch['title']}", url)],
                 "TechArticle", {"learningResourceType": "interactive textbook chapter", "position": pos,
-                                "dateModified": TODAY, "isPartOf": {"@type": "Book", "@id": curl + "#book", "name": course["title"], "url": curl}})
+                                "dateModified": modified.group(1) if modified else TODAY,
+                                "isPartOf": {"@type": "Book", "@id": curl + "#book", "name": course["title"], "url": curl}})
 
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 old_sm = (ROOT / "sitemap.xml").read_text(encoding="utf-8") if (ROOT / "sitemap.xml").exists() else ""
