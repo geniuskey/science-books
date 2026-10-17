@@ -1285,3 +1285,11 @@
 
   SB.hooks.push((root) => { initSteps(root); initPredict(root); });
 })();
+
+// Series glossary tooltips; data is generated into the active course manifest.
+(function () {
+  const base = new URL(".", document.currentScript.src);
+  const script = document.createElement("script");
+  script.src = new URL("glossary-tooltips.js", base).href;
+  document.head.append(script);
+})();

@@ -131,11 +131,8 @@ for entry in catalog["courses"]:
     course["url"] = SITE + course["id"] + "/"
     courses.append(dict(entry, **{k: course[k] for k in ("title", "en", "level", "description", "status", "url", "published", "total")}))
 
-    # ---- course.js
+    # ---- course.js (written after glossary data is collected below)
     js_course = {k: v for k, v in course.items() if k not in ("libs",)}
-    write(cdir / "course.js",
-          "/* 생성 파일 — course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
-          f"SB.registerCourse({json.dumps(js_course, ensure_ascii=False, indent=1)});\n")
 
     # ---- course home cards
     idx = cdir / "index.html"
@@ -215,6 +212,12 @@ for entry in catalog["courses"]:
                 return CHO[(ord(c) - 0xAC00) // 588].replace("ㄲ", "ㄱ").replace("ㄸ", "ㄷ").replace("ㅃ", "ㅂ").replace("ㅆ", "ㅅ").replace("ㅉ", "ㅈ")
             return "A–Z" if c.isascii() and c.isalpha() else "기타"
         items = sorted(terms.values(), key=lambda t: t["ko"])
+        # Series schema v1: the glossary page and prose tooltips share these definitions.
+        js_course["glossary"] = {"version": 1, "terms": [
+            {"ko": t["ko"], "en": t["en"], "abbr": "", "def": t["def"],
+             "chapters": [t["slug"] + ("#" + t["sec"] if t["sec"] else "")]}
+            for t in items
+        ]}
         out = [f'\n<p class="gl-count">용어 {len(items)}개 · 각 용어는 처음 정의된 장으로 연결된다.</p>']
         cur = None
         for t in items:
@@ -232,6 +235,10 @@ for entry in catalog["courses"]:
             out.append("</div>")
         gtext = gpath.read_text(encoding="utf-8")
         write(gpath, replace_block(gtext, "glossary", "\n".join(out) + "\n", gpath))
+
+    write(cdir / "course.js",
+          "/* 생성 파일 — course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
+          f"SB.registerCourse({json.dumps(js_course, ensure_ascii=False, indent=1)});\n")
 
 # ---- catalog.js
 write(ROOT / "catalog.js", "/* 생성 파일 — catalog.json·course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
