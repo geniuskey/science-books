@@ -129,7 +129,9 @@ for entry in catalog["courses"]:
     course["published"] = len(stats)
     course["total"] = len(slugs)
     course["url"] = SITE + course["id"] + "/"
-    courses.append(dict(entry, **{k: course[k] for k in ("title", "en", "level", "description", "status", "url", "published", "total")}))
+    courses.append(dict(entry, **{k: course[k] for k in ("title", "en", "level", "description", "status", "url", "published", "total")},
+                        color=course.get("accent", {}).get("light", ""), colorDark=course.get("accent", {}).get("dark", ""),
+                        sims=sum(v["sims"] for v in stats.values()), problems=sum(v["problems"] for v in stats.values())))
 
     # ---- course.js (written after glossary data is collected below)
     js_course = {k: v for k, v in course.items() if k not in ("libs",)}
@@ -244,21 +246,30 @@ for entry in catalog["courses"]:
 write(ROOT / "catalog.js", "/* 생성 파일 — catalog.json·course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
       f"SB.registerCatalog({json.dumps({'site': catalog['site'], 'fields': catalog['fields'], 'courses': courses}, ensure_ascii=False, indent=1)});\n")
 
-# ---- site home shelf
+# ---- site home shelf: 세로 표지 책장(분야 필터·검색·표지 그림은 home.js가 덧붙인다)
 home = ROOT / "index.html"
 if home.exists():
     cards = []
     for c in courses:
         f = fields.get(c["field"], {})
-        planned = c.get("status") == "planned"
-        st = "집필 예정" if planned else f"{c.get('published', 0)} / {c.get('total', 0)}장 공개 · {'집필 중' if c.get('status') == 'writing' else '출간'}"
-        tag = "div" if planned else "a"
-        href = "" if planned else f' href="{c["id"]}/"'
+        status = c.get("status", "planned")
+        planned, writing = status == "planned", status == "writing"
+        label = f'{c["title"]} · {c.get("en", "")}' + (" (집필 예정)" if planned else " (집필 중)" if writing else "")
+        if planned:
+            meta = f'<span>{esc(c.get("level", "").split(" · ")[0])}</span><span class="planned">집필 예정</span>'
+        elif writing:
+            meta = f'<span>{c["published"]} / {c["total"]}장 공개</span><span class="writing">집필 중</span>'
+        else:
+            meta = f'<span>{c["published"]}장</span><span>시뮬레이터 {c["sims"]}개</span>'
+        badge = "<b>예정</b>" if planned else "<b>집필 중</b>" if writing else ""
+        tag, attrs = ("div", f' role="img" aria-label="{esc(label)}"') if planned else ("a", f' href="{c["id"]}/" aria-label="{esc(label)} 읽기"')
         cards.append(
-            f'\n      <{tag} class="course-card{" planned" if planned else ""}" style="--c:{f.get("color", "var(--accent)")}"{href}>'
-            f'<span class="field">{esc(f.get("name"))} · {esc(c.get("level"))}</span>'
-            f'<h3>{esc(c["title"])}<small>{esc(c.get("en"))}</small></h3><p>{esc(c.get("description"))}</p>'
-            f'<span class="st">{st}</span></{tag}>')
+            f'\n      <article class="book {status}" data-course="{c["id"]}" data-field="{c["field"]}" style="--c:{c.get("color") or f.get("color", "#2f6fe0")}">'
+            f'<div class="book-stand"><{tag} class="book-cover"{attrs}>'
+            f'<span class="book-top"><small>{esc(f.get("name"))}</small>{badge}</span><strong>{esc(c["title"])}</strong>'
+            f'<span class="book-art" aria-hidden="true"></span>'
+            f'<span class="book-foot"><span>{esc(c.get("en"))}</span><span>{esc(c.get("code"))}</span></span></{tag}></div>'
+            f'<div class="book-label"><p>{esc(c.get("description"))}</p><div class="book-meta">{meta}</div></div></article>')
     text = home.read_text(encoding="utf-8")
     text = replace_block(text, "shelf", "".join(cards) + "\n    ", home)
     write(home, text)

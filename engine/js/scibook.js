@@ -796,7 +796,7 @@
       </div>
       ${C ? `<div class="book-search">${ICON.search}<input type="search" aria-label="이 교과서의 챕터, 절, 예제, 시뮬레이터 검색" placeholder="이 교과서 검색" autocomplete="off"><div class="book-search-results" aria-live="polite"></div></div>` : '<span class="spacer" style="flex:1"></span>'}
       <div class="book-nav-right">
-        ${page === "site-home" ? "" : `<a class="sb-btn series-link" href="${siteHome}" title="모든 과학 교과서">${ICON.shelf}<span>모든 교과서</span></a>`}
+        ${page === "site-home" ? `<a class="sb-btn series-link" href="${SB.SITE.hub}" title="euiyun books 전체 서가">${ICON.shelf}<span>전체 책</span></a>` : `<a class="sb-btn series-link" href="${siteHome}" title="모든 과학 교과서">${ICON.shelf}<span>모든 교과서</span></a>`}
         <a class="sb-btn icon feedback-button" href="${feedbackUrl}" target="_blank" rel="noopener" aria-label="독자 의견 보내기" title="독자 의견 보내기">${ICON.chat}</a>
         <button class="sb-btn icon" id="sb-theme" aria-label="테마 전환"></button>
       </div>

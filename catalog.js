@@ -29,6 +29,7 @@ SB.registerCatalog({
  "courses": [
   {
    "id": "general-chemistry",
+   "code": "GC",
    "field": "chemistry",
    "status": "published",
    "manifest": "general-chemistry/course.json",
@@ -38,10 +39,15 @@ SB.registerCatalog({
    "description": "원자와 몰에서 출발해 결합·분자 구조, 기체와 용액, 열역학, 속도론, 평형, 산·염기, 전기화학, 핵화학까지 — 대학 1학년 일반화학 전 과정을 수식과 시뮬레이터로 직접 실험하며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/general-chemistry/",
    "published": 23,
-   "total": 23
+   "total": 23,
+   "color": "#0a7f6f",
+   "colorDark": "#2fd1b5",
+   "sims": 99,
+   "problems": 326
   },
   {
    "id": "general-physics",
+   "code": "GP",
    "field": "physics",
    "status": "writing",
    "manifest": "general-physics/course.json",
@@ -51,10 +57,15 @@ SB.registerCatalog({
    "description": "운동과 힘, 에너지와 운동량, 회전, 진동과 파동, 열, 전기와 자기, 빛, 상대성까지 — 미적분 기반 대학 1학년 일반물리 전 과정을 끌고, 던지고, 부딪쳐 보며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/general-physics/",
    "published": 19,
-   "total": 35
+   "total": 35,
+   "color": "#2f6fe0",
+   "colorDark": "#6b9bff",
+   "sims": 95,
+   "problems": 256
   },
   {
    "id": "organic-chemistry",
+   "code": "OC",
    "field": "chemistry",
    "status": "planned",
    "title": "유기화학",
@@ -64,6 +75,7 @@ SB.registerCatalog({
   },
   {
    "id": "statics",
+   "code": "ST",
    "field": "mechanics",
    "status": "planned",
    "title": "정역학",
@@ -73,6 +85,7 @@ SB.registerCatalog({
   },
   {
    "id": "dynamics",
+   "code": "DY",
    "field": "mechanics",
    "status": "planned",
    "title": "동역학",
@@ -82,6 +95,7 @@ SB.registerCatalog({
   },
   {
    "id": "fluid-mechanics",
+   "code": "FM",
    "field": "mechanics",
    "status": "planned",
    "title": "유체역학",

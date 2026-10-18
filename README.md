@@ -22,7 +22,9 @@ general-chemistry/      과목 = 교과서 한 권
   index.html            과목 홈(목차·강의 계획)
   chapters/*.html       장 본문
 catalog.json            플랫폼의 과목 목록
-index.html              플랫폼 홈
+index.html              플랫폼 홈(서가·대표 실험·읽는 순서)
+home.css, home.js       플랫폼 홈 전용 스타일·책장 필터·표지 그림
+img/sims/               홈의 대표 실험 카드 스크린샷
 tools/build.py          매니페스트 → 생성 파일·SEO·sitemap, 콘텐츠 규칙 검사
 tools/smoke.mjs         Playwright 스모크 테스트
 tools/new_course.py     새 과목 뼈대 만들기
