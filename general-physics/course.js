@@ -350,8 +350,7 @@ SB.registerCourse({
      "tags": [
       "패러데이",
       "인덕턴스"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "ac-circuits",
@@ -775,6 +774,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "induction": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -800,7 +811,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 28,
+ "published": 29,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1065,6 +1076,15 @@ SB.registerCourse({
     "def": "1 광년(light-year, ly)은 빛이 1 율리우스년(365.25일) 동안 가는 거리다.",
     "chapters": [
      "units-vectors#units"
+    ]
+   },
+   {
+    "ko": "교류 발전기",
+    "en": "alternator",
+    "abbr": "",
+    "def": "코일을 자기장 속에서 돌리면 선속 \\(\\Phi = BA\\cos\\omega t\\)가 주기적으로 변해 교류 기전력이 생긴다 — 교류 발전기(alternator). 발전소의 터빈, 자전거 발전기, 풍력 발전기가 모두 이것이다.",
+    "chapters": [
+     "induction#motional"
     ]
    },
    {
@@ -1419,6 +1439,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "렌츠 법칙",
+    "en": "Lenz's law",
+    "abbr": "",
+    "def": "유도 전류는 그것을 만든 선속의 변화를 방해하는 방향으로 흐른다 — 렌츠 법칙(Lenz's law). 선속이 늘면 반대 방향의 장을, 줄면 같은 방향의 장을 만들어 원래대로 되돌리려 한다.",
+    "chapters": [
+     "induction#lenz"
+    ]
+   },
+   {
     "ko": "로런츠 힘",
     "en": "Lorentz force",
     "abbr": "",
@@ -1497,6 +1526,15 @@ SB.registerCourse({
     "def": "충돌을 거듭하며 평형에 이른 기체의 속력 분포는 맥스웰과 볼츠만이 구한 맥스웰–볼츠만 분포(Maxwell–Boltzmann distribution)를 따른다.",
     "chapters": [
      "kinetic-theory-first-law#kinetic"
+    ]
+   },
+   {
+    "ko": "맴돌이 전류",
+    "en": "eddy current",
+    "abbr": "",
+    "def": "큰 금속판 속에서도 유도 전기장은 소용돌이치는 전류를 만든다 — 맴돌이 전류(eddy current). 맴돌이 전류는 금속을 데우고(인덕션 레인지, 금속 용해로), 운동을 방해한다(열차와 롤러코스터의 자기 브레이크). 반대로 변압기와 전동기에서는 에너지 손실이므로 철심을 얇은 판으로 나눠 쌓아 줄인다.",
+    "chapters": [
+     "induction#induced-e"
     ]
    },
    {
@@ -2004,6 +2042,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "상호 인덕턴스",
+    "en": "mutual inductance",
+    "abbr": "",
+    "def": "이것이 상호 인덕턴스(mutual inductance) \\(M\\)이다.",
+    "chapters": [
+     "induction#inductance"
+    ]
+   },
+   {
     "ko": "선밀도",
     "en": "linear mass density",
     "abbr": "",
@@ -2508,6 +2555,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "운동 기전력",
+    "en": "motional emf",
+    "abbr": "",
+    "def": "자기장 속에서 도선이 움직일 때 생기는 기전력을 운동 기전력(motional emf)이라 한다.",
+    "chapters": [
+     "induction#motional"
+    ]
+   },
+   {
     "ko": "운동 마찰력",
     "en": "kinetic friction",
     "abbr": "",
@@ -2589,12 +2645,30 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "유도 기전력",
+    "en": "induced emf",
+    "abbr": "",
+    "def": "\\(N\\)번 감은 코일이면 \\(N\\)배 — 패러데이 법칙(Faraday's law). 이렇게 생기는 기전력을 유도 기전력(induced emf)이라 한다.",
+    "chapters": [
+     "induction#faraday"
+    ]
+   },
+   {
     "ko": "유도 대전",
     "en": "charging by induction",
     "abbr": "",
     "def": "이를 이용해 접촉하지 않고 도체를 대전시키는 방법이 유도 대전(charging by induction)이다.",
     "chapters": [
      "electric-field#charge"
+    ]
+   },
+   {
+    "ko": "유도 전기장",
+    "en": "induced electric field",
+    "abbr": "",
+    "def": "이 유도 전기장(induced electric field)은 전하가 만드는 정전기장과 달리 닫힌 고리 모양이고, 한 바퀴 돌며 한 일이 0이 아니다(비보존장). 전위로 나타낼 수 없다.",
+    "chapters": [
+     "induction#induced-e"
     ]
    },
    {
@@ -2760,6 +2834,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "인덕터",
+    "en": "inductor",
+    "abbr": "",
+    "def": "$$\\mathcal E_2 = -M\\frac{dI_1}{dt}, \\qquad \\mathcal E = -L\\frac{dI}{dt}, \\qquad L = \\frac{N\\Phi_B}{I}, \\qquad L_\\text{솔레노이드} = \\frac{\\mu_0N^2A}{l}$$단위 헨리(H = V·s/A). 인덕턴스가 큰 코일을 인덕터(inductor)라 하고, 회로에서 전류의 \"관성\"처럼 행동한다: 전류를 갑자기 바꿀 수 없다.",
+    "chapters": [
+     "induction#inductance"
+    ]
+   },
+   {
     "ko": "일",
     "en": "work",
     "abbr": "",
@@ -2883,6 +2966,15 @@ SB.registerCourse({
     "def": "이 신기한 운동을 세차 운동(precession)이라 하고, 이런 장치를 자이로스코프(gyroscope)라 한다.",
     "chapters": [
      "rotation-dynamics#gyro"
+    ]
+   },
+   {
+    "ko": "자체 인덕턴스",
+    "en": "self-inductance",
+    "abbr": "",
+    "def": "그런데 코일 1 자신을 지나는 선속도 변하므로, 코일 1에도 기전력이 생긴다 — 자체 인덕턴스(self-inductance) \\(L\\). 렌츠 법칙에 따라 이 기전력은 전류의 변화를 거스른다.",
+    "chapters": [
+     "induction#inductance"
     ]
    },
    {
@@ -3792,6 +3884,15 @@ SB.registerCourse({
     "def": "밀폐된 유체의 한 부분에 가한 압력 변화는 줄어들지 않고 유체의 모든 부분과 그릇의 벽에 그대로 전달된다(파스칼 원리(Pascal's principle)).",
     "chapters": [
      "fluids#pascal"
+    ]
+   },
+   {
+    "ko": "패러데이 법칙",
+    "en": "Faraday's law",
+    "abbr": "",
+    "def": "\\(N\\)번 감은 코일이면 \\(N\\)배 — 패러데이 법칙(Faraday's law). 이렇게 생기는 기전력을 유도 기전력(induced emf)이라 한다.",
+    "chapters": [
+     "induction#faraday"
     ]
    },
    {
