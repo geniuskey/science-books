@@ -400,8 +400,7 @@ SB.registerCourse({
      "tags": [
       "간섭",
       "회절"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "relativity-quantum",
@@ -819,6 +818,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "interference-diffraction": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -844,7 +855,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 32,
+ "published": 33,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -992,6 +1003,15 @@ SB.registerCourse({
     "def": "유체에 전부 또는 일부가 잠긴 물체는 밀려난 유체의 무게와 같은 크기의 위쪽 힘(부력)을 받는다(아르키메데스 원리(Archimedes' principle)). $$B = \\rho_\\text{유체}\\,V_\\text{잠김}\\,g, \\qquad \\text{떠 있을 때:}\\ \\ \\frac{V_\\text{잠김}}{V} = \\frac{\\rho_\\text{물체}}{\\rho_\\text{유체}}$$떠 있는 물체는 \\(B = W\\)이므로…",
     "chapters": [
      "fluids#buoyancy"
+    ]
+   },
+   {
+    "ko": "결맞음",
+    "en": "coherence",
+    "abbr": "",
+    "def": "무늬가 보이려면 두 파동의 위상차가 시간에 따라 변하지 않아야 한다 — 결맞음(coherence). 전구 두 개는 원자들이 제멋대로 빛을 내 위상차가 10⁻⁸ s 남짓마다 바뀌므로 무늬가 평균되어 사라진다.",
+    "chapters": [
+     "interference-diffraction#superposition"
     ]
    },
    {
@@ -1487,6 +1507,15 @@ SB.registerCourse({
     "def": "그 경계를 가늠하는 무차원 수가 레이놀즈 수(Reynolds number)이다.",
     "chapters": [
      "fluids#viscosity"
+    ]
+   },
+   {
+    "ko": "레일리 기준",
+    "en": "Rayleigh criterion",
+    "abbr": "",
+    "def": "한쪽 원반의 중심이 다른 쪽의 첫째 어두운 고리에 오는 각을 구별의 한계로 삼는다 — 레일리 기준(Rayleigh criterion).",
+    "chapters": [
+     "interference-diffraction#grating"
     ]
    },
    {
@@ -4232,6 +4261,15 @@ SB.registerCourse({
     "def": "속력은 에너지(\\(E = \\tfrac12v^2 - GM/r = -GM/2a\\), 이른바 활력 방정식(vis-viva equation))를 통해 긴반지름 \\(a\\)를, 방향은 각운동량을 통해 이심률과 궤도 방향을 정한다.",
     "chapters": [
      "gravitation#satellites"
+    ]
+   },
+   {
+    "ko": "회절 격자",
+    "en": "diffraction grating",
+    "abbr": "",
+    "def": "1 mm에 수백 줄을 새긴 회절 격자(diffraction grating)는 색마다 아주 다른 각으로 빛을 보내 파장을 정밀하게 잰다.",
+    "chapters": [
+     "interference-diffraction#grating"
     ]
    },
    {
