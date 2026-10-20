@@ -339,8 +339,7 @@ SB.registerCourse({
      "tags": [
       "비오–사바르",
       "앙페르"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "induction",
@@ -764,6 +763,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "magnetic-sources": {
+   "problems": 14,
+   "examples": 5,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -789,7 +800,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 27,
+ "published": 28,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -901,6 +912,15 @@ SB.registerCourse({
     "def": "저항력이 속도에 비례한다고 하자: \\(F = -bv\\)(\\(b\\): 감쇠 상수(damping constant), kg/s). 운동 방정식은 \\(m\\ddot x + b\\dot x + kx = 0\\)이고, 감쇠가 너무 크지 않으면 해는.",
     "chapters": [
      "oscillations#damped"
+    ]
+   },
+   {
+    "ko": "강자성",
+    "en": "ferromagnetism",
+    "abbr": "",
+    "def": "강자성(ferromagnetism) 물질에서는 이웃 원자의 모멘트를 나란히 세우는 양자역학적 상호 작용이 있어, 수천억 개의 원자가 한 방향으로 정렬한 자기 구역(magnetic domain)을 이룬다.",
+    "chapters": [
+     "magnetic-sources#materials"
     ]
    },
    {
@@ -1687,6 +1707,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "보어 마그네톤",
+    "en": "Bohr magneton",
+    "abbr": "",
+    "def": "그 크기의 단위는 보어 마그네톤(Bohr magneton) \\(\\mu_B = e\\hbar/2m_e = 9.274\\times10^{-24}\\) A·m²이다.",
+    "chapters": [
+     "magnetic-sources#materials"
+    ]
+   },
+   {
     "ko": "보존력",
     "en": "conservative force",
     "abbr": "",
@@ -1864,6 +1893,15 @@ SB.registerCourse({
     "def": "그래서 $$C_p = C_V + R, \\qquad \\gamma = \\frac{C_p}{C_V}$$\\(C_p\\): 등압 몰 열용량. 비열비(ratio of heat capacities) \\(\\gamma\\)는 단원자 \\(5/3 = 1.67\\), 이원자(공기) \\(7/5 = 1.40\\). 16장의 음속 \\(v = \\sqrt{\\gamma RT/M}\\)에 나온 그 \\(\\gamma\\)다.",
     "chapters": [
      "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
+    "ko": "비오–사바르 법칙",
+    "en": "Biot–Savart law",
+    "abbr": "",
+    "def": "$$\\vec B = \\frac{\\mu_0}{4\\pi}\\frac{q\\vec v\\times\\hat r}{r^2}, \\qquad d\\vec B = \\frac{\\mu_0}{4\\pi}\\frac{I\\,d\\vec l\\times\\hat r}{r^2}$$\\(\\mu_0 = 4\\pi\\times10^{-7}\\) T·m/A(≈ 1.257 × 10⁻⁶): 진공의 투자율(permeability of free space). 둘째 식이 비오–사바르…",
+    "chapters": [
+     "magnetic-sources#biot-savart"
     ]
    },
    {
@@ -2056,6 +2094,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "솔레노이드",
+    "en": "solenoid",
+    "abbr": "",
+    "def": "도선을 원통 모양으로 촘촘히 감은 것이 솔레노이드(solenoid)다.",
+    "chapters": [
+     "magnetic-sources#solenoid"
+    ]
+   },
+   {
     "ko": "수직항력",
     "en": "normal force",
     "abbr": "",
@@ -2164,6 +2211,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "암페어",
+    "en": "ampere",
+    "abbr": "",
+    "def": "2019년 이전에는 이것이 암페어(ampere)의 정의였다(지금은 기본 전하 \\(e\\)의 값으로 정의).",
+    "chapters": [
+     "magnetic-sources#parallel"
+    ]
+   },
+   {
     "ko": "압력",
     "en": "pressure",
     "abbr": "",
@@ -2206,6 +2262,24 @@ SB.registerCourse({
     "def": "최대 부피와 최소 부피의 비 \\(r = V_\\text{max}/V_\\text{min}\\)이 압축비(compression ratio)다.",
     "chapters": [
      "second-law#heat-engines"
+    ]
+   },
+   {
+    "ko": "앙페르 고리",
+    "en": "Amperian loop",
+    "abbr": "",
+    "def": "닫힌 경로(앙페르 고리(Amperian loop))를 따라 자기장의 접선 성분을 적분한 값은 그 경로가 둘러싼 면을 꿰뚫는 알짜 전류의 \\(\\mu_0\\)배다.",
+    "chapters": [
+     "magnetic-sources#ampere"
+    ]
+   },
+   {
+    "ko": "앙페르 법칙",
+    "en": "Ampère's law",
+    "abbr": "",
+    "def": "전류의 부호는 오른손 규칙으로 정한다(네 손가락을 경로 방향으로 감을 때 엄지 방향이 +) — 앙페르 법칙(Ampère's law).",
+    "chapters": [
+     "magnetic-sources#ampere"
     ]
    },
    {
@@ -2710,6 +2784,24 @@ SB.registerCourse({
     "def": "임계 감쇠(critical damping) \\(b = 2\\sqrt{km}\\): 진동하지 않고 가장 빨리 평형으로 돌아간다.",
     "chapters": [
      "oscillations#damped"
+    ]
+   },
+   {
+    "ko": "자기 감수율",
+    "en": "magnetic susceptibility",
+    "abbr": "",
+    "def": "물질 속 장은 \\(B = K_mB_0\\), \\(K_m = 1 + \\chi_m\\)(\\(K_m\\): 비투자율, \\(\\chi_m\\): 자기 감수율(magnetic susceptibility))로 쓴다.",
+    "chapters": [
+     "magnetic-sources#materials"
+    ]
+   },
+   {
+    "ko": "자기 구역",
+    "en": "magnetic domain",
+    "abbr": "",
+    "def": "강자성(ferromagnetism) 물질에서는 이웃 원자의 모멘트를 나란히 세우는 양자역학적 상호 작용이 있어, 수천억 개의 원자가 한 방향으로 정렬한 자기 구역(magnetic domain)을 이룬다.",
+    "chapters": [
+     "magnetic-sources#materials"
     ]
    },
    {
@@ -3361,6 +3453,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "진공의 투자율",
+    "en": "permeability of free space",
+    "abbr": "",
+    "def": "$$\\vec B = \\frac{\\mu_0}{4\\pi}\\frac{q\\vec v\\times\\hat r}{r^2}, \\qquad d\\vec B = \\frac{\\mu_0}{4\\pi}\\frac{I\\,d\\vec l\\times\\hat r}{r^2}$$\\(\\mu_0 = 4\\pi\\times10^{-7}\\) T·m/A(≈ 1.257 × 10⁻⁶): 진공의 투자율(permeability of free space). 둘째 식이 비오–사바르…",
+    "chapters": [
+     "magnetic-sources#biot-savart"
+    ]
+   },
+   {
     "ko": "진동",
     "en": "oscillation",
     "abbr": "",
@@ -3604,6 +3705,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "토로이드",
+    "en": "toroid",
+    "abbr": "",
+    "def": "안팎을 잇는 직사각형 앙페르 고리를 쓰면 $$B_\\text{솔레노이드} = \\mu_0nI, \\qquad B_\\text{토로이드} = \\frac{\\mu_0NI}{2\\pi r}$$\\(n = N/L\\): 단위 길이당 감은 수. 반지름과 무관하다.",
+    "chapters": [
+     "magnetic-sources#solenoid"
+    ]
+   },
+   {
     "ko": "토리첼리 정리",
     "en": "Torricelli's theorem",
     "abbr": "",
@@ -3835,6 +3945,15 @@ SB.registerCourse({
     "def": "분자들이 앞뒤로 움직이면 어떤 곳은 분자가 몰려 압력이 높아지고(압축(compression)), 어떤 곳은 성겨져 압력이 낮아진다(희박(rarefaction)). 단면적 \\(S\\), 길이 \\(\\Delta x\\)인 공기 조각의 부피 변화는 \\(\\Delta V = S\\,[y(x+\\Delta x) - y(x)]\\)이므로 \\(\\Delta V/V \\to \\partial y/\\partial x\\)이고, 부피 탄성률…",
     "chapters": [
      "sound#sound-waves"
+    ]
+   },
+   {
+    "ko": "히스테리시스",
+    "en": "hysteresis",
+    "abbr": "",
+    "def": "장을 없애도 정렬이 일부 남는 성질 — 히스테리시스(hysteresis) — 덕분에 영구 자석과 하드 디스크가 가능하다.",
+    "chapters": [
+     "magnetic-sources#materials"
     ]
    },
    {
