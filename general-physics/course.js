@@ -300,8 +300,7 @@ SB.registerCourse({
      "tags": [
       "축전기",
       "유전체"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "current-circuits",
@@ -731,6 +730,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "capacitance": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 7,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -756,7 +767,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 24,
+ "published": 25,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1246,6 +1257,15 @@ SB.registerCourse({
     "def": "17장에서 본 금속들의 몰 열용량이 약 25 J/(mol·K)로 같았던 뒬롱–프티 법칙(rule of Dulong and Petit)이 바로 이것이다.",
     "chapters": [
      "kinetic-theory-first-law#equipartition"
+    ]
+   },
+   {
+    "ko": "등가 용량",
+    "en": "equivalent capacitance",
+    "abbr": "",
+    "def": "이어진 묶음 전체와 똑같이 행동하는 축전기 하나의 용량을 등가 용량(equivalent capacitance)이라 한다.",
+    "chapters": [
+     "capacitance#combinations"
     ]
    },
    {
@@ -2104,6 +2124,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "에너지 밀도",
+    "en": "energy density",
+    "abbr": "",
+    "def": "$$u = \\frac{U}{\\text{부피}} = \\frac12\\epsilon_0E^2$$\\(u\\): 에너지 밀도(energy density), J/m³.",
+    "chapters": [
+     "capacitance#energy"
+    ]
+   },
+   {
     "ko": "엔트로피",
     "en": "entropy",
     "abbr": "",
@@ -2374,12 +2403,48 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "유도 전하",
+    "en": "induced charge",
+    "abbr": "",
+    "def": "장이 분자들을 정렬시킨다(분극). 내부에서는 이웃한 +와 −가 상쇄되지만, 판에 닿은 두 표면에는 판과 반대 부호의 유도 전하(induced charge) \\(\\mp\\sigma_i\\)가 남는다.",
+    "chapters": [
+     "capacitance#dielectrics"
+    ]
+   },
+   {
     "ko": "유선",
     "en": "streamline",
     "abbr": "",
     "def": "정상 흐름에서 유체 입자가 지나는 경로를 유선(streamline)이라 하며, 유선은 서로 교차하지 않는다.",
     "chapters": [
      "fluids#continuity"
+    ]
+   },
+   {
+    "ko": "유전 상수",
+    "en": "dielectric constant",
+    "abbr": "",
+    "def": "판 사이를 채우는 절연체를 유전체(dielectric)라 하고, 용량이 커지는 배율을 유전 상수(dielectric constant) \\(K\\)라 한다.",
+    "chapters": [
+     "capacitance#dielectrics"
+    ]
+   },
+   {
+    "ko": "유전율",
+    "en": "permittivity",
+    "abbr": "",
+    "def": "$$C = KC_0, \\qquad \\epsilon = K\\epsilon_0, \\qquad C_\\text{평행판} = \\frac{K\\epsilon_0A}{d} = \\frac{\\epsilon A}{d}$$\\(\\epsilon\\): 물질의 유전율(permittivity). 전지에서 떼어 낸(Q 고정) 축전기에 유전체를 넣으면 \\(V = V_0/K\\), \\(E = E_0/K\\), \\(U = U_0/K\\). 전지에 연결된(V…",
+    "chapters": [
+     "capacitance#dielectrics"
+    ]
+   },
+   {
+    "ko": "유전체",
+    "en": "dielectric",
+    "abbr": "",
+    "def": "판 사이를 채우는 절연체를 유전체(dielectric)라 하고, 용량이 커지는 배율을 유전 상수(dielectric constant) \\(K\\)라 한다.",
+    "chapters": [
+     "capacitance#dielectrics"
     ]
    },
    {
@@ -2662,6 +2727,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "전기 용량",
+    "en": "capacitance",
+    "abbr": "",
+    "def": "전하를 2배로 하면 장이 2배, 전위차도 2배가 되므로 \\(Q\\)와 \\(V\\)는 비례하고, 그 비례 상수가 전기 용량(capacitance)이다.",
+    "chapters": [
+     "capacitance#capacitors"
+    ]
+   },
+   {
     "ko": "전기력선",
     "en": "electric field line",
     "abbr": "",
@@ -2776,6 +2850,24 @@ SB.registerCourse({
     "def": "과학에서 쓰는 켈빈 눈금(Kelvin scale)은 절대 영도(absolute zero)에서 0이고 눈금 간격은 섭씨와 같다.",
     "chapters": [
      "temperature-heat#temperature"
+    ]
+   },
+   {
+    "ko": "절연 내력",
+    "en": "dielectric strength",
+    "abbr": "",
+    "def": "장이 너무 세면 유전체의 분자에서 전자가 뜯겨 나가 갑자기 전류가 흐른다 — 절연 파괴(dielectric breakdown). 그 직전의 최대 장이 절연 내력(dielectric strength)이고, 축전기의 최대 전압은 (절연 내력) × (두께)다.",
+    "chapters": [
+     "capacitance#dielectrics"
+    ]
+   },
+   {
+    "ko": "절연 파괴",
+    "en": "dielectric breakdown",
+    "abbr": "",
+    "def": "장이 너무 세면 유전체의 분자에서 전자가 뜯겨 나가 갑자기 전류가 흐른다 — 절연 파괴(dielectric breakdown). 그 직전의 최대 장이 절연 내력(dielectric strength)이고, 축전기의 최대 전압은 (절연 내력) × (두께)다.",
+    "chapters": [
+     "capacitance#dielectrics"
     ]
    },
    {
@@ -3136,6 +3228,15 @@ SB.registerCourse({
     "def": "$$\\Delta v = v - v_0 = v_\\text{ex}\\ln\\frac{m_0}{m}, \\qquad F_\\text{추력} = v_\\text{ex}\\left|\\frac{dm}{dt}\\right|$$\\(v_\\text{ex}\\): 배기 속력(exhaust speed)(로켓에 대한 연료의 속력), \\(m_0/m\\): 질량비. 중력이 있으면 연소 시간 \\(t\\) 동안 \\(-gt\\)가 더해진다.",
     "chapters": [
      "momentum#rocket"
+    ]
+   },
+   {
+    "ko": "축전기",
+    "en": "capacitor",
+    "abbr": "",
+    "def": "이런 장치가 축전기(capacitor)다.",
+    "chapters": [
+     "capacitance#capacitors"
     ]
    },
    {
