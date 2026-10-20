@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>가우스 법칙 · 일반물리학 · SciBook</title>
+<meta name="description" content="전기 선속의 정의와 계산, 가우스 법칙과 그 증명, 구·원통·평면 대칭을 이용한 전기장 계산, 도체의 전하 분포와 패러데이 상자를 상자 속 전하 맞히기·가우스 면·대전 구·도체 전하 이완 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/general-physics/chapters/gauss-law.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="가우스 법칙 · 일반물리학 · SciBook">
+<meta property="og:description" content="전기 선속의 정의와 계산, 가우스 법칙과 그 증명, 구·원통·평면 대칭을 이용한 전기장 계산, 도체의 전하 분포와 패러데이 상자를 상자 속 전하 맞히기·가우스 면·대전 구·도체 전하 이완 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/general-physics/chapters/gauss-law.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "가우스 법칙 · 일반물리학 · SciBook", "headline": "21 가우스 법칙", "url": "https://science.euiyun.com/general-physics/chapters/gauss-law.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "전기 선속의 정의와 계산, 가우스 법칙과 그 증명, 구·원통·평면 대칭을 이용한 전기장 계산, 도체의 전하 분포와 패러데이 상자를 상자 속 전하 맞히기·가우스 면·대전 구·도체 전하 이완 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 21, "dateModified": "2026-10-20", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/general-physics/#book", "name": "일반물리학", "url": "https://science.euiyun.com/general-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "일반물리학", "item": "https://science.euiyun.com/general-physics/"}, {"@type": "ListItem", "position": 3, "name": "21 가우스 법칙", "item": "https://science.euiyun.com/general-physics/chapters/gauss-law.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+</head>
+<body data-chapter="gauss-law">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="electric-field">
+    <div class="eyebrow">Chapter 21</div>
+    <h1>가우스 법칙</h1>
+    <p class="lead">20장에서는 전하 하나하나의 장을 더해(적분해) 전기장을 구했다. 이 장에서는 거꾸로 묻는다: 어떤 닫힌 면을 지나 나오는 전기장의 "양"을 재면, 그 안에 든 전하를 알 수 있을까? 답이 <strong>가우스 법칙</strong>이다. 이 법칙은 대칭이 있는 문제에서 어려운 적분을 한 줄로 바꾸어 주고, 도체 속에 전기장이 없고 여분의 전하가 모두 표면에 있는 이유를 설명한다. 맥스웰 방정식 네 개 중 첫 번째이기도 하다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">점선 원(가우스 면)과 전하를 끌어 보세요</span></div>
+    <ul class="objectives">
+      <li>전기 선속 \(\Phi_E = \int\vec E\cdot d\vec A\)를 정의하고 평면·닫힌 면에 대해 계산한다.</li>
+      <li>가우스 법칙 \(\oint\vec E\cdot d\vec A = Q_\text{안}/\epsilon_0\)을 말하고, 점전하의 경우에서 출발해 그 근거를 설명한다.</li>
+      <li>구·원통·평면 대칭에 알맞은 가우스 면을 골라 전기장을 구한다.</li>
+      <li>정전기 평형의 도체 속에서 \(E = 0\)이고 여분의 전하가 표면에 있으며, 표면 바로 밖의 장이 \(\sigma/\epsilon_0\)임을 보인다.</li>
+      <li>공동이 있는 도체의 유도 전하와 정전기 차폐(패러데이 상자)를 설명한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="charge-flux">
+    <h2>전하와 전기 선속: 상자 안을 들여다보지 않고 전하 알아내기</h2>
+    <p>안을 볼 수 없는 상자가 있다. 상자의 표면 곳곳에서 전기장을 잴 수 있다면 안에 든 전하를 알 수 있을까? 양전하가 들어 있으면 전기장은 대체로 표면을 뚫고 <em>바깥으로</em>, 음전하면 <em>안으로</em> 향한다. 전하가 없으면 — 바깥에 전하가 있더라도 — 장은 한쪽으로 들어와 다른 쪽으로 나간다. 표면을 통과해 "흘러 나가는" 전기장의 양을 <span class="term">전기 선속</span><span class="en">(electric flux)</span>이라 한다(유체 14장의 부피 흐름률과 같은 수학이다). 결론부터 말하면, 닫힌 면에서 나가는 알짜 선속은 <strong>안에 든 알짜 전하에만</strong> 비례한다.</p>
+    <div class="sim" id="sim-mystery">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>도전: 상자 속 숨은 전하를 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-my"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>추측: 상자 속 알짜 전하 <output id="my-q-out"></output></span><input type="range" id="my-q" min="-12" max="12" step="1" value="0"></label>
+          <label class="check"><input type="checkbox" id="my-arr" checked> 표면의 장 화살표</label>
+          <div class="ctrl-row"><button class="btn primary" id="my-go" type="button">확인</button><button class="btn" id="my-new" type="button">새 상자</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">여섯 면의 선속 합 Φ</span><span class="v" id="my-sum">—</span></div>
+        <div class="stat"><span class="k">상자 속 실제 전하</span><span class="v" id="my-a">?</span></div>
+        <div class="stat"><span class="k">판정 · 연속 정답</span><span class="v" id="my-j">—</span></div>
+      </div>
+      <div class="sim-note">한 변 20 cm인 정육면체 상자(그림은 가운데 단면)의 각 면을 지나 바깥으로 나가는 선속이 적혀 있다(앞·뒤 면은 같다). 상자 속 전하는 정수 nC이고, 바깥의 전하(보임)는 방해꾼이다. 여섯 면의 선속을 모두 더해 \(\epsilon_0 = 8.854\times10^{-12}\) C²/(N·m²)를 곱하면 된다. 해볼 것: 바깥 전하를 무시해도 되는 이유를 화살표에서 찾아라 — 한쪽 면으로 들어온 만큼 다른 면으로 나간다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="flux">
+    <h2>전기 선속의 계산</h2>
+    <p>넓이 \(A\)인 평평한 면을 균일한 전기장 \(\vec E\)가 지난다. 면에 수직하고 크기가 \(A\)인 <span class="term">넓이 벡터</span><span class="en">(area vector)</span> \(\vec A\)를 쓰면, 면을 지나는 선속은 장이 면을 수직으로 뚫는 성분 \(E\cos\phi\)에 넓이를 곱한 것이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="균일한 전기장 속 기울어진 면의 선속: 넓이 벡터와 장 사이의 각">
+        <defs><marker id="m21a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-faint)"/></marker>
+          <marker id="m21b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <g stroke="var(--text-faint)" stroke-width="1.6" marker-end="url(#m21a)"><line x1="30" y1="50" x2="460" y2="50"/><line x1="30" y1="90" x2="460" y2="90"/><line x1="30" y1="130" x2="460" y2="130"/><line x1="30" y1="170" x2="460" y2="170"/><line x1="30" y1="210" x2="460" y2="210"/></g>
+        <text class="t-dim" x="470" y="134">E</text>
+        <line x1="210" y1="215" x2="290" y2="45" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+        <line x1="250" y1="130" x2="340" y2="172" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#m21b)"/><text class="t" x="346" y="186" style="fill:var(--accent-2);font-weight:700">A (넓이 벡터)</text>
+        <line x1="250" y1="130" x2="340" y2="130" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <path d="M300,130 A50,50 0 0 1 295,151" fill="none" stroke="var(--text)" stroke-width="1.6"/><text class="t" x="306" y="148">φ</text>
+        <text class="t-acc" x="160" y="230" style="font-weight:700">면 (옆에서 본 모습)</text>
+        <text class="t-mono" x="520" y="80" style="font-weight:700">Φ_E = E A cos φ = E · A</text>
+        <text class="t-dim" x="520" y="110">φ = 0: 정면으로 뚫는다 → EA (최대)</text>
+        <text class="t-dim" x="520" y="134">φ = 90°: 면과 나란 → 0</text>
+        <text class="t-dim" x="520" y="158">φ &gt; 90°: 음(뒤에서 들어온다)</text>
+        <text class="t-mono" x="520" y="196">일반: Φ_E = ∫ E · dA</text>
+        <text class="t-dim" x="520" y="218">닫힌 면은 바깥을 향하는 dA</text>
+      </svg>
+      <figcaption>전기 선속. 면에 수직한 장 성분만 면을 "통과"한다. 닫힌 면에서는 넓이 벡터를 바깥 방향으로 잡는 것이 약속이다 — 나가는 선속이 양, 들어오는 선속이 음이다.</figcaption>
+    </figure>
+    <div class="formula">$$\Phi_E = \vec E\cdot\vec A = EA\cos\phi, \qquad \Phi_E = \int\vec E\cdot d\vec A = \int E_\perp\,dA$$<div class="where">단위 N·m²/C. 장이 면 위에서 변하면 작은 조각 \(d\vec A\)로 나누어 적분한다. 닫힌 면 위의 적분은 \(\oint\)로 쓴다.</div></div>
+    <figure class="mini" id="mini-tilt">
+      <div class="mini-view"><canvas id="cv-tilt"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="tl-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>넓이 벡터의 끝(흰 원)을 끌어 한 변 20 cm인 정사각형 면을 돌려 보라(\(E = 1.0\times10^3\) N/C). 면을 뚫는 전기력선의 수(주황)가 \(\cos\phi\)에 비례하고, 90°를 넘기면 선속의 부호가 바뀐다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-flux">
+      <p>세기 <span class="tn" data-var="E" data-min="100" data-max="10000" data-step="100" data-unit=" N/C">2000</span>인 균일한 전기장 속에 반지름 <span class="tn" data-var="r" data-min="1" data-max="50" data-step="1" data-unit=" cm">10</span>인 원판을 넓이 벡터가 장과 <span class="tn" data-var="phi" data-min="0" data-max="180" data-step="5" data-unit="°">30</span>를 이루도록 놓으면, 선속은 \(\Phi = E\pi r^2\cos\phi =\) <span class="tn-out" data-out="F"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <p>균일한 장 속에 정육면체를 놓으면 어떻게 될까? 장과 수직한 두 면 중 한쪽으로 \(-EA\)가 들어와 다른 쪽으로 \(+EA\)가 나가고, 나머지 네 면은 장과 나란해 0이다. 알짜 선속은 0 — 안에 전하가 없기 때문이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 220" role="img" aria-label="균일한 전기장 속 정육면체: 들어오는 선속과 나가는 선속이 같아 알짜 0">
+        <defs><marker id="m21c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g stroke="var(--accent)" stroke-width="1.6" marker-end="url(#m21c)" opacity=".7"><line x1="60" y1="70" x2="560" y2="70"/><line x1="60" y1="110" x2="560" y2="110"/><line x1="60" y1="150" x2="560" y2="150"/></g>
+        <path d="M240,50 L360,50 L400,20 L280,20 Z" class="f-surface s-line" opacity=".7"/><path d="M360,50 L360,170 L400,140 L400,20 Z" fill="var(--accent-2-soft)" class="s-line"/>
+        <rect x="240" y="50" width="120" height="120" fill="var(--bad-soft)" class="s-line" opacity=".7"/>
+        <text class="t" x="300" y="200" text-anchor="middle" style="fill:var(--bad);font-weight:700">왼쪽 면: −EA</text>
+        <text class="t" x="420" y="200" style="fill:var(--accent-2);font-weight:700">오른쪽 면: +EA</text>
+        <text class="t-dim" x="600" y="80">위·아래·앞·뒤: 0</text>
+        <text class="t-mono" x="600" y="120" style="font-weight:700">Φ_알짜 = 0</text>
+        <text class="t-dim" x="600" y="146">들어온 장이 그대로 나간다</text>
+      </svg>
+      <figcaption>균일한 장 속의 닫힌 면. 바깥에 있는 전하의 장은 언제나 이렇게 알짜 선속이 0이다.</figcaption>
+    </figure>
+    <div class="example" data-title="원판을 지나는 선속">
+      <p>반지름 0.10 m인 원판이 세기 \(2.0\times10^3\) N/C인 균일한 전기장 속에 있다. 넓이 벡터가 장과 30°를 이룰 때, 0°일 때, 90°일 때의 선속은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> \(A = \pi(0.10)^2 = 0.0314\) m². 30°: \(\Phi = (2.0\times10^3)(0.0314)\cos30° = 54\) N·m²/C. 0°: 63 N·m²/C. 90°: 0.</div>
+        <div class="answer">54, 63, 0 N·m²/C</div>
+        <div class="step"><b>검토</b> 위의 드래그 숫자 문단에서 각을 바꿔 확인하라. 각이 180°면 \(-63\) N·m²/C이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="gauss">
+    <h2>가우스 법칙</h2>
+    <p>점전하 \(q\)를 중심으로 반지름 \(r\)인 구를 그리자. 구 위의 모든 점에서 \(E = kq/r^2\)이고 장은 구면에 수직으로 나가므로, 선속은 \(\Phi = E\cdot4\pi r^2 = 4\pi kq = q/\epsilon_0\)이다. <strong>반지름이 사라졌다</strong>. 구가 커지면 넓이가 \(r^2\)으로 커지고 장이 \(1/r^2\)로 약해져 정확히 상쇄된다. 이것이 역제곱 법칙의 핵심 성질이다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="가우스 법칙의 근거: 구, 임의의 면, 바깥 전하">
+        <defs><marker id="m21d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g data-only="1">
+          <circle cx="400" cy="140" r="60" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/><circle cx="400" cy="140" r="110" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <g stroke="var(--accent)" stroke-width="1.6" marker-end="url(#m21d)"><line x1="412" y1="140" x2="530" y2="140"/><line x1="388" y1="140" x2="270" y2="140"/><line x1="400" y1="128" x2="400" y2="20"/><line x1="400" y1="152" x2="400" y2="260"/><line x1="408" y1="132" x2="490" y2="50"/><line x1="392" y1="132" x2="310" y2="50"/><line x1="408" y1="148" x2="490" y2="230"/><line x1="392" y1="148" x2="310" y2="230"/></g>
+          <text class="t-mono" x="560" y="110">작은 구: 큰 E × 작은 넓이</text><text class="t-mono" x="560" y="134">큰 구:   작은 E × 큰 넓이</text><text class="t-mono" x="560" y="170" style="font-weight:700">Φ = q/ε₀ (같다)</text></g>
+        <g data-only="2">
+          <path d="M400,40 C500,30 540,100 520,160 C500,240 420,250 360,230 C280,210 260,150 290,100 C310,60 350,45 400,40 Z" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <circle cx="400" cy="140" r="60" fill="none" stroke="var(--text-faint)" stroke-width="1.4" stroke-dasharray="3 3"/>
+          <path d="M400,140 L520,110 L516,170 Z" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text class="t-mono" x="560" y="100">같은 입체각 dΩ 안에서</text><text class="t-mono" x="560" y="124">먼 조각: E ∝ 1/r², 넓이 ∝ r²</text><text class="t-mono" x="560" y="148">기울기: E·dA 의 cos 가 보정</text><text class="t-mono" x="560" y="184" style="font-weight:700">→ 어떤 모양이든 q/ε₀</text></g>
+        <g data-only="3">
+          <circle cx="400" cy="140" r="80" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <g stroke="var(--accent)" stroke-width="1.6" marker-end="url(#m21d)"><line x1="160" y1="140" x2="560" y2="140"/><line x1="160" y1="132" x2="560" y2="92"/><line x1="160" y1="148" x2="560" y2="188"/><line x1="160" y1="124" x2="530" y2="50"/><line x1="160" y1="156" x2="530" y2="230"/></g>
+          <text class="t" x="560" y="40" style="fill:var(--accent);font-weight:700">들어온 선 = 나간 선</text><text class="t-mono" x="560" y="250" style="font-weight:700">바깥 전하: Φ = 0</text></g>
+        <circle cx="400" cy="140" r="11" fill="var(--bad)" data-step="1" data-only="1"/>
+        <circle cx="400" cy="140" r="11" fill="var(--bad)" data-only="2"/>
+        <circle cx="150" cy="140" r="11" fill="var(--bad)" data-only="3"/>
+      </svg>
+      <ol class="steps-cap">
+        <li>점전하를 둘러싼 구: \(\Phi = (kq/r^2)(4\pi r^2) = q/\epsilon_0\). 구의 크기와 상관없다.</li>
+        <li>울퉁불퉁한 면이라도, 전하에서 본 같은 입체각 조각을 지나는 선속은 구의 조각과 같다(거리의 제곱이 상쇄되고, 기울어진 만큼은 \(\cos\)가 보정한다). 그러므로 전하를 둘러싼 <em>어떤</em> 닫힌 면이든 \(q/\epsilon_0\)이다.</li>
+        <li>전하가 면 밖에 있으면, 면으로 들어오는 선속과 나가는 선속이 같아 알짜 0이다. 여러 전하가 있으면 중첩으로 안에 든 것만 남는다.</li>
+      </ol>
+      <figcaption>가우스 법칙의 근거. 전기력선으로 말하면: 닫힌 면을 나가는 알짜 전기력선의 수는 안에 든 전하에 비례한다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">가우스 법칙</span>
+      <p>임의의 닫힌 면(<span class="term">가우스 면</span><span class="en">(Gaussian surface)</span>)을 지나 바깥으로 나가는 알짜 전기 선속은 그 면 안에 든 알짜 전하를 \(\epsilon_0\)으로 나눈 것과 같다 — <span class="term">가우스 법칙</span><span class="en">(Gauss's law)</span>.</p>
+    </div>
+    <div class="formula">$$\oint\vec E\cdot d\vec A = \frac{Q_\text{안}}{\epsilon_0}$$<div class="where">\(\vec E\)는 안팎 <em>모든</em> 전하가 만든 전체 장이지만, 적분 결과는 안의 전하만으로 정해진다. 쿨롱 법칙과 같은 내용이며, 움직이는 전하에도 성립하는 더 일반적인 법칙이다(29장 맥스웰 방정식).</div></div>
+    <div class="predict" data-for="sim-gauss">
+      <p>점전하를 둘러싼 구형 가우스 면의 반지름을 2배로 늘리면 면을 지나는 선속은?</p>
+      <div class="opts"><button class="opt">1/4배</button><button class="opt">1/2배</button><button class="opt" data-correct>변하지 않는다</button><button class="opt">4배</button></div>
+      <div class="quiz-exp">\(E\)는 1/4로, 넓이는 4배로 바뀌어 선속은 그대로 \(q/\epsilon_0\)이다. 아래에서 면의 크기 손잡이를 끌어 확인하고, 면을 찌그러뜨린 정육면체로 바꿔도 보라.</div>
+    </div>
+    <div class="sim" id="sim-gauss">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>가우스 면 실험대: 선속을 수치 적분으로 재기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-gs"></canvas><span class="hint top">전하, 면의 가운데(+), 면의 크기(흰 원)를 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>가우스 면</span><div class="seg" id="gs-shape"><button data-value="s" class="on">구</button><button data-value="c">정육면체</button></div></div>
+          <div class="ctrl"><span>전하 배치</span><div class="seg" id="gs-pre"><button data-value="one" class="on">하나</button><button data-value="dip">쌍극자</button><button data-value="three">셋</button></div></div>
+          <label class="check"><input type="checkbox" id="gs-lines" checked> 전기력선</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">수치 적분 ∮E·dA</span><span class="v" id="gs-F">—</span></div>
+        <div class="stat"><span class="k">안의 전하 Q<sub>안</sub></span><span class="v" id="gs-Q">—</span></div>
+        <div class="stat"><span class="k">Q<sub>안</sub>/ε<sub>0</sub></span><span class="v" id="gs-Fq">—</span></div>
+      </div>
+      <div class="sim-note">모든 전하는 그림 평면(z = 0) 위에 있고, 가우스 면은 3차원 구 또는 정육면체다(그림은 단면). 구는 3600개 조각으로 \(\vec E\cdot d\vec A\)를 더하고, 정육면체는 면마다 정확한 입체각으로 계산한다. 테두리 색: 빨강 = 장이 나감, 파랑 = 들어옴. 해볼 것: ① 전하가 면 밖으로 나가는 순간 선속이 뚝 떨어진다. ② 쌍극자를 통째로 감싸면 장은 0이 아니어도 선속은 0이다. ③ 전하를 면에 아주 가깝게 대면 구의 수치 적분 오차가 커진다 — 조각이 유한하기 때문이다.</div>
+    </div>
+    <div class="example" data-title="점전하를 감싼 면">
+      <p>\(+3.0\) μC인 점전하를 (a) 반지름 0.20 m인 구, (b) 한 변 1.0 m인 정육면체(전하가 중심)로 감쌌다. 각 면을 지나는 선속은? (b)에서 한 면을 지나는 선속은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> 어떤 닫힌 면이든 \(\Phi = q/\epsilon_0 = 3.0\times10^{-6}/8.854\times10^{-12} = 3.39\times10^5\) N·m²/C. 정육면체의 여섯 면은 대칭으로 같으므로 한 면은 \(5.6\times10^4\) N·m²/C.</div>
+        <div class="answer">(a), (b) 모두 3.4 × 10⁵ N·m²/C · 한 면 5.6 × 10⁴ N·m²/C</div>
+        <div class="step"><b>검토</b> 한 면의 선속을 직접 적분하는 것은 어렵지만, 대칭과 가우스 법칙으로는 나눗셈 한 번이다. 시뮬레이터의 "정육면체"에서 전하를 중심에 두고 확인하라.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="symmetry">
+    <h2>대칭을 이용한 전기장 계산</h2>
+    <p>가우스 법칙은 언제나 성립하지만, 장을 <em>구하는</em> 데 쓰려면 \(\oint\vec E\cdot d\vec A\)를 \(E\times(\text{넓이})\)로 바꿀 수 있어야 한다. 그러려면 가우스 면 위에서 장이 (1) 크기가 일정하고 면에 수직이거나, (2) 면과 나란해 선속이 0이어야 한다. 그런 면은 전하 분포에 높은 대칭이 있을 때만 고를 수 있다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 260" role="img" aria-label="대칭에 맞는 가우스 면: 동심구, 동축 원통, 상자(필박스)">
+        <g data-only="1"><circle cx="300" cy="130" r="55" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/><circle cx="300" cy="130" r="100" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <text class="t" x="300" y="135" text-anchor="middle" style="fill:var(--bad);font-weight:700">Q</text><text class="t" x="410" y="70" style="fill:var(--accent-2);font-weight:700">동심 구 (반지름 r)</text>
+          <text class="t-mono" x="450" y="130">E(4πr²) = Q_안/ε₀</text><text class="t-mono" x="450" y="156" style="font-weight:700">E = kQ_안/r²</text><text class="t-dim" x="450" y="190">구 대칭: 대전 구, 구 껍질</text></g>
+        <g data-only="2"><line x1="120" y1="130" x2="540" y2="130" stroke="var(--bad)" stroke-width="5"/>
+          <ellipse cx="220" cy="130" rx="18" ry="60" fill="none" stroke="var(--accent-2)" stroke-width="2"/><ellipse cx="420" cy="130" rx="18" ry="60" fill="none" stroke="var(--accent-2)" stroke-width="2"/><line x1="220" y1="70" x2="420" y2="70" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/><line x1="220" y1="190" x2="420" y2="190" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+          <text class="t" x="320" y="55" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">동축 원통 (반지름 r, 길이 l)</text><text class="t-dim" x="130" y="118">λ</text>
+          <text class="t-mono" x="560" y="110">옆면: E(2πrl)</text><text class="t-mono" x="560" y="134">양 끝: 0 (장과 나란)</text><text class="t-mono" x="560" y="170" style="font-weight:700">E = λ/(2πε₀r)</text></g>
+        <g data-only="3"><rect x="290" y="20" width="16" height="220" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/>
+          <rect x="230" y="100" width="136" height="60" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="6 4"/>
+          <text class="t" x="298" y="14" text-anchor="middle" style="fill:var(--bad);font-weight:700">σ</text><text class="t" x="390" y="96" style="fill:var(--accent-2);font-weight:700">상자 (양면 넓이 A)</text>
+          <text class="t-mono" x="430" y="130">양 끝면: 2EA = σA/ε₀</text><text class="t-mono" x="430" y="156">옆면: 0</text><text class="t-mono" x="430" y="190" style="font-weight:700">E = σ/(2ε₀)</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>구 대칭: 장은 중심에서 방사상이고 같은 반지름에서 크기가 같다 → 동심 구. 구 밖에서는 모든 전하가 중심에 모인 점전하와 같다(12장 구 껍질 정리의 전기판).</li>
+        <li>원통 대칭(무한 직선·원통): 장은 축에서 수직으로 퍼진다 → 동축 원통. 양 끝 뚜껑은 장과 나란해 선속이 없다.</li>
+        <li>평면 대칭(무한 평면): 장은 평면에 수직 → 평면을 가로지르는 상자(필박스). 20장에서 적분으로 구한 \(\sigma/2\epsilon_0\)이 한 줄로 나온다.</li>
+      </ol>
+      <figcaption>대칭에 맞는 가우스 면. 정육면체 모양의 전하 분포처럼 대칭이 낮으면 가우스 법칙은 참이지만 장을 구하는 데는 쓸모가 없다.</figcaption>
+    </figure>
+    <p>균일하게 대전된 절연체 구(반지름 \(R\), 전하 \(Q\))의 안쪽(\(r < R\))에서는 가우스 면 안의 전하가 \(Q(r/R)^3\)이므로 \(E = kQr/R^3\) — 중심에서 0이고 바깥으로 갈수록 직선으로 커진다. 반면 얇은 구 껍질 안쪽에는 전하가 없어 \(E = 0\)이다.</p>
+    <div class="formula">$$E_\text{균일 구} = \begin{cases} \dfrac{kQr}{R^3} & (r < R) \\[2mm] \dfrac{kQ}{r^2} & (r \ge R)\end{cases}, \qquad E_\text{구 껍질} = \begin{cases} 0 & (r < R) \\ \dfrac{kQ}{r^2} & (r > R)\end{cases}$$</div>
+    <div class="sim" id="sim-sphere">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>대전된 구의 전기장 E(r): 가우스 면을 키워 보라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-sp-a"></canvas></div><div><canvas id="cv-sp-b"></canvas></div></div><span class="hint top">점선 원의 흰 원을 끌어 반지름 r을 바꾼다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>전하 분포</span><div class="seg" id="sp-type"><button data-value="ins" class="on">균일한 절연체 구</button><button data-value="shell">도체 구(껍질)</button><button data-value="cav">중심 전하 + 도체 껍질</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">가우스 면 반지름 r</span><span class="v" id="sp-r">—</span></div>
+        <div class="stat"><span class="k">안의 전하 Q<sub>안</sub></span><span class="v" id="sp-Q">—</span></div>
+        <div class="stat"><span class="k">E<sub>r</sub> (바깥 +)</span><span class="v" id="sp-E">—</span></div>
+        <div class="stat"><span class="k">Φ = Q<sub>안</sub>/ε<sub>0</sub></span><span class="v" id="sp-F">—</span></div>
+      </div>
+      <div class="sim-note">구 반지름 10 cm, 전하 +5.0 nC. "중심 전하 + 도체 껍질"은 중심에 +3.0 nC, 안지름 8 cm·바깥지름 12 cm인 도체 껍질에 알짜 −5.0 nC. 해볼 것: ① 절연체 구 안에서 E가 r에 비례한다. ② 도체 구 안은 어디서나 0이다. ③ 셋째 분포에서 도체 껍질 속(8–12 cm)은 E = 0이므로 안쪽 면에 −3.0 nC, 바깥 면에 −2.0 nC가 있어야 한다.</div>
+    </div>
+    <div class="tangle" id="tg-sphere">
+      <p>반지름 <span class="tn" data-var="R" data-min="1" data-max="50" data-step="1" data-unit=" cm">10</span>, 전하 <span class="tn" data-var="Q" data-min="-10" data-max="10" data-step="0.5" data-unit=" μC">5.0</span>로 균일하게 대전된 절연체 구의 중심에서 <span class="tn" data-var="r" data-min="0" data-max="100" data-step="1" data-unit=" cm">5</span> 떨어진 곳의 장은 <span class="tn-out" data-out="E"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="균일하게 대전된 구">
+      <p>반지름 0.10 m인 절연체 구에 5.0 μC이 고르게 퍼져 있다. 중심에서 0.050 m, 0.20 m 떨어진 곳의 장은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 동심 구 가우스 면. 안쪽이면 \(Q_\text{안} = Q(r/R)^3\).</div>
+        <div class="step"><b>풀이</b> \(r = 0.050\) m: \(E = kQr/R^3 = (8.988\times10^9)(5.0\times10^{-6})(0.050)/(0.10)^3 = 2.25\times10^6\) N/C. \(r = 0.20\) m: \(E = kQ/r^2 = 1.12\times10^6\) N/C.</div>
+        <div class="answer">2.2 × 10⁶ N/C, 1.1 × 10⁶ N/C (모두 바깥 방향)</div>
+        <div class="step"><b>검토</b> 표면(r = R)에서 두 식이 같은 값 \(4.5\times10^6\) N/C를 준다 — 장이 연속이다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="무한히 긴 선전하">
+      <p>가우스 법칙으로 선전하 밀도 \(\lambda\)인 무한 직선의 장을 구하고, \(\lambda = 3.0\) μC/m일 때 0.10 m 떨어진 곳의 값을 계산하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> 반지름 \(r\), 길이 \(l\)인 동축 원통: \(E(2\pi rl) = \lambda l/\epsilon_0\) → \(E = \dfrac{\lambda}{2\pi\epsilon_0r} = \dfrac{2k\lambda}{r}\). 값: \(2(8.988\times10^9)(3.0\times10^{-6})/0.10 = 5.4\times10^5\) N/C.</div>
+        <div class="answer">E = λ/(2πε₀r) ≈ 5.4 × 10⁵ N/C</div>
+        <div class="step"><b>검토</b> 20장에서 적분으로 얻은 결과와 같다. 원통의 길이 \(l\)은 약분된다.</div>
+      </details>
+    </div>
+    <figure class="mini" id="mini-pill">
+      <div class="mini-view"><canvas id="cv-pill"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>왼쪽 판 σ₁ <output id="pl-1-out"></output></span><input type="range" id="pl-1" min="-5" max="5" step="0.5" value="2"></label>
+        <label class="ctrl"><span>오른쪽 판 σ₂ <output id="pl-2-out"></output></span><input type="range" id="pl-2" min="-5" max="5" step="0.5" value="-2"></label>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>무한히 넓은 대전 판 두 개. 각 판은 양쪽에 \(\sigma/2\epsilon_0\)의 균일한 장을 만들고(흐린 화살표), 세 영역의 장은 그 합이다(진한 화살표). \(\sigma_1 = -\sigma_2\)이면 판 사이에만 \(\sigma/\epsilon_0\)의 장이 있고 바깥은 0 — 23장 평행판 축전기다.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="conductors">
+    <h2>도체와 가우스 법칙</h2>
+    <p>도체 속의 자유 전자는 조금이라도 전기장이 있으면 움직인다. 그러므로 전하가 더 이상 움직이지 않는 <span class="term">정전기 평형</span><span class="en">(electrostatic equilibrium)</span>에서는 <strong>도체 속의 전기장이 0</strong>이다. 이 한 가지 사실과 가우스 법칙으로 도체의 성질이 모두 나온다.</p>
+    <ol>
+      <li><strong>여분의 전하는 표면에만 있다.</strong> 도체 속 어디에 가우스 면을 그려도 \(E = 0\)이므로 안의 전하가 0이다.</li>
+      <li><strong>표면 바로 밖의 장은 표면에 수직이고 \(E = \sigma/\epsilon_0\)이다.</strong> 나란한 성분이 있으면 표면의 전하가 움직일 것이다. 표면을 가로지르는 작은 상자를 그리면 바깥 뚜껑만 선속을 갖는다: \(EA = \sigma A/\epsilon_0\).</li>
+      <li><strong>공동 속 전하는 공동 벽에 반대 부호의 전하를 유도한다.</strong> 공동을 감싸는 가우스 면(도체 속)에서 \(E = 0\)이므로 공동 속 전하 \(q\)와 벽의 전하 합이 0, 곧 벽에 \(-q\)가 있다.</li>
+    </ol>
+    <div class="predict" data-for="sim-conductor">
+      <p>절연 손잡이가 달린 금속 덩어리 속 여기저기에 여분의 전하를 흩뿌렸다. 잠시 뒤 전하들은 어디에 있을까?</p>
+      <div class="opts"><button class="opt">처음 자리에 그대로</button><button class="opt">덩어리 속에 고르게 퍼진다</button><button class="opt" data-correct>모두 표면으로 가고, 뾰족한 곳에 더 빽빽하다</button><button class="opt">중심에 모인다</button></div>
+      <div class="quiz-exp">같은 부호 전하는 서로 밀어 가능한 한 멀어지고, 도체 속의 장이 0이 되는 분포는 표면 분포뿐이다. 곡률이 큰 뾰족한 곳에 전하가 모이고 장이 세다 — 피뢰침의 원리.</div>
+    </div>
+    <div class="sim" id="sim-conductor">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>도체 속 전하의 이완</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-cd"></canvas><span class="hint top">도체 속을 누르면 그 자리에 전하를 하나 더 넣는다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>도체 모양(단면)</span><div class="seg" id="cd-shape"><button data-value="circ" class="on">원</button><button data-value="tear">물방울(뾰족한 끝)</button></div></div>
+          <label class="ctrl"><span>전하 수 <output id="cd-N-out"></output></span><input type="range" id="cd-N" min="10" max="80" step="2" value="40"></label>
+          <button class="btn primary" id="cd-go" type="button">다시 흩뿌리기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">표면에 닿은 전하</span><span class="v" id="cd-s">—</span></div>
+        <div class="stat"><span class="k">가운데 점의 |E| (처음 대비)</span><span class="v" id="cd-E">—</span></div>
+        <div class="stat"><span class="k">뾰족한 끝 ÷ 둥근 끝 전하 밀도</span><span class="v" id="cd-tip">—</span></div>
+      </div>
+      <div class="sim-note">아주 긴 도체의 단면이다(전하들은 단면에 수직인 긴 선전하로, 서로 \(1/r\)로 민다). 전하는 받는 힘의 방향으로 움직이며(마찰이 큰 운동), 도체 밖으로는 나가지 못한다. 해볼 것: ① 처음에는 가운데의 장이 크지만 전하가 표면으로 가면 0에 가까워진다. ② 물방울 모양에서는 뾰족한 끝 바로 근처의 전하 밀도가 둥근 끝보다 크다(전하 80개에서 약 1.4배 — 끝이 뾰족할수록, 끝에 가까울수록 더 커진다). ③ 몇 개는 안쪽에 남기도 한다: 표면 전하가 만드는 안쪽 장이 거의 0이라 밀어낼 힘이 아주 약하기 때문이다.</div>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="공동이 있는 도체: 공동 속 전하 q가 안쪽 벽에 -q를, 바깥 면에 Q+q를 만든다">
+        <path d="M150,130 C150,40 300,20 400,30 C540,40 650,70 650,140 C650,220 520,240 400,235 C270,230 150,220 150,130 Z" class="f-surface s-line" stroke-width="2.4"/>
+        <ellipse cx="380" cy="135" rx="110" ry="70" fill="var(--canvas-bg)" class="s-line" stroke-width="2"/>
+        <circle cx="370" cy="135" r="11" fill="var(--bad)"/><text x="370" y="140" text-anchor="middle" fill="#fff" style="font-weight:700">+</text><text class="t" x="390" y="128" style="fill:var(--bad);font-weight:700">q</text>
+        <g class="t" style="font-weight:700;fill:var(--accent)"><text x="280" y="120" style="fill:var(--accent)">−</text><text x="300" y="80" style="fill:var(--accent)">−</text><text x="370" y="74" style="fill:var(--accent)">−</text><text x="440" y="80" style="fill:var(--accent)">−</text><text x="476" y="125" style="fill:var(--accent)">−</text><text x="440" y="198" style="fill:var(--accent)">−</text><text x="370" y="204" style="fill:var(--accent)">−</text><text x="300" y="194" style="fill:var(--accent)">−</text></g>
+        <g class="t" style="font-weight:700;fill:var(--bad)"><text x="160" y="90" style="fill:var(--bad)">+</text><text x="250" y="36" style="fill:var(--bad)">+</text><text x="400" y="24" style="fill:var(--bad)">+</text><text x="560" y="44" style="fill:var(--bad)">+</text><text x="650" y="120" style="fill:var(--bad)">+</text><text x="570" y="236" style="fill:var(--bad)">+</text><text x="400" y="250" style="fill:var(--bad)">+</text><text x="230" y="230" style="fill:var(--bad)">+</text></g>
+        <path d="M230,130 C230,60 320,45 400,48 C520,50 560,90 560,135 C560,190 500,218 400,215 C300,212 230,190 230,130 Z" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text class="t" x="560" y="200" style="fill:var(--accent-2);font-weight:700">가우스 면 (도체 속: E = 0)</text>
+        <text class="t-mono" x="680" y="80">공동 벽: −q</text><text class="t-mono" x="680" y="104">바깥 면: Q + q</text><text class="t-dim" x="680" y="134">(Q: 도체의 알짜</text><text class="t-dim" x="680" y="152"> 전하, 그림은 Q = 0)</text>
+      </svg>
+      <figcaption>공동이 있는 도체. 도체 속의 가우스 면을 지나는 선속이 0이므로 공동 벽에는 \(-q\)가 유도된다. 도체의 알짜 전하가 \(Q\)라면 바깥 면에는 \(Q + q\)가 남는다. 패러데이는 얼음통 실험으로 이것을 확인했다.</figcaption>
+    </figure>
+    <h3>정전기 차폐</h3>
+    <p>공동 속에 전하가 없으면 공동 벽에도 전하가 없고, 공동 속의 장은 0이다 — 바깥에 어떤 장이 있든 상관없다. 바깥의 장은 도체 바깥 면의 전하를 재배치할 뿐 안으로 들어오지 못한다. 이것이 <span class="term">정전기 차폐</span><span class="en">(electrostatic shielding)</span>이고, 금속 그물로 감싼 방이 <span class="term">패러데이 상자</span><span class="en">(Faraday cage)</span>다. 번개 맞은 자동차 안이 안전하고, 엘리베이터 안에서 휴대전화가 잘 안 터지는 이유다.</p>
+    <figure class="mini" id="mini-cage">
+      <div class="mini-view"><canvas id="cv-cage"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="check"><input type="checkbox" id="cg-on" checked> 도체 원통 놓기</label>
+        <span class="readout" id="cg-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>균일한 전기장 속에 속이 빈 도체 원통을 놓는다. 장은 원통의 왼쪽 면에 음전하, 오른쪽 면에 양전하를 유도하고, 전기력선은 표면에 수직으로 들어갔다 나온다. 안쪽 점(흰 원)을 어디로 끌어도 장은 0이다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-earth">
+      <p>맑은 날 지표면 근처에는 아래쪽을 향하는 약 <span class="tn" data-var="E" data-min="50" data-max="500" data-step="10" data-unit=" N/C">150</span>의 전기장이 있다. 지구를 도체 구(반지름 6371 km)로 보면 지표면의 면전하 밀도는 \(\sigma = -\epsilon_0E =\) <span class="tn-out" data-out="s"></span>, 지구 전체의 전하는 <span class="tn-out" data-out="Q"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="공동 속 전하와 도체 껍질">
+      <p>알짜 전하 \(-5.0\) nC인 도체 껍질의 공동 중심에 \(+2.0\) nC인 점전하가 있다. 공동 벽(안쪽 면)과 바깥 면의 전하는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> 도체 속 가우스 면: \(Q_\text{안} = 0\) → 안쪽 면 \(= -2.0\) nC. 전하 보존: 바깥 면 \(= -5.0 - (-2.0) = -3.0\) nC.</div>
+        <div class="answer">안쪽 면 −2.0 nC, 바깥 면 −3.0 nC</div>
+        <div class="step"><b>검토</b> 껍질 밖의 장은 \(k(-3.0\text{ nC})/r^2\) — 껍질 바깥에서는 안쪽 전하 \(+2.0\)과 껍질 \(-5.0\)의 합 \(-3.0\) nC만 보인다. 구 실험대의 셋째 분포에서 같은 구조를 볼 수 있다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="지구의 전하">
+      <p>지표면 근처의 전기장이 아래로 150 N/C이다. 지표면의 면전하 밀도와 지구 전체의 전하는? (지구 반지름 \(6.37\times10^6\) m)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> 도체 표면 밖: \(E = \sigma/\epsilon_0\) → \(|\sigma| = (8.854\times10^{-12})(150) = 1.33\times10^{-9}\) C/m². 장이 안쪽(아래)을 향하므로 음전하. \(Q = 4\pi R^2\sigma = -6.8\times10^5\) C.</div>
+        <div class="answer">σ ≈ −1.3 × 10⁻⁹ C/m², Q ≈ −6.8 × 10⁵ C</div>
+        <div class="step"><b>검토</b> 엄청난 전하 같지만 1 m²당 전자 약 80억 개가 남는 정도다. 이 전하는 전 세계의 뇌우가 끊임없이 충전한다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-sym" data-title="대칭 · 도체 · 선속 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>전기 선속 \(\Phi_E = \int\vec E\cdot d\vec A\), 균일한 장과 평면이면 \(EA\cos\phi\). 닫힌 면은 바깥을 향하는 \(d\vec A\)를 쓴다.</li>
+      <li>가우스 법칙 \(\oint\vec E\cdot d\vec A = Q_\text{안}/\epsilon_0\). 면의 모양과 크기, 바깥 전하와 무관하다. 역제곱 법칙의 결과다.</li>
+      <li>대칭을 쓰면 장이 한 줄로 나온다: 구(\(kQ_\text{안}/r^2\)), 균일 구 내부(\(kQr/R^3\)), 무한 직선(\(\lambda/2\pi\epsilon_0r\)), 무한 평면(\(\sigma/2\epsilon_0\)).</li>
+      <li>정전기 평형의 도체: 속의 \(E = 0\), 여분의 전하는 표면에, 표면 바로 밖 \(E = \sigma/\epsilon_0\)(표면에 수직). 뾰족한 곳에 전하가 몰린다.</li>
+      <li>공동 속 전하 \(q\)는 공동 벽에 \(-q\)를 유도한다. 빈 공동 속은 바깥 장과 무관하게 \(E = 0\)(정전기 차폐, 패러데이 상자).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 \(k = 8.988\times10^9\) N·m²/C², \(\epsilon_0 = 8.854\times10^{-12}\) C²/(N·m²)를 쓴다. 부호가 있는 답은 부호까지 입력한다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="평면의 선속" data-answer="1200" data-label="Φ =" data-unit="N·m²/C">
+        <div class="prob-q"><p>0.20 m × 0.30 m인 직사각형 면이 \(4.0\times10^4\) N/C의 균일한 장 속에 있고, 넓이 벡터와 장 사이의 각이 60°이다. 선속은?</p></div>
+        <div class="prob-sol"><p>\(\Phi = EA\cos\phi = (4.0\times10^4)(0.060)(0.50) = 1.2\times10^3\) N·m²/C.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="가우스 법칙" data-answer="-452" data-label="Φ =" data-unit="N·m²/C">
+        <div class="prob-q"><p>\(-4.0\) nC인 점전하를 감싼 닫힌 면(모양은 모른다)을 지나는 알짜 선속은?</p></div>
+        <div class="prob-sol"><p>\(\Phi = q/\epsilon_0 = -4.0\times10^{-9}/8.854\times10^{-12} = -452\) N·m²/C. 음수: 알짜로 들어온다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="안과 밖의 전하" data-answer="-226" data-label="Φ =" data-unit="N·m²/C">
+        <div class="prob-q"><p>상자 안에 \(+3.0\) nC과 \(-5.0\) nC이, 상자 밖 가까이에 \(+7.0\) nC이 있다. 상자를 지나는 알짜 선속은?</p></div>
+        <div class="prob-sol"><p>바깥 전하는 기여하지 않는다: \(\Phi = (3.0 - 5.0)\times10^{-9}/\epsilon_0 = -226\) N·m²/C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="정육면체의 한 면" data-answer="1.13e5" data-label="Φ =" data-unit="N·m²/C">
+        <div class="prob-q"><p>정육면체의 중심에 6.0 μC이 있다. 한 면을 지나는 선속은?</p></div>
+        <div class="prob-sol"><p>대칭으로 여섯 면이 같다: \(\Phi = q/6\epsilon_0 = 1.13\times10^5\) N·m²/C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="균일 구의 내부" data-answer="8.99e5" data-label="E =" data-unit="N/C">
+        <div class="prob-q"><p>반지름 0.20 m인 절연체 구에 8.0 μC이 고르게 퍼져 있다. 중심에서 0.10 m인 곳의 장은?</p></div>
+        <div class="prob-sol"><p>\(E = kQr/R^3 = (8.988\times10^9)(8.0\times10^{-6})(0.10)/(0.20)^3 = 8.99\times10^5\) N/C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="도체 구의 전하" data-answer="7.51e-8" data-label="Q =" data-unit="C">
+        <div class="prob-q"><p>반지름 0.15 m인 도체 구의 표면 바로 밖에서 장이 \(3.0\times10^4\) N/C(바깥 방향)이다. 구의 전하는?</p></div>
+        <div class="prob-sol"><p>\(E = kQ/R^2\) → \(Q = ER^2/k = (3.0\times10^4)(0.15)^2/(8.988\times10^9) = 7.51\times10^{-8}\) C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="선전하" data-answer="2.78e-7" data-label="λ =" data-unit="C/m">
+        <div class="prob-q"><p>아주 긴 대전 도선에서 0.20 m 떨어진 곳의 장이 \(2.5\times10^4\) N/C이다. 도선의 선전하 밀도는?</p></div>
+        <div class="prob-sol"><p>\(\lambda = 2\pi\epsilon_0rE = Er/2k = 2.78\times10^{-7}\) C/m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="동축 케이블" data-answer="7.19e3" data-label="E =" data-unit="N/C">
+        <div class="prob-q"><p>동축 케이블의 안쪽 도선에 +4.0 nC/m, 바깥 원통 도체에 −4.0 nC/m가 있다. 축에서 1.0 cm(두 도체 사이)인 곳의 장은? (케이블 밖의 장은 얼마일까?)</p></div>
+        <div class="prob-sol"><p>반지름 1.0 cm 원통 안의 전하는 안쪽 도선뿐: \(E = 2k\lambda/r = 7.19\times10^3\) N/C. 케이블 밖에서는 \(\lambda_\text{안} = 0\)이라 \(E = 0\) — 동축 케이블이 신호를 차폐하는 이유.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="평행한 두 판" data-answer="2.26e5" data-label="E =" data-unit="N/C">
+        <div class="prob-q"><p>면전하 밀도 +2.0 μC/m², −2.0 μC/m²인 아주 넓은 평행판 사이의 장은?</p></div>
+        <div class="prob-sol"><p>\(E = \sigma/\epsilon_0 = 2.26\times10^5\) N/C. 바깥은 두 판의 장이 상쇄되어 0.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="공동이 있는 도체" data-answer="2.0; 4.0; 400" data-label="안쪽 면 =; 바깥 면 =; E(0.30 m) =" data-unit="nC; nC; N/C">
+        <div class="prob-q"><p>안지름 0.10 m, 바깥지름 0.20 m인 도체 구 껍질의 알짜 전하가 +6.0 nC이고, 공동 중심에 −2.0 nC인 점전하가 있다. 껍질의 안쪽 면과 바깥 면의 전하, 그리고 중심에서 0.30 m인 곳의 장의 크기는?</p></div>
+        <div class="prob-sol"><p>안쪽 면 \(+2.0\) nC(공동 전하를 상쇄), 바깥 면 \(6.0 - 2.0 = +4.0\) nC. \(E = k(4.0\times10^{-9})/(0.30)^2 = 400\) N/C(바깥 방향).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="도체 표면의 장" data-answer="5.65e5" data-label="E =" data-unit="N/C">
+        <div class="prob-q"><p>도체 표면의 면전하 밀도가 5.0 μC/m²이다. 표면 바로 밖의 장은?</p></div>
+        <div class="prob-sol"><p>\(E = \sigma/\epsilon_0 = 5.65\times10^5\) N/C. 무한 평면(\(\sigma/2\epsilon_0\))의 2배 — 도체 속의 장이 0이라 모든 선속이 바깥으로만 나가기 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="대기 전기장" data-answer="1.06e-9" data-label="|σ| =" data-unit="C/m²">
+        <div class="prob-q"><p>지표면 근처의 전기장이 아래 방향으로 120 N/C이다. 지표면의 면전하 밀도의 크기는?</p></div>
+        <div class="prob-sol"><p>\(|\sigma| = \epsilon_0E = 1.06\times10^{-9}\) C/m², 음전하.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="선속이 0">
+        <div class="prob-q"><p>어떤 닫힌 면을 지나는 알짜 선속이 0이다. 반드시 참인 것은?</p></div>
+        <div class="prob-choices"><button>면 위 모든 점에서 E = 0이다</button><button data-correct>면 안의 알짜 전하가 0이다</button><button>면 안에 전하가 하나도 없다</button><button>면 밖에 전하가 없다</button></div>
+        <div class="prob-sol"><p>알짜 전하가 0이면 된다(+q와 −q가 함께 있어도 된다). 장 자체는 바깥 전하 때문에 0이 아닐 수 있다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="도체 속의 장">
+        <div class="prob-q"><p>정전기 평형에 있는 도체 속의 전기장이 0인 이유는?</p></div>
+        <div class="prob-choices"><button>도체에는 전하가 없어서</button><button>가우스 법칙이 그렇게 정해서</button><button data-correct>장이 있으면 자유 전자가 움직여 평형이 아니게 되므로</button><button>도체가 장을 흡수해서</button></div>
+        <div class="prob-sol"><p>정전기 평형의 정의(전하가 움직이지 않음)에서 나온다. 가우스 법칙은 그 결과로 여분의 전하가 표면에 있음을 알려 준다.</p></div>
+      </div>
+    </div>
+    <div class="drill" id="drill-flux" data-title="선속 · 가우스 법칙 반복 연습"></div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>점전하 \(q\)를 둘러싼 가우스 면 바깥에 다른 전하 \(Q\)를 가져왔다. 면을 지나는 선속과 면 위의 장은?</p><div class="opts">
+        <button class="opt">둘 다 변하지 않는다</button><button class="opt" data-correct>선속은 그대로, 면 위의 장은 변한다</button><button class="opt">선속이 변하고 장은 그대로</button><button class="opt">둘 다 변한다</button>
+      </div><div class="quiz-exp">장은 모든 전하가 만들지만 바깥 전하의 선속 기여는 0이다.</div></div>
+      <div class="quiz-q"><p>균일하게 대전된 절연체 구의 중심에서 장은?</p><div class="opts">
+        <button class="opt">가장 세다</button><button class="opt" data-correct>0이다</button><button class="opt">kQ/R²이다</button><button class="opt">무한대다</button>
+      </div><div class="quiz-exp">\(E = kQr/R^3\)에서 r = 0. 사방의 전하가 상쇄한다.</div></div>
+      <div class="quiz-q"><p>가우스 법칙으로 정육면체 모양으로 고르게 대전된 물체 바깥의 장을 쉽게 구할 수 없는 이유는?</p><div class="opts">
+        <button class="opt">가우스 법칙이 성립하지 않아서</button><button class="opt" data-correct>장의 크기가 일정한 가우스 면을 고를 수 없어서</button><button class="opt">정육면체 안의 전하를 몰라서</button><button class="opt">장이 0이어서</button>
+      </div><div class="quiz-exp">법칙은 성립하지만 적분을 \(E\times\)넓이로 바꿀 대칭이 없다.</div></div>
+      <div class="quiz-q"><p>도체 표면에서 곡률이 가장 큰(뾰족한) 곳의 특징은?</p><div class="opts">
+        <button class="opt">전하가 가장 적다</button><button class="opt" data-correct>면전하 밀도와 표면 밖의 장이 가장 크다</button><button class="opt">장이 표면과 나란하다</button><button class="opt">도체 속 장이 0이 아니다</button>
+      </div><div class="quiz-exp">\(E = \sigma/\epsilon_0\)이고 뾰족한 곳에 \(\sigma\)가 크다. 장이 공기의 절연 파괴 세기를 넘으면 코로나 방전이 일어난다.</div></div>
+      <div class="quiz-q"><p>번개가 자동차에 떨어져도 안에 있는 사람이 대개 안전한 이유는?</p><div class="opts">
+        <button class="opt">타이어가 절연체라서</button><button class="opt" data-correct>금속 차체가 패러데이 상자처럼 전하를 바깥 면으로 흘려 안의 장이 작아서</button><button class="opt">차 안 공기가 전기를 흡수해서</button><button class="opt">번개의 전하가 작아서</button>
+      </div><div class="quiz-exp">타이어는 수억 볼트에서 아무 소용이 없다. 금속 껍질이 전하를 바깥으로 흐르게 한다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const K = 8.9875517923e9, EPS = 8.8541878128e-12;
+  const pal = () => SB.palette();
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const charge = (ctx, x, y, q, r = 12) => {
+    const P = pal(); ctx.save(); ctx.fillStyle = q > 0 ? P.bad : q < 0 ? P.accent : P.dim; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = `700 ${Math.round(r * 1.2)}px ` + SB.color("font"); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(q > 0 ? "+" : q < 0 ? "−" : "0", x, y + 1); ctx.restore();
+  };
+  const sciL = (x, d = 2) => { if (x === 0) return "0"; const e = Math.floor(Math.log10(Math.abs(x))); if (e >= -2 && e <= 3) return Number(x.toPrecision(d + 1)).toString(); return `${(x / Math.pow(10, e)).toFixed(d)} × 10<sup>${e}</sup>`; };
+  const fl = (x) => (Math.abs(x) >= 1e4 ? sciL(x) : x.toFixed(Math.abs(x) < 10 ? 2 : 0)); // 선속 표시
+  /* 점 p(cm, z=0 평면)들의 3D 전기장 [N/C], 전하 q nC */
+  const E3 = (qs, x, y, z) => { let ex = 0, ey = 0, ez = 0; qs.forEach((c) => { const dx = (x - c.x) / 100, dy = (y - c.y) / 100, dz = z / 100, r2 = dx * dx + dy * dy + dz * dz + 1e-12, r = Math.sqrt(r2), e = (K * c.q * 1e-9) / r2 / r; ex += e * dx; ey += e * dy; ez += e * dz; }); return [ex, ey, ez]; };
+  /* 직사각형 면의 입체각: 수선의 발 기준 좌표 [x1,x2]×[y1,y2], 거리 d>0 */
+  const rectOmega = (x1, x2, y1, y2, d) => { const F = (x, y) => Math.atan2(x * y, d * Math.sqrt(d * d + x * x + y * y)); return F(x2, y2) - F(x1, y2) - F(x2, y1) + F(x1, y1); };
+  /* 정육면체(중심 cx,cy,0, 반변 s, cm)의 면별 바깥 선속 [N·m²/C]: 순서 +x, −x, +y, −y, +z, −z */
+  const cubeFaces = (qs, cx, cy, s) => {
+    const out = [0, 0, 0, 0, 0, 0];
+    qs.forEach((c) => {
+      const f = (c.q * 1e-9) / (4 * Math.PI * EPS), ax = cx - c.x, ay = cy - c.y;
+      const side = (plane, n, ya, yb) => { const dd = plane * n; return Math.sign(dd || 1) * rectOmega(ya[0], ya[1], yb[0], yb[1], Math.abs(dd) + 1e-9); };
+      out[0] += f * side(ax + s, 1, [ay - s, ay + s], [-s, s]); out[1] += f * side(ax - s, -1, [ay - s, ay + s], [-s, s]);
+      out[2] += f * side(ay + s, 1, [ax - s, ax + s], [-s, s]); out[3] += f * side(ay - s, -1, [ax - s, ax + s], [-s, s]);
+      const z = rectOmega(ax - s, ax + s, ay - s, ay + s, s); out[4] += f * z; out[5] += f * z;
+    });
+    return out;
+  };
+  /* 구(중심 cx,cy,0, 반지름 R cm)의 선속 수치 적분 */
+  const sphereFlux = (qs, cx, cy, R, nu = 60, nf = 60) => {
+    let s = 0;
+    for (let i = 0; i < nu; i++) { const u = -1 + (2 * (i + 0.5)) / nu, st = Math.sqrt(1 - u * u); for (let j = 0; j < nf; j++) { const f = (2 * Math.PI * (j + 0.5)) / nf, nx = st * Math.cos(f), ny = st * Math.sin(f), nz = u, E = E3(qs, cx + R * nx, cy + R * ny, R * nz); s += E[0] * nx + E[1] * ny + E[2] * nz; } }
+    return s * (2 / nu) * ((2 * Math.PI) / nf) * (R / 100) ** 2;
+  };
+
+  /* ---------------------------------------------------------- 머리: 가우스 면과 전하 */
+  {
+    const st = { q: [{ x: -1.2, y: 0.3, q: 1 }, { x: 1.6, y: -0.4, q: -1 }, { x: 0.2, y: -0.9, q: 1 }], c: [-0.6, 0], R: 1.4, L: null, dirty: true, w: 0, h: 0, t: 0 };
+    const tf = (w, h) => { const s = h / 5; return { s, X: (x) => w / 2 + x * s, Y: (y) => h / 2 - y * s, ix: (px) => (px - w / 2) / s, iy: (py) => (h / 2 - py) / s, hw: w / 2 / s }; };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      if (st.w !== w || st.h !== h) { st.w = w; st.h = h; st.dirty = true; }
+      const P = pal(), T = tf(w, h);
+      if (st.dirty) { st.L = Phys.fieldLines(st.q, { perCharge: 14, step: 0.04, maxSteps: 400, bounds: [-T.hw - 0.3, T.hw + 0.3, -2.8, 2.8] }); st.dirty = false; }
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.3; ctx.lineWidth = 1.3; st.L.forEach((l) => { ctx.beginPath(); l.forEach((p, i) => (i ? ctx.lineTo(T.X(p[0]), T.Y(p[1])) : ctx.moveTo(T.X(p[0]), T.Y(p[1])))); ctx.stroke(); }); ctx.restore();
+      // 원 둘레의 장 화살표 (바깥 성분)
+      const n = 36;
+      for (let i = 0; i < n; i++) { const a = (2 * Math.PI * i) / n, x = st.c[0] + st.R * Math.cos(a), y = st.c[1] + st.R * Math.sin(a), E = Phys.Efield(st.q, x, y), En = E[0] * Math.cos(a) + E[1] * Math.sin(a), L = SB.clamp(14 * Math.sign(En) * Math.log10(1 + Math.abs(En) * 8), -22, 22); SB.arrow(ctx, T.X(x), T.Y(y), T.X(x) + L * Math.cos(a), T.Y(y) - L * Math.sin(a), { color: En > 0 ? P.bad : P.accent, width: 1.8, head: 6 }); }
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.4; ctx.setLineDash([7, 5]); ctx.lineDashOffset = -st.t * 20; ctx.beginPath(); ctx.arc(T.X(st.c[0]), T.Y(st.c[1]), st.R * T.s, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      st.q.forEach((c) => charge(ctx, T.X(c.x), T.Y(c.y), c.q, 12));
+      const Qin = st.q.filter((c) => Math.hypot(c.x - st.c[0], c.y - st.c[1]) < st.R).reduce((s, c) => s + c.q, 0);
+      const hx = T.X(st.c[0] + st.R), hy = T.Y(st.c[1]), mx = T.X(st.c[0] + st.R * Math.cos(2.2)), my = T.Y(st.c[1] + st.R * Math.sin(2.2));
+      handle(ctx, hx, hy, P.accent2, 9);
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      SB.label(ctx, "크기", hx + 20, hy - 14, { size: 10, color: P.accent2 }); SB.label(ctx, "이동", mx - 20, my - 12, { size: 10, color: P.accent2 });
+      SB.label(ctx, `면 안의 알짜 전하 ${Qin > 0 ? "+" : ""}${Qin}q  →  알짜 선속 ${Qin > 0 ? "나감" : Qin < 0 ? "들어옴" : "0"}`, w / 2, h - 16, { size: 13, bold: true, color: Qin > 0 ? P.bad : Qin < 0 ? P.accent : P.text });
+      self._hs = st.q.map((c, i) => ({ id: i, x: T.X(c.x), y: T.Y(c.y), r: 16 })).concat([{ id: "R", x: hx, y: hy, r: 16 }, { id: "c", x: T.X(st.c[0] + st.R * Math.cos(2.2)), y: T.Y(st.c[1] + st.R * Math.sin(2.2)), r: 14 }]);
+      self._T = T;
+    }, { aspect: 0.36, minHeight: 220, maxHeight: 300 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      down: (id, x, y) => { st._off = id === "c" ? [cv._T.ix(x) - st.c[0], cv._T.iy(y) - st.c[1]] : null; },
+      move: (id, x, y) => {
+        if (id == null) return; const T = cv._T, X = T.ix(x), Y = T.iy(y);
+        if (id === "R") st.R = SB.clamp(Math.hypot(X - st.c[0], Y - st.c[1]), 0.4, 2.3);
+        else if (id === "c") { st.c = [SB.clamp(X - st._off[0], -T.hw + 0.5, T.hw - 0.5), SB.clamp(Y - st._off[1], -2, 2)]; }
+        else { st.q[id].x = SB.clamp(X, -T.hw + 0.3, T.hw - 0.3); st.q[id].y = SB.clamp(Y, -2.2, 2.2); st.dirty = true; }
+      },
+    });
+    SB.loop("hero", (dt) => { st.t += dt; cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 숨은 전하 맞히기 */
+  {
+    const S = 10, st = { inQ: [], outQ: [], done: false, streak: 0 };
+    const getQ = SB.range("my-q", (v) => (v > 0 ? "+" : "") + v + " nC");
+    const arr = document.getElementById("my-arr");
+    arr.addEventListener("change", () => cv.redraw());
+    const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    function fresh() {
+      const n = rint(1, 3); st.inQ = [];
+      for (let i = 0; i < n; i++) { let q = 0; while (q === 0) q = rint(-6, 6); st.inQ.push({ x: rint(-6, 6), y: rint(-6, 6), q }); }
+      st.outQ = []; const m = rint(0, 2);
+      for (let i = 0; i < m; i++) { let q = 0; while (q === 0) q = rint(-8, 8); const side = Math.random() < 0.5 ? -1 : 1; st.outQ.push(Math.random() < 0.5 ? { x: side * rint(14, 22), y: rint(-8, 8), q } : { x: rint(-12, 12), y: side * rint(14, 16), q }); }
+      st.done = false; getQ.set(0, true);
+      SB.stat("my-a", "?"); SB.stat("my-j", `— · ${st.streak}`);
+      const f = cubeFaces(st.inQ.concat(st.outQ), 0, 0, S);
+      SB.stat("my-sum", "직접 더해 보라");
+      st.faces = f; cv.redraw();
+    }
+    function judge() {
+      if (st.done) return; st.done = true;
+      const Q = st.inQ.reduce((s, c) => s + c.q, 0), ok = getQ() === Q; st.streak = ok ? st.streak + 1 : 0;
+      const sum = st.faces.reduce((s, x) => s + x, 0);
+      SB.stat("my-sum", fl(sum) + " <small>N·m²/C</small>");
+      SB.stat("my-a", `${Q > 0 ? "+" : ""}${Q} <small>nC = ε₀Φ</small>`);
+      SB.stat("my-j", (ok ? '<span style="color:var(--ok)">정답!</span>' : '<span style="color:var(--bad)">아깝다</span>') + ` · ${st.streak}`);
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-my", (ctx, w, h) => {
+      const P = pal(), sc = Math.min((w - 40) / 50, (h - 40) / 40), X = (x) => w / 2 + x * sc, Y = (y) => h / 2 - y * sc, all = st.inQ.concat(st.outQ);
+      // 상자
+      ctx.save(); ctx.fillStyle = st.done ? "transparent" : SB.color("surface"); ctx.globalAlpha = 0.95; ctx.fillRect(X(-S), Y(S), 2 * S * sc, 2 * S * sc); ctx.globalAlpha = 1; ctx.strokeStyle = P.text; ctx.lineWidth = 2.5; ctx.strokeRect(X(-S), Y(S), 2 * S * sc, 2 * S * sc); ctx.restore();
+      if (!st.done) SB.label(ctx, "?", w / 2, h / 2, { size: 40, bold: true, color: P.faint });
+      else st.inQ.forEach((c) => { charge(ctx, X(c.x), Y(c.y), c.q, 11); SB.label(ctx, (c.q > 0 ? "+" : "") + c.q, X(c.x) + 16, Y(c.y) - 12, { size: 11, bold: true }); });
+      st.outQ.forEach((c) => { charge(ctx, X(c.x), Y(c.y), c.q, 11); SB.label(ctx, (c.q > 0 ? "+" : "") + c.q + " nC", X(c.x), Y(c.y) + 20, { size: 11, bold: true, color: P.dim }); });
+      // 표면의 바깥 방향 장
+      if (arr.checked) {
+        const pts = []; for (let i = -4; i <= 4; i++) { const u = (i / 4.5) * S; pts.push([S, u, 1, 0], [-S, u, -1, 0], [u, S, 0, 1], [u, -S, 0, -1]); }
+        pts.forEach(([x, y, nx, ny]) => { const E = E3(all, x, y, 0), En = E[0] * nx + E[1] * ny, L = SB.clamp(Math.sign(En) * 9 * Math.log10(1 + Math.abs(En) / 100), -26, 26); if (Math.abs(L) > 1) SB.arrow(ctx, X(x), Y(y), X(x) + L * nx, Y(y) - L * ny, { color: En > 0 ? P.bad : P.accent, width: 1.8, head: 6 }); });
+      }
+      // 면별 선속
+      const f = st.faces || [0, 0, 0, 0, 0, 0], lab = (t, v, x, y, al) => SB.label(ctx, `${t} ${v >= 0 ? "+" : ""}${fl(v)}`, x, y, { size: 11, bold: true, mono: true, color: v > 0 ? P.bad : P.accent, align: al || "center" });
+      lab("오른쪽", f[0], X(S) + 6, Y(0) - 34, "left"); lab("왼쪽", f[1], X(-S) - 6, Y(0) - 34, "right"); lab("위", f[2], w / 2, Y(S) - 14); lab("아래", f[3], w / 2, Y(-S) + 14);
+      SB.label(ctx, `앞·뒤 각 ${f[4] >= 0 ? "+" : ""}${fl(f[4])}  (N·m²/C)`, w / 2, h - 10, { size: 11, bold: true, mono: true, color: f[4] > 0 ? P.bad : P.accent });
+    }, { aspect: 0.7, minHeight: 280, maxHeight: 420 });
+    document.getElementById("my-go").addEventListener("click", judge);
+    document.getElementById("my-new").addEventListener("click", fresh);
+    fresh();
+  }
+
+  /* ---------------------------------------------------------- 기울인 면의 선속 */
+  {
+    const st = { phi: 0.6 }, E0 = 1000, A = 0.04;
+    const cv = SB.canvas("cv-tilt", (ctx, w, h, self) => {
+      const P = pal(), split = Math.min(w * 0.55, 420), cx = split / 2, cy = h / 2, half = Math.min(h * 0.36, 80), nL = 60;
+      const ux = -Math.sin(st.phi), uy = -Math.cos(st.phi); // 면 방향(화면 좌표, 위가 −)
+      const n = [Math.cos(st.phi), -Math.sin(st.phi)]; // 넓이 벡터(화면)
+      const ys = []; for (let y = 16; y < h - 10; y += 16) ys.push(y);
+      ys.forEach((y) => { const crosses = Math.abs((y - cy) / uy) <= half && Math.abs(uy) > 1e-3; const hitX = crosses ? cx + ((y - cy) / uy) * ux : null; ctx.save(); ctx.strokeStyle = crosses ? P.accent2 : P.faint; ctx.lineWidth = crosses ? 2 : 1.2; ctx.beginPath(); ctx.moveTo(10, y); ctx.lineTo(split - 10, y); ctx.stroke(); ctx.restore(); SB.arrow(ctx, split - 30, y, split - 12, y, { color: crosses ? P.accent2 : P.faint, width: 1, head: 6 }); void hitX; });
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(cx - ux * half, cy - uy * half); ctx.lineTo(cx + ux * half, cy + uy * half); ctx.stroke(); ctx.restore();
+      const tx = cx + n[0] * nL, ty = cy + n[1] * nL;
+      SB.arrow(ctx, cx, cy, tx, ty, { color: P.text, width: 2.6, label: "A" });
+      handle(ctx, tx, ty, P.accent2, 10);
+      self._h = [tx, ty]; self._c = [cx, cy];
+      const data = []; for (let d = 0; d <= 180; d += 3) data.push([d, E0 * A * Math.cos((d * Math.PI) / 180)]);
+      const deg = (Math.abs(st.phi) * 180) / Math.PI, F = E0 * A * Math.cos(st.phi);
+      SB.chart(ctx, { x: split + 50, y: 12, w: w - split - 62, h: h - 56 }, { x: [0, 180], y: [-45, 45], xLabel: "φ (°)", yLabel: "Φ (N·m²/C)", xTicks: [0, 45, 90, 135, 180], series: [{ data, color: P.accent, width: 2.4 }], hlines: [{ y: 0, color: P.faint }], points: [{ x: deg, y: F, r: 6, color: P.accent2 }] });
+      document.getElementById("tl-r").textContent = `φ = ${deg.toFixed(0)}° · Φ = EA cos φ = ${F.toFixed(1)} N·m²/C`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id === "n") st.phi = Math.atan2(-(y - cv._c[1]), x - cv._c[0]); } });
+  }
+
+  /* ---------------------------------------------------------- 원판 선속 드래그 숫자 */
+  SB.tangle("tg-flux", (v) => {
+    const F = v.E * Math.PI * (v.r / 100) ** 2 * Math.cos((v.phi * Math.PI) / 180);
+    return { F: (Math.abs(F) < 0.005 ? "0" : F.toPrecision(3)) + " N·m²/C", msg: v.phi === 90 ? "(면이 장과 나란해 아무것도 통과하지 않는다.)" : v.phi > 90 ? "(음수: 장이 넓이 벡터의 반대쪽에서 들어온다.)" : "" };
+  });
+
+  /* ---------------------------------------------------------- 가우스 면 실험대 */
+  {
+    const W = 40, H = 24, st = { q: [], c: [20, 12], R: 6, L: null, dirty: true };
+    const presets = { one: () => [{ x: 18, y: 12, q: 4 }], dip: () => [{ x: 17, y: 12, q: 4 }, { x: 23, y: 12, q: -4 }], three: () => [{ x: 16, y: 10, q: 4 }, { x: 24, y: 14, q: -2 }, { x: 31, y: 8, q: 3 }] };
+    const getShape = SB.seg("gs-shape", () => upd());
+    const getPre = SB.seg("gs-pre", (v) => { st.q = presets[v](); st.dirty = true; upd(); });
+    const lines = document.getElementById("gs-lines");
+    lines.addEventListener("change", () => cv.redraw());
+    st.q = presets.one();
+    const inside = (c) => (getShape() === "s" ? Math.hypot(c.x - st.c[0], c.y - st.c[1]) < st.R : Math.abs(c.x - st.c[0]) < st.R && Math.abs(c.y - st.c[1]) < st.R);
+    function upd() {
+      const F = getShape() === "s" ? sphereFlux(st.q, st.c[0], st.c[1], st.R) : cubeFaces(st.q, st.c[0], st.c[1], st.R).reduce((s, x) => s + x, 0);
+      const Q = st.q.filter(inside).reduce((s, c) => s + c.q, 0);
+      SB.stat("gs-F", fl(F) + " <small>N·m²/C</small>"); SB.stat("gs-Q", (Q > 0 ? "+" : "") + Q + " <small>nC</small>"); SB.stat("gs-Fq", fl((Q * 1e-9) / EPS) + " <small>N·m²/C</small>");
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-gs", (ctx, w, h, self) => {
+      const P = pal(), s = Math.min(w / W, h / H), ox = (w - W * s) / 2, oy = (h - H * s) / 2, X = (x) => ox + x * s, Y = (y) => oy + y * s;
+      if (st.dirty) { st.L = Phys.fieldLines(st.q, { perCharge: 14, step: 0.12, maxSteps: 600, bounds: [-2, W + 2, -2, H + 2] }); st.dirty = false; }
+      if (lines.checked) { ctx.save(); ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.35; ctx.lineWidth = 1.3; st.L.forEach((l) => { ctx.beginPath(); l.forEach((p, i) => (i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1])))); ctx.stroke(); }); ctx.restore(); }
+      // 면 테두리: 바깥 성분 부호로 색칠
+      const cx = st.c[0], cy = st.c[1], R = st.R, seg = 96;
+      for (let i = 0; i < seg; i++) {
+        let p1, p2, nx, ny;
+        if (getShape() === "s") { const a1 = (2 * Math.PI * i) / seg, a2 = (2 * Math.PI * (i + 1)) / seg; p1 = [cx + R * Math.cos(a1), cy + R * Math.sin(a1)]; p2 = [cx + R * Math.cos(a2), cy + R * Math.sin(a2)]; const am = (a1 + a2) / 2; nx = Math.cos(am); ny = Math.sin(am); }
+        else { const per = 8 * R, d1 = (per * i) / seg, d2 = (per * (i + 1)) / seg, at = (d) => { const k = Math.floor(d / (2 * R)), u = d - k * 2 * R; return [[cx - R + u, cy - R, 0, -1], [cx + R, cy - R + u, 1, 0], [cx + R - u, cy + R, 0, 1], [cx - R, cy + R - u, -1, 0]][Math.min(3, k)]; }; const A1 = at(d1), A2 = at(Math.min(d2, per - 1e-6)); p1 = A1; p2 = A2; nx = A1[2]; ny = A1[3]; }
+        const m = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2], E = E3(st.q, m[0], m[1], 0), En = E[0] * nx + E[1] * ny;
+        ctx.save(); ctx.strokeStyle = Math.abs(En) < 50 ? P.dim : En > 0 ? P.bad : P.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(X(p1[0]), Y(p1[1])); ctx.lineTo(X(p2[0]), Y(p2[1])); ctx.stroke(); ctx.restore();
+      }
+      st.q.forEach((c) => charge(ctx, X(c.x), Y(c.y), c.q, 11));
+      SB.label(ctx, "+", X(cx), Y(cy), { size: 18, bold: true, color: P.accent2 });
+      const hx = X(cx + R), hy = Y(cy);
+      handle(ctx, hx, hy, P.accent2, 9);
+      self._hs = st.q.map((c, i) => ({ id: i, x: X(c.x), y: Y(c.y), r: 14 })).concat([{ id: "R", x: hx, y: hy, r: 14 }, { id: "c", x: X(cx), y: Y(cy), r: 14 }]);
+      self._i = (x, y) => [(x - ox) / s, (y - oy) / s];
+    }, { aspect: 0.6, minHeight: 260, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      move: (id, x, y) => {
+        if (id == null) return; const [X, Y] = cv._i(x, y);
+        if (id === "R") st.R = SB.clamp(Math.max(Math.abs(X - st.c[0]), 1.5), 1.5, 11);
+        else if (id === "c") st.c = [SB.clamp(X, 2, W - 2), SB.clamp(Y, 2, H - 2)];
+        else { st.q[id].x = SB.clamp(X, 0.5, W - 0.5); st.q[id].y = SB.clamp(Y, 0.5, H - 0.5); st.dirty = true; }
+        upd();
+      },
+    });
+    void getPre; upd();
+  }
+
+  /* ---------------------------------------------------------- 대전된 구의 E(r) */
+  {
+    const st = { r: 6 };
+    const getT = SB.seg("sp-type", () => upd());
+    const model = () => {
+      const t = getT();
+      if (t === "ins") return { Qin: (r) => (r < 10 ? 5 * (r / 10) ** 3 : 5) };
+      if (t === "shell") return { Qin: (r) => (r < 10 ? 0 : 5) };
+      return { Qin: (r) => (r < 8 ? 3 : r < 12 ? 0 : -2) };
+    };
+    const Er = (r) => (r <= 0 ? 0 : (K * model().Qin(r) * 1e-9) / (r / 100) ** 2);
+    function upd() {
+      const Q = model().Qin(st.r), E = Er(st.r);
+      SB.stat("sp-r", st.r.toFixed(1) + " <small>cm</small>"); SB.stat("sp-Q", (Q > 0 ? "+" : "") + Q.toFixed(2) + " <small>nC</small>");
+      SB.stat("sp-E", (Math.abs(E) >= 1e3 ? (E / 1e3).toFixed(2) + " <small>kN/C</small>" : E.toFixed(0) + " <small>N/C</small>")); SB.stat("sp-F", fl((Q * 1e-9) / EPS) + " <small>N·m²/C</small>");
+      a.redraw(); b.redraw();
+    }
+    const a = SB.canvas("cv-sp-a", (ctx, w, h, self) => {
+      const P = pal(), cx = w / 2, cy = h / 2, s = Math.min(w, h) / 2 / 30, t = getT(), X = (r) => r * s;
+      if (t === "ins") { ctx.save(); ctx.fillStyle = SB.color("bad-soft"); ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, X(10), 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); for (let i = 0; i < 40; i++) { const rr = 10 * Math.cbrt((i + 0.5) / 40), an = i * 2.4; SB.label(ctx, "+", cx + X(rr) * Math.cos(an), cy + X(rr) * Math.sin(an), { size: 10, color: P.bad }); } }
+      else if (t === "shell") { ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, X(10), 0, Math.PI * 2); ctx.stroke(); ctx.restore(); for (let i = 0; i < 20; i++) { const an = (i / 20) * 2 * Math.PI; SB.label(ctx, "+", cx + X(10.9) * Math.cos(an), cy + X(10.9) * Math.sin(an), { size: 11, bold: true, color: P.bad }); } }
+      else {
+        ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, X(12), 0, Math.PI * 2); ctx.arc(cx, cy, X(8), 0, Math.PI * 2, true); ctx.fill("evenodd"); ctx.stroke(); ctx.beginPath(); ctx.arc(cx, cy, X(8), 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        for (let i = 0; i < 12; i++) { const an = (i / 12) * 2 * Math.PI; SB.label(ctx, "−", cx + X(7.2) * Math.cos(an), cy + X(7.2) * Math.sin(an), { size: 11, bold: true, color: P.accent }); }
+        for (let i = 0; i < 8; i++) { const an = (i / 8) * 2 * Math.PI + 0.2; SB.label(ctx, "−", cx + X(12.9) * Math.cos(an), cy + X(12.9) * Math.sin(an), { size: 11, bold: true, color: P.accent }); }
+        charge(ctx, cx, cy, 1, 9);
+      }
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.arc(cx, cy, X(st.r), 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      const an = -Math.PI / 4, hx = cx + X(st.r) * Math.cos(an), hy = cy + X(st.r) * Math.sin(an);
+      handle(ctx, hx, hy, P.accent2, 9);
+      SB.label(ctx, t === "cav" ? "8 cm / 12 cm" : "R = 10 cm", cx, cy + X(t === "cav" ? 12 : 10) + 14, { size: 10, color: P.dim });
+      self._h = [hx, hy]; self._c = [cx, cy, s];
+    }, { aspect: 1, minHeight: 250, maxHeight: 340 });
+    const b = SB.canvas("cv-sp-b", (ctx, w, h) => {
+      const P = pal(), data = []; for (let i = 1; i <= 300; i++) { const r = i / 10; data.push([r, Er(r) / 1e3]); }
+      const t = getT(), ymax = t === "cav" ? 45 : 50, ymin = t === "cav" ? -15 : 0;
+      SB.chart(ctx, { x: 50, y: 12, w: w - 62, h: h - 56 }, { x: [0, 30], y: [ymin, ymax], xLabel: "r (cm)", yLabel: "E_r (kN/C)", series: [{ data, color: P.accent, width: 2.4 }], hlines: [{ y: 0, color: P.faint }], vlines: (t === "cav" ? [8, 12] : [10]).map((x) => ({ x, color: P.faint, dash: [3, 3] })), points: [{ x: st.r, y: SB.clamp(Er(st.r) / 1e3, ymin, ymax), r: 6, color: P.accent2 }] });
+    }, { aspect: 1, minHeight: 250, maxHeight: 340 });
+    SB.drag(a, { handles: () => (a._h ? [{ id: "r", x: a._h[0], y: a._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "r") return; const [cx, cy, s] = a._c; st.r = Math.round(SB.clamp(Math.hypot(x - cx, y - cy) / s, 0.5, 29) * 2) / 2; upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 균일 구 드래그 숫자 */
+  SB.tangle("tg-sphere", (v) => {
+    const Q = v.Q * 1e-6, R = v.R / 100, r = v.r / 100, E = r < R ? (K * Q * r) / R ** 3 : (K * Q) / (r * r);
+    return { E: sciL(Math.abs(E)) + " N/C" + (E === 0 ? "" : E > 0 ? "(바깥 방향)" : "(안쪽 방향)"), msg: v.r === 0 ? "(중심에서는 사방의 전하가 상쇄된다.)" : v.r < v.R ? `(안쪽: 반지름 ${v.r} cm 구 안의 전하 ${(v.Q * (v.r / v.R) ** 3).toFixed(3)} μC만 효과가 있다.)` : "(바깥: 모든 전하가 중심에 모인 점전하와 같다.)" };
+  });
+
+  /* ---------------------------------------------------------- 두 판 */
+  {
+    const get1 = SB.range("pl-1", (v) => (v > 0 ? "+" : "") + v.toFixed(1) + " μC/m²", () => cv.redraw());
+    const get2 = SB.range("pl-2", (v) => (v > 0 ? "+" : "") + v.toFixed(1) + " μC/m²", () => cv.redraw());
+    const cv = SB.canvas("cv-pill", (ctx, w, h) => {
+      const P = pal(), s1 = get1() * 1e-6, s2 = get2() * 1e-6, e1 = s1 / (2 * EPS), e2 = s2 / (2 * EPS), x1 = w * 0.36, x2 = w * 0.64;
+      const plate = (x, s) => { ctx.save(); ctx.fillStyle = s > 0 ? P.bad : s < 0 ? P.accent : P.dim; ctx.globalAlpha = 0.8; ctx.fillRect(x - 4, 16, 8, h - 32); ctx.restore(); SB.label(ctx, s > 0 ? "+" : s < 0 ? "−" : "0", x, 10, { bold: true, color: s > 0 ? P.bad : P.accent }); };
+      plate(x1, s1); plate(x2, s2);
+      const regs = [[0, x1, -(e1 + e2)], [x1, x2, e1 - e2], [x2, w, e1 + e2]], parts = [[-e1, -e2], [e1, -e2], [e1, e2]];
+      const Lf = (E) => SB.clamp((E / 6e5) * 120, -120, 120);
+      regs.forEach(([a, b, E], i) => {
+        const cx = (a + b) / 2, y0 = h * 0.3;
+        parts[i].forEach((pe, j) => { const L = Lf(pe); if (Math.abs(L) > 2) SB.arrow(ctx, cx - L / 2, y0 + j * 18, cx + L / 2, y0 + j * 18, { color: P.faint, width: 1.6, head: 7 }); });
+        const L = Lf(E); if (Math.abs(L) > 2) SB.arrow(ctx, cx - L / 2, h * 0.62, cx + L / 2, h * 0.62, { color: P.accent2, width: 3.4 });
+        SB.label(ctx, Math.abs(E) < 1 ? "E = 0" : `${(Math.abs(E) / 1e3).toFixed(0)} kN/C ${E > 0 ? "→" : "←"}`, cx, h * 0.8, { size: 11, bold: true, mono: true });
+      });
+      SB.label(ctx, "각 판의 장(σ/2ε₀)", w * 0.18, h * 0.18, { size: 10, color: P.dim });
+    }, { aspect: 0.36, minHeight: 180, maxHeight: 240 });
+  }
+
+  /* ---------------------------------------------------------- 도체 속 전하 이완 */
+  {
+    const st = { p: [], shape: [], E0: 1 };
+    const getS = SB.seg("cd-shape", () => { build(); scatter(); });
+    const getN = SB.range("cd-N", (v) => String(v), () => scatter());
+    function build() {
+      const pts = [];
+      for (let i = 0; i < 160; i++) { const t = (2 * Math.PI * i) / 160; pts.push(getS() === "circ" ? [Math.cos(t), Math.sin(t)] : [1.25 * Math.cos(t), 0.85 * Math.sin(t) * Math.sin(t / 2)]); }
+      st.shape = pts;
+    }
+    const inPoly = (x, y) => { let c = false; const P = st.shape; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { if (P[i][1] > y !== P[j][1] > y && x < ((P[j][0] - P[i][0]) * (y - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; } return c; };
+    const nearest = (x, y) => { let best = null, bd = Infinity; const P = st.shape; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], dx = b[0] - a[0], dy = b[1] - a[1], t = SB.clamp(((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy), 0, 1), px = a[0] + t * dx, py = a[1] + t * dy, d = Math.hypot(x - px, y - py); if (d < bd) { bd = d; best = [px, py]; } } return { p: best, d: bd }; };
+    const Ecenter = () => { const c = getS() === "circ" ? [0, 0] : [-0.2, 0]; let ex = 0, ey = 0; st.p.forEach((q) => { const dx = c[0] - q[0], dy = c[1] - q[1], r2 = dx * dx + dy * dy + 1e-4; ex += dx / r2; ey += dy / r2; }); return Math.hypot(ex, ey); };
+    function scatter() {
+      const N = getN(); st.p = [];
+      while (st.p.length < N) { const x = (Math.random() * 2 - 1) * 0.6 - (getS() === "tear" ? 0.2 : 0), y = (Math.random() * 2 - 1) * 0.45; if (inPoly(x, y)) st.p.push([x, y]); }
+      st.E0 = Ecenter() || 1; upd();
+    }
+    function upd() {
+      const N = st.p.length, onS = st.p.filter((q) => nearest(q[0], q[1]).d < 0.03).length, Ec = Ecenter();
+      SB.stat("cd-s", `${onS} / ${N}`); SB.stat("cd-E", ((Ec / st.E0) * 100).toFixed(1) + " <small>%</small>");
+      if (getS() === "tear") {
+        // 표면 길이당 전하 수(선밀도): 뾰족한 끝(x > 1.0)과 둥근 끝(x < −0.95)
+        const per = (test) => { let L = 0; const S = st.shape; for (let i = 0; i < S.length; i++) { const a = S[i], b = S[(i + 1) % S.length]; if (test((a[0] + b[0]) / 2)) L += Math.hypot(b[0] - a[0], b[1] - a[1]); } return L; };
+        const tip = st.p.filter((q) => q[0] > 1.0).length / per((x) => x > 1.0), back = st.p.filter((q) => q[0] < -0.95).length / per((x) => x < -0.95);
+        SB.stat("cd-tip", `${(tip / (back || 1e-9)).toFixed(1)} <small>배 (표면 길이당 전하)</small>`);
+      } else SB.stat("cd-tip", "1.0 <small>배 (원은 고르다)</small>");
+    }
+    const cv = SB.canvas("cv-cd", (ctx, w, h, self) => {
+      const P = pal(), s = Math.min(w / 3, h / 2.2), X = (x) => w / 2 + x * s, Y = (y) => h / 2 - y * s;
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); st.shape.forEach((p, i) => (i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1])))); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      st.p.forEach((q) => charge(ctx, X(q[0]), Y(q[1]), 1, 5));
+      const c = getS() === "circ" ? [0, 0] : [-0.2, 0];
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(c[0]) - 6, Y(c[1])); ctx.lineTo(X(c[0]) + 6, Y(c[1])); ctx.moveTo(X(c[0]), Y(c[1]) - 6); ctx.lineTo(X(c[0]), Y(c[1]) + 6); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "E 측정점", X(c[0]), Y(c[1]) + 16, { size: 10, color: P.accent2 });
+      self._i = (x, y) => [(x - w / 2) / s, (h / 2 - y) / s];
+    }, { aspect: 0.55, minHeight: 240, maxHeight: 380 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { const [px, py] = cv._i(x, y); if (inPoly(px, py) && st.p.length < 120) { st.p.push([px, py]); upd(); } } });
+    SB.loop("sim-conductor", (dt) => {
+      const N = st.p.length, f = new Array(N);
+      for (let i = 0; i < N; i++) { let fx = 0, fy = 0; const a = st.p[i]; for (let j = 0; j < N; j++) { if (i === j) continue; const dx = a[0] - st.p[j][0], dy = a[1] - st.p[j][1], r2 = dx * dx + dy * dy + 1e-4; fx += dx / r2; fy += dy / r2; } f[i] = [fx, fy]; }
+      const mu = Math.min(0.02, dt) * 0.02;
+      for (let i = 0; i < N; i++) { const m = Math.hypot(...f[i]), sc = Math.min(mu * m, 0.03) / (m || 1), q = st.p[i]; q[0] += f[i][0] * sc; q[1] += f[i][1] * sc; if (!inPoly(q[0], q[1])) { const nb = nearest(q[0], q[1]); q[0] = nb.p[0]; q[1] = nb.p[1]; } }
+      upd(); cv.redraw();
+    });
+    document.getElementById("cd-go").addEventListener("click", scatter);
+    build(); scatter();
+  }
+
+  /* ---------------------------------------------------------- 패러데이 상자 */
+  {
+    const st = { probe: [0.3, 0.2], L: null, key: "" };
+    const on = document.getElementById("cg-on");
+    on.addEventListener("change", () => { st.key = ""; cv.redraw(); });
+    const a = 1;
+    const Ef = (x, y) => { if (!on.checked) return [1, 0]; const r2 = x * x + y * y; if (r2 < a * a) return [0, 0]; const r4 = r2 * r2; return [1 - (a * a * (y * y - x * x)) / r4, (2 * a * a * x * y) / r4]; };
+    const trace = (x0, y0, dir, xmax) => { const pts = [[x0, y0]]; let x = x0, y = y0; for (let i = 0; i < 900; i++) { const E = Ef(x, y), m = Math.hypot(...E); if (m < 1e-6) break; x += (dir * 0.02 * E[0]) / m; y += (dir * 0.02 * E[1]) / m; pts.push([x, y]); if (Math.abs(x) > xmax || Math.abs(y) > 2) break; if (on.checked && x * x + y * y < a * a) { const r = Math.hypot(x, y); pts[pts.length - 1] = [x / r, y / r]; return { pts, hit: true }; } } return { pts, hit: false }; };
+    const cv = SB.canvas("cv-cage", (ctx, w, h, self) => {
+      const P = pal(), s = Math.min(w / 6.4, h / 3.6), X = (x) => w / 2 + x * s, Y = (y) => h / 2 - y * s, xmax = w / 2 / s;
+      const key = `${w}x${h}${on.checked}`;
+      if (st.key !== key) { const L = []; for (let i = -7; i <= 7; i++) { const y0 = i * 0.24; const f = trace(-xmax, y0, 1, xmax + 0.1); L.push(f.pts); if (f.hit) { const g = trace(xmax, y0, -1, xmax + 0.1); if (g.hit) L.push(g.pts); } } st.L = L; st.key = key; }
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.8; st.L.forEach((l) => { ctx.beginPath(); l.forEach((p, i) => (i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1])))); ctx.stroke(); }); ctx.restore();
+      if (on.checked) {
+        ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(X(0), Y(0), a * s, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = SB.color("canvas-bg"); ctx.beginPath(); ctx.arc(X(0), Y(0), a * s - 3, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        for (let i = 0; i < 16; i++) { const t = (i / 16) * 2 * Math.PI, c = Math.cos(t); if (Math.abs(c) < 0.25) continue; SB.label(ctx, c > 0 ? "+" : "−", X(1.22 * Math.cos(t)), Y(1.22 * Math.sin(t)), { size: 10 + 4 * Math.abs(c), bold: true, color: c > 0 ? P.bad : P.accent }); }
+      }
+      const E = Ef(...st.probe), m = Math.hypot(...E), px = X(st.probe[0]), py = Y(st.probe[1]);
+      if (m > 1e-6) SB.arrow(ctx, px, py, px + E[0] * 30, py - E[1] * 30, { color: P.accent2, width: 3 });
+      handle(ctx, px, py, P.accent2, 9);
+      self._h = [px, py]; self._i = (x, y) => [(x - w / 2) / s, (h / 2 - y) / s];
+      document.getElementById("cg-r").textContent = `측정점의 |E| = ${m.toFixed(2)} E₀` + (on.checked && m === 0 ? " — 도체 안은 차폐된다" : "");
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id === "p") { const p = cv._i(x, y); st.probe = [SB.clamp(p[0], -3, 3), SB.clamp(p[1], -1.6, 1.6)]; } } });
+  }
+
+  /* ---------------------------------------------------------- 지구 전하 드래그 숫자 */
+  SB.tangle("tg-earth", (v) => {
+    const s = EPS * v.E, Q = 4 * Math.PI * 6.371e6 ** 2 * s;
+    return { s: "−" + sciL(s) + " C/m²", Q: "−" + sciL(Q) + " C", msg: `(1 m²당 남는 전자 약 ${sciL(s / 1.602176634e-19)}개)` };
+  });
+
+  /* ---------------------------------------------------------- 드릴 */
+  const rnd = (a, b, d = 0) => Number((a + Math.random() * (b - a)).toFixed(d));
+  SB.drill("drill-sym", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) { const Q = rnd(1, 9, 1), R = rnd(5, 30), r = rnd(1, 60), E = r < R ? (K * Q * 1e-6 * (r / 100)) / (R / 100) ** 3 : (K * Q * 1e-6) / (r / 100) ** 2;
+      return { q: `<p>반지름 \\(${R}\\) cm인 절연체 구에 \\(${Q}\\) μC이 고르게 퍼져 있다. 중심에서 \\(${r}\\) cm인 곳의 장은?</p>`, answer: E, label: "E =", unit: "N/C", tol: "1%", sol: r < R ? `안쪽: \\(E = kQr/R^3 = ${E.toPrecision(3)}\\) N/C` : `바깥: \\(E = kQ/r^2 = ${E.toPrecision(3)}\\) N/C` }; }
+    if (k === 1) { const lam = rnd(0.5, 9, 1), r = rnd(1, 50), E = (2 * K * lam * 1e-9) / (r / 100);
+      return { q: `<p>선전하 밀도 \\(${lam}\\) nC/m인 무한 직선에서 \\(${r}\\) cm인 곳의 장은?</p>`, answer: E, label: "E =", unit: "N/C", tol: "1%", sol: `\\(E = \\lambda/2\\pi\\epsilon_0r = 2k\\lambda/r = ${E.toPrecision(3)}\\) N/C` }; }
+    const s = rnd(0.5, 20, 1), E = (s * 1e-6) / EPS;
+    return { q: `<p>도체 표면의 면전하 밀도가 \\(${s}\\) μC/m²이다. 표면 바로 밖의 장은?</p>`, answer: E, label: "E =", unit: "N/C", tol: "1%", sol: `\\(E = \\sigma/\\epsilon_0 = ${s}\\times10^{-6}/8.854\\times10^{-12} = ${E.toPrecision(3)}\\) N/C` };
+  });
+  SB.drill("drill-flux", () => {
+    const k = Math.floor(Math.random() * 2);
+    if (k === 0) { const E = rnd(1, 50) * 100, A = rnd(0.01, 0.5, 2), ph = rnd(0, 180, 0) - (rnd(0, 180, 0) % 15), F = E * A * Math.cos((ph * Math.PI) / 180);
+      return { q: `<p>세기 \\(${E}\\) N/C인 균일한 장 속 넓이 \\(${A}\\) m²인 평면의 넓이 벡터가 장과 \\(${ph}°\\)를 이룬다. 선속은? (부호 포함)</p>`, answer: F, label: "Φ =", unit: "N·m²/C", tol: Math.abs(F) < 1 ? "0.5" : "1%", sol: `\\(\\Phi = EA\\cos\\phi = (${E})(${A})\\cos${ph}° = ${F.toFixed(2)}\\) N·m²/C` }; }
+    const q1 = rnd(-9, 9), q2 = rnd(-9, 9), q3 = rnd(-9, 9), F = ((q1 + q2) * 1e-9) / EPS;
+    return { q: `<p>닫힌 면 안에 \\(${q1}\\) nC과 \\(${q2}\\) nC이, 밖에 \\(${q3}\\) nC이 있다. 알짜 선속은? (부호 포함)</p>`, answer: F, label: "Φ =", unit: "N·m²/C", tol: q1 + q2 === 0 ? "0.5" : "1%", sol: `\\(\\Phi = (q_1 + q_2)/\\epsilon_0 = (${q1 + q2}\\times10^{-9})/8.854\\times10^{-12} = ${F.toFixed(1)}\\) N·m²/C (바깥 전하는 무관)` };
+  });
+})();
+</script>
+</body>
+</html>

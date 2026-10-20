@@ -278,8 +278,7 @@ SB.registerCourse({
      "tags": [
       "선속",
       "대칭"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "electric-potential",
@@ -709,6 +708,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "gauss-law": {
+   "problems": 14,
+   "examples": 6,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -734,7 +745,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 22,
+ "published": 23,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -765,6 +776,24 @@ SB.registerCourse({
     "def": "반대로 계와 주위를 모두 처음 상태로 되돌릴 수 있는 과정은 가역 과정(reversible process)이다.",
     "chapters": [
      "second-law#irreversible"
+    ]
+   },
+   {
+    "ko": "가우스 면",
+    "en": "Gaussian surface",
+    "abbr": "",
+    "def": "임의의 닫힌 면(가우스 면(Gaussian surface))을 지나 바깥으로 나가는 알짜 전기 선속은 그 면 안에 든 알짜 전하를 \\(\\epsilon_0\\)으로 나눈 것과 같다 — 가우스 법칙(Gauss's law).",
+    "chapters": [
+     "gauss-law#gauss"
+    ]
+   },
+   {
+    "ko": "가우스 법칙",
+    "en": "Gauss's law",
+    "abbr": "",
+    "def": "임의의 닫힌 면(가우스 면(Gaussian surface))을 지나 바깥으로 나가는 알짜 전기 선속은 그 면 안에 든 알짜 전하를 \\(\\epsilon_0\\)으로 나눈 것과 같다 — 가우스 법칙(Gauss's law).",
+    "chapters": [
+     "gauss-law#gauss"
     ]
    },
    {
@@ -1089,6 +1118,15 @@ SB.registerCourse({
     "def": "열기관을 거꾸로 돌리면 일을 받아 차가운 곳에서 열을 퍼내 뜨거운 곳으로 버리는 냉동기(refrigerator)가 된다.",
     "chapters": [
      "second-law#refrigerators"
+    ]
+   },
+   {
+    "ko": "넓이 벡터",
+    "en": "area vector",
+    "abbr": "",
+    "def": "면에 수직하고 크기가 \\(A\\)인 넓이 벡터(area vector) \\(\\vec A\\)를 쓰면, 면을 지나는 선속은 장이 면을 수직으로 뚫는 성분 \\(E\\cos\\phi\\)에 넓이를 곱한 것이다.",
+    "chapters": [
+     "gauss-law#flux"
     ]
    },
    {
@@ -2568,6 +2606,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "전기 선속",
+    "en": "electric flux",
+    "abbr": "",
+    "def": "표면을 통과해 \"흘러 나가는\" 전기장의 양을 전기 선속(electric flux)이라 한다(유체 14장의 부피 흐름률과 같은 수학이다). 결론부터 말하면, 닫힌 면에서 나가는 알짜 선속은 안에 든 알짜 전하에만 비례한다.",
+    "chapters": [
+     "gauss-law#charge-flux"
+    ]
+   },
+   {
     "ko": "전기 쌍극자",
     "en": "electric dipole",
     "abbr": "",
@@ -2763,6 +2810,24 @@ SB.registerCourse({
     "def": "특히 처음에 정지해 있어 계속 정지하는 경우를 정적 평형(static equilibrium)이라 한다.",
     "chapters": [
      "equilibrium-elasticity#conditions"
+    ]
+   },
+   {
+    "ko": "정전기 차폐",
+    "en": "electrostatic shielding",
+    "abbr": "",
+    "def": "이것이 정전기 차폐(electrostatic shielding)이고, 금속 그물로 감싼 방이 패러데이 상자(Faraday cage)다.",
+    "chapters": [
+     "gauss-law#conductors"
+    ]
+   },
+   {
+    "ko": "정전기 평형",
+    "en": "electrostatic equilibrium",
+    "abbr": "",
+    "def": "그러므로 전하가 더 이상 움직이지 않는 정전기 평형(electrostatic equilibrium)에서는 도체 속의 전기장이 0이다.",
+    "chapters": [
+     "gauss-law#conductors"
     ]
    },
    {
@@ -3231,6 +3296,15 @@ SB.registerCourse({
     "def": "밀폐된 유체의 한 부분에 가한 압력 변화는 줄어들지 않고 유체의 모든 부분과 그릇의 벽에 그대로 전달된다(파스칼 원리(Pascal's principle)).",
     "chapters": [
      "fluids#pascal"
+    ]
+   },
+   {
+    "ko": "패러데이 상자",
+    "en": "Faraday cage",
+    "abbr": "",
+    "def": "이것이 정전기 차폐(electrostatic shielding)이고, 금속 그물로 감싼 방이 패러데이 상자(Faraday cage)다.",
+    "chapters": [
+     "gauss-law#conductors"
     ]
    },
    {
