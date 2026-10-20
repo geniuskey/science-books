@@ -372,8 +372,7 @@ SB.registerCourse({
      "tags": [
       "맥스웰",
       "편광"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -797,6 +796,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "em-waves": {
+   "problems": 15,
+   "examples": 6,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -822,7 +833,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 30,
+ "published": 31,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1522,6 +1533,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "말뤼스 법칙",
+    "en": "Malus's law",
+    "abbr": "",
+    "def": "편광된 빛이 투과축과 각 \\(\\theta\\)를 이루는 편광판을 지나면 전기장의 투과축 성분 \\(E\\cos\\theta\\)만 남으므로, 세기는 \\(\\cos^2\\theta\\)배가 된다 — 말뤼스 법칙(Malus's law). 편광되지 않은 빛은 첫 편광판에서 세기가 절반이 된다(\\(\\langle\\cos^2\\rangle = \\tfrac12\\)).",
+    "chapters": [
+     "em-waves#polarization"
+    ]
+   },
+   {
     "ko": "매질",
     "en": "medium",
     "abbr": "",
@@ -1537,6 +1557,15 @@ SB.registerCourse({
     "def": "이것이 맥놀이(beats)다.",
     "chapters": [
      "sound#interference"
+    ]
+   },
+   {
+    "ko": "맥스웰 방정식",
+    "en": "Maxwell's equations",
+    "abbr": "",
+    "def": "이 네 식이 맥스웰 방정식(Maxwell's equations)이고, 로런츠 힘 \\(q(\\vec E + \\vec v\\times\\vec B)\\)와 함께 모든 고전 전자기 현상을 설명한다.",
+    "chapters": [
+     "em-waves#maxwell"
     ]
    },
    {
@@ -1756,6 +1785,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "변위 전류",
+    "en": "displacement current",
+    "abbr": "",
+    "def": "이것을 변위 전류(displacement current)로 넣으면 두 면이 같은 답을 준다.",
+    "chapters": [
+     "em-waves#maxwell"
+    ]
+   },
+   {
     "ko": "변형률",
     "en": "strain",
     "abbr": "",
@@ -1798,6 +1836,15 @@ SB.registerCourse({
     "def": "전도(conduction)는 물질 자체는 움직이지 않고 이웃 원자·자유 전자의 충돌로 에너지가 전해지는 것, 대류(convection)는 데워진 유체가 직접 흘러가는 것, 복사(radiation)는 전자기파로 옮겨 가는 것이다.",
     "chapters": [
      "temperature-heat#conduction"
+    ]
+   },
+   {
+    "ko": "복사압",
+    "en": "radiation pressure",
+    "abbr": "",
+    "def": "빛이 면에 흡수되면 그 운동량을 넘겨주고, 반사되면 두 배를 넘겨준다 — 복사압(radiation pressure).",
+    "chapters": [
+     "em-waves#energy"
     ]
    },
    {
@@ -2104,6 +2151,15 @@ SB.registerCourse({
     "def": "$$\\Delta L = \\alpha L_0\\,\\Delta T, \\qquad \\Delta V = \\beta V_0\\,\\Delta T, \\qquad \\beta = 3\\alpha\\ (\\text{등방 고체})$$\\(\\alpha\\): 선팽창 계수(coefficient of linear expansion), \\(\\beta\\): 부피 팽창 계수(coefficient of volume expansion), 단위 K⁻¹.…",
     "chapters": [
      "temperature-heat#expansion"
+    ]
+   },
+   {
+    "ko": "선편광",
+    "en": "linear polarization",
+    "abbr": "",
+    "def": "전기장이 한 방향으로만 진동하는 빛이 선편광(linear polarization)이다.",
+    "chapters": [
+     "em-waves#polarization"
     ]
    },
    {
@@ -3970,6 +4026,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "편광판",
+    "en": "polarizer",
+    "abbr": "",
+    "def": "편광판(polarizer)은 특정 방향(투과축)의 전기장 성분만 통과시킨다.",
+    "chapters": [
+     "em-waves#polarization"
+    ]
+   },
+   {
     "ko": "평균 속도",
     "en": "average velocity",
     "abbr": "",
@@ -4012,6 +4077,15 @@ SB.registerCourse({
     "def": "알짜힘이 0인 상태 — 정지해 있든 등속으로 움직이든 — 를 평형(equilibrium)이라 한다.",
     "chapters": [
      "newtons-laws#first-law"
+    ]
+   },
+   {
+    "ko": "포인팅 벡터",
+    "en": "Poynting vector",
+    "abbr": "",
+    "def": "전자기파의 에너지 밀도는 전기장과 자기장의 몫이 같다: \\(\\tfrac12\\epsilon_0E^2 = \\tfrac12B^2/\\mu_0\\)(\\(E = cB\\)를 넣어 확인하라). 단위 시간에 단위 넓이를 지나는 에너지 흐름을 포인팅 벡터(Poynting vector)로 나타낸다.",
+    "chapters": [
+     "em-waves#energy"
     ]
    },
    {
