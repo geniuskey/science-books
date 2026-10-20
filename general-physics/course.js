@@ -411,8 +411,7 @@ SB.registerCourse({
      "tags": [
       "상대성",
       "양자"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -830,6 +829,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "relativity-quantum": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -855,7 +866,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 33,
+ "published": 34,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1069,6 +1080,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "고유 시간",
+    "en": "proper time",
+    "abbr": "",
+    "def": "시계와 함께 움직이는 관찰자가 재는 시간 \\(\\Delta t_0\\)를 고유 시간(proper time)이라 한다.",
+    "chapters": [
+     "relativity-quantum#time-dilation"
+    ]
+   },
+   {
     "ko": "고정단",
     "en": "fixed end",
     "abbr": "",
@@ -1129,6 +1149,24 @@ SB.registerCourse({
     "def": "1 광년(light-year, ly)은 빛이 1 율리우스년(365.25일) 동안 가는 거리다.",
     "chapters": [
      "units-vectors#units"
+    ]
+   },
+   {
+    "ko": "광자",
+    "en": "photon",
+    "abbr": "",
+    "def": "1905년 아인슈타인은 한 걸음 더 나아가, 빛 자체가 에너지 \\(hf\\)의 알갱이 — 광자(photon) — 로 이루어져 있다고 보았다.",
+    "chapters": [
+     "relativity-quantum#photons"
+    ]
+   },
+   {
+    "ko": "광전 효과",
+    "en": "photoelectric effect",
+    "abbr": "",
+    "def": "증거는 광전 효과(photoelectric effect)였다: 금속에 빛을 비추면 전자가 튀어나온다.",
+    "chapters": [
+     "relativity-quantum#photons"
     ]
    },
    {
@@ -1525,6 +1563,15 @@ SB.registerCourse({
     "def": "유도 전류는 그것을 만든 선속의 변화를 방해하는 방향으로 흐른다 — 렌츠 법칙(Lenz's law). 선속이 늘면 반대 방향의 장을, 줄면 같은 방향의 장을 만들어 원래대로 되돌리려 한다.",
     "chapters": [
      "induction#lenz"
+    ]
+   },
+   {
+    "ko": "로런츠 변환",
+    "en": "Lorentz transformation",
+    "abbr": "",
+    "def": "사건의 좌표 \\((x, t)\\)를 속력 \\(v\\)로 움직이는 기준틀의 좌표 \\((x', t')\\)로 바꾸는 식이 로런츠 변환(Lorentz transformation)이다.",
+    "chapters": [
+     "relativity-quantum#lorentz"
     ]
    },
    {
@@ -2164,6 +2211,15 @@ SB.registerCourse({
     "def": "물체의 한 점에서 나온 광선들이 반사·굴절된 뒤 다시 한 점에 모이거나, 한 점에서 나온 것처럼 퍼지면 그 점이 상(image)이다.",
     "chapters": [
      "geometric-optics#mirrors"
+    ]
+   },
+   {
+    "ko": "상대성 원리",
+    "en": "principle of relativity",
+    "abbr": "",
+    "def": "① 상대성 원리(principle of relativity): 물리 법칙은 모든 관성 기준틀에서 같다.",
+    "chapters": [
+     "relativity-quantum#postulates"
     ]
    },
    {
@@ -3037,6 +3093,15 @@ SB.registerCourse({
     "def": "일을 하는 빠르기를 일률(power)이라 한다.",
     "chapters": [
      "work-energy#power"
+    ]
+   },
+   {
+    "ko": "일함수",
+    "en": "work function",
+    "abbr": "",
+    "def": "$$E = hf = \\frac{hc}\\lambda, \\qquad K_\\text{max} = hf - W = eV_\\text{정지}, \\qquad hc = 1240\\ \\text{eV·nm}$$\\(h = 6.626\\times10^{-34}\\) J·s(플랑크 상수). \\(W\\): 금속의 일함수(work function), 전자 하나를 떼어 내는 최소 에너지. \\(V_\\text{정지}\\): 가장 빠른 전자도 되돌려 보내는…",
+    "chapters": [
+     "relativity-quantum#photons"
     ]
    },
    {
