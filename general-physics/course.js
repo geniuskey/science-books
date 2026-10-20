@@ -239,8 +239,7 @@ SB.registerCourse({
      "tags": [
       "기체",
       "제1법칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "second-law",
@@ -676,6 +675,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "kinetic-theory-first-law": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -701,12 +712,21 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 19,
+ "published": 20,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
   "version": 1,
   "terms": [
+   {
+    "ko": "pV 도표",
+    "en": "pV diagram",
+    "abbr": "",
+    "def": "상태를 나타낼 때는 가로축 \\(V\\), 세로축 \\(p\\)의 pV 도표(pV diagram)를 많이 쓴다.",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
    {
     "ko": "가속도",
     "en": "acceleration",
@@ -822,6 +842,15 @@ SB.registerCourse({
     "def": "도로를 안쪽으로 기울이면(경사진 커브(banked curve)) 수직항력의 수평 성분이 중심을 향해 마찰 없이도 돌 수 있다.",
     "chapters": [
      "applying-newton#circular-dynamics"
+    ]
+   },
+   {
+    "ko": "계",
+    "en": "system",
+    "abbr": "",
+    "def": "열역학에서는 관심 있는 물체(대개 기체)를 계(system), 나머지를 주위(surroundings)라 한다.",
+    "chapters": [
+     "kinetic-theory-first-law#first-law"
     ]
    },
    {
@@ -960,6 +989,24 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "기체 분자 운동론",
+    "en": "kinetic theory of gases",
+    "abbr": "",
+    "def": "기체가 끊임없이 움직이는 분자들의 모임이라는 그림 — 기체 분자 운동론(kinetic theory of gases) — 으로 이 식을 설명할 수 있을까? 다음을 가정한다.",
+    "chapters": [
+     "kinetic-theory-first-law#kinetic"
+    ]
+   },
+   {
+    "ko": "기체 상수",
+    "en": "gas constant",
+    "abbr": "",
+    "def": "$$pV = nRT = NkT$$\\(n\\): 몰수, \\(N = nN_A\\): 분자 수, \\(T\\): 켈빈 온도. 기체 상수(gas constant) \\(R = 8.314\\) J/(mol·K), 볼츠만 상수(Boltzmann constant) \\(k = R/N_A = 1.381\\times10^{-23}\\) J/K, \\(N_A = 6.022\\times10^{23}\\) mol⁻¹. 질량 \\(m_\\text{tot}\\), 몰…",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
     "ko": "기화열",
     "en": "heat of vaporization",
     "abbr": "",
@@ -1011,6 +1058,15 @@ SB.registerCourse({
     "def": "이 경우의 진동을 단순 조화 운동(simple harmonic motion, SHM)이라 한다.",
     "chapters": [
      "oscillations#describe"
+    ]
+   },
+   {
+    "ko": "단열 과정",
+    "en": "adiabatic process",
+    "abbr": "",
+    "def": "과정조건일 W내부 에너지 ΔU열 Q 등적 과정(isochoric process)V 일정0\\(nC_V\\Delta T\\)\\(nC_V\\Delta T\\) 등압 과정(isobaric process)p 일정\\(p\\Delta V = nR\\Delta T\\)\\(nC_V\\Delta T\\)\\(nC_p\\Delta T\\) 등온 과정(isothermal process)T 일정\\(nRT\\ln(V_2/V_1)\\)0\\(Q = W\\) 단열…",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
     ]
    },
    {
@@ -1068,6 +1124,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "뒬롱–프티 법칙",
+    "en": "rule of Dulong and Petit",
+    "abbr": "",
+    "def": "17장에서 본 금속들의 몰 열용량이 약 25 J/(mol·K)로 같았던 뒬롱–프티 법칙(rule of Dulong and Petit)이 바로 이것이다.",
+    "chapters": [
+     "kinetic-theory-first-law#equipartition"
+    ]
+   },
+   {
     "ko": "등속 원운동",
     "en": "uniform circular motion",
     "abbr": "",
@@ -1083,6 +1148,42 @@ SB.registerCourse({
     "def": "단진자가 (근사적으로) 단순 조화 운동인 이유. $$\\omega = \\sqrt{\\frac{g}{L}}, \\qquad T = 2\\pi\\sqrt{\\frac{L}{g}} \\qquad(\\text{작은 진폭})$$질량과 진폭에 무관하다(갈릴레이가 성당의 샹들리에에서 발견한 등시성(isochronism)). 정확한 주기는 진폭 \\(\\theta_0\\)가 클수록 길어진다:…",
     "chapters": [
      "oscillations#pendulum"
+    ]
+   },
+   {
+    "ko": "등압 과정",
+    "en": "isobaric process",
+    "abbr": "",
+    "def": "과정조건일 W내부 에너지 ΔU열 Q 등적 과정(isochoric process)V 일정0\\(nC_V\\Delta T\\)\\(nC_V\\Delta T\\) 등압 과정(isobaric process)p 일정\\(p\\Delta V = nR\\Delta T\\)\\(nC_V\\Delta T\\)\\(nC_p\\Delta T\\) 등온 과정(isothermal process)T 일정\\(nRT\\ln(V_2/V_1)\\)0\\(Q = W\\) 단열…",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
+    "ko": "등온 과정",
+    "en": "isothermal process",
+    "abbr": "",
+    "def": "과정조건일 W내부 에너지 ΔU열 Q 등적 과정(isochoric process)V 일정0\\(nC_V\\Delta T\\)\\(nC_V\\Delta T\\) 등압 과정(isobaric process)p 일정\\(p\\Delta V = nR\\Delta T\\)\\(nC_V\\Delta T\\)\\(nC_p\\Delta T\\) 등온 과정(isothermal process)T 일정\\(nRT\\ln(V_2/V_1)\\)0\\(Q = W\\) 단열…",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
+    "ko": "등온선",
+    "en": "isotherm",
+    "abbr": "",
+    "def": "기체의 상태 하나는 이 평면의 점 하나이고, 온도가 같은 점들을 이은 곡선 \\(p = nRT/V\\)가 등온선(isotherm)이다.",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
+    "ko": "등적 과정",
+    "en": "isochoric process",
+    "abbr": "",
+    "def": "과정조건일 W내부 에너지 ΔU열 Q 등적 과정(isochoric process)V 일정0\\(nC_V\\Delta T\\)\\(nC_V\\Delta T\\) 등압 과정(isobaric process)p 일정\\(p\\Delta V = nR\\Delta T\\)\\(nC_V\\Delta T\\)\\(nC_p\\Delta T\\) 등온 과정(isothermal process)T 일정\\(nRT\\ln(V_2/V_1)\\)0\\(Q = W\\) 단열…",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
     ]
    },
    {
@@ -1164,6 +1265,15 @@ SB.registerCourse({
     "def": "이것이 맥놀이(beats)다.",
     "chapters": [
      "sound#interference"
+    ]
+   },
+   {
+    "ko": "맥스웰–볼츠만 분포",
+    "en": "Maxwell–Boltzmann distribution",
+    "abbr": "",
+    "def": "충돌을 거듭하며 평형에 이른 기체의 속력 분포는 맥스웰과 볼츠만이 구한 맥스웰–볼츠만 분포(Maxwell–Boltzmann distribution)를 따른다.",
+    "chapters": [
+     "kinetic-theory-first-law#kinetic"
     ]
    },
    {
@@ -1392,6 +1502,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "볼츠만 상수",
+    "en": "Boltzmann constant",
+    "abbr": "",
+    "def": "$$pV = nRT = NkT$$\\(n\\): 몰수, \\(N = nN_A\\): 분자 수, \\(T\\): 켈빈 온도. 기체 상수(gas constant) \\(R = 8.314\\) J/(mol·K), 볼츠만 상수(Boltzmann constant) \\(k = R/N_A = 1.381\\times10^{-23}\\) J/K, \\(N_A = 6.022\\times10^{23}\\) mol⁻¹. 질량 \\(m_\\text{tot}\\), 몰…",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
     "ko": "부력",
     "en": "buoyant force",
     "abbr": "",
@@ -1500,6 +1619,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "비열비",
+    "en": "ratio of heat capacities",
+    "abbr": "",
+    "def": "그래서 $$C_p = C_V + R, \\qquad \\gamma = \\frac{C_p}{C_V}$$\\(C_p\\): 등압 몰 열용량. 비열비(ratio of heat capacities) \\(\\gamma\\)는 단원자 \\(5/3 = 1.67\\), 이원자(공기) \\(7/5 = 1.40\\). 16장의 음속 \\(v = \\sqrt{\\gamma RT/M}\\)에 나온 그 \\(\\gamma\\)다.",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
     "ko": "비탄성 충돌",
     "en": "inelastic collision",
     "abbr": "",
@@ -1551,6 +1679,24 @@ SB.registerCourse({
     "def": "해볼 것: ① ‘같은 쪽’에서 t = 0일 때 높이가 두 배가 되는 보강 간섭(constructive interference)을 보라. ② ‘반대쪽’에서는 t = 0에 줄이 순간적으로 완전히 평평해진다(상쇄 간섭(destructive interference)). 에너지는 사라지지 않고 그 순간 모두 운동 에너지로 있다.",
     "chapters": [
      "mechanical-waves#superposition"
+    ]
+   },
+   {
+    "ko": "상태 방정식",
+    "en": "equation of state",
+    "abbr": "",
+    "def": "이 관계를 상태 방정식(equation of state)이라 한다.",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
+    "ko": "상태 함수",
+    "en": "state function",
+    "abbr": "",
+    "def": "즉 \\(U\\)는 상태 함수(state function)다.",
+    "chapters": [
+     "kinetic-theory-first-law#first-law"
     ]
    },
    {
@@ -1641,6 +1787,15 @@ SB.registerCourse({
     "def": "그 극한이 순간 속도(instantaneous velocity)다.",
     "chapters": [
      "straight-line-motion#instantaneous"
+    ]
+   },
+   {
+    "ko": "순환 과정",
+    "en": "cyclic process",
+    "abbr": "",
+    "def": "상태가 처음으로 돌아오는 순환 과정(cyclic process)에서는 \\(\\Delta U = 0\\)이므로 \\(Q_\\text{알짜} = W_\\text{알짜}\\)이다.",
+    "chapters": [
+     "kinetic-theory-first-law#first-law"
     ]
    },
    {
@@ -1758,6 +1913,15 @@ SB.registerCourse({
     "def": "이것을 에너지 도표(energy diagram)라 한다.",
     "chapters": [
      "energy-conservation#diagram"
+    ]
+   },
+   {
+    "ko": "에너지 등분배 정리",
+    "en": "equipartition theorem",
+    "abbr": "",
+    "def": "열평형에서 에너지의 제곱 항 하나마다 분자 하나당 평균 \\(\\tfrac12kT\\)(1몰당 \\(\\tfrac12RT\\))의 에너지가 배당된다 — 에너지 등분배 정리(equipartition theorem). 자유도가 \\(f\\)인 이상 기체는 \\(U = \\tfrac f2 nRT\\), \\(C_V = \\tfrac f2 R\\)이다.",
+    "chapters": [
+     "kinetic-theory-first-law#equipartition"
     ]
    },
    {
@@ -2067,6 +2231,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "이상 기체",
+    "en": "ideal gas",
+    "abbr": "",
+    "def": "분자 사이의 힘과 분자 자체의 부피를 무시할 수 있는 묽은 기체 — 이상 기체(ideal gas) — 는 다음을 따른다.",
+    "chapters": [
+     "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
     "ko": "이상 유체",
     "en": "ideal fluid",
     "abbr": "",
@@ -2136,6 +2309,15 @@ SB.registerCourse({
     "def": "고리에 걸려 자유롭게 미끄러지는 자유단(free end)에서는 끝이 펄스 높이의 두 배까지 튀어 올랐다가 같은 쪽 펄스를 돌려보낸다.",
     "chapters": [
      "mechanical-waves#superposition"
+    ]
+   },
+   {
+    "ko": "자유도",
+    "en": "degree of freedom",
+    "abbr": "",
+    "def": "분자의 에너지가 \\(\\tfrac12mv_x^2\\), \\(\\tfrac12I\\omega^2\\)처럼 속도(또는 좌표)의 제곱 항으로 쓰일 때, 그런 독립적인 항 하나하나를 자유도(degree of freedom)라 한다.",
+    "chapters": [
+     "kinetic-theory-first-law#equipartition"
     ]
    },
    {
@@ -2355,6 +2537,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "제곱 평균 제곱근 속력",
+    "en": "root-mean-square speed",
+    "abbr": "",
+    "def": "$$\\langle K_\\text{tr}\\rangle = \\tfrac12 m\\langle v^2\\rangle = \\tfrac32 kT, \\qquad v_\\text{rms} = \\sqrt{\\langle v^2\\rangle} = \\sqrt{\\frac{3kT}{m}} = \\sqrt{\\frac{3RT}{M}}$$\\(v_\\text{rms}\\): 제곱 평균 제곱근 속력(root-mean-square speed). 같은 온도의 기체는…",
+    "chapters": [
+     "kinetic-theory-first-law#kinetic"
+    ]
+   },
+   {
     "ko": "종단 속도",
     "en": "terminal speed",
     "abbr": "",
@@ -2397,6 +2588,24 @@ SB.registerCourse({
     "def": "줄의 끝을 단순 조화 운동으로 계속 흔들면 줄의 모든 부분이 같은 진동수로 진동하는 주기적 파동(periodic wave)이 생긴다.",
     "chapters": [
      "mechanical-waves#periodic"
+    ]
+   },
+   {
+    "ko": "주위",
+    "en": "surroundings",
+    "abbr": "",
+    "def": "열역학에서는 관심 있는 물체(대개 기체)를 계(system), 나머지를 주위(surroundings)라 한다.",
+    "chapters": [
+     "kinetic-theory-first-law#first-law"
+    ]
+   },
+   {
+    "ko": "준정적 과정",
+    "en": "quasi-static process",
+    "abbr": "",
+    "def": "이상 기체에서 자주 만나는 네 과정을 정리하자. 모두 준정적 과정(quasi-static process), 곧 아주 천천히 진행해 매 순간 기체가 평형 상태에 있다고 볼 수 있는 과정이다.",
+    "chapters": [
+     "kinetic-theory-first-law#processes"
     ]
    },
    {
@@ -2757,6 +2966,15 @@ SB.registerCourse({
     "def": "평균 속력(average speed)은 이동 거리를 시간으로 나눈 값으로, 언제나 0 이상이다.",
     "chapters": [
      "straight-line-motion#displacement"
+    ]
+   },
+   {
+    "ko": "평균 자유 경로",
+    "en": "mean free path",
+    "abbr": "",
+    "def": "반지름 \\(r\\)인 분자가 연이은 두 충돌 사이에 가는 평균 거리, 곧 평균 자유 경로(mean free path)는.",
+    "chapters": [
+     "kinetic-theory-first-law#kinetic"
     ]
    },
    {
