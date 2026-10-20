@@ -267,8 +267,7 @@ SB.registerCourse({
      "tags": [
       "쿨롱",
       "전기장"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "gauss-law",
@@ -698,6 +697,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "electric-field": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -723,7 +734,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 21,
+ "published": 22,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -991,6 +1002,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "기본 전하",
+    "en": "elementary charge",
+    "abbr": "",
+    "def": "전하의 양자화(quantization of charge): 모든 물체의 전하는 기본 전하(elementary charge) \\(e = 1.602\\times10^{-19}\\) C의 정수배다.",
+    "chapters": [
+     "electric-field#charge"
+    ]
+   },
+   {
     "ko": "기본 진동수",
     "en": "fundamental frequency",
     "abbr": "",
@@ -1141,6 +1161,15 @@ SB.registerCourse({
     "def": "단위 dB는 데시벨(decibel)이다.",
     "chapters": [
      "sound#intensity"
+    ]
+   },
+   {
+    "ko": "도체",
+    "en": "conductor",
+    "abbr": "",
+    "def": "금속처럼 전자 일부가 원자에 묶이지 않고 물질 속을 자유롭게 움직이는 물질이 도체(conductor), 유리·플라스틱·고무처럼 전자가 원자에 단단히 묶인 물질이 절연체(insulator)다.",
+    "chapters": [
+     "electric-field#charge"
     ]
    },
    {
@@ -1594,6 +1623,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "분극",
+    "en": "polarization",
+    "abbr": "",
+    "def": "이 분극(polarization) 때문에 대전된 물체는 중성인 절연체도 끌어당긴다.",
+    "chapters": [
+     "electric-field#charge"
+    ]
+   },
+   {
     "ko": "불안정 평형",
     "en": "unstable equilibrium",
     "abbr": "",
@@ -1888,6 +1926,15 @@ SB.registerCourse({
     "def": "결과가 스칼라인 스칼라곱(scalar product, dot product)과 결과가 벡터인 벡터곱(vector product, cross product)이다.",
     "chapters": [
      "units-vectors#products"
+    ]
+   },
+   {
+    "ko": "시험 전하",
+    "en": "test charge",
+    "abbr": "",
+    "def": "$$\\vec E = \\frac{\\vec F_0}{q_0}, \\qquad \\vec F = q\\vec E, \\qquad E_\\text{점전하} = k\\frac{|q|}{r^2}$$아주 작은 양의 시험 전하(test charge) \\(q_0\\)가 받는 힘을 \\(q_0\\)로 나눈 것. 단위 N/C. 양전하가 만든 장은 바깥을, 음전하가 만든 장은 안쪽을 향한다.",
+    "chapters": [
+     "electric-field#field"
     ]
    },
    {
@@ -2251,6 +2298,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "유도 대전",
+    "en": "charging by induction",
+    "abbr": "",
+    "def": "이를 이용해 접촉하지 않고 도체를 대전시키는 방법이 유도 대전(charging by induction)이다.",
+    "chapters": [
+     "electric-field#charge"
+    ]
+   },
+   {
     "ko": "유선",
     "en": "streamline",
     "abbr": "",
@@ -2512,6 +2568,42 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "전기 쌍극자",
+    "en": "electric dipole",
+    "abbr": "",
+    "def": "크기가 같고 부호가 반대인 두 전하 \\(\\pm q\\)가 거리 \\(d\\)만큼 떨어진 것을 전기 쌍극자(electric dipole)라 한다.",
+    "chapters": [
+     "electric-field#dipole"
+    ]
+   },
+   {
+    "ko": "전기 쌍극자 모멘트",
+    "en": "electric dipole moment",
+    "abbr": "",
+    "def": "쌍극자의 세기와 방향은 음전하에서 양전하를 향하는 전기 쌍극자 모멘트(electric dipole moment) \\(\\vec p\\)로 나타낸다.",
+    "chapters": [
+     "electric-field#dipole"
+    ]
+   },
+   {
+    "ko": "전기력선",
+    "en": "electric field line",
+    "abbr": "",
+    "def": "전기장을 그림으로 나타내는 방법이 전기력선(electric field line)이다.",
+    "chapters": [
+     "electric-field#field"
+    ]
+   },
+   {
+    "ko": "전기장",
+    "en": "electric field",
+    "abbr": "",
+    "def": "떨어져 있는 전하가 어떻게 서로 힘을 미칠까? 패러데이는 전하가 주위 공간에 전기장(electric field)을 만들고, 다른 전하는 자기가 있는 곳의 전기장에서 힘을 받는다고 생각했다.",
+    "chapters": [
+     "electric-field#field"
+    ]
+   },
+   {
     "ko": "전단 탄성률",
     "en": "shear modulus",
     "abbr": "",
@@ -2527,6 +2619,33 @@ SB.registerCourse({
     "def": "전도(conduction)는 물질 자체는 움직이지 않고 이웃 원자·자유 전자의 충돌로 에너지가 전해지는 것, 대류(convection)는 데워진 유체가 직접 흘러가는 것, 복사(radiation)는 전자기파로 옮겨 가는 것이다.",
     "chapters": [
      "temperature-heat#conduction"
+    ]
+   },
+   {
+    "ko": "전하",
+    "en": "electric charge",
+    "abbr": "",
+    "def": "이런 관찰로부터 전하(electric charge)에는 두 종류가 있고, 같은 종류끼리는 밀고 다른 종류끼리는 당긴다는 것을 안다.",
+    "chapters": [
+     "electric-field#charge"
+    ]
+   },
+   {
+    "ko": "전하 보존 법칙",
+    "en": "conservation of charge",
+    "abbr": "",
+    "def": "전하 보존 법칙(conservation of charge): 고립계의 알짜 전하는 언제나 일정하다.",
+    "chapters": [
+     "electric-field#charge"
+    ]
+   },
+   {
+    "ko": "전하의 양자화",
+    "en": "quantization of charge",
+    "abbr": "",
+    "def": "전하의 양자화(quantization of charge): 모든 물체의 전하는 기본 전하(elementary charge) \\(e = 1.602\\times10^{-19}\\) C의 정수배다.",
+    "chapters": [
+     "electric-field#charge"
     ]
    },
    {
@@ -2554,6 +2673,15 @@ SB.registerCourse({
     "def": "과학에서 쓰는 켈빈 눈금(Kelvin scale)은 절대 영도(absolute zero)에서 0이고 눈금 간격은 섭씨와 같다.",
     "chapters": [
      "temperature-heat#temperature"
+    ]
+   },
+   {
+    "ko": "절연체",
+    "en": "insulator",
+    "abbr": "",
+    "def": "금속처럼 전자 일부가 원자에 묶이지 않고 물질 속을 자유롭게 움직이는 물질이 도체(conductor), 유리·플라스틱·고무처럼 전자가 원자에 단단히 묶인 물질이 절연체(insulator)다.",
+    "chapters": [
+     "electric-field#charge"
     ]
    },
    {
@@ -2800,6 +2928,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "진공의 유전율",
+    "en": "permittivity of free space",
+    "abbr": "",
+    "def": "두 힘은 크기가 같고 방향이 반대다(작용–반작용) — 쿨롱 법칙(Coulomb's law). $$F = k\\frac{|q_1q_2|}{r^2}, \\qquad k = \\frac{1}{4\\pi\\epsilon_0} = 8.988\\times10^9\\ \\text{N·m}^2/\\text{C}^2$$\\(\\epsilon_0 = 8.854\\times10^{-12}\\) C²/(N·m²): 진공의 유전율(permittivity of…",
+    "chapters": [
+     "electric-field#coulomb"
+    ]
+   },
+   {
     "ko": "진동",
     "en": "oscillation",
     "abbr": "",
@@ -2941,6 +3078,15 @@ SB.registerCourse({
     "def": "과학에서 쓰는 켈빈 눈금(Kelvin scale)은 절대 영도(absolute zero)에서 0이고 눈금 간격은 섭씨와 같다.",
     "chapters": [
      "temperature-heat#temperature"
+    ]
+   },
+   {
+    "ko": "쿨롱 법칙",
+    "en": "Coulomb's law",
+    "abbr": "",
+    "def": "두 힘은 크기가 같고 방향이 반대다(작용–반작용) — 쿨롱 법칙(Coulomb's law).",
+    "chapters": [
+     "electric-field#coulomb"
     ]
    },
    {
