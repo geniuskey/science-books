@@ -361,8 +361,7 @@ SB.registerCourse({
      "tags": [
       "교류",
       "공명"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "em-waves",
@@ -786,6 +785,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "ac-circuits": {
+   "problems": 15,
+   "examples": 5,
+   "sims": 4,
+   "figures": 7,
+   "drills": 2,
+   "minis": 2,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -811,7 +822,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 29,
+ "published": 30,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1457,6 +1468,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "리액턴스",
+    "en": "reactance",
+    "abbr": "",
+    "def": "$$X_L = \\omega L, \\qquad X_C = \\frac{1}{\\omega C}, \\qquad V_L = IX_L,\\ V_C = IX_C$$\\(X_L\\): 유도 리액턴스(reactance), \\(X_C\\): 용량 리액턴스, 단위 Ω. 저항처럼 전류를 제한하지만 에너지를 소모하지 않는다(에너지를 받았다 돌려준다). 인덕터는 높은 진동수를 막고, 축전기는 낮은 진동수(직류)를 막는다.",
+    "chapters": [
+     "ac-circuits#reactance"
+    ]
+   },
+   {
     "ko": "마디",
     "en": "node",
     "abbr": "",
@@ -1715,6 +1735,15 @@ SB.registerCourse({
     "def": "관의 넓은 곳과 좁은 목에 세운 관(피에조미터)의 물기둥 높이 차로 이 압력 차를 보이는 장치가 벤투리관(Venturi tube)이다.",
     "chapters": [
      "fluids#bernoulli"
+    ]
+   },
+   {
+    "ko": "변압기",
+    "en": "transformer",
+    "abbr": "",
+    "def": "이상적인 변압기(transformer)는 에너지를 잃지 않으므로 전력도 같다.",
+    "chapters": [
+     "ac-circuits#transformer"
     ]
    },
    {
@@ -2231,6 +2260,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "실횻값",
+    "en": "root-mean-square value",
+    "abbr": "",
+    "def": "$$v = V\\cos\\omega t, \\qquad i = I\\cos(\\omega t - \\phi), \\qquad V_\\text{rms} = \\frac{V}{\\sqrt2},\\ I_\\text{rms} = \\frac{I}{\\sqrt2}$$\\(V\\), \\(I\\): 진폭(최댓값). \\(\\omega = 2\\pi f\\). 실횻값(root-mean-square value)은 같은 저항에서 같은 평균 전력을 내는 직류의…",
+    "chapters": [
+     "ac-circuits#ac"
+    ]
+   },
+   {
     "ko": "아르키메데스 원리",
     "en": "Archimedes' principle",
     "abbr": "",
@@ -2372,6 +2410,15 @@ SB.registerCourse({
     "def": "그 상태 함수가 엔트로피(entropy) \\(S\\)다.",
     "chapters": [
      "second-law#entropy"
+    ]
+   },
+   {
+    "ko": "역률",
+    "en": "power factor",
+    "abbr": "",
+    "def": "$$P_\\text{평균} = \\frac12VI\\cos\\phi = V_\\text{rms}I_\\text{rms}\\cos\\phi = I_\\text{rms}^2R$$\\(\\cos\\phi\\): 역률(power factor). 전동기처럼 인덕턴스가 큰 부하는 역률이 낮아, 같은 일을 하는 데 더 큰 전류가 필요하고 송전선 손실이 커진다.",
+    "chapters": [
+     "ac-circuits#power"
     ]
    },
    {
@@ -2867,6 +2914,15 @@ SB.registerCourse({
     "def": "임계 감쇠(critical damping) \\(b = 2\\sqrt{km}\\): 진동하지 않고 가장 빨리 평형으로 돌아간다.",
     "chapters": [
      "oscillations#damped"
+    ]
+   },
+   {
+    "ko": "임피던스",
+    "en": "impedance",
+    "abbr": "",
+    "def": "전원 전압이 전류보다 \\(\\phi\\)만큼 앞선다(\\(X_L > X_C\\)일 때). RLC 직렬 회로의 페이저 합(본문 예제의 값). $$V = IZ, \\qquad Z = \\sqrt{R^2 + (X_L - X_C)^2}, \\qquad \\tan\\phi = \\frac{X_L - X_C}{R}$$\\(Z\\): 임피던스(impedance)(Ω). \\(\\phi > 0\\)이면 유도성(전압이 앞섬), \\(\\phi < 0\\)이면 용량성.",
+    "chapters": [
+     "ac-circuits#rlc"
     ]
    },
    {
@@ -3902,6 +3958,15 @@ SB.registerCourse({
     "def": "이것이 정전기 차폐(electrostatic shielding)이고, 금속 그물로 감싼 방이 패러데이 상자(Faraday cage)다.",
     "chapters": [
      "gauss-law#conductors"
+    ]
+   },
+   {
+    "ko": "페이저",
+    "en": "phasor",
+    "abbr": "",
+    "def": "사인 함수를 다룰 때는 길이가 진폭이고 각속도 \\(\\omega\\)로 반시계 방향으로 도는 화살표, 곧 페이저(phasor)를 쓰면 편하다.",
+    "chapters": [
+     "ac-circuits#ac"
     ]
    },
    {
