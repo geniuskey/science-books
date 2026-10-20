@@ -311,8 +311,7 @@ SB.registerCourse({
      "tags": [
       "회로",
       "키르히호프"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -742,6 +741,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "current-circuits": {
+   "problems": 15,
+   "examples": 6,
+   "sims": 4,
+   "figures": 6,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 1,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -767,7 +778,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 25,
+ "published": 26,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -945,6 +956,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "고리 법칙",
+    "en": "loop rule",
+    "abbr": "",
+    "def": "분기점 법칙(junction rule): 분기점으로 들어오는 전류의 합 = 나가는 전류의 합 (\\(\\sum I = 0\\), 전하 보존). 고리 법칙(loop rule): 닫힌 고리를 한 바퀴 돌 때 전위 변화의 합은 0 (\\(\\sum\\Delta V = 0\\), 정전기장이 보존장이므로).",
+    "chapters": [
+     "current-circuits#kirchhoff"
+    ]
+   },
+   {
     "ko": "고립계",
     "en": "isolated system",
     "abbr": "",
@@ -1080,6 +1100,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "기전력",
+    "en": "electromotive force, emf",
+    "abbr": "",
+    "def": "그 역할을 하는 장치(전지, 발전기, 태양 전지)의 단위 전하당 일을 기전력(electromotive force, emf) \\(\\mathcal E\\)라 한다.",
+    "chapters": [
+     "current-circuits#emf"
+    ]
+   },
+   {
     "ko": "기준원",
     "en": "reference circle",
     "abbr": "",
@@ -1140,6 +1169,15 @@ SB.registerCourse({
     "def": "$$K_1 + U_1 + W_\\text{other} = K_2 + U_2, \\qquad W_\\text{other} = -\\Delta U_\\text{int}\\ (\\text{운동 마찰일 때})$$\\(W_\\text{other}\\): 보존력이 아닌 힘(마찰, 사람의 손, 엔진)이 한 일. 마찰이 빼앗은 역학적 에너지는 물체와 바닥의 내부 에너지(internal energy)로 바뀐다(온도 상승). 이를 포함하면 전체 에너지는…",
     "chapters": [
      "energy-conservation#conservative"
+    ]
+   },
+   {
+    "ko": "내부 저항",
+    "en": "internal resistance",
+    "abbr": "",
+    "def": "실제 전원에는 내부 저항(internal resistance) \\(r\\)이 있어 전류가 흐르면 단자 전압이 떨어진다.",
+    "chapters": [
+     "current-circuits#emf"
     ]
    },
    {
@@ -1719,6 +1757,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "분기점 법칙",
+    "en": "junction rule",
+    "abbr": "",
+    "def": "분기점 법칙(junction rule): 분기점으로 들어오는 전류의 합 = 나가는 전류의 합 (\\(\\sum I = 0\\), 전하 보존). 고리 법칙(loop rule): 닫힌 고리를 한 바퀴 돌 때 전위 변화의 합은 0 (\\(\\sum\\Delta V = 0\\), 정전기장이 보존장이므로).",
+    "chapters": [
+     "current-circuits#kirchhoff"
+    ]
+   },
+   {
     "ko": "불안정 평형",
     "en": "unstable equilibrium",
     "abbr": "",
@@ -1797,6 +1844,15 @@ SB.registerCourse({
     "def": "그래서 $$C_p = C_V + R, \\qquad \\gamma = \\frac{C_p}{C_V}$$\\(C_p\\): 등압 몰 열용량. 비열비(ratio of heat capacities) \\(\\gamma\\)는 단원자 \\(5/3 = 1.67\\), 이원자(공기) \\(7/5 = 1.40\\). 16장의 음속 \\(v = \\sqrt{\\gamma RT/M}\\)에 나온 그 \\(\\gamma\\)다.",
     "chapters": [
      "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
+    "ko": "비저항",
+    "en": "resistivity",
+    "abbr": "",
+    "def": "많은 물질에서 전류 밀도는 전기장에 비례한다: \\(\\vec J = \\vec E/\\rho\\). 비례 상수 \\(\\rho\\)가 비저항(resistivity)(Ω·m)이고, 그 역수가 전도도 \\(\\sigma = 1/\\rho\\)다.",
+    "chapters": [
+     "current-circuits#resistance"
     ]
    },
    {
@@ -2013,6 +2069,15 @@ SB.registerCourse({
     "def": "결과가 스칼라인 스칼라곱(scalar product, dot product)과 결과가 벡터인 벡터곱(vector product, cross product)이다.",
     "chapters": [
      "units-vectors#products"
+    ]
+   },
+   {
+    "ko": "시간 상수",
+    "en": "time constant",
+    "abbr": "",
+    "def": "$$\\text{충전: } q = C\\mathcal E\\left(1 - e^{-t/RC}\\right),\\ i = \\frac{\\mathcal E}{R}e^{-t/RC}, \\qquad \\text{방전: } q = Q_0e^{-t/RC},\\ i = -\\frac{Q_0}{RC}e^{-t/RC}$$\\(\\tau = RC\\): 시간 상수(time constant)(Ω·F = s). \\(t = \\tau\\)에서 충전은 63.2%, 방전은…",
+    "chapters": [
+     "current-circuits#rc"
     ]
    },
    {
@@ -2277,6 +2342,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "옴의 법칙",
+    "en": "Ohm's law",
+    "abbr": "",
+    "def": "길이 \\(L\\), 단면적 \\(A\\)인 도선에 적용하면 \\(V = EL\\), \\(I = JA\\)이므로 $$V = IR, \\qquad R = \\frac{\\rho L}{A}, \\qquad \\rho(T) = \\rho_0\\big[1 + \\alpha(T - T_0)\\big]$$\\(R\\): 저항(resistance), 단위 옴(Ω = V/A). \\(V\\)와 \\(I\\)가 비례하는 것을 옴의 법칙(Ohm's law)이라 하지만, 이는…",
+    "chapters": [
+     "current-circuits#resistance"
+    ]
+   },
+   {
     "ko": "와트",
     "en": "watt",
     "abbr": "",
@@ -2409,6 +2483,15 @@ SB.registerCourse({
     "def": "장이 분자들을 정렬시킨다(분극). 내부에서는 이웃한 +와 −가 상쇄되지만, 판에 닿은 두 표면에는 판과 반대 부호의 유도 전하(induced charge) \\(\\mp\\sigma_i\\)가 남는다.",
     "chapters": [
      "capacitance#dielectrics"
+    ]
+   },
+   {
+    "ko": "유동 속력",
+    "en": "drift speed",
+    "abbr": "",
+    "def": "$$I = \\frac{dQ}{dt}, \\qquad I = nqv_dA, \\qquad J = \\frac{I}{A} = nqv_d$$\\(n\\): 단위 부피당 전하 운반자의 수(구리는 \\(8.5\\times10^{28}\\) m⁻³), \\(v_d\\): 유동 속력(drift speed), \\(J\\): 전류 밀도(current density)(A/m²).",
+    "chapters": [
+     "current-circuits#current"
     ]
    },
    {
@@ -2691,6 +2774,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "저항",
+    "en": "resistance",
+    "abbr": "",
+    "def": "많은 물질에서 전류 밀도는 전기장에 비례한다: \\(\\vec J = \\vec E/\\rho\\). 비례 상수 \\(\\rho\\)가 비저항(resistivity)(Ω·m)이고, 그 역수가 전도도 \\(\\sigma = 1/\\rho\\)다.",
+    "chapters": [
+     "current-circuits#resistance"
+    ]
+   },
+   {
     "ko": "저항력",
     "en": "drag force",
     "abbr": "",
@@ -2769,6 +2861,24 @@ SB.registerCourse({
     "def": "전도(conduction)는 물질 자체는 움직이지 않고 이웃 원자·자유 전자의 충돌로 에너지가 전해지는 것, 대류(convection)는 데워진 유체가 직접 흘러가는 것, 복사(radiation)는 전자기파로 옮겨 가는 것이다.",
     "chapters": [
      "temperature-heat#conduction"
+    ]
+   },
+   {
+    "ko": "전류",
+    "en": "electric current",
+    "abbr": "",
+    "def": "단면을 지나는 전하의 흐름률이 전류(electric current)다.",
+    "chapters": [
+     "current-circuits#current"
+    ]
+   },
+   {
+    "ko": "전류 밀도",
+    "en": "current density",
+    "abbr": "",
+    "def": "$$I = \\frac{dQ}{dt}, \\qquad I = nqv_dA, \\qquad J = \\frac{I}{A} = nqv_d$$\\(n\\): 단위 부피당 전하 운반자의 수(구리는 \\(8.5\\times10^{28}\\) m⁻³), \\(v_d\\): 유동 속력(drift speed), \\(J\\): 전류 밀도(current density)(A/m²).",
+    "chapters": [
+     "current-circuits#current"
     ]
    },
    {
@@ -3219,6 +3329,15 @@ SB.registerCourse({
     "def": "사람이 들을 수 있는 진동수는 대략 20 Hz–20 kHz(가청 진동수(audible range))이고, 그보다 낮으면 초저주파(infrasound), 높으면 초음파(ultrasound)라 한다.",
     "chapters": [
      "sound#sound-waves"
+    ]
+   },
+   {
+    "ko": "최대 전력 전달",
+    "en": "",
+    "abbr": "",
+    "def": "부하가 받는 전력은 \\(R = r\\)일 때 최대 \\(\\mathcal E^2/4r\\)이다(최대 전력 전달).",
+    "chapters": [
+     "current-circuits#emf"
     ]
    },
    {
