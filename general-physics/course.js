@@ -289,8 +289,7 @@ SB.registerCourse({
      "tags": [
       "전위",
       "등전위"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "capacitance",
@@ -720,6 +719,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "electric-potential": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -745,7 +756,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 23,
+ "published": 24,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1049,6 +1060,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "기울기",
+    "en": "gradient",
+    "abbr": "",
+    "def": "$$E_x = -\\frac{\\partial V}{\\partial x},\\quad E_y = -\\frac{\\partial V}{\\partial y},\\quad E_z = -\\frac{\\partial V}{\\partial z}, \\qquad \\vec E = -\\nabla V$$\\(\\nabla V\\): 전위의 기울기(gradient). 장은 전위가 가장 가파르게 낮아지는 방향을 향하고, 크기는 그 기울기다.",
+    "chapters": [
+     "electric-potential#gradient"
+    ]
+   },
+   {
     "ko": "기준원",
     "en": "reference circle",
     "abbr": "",
@@ -1280,6 +1300,15 @@ SB.registerCourse({
     "def": "과정조건일 W내부 에너지 ΔU열 Q 등적 과정(isochoric process)V 일정0\\(nC_V\\Delta T\\)\\(nC_V\\Delta T\\) 등압 과정(isobaric process)p 일정\\(p\\Delta V = nR\\Delta T\\)\\(nC_V\\Delta T\\)\\(nC_p\\Delta T\\) 등온 과정(isothermal process)T 일정\\(nRT\\ln(V_2/V_1)\\)0\\(Q = W\\) 단열…",
     "chapters": [
      "kinetic-theory-first-law#processes"
+    ]
+   },
+   {
+    "ko": "등전위면",
+    "en": "equipotential surface",
+    "abbr": "",
+    "def": "전위가 같은 점들을 이은 면이 등전위면(equipotential surface)이다(지도의 등고선과 같다). 등전위면을 따라 전하를 옮기면 \\(\\Delta V = 0\\)이므로 일이 0이고, 따라서 전기장은 언제나 등전위면에 수직이다.",
+    "chapters": [
+     "electric-potential#equipotential"
     ]
    },
    {
@@ -2666,6 +2695,33 @@ SB.registerCourse({
     "def": "전도(conduction)는 물질 자체는 움직이지 않고 이웃 원자·자유 전자의 충돌로 에너지가 전해지는 것, 대류(convection)는 데워진 유체가 직접 흘러가는 것, 복사(radiation)는 전자기파로 옮겨 가는 것이다.",
     "chapters": [
      "temperature-heat#conduction"
+    ]
+   },
+   {
+    "ko": "전압",
+    "en": "voltage",
+    "abbr": "",
+    "def": "$$V = \\frac{U}{q_0}, \\qquad V_\\text{점전하} = k\\frac{q}{r}, \\qquad V = k\\sum_i\\frac{q_i}{r_i}, \\qquad V_a - V_b = \\int_a^b\\vec E\\cdot d\\vec l$$단위 볼트 V = J/C. 스칼라이므로 그냥 더한다(성분 분해가 필요 없다!). 두 점 사이의 전위차 \\(V_{ab} = V_a - V_b\\)를 전압(voltage)이라 부른다.",
+    "chapters": [
+     "electric-potential#potential"
+    ]
+   },
+   {
+    "ko": "전위",
+    "en": "electric potential",
+    "abbr": "",
+    "def": "\\(q_0\\)로 나눈 양은 시험 전하와 상관없이 그 위치만의 성질이 되는데, 이것이 전위(electric potential)다.",
+    "chapters": [
+     "electric-potential#potential"
+    ]
+   },
+   {
+    "ko": "전자볼트",
+    "en": "electron volt",
+    "abbr": "",
+    "def": "원자·핵물리에서는 에너지 단위로 전자볼트(electron volt)를 쓴다.",
+    "chapters": [
+     "electric-potential#potential"
     ]
    },
    {
