@@ -250,8 +250,7 @@ SB.registerCourse({
      "tags": [
       "열기관",
       "엔트로피"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -687,6 +686,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "second-law": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -712,7 +723,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 20,
+ "published": 21,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -734,6 +745,15 @@ SB.registerCourse({
     "def": "속도가 바뀌는 빠르기가 가속도(acceleration)다.",
     "chapters": [
      "straight-line-motion#acceleration"
+    ]
+   },
+   {
+    "ko": "가역 과정",
+    "en": "reversible process",
+    "abbr": "",
+    "def": "반대로 계와 주위를 모두 처음 상태로 되돌릴 수 있는 과정은 가역 과정(reversible process)이다.",
+    "chapters": [
+     "second-law#irreversible"
     ]
    },
    {
@@ -1043,6 +1063,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "냉동기",
+    "en": "refrigerator",
+    "abbr": "",
+    "def": "열기관을 거꾸로 돌리면 일을 받아 차가운 곳에서 열을 퍼내 뜨거운 곳으로 버리는 냉동기(refrigerator)가 된다.",
+    "chapters": [
+     "second-law#refrigerators"
+    ]
+   },
+   {
     "ko": "뉴턴",
     "en": "newton",
     "abbr": "",
@@ -1340,6 +1369,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "미시 상태",
+    "en": "microscopic state",
+    "abbr": "",
+    "def": "거시 상태(압력, 온도, 왼쪽 칸의 분자 수 …)가 같아도 그것을 이루는 분자 배치, 곧 미시 상태(microscopic state)는 무수히 많다.",
+    "chapters": [
+     "second-law#entropy"
+    ]
+   },
+   {
     "ko": "밀",
     "en": "compression",
     "abbr": "",
@@ -1583,6 +1621,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "비가역 과정",
+    "en": "irreversible process",
+    "abbr": "",
+    "def": "이처럼 저절로 한 방향으로만 일어나는 과정을 비가역 과정(irreversible process)이라 한다.",
+    "chapters": [
+     "second-law#irreversible"
+    ]
+   },
+   {
     "ko": "비례 한계",
     "en": "proportional limit",
     "abbr": "",
@@ -1724,6 +1771,15 @@ SB.registerCourse({
     "def": "$$\\Delta L = \\alpha L_0\\,\\Delta T, \\qquad \\Delta V = \\beta V_0\\,\\Delta T, \\qquad \\beta = 3\\alpha\\ (\\text{등방 고체})$$\\(\\alpha\\): 선팽창 계수(coefficient of linear expansion), \\(\\beta\\): 부피 팽창 계수(coefficient of volume expansion), 단위 K⁻¹.…",
     "chapters": [
      "temperature-heat#expansion"
+    ]
+   },
+   {
+    "ko": "성능 계수",
+    "en": "coefficient of performance",
+    "abbr": "",
+    "def": "$$K = \\frac{|Q_C|}{|W|} = \\frac{|Q_C|}{|Q_H| - |Q_C|}, \\qquad K_H = \\frac{|Q_H|}{|W|} = K + 1$$\\(K\\): 냉동기의 성능 계수(coefficient of performance). 효율과 달리 1보다 클 수 있다 — 냉장고는 흔히 \\(K \\approx 2\\)–4. 난방용 열펌프(heat pump)는 받은 전기 에너지보다 많은 열을 실내에 준다.",
+    "chapters": [
+     "second-law#refrigerators"
     ]
    },
    {
@@ -1898,6 +1954,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "압축비",
+    "en": "compression ratio",
+    "abbr": "",
+    "def": "최대 부피와 최소 부피의 비 \\(r = V_\\text{max}/V_\\text{min}\\)이 압축비(compression ratio)다.",
+    "chapters": [
+     "second-law#heat-engines"
+    ]
+   },
+   {
     "ko": "액주계",
     "en": "manometer",
     "abbr": "",
@@ -1922,6 +1987,15 @@ SB.registerCourse({
     "def": "열평형에서 에너지의 제곱 항 하나마다 분자 하나당 평균 \\(\\tfrac12kT\\)(1몰당 \\(\\tfrac12RT\\))의 에너지가 배당된다 — 에너지 등분배 정리(equipartition theorem). 자유도가 \\(f\\)인 이상 기체는 \\(U = \\tfrac f2 nRT\\), \\(C_V = \\tfrac f2 R\\)이다.",
     "chapters": [
      "kinetic-theory-first-law#equipartition"
+    ]
+   },
+   {
+    "ko": "엔트로피",
+    "en": "entropy",
+    "abbr": "",
+    "def": "그 상태 함수가 엔트로피(entropy) \\(S\\)다.",
+    "chapters": [
+     "second-law#entropy"
     ]
    },
    {
@@ -1961,6 +2035,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "열기관",
+    "en": "heat engine",
+    "abbr": "",
+    "def": "열을 받아 그 일부를 역학적 일로 바꾸며 같은 상태로 되풀이해 돌아오는 장치가 열기관(heat engine)이다.",
+    "chapters": [
+     "second-law#heat-engines"
+    ]
+   },
+   {
     "ko": "열량 측정법",
     "en": "calorimetry",
     "abbr": "",
@@ -1997,6 +2080,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "열펌프",
+    "en": "heat pump",
+    "abbr": "",
+    "def": "|Q_H| = |Q_C| + |W| |Q_C| (빼낸 열) |W| (전기 에너지) 냉동기 K = |Q_C| / |W|열펌프 K_H = |Q_H| / |W| 냉동기와 열펌프의 에너지 흐름도. 같은 장치를 차가운 쪽 관점(냉방·냉장)에서 보면 냉동기, 뜨거운 쪽 관점(난방)에서 보면 열펌프다.",
+    "chapters": [
+     "second-law#refrigerators"
+    ]
+   },
+   {
     "ko": "열평형",
     "en": "thermal equilibrium",
     "abbr": "",
@@ -2006,12 +2098,30 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "열효율",
+    "en": "thermal efficiency",
+    "abbr": "",
+    "def": "$$W = Q_H + Q_C = Q_H - |Q_C|, \\qquad e = \\frac{W}{Q_H} = 1 - \\frac{|Q_C|}{Q_H}$$\\(e\\): 열효율(thermal efficiency). 버리는 열 \\(|Q_C|\\)가 0이 아닌 한 \\(e < 1\\)이다.",
+    "chapters": [
+     "second-law#heat-engines"
+    ]
+   },
+   {
     "ko": "영률",
     "en": "Young's modulus",
     "abbr": "",
     "def": "점선이 원래 모양이다(변형은 크게 과장). $$Y = \\frac{F_\\perp/A}{\\Delta L/L_0}, \\qquad B = -\\frac{\\Delta p}{\\Delta V/V_0}, \\qquad S = \\frac{F_\\parallel/A}{x/h}$$\\(Y\\): 영률(Young's modulus), \\(B\\): 부피 탄성률(bulk modulus)(음의 부호는 압력이 늘면 부피가 줄기 때문, \\(1/B\\)은…",
     "chapters": [
      "equilibrium-elasticity#elastic"
+    ]
+   },
+   {
+    "ko": "오토 순환",
+    "en": "Otto cycle",
+    "abbr": "",
+    "def": "가솔린 엔진의 4행정은 이상화하면 두 단열 과정과 두 등적 과정으로 이루어진 오토 순환(Otto cycle)이 된다.",
+    "chapters": [
+     "second-law#heat-engines"
     ]
    },
    {
@@ -2327,6 +2437,15 @@ SB.registerCourse({
     "def": "이 신기한 운동을 세차 운동(precession)이라 하고, 이런 장치를 자이로스코프(gyroscope)라 한다.",
     "chapters": [
      "rotation-dynamics#gyro"
+    ]
+   },
+   {
+    "ko": "작업 물질",
+    "en": "working substance",
+    "abbr": "",
+    "def": "열기관 속에서 순환 과정을 겪는 물질(물, 공기–연료 혼합물)을 작업 물질(working substance)이라 한다.",
+    "chapters": [
+     "second-law#heat-engines"
     ]
    },
    {
@@ -2795,6 +2914,24 @@ SB.registerCourse({
     "def": "층이 미끄러지듯 매끈하게 흐르는 정상 흐름을 층류(laminar flow)라 한다.",
     "chapters": [
      "fluids#continuity"
+    ]
+   },
+   {
+    "ko": "카르노 순환",
+    "en": "Carnot cycle",
+    "abbr": "",
+    "def": "유한한 온도 차를 건너는 열전달은 비가역이므로, 최선의 기관은 열저장체와 같은 온도에서만 열을 주고받고(등온 과정), 두 온도 사이는 열 출입 없이 오가야 한다(단열 과정). 이것이 카르노 순환(Carnot cycle)이다.",
+    "chapters": [
+     "second-law#carnot"
+    ]
+   },
+   {
+    "ko": "카르노 정리",
+    "en": "Carnot's theorem",
+    "abbr": "",
+    "def": "카르노 정리(Carnot's theorem): 같은 두 열저장체 사이에서 작동하는 어떤 기관도 카르노 기관보다 효율이 높을 수 없고, 모든 가역 기관의 효율은 작업 물질과 상관없이 \\(e_\\text{C}\\)로 같다.",
+    "chapters": [
+     "second-law#carnot"
     ]
    },
    {
