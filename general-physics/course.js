@@ -389,8 +389,7 @@ SB.registerCourse({
      "tags": [
       "굴절",
       "렌즈"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "interference-diffraction",
@@ -808,6 +807,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "geometric-optics": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 2,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -833,7 +844,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 31,
+ "published": 32,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1137,6 +1148,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "굴절률",
+    "en": "index of refraction",
+    "abbr": "",
+    "def": "진공에서의 속력과 매질 속 속력의 비가 굴절률(index of refraction)이다.",
+    "chapters": [
+     "geometric-optics#refraction"
+    ]
+   },
+   {
     "ko": "극한 강도",
     "en": "ultimate strength",
     "abbr": "",
@@ -1206,6 +1226,15 @@ SB.registerCourse({
     "def": "$$pV = nRT = NkT$$\\(n\\): 몰수, \\(N = nN_A\\): 분자 수, \\(T\\): 켈빈 온도. 기체 상수(gas constant) \\(R = 8.314\\) J/(mol·K), 볼츠만 상수(Boltzmann constant) \\(k = R/N_A = 1.381\\times10^{-23}\\) J/K, \\(N_A = 6.022\\times10^{23}\\) mol⁻¹. 질량 \\(m_\\text{tot}\\), 몰…",
     "chapters": [
      "kinetic-theory-first-law#ideal-gas"
+    ]
+   },
+   {
+    "ko": "기하 광학",
+    "en": "geometric optics",
+    "abbr": "",
+    "def": "이것이 기하 광학(geometric optics)이다.",
+    "chapters": [
+     "geometric-optics"
     ]
    },
    {
@@ -1929,6 +1958,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "분산",
+    "en": "dispersion",
+    "abbr": "",
+    "def": "이렇게 색에 따라 굴절이 달라 빛이 갈라지는 것이 분산(dispersion)이다.",
+    "chapters": [
+     "geometric-optics#tir"
+    ]
+   },
+   {
     "ko": "불안정 평형",
     "en": "unstable equilibrium",
     "abbr": "",
@@ -2088,6 +2126,15 @@ SB.registerCourse({
     "def": "특히 사인 모양의 파동을 사인파(sinusoidal wave)라 한다.",
     "chapters": [
      "mechanical-waves#periodic"
+    ]
+   },
+   {
+    "ko": "상",
+    "en": "image",
+    "abbr": "",
+    "def": "물체의 한 점에서 나온 광선들이 반사·굴절된 뒤 다시 한 점에 모이거나, 한 점에서 나온 것처럼 퍼지면 그 점이 상(image)이다.",
+    "chapters": [
+     "geometric-optics#mirrors"
     ]
    },
    {
@@ -2973,6 +3020,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "임계각",
+    "en": "critical angle",
+    "abbr": "",
+    "def": "그때의 입사각이 임계각(critical angle)이고, 그보다 크면 빛이 하나도 빠져나가지 못하고 전부 반사된다 — 전반사(total internal reflection).",
+    "chapters": [
+     "geometric-optics#tir"
+    ]
+   },
+   {
     "ko": "임피던스",
     "en": "impedance",
     "abbr": "",
@@ -3261,6 +3317,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "전반사",
+    "en": "total internal reflection",
+    "abbr": "",
+    "def": "그때의 입사각이 임계각(critical angle)이고, 그보다 크면 빛이 하나도 빠져나가지 못하고 전부 반사된다 — 전반사(total internal reflection).",
+    "chapters": [
+     "geometric-optics#tir"
+    ]
+   },
+   {
     "ko": "전압",
     "en": "voltage",
     "abbr": "",
@@ -3504,6 +3569,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "조절",
+    "en": "accommodation",
+    "abbr": "",
+    "def": "수정체 둘레의 근육이 렌즈를 두껍게 해 가까운 물체에 초점을 맞춘다(조절(accommodation)). 선명하게 볼 수 있는 가장 먼 점이 원점, 가장 가까운 점이 근점이다.",
+    "chapters": [
+     "geometric-optics#instruments"
+    ]
+   },
+   {
     "ko": "종단 속도",
     "en": "terminal speed",
     "abbr": "",
@@ -3744,6 +3818,15 @@ SB.registerCourse({
     "def": "사람이 들을 수 있는 진동수는 대략 20 Hz–20 kHz(가청 진동수(audible range))이고, 그보다 낮으면 초저주파(infrasound), 높으면 초음파(ultrasound)라 한다.",
     "chapters": [
      "sound#sound-waves"
+    ]
+   },
+   {
+    "ko": "초점",
+    "en": "focal point",
+    "abbr": "",
+    "def": "구면 거울은 축에 나란한 광선을 한 점, 초점(focal point)에 모은다(오목 거울). 초점 거리는 곡률 반지름의 절반이다.",
+    "chapters": [
+     "geometric-optics#mirrors"
     ]
    },
    {
