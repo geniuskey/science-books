@@ -522,7 +522,7 @@
   const chapterNum = () => {
     const slug = document.body.dataset.chapter;
     const ch = SB.course && SB.course.chapters.find((c) => c.slug === slug);
-    return ch ? String(Number(ch.num)) || ch.num : document.body.dataset.num || "";
+    return ch ? (isNaN(Number(ch.num)) ? ch.num : String(Number(ch.num))) : document.body.dataset.num || "";
   };
 
   /** 예제: <div class="example" data-title="..."><div class="ex-body">...</div></div> → 머리말·번호 */

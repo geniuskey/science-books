@@ -428,8 +428,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "수학"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "constants-units",
@@ -841,6 +840,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "math-tools": {
+   "problems": 0,
+   "examples": 0,
+   "sims": 4,
+   "figures": 4,
+   "drills": 1,
+   "minis": 2,
+   "tangles": 3,
+   "steps": 1,
+   "predicts": 0,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -866,7 +877,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 34,
+ "published": 35,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1449,6 +1460,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "도함수",
+    "en": "derivative",
+    "abbr": "",
+    "def": "두 점을 한없이 가깝게 하면 할선이 한 점의 접선이 되고, 그 기울기가 순간 속도 — 도함수(derivative)다(2장).",
+    "chapters": [
+     "math-tools#derivative"
+    ]
+   },
+   {
     "ko": "뒬롱–프티 법칙",
     "en": "rule of Dulong and Petit",
     "abbr": "",
@@ -1752,6 +1772,15 @@ SB.registerCourse({
     "def": "반지름 \\(R\\)인 물체가 미끄러짐 없이 구를(rolling without slipping) 조건은 \\(v_\\text{cm} = R\\omega\\)(그리고 \\(a_\\text{cm} = R\\alpha\\))이다.",
     "chapters": [
      "rotation-dynamics#rolling"
+    ]
+   },
+   {
+    "ko": "미분 방정식",
+    "en": "differential equation",
+    "abbr": "",
+    "def": "이런 식을 미분 방정식(differential equation)이라 하고, 처음 상태(초기 조건)가 주어지면 앞으로의 운동이 정해진다.",
+    "chapters": [
+     "math-tools#ode"
     ]
    },
    {
@@ -3615,6 +3644,15 @@ SB.registerCourse({
     "def": "특히 처음에 정지해 있어 계속 정지하는 경우를 정적 평형(static equilibrium)이라 한다.",
     "chapters": [
      "equilibrium-elasticity#conditions"
+    ]
+   },
+   {
+    "ko": "정적분",
+    "en": "definite integral",
+    "abbr": "",
+    "def": "조각을 한없이 잘게 하면 정적분(definite integral)이 된다.",
+    "chapters": [
+     "math-tools#integral"
     ]
    },
    {
