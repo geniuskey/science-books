@@ -328,8 +328,7 @@ SB.registerCourse({
      "tags": [
       "로런츠 힘",
       "전동기"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "magnetic-sources",
@@ -753,6 +752,18 @@ SB.registerCourse({
    "predicts": 2,
    "hero": 1
   },
+  "magnetic-force": {
+   "problems": 14,
+   "examples": 6,
+   "sims": 4,
+   "figures": 7,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "constants-units": {
    "problems": 0,
    "examples": 0,
@@ -778,7 +789,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 26,
+ "published": 27,
  "total": 35,
  "url": "https://science.euiyun.com/general-physics/",
  "glossary": {
@@ -1388,6 +1399,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "로런츠 힘",
+    "en": "Lorentz force",
+    "abbr": "",
+    "def": "$$\\vec F = q\\vec v\\times\\vec B, \\qquad F = |q|vB\\sin\\phi, \\qquad \\vec F = q(\\vec E + \\vec v\\times\\vec B)$$\\(\\phi\\): \\(\\vec v\\)와 \\(\\vec B\\) 사이의 각. 마지막 식이 전기장과 자기장이 함께 있을 때의 로런츠 힘(Lorentz force)이다.",
+    "chapters": [
+     "magnetic-force#force"
+    ]
+   },
+   {
     "ko": "마디",
     "en": "node",
     "abbr": "",
@@ -1892,6 +1912,24 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "사이클로트론",
+    "en": "cyclotron",
+    "abbr": "",
+    "def": "사이클로트론(cyclotron)은 사이클로트론 진동수가 속력과 무관하다는 성질을 이용한 입자 가속기다.",
+    "chapters": [
+     "magnetic-force#applications"
+    ]
+   },
+   {
+    "ko": "사이클로트론 진동수",
+    "en": "cyclotron frequency",
+    "abbr": "",
+    "def": "균일한 자기장에 수직으로 들어온 전하는 크기가 일정하고 늘 속도에 수직인 힘을 받으므로 등속 원운동을 한다(3장). 구심력 \\(mv^2/r = |q|vB\\)에서 $$r = \\frac{mv}{|q|B}, \\qquad \\omega = \\frac{|q|B}{m}, \\qquad T = \\frac{2\\pi m}{|q|B}, \\qquad f = \\frac{|q|B}{2\\pi m}$$\\(f\\): 사이클로트론 진동수(cyclotron…",
+    "chapters": [
+     "magnetic-force#force"
+    ]
+   },
+   {
     "ko": "사인파",
     "en": "sinusoidal wave",
     "abbr": "",
@@ -2006,6 +2044,15 @@ SB.registerCourse({
     "def": "그 너머에서 물질은 항복(yield)하여 소성 변형(plastic deformation)을 겪는다: 하중을 없애도 영구 변형이 남는다.",
     "chapters": [
      "equilibrium-elasticity#plastic"
+    ]
+   },
+   {
+    "ko": "속도 선택기",
+    "en": "velocity selector",
+    "abbr": "",
+    "def": "두 힘이 같아지는 속력의 입자만 휘지 않고 곧장 지나간다 — 속도 선택기(velocity selector)다.",
+    "chapters": [
+     "magnetic-force#applications"
     ]
    },
    {
@@ -2666,6 +2713,42 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "자기 선속",
+    "en": "magnetic flux",
+    "abbr": "",
+    "def": "전기 선속처럼 면을 지나는 자기 선속(magnetic flux) \\(\\Phi_B = \\int\\vec B\\cdot d\\vec A\\)를 정의한다(단위 웨버 Wb = T·m²). 자기력선은 닫혀 있으므로 닫힌 면으로 들어온 만큼 나간다: 자기에 대한 가우스 법칙 \\(\\oint\\vec B\\cdot d\\vec A = 0\\). 자기 홀극이 없다는 것의 수학적 표현이고, 맥스웰 방정식의 두 번째 식이다.",
+    "chapters": [
+     "magnetic-force#field"
+    ]
+   },
+   {
+    "ko": "자기 쌍극자 모멘트",
+    "en": "magnetic dipole moment",
+    "abbr": "",
+    "def": "$$\\vec\\mu = NI\\vec A, \\qquad \\vec\\tau = \\vec\\mu\\times\\vec B, \\qquad \\tau = NIAB\\sin\\phi, \\qquad U = -\\vec\\mu\\cdot\\vec B$$\\(\\vec\\mu\\): 자기 쌍극자 모멘트(magnetic dipole moment)(A·m²), 방향은 오른손 네 손가락을 전류 방향으로 감았을 때 엄지 방향. 나침반 바늘, 원자 속 전자의 궤도, 전자의…",
+    "chapters": [
+     "magnetic-force#wire"
+    ]
+   },
+   {
+    "ko": "자기 홀극",
+    "en": "magnetic monopole",
+    "abbr": "",
+    "def": "고립된 자기 \"전하\", 곧 자기 홀극(magnetic monopole)은 지금까지 한 번도 발견되지 않았다.",
+    "chapters": [
+     "magnetic-force#field"
+    ]
+   },
+   {
+    "ko": "자기장",
+    "en": "magnetic field",
+    "abbr": "",
+    "def": "자석이나 전류가 만드는 자기장(magnetic field) \\(\\vec B\\)는 운동하는 전하가 받는 힘으로 정의한다(다음 절). 단위는 테슬라(T = N/(A·m)). 지구 표면 약 5 × 10⁻⁵ T, 냉장고 자석 약 5 × 10⁻³ T, 병원 MRI 1.5–3 T, 실험실 최고 기록 약 45 T(연속). 오래된 단위로 1 가우스(G) = 10⁻⁴ T.",
+    "chapters": [
+     "magnetic-force#field"
+    ]
+   },
+   {
     "ko": "자유 낙하",
     "en": "free fall",
     "abbr": "",
@@ -3026,6 +3109,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "정류자",
+    "en": "commutator",
+    "abbr": "",
+    "def": "그래서 반 바퀴마다 전류의 방향을 뒤집는 정류자(commutator)를 단다 — 그러면 토크가 늘 같은 방향이 된다.",
+    "chapters": [
+     "magnetic-force#wire"
+    ]
+   },
+   {
     "ko": "정상 상태",
     "en": "steady state",
     "abbr": "",
@@ -3251,6 +3343,15 @@ SB.registerCourse({
     ]
    },
    {
+    "ko": "직류 전동기",
+    "en": "DC motor",
+    "abbr": "",
+    "def": "직류 전동기(DC motor)는 이 토크를 쓴다.",
+    "chapters": [
+     "magnetic-force#wire"
+    ]
+   },
+   {
     "ko": "진공의 유전율",
     "en": "permittivity of free space",
     "abbr": "",
@@ -3293,6 +3394,15 @@ SB.registerCourse({
     "def": "(3) 같은 알짜힘에서 가속도는 물체의 질량(mass)에 반비례한다.",
     "chapters": [
      "newtons-laws#second-law"
+    ]
+   },
+   {
+    "ko": "질량 분석기",
+    "en": "mass spectrometer",
+    "abbr": "",
+    "def": "반지름 \\(r = mv/qB\\)이므로 부딪친 자리로 질량을 알 수 있다 — 질량 분석기(mass spectrometer). 동위원소를 분리하고, 분자를 식별하고, 고대 유물의 연대를 잰다.",
+    "chapters": [
+     "magnetic-force#applications"
     ]
    },
    {
@@ -3662,6 +3772,15 @@ SB.registerCourse({
     "def": "그 너머에서 물질은 항복(yield)하여 소성 변형(plastic deformation)을 겪는다: 하중을 없애도 영구 변형이 남는다.",
     "chapters": [
      "equilibrium-elasticity#plastic"
+    ]
+   },
+   {
+    "ko": "홀 전압",
+    "en": "Hall voltage",
+    "abbr": "",
+    "def": "쌓인 전하가 만드는 가로 방향 전기장이 자기력과 같아지면 더 이상 쌓이지 않는다: \\(qE_H = qv_dB\\). 이때 띠의 양쪽 가장자리 사이의 전압이 홀 전압(Hall voltage)이다(1879년 홀이 발견).",
+    "chapters": [
+     "magnetic-force#hall"
     ]
    },
    {
