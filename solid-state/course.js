@@ -428,7 +428,7 @@ SB.registerCourse({
    "hero": 1
   },
   "nanostructures": {
-   "problems": 16,
+   "problems": 15,
    "examples": 7,
    "sims": 5,
    "figures": 11,

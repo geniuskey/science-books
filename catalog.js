@@ -97,7 +97,7 @@ SB.registerCatalog({
    "color": "#0e7490",
    "colorDark": "#22d3ee",
    "sims": 81,
-   "problems": 250
+   "problems": 249
   },
   {
    "id": "organic-chemistry",
