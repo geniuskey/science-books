@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "발산",
       "회전"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "electrostatics",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "가우스 법칙",
       "전위"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "conductors-dielectrics",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "유전율",
       "정전 용량"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "boundary-value",
@@ -63,8 +60,7 @@ SB.registerCourse({
      "tags": [
       "라플라스 방정식",
       "영상법"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "전류 밀도",
       "면저항"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "magnetostatics",
@@ -92,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "비오–사바르",
       "앙페르 법칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "magnetic-materials",
@@ -104,8 +98,7 @@ SB.registerCourse({
      "tags": [
       "투자율",
       "자기 회로"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +114,7 @@ SB.registerCourse({
      "tags": [
       "패러데이 법칙",
       "인덕턴스"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "maxwell-equations",
@@ -263,8 +255,105 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "vector-analysis": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "electrostatics": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 14,
+   "drills": 2,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "conductors-dielectrics": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "boundary-value": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 6,
+   "figures": 12,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 4,
+   "hero": 1
+  },
+  "steady-currents": {
+   "problems": 15,
+   "examples": 9,
+   "sims": 6,
+   "figures": 13,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "magnetostatics": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "magnetic-materials": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 9,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "induction": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  }
+ },
+ "published": 8,
  "total": 18,
  "url": "https://science.euiyun.com/electromagnetics/"
 });
