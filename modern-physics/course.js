@@ -397,9 +397,9 @@ SB.registerCourse({
   "terms": [
    {
     "ko": "Kα선",
-    "en": "",
+    "en": "Kα line",
     "abbr": "",
-    "def": "들어온 전자가 가장 안쪽 K 껍질(n = 1) 전자를 쳐내면 빈자리가 생기고, L 껍질(n = 2) 전자가 떨어지며 Kα선, M 껍질(n = 3)에서 떨어지면 Kβ선을 낸다.",
+    "def": "K 껍질(\\(n=1\\)) 빈자리를 L 껍질(\\(n=2\\)) 전자가 채우며 내는 특성 X선. 원소마다 에너지가 정해져 있어 원소 분석과 XRD 광원(Cu K\\(_\\alpha\\) 0.154 nm)에 쓴다.",
     "chapters": [
      "atomic-spectra#xray"
     ]
@@ -408,7 +408,7 @@ SB.registerCourse({
     "ko": "LEED",
     "en": "low-energy electron diffraction",
     "abbr": "",
-    "def": "LEED(low-energy electron diffraction)는 20–200 eV(λ = 0.27–0.087 nm) 전자를 쓰는데, 이 에너지의 전자는 몇 원자층만 들어가므로 Si(001) 표면의 2×1 재구성 같은 표면 구조만 골라 본다.",
+    "def": "20–200 eV의 느린 전자를 표면에 쏘아 회절 무늬를 보는 기법. 전자가 몇 원자층만 들어가므로 표면 재구성 같은 표면 구조만 골라 본다.",
     "chapters": [
      "matter-waves#diffraction"
     ]
@@ -417,7 +417,7 @@ SB.registerCourse({
     "ko": "RHEED",
     "en": "reflection high-energy electron diffraction",
     "abbr": "",
-    "def": "MBE 장비에 붙은 RHEED(reflection high-energy electron diffraction)는 10–30 keV 전자를 표면에 1–3°로 스치듯 쏘아 성장 중에 실시간으로 본다.",
+    "def": "10–30 keV 전자를 표면에 1–3°로 스치듯 쏘아 회절 무늬를 보는 기법. MBE 성장 중에 표면 상태와 층 단위 성장을 실시간으로 감시한다.",
     "chapters": [
      "matter-waves#diffraction"
     ]
@@ -426,7 +426,7 @@ SB.registerCourse({
     "ko": "WKB 근사",
     "en": "Wentzel–Kramers–Brillouin approximation",
     "abbr": "",
-    "def": "이것이 WKB 근사(Wentzel–Kramers–Brillouin approximation)다.",
+    "def": "퍼텐셜이 천천히 변할 때 투과율을 \\(T \\approx \\exp(-2\\int\\kappa(x)\\,dx)\\)로 어림하는 준고전 근사. 삼각 장벽(FN 터널링)이나 쿨롱 장벽처럼 모양이 복잡한 장벽에 쓴다.",
     "chapters": [
      "tunneling#wkb"
     ]
@@ -435,7 +435,7 @@ SB.registerCourse({
     "ko": "g 인자",
     "en": "g-factor",
     "abbr": "",
-    "def": "$$|\\vec S| = \\sqrt{s(s+1)}\\,\\hbar = \\frac{\\sqrt3}{2}\\hbar, \\qquad S_z = m_s\\hbar,\\ m_s = \\pm\\tfrac12, \\qquad \\vec\\mu_s = -g_s\\frac{e}{2m_e}\\vec S,\\quad \\mu_{s,z} = -g_s m_s\\mu_B \\approx \\mp\\mu_B$$\\(g_s = 2.0023\\): 전자 스핀의 g 인자(g-factor).…",
+    "def": "자기 모멘트와 각운동량의 비를 \\(\\mu_B/\\hbar\\) 단위로 나타낸 무차원 수. 궤도 운동은 1, 전자 스핀은 \\(g_s = 2.0023\\)이다.",
     "chapters": [
      "spin-atoms#spin"
     ]
@@ -444,7 +444,7 @@ SB.registerCourse({
     "ko": "sp³ 혼성 오비탈",
     "en": "sp³ hybrid",
     "abbr": "",
-    "def": "결정 속에서 3s 하나와 3p 셋(\\(p_x, p_y, p_z\\))이 섞여 109.5° 간격의 sp³ 혼성 오비탈(sp³ hybrid) 네 개가 되고, 이웃 원자 넷과 결합 길이 0.235 nm의 공유 결합을 이룬다.",
+    "def": "s 오비탈 하나와 p 오비탈 셋을 섞어 만든, 109.5° 간격으로 뻗은 네 개의 오비탈. 실리콘·다이아몬드의 사면체 공유 결합을 이룬다.",
     "chapters": [
      "hydrogen-atom#angular"
     ]
@@ -453,7 +453,7 @@ SB.registerCourse({
     "ko": "가모프 인자",
     "en": "Gamow factor",
     "abbr": "",
-    "def": "쿨롱 장벽에 WKB를 적용하면 가모프 인자(Gamow factor)를 얻는다.",
+    "def": "쿨롱 장벽에 WKB 근사를 적용해 얻는 터널링 확률의 지수 인자. 알파 붕괴 수명과 핵융합 반응률을 설명한다.",
     "chapters": [
      "tunneling#wkb"
     ]
@@ -462,7 +462,7 @@ SB.registerCourse({
     "ko": "가벼운 정공",
     "en": "light hole",
     "abbr": "",
-    "def": "p 오비탈에서 나온 띠라서 곡률이 서로 다르다: 무거운 정공(heavy hole) \\(m_{hh} \\approx 0.49\\,m_e\\), 가벼운 정공(light hole) \\(m_{lh} \\approx 0.16\\,m_e\\), 그리고 0.044 eV 아래의 갈라진 띠(split-off). 정공 상태 밀도 질량은 \\(m_{dp} = (m_{hh}^{3/2} + m_{lh}^{3/2})^{2/3}\\)이다.",
+    "def": "가전자대 꼭대기에서 곡률이 큰 쪽의 정공 띠. 실리콘에서 유효 질량이 약 \\(0.16m_e\\)이다.",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -471,7 +471,7 @@ SB.registerCourse({
     "ko": "가시도",
     "en": "visibility",
     "abbr": "",
-    "def": "경로 정보가 부분적이면 무늬의 가시도(visibility) \\(V = (P_\\text{max} - P_\\text{min})/(P_\\text{max} + P_\\text{min})\\)가 그만큼 줄어든다.",
+    "def": "간섭무늬의 뚜렷함 \\(V = (P_\\text{max} - P_\\text{min})/(P_\\text{max} + P_\\text{min})\\). 어느 경로로 갔는지 정보가 생길수록 줄어든다.",
     "chapters": [
      "matter-waves#double-slit"
     ]
@@ -480,7 +480,7 @@ SB.registerCourse({
     "ko": "가전자대",
     "en": "valence band",
     "abbr": "",
-    "def": "결합 오비탈에서 온 띠가 가전자대(valence band), 반결합 오비탈에서 온 띠가 전도대(conduction band)다.",
+    "def": "결합 오비탈에서 비롯한 띠로, 0 K 반도체에서 전자가 꽉 차 있는 가장 높은 띠. 꼭대기 에너지를 \\(E_v\\)로 쓴다.",
     "chapters": [
      "molecular-bonding#bands"
     ]
@@ -489,7 +489,7 @@ SB.registerCourse({
     "ko": "간접 띠 간격",
     "en": "indirect band gap",
     "abbr": "",
-    "def": "GaAs는 전도대 바닥과 가전자대 꼭대기가 모두 \\(\\Gamma\\)(\\(k = 0\\))에 있는 직접 띠 간격(direct band gap) 반도체이고, Si와 Ge는 둘의 \\(k\\)가 다른 간접 띠 간격(indirect band gap) 반도체다.",
+    "def": "전도대 바닥과 가전자대 꼭대기가 서로 다른 \\(k\\)에 있는 띠 간격. 빛의 흡수·방출에 포논이 함께 필요해 발광이 약하다(Si, Ge).",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -498,7 +498,7 @@ SB.registerCourse({
     "ko": "강결합 근사",
     "en": "tight-binding approximation",
     "abbr": "",
-    "def": "원자 N개를 간격 일정하게 늘어놓고 각 원자가 이웃하고만 결합 \\(t\\)를 가진다고 하면(강결합 근사(tight-binding approximation)), 해밀토니안은 대각선에 \\(\\varepsilon\\), 바로 옆 대각선에 \\(-t\\)가 있는 N×N 행렬이다.",
+    "def": "원자 오비탈과 이웃 원자 사이의 결합 적분 \\(t\\)만으로 고체의 띠를 만드는 근사. 1차원 사슬에서 띠 \\(E = \\varepsilon - 2t\\cos ka\\), 폭 \\(4t\\)를 준다.",
     "chapters": [
      "molecular-bonding#bands"
     ]
@@ -507,7 +507,7 @@ SB.registerCourse({
     "ko": "거대 자기 저항",
     "en": "GMR, giant magnetoresistance",
     "abbr": "",
-    "def": "이 거대 자기 저항(GMR, giant magnetoresistance)을 발견한 페르와 그륀베르크는 2007년 노벨상을 받았고, GMR 읽기 헤드는 1997년부터 하드디스크 용량을 폭발적으로 늘렸다.",
+    "def": "강자성층/비자성 금속층/강자성층 구조에서 두 자화가 나란할 때와 반대일 때 저항이 크게 다른 현상(GMR). 하드디스크 읽기 헤드에 쓰였다.",
     "chapters": [
      "spin-atoms#spin"
     ]
@@ -516,7 +516,7 @@ SB.registerCourse({
     "ko": "거시 상태",
     "en": "macrostate",
     "abbr": "",
-    "def": "동전 하나하나의 결과를 모두 적은 것이 미시 상태(microstate)이고, \"앞면 몇 개\"만 적은 것이 거시 상태(macrostate)다.",
+    "def": "전체 에너지나 앞면 개수처럼 계를 거칠게 기술한 상태. 하나의 거시 상태에 대응하는 미시 상태 수가 그 확률을 정한다.",
     "chapters": [
      "quantum-statistics#boltzmann"
     ]
@@ -525,7 +525,7 @@ SB.registerCourse({
     "ko": "거의 자유 전자 모형",
     "en": "nearly free electron model",
     "abbr": "",
-    "def": "퍼텐셜이 약할 때 \\(E_g\\)가 \\(|V_G|\\)에 정비례한다는 이 그림을 거의 자유 전자 모형(nearly free electron model)이라 한다.",
+    "def": "약한 주기 퍼텐셜을 자유 전자에 섭동으로 더한 띠 모형. 브릴루앙 영역 경계에서 푸리에 성분 \\(|V_G|\\)의 두 배만큼 띠 간격이 열린다.",
     "chapters": [
      "energy-bands#gap"
     ]
@@ -534,7 +534,7 @@ SB.registerCourse({
     "ko": "격자",
     "en": "lattice",
     "abbr": "",
-    "def": "되풀이의 뼈대가 되는 점들의 집합을 격자(lattice), 각 격자점에 붙는 원자 묶음을 기저(basis)라 한다.",
+    "def": "결정에서 되풀이의 뼈대가 되는 점들의 집합. 각 격자점에 기저(원자 묶음)를 붙이면 결정 구조가 된다.",
     "chapters": [
      "energy-bands#crystal"
     ]
@@ -543,7 +543,7 @@ SB.registerCourse({
     "ko": "격자 상수",
     "en": "lattice constant",
     "abbr": "",
-    "def": "단위 세포 한 변의 길이가 격자 상수(lattice constant) \\(a\\)다.",
+    "def": "결정의 단위 세포 한 변의 길이 \\(a\\). 실리콘은 0.5431 nm이다.",
     "chapters": [
      "energy-bands#crystal"
     ]
@@ -552,7 +552,7 @@ SB.registerCourse({
     "ko": "결맞는",
     "en": "coherent",
     "abbr": "",
-    "def": "유도 방출은 광자를 복제하므로 레이저 빛은 공간적으로(빔 단면 전체가 같은 위상) 그리고 시간적으로(긴 파열이 끊기지 않음) 결맞는(coherent) 빛이다.",
+    "def": "빛이나 파동의 위상이 공간적·시간적으로 일정한 관계를 유지하는 성질. 유도 방출로 광자를 복제하는 레이저 빛이 대표적이다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -561,7 +561,7 @@ SB.registerCourse({
     "ko": "결맞음 길이",
     "en": "coherence length",
     "abbr": "",
-    "def": "시간 결맞음은 선폭으로 정해진다: 결맞음 길이(coherence length) \\(l_c \\approx c/\\Delta\\nu = \\lambda^2/\\Delta\\lambda\\). 선폭 20 nm인 청색 LED는 \\(l_c \\approx (450)^2/20\\) nm ≈ 10 µm, 선폭 1 MHz인 단일 모드 레이저는 300 m다.",
+    "def": "파동이 위상 관계를 유지하는 거리 \\(l_c \\approx \\lambda^2/\\Delta\\lambda\\). 선폭이 좁을수록 길다(LED 수 µm, 단일 모드 레이저 수백 m).",
     "chapters": [
      "light-matter#laser"
     ]
@@ -570,7 +570,7 @@ SB.registerCourse({
     "ko": "결맞음 상태",
     "en": "coherent state",
     "abbr": "",
-    "def": "특별한 겹침인 결맞음 상태(coherent state)는 바닥 상태 가우스를 옆으로 \\(x_c\\)만큼 옮겨 놓은 것이다.",
+    "def": "조화 진동자 바닥 상태 가우스를 옆으로 옮긴 특별한 겹침 상태. 모양을 유지한 채 고전 진동자처럼 왕복한다.",
     "chapters": [
      "harmonic-oscillator#coherent"
     ]
@@ -579,25 +579,16 @@ SB.registerCourse({
     "ko": "결정 운동량",
     "en": "crystal momentum",
     "abbr": "",
-    "def": "\\(k\\)는 결정 운동량(crystal momentum) \\(\\hbar k\\)를 정하는 파수, \\(n\\)은 띠 번호다.",
+    "def": "블로흐 상태를 붙이는 파수 \\(k\\)에 \\(\\hbar\\)를 곱한 양 \\(\\hbar k\\). 외부 힘에 대해 \\(\\hbar\\,dk/dt = F\\)를 따르지만 전자의 실제 운동량은 아니다.",
     "chapters": [
      "energy-bands#bloch"
-    ]
-   },
-   {
-    "ko": "겹침",
-    "en": "degeneracy",
-    "abbr": "",
-    "def": "에너지가 같은 상태가 두 개, 즉 겹침(degeneracy)이다.",
-    "chapters": [
-     "molecular-bonding#double-well"
     ]
    },
    {
     "ko": "겹침 적분",
     "en": "overlap integral",
     "abbr": "",
-    "def": "\\(S\\): 겹침 적분(overlap integral), 0과 1 사이.",
+    "def": "이웃한 두 원자 오비탈이 공간에서 겹치는 정도 \\(S = \\langle\\phi_A|\\phi_B\\rangle\\)(0과 1 사이). LCAO 계산에 들어간다.",
     "chapters": [
      "molecular-bonding#lcao"
     ]
@@ -606,7 +597,7 @@ SB.registerCourse({
     "ko": "계곡",
     "en": "valley",
     "abbr": "",
-    "def": "실리콘 전도대 바닥은 하나가 아니라 \\(\\langle100\\rangle\\) 방향의 여섯 계곡(valley)이다.",
+    "def": "전도대에서 에너지가 극소인 \\(k\\) 공간의 지점. 실리콘은 \\(\\langle100\\rangle\\) 방향에 여섯 계곡이 있고, 각 계곡은 세로·가로 유효 질량이 다르다.",
     "chapters": [
      "quantum-wells#hetero"
     ]
@@ -615,7 +606,7 @@ SB.registerCourse({
     "ko": "계단 퍼텐셜",
     "en": "potential step",
     "abbr": "",
-    "def": "가장 단순한 장애물은 높이 \\(V_0\\)의 계단 퍼텐셜(potential step)이다: \\(x\\lt 0\\)에서 \\(V=0\\), \\(x>0\\)에서 \\(V=V_0\\). 반도체에서는 GaAs/AlGaAs 같은 이종 접합의 전도대 어긋남이 바로 이런 계단이다.",
+    "def": "한 점에서 퍼텐셜이 \\(0\\)에서 \\(V_0\\)로 갑자기 바뀌는 모형. 이종 접합의 띠 어긋남처럼 \\(E > V_0\\)이어도 일부가 반사된다.",
     "chapters": [
      "tunneling#step"
     ]
@@ -624,7 +615,7 @@ SB.registerCourse({
     "ko": "계열 한계",
     "en": "series limit",
     "abbr": "",
-    "def": "발머 계열에서 \\(n_2\\)를 3, 4, 5, …로 계속 키우면 선들은 어떻게 늘어설까? 일정한 간격으로 끝없이 짧은 파장 쪽으로 간다간격이 점점 좁아지며 364.7 nm에 몰린다간격이 점점 넓어진다n₂ = 7부터는 선이 없다 \\(n_2 \\to \\infty\\)이면 \\(1/\\lambda \\to R_\\text{H}/4\\)이므로 \\(\\lambda \\to 4/R_\\text{H} = 364.7\\) nm. 이 계열…",
+    "def": "한 스펙트럼 계열에서 위 준위 \\(n_2 \\to \\infty\\)일 때 선들이 몰려드는 가장 짧은 파장. 발머 계열은 364.7 nm다.",
     "chapters": [
      "atomic-spectra#spectra"
     ]
@@ -633,7 +624,7 @@ SB.registerCourse({
     "ko": "고유 함수",
     "en": "eigenfunction",
     "abbr": "",
-    "def": "시간 독립 슈뢰딩거 방정식 $$-\\frac{\\hbar^2}{2m}\\frac{d^2\\psi}{dx^2} + V(x)\\,\\psi = E\\,\\psi \\quad\\Longleftrightarrow\\quad \\hat H\\psi = E\\psi$$연산자를 걸었더니 자기 자신의 상수배가 나오는 함수를 고유 함수(eigenfunction), 그 상수 \\(E\\)를 에너지 고윳값(energy eigenvalue)이라 한다.",
+    "def": "연산자를 작용하면 자기 자신의 상수배가 되는 함수. 해밀토니언의 고유 함수가 정상 상태이고 그 상수가 에너지 고윳값이다.",
     "chapters": [
      "schrodinger#stationary"
     ]
@@ -642,7 +633,7 @@ SB.registerCourse({
     "ko": "고전적 전환점",
     "en": "classical turning points",
     "abbr": "",
-    "def": "$$T \\approx \\exp\\left(-2\\int_{x_1}^{x_2}\\kappa(x)\\,dx\\right), \\qquad \\kappa(x) = \\frac{\\sqrt{2m\\,[V(x)-E]}}{\\hbar}$$\\(x_1, x_2\\)는 \\(V(x) = E\\)인 고전적 전환점(classical turning points). 사각 장벽이면 \\(e^{-2\\kappa a}\\)로 돌아간다(앞인자 16…은 빠진다).…",
+    "def": "\\(V(x) = E\\)가 되는 점. 고전 입자는 여기서 되돌아가며, 양자 입자의 파동함수는 그 너머에서 지수적으로 줄어든다.",
     "chapters": [
      "tunneling#wkb"
     ]
@@ -651,7 +642,7 @@ SB.registerCourse({
     "ko": "고전적 허용 영역",
     "en": "classically allowed region",
     "abbr": "",
-    "def": "\\(E > V\\)인 고전적 허용 영역(classically allowed region)에서는 \\(\\psi''\\)이 \\(\\psi\\)와 반대 부호라 \\(\\psi\\)가 축 쪽으로 휘어 진동하고, \\(E < V\\)인 금지 영역(forbidden region)에서는 같은 부호라 축에서 멀어지며 지수적으로 커지거나 줄어든다.",
+    "def": "\\(E > V\\)인 구간. 파동함수가 진동하며, 고전 입자도 갈 수 있는 곳이다.",
     "chapters": [
      "schrodinger#conditions"
     ]
@@ -660,7 +651,7 @@ SB.registerCourse({
     "ko": "공명 적분",
     "en": "resonance integral",
     "abbr": "",
-    "def": "$$\\psi = c_A\\phi_A + c_B\\phi_B, \\qquad \\alpha_A = \\langle\\phi_A|H|\\phi_A\\rangle,\\quad \\beta = \\langle\\phi_A|H|\\phi_B\\rangle,\\quad S = \\langle\\phi_A|\\phi_B\\rangle$$\\(\\alpha\\): 온사이트 에너지(on-site energy) — 원자 하나에서의 준위(쿨롱 적분). \\(\\beta < 0\\):…",
+    "def": "이웃한 두 원자 오비탈 사이의 해밀토니언 행렬 요소 \\(\\beta = \\langle\\phi_A|H|\\phi_B\\rangle\\)(보통 음수). 결합·반결합 준위의 갈라짐을 정한다.",
     "chapters": [
      "molecular-bonding#lcao"
     ]
@@ -669,7 +660,7 @@ SB.registerCourse({
     "ko": "공명 터널 다이오드",
     "en": "resonant tunneling diode, RTD",
     "abbr": "",
-    "def": "공명 터널 다이오드(resonant tunneling diode, RTD)는 이중 장벽 양쪽을 고농도로 도핑한 구조다.",
+    "def": "얇은 두 장벽 사이에 양자 우물을 둔 소자(RTD). 우물 준위가 들어오는 전자와 맞을 때만 전류가 크게 흘러 부성 미분 저항을 보인다.",
     "chapters": [
      "tunneling#transfer"
     ]
@@ -678,7 +669,7 @@ SB.registerCourse({
     "ko": "공유 결합",
     "en": "covalent bond",
     "abbr": "",
-    "def": "\\(\\Delta \\approx 0\\)이고 \\(t\\)가 크면 전자가 두 원자 사이에 고르게 쌓이는 공유 결합(covalent bond), \\(|\\Delta| \\gg t\\)이면 전자가 한쪽으로 완전히 넘어가는 이온 결합(ionic bond)이다.",
+    "def": "두 원자가 전자쌍을 고르게 나누어 가지며 이루는 결합. 온사이트 에너지 차가 작고 결합 적분이 클 때 생기며 실리콘 결정이 대표적이다.",
     "chapters": [
      "molecular-bonding#bond-types"
     ]
@@ -687,7 +678,7 @@ SB.registerCourse({
     "ko": "광검출기",
     "en": "photodetector",
     "abbr": "",
-    "def": "흡수로 만든 전자–정공 쌍을 전기장으로 갈라 모으면 광검출기(photodetector)다.",
+    "def": "빛 흡수로 생긴 전자–정공 쌍을 전기장으로 갈라 모아 광전류로 바꾸는 소자. 포토다이오드, 이미지 센서 화소가 여기에 속한다.",
     "chapters": [
      "light-matter#detector"
     ]
@@ -696,7 +687,7 @@ SB.registerCourse({
     "ko": "광자",
     "en": "photon",
     "abbr": "",
-    "def": "빛 자체가 에너지 \\(hf\\)인 알갱이, 광자(photon)의 흐름이다.",
+    "def": "빛 에너지의 알갱이. 에너지 \\(E = hf = hc/\\lambda\\), 운동량 \\(p = h/\\lambda\\)를 가지고 질량은 0이다.",
     "chapters": [
      "photons#photoelectric"
     ]
@@ -705,7 +696,7 @@ SB.registerCourse({
     "ko": "광자 샷 노이즈",
     "en": "photon shot noise",
     "abbr": "",
-    "def": "이것이 광자 샷 노이즈(photon shot noise)다.",
+    "def": "광자가 무작위로 도착해 생기는 개수 요동. 평균 \\(N\\)개면 표준편차가 \\(\\sqrt N\\)이어서, EUV처럼 광자 수가 적을수록 상대 요동이 커진다.",
     "chapters": [
      "photons#photon"
     ]
@@ -714,7 +705,7 @@ SB.registerCourse({
     "ko": "광전 효과",
     "en": "photoelectric effect",
     "abbr": "",
-    "def": "이것이 광전 효과(photoelectric effect)이고, 튀어나온 전자를 광전자(photoelectron)라 한다.",
+    "def": "금속에 빛을 쬐면 전자가 튀어나오는 현상. 광전자의 최대 운동 에너지가 \\(hf - \\phi\\)로 진동수에만 의존해 빛의 입자성을 보여 준다.",
     "chapters": [
      "photons#photoelectric"
     ]
@@ -723,7 +714,7 @@ SB.registerCourse({
     "ko": "광전자",
     "en": "photoelectron",
     "abbr": "",
-    "def": "이것이 광전 효과(photoelectric effect)이고, 튀어나온 전자를 광전자(photoelectron)라 한다.",
+    "def": "광전 효과로 물질 표면에서 튀어나온 전자.",
     "chapters": [
      "photons#photoelectric"
     ]
@@ -732,7 +723,7 @@ SB.registerCourse({
     "ko": "광학 발광 분광",
     "en": "optical emission spectroscopy, OES",
     "abbr": "",
-    "def": "이것이 광학 발광 분광(optical emission spectroscopy, OES)이다.",
+    "def": "플라즈마 속 들뜬 원자·분자가 내는 선 스펙트럼을 분석하는 기법(OES). 식각 장비에서 특정 선의 세기 변화로 종말점을 찾는다.",
     "chapters": [
      "atomic-spectra#emission"
     ]
@@ -741,7 +732,7 @@ SB.registerCourse({
     "ko": "구면 조화 함수",
     "en": "spherical harmonics",
     "abbr": "",
-    "def": "\\(\\Theta\\)와 \\(\\Phi\\)를 합친 각도 부분을 구면 조화 함수(spherical harmonics) \\(Y_l^m(\\theta,\\phi) \\propto P_l^m(\\cos\\theta)\\,e^{im\\phi}\\)라 한다(\\(P_l^m\\)은 버금 르장드르 함수). 이 함수는 각운동량 연산자의 고유함수이기도 하다.",
+    "def": "구면 좌표의 각도 부분 해 \\(Y_l^m(\\theta,\\phi)\\). 각운동량 \\(\\hat L^2\\)과 \\(\\hat L_z\\)의 공통 고유 함수로 오비탈의 모양을 정한다.",
     "chapters": [
      "hydrogen-atom#angular"
     ]
@@ -750,7 +741,7 @@ SB.registerCourse({
     "ko": "구면 좌표",
     "en": "spherical coordinates",
     "abbr": "",
-    "def": "이런 대칭에는 직교 좌표 \\((x,y,z)\\)보다 구면 좌표(spherical coordinates) \\((r,\\theta,\\phi)\\)가 맞는다.",
+    "def": "위치를 거리 \\(r\\), 극각 \\(\\theta\\), 방위각 \\(\\phi\\)로 나타내는 좌표계. 중심력 문제의 변수 분리에 쓴다.",
     "chapters": [
      "hydrogen-atom#separation"
     ]
@@ -759,7 +750,7 @@ SB.registerCourse({
     "ko": "군속도",
     "en": "group velocity",
     "abbr": "",
-    "def": "개별 마루가 움직이는 위상 속도(phase velocity)와 포락선 덩어리가 움직이는 군속도(group velocity)다.",
+    "def": "파속의 포락선이 움직이는 속도 \\(v_g = d\\omega/dk\\). 입자의 속도와 에너지 전달 속도에 해당한다.",
     "chapters": [
      "matter-waves#wavepacket"
     ]
@@ -768,7 +759,7 @@ SB.registerCourse({
     "ko": "궤도 양자수",
     "en": "orbital quantum number",
     "abbr": "",
-    "def": "$$\\hat L^2\\,Y_l^m = l(l+1)\\hbar^2\\,Y_l^m, \\qquad \\hat L_z\\,Y_l^m = m\\hbar\\,Y_l^m, \\qquad l = 0, 1, 2, \\dots,\\quad m = -l, \\dots, +l$$\\(l\\): 궤도 양자수(orbital quantum number). 각운동량의 크기는 \\(|\\vec L| = \\sqrt{l(l+1)}\\,\\hbar\\)이고 \\(z\\) 성분은…",
+    "def": "궤도 각운동량의 크기 \\(|\\vec L| = \\sqrt{l(l+1)}\\hbar\\)를 정하는 양자수 \\(l = 0, 1, \\dots, n-1\\). s, p, d, f 오비탈에 대응한다.",
     "chapters": [
      "hydrogen-atom#angular"
     ]
@@ -777,7 +768,7 @@ SB.registerCourse({
     "ko": "금속",
     "en": "metal",
     "abbr": "",
-    "def": "페르미 준위가 띠 한가운데: 바로 위에 빈 상태가 무수히 있어, 아주 약한 전기장으로도 전자 분포가 \\(k\\) 공간에서 한쪽으로 쏠린다 → 전류 → 금속(metal). 셀당 전자 수가 홀수이면 반드시 이렇다.",
+    "def": "페르미 준위가 띠 한가운데 있어 바로 위에 빈 상태가 무수히 많은 고체. 약한 전기장에도 전류가 흐른다.",
     "chapters": [
      "energy-bands#filling"
     ]
@@ -786,7 +777,7 @@ SB.registerCourse({
     "ko": "금속 결합",
     "en": "metallic bond",
     "abbr": "",
-    "def": "고체에서는 여기에 금속 결합(metallic bond)과 반데르발스 결합(van der Waals bond)이 더해진다.",
+    "def": "원자들이 내놓은 전자가 결정 전체에 퍼진 전자 바다를 이루어 양이온들을 묶는 결합.",
     "chapters": [
      "molecular-bonding#bond-types"
     ]
@@ -795,7 +786,7 @@ SB.registerCourse({
     "ko": "금속–절연체 전이",
     "en": "metal–insulator transition",
     "abbr": "",
-    "def": "모트(Mott)의 판정 기준은 $$n_c^{1/3}\\,a_B^* \\approx 0.26$$이 농도 위에서는 절대 0도에서도 전도가 남는다: 금속–절연체 전이(metal–insulator transition). 실리콘 속 P의 실측 \\(n_c = 3.7\\times10^{18}\\) cm⁻³이다.",
+    "def": "도핑 농도가 모트 기준 \\(n_c^{1/3}a_B^* \\approx 0.26\\)을 넘으면 불순물 궤도가 겹쳐 절대 0도에서도 전도가 남게 되는 전이. Si:P에서 \\(n_c \\approx 3.7\\times10^{18}\\ \\text{cm}^{-3}\\)이다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
     ]
@@ -804,7 +795,7 @@ SB.registerCourse({
     "ko": "금지 영역",
     "en": "forbidden region",
     "abbr": "",
-    "def": "\\(E > V\\)인 고전적 허용 영역(classically allowed region)에서는 \\(\\psi''\\)이 \\(\\psi\\)와 반대 부호라 \\(\\psi\\)가 축 쪽으로 휘어 진동하고, \\(E < V\\)인 금지 영역(forbidden region)에서는 같은 부호라 축에서 멀어지며 지수적으로 커지거나 줄어든다.",
+    "def": "\\(E < V\\)인 구간. 고전 입자는 들어갈 수 없고, 파동함수는 지수적으로 감쇠한다.",
     "chapters": [
      "schrodinger#conditions"
     ]
@@ -813,7 +804,7 @@ SB.registerCourse({
     "ko": "기댓값",
     "en": "expectation value",
     "abbr": "",
-    "def": "그 평균이 기댓값(expectation value)이다.",
+    "def": "같은 상태를 여러 번 측정했을 때 얻는 평균값 \\(\\langle A\\rangle = \\int\\Psi^*\\hat A\\Psi\\,dx\\).",
     "chapters": [
      "schrodinger#operators"
     ]
@@ -822,7 +813,7 @@ SB.registerCourse({
     "ko": "기본 단위 세포",
     "en": "primitive cell",
     "abbr": "",
-    "def": "결정 전체를 빈틈없이 채우며 반복되는 가장 작은 덩어리가 기본 단위 세포(primitive cell)이고, 대칭을 보기 쉽게 고른 더 큰 덩어리가 관습적 단위 세포(unit cell)다.",
+    "def": "결정 전체를 빈틈없이 채우며 반복되는 가장 작은 단위. 격자점 하나를 포함한다.",
     "chapters": [
      "energy-bands#crystal"
     ]
@@ -831,7 +822,7 @@ SB.registerCourse({
     "ko": "기울기 효율",
     "en": "slope efficiency",
     "abbr": "",
-    "def": "반도체 레이저에서 그 기울기(기울기 효율(slope efficiency))는.",
+    "def": "반도체 레이저에서 문턱 전류 이상의 출력 광전력 대 전류 곡선의 기울기(W/A).",
     "chapters": [
      "light-matter#laser"
     ]
@@ -840,7 +831,7 @@ SB.registerCourse({
     "ko": "기저",
     "en": "basis",
     "abbr": "",
-    "def": "되풀이의 뼈대가 되는 점들의 집합을 격자(lattice), 각 격자점에 붙는 원자 묶음을 기저(basis)라 한다.",
+    "def": "결정의 각 격자점에 붙는 원자 묶음. 실리콘(다이아몬드 구조)은 fcc 격자에 원자 두 개짜리 기저를 붙인 것이다.",
     "chapters": [
      "energy-bands#crystal"
     ]
@@ -849,7 +840,7 @@ SB.registerCourse({
     "ko": "내부 광방출",
     "en": "internal photoemission",
     "abbr": "",
-    "def": "MOS 커패시터에 빛을 비추면 전극의 전자가 광자를 흡수해 SiO₂ 전도대로 넘어가는 내부 광방출(internal photoemission)이 일어난다.",
+    "def": "빛을 흡수한 전극의 전자가 절연막의 전도대로 넘어가는 현상. 광전류가 시작되는 광자 에너지로 Si/SiO₂ 같은 계면의 장벽 높이를 잰다.",
     "chapters": [
      "photons#photoelectric"
     ]
@@ -858,7 +849,7 @@ SB.registerCourse({
     "ko": "다이아몬드 구조",
     "en": "diamond structure",
     "abbr": "",
-    "def": "실리콘 결정에서 각 원자는 sp³ 혼성 넷으로 이웃 넷과 결합해 다이아몬드 구조(diamond structure)를 이룬다.",
+    "def": "각 원자가 sp³ 혼성으로 이웃 넷과 사면체 결합을 이루는 결정 구조. 실리콘·저마늄·다이아몬드가 이 구조다.",
     "chapters": [
      "molecular-bonding#hybrid"
     ]
@@ -867,7 +858,7 @@ SB.registerCourse({
     "ko": "단면적",
     "en": "cross section",
     "abbr": "",
-    "def": "이 넓이를 단면적(cross section)이라 한다.",
+    "def": "입사 입자가 특정 방식으로 산란될 확률을 넓이로 나타낸 양. 표적 하나가 막는 유효 넓이로 생각한다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -876,7 +867,7 @@ SB.registerCourse({
     "ko": "단위 세포",
     "en": "unit cell",
     "abbr": "",
-    "def": "결정 전체를 빈틈없이 채우며 반복되는 가장 작은 덩어리가 기본 단위 세포(primitive cell)이고, 대칭을 보기 쉽게 고른 더 큰 덩어리가 관습적 단위 세포(unit cell)다.",
+    "def": "대칭을 보기 쉽게 고른, 결정에서 반복되는 덩어리(관습적 단위 세포). 실리콘의 입방 단위 세포에는 원자 8개가 있다.",
     "chapters": [
      "energy-bands#crystal"
     ]
@@ -885,7 +876,7 @@ SB.registerCourse({
     "ko": "대응 원리",
     "en": "correspondence principle",
     "abbr": "",
-    "def": "② n을 20까지 올리면 양자 확률이 고전값 (b − a)/L에 다가간다(대응 원리(correspondence principle)). ③ 같은 폭에서 GaAs 전자의 에너지가 자유 전자의 약 15배임을 확인하라.",
+    "def": "양자수가 커지면 양자역학의 결과가 고전역학의 결과에 다가가야 한다는 원리.",
     "chapters": [
      "quantum-wells#infinite"
     ]
@@ -894,7 +885,7 @@ SB.registerCourse({
     "ko": "대칭",
     "en": "symmetric",
     "abbr": "",
-    "def": "$$|\\psi(x_2, x_1)|^2 = |\\psi(x_1, x_2)|^2 \\ \\Rightarrow\\ \\psi(x_2, x_1) = \\pm\\,\\psi(x_1, x_2)$$\\(+\\): 대칭(symmetric), \\(-\\): 반대칭(antisymmetric). 자연은 입자 종류마다 둘 중 하나를 고른다.",
+    "def": "두 동일 입자를 맞바꿔도 부호가 변하지 않는 다입자 파동함수의 성질. 보손이 이 대칭을 따른다.",
     "chapters": [
      "spin-atoms#identical"
     ]
@@ -903,7 +894,7 @@ SB.registerCourse({
     "ko": "도플러 넓어짐",
     "en": "Doppler broadening",
     "abbr": "",
-    "def": "실제 기체에서는 자연 선폭보다 훨씬 넓은 도플러 넓어짐(Doppler broadening)이 지배한다.",
+    "def": "열운동하는 원자들의 도플러 이동이 겹쳐 스펙트럼 선이 넓어지는 현상. 기체에서는 보통 자연 선폭보다 훨씬 크다.",
     "chapters": [
      "light-matter#lifetime"
     ]
@@ -912,25 +903,16 @@ SB.registerCourse({
     "ko": "독립 전자 근사",
     "en": "independent-electron approximation",
     "abbr": "",
-    "def": "가장 쓸모 있는 근사는 독립 전자 근사(independent-electron approximation)다.",
+    "def": "다전자 원자에서 각 전자가 핵과 나머지 전자들의 평균 퍼텐셜 속을 독립적으로 움직인다고 보는 근사. 오비탈과 전자 배치 개념의 바탕이다.",
     "chapters": [
      "spin-atoms#periodic"
-    ]
-   },
-   {
-    "ko": "듀안–헌트 법칙",
-    "en": "Duane–Hunt law",
-    "abbr": "",
-    "def": "제동 복사의 가장 짧은 파장은 전자 하나의 운동 에너지 전부가 광자 하나가 될 때다(듀안–헌트 법칙(Duane–Hunt law)).",
-    "chapters": [
-     "atomic-spectra#xray"
     ]
    },
    {
     "ko": "듀안–헌트 한계",
     "en": "Duane–Hunt limit",
     "abbr": "",
-    "def": "이것이 듀안–헌트 한계(Duane–Hunt limit)이고, 표적 재질과 무관하다.",
+    "def": "제동 복사 X선의 최단 파장 \\(\\lambda_\\text{min} = hc/eV\\). 가속 전압으로만 정해지고 표적 재질과 무관하다.",
     "chapters": [
      "photons#xray-compton"
     ]
@@ -939,7 +921,7 @@ SB.registerCourse({
     "ko": "드브로이 파",
     "en": "de Broglie wave",
     "abbr": "",
-    "def": "이것이 물질파(matter wave), 또는 드브로이 파(de Broglie wave)다.",
+    "def": "운동량 \\(p\\)인 입자에 따르는 파장 \\(\\lambda = h/p\\)의 파동. 물질파라고도 한다.",
     "chapters": [
      "matter-waves#debroglie"
     ]
@@ -948,7 +930,7 @@ SB.registerCourse({
     "ko": "등가 산화막 두께",
     "en": "equivalent oxide thickness, EOT",
     "abbr": "",
-    "def": "이때 쓰는 잣대가 등가 산화막 두께(equivalent oxide thickness, EOT)다.",
+    "def": "고유전율 절연막과 같은 게이트 용량을 내는 SiO₂ 두께 \\(\\text{EOT} = t_\\text{high-k}(3.9/\\varepsilon_r)\\)(EOT). 물리 두께는 두꺼워 터널 누설을 줄인다.",
     "chapters": [
      "tunneling#oxide"
     ]
@@ -957,7 +939,7 @@ SB.registerCourse({
     "ko": "띠 간격",
     "en": "band gap",
     "abbr": "",
-    "def": "무한 결정에서는 그런 상태가 있을 수 없으므로 그 에너지 구간은 띠 간격(band gap), 금지 띠다.",
+    "def": "전자가 가질 수 없는 에너지 구간(금지 띠). 반도체에서는 가전자대 꼭대기와 전도대 바닥의 차 \\(E_g\\)이며 Si 1.12 eV다.",
     "chapters": [
      "energy-bands#kronig-penney"
     ]
@@ -966,7 +948,7 @@ SB.registerCourse({
     "ko": "띠 오프셋",
     "en": "band offset",
     "abbr": "",
-    "def": "이 나뉨이 띠 오프셋(band offset)이다.",
+    "def": "이종 접합에서 띠 간격 차이가 전도대와 가전자대로 나뉜 몫 \\(\\Delta E_c\\), \\(\\Delta E_v\\). 전자와 정공을 가두는 우물 깊이를 정한다.",
     "chapters": [
      "quantum-wells#hetero"
     ]
@@ -975,7 +957,7 @@ SB.registerCourse({
     "ko": "라모어 세차 운동",
     "en": "Larmor precession",
     "abbr": "",
-    "def": "$$E = E_0 + m_l\\,\\mu_B B, \\qquad m_l = -l, \\dots, +l$$고전적으로는 토크 \\(\\vec\\tau = \\vec\\mu\\times\\vec B\\) 때문에 \\(\\vec L\\)이 \\(\\vec B\\) 둘레로 라모어 세차 운동(Larmor precession)을 하고, 그 진동수 \\(\\nu_L = \\mu_B B/h = 14.0\\ \\text{GHz/T}\\)가 바로 준위 간격 \\(\\mu_B B\\)를…",
+    "def": "자기 모멘트가 자기장에서 토크를 받아 자기장 축 둘레로 도는 운동. 진동수가 제만 준위 간격을 \\(h\\)로 나눈 값과 같다.",
     "chapters": [
      "spin-atoms#zeeman"
     ]
@@ -984,7 +966,7 @@ SB.registerCourse({
     "ko": "란데 g 인자",
     "en": "Landé g-factor",
     "abbr": "",
-    "def": "약한 자기장에서는 \\(\\vec J\\) 방향 성분만 효과가 있고, 에너지 이동은 란데 g 인자(Landé g-factor) \\(g_J\\)로 쓴다.",
+    "def": "스핀–궤도 결합된 상태 \\(J\\)의 자기 모멘트를 정하는 인자 \\(g_J\\). 약한 자기장에서 준위 이동 \\(g_J m_j\\mu_BB\\)를 준다(비정상 제만 효과).",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -993,7 +975,7 @@ SB.registerCourse({
     "ko": "로런츠 선 모양",
     "en": "Lorentzian line shape",
     "abbr": "",
-    "def": "지수적으로 줄어드는 진동 \\(e^{-t/2\\tau}\\cos 2\\pi\\nu_0 t\\)를 푸리에 분해하면 한 진동수가 아니라 폭이 있는 로런츠 선 모양(Lorentzian line shape)이 나온다.",
+    "def": "유한한 수명으로 지수 감쇠하는 방출의 스펙트럼 모양. 선폭이 \\(\\Delta\\nu = 1/(2\\pi\\tau)\\)다.",
     "chapters": [
      "light-matter#lifetime"
     ]
@@ -1002,7 +984,7 @@ SB.registerCourse({
     "ko": "뤼드베리 상수",
     "en": "Rydberg constant",
     "abbr": "",
-    "def": "$$\\frac{1}{\\lambda} = R_\\text{H}\\left(\\frac{1}{n_1^2} - \\frac{1}{n_2^2}\\right), \\qquad n_2 > n_1, \\qquad R_\\text{H} = 1.09678\\times10^{7}\\ \\text{m}^{-1}$$\\(R_\\text{H}\\): 수소의 뤼드베리 상수(Rydberg constant). \\(n_1 = 1\\) 라이먼(자외선), \\(2\\)…",
+    "def": "수소 스펙트럼 식 \\(1/\\lambda = R_H(1/n_1^2 - 1/n_2^2)\\)의 상수. \\(R_H = 1.09678\\times10^7\\ \\text{m}^{-1}\\)이다.",
     "chapters": [
      "atomic-spectra#spectra"
     ]
@@ -1011,7 +993,7 @@ SB.registerCourse({
     "ko": "모스 퍼텐셜",
     "en": "Morse potential",
     "abbr": "",
-    "def": "모스 퍼텐셜(Morse potential)은 이를 잘 흉내 내면서 정확히 풀린다.",
+    "def": "분자 결합 퍼텐셜을 \\(D_e(1 - e^{-a(r-r_e)})^2\\)로 나타낸 모형. 바닥 근처는 포물선이고 멀어지면 해리 에너지에서 평평해진다.",
     "chapters": [
      "harmonic-oscillator#molecules"
     ]
@@ -1020,7 +1002,7 @@ SB.registerCourse({
     "ko": "무거운 정공",
     "en": "heavy hole",
     "abbr": "",
-    "def": "p 오비탈에서 나온 띠라서 곡률이 서로 다르다: 무거운 정공(heavy hole) \\(m_{hh} \\approx 0.49\\,m_e\\), 가벼운 정공(light hole) \\(m_{lh} \\approx 0.16\\,m_e\\), 그리고 0.044 eV 아래의 갈라진 띠(split-off). 정공 상태 밀도 질량은 \\(m_{dp} = (m_{hh}^{3/2} + m_{lh}^{3/2})^{2/3}\\)이다.",
+    "def": "가전자대 꼭대기에서 곡률이 작은 쪽의 정공 띠. 실리콘에서 유효 질량이 약 \\(0.49m_e\\)이다.",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -1029,7 +1011,7 @@ SB.registerCourse({
     "ko": "무한 사각 우물",
     "en": "infinite square well",
     "abbr": "",
-    "def": "이것을 무한 사각 우물(infinite square well)이라 부른다.",
+    "def": "폭 \\(L\\) 안에서 \\(V = 0\\), 밖은 무한대인 퍼텐셜. 에너지가 \\(E_n = n^2\\pi^2\\hbar^2/2mL^2\\)로 양자화된다.",
     "chapters": [
      "quantum-wells#infinite"
     ]
@@ -1038,7 +1020,7 @@ SB.registerCourse({
     "ko": "문턱 조건",
     "en": "threshold condition",
     "abbr": "",
-    "def": "따라서 발진의 문턱 조건(threshold condition)은.",
+    "def": "레이저 발진이 시작되는 조건. 공진기를 한 번 왕복하는 동안의 이득이 거울 손실과 내부 손실을 정확히 메워야 한다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -1047,7 +1029,7 @@ SB.registerCourse({
     "ko": "물질파",
     "en": "matter wave",
     "abbr": "",
-    "def": "이것이 물질파(matter wave), 또는 드브로이 파(de Broglie wave)다.",
+    "def": "전자·중성자 같은 입자가 보이는 파동성. 파장은 드브로이 관계 \\(\\lambda = h/p\\)로 정해진다.",
     "chapters": [
      "matter-waves#debroglie"
     ]
@@ -1056,7 +1038,7 @@ SB.registerCourse({
     "ko": "미분 단면적",
     "en": "differential cross section",
     "abbr": "",
-    "def": "\\(b(\\theta)\\)를 미분해 입체각 \\(d\\Omega = 2\\pi\\sin\\theta\\,d\\theta\\)로 나누면 러더퍼드의 미분 단면적(differential cross section)이 나온다.",
+    "def": "단위 입체각으로 산란되는 단면적 \\(d\\sigma/d\\Omega\\). 러더퍼드 산란에서는 \\(1/\\sin^4(\\theta/2)\\)에 비례한다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -1065,7 +1047,7 @@ SB.registerCourse({
     "ko": "미세 구조",
     "en": "fine structure",
     "abbr": "",
-    "def": "수소의 2p 준위에서 이 갈라짐은 \\(4.5\\times10^{-5}\\) eV(10.9 GHz)로, 보어 준위의 \\(\\alpha^2\\approx 5\\times10^{-5}\\)배 크기다(\\(\\alpha = 1/137\\): 미세 구조 상수). 그래서 이름이 미세 구조(fine structure)다.",
+    "def": "스핀–궤도 결합과 상대론 보정으로 원자 준위가 \\(\\alpha^2\\) 정도로 잘게 갈라지는 구조. 나트륨 D선 두 줄이 그 예다.",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -1074,7 +1056,7 @@ SB.registerCourse({
     "ko": "미시 상태",
     "en": "microstate",
     "abbr": "",
-    "def": "동전 하나하나의 결과를 모두 적은 것이 미시 상태(microstate)이고, \"앞면 몇 개\"만 적은 것이 거시 상태(macrostate)다.",
+    "def": "계를 이루는 각 입자의 상태를 모두 지정한 상태. 같은 거시 상태에 속하는 미시 상태들은 똑같은 확률로 나타난다고 본다.",
     "chapters": [
      "quantum-statistics#boltzmann"
     ]
@@ -1083,7 +1065,7 @@ SB.registerCourse({
     "ko": "밀도 기울기 모형",
     "en": "density-gradient model",
     "abbr": "",
-    "def": "그래서 TCAD는 슈뢰딩거–푸아송 방정식을 자기 일관적으로 풀거나(슈팅법·유한 차분 고윳값 풀이가 그 안에 들어간다), 계산을 줄이려고 밀도 기울기 모형(density-gradient model)으로 양자 보정을 넣는다.",
+    "def": "슈뢰딩거 방정식을 직접 풀지 않고 전자 밀도의 기울기 항으로 양자 구속 효과를 보정하는 TCAD 모형.",
     "chapters": [
      "schrodinger#conditions"
     ]
@@ -1092,7 +1074,7 @@ SB.registerCourse({
     "ko": "밀도 반전",
     "en": "population inversion",
     "abbr": "",
-    "def": "빛이 증폭되려면 \\(N_2 > N_1\\), 즉 밀도 반전(population inversion)이 필요하다.",
+    "def": "위 준위의 원자 수가 아래 준위보다 많은 상태 \\(N_2 > N_1\\). 유도 방출이 흡수를 이겨 빛이 증폭되려면 필요하다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -1101,7 +1083,7 @@ SB.registerCourse({
     "ko": "바닥 상태",
     "en": "ground state",
     "abbr": "",
-    "def": "\\(n=1\\)인 바닥 상태(ground state) 에너지의 크기 13.6 eV가 수소의 이온화 에너지(ionization energy)다.",
+    "def": "계가 가질 수 있는 가장 낮은 에너지 상태. 수소 원자는 \\(n = 1\\), \\(E_1 = -13.6\\ \\text{eV}\\)다.",
     "chapters": [
      "atomic-spectra#bohr"
     ]
@@ -1110,7 +1092,7 @@ SB.registerCourse({
     "ko": "반대칭",
     "en": "antisymmetric",
     "abbr": "",
-    "def": "$$|\\psi(x_2, x_1)|^2 = |\\psi(x_1, x_2)|^2 \\ \\Rightarrow\\ \\psi(x_2, x_1) = \\pm\\,\\psi(x_1, x_2)$$\\(+\\): 대칭(symmetric), \\(-\\): 반대칭(antisymmetric). 자연은 입자 종류마다 둘 중 하나를 고른다.",
+    "def": "두 동일 입자를 맞바꾸면 부호가 바뀌는 다입자 파동함수의 성질. 페르미온(전자)이 따르며 파울리 배타 원리로 이어진다.",
     "chapters": [
      "spin-atoms#identical"
     ]
@@ -1119,7 +1101,7 @@ SB.registerCourse({
     "ko": "반데르발스 결합",
     "en": "van der Waals bond",
     "abbr": "",
-    "def": "고체에서는 여기에 금속 결합(metallic bond)과 반데르발스 결합(van der Waals bond)이 더해진다.",
+    "def": "분자나 원자 사이의 약한 쌍극자 인력으로 이루어진 결합. 흑연 층 사이, MoS₂ 같은 2차원 물질의 층 사이를 묶는다.",
     "chapters": [
      "molecular-bonding#bond-types"
     ]
@@ -1128,7 +1110,7 @@ SB.registerCourse({
     "ko": "반도체",
     "en": "semiconductor",
     "abbr": "",
-    "def": "띠가 꽉 차고 위 띠와 사이에 간격: 꽉 찬 띠는 \\(+k\\)와 \\(-k\\) 상태가 짝지어 모두 차 있어 전류를 나르지 못한다(뒤의 정공 절). 간격이 작으면(대략 \\(E_g \\lesssim 3\\)–4 eV) 상온에서 일부 전자가 열로 올라가는 반도체(semiconductor), 크면 절연체(insulator).",
+    "def": "0 K에서 띠가 꽉 차 있지만 띠 간격이 작아(대략 3–4 eV 이하) 상온에서 일부 전자가 열로 전도대에 오르는 고체. 도핑으로 전도도를 크게 바꿀 수 있다.",
     "chapters": [
      "energy-bands#filling"
     ]
@@ -1137,7 +1119,7 @@ SB.registerCourse({
     "ko": "반전층",
     "en": "inversion layer",
     "abbr": "",
-    "def": "MOSFET 게이트에 문턱 이상의 전압을 걸면 산화막 아래 실리콘 표면에 전자가 모인다(반전층(inversion layer)). 이때 전도대는 계면에서 아래로 휘고, 전자는 한쪽은 산화막 장벽(3.1 eV), 다른 쪽은 휘어 오르는 전도대로 막힌 좁은 우물에 갇힌다.",
+    "def": "MOSFET 게이트에 문턱 이상의 전압을 걸었을 때 산화막 바로 아래에 소수 캐리어가 모여 생긴 얇은 전도층. 삼각 우물에 갇혀 부띠로 양자화된다.",
     "chapters": [
      "quantum-wells#triangular"
     ]
@@ -1146,7 +1128,7 @@ SB.registerCourse({
     "ko": "발광 다이오드",
     "en": "LED, light-emitting diode",
     "abbr": "",
-    "def": "발광 다이오드(LED, light-emitting diode)는 pn 접합에 순방향 전류를 흘려 전자와 정공을 활성층에서 만나게 한다.",
+    "def": "pn 접합에 순방향 전류를 흘려 주입된 전자와 정공의 복사 재결합으로 빛을 내는 소자(LED). 파장은 대략 \\(hc/E_g\\)다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -1155,7 +1137,7 @@ SB.registerCourse({
     "ko": "방출선",
     "en": "emission line",
     "abbr": "",
-    "def": "뜨겁고 조밀한 물체는 연속 스펙트럼, 뜨겁고 묽은 기체는 밝은 방출선(emission line), 연속 광원 앞의 차가운 기체는 같은 자리에 어두운 흡수선(absorption line)을 만든다.",
+    "def": "뜨겁고 묽은 기체가 특정 파장에서만 내는 밝은 선. 원자 준위 사이 전이 에너지에 해당한다.",
     "chapters": [
      "atomic-spectra#emission"
     ]
@@ -1164,7 +1146,7 @@ SB.registerCourse({
     "ko": "버나드–듀라포그 조건",
     "en": "Bernard–Duraffourg condition",
     "abbr": "",
-    "def": "반도체의 밀도 반전 조건은 전자의 준페르미 준위와 정공의 준페르미 준위 차가 광자 에너지보다 큰 것이다(버나드–듀라포그 조건(Bernard–Duraffourg condition): \\(E_{Fn} - E_{Fp} > h\\nu > E_g\\)). 초기의 단순 pn 접합(동종 접합) 레이저는 캐리어가 수 µm로 퍼져 나가 상온에서 발진하지 못했다.",
+    "def": "반도체에서 빛이 증폭되기 위한 밀도 반전 조건 \\(E_{Fn} - E_{Fp} > h\\nu > E_g\\). 두 준페르미 준위의 차가 광자 에너지보다 커야 한다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -1173,7 +1155,7 @@ SB.registerCourse({
     "ko": "벡터 모형",
     "en": "vector model",
     "abbr": "",
-    "def": "이것이 벡터 모형(vector model)이다.",
+    "def": "각운동량 \\(\\vec L\\)을 길이 \\(\\sqrt{l(l+1)}\\hbar\\)인 화살표가 \\(z\\)축 둘레 원뿔 위에서 \\(z\\) 성분 \\(m\\hbar\\)만 정해진 채 도는 것으로 그리는 모형.",
     "chapters": [
      "hydrogen-atom#angular"
     ]
@@ -1182,7 +1164,7 @@ SB.registerCourse({
     "ko": "변수 분리",
     "en": "separation of variables",
     "abbr": "",
-    "def": "변의 길이가 \\(a, b, c\\)인 3차원 상자에서는 퍼텐셜이 \\(x, y, z\\)로 나뉘므로 변수 분리(separation of variables) \\(\\psi = X(x)Y(y)Z(z)\\)가 된다.",
+    "def": "여러 변수의 편미분 방정식을 각 변수만의 함수의 곱 \\(\\psi = X(x)Y(y)Z(z)\\)으로 풀어 상미분 방정식들로 나누는 방법.",
     "chapters": [
      "quantum-wells#boxes"
     ]
@@ -1191,7 +1173,7 @@ SB.registerCourse({
     "ko": "보른 해석",
     "en": "Born interpretation",
     "abbr": "",
-    "def": "전자의 상태를 복소수 값의 파동함수(wave function) \\(\\psi\\)로 나타내고, 어떤 위치에서 전자가 검출될 확률은 \\(|\\psi|^2\\)에 비례한다(보른 해석(Born interpretation), 4장). 슬릿 1을 지나는 진폭을 \\(\\psi_1\\), 슬릿 2를 지나는 진폭을 \\(\\psi_2\\)라 하면, 두 길이 모두 열려 있고 어느 길인지 알 수 없을 때는 진폭이 더해진다.",
+    "def": "파동함수의 절댓값 제곱 \\(|\\psi|^2\\)이 입자를 발견할 확률 밀도라는 해석.",
     "chapters": [
      "matter-waves#double-slit"
     ]
@@ -1200,7 +1182,7 @@ SB.registerCourse({
     "ko": "보스–아인슈타인 분포",
     "en": "Bose–Einstein distribution",
     "abbr": "",
-    "def": "들뜬 진동자 준위의 볼츠만 무게를 모두 더하면 나오는 결과로, 10장에서 보스–아인슈타인 분포(Bose–Einstein distribution)의 특수한 경우(화학 퍼텐셜 0)임을 보게 된다.",
+    "def": "보손이 에너지 \\(E\\)인 상태를 차지하는 평균 수 \\(1/(e^{(E-\\mu)/kT} - 1)\\). 광자·포논은 \\(\\mu = 0\\)이다.",
     "chapters": [
      "harmonic-oscillator#phonons"
     ]
@@ -1209,7 +1191,7 @@ SB.registerCourse({
     "ko": "보어 마그네톤",
     "en": "Bohr magneton",
     "abbr": "",
-    "def": "$$\\vec\\mu = -\\frac{e}{2m_e}\\vec L, \\qquad \\mu_z = -m\\,\\mu_B, \\qquad \\mu_B = \\frac{e\\hbar}{2m_e} = 9.274\\times10^{-24}\\ \\text{J/T} = 5.788\\times10^{-5}\\ \\text{eV/T}$$\\(\\mu_B\\): 보어 마그네톤(Bohr magneton), 원자 자성의 자연 단위. 자기장 \\(B\\) 속에서 에너지는…",
+    "def": "원자 자기 모멘트의 자연 단위 \\(\\mu_B = e\\hbar/2m_e = 9.274\\times10^{-24}\\ \\text{J/T} = 5.788\\times10^{-5}\\ \\text{eV/T}\\).",
     "chapters": [
      "hydrogen-atom#transitions"
     ]
@@ -1218,7 +1200,7 @@ SB.registerCourse({
     "ko": "복사 재결합",
     "en": "radiative recombination",
     "abbr": "",
-    "def": "흡수의 반대 과정이 복사 재결합(radiative recombination)이다.",
+    "def": "전도대 전자가 가전자대 정공과 만나 띠 간격만큼의 에너지를 광자로 내는 재결합. LED와 레이저의 발광 원리다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -1227,7 +1209,7 @@ SB.registerCourse({
     "ko": "볼츠만 분포",
     "en": "Boltzmann distribution",
     "abbr": "",
-    "def": "열평형에서 준위 \\(E_2\\)와 \\(E_1\\)에 있는 원자 수의 비는 볼츠만 분포(Boltzmann distribution)를 따른다.",
+    "def": "열평형에서 에너지 \\(E\\)인 상태가 차지될 상대 확률이 \\(e^{-E/kT}\\)에 비례한다는 분포.",
     "chapters": [
      "atomic-spectra#emission"
     ]
@@ -1236,7 +1218,7 @@ SB.registerCourse({
     "ko": "부성 미분 저항",
     "en": "negative differential resistance, NDR",
     "abbr": "",
-    "def": "③의 구간에서는 전압을 올릴수록 전류가 줄어드는 부성 미분 저항(negative differential resistance, NDR)이 나타난다.",
+    "def": "전압을 올릴수록 전류가 줄어드는 구간(NDR). 공명 터널 다이오드에서 나타나 고주파 발진에 쓴다.",
     "chapters": [
      "tunneling#transfer"
     ]
@@ -1245,25 +1227,16 @@ SB.registerCourse({
     "ko": "분배 함수",
     "en": "partition function",
     "abbr": "",
-    "def": "\\(Z = \\sum_i g_i e^{-E_i/k_BT}\\)는 분배 함수(partition function)다.",
+    "def": "모든 상태의 볼츠만 인자를 더한 \\(Z = \\sum g_ie^{-E_i/kT}\\). 각 상태의 확률은 \\(g_ie^{-E_i/kT}/Z\\)다.",
     "chapters": [
      "quantum-statistics#boltzmann"
-    ]
-   },
-   {
-    "ko": "분산",
-    "en": "",
-    "abbr": "",
-    "def": "$$v_p = \\frac{\\omega}{k}, \\qquad v_g = \\frac{d\\omega}{dk}\\bigg|_{k_0}$$\\(\\omega(k)\\)를 분산 관계(dispersion relation)라 한다.",
-    "chapters": [
-     "matter-waves#wavepacket"
     ]
    },
    {
     "ko": "분산 관계",
     "en": "dispersion relation",
     "abbr": "",
-    "def": "$$v_p = \\frac{\\omega}{k}, \\qquad v_g = \\frac{d\\omega}{dk}\\bigg|_{k_0}$$\\(\\omega(k)\\)를 분산 관계(dispersion relation)라 한다.",
+    "def": "파동의 각진동수와 파수의 관계 \\(\\omega(k)\\). 자유 입자는 \\(\\omega = \\hbar k^2/2m\\)이며, 군속도와 파속의 퍼짐을 정한다.",
     "chapters": [
      "matter-waves#wavepacket"
     ]
@@ -1272,7 +1245,7 @@ SB.registerCourse({
     "ko": "불확정성 원리",
     "en": "uncertainty principle",
     "abbr": "",
-    "def": "1927년 하이젠베르크가 제시한 불확정성 원리(uncertainty principle)다.",
+    "def": "위치와 운동량을 동시에 정확히 알 수 없다는 원리 \\(\\Delta x\\,\\Delta p \\ge \\hbar/2\\). 측정 기술의 한계가 아니라 파동성의 결과다.",
     "chapters": [
      "matter-waves#uncertainty"
     ]
@@ -1281,7 +1254,7 @@ SB.registerCourse({
     "ko": "브래그 조건",
     "en": "Bragg condition",
     "abbr": "",
-    "def": "이것이 브래그 조건(Bragg condition)이며, X선·전자·중성자 회절에 똑같이 쓴다.",
+    "def": "간격 \\(d\\)인 결정면에서 반사된 파가 보강 간섭하는 조건 \\(2d\\sin\\theta = n\\lambda\\). X선·전자·중성자 회절에 똑같이 쓴다.",
     "chapters": [
      "matter-waves#diffraction"
     ]
@@ -1290,7 +1263,7 @@ SB.registerCourse({
     "ko": "브루스 식",
     "en": "Brus equation",
     "abbr": "",
-    "def": "브루스가 쿨롱 인력까지 넣어 얻은 근사식은 $$E \\approx E_g + \\frac{\\pi^2\\hbar^2}{2R^2}\\left(\\frac{1}{m_e^*} + \\frac{1}{m_h^*}\\right) - 1.786\\,\\frac{e^2}{4\\pi\\varepsilon_0\\varepsilon_r R}$$브루스 식(Brus equation). CdSe: \\(E_g = 1.74\\) eV, \\(m_e^* = 0.13\\),…",
+    "def": "구형 반도체 양자점의 띠 간격을 덩어리 \\(E_g\\)에 전자·정공 구속 에너지를 더하고 쿨롱 인력을 뺀 값으로 어림하는 식.",
     "chapters": [
      "quantum-wells#boxes"
     ]
@@ -1299,7 +1272,7 @@ SB.registerCourse({
     "ko": "브릴루앙 영역",
     "en": "Brillouin zone",
     "abbr": "",
-    "def": "\\(k\\)와 \\(k + 2\\pi/a\\)는 원자 위치에서 똑같은 운동이므로 첫 브릴루앙 영역(Brillouin zone)만 보면 된다(12장).",
+    "def": "\\(k\\) 공간에서 서로 다른 상태를 한 번씩만 담는 구간. 1차원 제1 영역은 \\(-\\pi/a < k \\le \\pi/a\\)이고, 그 경계에서 띠 간격이 열린다.",
     "chapters": [
      "harmonic-oscillator#phonons"
     ]
@@ -1308,7 +1281,7 @@ SB.registerCourse({
     "ko": "블로흐 진동",
     "en": "Bloch oscillation",
     "abbr": "",
-    "def": "이 블로흐 진동(Bloch oscillation)은 1992년 반도체 초격자에서 처음 관측되었다.",
+    "def": "완벽한 결정 속 전자에 일정한 힘을 가하면 \\(k\\)가 브릴루앙 영역을 되풀이해 지나가며 위치가 진동하는 현상. 반도체 초격자에서 관측되었다.",
     "chapters": [
      "energy-bands#dynamics"
     ]
@@ -1317,7 +1290,7 @@ SB.registerCourse({
     "ko": "블로흐 함수",
     "en": "Bloch function",
     "abbr": "",
-    "def": "블로흐 함수(Bloch function)는 자유 전자의 평면파 \\(e^{ikx}\\)에 격자와 같은 주기로 출렁이는 함수 \\(u_k\\)를 곱한 것이다.",
+    "def": "주기 퍼텐셜 속 전자의 고유 상태 \\(\\psi_k = e^{ikx}u_k(x)\\). 평면파에 격자 주기를 가진 함수 \\(u_k\\)를 곱한 꼴이다(블로흐 정리).",
     "chapters": [
      "energy-bands#bloch"
     ]
@@ -1326,7 +1299,7 @@ SB.registerCourse({
     "ko": "비복사 전이",
     "en": "nonradiative transition",
     "abbr": "",
-    "def": "$$N_2(t) = N_2(0)\\,e^{-t/\\tau}, \\qquad \\tau = \\frac{1}{A_{21}}, \\qquad \\frac{1}{\\tau} = \\frac{1}{\\tau_r} + \\frac{1}{\\tau_{nr}}$$빛을 내지 않고 열(포논)로 에너지를 잃는 비복사 전이(nonradiative transition)가 있으면 두 빈도가 더해진다.",
+    "def": "광자를 내지 않고 포논(열)이나 결함을 거쳐 에너지를 잃는 전이. 발광 효율을 떨어뜨린다.",
     "chapters": [
      "light-matter#lifetime"
     ]
@@ -1335,7 +1308,7 @@ SB.registerCourse({
     "ko": "비조화성",
     "en": "anharmonicity",
     "abbr": "",
-    "def": "$$V(r) = D_e\\left(1 - e^{-a(r-r_e)}\\right)^2, \\qquad k = 2D_ea^2, \\qquad E_n = \\hbar\\omega\\left(n+\\tfrac12\\right) - \\frac{[\\hbar\\omega(n+\\frac12)]^2}{4D_e}$$둘째 항이 비조화성(anharmonicity)이다.",
+    "def": "실제 분자 퍼텐셜이 포물선에서 벗어나는 정도. 진동 준위 간격이 위로 갈수록 좁아지고 배음 흡수가 생긴다.",
     "chapters": [
      "harmonic-oscillator#molecules"
     ]
@@ -1344,7 +1317,7 @@ SB.registerCourse({
     "ko": "비축퇴",
     "en": "nondegenerate",
     "abbr": "",
-    "def": "이것이 비축퇴(nondegenerate) 반도체의 표준 결과다.",
+    "def": "페르미 준위가 띠 가장자리에서 \\(3kT\\) 이상 떨어져 페르미–디랙 분포를 볼츠만 분포로 근사할 수 있는 상태. \\(n = N_ce^{-(E_c-E_F)/kT}\\)가 성립한다.",
     "chapters": [
      "quantum-statistics#carriers"
     ]
@@ -1353,7 +1326,7 @@ SB.registerCourse({
     "ko": "빈 변위 법칙",
     "en": "Wien's displacement law",
     "abbr": "",
-    "def": "$$\\lambda_\\text{max}T = b = 2.898\\times10^{-3}\\ \\text{m·K}, \\qquad M = \\int_0^\\infty M_\\lambda\\,d\\lambda = \\sigma T^4$$왼쪽은 빈 변위 법칙(Wien's displacement law): 온도가 높을수록 봉우리가 짧은 파장으로 옮겨 간다.",
+    "def": "흑체 복사 스펙트럼의 봉우리 파장이 온도에 반비례한다는 법칙 \\(\\lambda_\\text{max}T = 2.898\\times10^{-3}\\ \\text{m}\\cdot\\text{K}\\).",
     "chapters": [
      "photons#blackbody"
     ]
@@ -1362,7 +1335,7 @@ SB.registerCourse({
     "ko": "사각 장벽",
     "en": "rectangular barrier",
     "abbr": "",
-    "def": "이제 폭 \\(a\\), 높이 \\(V_0\\)의 사각 장벽(rectangular barrier)을 생각한다.",
+    "def": "폭 \\(a\\), 높이 \\(V_0\\)의 직사각형 퍼텐셜 장벽. \\(E < V_0\\)이어도 투과율이 대략 \\(e^{-2\\kappa a}\\)만큼 남는다.",
     "chapters": [
      "tunneling#barrier"
     ]
@@ -1371,7 +1344,7 @@ SB.registerCourse({
     "ko": "삼각 우물",
     "en": "triangular well",
     "abbr": "",
-    "def": "계면 근처의 전도대는 거의 직선이므로 \\(V(z) = qFz\\) (\\(z > 0\\)), \\(z < 0\\)은 무한 벽인 삼각 우물(triangular well)로 근사할 수 있다.",
+    "def": "한쪽은 무한 벽, 다른 쪽은 \\(V = qFz\\)로 직선적으로 오르는 퍼텐셜 우물. MOSFET 반전층을 근사하며 해는 에어리 함수다.",
     "chapters": [
      "quantum-wells#triangular"
     ]
@@ -1380,7 +1353,7 @@ SB.registerCourse({
     "ko": "상태 밀도",
     "en": "density of states",
     "abbr": "",
-    "def": "단위 부피·단위 에너지당 상태 수를 상태 밀도(density of states) \\(g(E)\\)라 한다.",
+    "def": "단위 부피·단위 에너지당 양자 상태 수 \\(g(E)\\). 3차원 자유 전자는 \\(\\sqrt E\\), 2차원은 일정, 1차원은 \\(1/\\sqrt E\\)에 비례한다.",
     "chapters": [
      "quantum-statistics#dos"
     ]
@@ -1389,7 +1362,7 @@ SB.registerCourse({
     "ko": "상태 밀도 유효 질량",
     "en": "density-of-states effective mass",
     "abbr": "",
-    "def": "상태 밀도(10장의 \\(N_c\\))에는 계곡 수까지 넣은 상태 밀도 유효 질량(density-of-states effective mass), 전류(이동도)에는 세 방향 \\(1/m\\)의 평균인 전도도 유효 질량(conductivity effective mass)을 쓴다.",
+    "def": "계곡 수와 방향별 질량을 묶어 상태 밀도를 맞추도록 정한 유효 질량. 실리콘 전자는 \\(6^{2/3}(m_lm_t^2)^{1/3} = 1.08m_e\\)다.",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -1398,7 +1371,7 @@ SB.registerCourse({
     "ko": "선 스펙트럼",
     "en": "line spectrum",
     "abbr": "",
-    "def": "반면 낮은 압력의 기체에 방전을 일으키면 몇 개의 날카로운 파장만 나오는 선 스펙트럼(line spectrum)이 보인다.",
+    "def": "묽은 기체가 내거나 흡수하는, 몇 개의 날카로운 파장만으로 이루어진 스펙트럼. 원자 에너지 준위가 불연속임을 보여 준다.",
     "chapters": [
      "atomic-spectra#spectra"
     ]
@@ -1407,7 +1380,7 @@ SB.registerCourse({
     "ko": "선택 규칙",
     "en": "selection rule",
     "abbr": "",
-    "def": "이것이 선택 규칙(selection rule) \\(\\Delta n = \\pm1\\)이다.",
+    "def": "빛의 흡수·방출로 일어날 수 있는 전이를 정하는 규칙. 조화 진동자는 \\(\\Delta n = \\pm1\\), 원자의 전기 쌍극자 전이는 \\(\\Delta l = \\pm1\\)이다.",
     "chapters": [
      "harmonic-oscillator#molecules"
     ]
@@ -1416,7 +1389,7 @@ SB.registerCourse({
     "ko": "수명",
     "en": "lifetime",
     "abbr": "",
-    "def": "해는 지수 감소이고, 위 준위의 평균 머무름 시간을 수명(lifetime)이라 한다.",
+    "def": "들뜬 준위에 머무는 평균 시간 \\(\\tau\\). 자발 방출만 있으면 \\(\\tau = 1/A_{21}\\)이다.",
     "chapters": [
      "light-matter#lifetime"
     ]
@@ -1425,25 +1398,16 @@ SB.registerCourse({
     "ko": "수소 꼴 원자",
     "en": "hydrogen-like atom",
     "abbr": "",
-    "def": "핵 전하가 \\(Ze\\)이고 전자가 하나뿐인 이온(He⁺, Li²⁺, …)을 수소 꼴 원자(hydrogen-like atom)라 한다.",
+    "def": "핵 전하 \\(Ze\\) 주위에 전자 하나만 있는 원자나 이온(He⁺, Li²⁺ 등). 에너지는 \\(E_n = -13.6\\,Z^2/n^2\\ \\text{eV}\\)다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
-    ]
-   },
-   {
-    "ko": "수소 꼴 이온",
-    "en": "hydrogen-like ion",
-    "abbr": "",
-    "def": "$$E_n = -\\frac{\\mu}{m_e}\\frac{13.6057\\ \\text{eV}\\cdot Z^2}{n^2}, \\qquad R_M = \\frac{R_\\infty}{1 + m_e/M}$$수소는 \\(\\mu/m_e = 0.999456\\), 그래서 \\(R_\\text{H} = 1.09678\\times10^7\\ \\text{m}^{-1}\\). 전자 하나만 남은 He⁺(Z = 2), Li²⁺(Z = 3) 같은 수소 꼴…",
-    "chapters": [
-     "atomic-spectra#bohr"
     ]
    },
    {
     "ko": "수직 공진 표면 방출 레이저",
     "en": "VCSEL",
     "abbr": "",
-    "def": "공진기를 기판에 수직으로 세우고 위아래에 분산 브래그 반사경(DBR, 반사율 99% 이상)을 둔 것이 수직 공진 표면 방출 레이저(VCSEL)다.",
+    "def": "공진기를 기판에 수직으로 세우고 위아래에 분산 브래그 반사경을 둔 반도체 레이저(VCSEL). 빛이 표면으로 나와 웨이퍼 단위 시험과 배열이 쉽다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -1452,7 +1416,7 @@ SB.registerCourse({
     "ko": "슈테판–볼츠만 법칙",
     "en": "Stefan–Boltzmann law",
     "abbr": "",
-    "def": "오른쪽은 슈테판–볼츠만 법칙(Stefan–Boltzmann law), \\(\\sigma = 5.670\\times10^{-8}\\) W/(m²·K⁴). 실제 물체는 방사율 \\(\\varepsilon\\)(0–1)을 곱해 \\(M = \\varepsilon\\sigma T^4\\).",
+    "def": "흑체가 단위 넓이당 내는 전체 복사 출력이 \\(\\sigma T^4\\)라는 법칙(\\(\\sigma = 5.670\\times10^{-8}\\ \\text{W/(m}^2\\text{K}^4)\\)).",
     "chapters": [
      "photons#blackbody"
     ]
@@ -1461,7 +1425,7 @@ SB.registerCourse({
     "ko": "슈팅법",
     "en": "shooting method",
     "abbr": "",
-    "def": "이것이 슈팅법(shooting method)이고, 에너지 양자화의 가장 직관적인 설명이다.",
+    "def": "한쪽 끝에서 시작해 슈뢰딩거 방정식을 수치 적분하며 다른 쪽 경계 조건이 맞을 때까지 에너지를 조정하는 고윳값 풀이법.",
     "chapters": [
      "schrodinger#conditions"
     ]
@@ -1470,7 +1434,7 @@ SB.registerCourse({
     "ko": "스핀",
     "en": "spin",
     "abbr": "",
-    "def": "1925년 하우드스미트와 윌렌벡은 전자가 고유한 각운동량 스핀(spin)을 가진다고 제안했다.",
+    "def": "입자가 공간 운동과 무관하게 가지는 고유 각운동량. 전자는 \\(s = 1/2\\)로 \\(S_z = \\pm\\hbar/2\\) 두 상태만 있다.",
     "chapters": [
      "spin-atoms#spin"
     ]
@@ -1479,7 +1443,7 @@ SB.registerCourse({
     "ko": "스핀 전달 토크",
     "en": "STT",
     "abbr": "",
-    "def": "고정층을 지나며 스핀이 한쪽으로 정렬된 전류가 자유층에 들어가면 스핀 각운동량을 넘겨주며 자화를 돌린다(스핀 전달 토크(STT)). 수직 자화 CoFeB/MgO MTJ(지름 수십 nm, 장벽 약 1 nm)는 열 안정성 \\(\\Delta = E_b/k_BT \\gtrsim 60\\)으로 10년 보존을 지키며, 28 nm 이하 로직 공정의 BEOL에 내장 메모리(eMRAM)로 들어가 eFlash를 대체하고 있다.",
+    "def": "스핀이 정렬된 전류가 자성층에 들어가 스핀 각운동량을 넘겨주며 자화를 돌리는 효과(STT). STT-MRAM의 쓰기 원리다.",
     "chapters": [
      "spin-atoms#inner"
     ]
@@ -1488,7 +1452,7 @@ SB.registerCourse({
     "ko": "스핀–궤도 결합",
     "en": "spin–orbit coupling",
     "abbr": "",
-    "def": "이것이 스핀–궤도 결합(spin–orbit coupling)이다.",
+    "def": "전자의 스핀 자기 모멘트가 궤도 운동으로 생긴 내부 자기장과 상호작용해 준위가 \\(j = l \\pm 1/2\\)로 갈라지는 효과.",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -1497,7 +1461,7 @@ SB.registerCourse({
     "ko": "스핀–통계 정리",
     "en": "spin–statistics theorem",
     "abbr": "",
-    "def": "스핀과 대칭의 이 연결을 스핀–통계 정리(spin–statistics theorem)라 한다(파울리, 1940, 상대론적 양자장론의 결과). 전자에 대한 결론이 파울리 배타 원리(Pauli exclusion principle)다.",
+    "def": "정수 스핀 입자(보손)는 대칭, 반정수 스핀 입자(페르미온)는 반대칭 파동함수를 가진다는 정리.",
     "chapters": [
      "spin-atoms#identical"
     ]
@@ -1506,7 +1470,7 @@ SB.registerCourse({
     "ko": "슬레이터 행렬식",
     "en": "Slater determinant",
     "abbr": "",
-    "def": "전자 \\(N\\)개의 반대칭 파동함수는 슬레이터 행렬식(Slater determinant)으로 쓴다.",
+    "def": "전자 \\(N\\)개의 반대칭 파동함수를 단일 입자 오비탈로 만든 \\(N\\times N\\) 행렬식. 두 전자가 같은 상태에 있으면 0이 된다.",
     "chapters": [
      "spin-atoms#identical"
     ]
@@ -1515,7 +1479,7 @@ SB.registerCourse({
     "ko": "실수 오비탈",
     "en": "real orbitals",
     "abbr": "",
-    "def": "화학과 반도체에서 쓰는 \\(p_x, p_y, d_{xy}\\) 같은 모양은 \\(+m\\)과 \\(-m\\) 상태를 더하고 빼서 만든 실수 오비탈(real orbitals)이다.",
+    "def": "\\(+m\\)과 \\(-m\\) 상태를 더하고 빼서 만든 실수 값 오비탈(\\(p_x, p_y, d_{xy}\\) 등). 화학 결합의 방향을 보여 준다.",
     "chapters": [
      "hydrogen-atom#angular"
     ]
@@ -1524,7 +1488,7 @@ SB.registerCourse({
     "ko": "쌍생성",
     "en": "pair production",
     "abbr": "",
-    "def": "이를 쌍생성(pair production)이라 한다.",
+    "def": "에너지 \\(2m_ec^2 = 1.022\\ \\text{MeV}\\) 이상의 광자가 핵 근처에서 사라지며 전자와 양전자 한 쌍을 만드는 현상.",
     "chapters": [
      "photons#pair"
     ]
@@ -1533,7 +1497,7 @@ SB.registerCourse({
     "ko": "쌓음 원리",
     "en": "aufbau principle",
     "abbr": "",
-    "def": "바닥 상태의 전자 배치는 에너지가 낮은 오비탈부터 파울리 원리에 따라 채운다(쌓음 원리(aufbau principle)). 버금껍질 \\(l\\)에는 \\(2(2l+1)\\)개(s 2, p 6, d 10, f 14), 껍질 \\(n\\)에는 \\(2n^2\\)개가 들어간다.",
+    "def": "바닥 상태의 전자 배치는 에너지가 낮은 오비탈부터 파울리 원리에 따라 채운다는 원리.",
     "chapters": [
      "spin-atoms#periodic"
     ]
@@ -1542,7 +1506,7 @@ SB.registerCourse({
     "ko": "아레니우스 법칙",
     "en": "Arrhenius law",
     "abbr": "",
-    "def": "플래시 메모리의 전하 손실이나 소자 열화처럼 활성화 에너지 \\(E_a\\)를 넘어야 일어나는 과정의 속도는 볼츠만 인자 \\(e^{-E_a/kT}\\)에 비례한다(아레니우스 법칙(Arrhenius law)). 그래서 높은 온도에서 시험하면 시간을 압축할 수 있다.",
+    "def": "활성화 에너지 \\(E_a\\)를 넘어야 일어나는 과정의 속도가 \\(e^{-E_a/kT}\\)에 비례한다는 법칙. 신뢰성 가속 시험의 바탕이다.",
     "chapters": [
      "quantum-statistics#boltzmann"
     ]
@@ -1551,7 +1515,7 @@ SB.registerCourse({
     "ko": "액티노메트리",
     "en": "actinometry",
     "abbr": "",
-    "def": "장비는 이 선의 세기를 Ar 750.4 nm 같은 기준선으로 나눠(액티노메트리(actinometry)) 플라즈마 밀도 요동을 지우고, 기울기가 꺾이는 시점을 종말점(endpoint)으로 잡는다.",
+    "def": "발광 분광에서 관심 선의 세기를 Ar 같은 기준 기체 선으로 나누어 플라즈마 밀도·전자 온도 요동을 지우는 방법.",
     "chapters": [
      "atomic-spectra#emission"
     ]
@@ -1560,16 +1524,16 @@ SB.registerCourse({
     "ko": "양자 용량",
     "en": "quantum capacitance",
     "abbr": "",
-    "def": "페르미 준위를 \\(dE\\)만큼 올리면 \\(dn_s = g_{2D}\\,dE\\)개가 더 들어오므로, 반전층은 \\(C_q = e^2 g_{2D} \\approx 25\\) µF/cm²의 양자 용량(quantum capacitance)을 산화막 용량과 직렬로 붙인다.",
+    "def": "상태 밀도가 유한해 페르미 준위를 올려야 전하가 들어오는 데서 생기는 용량 \\(C_q = e^2g\\). 산화막 용량과 직렬로 작용한다.",
     "chapters": [
      "quantum-statistics#dos"
     ]
    },
    {
     "ko": "양자 우물",
-    "en": "quantum well, 2D",
+    "en": "quantum well",
     "abbr": "",
-    "def": "한 방향만 가두면 양자 우물(quantum well, 2D), 두 방향을 가두면 양자선(quantum wire, 1D), 세 방향 모두 가두면 양자점(quantum dot, 0D)이다.",
+    "def": "한 방향으로만 퍼텐셜에 갇혀 그 방향 운동이 양자화되고 나머지 두 방향은 자유로운 2차원 구조. 이종 구조 레이저와 반전층이 예다.",
     "chapters": [
      "quantum-wells#boxes"
     ]
@@ -1578,25 +1542,25 @@ SB.registerCourse({
     "ko": "양자 효율",
     "en": "quantum efficiency",
     "abbr": "",
-    "def": "들어온 광자 하나당 모인 전자 수를 양자 효율(quantum efficiency) \\(\\eta\\)라 하고, 입사 광전력당 광전류를 응답도(responsivity) \\(\\mathcal{R}\\)이라 한다.",
+    "def": "들어온 광자 하나당 회로로 모인 전자 수 \\(\\eta\\). 반사·흡수·수집 손실을 모두 포함한 값이 외부 양자 효율이다.",
     "chapters": [
      "light-matter#detector"
     ]
    },
    {
     "ko": "양자선",
-    "en": "quantum wire, 1D",
+    "en": "quantum wire",
     "abbr": "",
-    "def": "한 방향만 가두면 양자 우물(quantum well, 2D), 두 방향을 가두면 양자선(quantum wire, 1D), 세 방향 모두 가두면 양자점(quantum dot, 0D)이다.",
+    "def": "두 방향으로 갇혀 한 방향으로만 움직일 수 있는 1차원 구조. 나노와이어 트랜지스터 채널이 예다.",
     "chapters": [
      "quantum-wells#boxes"
     ]
    },
    {
     "ko": "양자점",
-    "en": "quantum dot, 0D",
+    "en": "quantum dot",
     "abbr": "",
-    "def": "한 방향만 가두면 양자 우물(quantum well, 2D), 두 방향을 가두면 양자선(quantum wire, 1D), 세 방향 모두 가두면 양자점(quantum dot, 0D)이다.",
+    "def": "세 방향 모두 갇혀 에너지 준위가 원자처럼 불연속인 0차원 구조. 크기로 발광 색을 조절해 QD 디스플레이에 쓴다.",
     "chapters": [
      "quantum-wells#boxes"
     ]
@@ -1605,7 +1569,7 @@ SB.registerCourse({
     "ko": "양전자",
     "en": "positron, e⁺",
     "abbr": "",
-    "def": "광자가 사라지고 전자와 그 반입자인 양전자(positron, e⁺)가 한 쌍으로 생긴다.",
+    "def": "전자의 반입자. 질량은 전자와 같고 전하가 \\(+e\\)이며, 전자와 만나면 소멸해 0.511 MeV 광자 두 개를 낸다.",
     "chapters": [
      "photons#pair"
     ]
@@ -1614,7 +1578,7 @@ SB.registerCourse({
     "ko": "얕은 주개",
     "en": "shallow donor",
     "abbr": "",
-    "def": "두 가지가 바뀐다: 쿨롱 힘이 비유전율 \\(\\varepsilon_r\\)만큼 약해지고(\\(ke^2 \\to ke^2/\\varepsilon_r\\)), 전자는 결정 속에서 유효 질량(effective mass) \\(m^*\\)로 움직인다(12장).…",
+    "def": "반도체에 넣은 5족 원자처럼 전자 하나를 내놓기 쉬운 불순물. 수소 모형에서 결합 에너지가 \\(13.6\\,(m^*/m_e)/\\varepsilon_r^2\\ \\text{eV}\\)로 수십 meV에 불과하다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
     ]
@@ -1623,7 +1587,7 @@ SB.registerCourse({
     "ko": "에너지 고윳값",
     "en": "energy eigenvalue",
     "abbr": "",
-    "def": "시간 독립 슈뢰딩거 방정식 $$-\\frac{\\hbar^2}{2m}\\frac{d^2\\psi}{dx^2} + V(x)\\,\\psi = E\\,\\psi \\quad\\Longleftrightarrow\\quad \\hat H\\psi = E\\psi$$연산자를 걸었더니 자기 자신의 상수배가 나오는 함수를 고유 함수(eigenfunction), 그 상수 \\(E\\)를 에너지 고윳값(energy eigenvalue)이라 한다.",
+    "def": "시간 독립 슈뢰딩거 방정식 \\(\\hat H\\psi = E\\psi\\)을 경계 조건과 함께 만족하는 에너지 값. 속박 상태에서는 불연속이다.",
     "chapters": [
      "schrodinger#stationary"
     ]
@@ -1632,7 +1596,7 @@ SB.registerCourse({
     "ko": "에너지 등분배",
     "en": "equipartition",
     "abbr": "",
-    "def": "고전 통계의 에너지 등분배(equipartition)에 따르면 각 모드는 평균 \\(k_BT\\)를 가지므로.",
+    "def": "고전 통계에서 각 2차 자유도가 평균 \\(\\tfrac12k_BT\\)의 에너지를 가진다는 정리. 흑체 복사에 적용하면 자외선 파탄이 생긴다.",
     "chapters": [
      "photons#blackbody"
     ]
@@ -1641,7 +1605,7 @@ SB.registerCourse({
     "ko": "에너지 분산 X선 분광",
     "en": "energy-dispersive X-ray spectroscopy, EDS/EDX",
     "abbr": "",
-    "def": "SEM·TEM에 붙은 에너지 분산 X선 분광(energy-dispersive X-ray spectroscopy, EDS/EDX)은 전자빔이 시료에서 만든 특성 X선을 실리콘 검출기로 센다.",
+    "def": "전자빔이 시료에서 만든 특성 X선의 에너지를 반도체 검출기로 재어 원소를 분석하는 기법(EDS/EDX). SEM·TEM에 붙어 있다.",
     "chapters": [
      "atomic-spectra#xray"
     ]
@@ -1650,7 +1614,7 @@ SB.registerCourse({
     "ko": "에르미트 다항식",
     "en": "Hermite polynomial",
     "abbr": "",
-    "def": "\\(H_n\\)은 에르미트 다항식(Hermite polynomial): \\(H_0 = 1\\), \\(H_1 = 2\\xi\\), \\(H_2 = 4\\xi^2-2\\), \\(H_3 = 8\\xi^3-12\\xi\\), 점화식 \\(H_{n+1} = 2\\xi H_n - 2nH_{n-1}\\).",
+    "def": "조화 진동자 고유 함수 \\(\\psi_n \\propto H_n(\\xi)e^{-\\xi^2/2}\\)에 나오는 다항식. \\(H_0 = 1\\), \\(H_1 = 2\\xi\\), \\(H_2 = 4\\xi^2 - 2\\), ….",
     "chapters": [
      "harmonic-oscillator#quantum"
     ]
@@ -1659,7 +1623,7 @@ SB.registerCourse({
     "ko": "에어리 함수",
     "en": "Airy function",
     "abbr": "",
-    "def": "삼각 우물의 해는 에어리 함수(Airy function) \\(\\psi_n(z) \\propto \\mathrm{Ai}\\!\\left(z/z_F - a_n\\right)\\)이며(\\(z_F = (\\hbar^2/2mqF)^{1/3}\\)), 벽 조건 \\(\\psi(0) = 0\\)이 \\(\\mathrm{Ai}(-a_n) = 0\\)을 요구해 \\(a_n\\) = 2.338, 4.088, 5.521, …이 정해진다.",
+    "def": "선형 퍼텐셜 속 슈뢰딩거 방정식의 해 \\(\\mathrm{Ai}(z)\\). 삼각 우물의 준위는 \\(\\mathrm{Ai}\\)의 영점 2.338, 4.088, …으로 정해진다.",
     "chapters": [
      "quantum-wells#triangular"
     ]
@@ -1668,7 +1632,7 @@ SB.registerCourse({
     "ko": "엑시머 레이저",
     "en": "excimer laser",
     "abbr": "",
-    "def": "DUV 노광기는 엑시머 레이저(excimer laser)를 쓴다.",
+    "def": "KrF(248 nm)·ArF(193 nm)처럼 들뜬 상태에서만 묶이는 분자를 이득 매질로 쓰는 자외선 레이저. DUV 노광의 광원이다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -1677,7 +1641,7 @@ SB.registerCourse({
     "ko": "엑시톤",
     "en": "exciton",
     "abbr": "",
-    "def": "빛을 흡수해 생긴 전자와 정공이 서로 끌어 묶인 상태를 엑시톤(exciton)이라 한다.",
+    "def": "빛 흡수로 생긴 전자와 정공이 쿨롱 인력으로 묶인 수소 비슷한 상태. 띠 간격 바로 아래에 흡수 봉우리를 만든다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
     ]
@@ -1686,7 +1650,7 @@ SB.registerCourse({
     "ko": "역격자 벡터",
     "en": "reciprocal lattice vector",
     "abbr": "",
-    "def": "그래서 \\(k\\)는 길이 \\(2\\pi/a\\)인 구간 하나만 보면 충분하고, 보통 원점을 중심으로 $$-\\frac{\\pi}{a} < k \\le \\frac{\\pi}{a} \\qquad (\\text{제1 브릴루앙 영역})$$\\(G = 2\\pi n/a\\)를 역격자 벡터(reciprocal lattice vector)라 한다.",
+    "def": "\\(e^{iGx}\\)가 격자 주기를 갖게 하는 파수 \\(G = 2\\pi n/a\\). \\(k\\)와 \\(k + G\\)는 같은 블로흐 상태를 나타낸다.",
     "chapters": [
      "energy-bands#bloch"
     ]
@@ -1695,7 +1659,7 @@ SB.registerCourse({
     "ko": "연산자",
     "en": "operator",
     "abbr": "",
-    "def": "평면파 단계에서 본 대응 \\(p \\leftrightarrow -i\\hbar\\,\\partial/\\partial x\\)를 써서, 물리량마다 연산자(operator)를 정하고 \\(\\Psi^*\\)와 \\(\\Psi\\) 사이에 끼워 적분한다.",
+    "def": "파동함수에 작용해 물리량을 꺼내는 수학적 조작. 운동량 \\(\\hat p = -i\\hbar\\,\\partial/\\partial x\\), 에너지는 해밀토니언 \\(\\hat H\\)다.",
     "chapters": [
      "schrodinger#operators"
     ]
@@ -1704,7 +1668,7 @@ SB.registerCourse({
     "ko": "연속 스펙트럼",
     "en": "continuous spectrum",
     "abbr": "",
-    "def": "뜨거운 고체(전구 필라멘트)는 1장의 흑체 복사처럼 모든 파장을 내는 연속 스펙트럼(continuous spectrum)을 낸다.",
+    "def": "모든 파장을 끊김 없이 포함하는 스펙트럼. 뜨거운 고체나 조밀한 물체가 흑체 복사처럼 낸다.",
     "chapters": [
      "atomic-spectra#spectra"
     ]
@@ -1713,7 +1677,7 @@ SB.registerCourse({
     "ko": "열복사",
     "en": "thermal radiation",
     "abbr": "",
-    "def": "모든 물체는 온도에 따라 전자기파를 내는데, 이를 열복사(thermal radiation)라 한다.",
+    "def": "물체가 온도 때문에 내는 전자기파. 온도가 높을수록 세지고 짧은 파장 쪽으로 옮겨 간다.",
     "chapters": [
      "photons#blackbody"
     ]
@@ -1722,7 +1686,7 @@ SB.registerCourse({
     "ko": "열중성자",
     "en": "thermal neutron",
     "abbr": "",
-    "def": "원자로나 가속기의 열중성자(thermal neutron)도 파장이 약 0.18 nm라 결정에서 회절하는데, 전하가 없어 시료 깊숙이 들어가고 가벼운 원소(수소·리튬)와 자기 질서에 민감하다.",
+    "def": "상온 정도의 운동 에너지(약 25 meV)를 가진 중성자. 파장이 약 0.18 nm라 결정 회절에 쓰며 가벼운 원소와 자기 질서에 민감하다.",
     "chapters": [
      "matter-waves#diffraction"
     ]
@@ -1731,7 +1695,7 @@ SB.registerCourse({
     "ko": "열화",
     "en": "thermalization",
     "abbr": "",
-    "def": "띠 간격이 효율을 정한다: \\(h\\nu < E_g\\)인 광자는 버려지고, \\(h\\nu > E_g\\)인 광자도 초과분 \\(h\\nu - E_g\\)를 열(포논)로 잃는다(열화(thermalization)). 예를 들어 Si에 흡수된 450 nm 광자(2.76 eV)는 에너지의 59%를 열로 잃는다.",
+    "def": "띠 간격보다 큰 에너지로 들뜬 캐리어가 포논을 내며 띠 가장자리까지 빠르게 식는 과정. 초과 에너지 \\(h\\nu - E_g\\)는 열로 사라진다.",
     "chapters": [
      "light-matter#detector"
     ]
@@ -1740,7 +1704,7 @@ SB.registerCourse({
     "ko": "영년 방정식",
     "en": "secular equation",
     "abbr": "",
-    "def": "에너지 기댓값 \\(\\langle\\psi|H|\\psi\\rangle/\\langle\\psi|\\psi\\rangle\\)를 \\(c_A, c_B\\)에 대해 최소로 만드는(변분법) 조건은 2×2 영년 방정식(secular equation)이다.",
+    "def": "LCAO 변분 계산에서 계수가 0이 아닌 해를 가질 조건인 행렬식 방정식 \\(\\det(H - ES) = 0\\). 그 근이 분자 오비탈 에너지다.",
     "chapters": [
      "molecular-bonding#lcao"
     ]
@@ -1749,7 +1713,7 @@ SB.registerCourse({
     "ko": "영점 에너지",
     "en": "zero-point energy",
     "abbr": "",
-    "def": "절대 영도에서도 사라지지 않는 이 최소 에너지를 영점 에너지(zero-point energy)라 한다.",
+    "def": "절대 0도에서도 사라지지 않는 최소 에너지. 조화 진동자는 \\(\\tfrac12\\hbar\\omega\\)이며 불확정성 원리의 결과다.",
     "chapters": [
      "matter-waves#estimates"
     ]
@@ -1758,7 +1722,7 @@ SB.registerCourse({
     "ko": "온사이트 에너지",
     "en": "on-site energy",
     "abbr": "",
-    "def": "$$\\psi = c_A\\phi_A + c_B\\phi_B, \\qquad \\alpha_A = \\langle\\phi_A|H|\\phi_A\\rangle,\\quad \\beta = \\langle\\phi_A|H|\\phi_B\\rangle,\\quad S = \\langle\\phi_A|\\phi_B\\rangle$$\\(\\alpha\\): 온사이트 에너지(on-site energy) — 원자 하나에서의 준위(쿨롱 적분). \\(\\beta < 0\\):…",
+    "def": "원자 오비탈 하나에 전자가 있을 때의 에너지 \\(\\alpha = \\langle\\phi_A|H|\\phi_A\\rangle\\). 강결합 띠의 중심을 정한다.",
     "chapters": [
      "molecular-bonding#lcao"
     ]
@@ -1767,7 +1731,7 @@ SB.registerCourse({
     "ko": "올림 연산자",
     "en": "raising operator",
     "abbr": "",
-    "def": "교환 관계로부터 \\(\\hat a^\\dagger\\)는 에너지를 \\(\\hbar\\omega\\)만큼 올리고(올림 연산자(raising operator)) \\(\\hat a\\)는 내린다: \\(\\hat a^\\dagger\\psi_n = \\sqrt{n+1}\\,\\psi_{n+1}\\), \\(\\hat a\\psi_n = \\sqrt n\\,\\psi_{n-1}\\). 사다리에는 바닥이 있어야 하므로 \\(\\hat a\\psi_0 = 0\\), 즉…",
+    "def": "조화 진동자 상태를 한 단계 위로 올리는 연산자 \\(\\hat a^\\dagger\\psi_n = \\sqrt{n+1}\\,\\psi_{n+1}\\). 내림 연산자 \\(\\hat a\\)와 짝을 이룬다.",
     "chapters": [
      "harmonic-oscillator#quantum"
     ]
@@ -1776,7 +1740,7 @@ SB.registerCourse({
     "ko": "외부 양자 효율",
     "en": "EQE",
     "abbr": "",
-    "def": "외부 양자 효율(EQE)은 주입 효율 × 내부 양자 효율 × 광 추출 효율이다.",
+    "def": "LED에 주입한 전자 하나당 밖으로 나온 광자 수(EQE). 주입 효율 × 내부 양자 효율 × 광 추출 효율이다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -1785,7 +1749,7 @@ SB.registerCourse({
     "ko": "원심 장벽",
     "en": "centrifugal barrier",
     "abbr": "",
-    "def": "$$-\\frac{\\hbar^2}{2m}\\frac{d^2u}{dr^2} + \\underbrace{\\left[-\\frac{ke^2}{r} + \\frac{l(l+1)\\hbar^2}{2mr^2}\\right]}_{U_\\text{eff}(r)} u = E\\,u, \\qquad u(0) = 0$$둘째 항은 원심 장벽(centrifugal barrier)이다.",
+    "def": "지름 방향 방정식의 유효 퍼텐셜에 더해지는 항 \\(l(l+1)\\hbar^2/2mr^2\\). \\(l > 0\\)인 전자를 핵에서 밀어낸다.",
     "chapters": [
      "hydrogen-atom#radial"
     ]
@@ -1794,7 +1758,7 @@ SB.registerCourse({
     "ko": "원자 오비탈의 선형 결합",
     "en": "linear combination of atomic orbitals, LCAO",
     "abbr": "",
-    "def": "분자 오비탈을 각 원자의 오비탈 \\(\\phi_A, \\phi_B\\)의 원자 오비탈의 선형 결합(linear combination of atomic orbitals, LCAO)으로 놓는다.",
+    "def": "분자 오비탈을 각 원자의 오비탈을 겹친 \\(\\psi = c_A\\phi_A + c_B\\phi_B\\)로 근사하는 방법(LCAO). 결합·반결합 오비탈을 준다.",
     "chapters": [
      "molecular-bonding#lcao"
     ]
@@ -1803,7 +1767,7 @@ SB.registerCourse({
     "ko": "원자핵",
     "en": "nucleus",
     "abbr": "",
-    "def": "1911년 그는 원자의 양전하와 질량 거의 전부가 지름 수 fm(1 fm = 10⁻¹⁵ m)인 원자핵(nucleus)에 모여 있다고 결론지었다.",
+    "def": "원자 질량과 양전하 거의 전부가 모인 지름 수 fm의 중심. 러더퍼드 산란 실험으로 발견되었다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -1812,7 +1776,7 @@ SB.registerCourse({
     "ko": "위상 속도",
     "en": "phase velocity",
     "abbr": "",
-    "def": "개별 마루가 움직이는 위상 속도(phase velocity)와 포락선 덩어리가 움직이는 군속도(group velocity)다.",
+    "def": "파동의 개별 마루가 움직이는 속도 \\(v_p = \\omega/k\\). 물질파에서는 입자 속도의 절반이다.",
     "chapters": [
      "matter-waves#wavepacket"
     ]
@@ -1821,7 +1785,7 @@ SB.registerCourse({
     "ko": "유도 방출",
     "en": "stimulated emission",
     "abbr": "",
-    "def": "유도 방출(stimulated emission): 위 준위 원자가 지나가는 광자에 \"떠밀려\" 내려오며 똑같은 광자를 하나 더 낸다.",
+    "def": "들뜬 원자가 지나가는 광자에 자극받아 그와 똑같은 진동수·위상·방향의 광자를 하나 더 내며 내려오는 과정. 레이저 증폭의 원리다.",
     "chapters": [
      "light-matter#einstein"
     ]
@@ -1830,7 +1794,7 @@ SB.registerCourse({
     "ko": "유한 사각 우물",
     "en": "finite square well",
     "abbr": "",
-    "def": "깊이 \\(V_0\\), 폭 \\(L\\)인 유한 사각 우물(finite square well)을 우물 가운데를 원점으로 놓고 풀자(\\(|x| < L/2\\)에서 \\(V = 0\\), 밖에서 \\(V = V_0\\)). 속박 상태(\\(0 < E < V_0\\))에서 장벽 속은 고전적으로 금지된 영역이라 해가 진동하지 않고 지수적으로 줄어든다.",
+    "def": "깊이 \\(V_0\\), 폭 \\(L\\)의 우물. 속박 상태 수가 유한하고 파동함수가 장벽 속으로 스며들어 무한 우물보다 준위가 낮다.",
     "chapters": [
      "quantum-wells#finite"
     ]
@@ -1839,7 +1803,7 @@ SB.registerCourse({
     "ko": "유효 상태 밀도",
     "en": "effective density of states",
     "abbr": "",
-    "def": "$$n = \\underbrace{2\\left(\\frac{2\\pi m_n^*kT}{h^2}\\right)^{3/2}}_{N_c}\\;\\underbrace{\\frac{2}{\\sqrt\\pi}\\int_0^\\infty\\frac{\\sqrt x\\,dx}{1 + e^{x-\\eta}}}_{F_{1/2}(\\eta)} = N_c\\,F_{1/2}(\\eta)$$\\(N_c\\): 전도대 유효 상태 밀도(effective density of…",
+    "def": "띠 전체의 상태를 띠 가장자리 한 준위에 모은 것처럼 나타낸 농도 \\(N_c = 2(2\\pi m_n^*kT/h^2)^{3/2}\\). Si 300 K에서 \\(2.8\\times10^{19}\\ \\text{cm}^{-3}\\)이다.",
     "chapters": [
      "quantum-statistics#carriers"
     ]
@@ -1848,7 +1812,7 @@ SB.registerCourse({
     "ko": "유효 질량",
     "en": "effective mass",
     "abbr": "",
-    "def": "전도대 전자의 포락 함수는 \\(m\\)을 유효 질량(effective mass) \\(m^*\\)로 바꾼 같은 슈뢰딩거 방정식을 따른다: 실리콘 Δ 계곡의 가로 질량 \\(m_t^* = 0.19\\,m_e\\), 세로 질량 \\(m_l^* = 0.98\\,m_e\\), GaAs \\(m^* = 0.067\\,m_e\\). 이 장의 모든 시뮬레이터에 \\(m^*\\)를 넣을 수 있게 한 이유다.",
+    "def": "결정 속 전자가 외부 힘에 반응할 때 보이는 질량 \\(m^* = \\hbar^2/(d^2E/dk^2)\\). 띠의 곡률로 정해지며 Si 가로 질량 \\(0.19m_e\\), GaAs \\(0.067m_e\\)이다.",
     "chapters": [
      "schrodinger#wave-eq"
     ]
@@ -1857,7 +1821,7 @@ SB.registerCourse({
     "ko": "유효 핵전하",
     "en": "effective nuclear charge",
     "abbr": "",
-    "def": "이를 유효 핵전하(effective nuclear charge) \\(Z_\\text{eff}\\)로 나타내면 수소꼴 공식을 빌려 쓸 수 있다.",
+    "def": "다전자 원자에서 안쪽 전자의 가림을 뺀 뒤 바깥 전자가 느끼는 핵전하 \\(Z_\\text{eff} = Z - \\sigma\\).",
     "chapters": [
      "spin-atoms#periodic"
     ]
@@ -1866,7 +1830,7 @@ SB.registerCourse({
     "ko": "응답도",
     "en": "responsivity",
     "abbr": "",
-    "def": "들어온 광자 하나당 모인 전자 수를 양자 효율(quantum efficiency) \\(\\eta\\)라 하고, 입사 광전력당 광전류를 응답도(responsivity) \\(\\mathcal{R}\\)이라 한다.",
+    "def": "광검출기에 들어온 광전력 1 W당 광전류 \\(\\mathcal R = \\eta e\\lambda/hc\\)(A/W).",
     "chapters": [
      "light-matter#detector"
     ]
@@ -1875,7 +1839,7 @@ SB.registerCourse({
     "ko": "이득 계수",
     "en": "gain coefficient",
     "abbr": "",
-    "def": "$$\\frac{dI}{dz} = \\sigma(N_2 - N_1)\\,I \\equiv g\\,I \\quad\\Rightarrow\\quad I(z) = I_0\\,e^{gz}$$\\(\\sigma\\): 유도 방출 단면적(cm²), \\(g = \\sigma(N_2 - N_1)\\): 이득 계수(gain coefficient). 보통은 \\(N_1 > N_2\\)라 \\(g < 0\\)(흡수, 비어–람베르트 법칙)이다.",
+    "def": "매질 속을 지나는 빛의 세기가 \\(I = I_0e^{gz}\\)로 늘어날 때의 \\(g = \\sigma(N_2 - N_1)\\). 밀도 반전이 있어야 양수가 된다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -1884,7 +1848,7 @@ SB.registerCourse({
     "ko": "이득 포화",
     "en": "gain saturation",
     "abbr": "",
-    "def": "이 값이 1보다 크면 빛이 불어나고, 불어난 빛이 반전을 소모해(이득 포화(gain saturation)) 결국 정확히 1에서 멈춘다.",
+    "def": "빛이 세질수록 유도 방출이 밀도 반전을 소모해 이득이 줄어드는 현상. 레이저 출력이 일정한 값에서 안정되는 이유다.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -1893,7 +1857,7 @@ SB.registerCourse({
     "ko": "이온 결합",
     "en": "ionic bond",
     "abbr": "",
-    "def": "\\(\\Delta \\approx 0\\)이고 \\(t\\)가 크면 전자가 두 원자 사이에 고르게 쌓이는 공유 결합(covalent bond), \\(|\\Delta| \\gg t\\)이면 전자가 한쪽으로 완전히 넘어가는 이온 결합(ionic bond)이다.",
+    "def": "전기 음성도 차가 커서 전자가 한 원자에서 다른 원자로 거의 완전히 넘어가 양·음이온의 정전기 인력으로 묶이는 결합.",
     "chapters": [
      "molecular-bonding#bond-types"
     ]
@@ -1902,7 +1866,7 @@ SB.registerCourse({
     "ko": "이온화 에너지",
     "en": "ionization energy",
     "abbr": "",
-    "def": "\\(n=1\\)인 바닥 상태(ground state) 에너지의 크기 13.6 eV가 수소의 이온화 에너지(ionization energy)다.",
+    "def": "바닥 상태의 원자에서 전자 하나를 무한히 떼어 내는 데 드는 최소 에너지. 수소는 13.6 eV다.",
     "chapters": [
      "atomic-spectra#bohr"
     ]
@@ -1911,7 +1875,7 @@ SB.registerCourse({
     "ko": "이종 구조",
     "en": "heterostructure",
     "abbr": "",
-    "def": "띠 간격이 다른 두 반도체를 원자층 단위로 쌓은 것을 이종 구조(heterostructure)라 한다.",
+    "def": "띠 간격이 다른 반도체를 원자층 단위로 쌓은 구조. 띠 오프셋으로 전자와 정공을 가두어 양자 우물·레이저·HEMT를 만든다.",
     "chapters": [
      "quantum-wells#hetero"
     ]
@@ -1920,7 +1884,7 @@ SB.registerCourse({
     "ko": "일함수",
     "en": "work function",
     "abbr": "",
-    "def": "전자가 금속을 벗어나려면 최소 일함수(work function) \\(\\phi\\)만큼의 에너지가 필요하다.",
+    "def": "페르미 준위의 전자를 물질 밖 진공으로 꺼내는 데 필요한 최소 에너지 \\(\\phi\\). 금속마다 다르며 광전 효과의 문턱 진동수를 정한다.",
     "chapters": [
      "photons#photoelectric"
     ]
@@ -1929,7 +1893,7 @@ SB.registerCourse({
     "ko": "자기 양자수",
     "en": "magnetic quantum number",
     "abbr": "",
-    "def": "이것이 자기 양자수(magnetic quantum number)이고(9장에서 자기장 속 준위 갈라짐으로 이름의 이유를 본다), 뒤에서 보듯 \\(L_z = m\\hbar\\)를 뜻한다.",
+    "def": "각운동량의 \\(z\\) 성분 \\(L_z = m\\hbar\\)를 정하는 양자수 \\(m = -l, \\dots, +l\\). 자기장 속 준위 갈라짐에서 이름이 왔다.",
     "chapters": [
      "hydrogen-atom#separation"
     ]
@@ -1938,7 +1902,7 @@ SB.registerCourse({
     "ko": "자기 터널 접합",
     "en": "MTJ, magnetic tunnel junction",
     "abbr": "",
-    "def": "이 자기 터널 접합(MTJ, magnetic tunnel junction)의 저항비를 터널 자기 저항(TMR)이라 한다.",
+    "def": "두 강자성층 사이에 얇은 절연막(MgO)을 끼운 구조(MTJ). 두 자화가 나란한지 반대인지에 따라 터널 저항이 달라 MRAM 셀로 쓴다.",
     "chapters": [
      "spin-atoms#inner"
     ]
@@ -1947,7 +1911,7 @@ SB.registerCourse({
     "ko": "자기 회전 비율",
     "en": "gyromagnetic ratio",
     "abbr": "",
-    "def": "$$\\vec\\mu_L = -\\frac{e}{2m_e}\\vec L, \\qquad \\mu_z = -\\frac{e}{2m_e}L_z = -m_l\\,\\mu_B, \\qquad \\mu_B = \\frac{e\\hbar}{2m_e} = 9.274\\times10^{-24}\\ \\text{J/T} = 5.788\\times10^{-5}\\ \\text{eV/T}$$\\(\\mu_B\\): 보어 마그네톤(Bohr magneton). \\(\\mu/L\\)의…",
+    "def": "자기 모멘트와 각운동량의 비 \\(\\gamma = \\mu/L\\). 궤도 운동은 \\(e/2m_e\\), 전자 스핀은 그 약 두 배다.",
     "chapters": [
      "spin-atoms#zeeman"
     ]
@@ -1956,7 +1920,7 @@ SB.registerCourse({
     "ko": "자발 방출",
     "en": "spontaneous emission",
     "abbr": "",
-    "def": "자발 방출(spontaneous emission): 위 준위 원자가 빛이 없어도 저절로 내려오며 광자를 낸다.",
+    "def": "들뜬 원자가 외부 빛 없이 저절로 아래 준위로 내려오며 임의의 방향·위상으로 광자를 내는 과정. 빈도는 아인슈타인 계수 \\(A_{21}\\)이다.",
     "chapters": [
      "light-matter#einstein"
     ]
@@ -1965,7 +1929,7 @@ SB.registerCourse({
     "ko": "자외선 파탄",
     "en": "ultraviolet catastrophe",
     "abbr": "",
-    "def": "이것이 자외선 파탄(ultraviolet catastrophe)이다.",
+    "def": "고전 에너지 등분배를 흑체 복사에 적용하면 짧은 파장에서 복사 세기가 무한대로 발산하는 모순. 플랑크의 양자 가설로 해결되었다.",
     "chapters": [
      "photons#blackbody"
     ]
@@ -1974,7 +1938,7 @@ SB.registerCourse({
     "ko": "자유 전자 모형",
     "en": "free-electron model",
     "abbr": "",
-    "def": "이 전자들을 상자 속 자유 전자 기체로 보자(자유 전자 모형(free-electron model)). \\(T = 0\\)에서 전자는 파울리 원리에 따라 가장 낮은 상태부터 하나씩 채운다.",
+    "def": "금속의 전도 전자를 상자 속에 갇힌, 서로 상호작용하지 않는 자유 전자 기체로 보는 모형. 페르미 에너지와 상태 밀도를 준다.",
     "chapters": [
      "quantum-statistics#metals"
     ]
@@ -1983,7 +1947,7 @@ SB.registerCourse({
     "ko": "전기 쌍극자 전이",
     "en": "electric dipole transition",
     "abbr": "",
-    "def": "가장 흔한 전기 쌍극자 전이(electric dipole transition)의 확률은 \\(\\langle f|\\vec r|i\\rangle\\)에 비례하는데, 각도 적분이 0이 아니려면.",
+    "def": "빛의 전기장이 원자의 쌍극자 모멘트와 결합해 일어나는 가장 흔한 전이. 확률이 \\(|\\langle f|\\vec r|i\\rangle|^2\\)에 비례하며 \\(\\Delta l = \\pm1\\) 선택 규칙을 따른다.",
     "chapters": [
      "hydrogen-atom#transitions"
     ]
@@ -1992,7 +1956,7 @@ SB.registerCourse({
     "ko": "전기 음성도",
     "en": "electronegativity",
     "abbr": "",
-    "def": "전기 음성도(electronegativity) \\(\\chi\\)는 결합 속에서 원자가 전자를 끌어당기는 정도로, LCAO의 온사이트 에너지 \\(\\alpha\\)가 낮을수록 크다.",
+    "def": "결합 속에서 원자가 전자를 끌어당기는 정도. LCAO의 온사이트 에너지가 낮을수록 크고, 두 원자의 차가 결합의 이온성을 정한다.",
     "chapters": [
      "molecular-bonding#bond-types"
     ]
@@ -2001,7 +1965,7 @@ SB.registerCourse({
     "ko": "전기적 산화막 두께",
     "en": "CET, capacitance equivalent thickness",
     "abbr": "",
-    "def": "그래서 용량–전압 측정으로 얻는 전기적 산화막 두께(CET, capacitance equivalent thickness)는 물리적 등가 두께(EOT)보다 두껍다.",
+    "def": "용량–전압 측정에서 얻는 유효 산화막 두께(CET). 반전층 전자의 중심이 계면에서 떨어져 있고 게이트 공핍이 있어 EOT보다 두껍게 나온다.",
     "chapters": [
      "quantum-wells#triangular"
     ]
@@ -2010,7 +1974,7 @@ SB.registerCourse({
     "ko": "전달 행렬법",
     "en": "transfer-matrix method",
     "abbr": "",
-    "def": "게이트 스택(SiO₂ 계면층 + HfO₂), 공명 터널 다이오드(장벽–우물–장벽), 초격자, 자기 터널 접합… 퍼텐셜이 여러 층의 계단으로 이루어져 있으면 전달 행렬법(transfer-matrix method)으로 체계적으로 풀 수 있다.",
+    "def": "여러 층의 계단 퍼텐셜에서 경계마다 파동함수와 기울기의 연속 조건을 행렬로 이어 붙여 투과율을 구하는 방법.",
     "chapters": [
      "tunneling#transfer"
     ]
@@ -2019,7 +1983,7 @@ SB.registerCourse({
     "ko": "전도대",
     "en": "conduction band",
     "abbr": "",
-    "def": "결합 오비탈에서 온 띠가 가전자대(valence band), 반결합 오비탈에서 온 띠가 전도대(conduction band)다.",
+    "def": "반결합 오비탈에서 비롯한 띠로, 반도체에서 가전자대 위에 띠 간격을 두고 있는 띠. 바닥 에너지를 \\(E_c\\)로 쓴다.",
     "chapters": [
      "molecular-bonding#bands"
     ]
@@ -2028,7 +1992,7 @@ SB.registerCourse({
     "ko": "전도도 유효 질량",
     "en": "conductivity effective mass",
     "abbr": "",
-    "def": "상태 밀도(10장의 \\(N_c\\))에는 계곡 수까지 넣은 상태 밀도 유효 질량(density-of-states effective mass), 전류(이동도)에는 세 방향 \\(1/m\\)의 평균인 전도도 유효 질량(conductivity effective mass)을 쓴다.",
+    "def": "이동도와 전류를 계산할 때 쓰는, 세 방향 \\(1/m\\)을 평균한 유효 질량. 실리콘 전자는 \\(3/(1/m_l + 2/m_t) = 0.26m_e\\)다.",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -2037,7 +2001,7 @@ SB.registerCourse({
     "ko": "전반사",
     "en": "total internal reflection",
     "abbr": "",
-    "def": "반도체의 굴절률은 \\(n \\approx 2.5\\)(GaN)–3.5(GaAs)로 커서, 표면에 임계각 \\(\\theta_c = \\sin^{-1}(1/n)\\)보다 비스듬히 닿은 빛은 전반사(total internal reflection)되어 갇힌다.",
+    "def": "굴절률이 큰 매질에서 임계각 \\(\\sin^{-1}(1/n)\\)보다 비스듬히 경계에 닿은 빛이 모두 반사되는 현상. LED 광 추출을 막는 주된 원인이다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -2046,7 +2010,7 @@ SB.registerCourse({
     "ko": "전자 스핀 공명",
     "en": "ESR 또는 EPR",
     "abbr": "",
-    "def": "이것이 전자 스핀 공명(ESR 또는 EPR)이다.",
+    "def": "자기장 속에서 갈라진 전자 스핀 준위 사이를 마이크로파로 전이시켜 흡수를 재는 분광법(ESR, EPR). 짝짓지 않은 전자를 가진 결함을 찾는다.",
     "chapters": [
      "spin-atoms#inner"
     ]
@@ -2055,7 +2019,7 @@ SB.registerCourse({
     "ko": "절연체",
     "en": "insulator",
     "abbr": "",
-    "def": "띠가 꽉 차고 위 띠와 사이에 간격: 꽉 찬 띠는 \\(+k\\)와 \\(-k\\) 상태가 짝지어 모두 차 있어 전류를 나르지 못한다(뒤의 정공 절). 간격이 작으면(대략 \\(E_g \\lesssim 3\\)–4 eV) 상온에서 일부 전자가 열로 올라가는 반도체(semiconductor), 크면 절연체(insulator).",
+    "def": "띠가 꽉 차고 띠 간격이 커서(대략 4 eV 이상) 상온에서도 전도대에 전자가 거의 없는 고체. SiO₂는 약 9 eV다.",
     "chapters": [
      "energy-bands#filling"
     ]
@@ -2064,7 +2028,7 @@ SB.registerCourse({
     "ko": "정규화",
     "en": "normalization",
     "abbr": "",
-    "def": "이것을 정규화(normalization) 조건이라 한다.",
+    "def": "입자를 어딘가에서 발견할 전체 확률이 1이 되도록 \\(\\int|\\Psi|^2dx = 1\\)로 파동함수의 크기를 맞추는 것.",
     "chapters": [
      "schrodinger#born"
     ]
@@ -2073,7 +2037,7 @@ SB.registerCourse({
     "ko": "정상 제만 효과",
     "en": "normal Zeeman effect",
     "abbr": "",
-    "def": "원래 \\(2l+1\\)겹으로 겹쳐 있던(축퇴된) 준위가 자기장 속에서 같은 간격 \\(\\mu_B B\\)로 갈라진다 — 이것이 정상 제만 효과(normal Zeeman effect)다.",
+    "def": "스핀을 무시할 때 자기장 속에서 원자 준위가 같은 간격 \\(\\mu_BB\\)로 \\(2l+1\\)개로 갈라져 스펙트럼 선이 세 줄로 나뉘는 현상.",
     "chapters": [
      "spin-atoms#zeeman"
     ]
@@ -2082,7 +2046,7 @@ SB.registerCourse({
     "ko": "정상파",
     "en": "standing wave",
     "abbr": "",
-    "def": "궤도 둘레에 전자 파동이 정수 개 들어가 한 바퀴 돌아 자기 자신과 이어지는 정상파(standing wave)일 때만 궤도가 안정하다는 뜻이다.",
+    "def": "제자리에서 진동하며 진행하지 않는 파동. 보어 모형에서 궤도 둘레에 전자 파장이 정수 개 들어가는 조건이 각운동량 양자화를 준다.",
     "chapters": [
      "atomic-spectra#bohr"
     ]
@@ -2091,7 +2055,7 @@ SB.registerCourse({
     "ko": "제동 복사",
     "en": "bremsstrahlung",
     "abbr": "",
-    "def": "이를 제동 복사(bremsstrahlung)라 한다.",
+    "def": "빠른 전자가 원자핵 근처에서 급히 감속하며 내는 연속 X선. 최단 파장은 가속 전압으로 정해진다.",
     "chapters": [
      "photons#xray-compton"
     ]
@@ -2100,7 +2064,7 @@ SB.registerCourse({
     "ko": "조화 진동자",
     "en": "harmonic oscillator",
     "abbr": "",
-    "def": "따라서 진폭이 작은 한, 어떤 퍼텐셜도 조화 진동자(harmonic oscillator) \\(V \\approx \\tfrac12 k(x-x_0)^2\\)로 보인다.",
+    "def": "복원력이 변위에 비례하는 계 \\(V = \\tfrac12kx^2\\). 양자 준위가 \\(E_n = (n + \\tfrac12)\\hbar\\omega\\)로 등간격이다.",
     "chapters": [
      "harmonic-oscillator#parabola"
     ]
@@ -2109,7 +2073,7 @@ SB.registerCourse({
     "ko": "종말점",
     "en": "endpoint",
     "abbr": "",
-    "def": "장비는 이 선의 세기를 Ar 750.4 nm 같은 기준선으로 나눠(액티노메트리(actinometry)) 플라즈마 밀도 요동을 지우고, 기울기가 꺾이는 시점을 종말점(endpoint)으로 잡는다.",
+    "def": "식각이 목표 층을 다 지나 아래층에 닿은 시점. 발광 분광에서 반응 생성물 선의 세기 변화로 찾는다.",
     "chapters": [
      "atomic-spectra#emission"
     ]
@@ -2118,7 +2082,7 @@ SB.registerCourse({
     "ko": "주사 터널링 현미경",
     "en": "scanning tunneling microscope, STM",
     "abbr": "",
-    "def": "비니히와 로러는 1981년 이 주사 터널링 현미경(scanning tunneling microscope, STM)을 만들어 1983년 Si(111) 7×7 재구성 표면의 원자 배열을 실공간에서 처음 보였고, 1986년 노벨 물리학상을 받았다.",
+    "def": "날카로운 탐침과 시료 사이의 터널 전류가 거리에 지수적으로 민감한 것을 이용해 표면 원자를 보는 현미경(STM).",
     "chapters": [
      "tunneling#stm"
     ]
@@ -2127,7 +2091,7 @@ SB.registerCourse({
     "ko": "준안정 상태",
     "en": "metastable state",
     "abbr": "",
-    "def": "② 2s → 1s를 시도해 보라. 금지! 2s 상태는 광자 두 개를 동시에 내며 0.12 s나 걸려 붕괴하는 준안정 상태(metastable state)다(2p의 수명은 1.6 ns). ③ 아래에서 위로 끌면 흡수다.",
+    "def": "선택 규칙 때문에 빛을 내며 쉽게 내려갈 수 없어 수명이 매우 긴 들뜬 상태. 수소의 2s 상태가 예다.",
     "chapters": [
      "hydrogen-atom#transitions"
     ]
@@ -2136,7 +2100,7 @@ SB.registerCourse({
     "ko": "준안정 준위",
     "en": "metastable level",
     "abbr": "",
-    "def": "펌프는 위쪽의 넓은 펌프 띠로 원자를 올리고, 원자는 그곳에서 빠르게(비복사로) 수명이 긴 준안정 준위(metastable level)로 떨어진다.",
+    "def": "레이저 매질에서 수명이 길어 원자가 쌓이며 밀도 반전을 만드는 들뜬 준위.",
     "chapters": [
      "light-matter#laser"
     ]
@@ -2145,7 +2109,7 @@ SB.registerCourse({
     "ko": "중심 세포 보정",
     "en": "central-cell correction",
     "abbr": "",
-    "def": "차이는 중심 세포 보정(central-cell correction) 때문이다: 불순물 바로 근처에서는 연속 매질 가정이 깨지고 원소마다 핵심 전자의 퍼텐셜이 다르다.",
+    "def": "불순물 원자 바로 근처에서 연속 매질 수소 모형이 깨져 생기는 결합 에너지 보정. 주개 원소마다 결합 에너지가 다른 이유다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
     ]
@@ -2154,7 +2118,7 @@ SB.registerCourse({
     "ko": "중심력",
     "en": "central force",
     "abbr": "",
-    "def": "$$-\\frac{\\hbar^2}{2m}\\nabla^2\\psi + U(r)\\,\\psi = E\\,\\psi, \\qquad U(r) = -\\frac{ke^2}{r} = -\\frac{1.440\\ \\text{eV·nm}}{r}$$\\(k = 1/4\\pi\\varepsilon_0\\). 퍼텐셜이 거리 \\(r\\)에만 의존하는 중심력(central force) 문제다.",
+    "def": "크기가 중심에서의 거리에만 의존하고 중심을 향하는 힘. 퍼텐셜이 \\(U(r)\\)이면 각운동량이 보존되어 각도 부분이 구면 조화 함수로 분리된다.",
     "chapters": [
      "hydrogen-atom#separation"
     ]
@@ -2163,7 +2127,7 @@ SB.registerCourse({
     "ko": "직교",
     "en": "orthogonal",
     "abbr": "",
-    "def": "서로 다른 상태는 직교(orthogonal)한다: \\(\\int_0^L\\psi_m\\psi_n\\,dx = \\delta_{mn}\\). 이는 에르미트 연산자(해밀토니안)의 서로 다른 고유값에 속한 고유함수가 늘 갖는 성질이며, 임의의 파동함수를 \\(\\Psi = \\sum c_n\\psi_n\\)으로 전개하고 \\(|c_n|^2\\)을 \"\\(E_n\\)을 측정할 확률\"로 읽을 수 있게 해 준다.",
+    "def": "서로 다른 고유 상태의 겹침 적분이 0이 되는 성질 \\(\\int\\psi_m^*\\psi_n\\,dx = 0\\). 임의의 상태를 고유 상태로 전개할 수 있게 한다.",
     "chapters": [
      "quantum-wells#infinite"
     ]
@@ -2172,7 +2136,7 @@ SB.registerCourse({
     "ko": "직접 띠 간격",
     "en": "direct band gap",
     "abbr": "",
-    "def": "GaAs는 전도대 바닥과 가전자대 꼭대기가 모두 \\(\\Gamma\\)(\\(k = 0\\))에 있는 직접 띠 간격(direct band gap) 반도체이고, Si와 Ge는 둘의 \\(k\\)가 다른 간접 띠 간격(indirect band gap) 반도체다.",
+    "def": "전도대 바닥과 가전자대 꼭대기가 같은 \\(k\\)에 있는 띠 간격. 포논 없이 빛을 흡수·방출할 수 있어 LED와 레이저에 쓴다(GaAs, GaN).",
     "chapters": [
      "energy-bands#real-bands"
     ]
@@ -2181,7 +2145,7 @@ SB.registerCourse({
     "ko": "직접 터널링",
     "en": "direct tunneling",
     "abbr": "",
-    "def": "산화막에 걸린 전압 \\(V_\\text{ox}\\)이 \\(\\phi_B/q\\)보다 작으면 장벽은 사다리꼴이고, 전자는 산화막 전체를 가로질러 곧장 게이트로 간다 — 직접 터널링(direct tunneling)이다.",
+    "def": "산화막 전압이 장벽 높이보다 작아 사다리꼴 장벽 전체를 전자가 곧장 터널링하는 과정. 얇은 게이트 산화막의 누설 전류 원인이다.",
     "chapters": [
      "tunneling#oxide"
     ]
@@ -2190,16 +2154,16 @@ SB.registerCourse({
     "ko": "진성 캐리어 농도",
     "en": "intrinsic carrier concentration",
     "abbr": "",
-    "def": "불순물이 없으면 전자는 가전자대에서 들떠 올라온 것뿐이므로 \\(n = p \\equiv n_i\\)(진성 캐리어 농도(intrinsic carrier concentration)). 비축퇴 식 두 개를 곱하면 \\(E_F\\)가 사라진다.",
+    "def": "불순물이 없는 반도체의 열평형 전자(=정공) 농도 \\(n_i = \\sqrt{N_cN_v}\\,e^{-E_g/2kT}\\). Si 300 K에서 약 \\(1.0\\times10^{10}\\ \\text{cm}^{-3}\\)이다.",
     "chapters": [
      "quantum-statistics#carriers"
     ]
    },
    {
     "ko": "짝 상태",
-    "en": "even",
+    "en": "even state",
     "abbr": "",
-    "def": "$$|x| < \\tfrac L2:\\ \\psi'' = -k^2\\psi,\\quad k = \\frac{\\sqrt{2mE}}{\\hbar}; \\qquad |x| > \\tfrac L2:\\ \\psi'' = \\kappa^2\\psi,\\quad \\kappa = \\frac{\\sqrt{2m(V_0 - E)}}{\\hbar}$$밖의 해는 \\(e^{-\\kappa|x|}\\)(무한대에서 발산하는 \\(e^{+\\kappa|x|}\\)은 버린다). 퍼텐셜이…",
+    "def": "대칭인 퍼텐셜에서 \\(\\psi(-x) = \\psi(x)\\)를 만족하는 고유 상태. 유한 우물의 바닥 상태가 짝 상태다.",
     "chapters": [
      "quantum-wells#finite"
     ]
@@ -2208,7 +2172,7 @@ SB.registerCourse({
     "ko": "총 각운동량",
     "en": "total angular momentum",
     "abbr": "",
-    "def": "$$E_{so} = A\\,\\vec L\\cdot\\vec S, \\qquad \\vec J = \\vec L + \\vec S, \\qquad \\vec L\\cdot\\vec S = \\tfrac12\\left(J^2 - L^2 - S^2\\right) = \\frac{\\hbar^2}{2}\\big[j(j+1) - l(l+1) - s(s+1)\\big]$$\\(\\vec J\\): 총 각운동량(total angular momentum). 양자수…",
+    "def": "궤도와 스핀 각운동량의 합 \\(\\vec J = \\vec L + \\vec S\\). 스핀–궤도 결합이 있으면 \\(j\\)와 \\(m_j\\)가 좋은 양자수가 된다.",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -2217,7 +2181,7 @@ SB.registerCourse({
     "ko": "최근접 거리",
     "en": "distance of closest approach",
     "abbr": "",
-    "def": "$$b = \\frac{d}{2}\\cot\\frac{\\theta}{2}, \\qquad d = \\frac{1}{4\\pi\\varepsilon_0}\\frac{(2e)(Ze)}{K} = \\frac{2Z\\times 1.44\\ \\text{MeV·fm}}{K}$$\\(\\theta\\): 산란각, \\(d\\): 정면 충돌(\\(b = 0\\)) 때 입자가 멈추는 최근접 거리(distance of closest approach).…",
+    "def": "정면으로 다가온 입자가 쿨롱 반발로 멈추는 거리. 러더퍼드 산란에서 핵 크기의 상한을 준다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -2226,7 +2190,7 @@ SB.registerCourse({
     "ko": "축퇴",
     "en": "degeneracy",
     "abbr": "",
-    "def": "이를 축퇴(degeneracy)라 하고, 같은 에너지의 상태 수를 축퇴도라 한다.",
+    "def": "서로 다른 양자 상태가 같은 에너지를 가지는 것. 같은 에너지의 상태 수를 축퇴도라 한다.",
     "chapters": [
      "quantum-wells#boxes"
     ]
@@ -2235,7 +2199,7 @@ SB.registerCourse({
     "ko": "축퇴 반도체",
     "en": "degenerate semiconductor",
     "abbr": "",
-    "def": "모트 농도의 수십 배이므로 주개 준위는 이미 전도대와 합쳐진 축퇴 반도체(degenerate semiconductor)로, 금속처럼 행동해 저온에서도 얼어붙지 않고 금속–반도체 접촉의 장벽을 터널링으로 뚫어 저항이 낮은 오믹 접촉을 만든다(6장). 반대쪽 극단에서는 주개 하나를 쓴다.",
+    "def": "도핑이 매우 높아 페르미 준위가 띠 안이나 띠 가장자리 가까이 들어간 반도체. 금속처럼 행동해 저온에서도 캐리어가 얼어붙지 않는다.",
     "chapters": [
      "hydrogen-atom#hydrogenic"
     ]
@@ -2244,7 +2208,7 @@ SB.registerCourse({
     "ko": "축퇴도",
     "en": "degeneracy",
     "abbr": "",
-    "def": "이 모든 상태가 같은 에너지를 가지므로 준위 \\(E_n\\)의 축퇴도(degeneracy)는 \\(n^2\\)이다(전자 스핀을 넣으면 \\(2n^2\\) — 9장에서 주기율표의 2, 8, 18의 기원이 된다).",
+    "def": "한 에너지 준위에 속한 서로 다른 상태의 수. 수소 원자 준위 \\(E_n\\)은 \\(n^2\\)(스핀 포함 \\(2n^2\\))이다.",
     "chapters": [
      "hydrogen-atom#radial"
     ]
@@ -2253,7 +2217,7 @@ SB.registerCourse({
     "ko": "충격 매개변수",
     "en": "impact parameter",
     "abbr": "",
-    "def": "핵을 지나는 직선과 입자의 처음 경로 사이 거리를 충격 매개변수(impact parameter) \\(b\\)라 한다.",
+    "def": "산란 중심을 지나는 직선과 입사 입자의 처음 경로 사이의 거리 \\(b\\). 작을수록 크게 휜다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -2262,7 +2226,7 @@ SB.registerCourse({
     "ko": "침투",
     "en": "penetration",
     "abbr": "",
-    "def": "$$E_n \\approx -\\frac{Z_\\text{eff}^2}{n^2}(13.6\\ \\text{eV}), \\qquad Z_\\text{eff} = n\\sqrt{\\frac{E_\\text{ion}}{13.6\\ \\text{eV}}}$$\\(Z_\\text{eff} = Z - \\sigma\\), \\(\\sigma\\): 가림 상수. 같은 \\(n\\)에서 \\(l\\)이 작은 오비탈(s)은 핵 가까이 파고드는 꼬리가…",
+    "def": "같은 껍질에서 \\(l\\)이 작은 오비탈(s)이 핵 가까이 파고들어 가림을 덜 받고 에너지가 낮아지는 효과.",
     "chapters": [
      "spin-atoms#periodic"
     ]
@@ -2271,7 +2235,7 @@ SB.registerCourse({
     "ko": "침투 깊이",
     "en": "penetration depth",
     "abbr": "",
-    "def": "진폭이 \\(1/e\\)로 줄어드는 거리를 침투 깊이(penetration depth) \\(\\delta = 1/\\kappa = \\hbar/\\sqrt{2m(V_0 - E)}\\)라 한다.",
+    "def": "파동이나 빛의 세기가 \\(1/e\\)로 줄어드는 깊이. 장벽 속 파동함수는 \\(\\delta = 1/\\kappa\\), 흡수 매질 속 빛은 \\(1/\\alpha\\)다.",
     "chapters": [
      "quantum-wells#finite"
     ]
@@ -2280,7 +2244,7 @@ SB.registerCourse({
     "ko": "콤프턴 파장",
     "en": "Compton wavelength",
     "abbr": "",
-    "def": "$$\\Delta\\lambda = \\lambda' - \\lambda = \\frac{h}{m_ec}(1-\\cos\\theta) = \\lambda_C(1-\\cos\\theta), \\qquad \\lambda_C = \\frac{h}{m_ec} = 2.426\\ \\text{pm}$$\\(\\lambda_C\\)는 전자의 콤프턴 파장(Compton wavelength). 파장 변화는 입사 파장과 표적 물질에 무관하다.",
+    "def": "전자의 콤프턴 파장 \\(\\lambda_C = h/m_ec = 2.426\\ \\text{pm}\\). 콤프턴 산란의 파장 변화 \\(\\lambda_C(1 - \\cos\\theta)\\)를 정한다.",
     "chapters": [
      "photons#xray-compton"
     ]
@@ -2289,7 +2253,7 @@ SB.registerCourse({
     "ko": "탄도 수송",
     "en": "ballistic transport",
     "abbr": "",
-    "def": "채널 길이가 전자의 평균 자유 행로(실리콘 반전층에서 약 10–20 nm)에 가까워지면 전자는 산란 없이 소스에서 드레인으로 날아가는 탄도 수송(ballistic transport)에 가까워진다.",
+    "def": "전자가 산란 없이 소스에서 드레인까지 날아가는 수송. 채널 길이가 평균 자유 행로(실리콘 반전층 약 10–20 nm)에 가까워지면 나타난다.",
     "chapters": [
      "schrodinger#free-particle"
     ]
@@ -2298,7 +2262,7 @@ SB.registerCourse({
     "ko": "탈출 원뿔",
     "en": "escape cone",
     "abbr": "",
-    "def": "등방적으로 나온 빛 중 한 면의 탈출 원뿔(escape cone)에 드는 비율은 입체각 비로.",
+    "def": "광원 내부에서 나온 빛 중 전반사되지 않고 표면을 빠져나갈 수 있는 임계각 안쪽의 원뿔. 굴절률이 큰 LED에서는 매우 좁다.",
     "chapters": [
      "light-matter#led"
     ]
@@ -2307,7 +2271,7 @@ SB.registerCourse({
     "ko": "터널 자기 저항",
     "en": "TMR",
     "abbr": "",
-    "def": "이 자기 터널 접합(MTJ, magnetic tunnel junction)의 저항비를 터널 자기 저항(TMR)이라 한다.",
+    "def": "자기 터널 접합에서 반평행과 평행 상태의 저항 비 \\(\\text{TMR} = (R_{AP} - R_P)/R_P\\)(TMR). MgO 장벽으로 상온 200% 이상을 얻는다.",
     "chapters": [
      "spin-atoms#inner"
     ]
@@ -2316,7 +2280,7 @@ SB.registerCourse({
     "ko": "터널링",
     "en": "tunneling",
     "abbr": "",
-    "def": "이 터널링(tunneling)은 반도체에서 피할 수 없는 골칫거리이자 쓸모 있는 도구다.",
+    "def": "입자가 고전적으로 넘을 수 없는 퍼텐셜 장벽을 파동함수의 꼬리로 통과하는 현상. 투과율은 장벽 두께에 지수적으로 줄어든다.",
     "chapters": [
      "tunneling"
     ]
@@ -2325,25 +2289,16 @@ SB.registerCourse({
     "ko": "터널링 결합",
     "en": "tunnel coupling",
     "abbr": "",
-    "def": "$$E_{S,A} \\approx E_1 \\mp t, \\qquad \\Delta E = E_A - E_S = 2t \\;\\propto\\; e^{-\\kappa d}, \\qquad \\kappa = \\frac{\\sqrt{2m(V_0 - E_1)}}{\\hbar}$$\\(d\\): 장벽(우물 사이) 두께, \\(t\\): 터널링 결합(tunnel coupling) 또는 건너뛰기 적분. 간격을 \\(1/\\kappa\\)만큼 늘릴 때마다 분리가…",
+    "def": "장벽을 사이에 둔 두 우물의 상태가 터널링으로 섞이는 세기 \\(t\\). 준위가 \\(2t\\)만큼 갈라지고 장벽이 두꺼울수록 지수적으로 작아진다.",
     "chapters": [
      "molecular-bonding#double-well"
-    ]
-   },
-   {
-    "ko": "테일러 전개",
-    "en": "Taylor expansion",
-    "abbr": "",
-    "def": "퍼텐셜을 \\(x_0\\) 둘레에서 테일러 전개(Taylor expansion)하면.",
-    "chapters": [
-     "harmonic-oscillator#parabola"
     ]
    },
    {
     "ko": "톰슨 모형",
     "en": "Thomson model, plum-pudding model",
     "abbr": "",
-    "def": "이른바 톰슨 모형(Thomson model, plum-pudding model)이다.",
+    "def": "양전하가 고르게 퍼진 구 속에 전자가 박혀 있다는 원자 모형(건포도 푸딩 모형). 러더퍼드 산란 실험으로 부정되었다.",
     "chapters": [
      "atomic-spectra#rutherford"
     ]
@@ -2352,7 +2307,7 @@ SB.registerCourse({
     "ko": "특성 X선",
     "en": "characteristic X-ray",
     "abbr": "",
-    "def": "전자가 원자핵 근처에서 급히 감속하며 내는 연속적인 제동 복사(bremsstrahlung)와, 양극 원소 고유의 날카로운 특성 X선(characteristic X-ray)이다.",
+    "def": "안쪽 껍질 빈자리를 바깥 전자가 채우며 내는, 원소 고유의 날카로운 X선. 모즐리 법칙으로 원자 번호와 이어진다.",
     "chapters": [
      "atomic-spectra#xray"
     ]
@@ -2361,7 +2316,7 @@ SB.registerCourse({
     "ko": "파동함수",
     "en": "wave function",
     "abbr": "",
-    "def": "전자의 상태를 복소수 값의 파동함수(wave function) \\(\\psi\\)로 나타내고, 어떤 위치에서 전자가 검출될 확률은 \\(|\\psi|^2\\)에 비례한다(보른 해석(Born interpretation), 4장). 슬릿 1을 지나는 진폭을 \\(\\psi_1\\), 슬릿 2를 지나는 진폭을 \\(\\psi_2\\)라 하면, 두 길이 모두 열려 있고 어느 길인지 알 수 없을 때는 진폭이 더해진다.",
+    "def": "입자의 양자 상태를 나타내는 복소수 값 함수 \\(\\psi\\). 절댓값 제곱이 확률 밀도다.",
     "chapters": [
      "matter-waves#double-slit"
     ]
@@ -2370,7 +2325,7 @@ SB.registerCourse({
     "ko": "파브리–페로 공진기",
     "en": "Fabry–Pérot resonator",
     "abbr": "",
-    "def": "이중 장벽에서 일어나는 일은 광학의 파브리–페로 공진기(Fabry–Pérot resonator)와 같다.",
+    "def": "마주 보는 두 반사면 사이에서 파동이 왕복하며 특정 파장에서만 투과가 커지는 공진기. 이중 장벽 공명 터널링과 레이저 공진기가 같은 원리다.",
     "chapters": [
      "tunneling#transfer"
     ]
@@ -2379,7 +2334,7 @@ SB.registerCourse({
     "ko": "파셴–바크 효과",
     "en": "Paschen–Back effect",
     "abbr": "",
-    "def": "자기장이 내부 자기장(수십 T)보다 커지면 \\(\\vec L\\)과 \\(\\vec S\\)의 결합이 끊어져 다시 세 줄 비슷하게 돌아간다(파셴–바크 효과(Paschen–Back effect)). 1절 시뮬레이터의 Na 모드에서 비정상 갈라짐을 확인하라.",
+    "def": "자기장이 매우 강해 스핀–궤도 결합이 끊어지면서 비정상 제만 갈라짐이 다시 정상 제만 효과와 비슷한 세 줄로 돌아가는 현상.",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -2388,7 +2343,7 @@ SB.registerCourse({
     "ko": "파속",
     "en": "wave packet",
     "abbr": "",
-    "def": "한곳에 모인 입자를 나타내려면 파수가 조금씩 다른 평면파를 많이 겹쳐 파속(wave packet)을 만들어야 한다.",
+    "def": "파수가 조금씩 다른 평면파를 겹쳐 한곳에 모이게 만든 파동 덩어리. 국소화된 입자를 나타내며 군속도로 움직인다.",
     "chapters": [
      "matter-waves#wavepacket"
     ]
@@ -2397,7 +2352,7 @@ SB.registerCourse({
     "ko": "파수",
     "en": "wavenumber",
     "abbr": "",
-    "def": "분광학에서는 진동수를 파수(wavenumber) \\(\\tilde\\nu = 1/\\lambda = f/c\\)(cm⁻¹)로 쓴다.",
+    "def": "분광학에서 쓰는 단위 길이당 파동 수 \\(\\tilde\\nu = 1/\\lambda\\)(cm⁻¹). 1 cm⁻¹은 0.124 meV에 해당한다.",
     "chapters": [
      "harmonic-oscillator#parabola"
     ]
@@ -2406,7 +2361,7 @@ SB.registerCourse({
     "ko": "파울러–노드하임(FN) 터널링",
     "en": "Fowler–Nordheim tunneling",
     "abbr": "",
-    "def": "이를 파울러–노드하임(FN) 터널링(Fowler–Nordheim tunneling)이라 한다(1928년, 금속 표면의 전계 방출을 설명하려고 유도). 전기장이 커질수록 삼각형이 얇아지므로 전류는 전기장에 대해 폭발적으로 늘어난다.",
+    "def": "강한 전기장으로 장벽이 삼각형이 되어 전자가 얇아진 끝부분을 터널링하는 과정. 전류가 전기장에 대해 폭발적으로 늘며 플래시 메모리 쓰기·지우기에 쓴다.",
     "chapters": [
      "tunneling#fn"
     ]
@@ -2415,7 +2370,7 @@ SB.registerCourse({
     "ko": "파울리 배타 원리",
     "en": "Pauli exclusion principle",
     "abbr": "",
-    "def": "스핀과 대칭의 이 연결을 스핀–통계 정리(spin–statistics theorem)라 한다(파울리, 1940, 상대론적 양자장론의 결과). 전자에 대한 결론이 파울리 배타 원리(Pauli exclusion principle)다.",
+    "def": "두 전자가 같은 양자 상태(모든 양자수가 같은 상태)를 차지할 수 없다는 원리. 주기율표와 페르미–디랙 통계의 바탕이다.",
     "chapters": [
      "spin-atoms#identical"
     ]
@@ -2424,7 +2379,7 @@ SB.registerCourse({
     "ko": "페르미 에너지",
     "en": "Fermi energy",
     "abbr": "",
-    "def": "마지막 전자가 들어간 에너지가 페르미 에너지(Fermi energy) \\(E_F\\)다.",
+    "def": "0 K에서 전자가 채워진 가장 높은 에너지 \\(E_F = (\\hbar^2/2m)(3\\pi^2n)^{2/3}\\). 구리는 약 7.0 eV다.",
     "chapters": [
      "quantum-statistics#metals"
     ]
@@ -2433,7 +2388,7 @@ SB.registerCourse({
     "ko": "페르미 준위",
     "en": "Fermi level",
     "abbr": "",
-    "def": "고체 물리에서는 전자의 \\(\\mu\\)를 페르미 준위(Fermi level) \\(E_F\\)라 부른다.",
+    "def": "전자의 화학 퍼텐셜. 페르미–디랙 분포에서 차지 확률이 1/2인 에너지이며, 열평형에서는 소자 전체에서 일정하다.",
     "chapters": [
      "quantum-statistics#three-stats"
     ]
@@ -2442,7 +2397,7 @@ SB.registerCourse({
     "ko": "페르미–디랙 분포 함수",
     "en": "Fermi–Dirac distribution",
     "abbr": "",
-    "def": "전자에 대한 \\(f(E) = 1/(1 + e^{(E-E_F)/kT})\\)를 페르미–디랙 분포 함수(Fermi–Dirac distribution)라 한다.",
+    "def": "페르미온이 에너지 \\(E\\)인 상태를 차지할 확률 \\(f(E) = 1/(1 + e^{(E-E_F)/kT})\\).",
     "chapters": [
      "quantum-statistics#three-stats"
     ]
@@ -2451,7 +2406,7 @@ SB.registerCourse({
     "ko": "평면파",
     "en": "plane wave",
     "abbr": "",
-    "def": "가장 단순한 물질파는 운동량이 정해진 자유 전자의 평면파(plane wave)다.",
+    "def": "운동량이 정해진 자유 입자의 파동함수 \\(e^{i(kx-\\omega t)}\\). 위치는 전혀 정해지지 않는다.",
     "chapters": [
      "schrodinger#wave-eq"
     ]
@@ -2460,7 +2415,7 @@ SB.registerCourse({
     "ko": "포논",
     "en": "phonon",
     "abbr": "",
-    "def": "그 에너지 양자 \\(\\hbar\\omega(k)\\) 하나를 포논(phonon)이라 한다.",
+    "def": "격자 진동 모드의 에너지 양자 \\(\\hbar\\omega(k)\\). 보스–아인슈타인 통계를 따르며 전자 산란과 열전도를 맡는다.",
     "chapters": [
      "harmonic-oscillator#phonons"
     ]
@@ -2469,7 +2424,7 @@ SB.registerCourse({
     "ko": "포락 함수 근사",
     "en": "envelope function approximation",
     "abbr": "",
-    "def": "결정 속 전도대 전자는 주기 퍼텐셜 속을 움직이지만, 띠 바닥 근처에서는 질량만 바뀐 자유 입자처럼 행동한다: \\(E = E_c + \\hbar^2k^2/2m^*\\). 이 \\(m^*\\)가 유효 질량(effective mass)이다(12장에서 띠 구조로 유도). 따라서 결정 위에 원자 수십 층 크기로 덧씌운 \"느린\" 퍼텐셜은 \\(m \\to m^*\\)로 바꾼 슈뢰딩거 방정식으로 다룰 수 있다 — 포락 함수…",
+    "def": "띠 바닥 근처 결정 전자를 질량만 \\(m^*\\)로 바꾼 자유 입자로 보고, 원자보다 큰 규모로 변하는 퍼텐셜에 대해 슈뢰딩거 방정식을 푸는 근사.",
     "chapters": [
      "quantum-wells#hetero"
     ]
@@ -2478,7 +2433,7 @@ SB.registerCourse({
     "ko": "푸리에 합성",
     "en": "Fourier synthesis",
     "abbr": "",
-    "def": "이것이 푸리에 합성(Fourier synthesis)이고, \\(A(k)\\)는 \\(\\psi(x)\\)의 푸리에 변환이다.",
+    "def": "여러 파수의 평면파를 가중치 \\(A(k)\\)로 더해 원하는 모양의 파동함수를 만드는 것. \\(A(k)\\)는 \\(\\psi(x)\\)의 푸리에 변환이다.",
     "chapters": [
      "matter-waves#wavepacket"
     ]
@@ -2487,7 +2442,7 @@ SB.registerCourse({
     "ko": "플랑크 상수",
     "en": "Planck constant",
     "abbr": "",
-    "def": "그러면 볼츠만 분포로 평균한 모드 에너지는 \\(k_BT\\)가 아니라 $$\\langle E\\rangle = \\frac{hf}{e^{hf/k_BT}-1} \\quad\\Longrightarrow\\quad M_\\lambda = \\frac{2\\pi hc^2}{\\lambda^5}\\,\\frac{1}{e^{hc/\\lambda k_BT}-1}$$\\(h = 6.626\\times10^{-34}\\) J·s는 플랑크 상수(Planck…",
+    "def": "에너지 양자의 크기를 정하는 기본 상수 \\(h = 6.626\\times10^{-34}\\ \\text{J}\\cdot\\text{s}\\). 진동수 \\(f\\)인 빛의 에너지 양자는 \\(hf\\)다.",
     "chapters": [
      "photons#blackbody"
     ]
@@ -2496,7 +2451,7 @@ SB.registerCourse({
     "ko": "항 기호",
     "en": "term symbol",
     "abbr": "",
-    "def": "좋은 양자수는 \\(n, l, j, m_j\\)이고, 상태는 항 기호(term symbol) \\(n\\,{}^{2s+1}L_j\\)로 쓴다.",
+    "def": "다전자 원자 상태를 \\(n\\,{}^{2S+1}L_J\\)로 나타내는 기호. 스핀 다중도, 궤도 각운동량, 총 각운동량을 한 번에 보여 준다.",
     "chapters": [
      "spin-atoms#fine"
     ]
@@ -2505,7 +2460,7 @@ SB.registerCourse({
     "ko": "해리",
     "en": "dissociation",
     "abbr": "",
-    "def": "포물선은 영원히 올라가지만, 실제 퍼텐셜은 해리 에너지 \\(D_e\\)에서 평평해진다.",
+    "def": "분자가 결합이 끊어져 원자들로 갈라지는 것. 이에 필요한 에너지를 해리 에너지라 한다.",
     "chapters": [
      "harmonic-oscillator#molecules"
     ]
@@ -2514,7 +2469,7 @@ SB.registerCourse({
     "ko": "해밀토니언",
     "en": "Hamiltonian",
     "abbr": "",
-    "def": "$$i\\hbar\\frac{\\partial\\Psi}{\\partial t} = -\\frac{\\hbar^2}{2m}\\frac{\\partial^2\\Psi}{\\partial x^2} + V(x)\\,\\Psi \\equiv \\hat H\\Psi$$\\(\\hat H\\)는 해밀토니언(Hamiltonian), 곧 전체 에너지 연산자다.",
+    "def": "계의 전체 에너지(운동 + 퍼텐셜)에 해당하는 연산자 \\(\\hat H = -(\\hbar^2/2m)\\nabla^2 + V\\).",
     "chapters": [
      "schrodinger#wave-eq"
     ]
@@ -2523,7 +2478,7 @@ SB.registerCourse({
     "ko": "핵자기 공명",
     "en": "NMR",
     "abbr": "",
-    "def": "원자핵의 스핀도 같은 일을 하지만 핵 자기 모멘트가 약 2000배 작아(핵 마그네톤 \\(\\mu_N = \\mu_B m_e/m_p\\)) 라디오파 영역이 된다 — 핵자기 공명(NMR), 그리고 병원의 MRI다.",
+    "def": "자기장 속 원자핵 스핀 준위 사이를 라디오파로 전이시켜 흡수를 재는 분광법(NMR). MRI의 원리다.",
     "chapters": [
      "spin-atoms#inner"
     ]
@@ -2532,7 +2487,7 @@ SB.registerCourse({
     "ko": "허용 띠",
     "en": "allowed band",
     "abbr": "",
-    "def": "\\(|f(E)| \\le 1\\)이면 실수 \\(k = \\cos^{-1}f/d\\)가 있어 블로흐 파가 결정 전체에 퍼질 수 있다 — 허용 띠(allowed band). \\(|f(E)| > 1\\)이면 \\(k\\)가 복소수가 되어 파동이 셀마다 지수적으로 커지거나 줄어든다.",
+    "def": "주기 퍼텐셜 속에서 실수 파수 \\(k\\)를 가진 블로흐 파가 존재해 전자가 결정 전체에 퍼질 수 있는 에너지 구간.",
     "chapters": [
      "energy-bands#kronig-penney"
     ]
@@ -2541,7 +2496,7 @@ SB.registerCourse({
     "ko": "호핑 적분",
     "en": "hopping integral",
     "abbr": "",
-    "def": "이웃 오비탈 사이의 겹침(호핑 적분(hopping integral)) \\(t\\)만 남기는 강결합 근사(tight-binding approximation)에서, 블로흐 정리를 만족하는 원자 오비탈 \\(\\phi\\)의 조합.",
+    "def": "강결합 근사에서 이웃 원자 오비탈 사이를 전자가 건너뛰는 세기 \\(t\\). 띠 폭과 유효 질량을 정한다.",
     "chapters": [
      "energy-bands#gap"
     ]
@@ -2550,16 +2505,16 @@ SB.registerCourse({
     "ko": "혼성 오비탈",
     "en": "hybrid orbital",
     "abbr": "",
-    "def": "s 전자 하나를 p로 올리는 데 드는 에너지보다 결합을 두 개 더 만들어 얻는 에너지가 크고, s와 p 오비탈을 섞은 혼성 오비탈(hybrid orbital)이 이웃 방향으로 더 길게 뻗어 겹침이 커지기 때문이다.",
+    "def": "한 원자의 s·p 오비탈을 섞어 특정 방향으로 길게 뻗게 만든 오비탈. 겹침이 커져 결합이 강해진다.",
     "chapters": [
      "molecular-bonding#hybrid"
     ]
    },
    {
     "ko": "홀 상태",
-    "en": "odd",
+    "en": "odd state",
     "abbr": "",
-    "def": "$$|x| < \\tfrac L2:\\ \\psi'' = -k^2\\psi,\\quad k = \\frac{\\sqrt{2mE}}{\\hbar}; \\qquad |x| > \\tfrac L2:\\ \\psi'' = \\kappa^2\\psi,\\quad \\kappa = \\frac{\\sqrt{2m(V_0 - E)}}{\\hbar}$$밖의 해는 \\(e^{-\\kappa|x|}\\)(무한대에서 발산하는 \\(e^{+\\kappa|x|}\\)은 버린다). 퍼텐셜이…",
+    "def": "대칭인 퍼텐셜에서 \\(\\psi(-x) = -\\psi(x)\\)를 만족하는 고유 상태. 가운데에 마디가 있다.",
     "chapters": [
      "quantum-wells#finite"
     ]
@@ -2568,7 +2523,7 @@ SB.registerCourse({
     "ko": "화학 퍼텐셜",
     "en": "chemical potential",
     "abbr": "",
-    "def": "\\(\\mu\\)는 화학 퍼텐셜(chemical potential)으로, 입자 수를 맞추는 상수다.",
+    "def": "입자 하나를 더할 때의 자유 에너지 변화 \\(\\mu\\). 분포 함수에서 전체 입자 수를 맞추는 상수이며, 전자에서는 페르미 준위라 부른다.",
     "chapters": [
      "quantum-statistics#three-stats"
     ]
@@ -2577,7 +2532,7 @@ SB.registerCourse({
     "ko": "확률 밀도",
     "en": "probability density",
     "abbr": "",
-    "def": "시각 \\(t\\)에 입자의 위치를 측정해 \\(a\\)와 \\(b\\) 사이에서 발견할 확률은 $$P(a \\le x \\le b) = \\int_a^b |\\Psi(x,t)|^2\\,dx, \\qquad |\\Psi|^2 = \\Psi^*\\Psi$$\\(|\\Psi|^2\\)은 확률 밀도(probability density), 1차원에서 단위는 1/길이(nm⁻¹)다.",
+    "def": "단위 길이(부피)당 입자를 발견할 확률 \\(|\\Psi|^2\\). 1차원에서 단위는 1/길이다.",
     "chapters": [
      "schrodinger#born"
     ]
@@ -2586,7 +2541,7 @@ SB.registerCourse({
     "ko": "확률 흐름",
     "en": "probability current",
     "abbr": "",
-    "def": "슈뢰딩거 방정식에서 직접 이끌 수 있는 확률 흐름(probability current) \\(j\\)는 단위 시간에 한 점을 지나가는 확률이며, 전하의 연속 방정식과 똑같은 꼴을 만족한다.",
+    "def": "단위 시간에 한 점을 지나는 확률 \\(j = (\\hbar/m)\\,\\mathrm{Im}(\\psi^*\\psi')\\). 투과율과 반사율을 정의하는 데 쓴다.",
     "chapters": [
      "schrodinger#born"
     ]
@@ -2595,7 +2550,7 @@ SB.registerCourse({
     "ko": "확장 영역",
     "en": "extended zone",
     "abbr": "",
-    "def": "띠 \\(n\\)을 \\(n\\)번째 영역(\\((n-1)\\pi/d < |k| \\le n\\pi/d\\))에 두면 자유 전자 포물선과 비교하기 쉬운 확장 영역(extended zone) 표시가 된다.",
+    "def": "\\(n\\)번째 띠를 \\(n\\)번째 브릴루앙 영역에 그려 자유 전자 포물선과 비교하기 쉽게 한 띠 구조 표시.",
     "chapters": [
      "energy-bands#kronig-penney"
     ]
@@ -2604,7 +2559,7 @@ SB.registerCourse({
     "ko": "환산 질량",
     "en": "reduced mass",
     "abbr": "",
-    "def": "전자와 핵은 공통 질량 중심을 돌므로, 전자 질량 \\(m_e\\) 대신 환산 질량(reduced mass) \\(\\mu = m_eM/(m_e+M)\\)을 써야 한다.",
+    "def": "두 물체 문제를 한 물체 문제로 바꿀 때 쓰는 질량 \\(\\mu = m_1m_2/(m_1 + m_2)\\). 수소의 뤼드베리 상수와 분자 진동에 들어간다.",
     "chapters": [
      "atomic-spectra#bohr"
     ]
@@ -2613,7 +2568,7 @@ SB.registerCourse({
     "ko": "환원 영역",
     "en": "reduced zone",
     "abbr": "",
-    "def": "\\(k\\)와 \\(k + 2\\pi/d\\)가 같은 상태이므로 각 조각을 역격자 벡터만큼 옮겨 제1 영역에 모으면 환원 영역(reduced zone) 표시 — 반도체 띠 구조 그림은 모두 이것이다.",
+    "def": "모든 띠를 역격자 벡터만큼 옮겨 제1 브릴루앙 영역 안에 겹쳐 그린 띠 구조 표시. 반도체 띠 그림의 표준이다.",
     "chapters": [
      "energy-bands#kronig-penney"
     ]
@@ -2622,7 +2577,7 @@ SB.registerCourse({
     "ko": "후면 조사",
     "en": "BSI, backside illumination",
     "abbr": "",
-    "def": "웨이퍼를 3–6 µm로 얇게 갈아 뒤에서 빛을 넣는 후면 조사(BSI, backside illumination)는 배선 가림을 없애고, 깊은 트렌치 격리(DTI)로 빨간빛의 옆 번짐을 막는다.",
+    "def": "웨이퍼를 얇게 갈아 배선 반대쪽(뒷면)으로 빛을 넣는 이미지 센서 구조(BSI). 배선 가림이 없어 감도가 높다.",
     "chapters": [
      "light-matter#absorption"
     ]
@@ -2631,7 +2586,7 @@ SB.registerCourse({
     "ko": "흑체",
     "en": "blackbody",
     "abbr": "",
-    "def": "들어오는 빛을 모두 흡수하는 이상적인 물체를 흑체(blackbody)라 하며, 작은 구멍이 뚫린 속 빈 상자(공동)가 좋은 근사다.",
+    "def": "들어오는 빛을 모두 흡수하는 이상적인 물체. 복사 스펙트럼이 온도만으로 정해지며 작은 구멍이 뚫린 공동이 좋은 근사다.",
     "chapters": [
      "photons#blackbody"
     ]
@@ -2640,7 +2595,7 @@ SB.registerCourse({
     "ko": "흡수",
     "en": "absorption",
     "abbr": "",
-    "def": "흡수(absorption): 아래 준위 원자가 광자를 삼키고 위로 올라간다.",
+    "def": "아래 준위의 원자나 전자가 광자를 삼키고 위 준위로 올라가는 과정. 빈도는 \\(B_{12}\\)와 복사 에너지 밀도의 곱이다.",
     "chapters": [
      "light-matter#einstein"
     ]
@@ -2649,7 +2604,7 @@ SB.registerCourse({
     "ko": "흡수 계수",
     "en": "absorption coefficient",
     "abbr": "",
-    "def": "흡수 계수(absorption coefficient) \\(\\alpha\\)(cm⁻¹)의 역수 \\(\\delta = 1/\\alpha\\)가 침투 깊이(penetration depth)로, 빛이 \\(1/e\\)(37%)로 줄어드는 깊이다.",
+    "def": "빛의 세기가 \\(I = I_0e^{-\\alpha x}\\)로 줄어들 때의 \\(\\alpha\\)(cm⁻¹). 역수 \\(1/\\alpha\\)가 침투 깊이다.",
     "chapters": [
      "light-matter#absorption"
     ]
@@ -2658,7 +2613,7 @@ SB.registerCourse({
     "ko": "흡수선",
     "en": "absorption line",
     "abbr": "",
-    "def": "뜨겁고 조밀한 물체는 연속 스펙트럼, 뜨겁고 묽은 기체는 밝은 방출선(emission line), 연속 광원 앞의 차가운 기체는 같은 자리에 어두운 흡수선(absorption line)을 만든다.",
+    "def": "연속 광원 앞의 차가운 기체가 특정 파장을 흡수해 스펙트럼에 생기는 어두운 선. 같은 기체의 방출선과 위치가 같다.",
     "chapters": [
      "atomic-spectra#emission"
     ]
