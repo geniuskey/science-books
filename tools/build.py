@@ -226,7 +226,8 @@ for entry in catalog["courses"]:
             if "가" <= c <= "힣":
                 return CHO[(ord(c) - 0xAC00) // 588].replace("ㄲ", "ㄱ").replace("ㄸ", "ㄷ").replace("ㅃ", "ㅂ").replace("ㅆ", "ㅅ").replace("ㅉ", "ㅈ")
             return "A–Z" if c.isascii() and c.isalpha() else "기타"
-        items = sorted(terms.values(), key=lambda t: t["ko"])
+        # 기타(숫자·그리스 문자 등) → A–Z → 한글 순으로 묶어, 같은 머리글이 두 번 나뉘지 않게 한다
+        items = sorted(terms.values(), key=lambda t: ({"기타": 0, "A–Z": 1}.get(initial(t["ko"]), 2), t["ko"]))
         # Series schema v1: the glossary page and prose tooltips share these definitions.
         js_course["glossary"] = {"version": 1, "terms": [
             {"ko": t["ko"], "en": t["en"], "abbr": "", "def": t["def"],

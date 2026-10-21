@@ -599,6 +599,24 @@ SB.registerCourse({
   "version": 1,
   "terms": [
    {
+    "ko": "π(파이) 결합",
+    "en": "pi bond",
+    "abbr": "",
+    "def": "혼성에 쓰이지 않은 2p 오비탈은 평면에 수직으로 서 있다가 이웃 탄소의 2p와 옆으로 겹쳐 π(파이) 결합(pi bond)을 만든다.",
+    "chapters": [
+     "molecular-geometry#multiple-bonds"
+    ]
+   },
+   {
+    "ko": "σ(시그마) 결합",
+    "en": "sigma bond",
+    "abbr": "",
+    "def": "이렇게 결합 축 위에 전자 밀도가 있는 결합이 σ(시그마) 결합(sigma bond)이다.",
+    "chapters": [
+     "molecular-geometry#multiple-bonds"
+    ]
+   },
+   {
     "ko": "ICE 표",
     "en": "",
     "abbr": "",
@@ -623,24 +641,6 @@ SB.registerCourse({
     "def": "pH 미터는 이 원리를 쓴다.",
     "chapters": [
      "electrochemistry#nernst"
-    ]
-   },
-   {
-    "ko": "π(파이) 결합",
-    "en": "pi bond",
-    "abbr": "",
-    "def": "혼성에 쓰이지 않은 2p 오비탈은 평면에 수직으로 서 있다가 이웃 탄소의 2p와 옆으로 겹쳐 π(파이) 결합(pi bond)을 만든다.",
-    "chapters": [
-     "molecular-geometry#multiple-bonds"
-    ]
-   },
-   {
-    "ko": "σ(시그마) 결합",
-    "en": "sigma bond",
-    "abbr": "",
-    "def": "이렇게 결합 축 위에 전자 밀도가 있는 결합이 σ(시그마) 결합(sigma bond)이다.",
-    "chapters": [
-     "molecular-geometry#multiple-bonds"
     ]
    },
    {
