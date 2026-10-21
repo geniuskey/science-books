@@ -125,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "경계층",
       "양력"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -298,9 +297,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "external-flow": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 12,
+   "drills": 2,
+   "minis": 7,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
   }
  },
- "published": 8,
+ "published": 9,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
