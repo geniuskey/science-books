@@ -313,6 +313,7 @@
       const nb = (ii, jj) => { const kk = idx(ii, jj), c = lk(k, kk); s += c * phi[kk]; ws += c; };
       if (i > 0) nb(i - 1, j); if (i < nx - 1) nb(i + 1, j); if (j > 0) nb(i, j - 1); if (j < ny - 1) nb(i, j + 1);
       // 노이만 가장자리: 없는 이웃은 거울상(자기 자신)으로 → 계수 생략과 같다
+      if (ws === 0) return 0; // 이웃 링크가 모두 ε(σ) = 0 이면 갱신하지 않는다
       const target = (s + (rho[k] * h * h) / eps0) / ws;
       const d = target - phi[k];
       phi[k] += w * d;
@@ -957,7 +958,8 @@
     for (let r = n - 1; r >= 0; r--) { let s = b[r]; for (let k = r + 1; k < n; k++) s -= A[r * n + k] * x[k]; x[r] = s / A[r * n + r]; }
     return x;
   }
-  EM.solve = (A, b) => solveDense(A, b, b.length);
+  /** 조밀 연립 방정식 Ax = b. A는 행 우선 평탄 배열(길이 n²) 또는 2차원 배열 [[…], …] */
+  EM.solve = (A, b) => solveDense(Array.isArray(A[0]) ? A.flat() : A, b, b.length);
 
   /* ------------------------------------------------------------ 그리기 도구 */
   /** 색 지도: t ∈ [0,1] → 'rgb()' ; 'div'(파랑–흰–빨강, t=0.5 흰), 'seq'(비리디스 근사), 'heat'(검정–빨강–노랑) */
