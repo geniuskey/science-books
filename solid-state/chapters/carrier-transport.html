@@ -1,0 +1,1328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>캐리어 수송 · 고체물리 · SciBook</title>
+<meta name="description" content="열속도와 표류 속도, 이동도 μ = qτ/m*, 음향 포논·이온화 불순물 산란과 마티센 규칙, 도핑·온도 의존 이동도와 어빈 곡선, 속도 포화와 건 효과, 확산과 아인슈타인 관계, 표류–확산 전류, 4탐침 면저항과 변형 실리콘을 몬테카를로로 직접 돌려 본다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/carrier-transport.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="캐리어 수송 · 고체물리 · SciBook">
+<meta property="og:description" content="열속도와 표류 속도, 이동도 μ = qτ/m*, 음향 포논·이온화 불순물 산란과 마티센 규칙, 도핑·온도 의존 이동도와 어빈 곡선, 속도 포화와 건 효과, 확산과 아인슈타인 관계, 표류–확산 전류, 4탐침 면저항과 변형 실리콘을 몬테카를로로 직접 돌려 본다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/carrier-transport.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "캐리어 수송 · 고체물리 · SciBook", "headline": "11 캐리어 수송", "url": "https://science.euiyun.com/solid-state/chapters/carrier-transport.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "열속도와 표류 속도, 이동도 μ = qτ/m*, 음향 포논·이온화 불순물 산란과 마티센 규칙, 도핑·온도 의존 이동도와 어빈 곡선, 속도 포화와 건 효과, 확산과 아인슈타인 관계, 표류–확산 전류, 4탐침 면저항과 변형 실리콘을 몬테카를로로 직접 돌려 본다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 11, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "11 캐리어 수송", "item": "https://science.euiyun.com/solid-state/chapters/carrier-transport.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+</head>
+<body data-chapter="carrier-transport">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="carrier-statistics band-structure phonons">
+    <div class="eyebrow">Chapter 11</div>
+    <h1>캐리어 수송</h1>
+    <p class="lead">상온 실리콘의 전도 전자는 초속 200 km가 넘는 빠르기로 날아다닌다. 그런데 전기장을 걸어도 전자 무리 전체가 한쪽으로 움직이는 속도는 초속 수십 m에 그친다. 전자는 0.2 ps마다 포논과 불순물에 부딪혀 방향을 잃고, 그 사이에 전기장에게서 얻은 아주 작은 치우침만 쌓이기 때문이다. 이 치우침의 크기를 정하는 <strong>이동도</strong>, 농도 차이가 만드는 <strong>확산</strong>, 그리고 그 둘을 묶는 <strong>아인슈타인 관계</strong>가 트랜지스터의 모든 전류식에 들어간다. 아래에서 전자 40개가 열운동을 한다. 오른쪽 아래 흰 원을 끌어 전기장을 걸어 보자(전기장 효과는 눈에 보이도록 과장했다).</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">흰 원을 끌어 전기장의 방향·세기를 바꾼다</span></div>
+    <ul class="objectives">
+      <li>열속도와 표류 속도를 구별하고, 완화 시간 모형에서 이동도 \(\mu = q\tau/m^*\)와 전류 밀도 \(J = q(n\mu_n + p\mu_p)E\)를 유도한다.</li>
+      <li>음향 포논·이온화 불순물·중성 불순물·표면 거칠기 산란의 온도·농도 의존을 설명하고 마티센 규칙으로 이동도를 합친다.</li>
+      <li>카우기–토머스형 경험식으로 실리콘의 이동도와 비저항을 계산하고, 어빈 곡선을 읽는다.</li>
+      <li>뜨거운 전자, 광학 포논 방출과 속도 포화, GaAs의 음미분 이동도를 설명하고 짧은 채널의 평균 전기장을 추정한다.</li>
+      <li>픽 법칙과 확산 전류를 쓰고, 평형 조건에서 아인슈타인 관계 \(D/\mu = kT/q\)와 불균일 도핑의 내장 전기장을 유도한다.</li>
+      <li>4탐침법으로 비저항과 면저항을 재는 원리(\(\rho = 2\pi sV/I\), \(R_s = 4.532\,V/I\))와 변형으로 이동도를 높이는 원리를 설명한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="drift">
+    <h2>열운동과 표류: 이동도의 탄생</h2>
+    <p>10장에서 전도 전자 농도 \(n\)과 정공 농도 \(p\)를 셈했다. 이제 그 캐리어가 어떻게 움직이는지 볼 차례다. 전기장이 없을 때도 캐리어는 가만히 있지 않다. 전도띠 바닥 근처의 전자는 유효 질량 \(m^*\)인 자유 입자처럼 행동하고, 결정 격자와 열평형을 이루며 평균 운동 에너지 \(\tfrac32 kT\)를 가진다. 이 운동의 대표 빠르기가 <span class="term">열속도</span><span class="en">(thermal velocity)</span>다.</p>
+    <div class="formula">$$\tfrac12 m^* v_\text{th}^2 = \tfrac32 kT \quad\Rightarrow\quad v_\text{th} = \sqrt{\frac{3kT}{m^*}} \approx 2.3\times10^7\ \text{cm/s}\ \ (\text{Si 전자},\ m^* = 0.26\,m_0,\ 300\ \text{K})$$<div class="where">교재에 따라 평균 속력 \(\sqrt{8kT/\pi m^*}\)이나 \(m^* = m_0\)을 쓰기도 해서 \(1\)–\(2.3\times10^7\) cm/s 사이의 값이 보인다. 어느 쪽이든 "초속 수백 km"다.</div></div>
+    <p>그러나 전자는 직진하지 못한다. 격자 진동(포논)과 불순물 이온, 결정 결함에 부딪혀 수백 fs마다 방향을 바꾼다. 충돌 사이 평균 시간이 <span class="term">완화 시간</span><span class="en">(relaxation time, mean free time)</span> \(\tau\), 그동안 날아간 평균 거리가 <span class="term">평균 자유 경로</span><span class="en">(mean free path)</span> \(\ell = v_\text{th}\tau\)다. 방향이 무작위이므로 전자 하나는 열심히 날아다녀도 무리의 평균 속도는 0이다 — 전류가 없다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="전기장이 없을 때와 있을 때 전자 한 개의 산란 궤적 비교">
+        <defs><marker id="ct-ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker><marker id="ct-ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <rect x="10" y="10" width="380" height="280" rx="10" class="f-surface" stroke="var(--border)"/>
+        <rect x="410" y="10" width="380" height="280" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="200" y="34" text-anchor="middle" style="font-weight:600">전기장 없음: 평균 변위 0</text>
+        <text class="t" x="600" y="34" text-anchor="middle" style="font-weight:600">전기장 E →: 충돌 사이 궤적이 휜다</text>
+        <g transform="translate(0,-50)">
+          <path d="M200,120 Q190,141 179,162 Q198,171 216,180 Q230,185 243,190 Q231,196 218,202 Q203,210 187,218 Q193,249 198,281 Q171,267 143,252 Q163,258 183,264 Q194,278 205,292 Q214,272 223,251 Q208,233 193,216 Q208,222 222,228 Q214,210 206,193 Q190,183 173,173" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <circle cx="200" cy="120" r="6" fill="var(--text)"/><circle cx="173" cy="173" r="6" fill="var(--accent)"/>
+          <path d="M700,120 Q690,141 660,162 Q679,171 685,180 Q699,185 707,190 Q694,196 675,202 Q659,210 636,218 Q642,249 620,281 Q592,267 536,252 Q556,258 566,264 Q577,278 577,292 Q586,272 578,251 Q563,233 532,216 Q546,222 552,228 Q544,210 525,193 Q508,183 481,173" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <circle cx="700" cy="120" r="6" fill="var(--text)"/><circle cx="481" cy="173" r="6" fill="var(--accent)"/>
+          <line x1="700" y1="320" x2="487" y2="320" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#ct-ar)"/>
+          <text class="t" x="594" y="312" text-anchor="middle" style="fill:var(--accent-2);font-weight:600">알짜 변위 = 표류</text>
+        </g>
+        <line x1="440" y1="56" x2="540" y2="56" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#ct-ar2)"/>
+        <text class="t-dim" x="550" y="60" style="font-size:12px">E (전자는 반대쪽으로 가속)</text>
+        <text class="t-dim" x="200" y="282" text-anchor="middle" style="font-size:12px">● 출발 · ● 14번 충돌 후</text>
+      </svg>
+      <figcaption>전자 한 개가 14번 산란되는 동안의 궤적(같은 난수). 왼쪽은 무작위 걷기라 출발점 주위를 맴돈다. 오른쪽은 충돌 사이마다 전기장 반대쪽으로 조금씩 가속되어 궤적이 포물선으로 휘고, 그 치우침이 쌓여 왼쪽으로 표류한다.</figcaption>
+    </figure>
+    <p>전기장 \(\vec E\)를 걸면 전자는 충돌 사이 시간 \(t\) 동안 가속도 \(-q\vec E/m^*\)를 받는다. 충돌 직후의 속도는 무작위라 평균하면 0이고, 충돌 직전까지 덧붙은 속도 \(-q\vec E t/m^*\)만 남는다. 충돌 사이 시간을 평균하면 \(\langle t\rangle = \tau\)이므로 무리의 평균 속도, 곧 <span class="term">표류 속도</span><span class="en">(drift velocity)</span>는</p>
+    <div class="def"><span class="def-k">표류 속도와 이동도</span>
+      <p>$$\vec v_d = -\frac{q\tau}{m^*}\vec E = -\mu_n\vec E\ \ (\text{전자}), \qquad \vec v_d = +\mu_p\vec E\ \ (\text{정공}), \qquad \mu = \frac{q\tau}{m^*}$$</p>
+      <p>비례 상수 \(\mu\)가 <span class="term">이동도</span><span class="en">(mobility)</span>다. 단위는 cm²/(V·s)이고, "1 V/cm의 전기장에서 몇 cm/s로 표류하는가"를 뜻한다. 이동도는 \(\tau\)(얼마나 오래 자유롭게 가속되는가)와 \(m^*\)(얼마나 쉽게 가속되는가) 두 가지로 정해진다.</p>
+    </div>
+    <p>여기서 \(m^*\)는 어떤 질량인가? 실리콘 전도띠 바닥은 [100] 방향 여섯 골짜기이고, 골짜기마다 긴 축 질량 \(m_l = 0.916\,m_0\), 짧은 축 질량 \(m_t = 0.19\,m_0\)인 회전 타원체다(<a href="band-structure.html">8장</a>). 전기장을 \(x\)로 걸면 \(x\)축 골짜기 두 개에서는 \(m_l\)로, 나머지 네 개에서는 \(m_t\)로 가속된다. 여섯 골짜기의 \(1/m\)을 평균한 것이 <span class="term">전도도 유효 질량</span><span class="en">(conductivity effective mass)</span>이다.</p>
+    <div class="formula">$$\frac{1}{m_c^*} = \frac13\left(\frac{1}{m_l} + \frac{2}{m_t}\right) \quad\Rightarrow\quad m_c^* = 0.26\,m_0\ \ (\text{Si 전자}), \qquad m_c^* \approx 0.39\,m_0\ \ (\text{Si 정공})$$<div class="where">정공 값은 무거운·가벼운 정공 띠를 평균한 것이다. 상태 밀도를 셀 때 쓰는 질량(Si 전자 \(m_\text{dos} = 6^{2/3}(m_lm_t^2)^{1/3} = 1.08\,m_0\))과 다르다. 셈(농도)에는 상태 밀도 질량, 가속(이동도)에는 전도도 질량을 쓴다.</div></div>
+    <p>전류 밀도는 "단위 넓이를 지나는 전하의 흐름"이다. 전자는 전기장 반대쪽으로 가지만 전하가 음수라 전류는 전기장 방향이다. 전자와 정공의 표류 전류는 같은 방향으로 더해진다.</p>
+    <div class="formula">$$J = qn\mu_nE + qp\mu_pE = \sigma E, \qquad \sigma = q(n\mu_n + p\mu_p), \qquad \rho = \frac{1}{\sigma}$$<div class="where">\(\sigma\) <span class="term">전도도</span><span class="en">(conductivity)</span>, \(\rho\) 비저항(Ω·cm). 이것이 미시적 옴의 법칙이다. 7장 드루드 모형과 같은 꼴이지만, 반도체에서는 \(n\)과 \(p\)를 도핑으로 10¹⁰배 넘게 바꿀 수 있다.</div></div>
+    <div class="tangle" id="tg-mob">
+      <p>완화 시간 <span class="tn" data-var="tau" data-min="0.02" data-max="1.00" data-step="0.01" data-unit=" ps">0.21</span>, 전도도 질량 <span class="tn" data-var="m" data-min="0.03" data-max="1.20" data-step="0.01" data-unit=" m₀">0.26</span>이면 이동도는 \(\mu = q\tau/m^* =\) <span class="tn-out" data-out="mu"></span>이다. 전기장 <span class="tn" data-var="E" data-min="10" data-max="5000" data-step="10" data-unit=" V/cm">1000</span>에서 표류 속도는 <span class="tn-out" data-out="vd"></span>로, 열속도 <span class="tn-out" data-out="vth"></span>의 <span class="tn-out" data-out="ratio"></span>에 불과하다. 평균 자유 경로는 <span class="tn-out" data-out="l"></span>. <span data-out="msg"></span></p>
+    </div>
+    <figure class="mini" id="mini-mx">
+      <div class="mini-view"><canvas id="cv-mx"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>전기장 E <output id="mx-E-out"></output></span><input type="range" id="mx-E" min="0" max="30" step="0.5" value="5"></label><label class="check"><input type="checkbox" id="mx-zoom"> 가운데 확대(×20)</label><span class="readout" id="mx-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>Si 전자(\(m^* = 0.26\), \(\mu = 1414\))의 \(x\)방향 속도 분포. 전기장은 분포 전체를 \(v_d = -\mu E\)만큼 옮길 뿐, 폭(열속도)은 그대로다. 10 kV/cm 이상에서는 이 단순한 그림이 깨진다(4절).</figcaption>
+    </figure>
+    <div class="example" data-title="실리콘 전자의 완화 시간과 평균 자유 경로">
+      <p>저도핑 실리콘의 전자 이동도는 300 K에서 1414 cm²/(V·s)이다. 전도도 질량 \(0.26\,m_0\)을 써서 (a) 완화 시간 \(\tau\), (b) 열속도 \(v_\text{th} = \sqrt{3kT/m^*}\)와 평균 자유 경로 \(\ell\), (c) 1 kV/cm에서의 표류 속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\mu = q\tau/m^*\)를 \(\tau\)에 대해 푼다. 이동도는 SI 단위(m²/(V·s))로 바꿔 넣는다.</div>
+        <div class="step"><b>풀이</b> (a) \(\tau = \mu m^*/q = 0.1414\times0.26\times9.109\times10^{-31}/1.602\times10^{-19} = 2.09\times10^{-13}\) s \(= 0.209\) ps. (b) \(v_\text{th} = \sqrt{3\times1.381\times10^{-23}\times300/(0.26\times9.109\times10^{-31})} = 2.29\times10^5\) m/s \(= 2.29\times10^7\) cm/s, \(\ell = v_\text{th}\tau = 2.29\times10^5\times2.09\times10^{-13} = 4.79\times10^{-8}\) m \(= 47.9\) nm. (c) \(v_d = \mu E = 1414\times1000 = 1.41\times10^6\) cm/s.</div>
+        <div class="answer">τ = 0.209 ps, v<sub>th</sub> = 2.29×10⁷ cm/s, ℓ ≈ 48 nm, v<sub>d</sub> = 1.41×10⁶ cm/s</div>
+        <div class="step"><b>검토</b> 표류 속도는 열속도의 6%다 — 1 kV/cm는 "약한" 전기장이다. 평균 자유 경로 48 nm는 Si 격자 상수의 약 90배로, 전자가 원자 하나하나에 부딪히는 것이 아님을 보여 준다(완전한 주기 격자에서는 산란이 없다, 8장). 또 요즘 트랜지스터의 채널 길이(수십 nm)와 같은 크기라는 점이 4절과 16장의 탄도 수송 이야기로 이어진다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="진성 실리콘과 도핑한 실리콘의 비저항">
+      <p>300 K 진성 실리콘(\(n_i = 1.0\times10^{10}\) cm⁻³, \(\mu_n = 1414\), \(\mu_p = 470.5\) cm²/(V·s))의 비저항을 구하고, 인을 \(1.0\times10^{15}\) cm⁻³ 넣은 n형(\(\mu_n = 1362\))과 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 진성이면 \(n = p = n_i\). n형은 완전 이온화로 \(n = N_D\), \(p = n_i^2/N_D = 10^5\) cm⁻³이라 정공 항은 무시한다.</div>
+        <div class="step"><b>풀이</b> 진성: \(\rho = 1/[qn_i(\mu_n + \mu_p)] = 1/(1.602\times10^{-19}\times10^{10}\times1884.5) = 3.31\times10^5\) Ω·cm. n형: \(\rho = 1/(qN_D\mu_n) = 1/(1.602\times10^{-19}\times10^{15}\times1362) = 4.58\) Ω·cm.</div>
+        <div class="answer">진성 ρ ≈ 3.3×10⁵ Ω·cm, n형(10¹⁵) ρ ≈ 4.58 Ω·cm — 약 7만 배 차이</div>
+        <div class="step"><b>검토</b> 실리콘 원자 5천만 개에 인 하나를 넣었을 뿐인데 비저항이 7만 배 떨어졌다. 진성 비저항은 \(n_i\)(교재에 따라 \(0.97\)–\(1.5\times10^{10}\))에 반비례하므로 값이 2배 가까이 달라질 수 있다. 실제 "진성" 웨이퍼는 잔류 불순물 때문에 이보다 낮은 수천–수만 Ω·cm다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="scattering">
+    <h2>산란 기구와 마티센 규칙</h2>
+    <p>8장에서 본 것처럼 완전한 주기 퍼텐셜 속 블로흐 전자는 산란되지 않는다. 산란은 <strong>주기성을 깨뜨리는 것</strong>이 있을 때만 일어난다. 반도체에서 중요한 것은 넷이다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="네 가지 산란 기구: 음향 포논, 이온화 불순물, 중성 불순물, 표면 거칠기">
+        <defs><marker id="ct-ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker><marker id="ct-ar4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <g>
+          <rect x="8" y="8" width="188" height="284" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="102" y="32" text-anchor="middle" style="font-weight:600">① 음향 포논</text>
+          <g fill="var(--text-faint)">
+            <circle cx="30" cy="80" r="4"/><circle cx="52" cy="80" r="4"/><circle cx="70" cy="80" r="4"/><circle cx="84" cy="80" r="4"/><circle cx="96" cy="80" r="4"/><circle cx="110" cy="80" r="4"/><circle cx="128" cy="80" r="4"/><circle cx="150" cy="80" r="4"/><circle cx="174" cy="80" r="4"/>
+            <circle cx="30" cy="150" r="4"/><circle cx="52" cy="150" r="4"/><circle cx="70" cy="150" r="4"/><circle cx="84" cy="150" r="4"/><circle cx="96" cy="150" r="4"/><circle cx="110" cy="150" r="4"/><circle cx="128" cy="150" r="4"/><circle cx="150" cy="150" r="4"/><circle cx="174" cy="150" r="4"/>
+          </g>
+          <rect x="66" y="66" width="50" height="98" rx="6" fill="var(--accent-soft)" opacity=".8"/>
+          <path d="M20,118 L80,114 Q92,113 100,104 L150,60" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#ct-ar3)"/>
+          <text class="t-dim" x="102" y="196" text-anchor="middle" style="font-size:12px">압축된 곳은 띠 끝이 바뀐다</text>
+          <text class="t-dim" x="102" y="214" text-anchor="middle" style="font-size:12px">(변형 퍼텐셜)</text>
+          <text class="t" x="102" y="248" text-anchor="middle" style="font-size:13px">μ<tspan dy="4" style="font-size:10px">L</tspan><tspan dy="-4"> ∝ T</tspan><tspan dy="-6" style="font-size:10px">−3/2</tspan></text>
+          <text class="t-dim" x="102" y="272" text-anchor="middle" style="font-size:12px">온도↑ → 포논↑</text>
+        </g>
+        <g data-step="2">
+          <rect x="206" y="8" width="188" height="284" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="300" y="32" text-anchor="middle" style="font-weight:600">② 이온화 불순물</text>
+          <circle cx="300" cy="120" r="14" fill="var(--accent-2)"/><text x="300" y="125" text-anchor="middle" style="font-size:16px;fill:#fff;font-weight:700">+</text>
+          <path d="M216,90 L262,96 Q296,104 312,150 L330,200" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#ct-ar3)"/>
+          <path d="M216,70 L280,72 Q320,76 384,92" fill="none" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#ct-ar4)"/>
+          <text class="t-dim" x="260" y="224" text-anchor="start" style="font-size:12px;fill:var(--accent)">느린 전자: 크게 꺾임</text>
+          <text class="t-dim" x="300" y="60" text-anchor="middle" style="font-size:12px;fill:var(--accent-2)">빠른 전자: 살짝</text>
+          <text class="t" x="300" y="248" text-anchor="middle" style="font-size:13px">μ<tspan dy="4" style="font-size:10px">I</tspan><tspan dy="-4"> ∝ T</tspan><tspan dy="-6" style="font-size:10px">3/2</tspan><tspan dy="6">/N</tspan><tspan dy="4" style="font-size:10px">I</tspan></text>
+          <text class="t-dim" x="300" y="272" text-anchor="middle" style="font-size:12px">온도↑ → 덜 꺾임</text>
+        </g>
+        <g data-step="3">
+          <rect x="404" y="8" width="188" height="284" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="498" y="32" text-anchor="middle" style="font-weight:600">③ 중성 불순물</text>
+          <circle cx="498" cy="120" r="14" fill="none" stroke="var(--text-dim)" stroke-width="2"/><circle cx="498" cy="120" r="4" fill="var(--text-dim)"/>
+          <path d="M414,124 L484,122 Q494,121 506,110 L560,70" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#ct-ar3)"/>
+          <text class="t-dim" x="498" y="196" text-anchor="middle" style="font-size:12px">전자를 붙든 도너·결함</text>
+          <text class="t-dim" x="498" y="214" text-anchor="middle" style="font-size:12px">짧은 거리 퍼텐셜</text>
+          <text class="t" x="498" y="248" text-anchor="middle" style="font-size:13px">μ ∝ 1/N<tspan dy="4" style="font-size:10px">0</tspan><tspan dy="-4">, T와 무관</tspan></text>
+          <text class="t-dim" x="498" y="272" text-anchor="middle" style="font-size:12px">동결 영역에서만 중요</text>
+        </g>
+        <g data-step="4">
+          <rect x="602" y="8" width="190" height="284" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="697" y="32" text-anchor="middle" style="font-weight:600">④ 표면 거칠기</text>
+          <path d="M612,90 L630,84 L644,92 L656,82 L672,90 L686,80 L700,92 L716,84 L732,90 L746,80 L762,90 L782,86 L782,56 L612,56 Z" fill="var(--accent-2-soft)" stroke="var(--text-dim)"/>
+          <text class="t" x="697" y="72" text-anchor="middle" style="font-size:12px">SiO₂</text>
+          <path d="M616,140 L660,110 L676,92 L700,118 L740,150" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#ct-ar3)"/>
+          <text class="t-dim" x="697" y="196" text-anchor="middle" style="font-size:12px">게이트 전기장이 전자를</text>
+          <text class="t-dim" x="697" y="214" text-anchor="middle" style="font-size:12px">계면에 눌러 붙인다</text>
+          <text class="t" x="697" y="248" text-anchor="middle" style="font-size:13px">μ<tspan dy="4" style="font-size:10px">sr</tspan><tspan dy="-4"> ∝ E</tspan><tspan dy="4" style="font-size:10px">⊥</tspan><tspan dy="-10" style="font-size:10px">−2</tspan></text>
+          <text class="t-dim" x="697" y="272" text-anchor="middle" style="font-size:12px">MOSFET 반전층</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>음향 포논: 원자가 모인 곳과 성긴 곳에서 띠 끝 에너지가 조금 달라진다(변형 퍼텐셜). 포논이 많을수록, 곧 온도가 높을수록 자주 산란된다.</li><li>이온화 불순물: 이온화된 도너(+)·억셉터(−)의 쿨롱 퍼텐셜이 전자를 꺾는다. 느린 전자일수록 오래 머물러 크게 꺾이므로, 온도가 오르면 오히려 덜 산란된다.</li><li>중성 불순물: 전자를 붙든 도너처럼 전하가 없는 불순물은 수소 원자 크기의 짧은 퍼텐셜만 있어 약하다. 저온 동결 영역에서나 눈에 띈다.</li><li>표면 거칠기: MOSFET 채널 전자는 원자 몇 층 높이로 울퉁불퉁한 Si/SiO₂ 계면에 눌려 있어, 게이트 전기장이 셀수록 강하게 산란된다.</li></ol>
+      <figcaption>산란 기구는 모두 "주기성의 흠"이다. 각각의 온도·농도 의존이 다르기 때문에, 이동도를 온도와 도핑에 따라 재면 어떤 기구가 지배하는지 거꾸로 알아낼 수 있다.</figcaption>
+    </figure>
+    <h3>음향 포논 산란: \(\mu_L \propto T^{-3/2}\)</h3>
+    <p>상온에서 에너지가 \(kT\) 정도인 전자는 파수가 작은 음향 포논과 주로 부딪힌다. 포논 에너지(수 meV)가 전자 에너지보다 훨씬 작아 거의 탄성 산란이다. 산란률은 두 인자의 곱으로 어림할 수 있다: (산란체의 수) × (전자가 산란 들어갈 상태 수). 저에너지 포논의 수는 \(\langle n\rangle \approx kT/\hbar\omega \propto T\)이고(5장), 3차원 상태 밀도는 \(\sqrt{E} \propto v\)에 비례한다. 따라서 \(1/\tau \propto T\,v\). 평균 전자의 \(v \propto T^{1/2}\)를 넣으면</p>
+    <div class="formula">$$\frac{1}{\tau_L} \propto T\cdot T^{1/2} = T^{3/2} \quad\Rightarrow\quad \mu_L = \frac{q\tau_L}{m^*} \propto (m^*)^{-5/2}\,T^{-3/2}$$<div class="where">정확한 바딘–쇼클리 결과 \(\mu_L = \dfrac{2\sqrt{2\pi}\,q\hbar^4 C_l}{3\,m^{*5/2}(kT)^{3/2}\,\Xi^2}\)(\(C_l\) 종탄성 상수, \(\Xi\) 변형 퍼텐셜)도 같은 지수를 준다. 가벼운 질량이 이중으로 유리하다(가속이 쉽고 산란 상태가 적다).</div></div>
+    <p>그런데 실리콘을 실제로 재면 저도핑 전자 이동도는 \(T^{-2.4}\), 정공은 \(T^{-2.2}\)쯤으로 더 가파르게 떨어진다. 실리콘은 골짜기가 여섯이라 전자가 다른 골짜기로 뛰는 <em>골짜기 사이 산란</em>(큰 파수의 포논, 에너지 19–63 meV)과 광학 포논 산란이 상온에서 이미 한몫을 하고, 이 비탄성 기구는 포논 수가 \(T\)보다 빠르게 늘어나기 때문이다.</p>
+    <h3>이온화 불순물 산란: \(\mu_I \propto T^{3/2}/N_I\)</h3>
+    <p>이온 주위의 쿨롱 퍼텐셜에 의한 산란은 알파 입자의 러더퍼드 산란과 같다. 산란 단면적은 \(\sigma \propto 1/v^4\)이라, 산란률 \(1/\tau = N_I\sigma v \propto N_I/v^3\)이다. \(v \propto T^{1/2}\)이므로 \(\tau_I \propto T^{3/2}/N_I\). 문제는 쿨롱 퍼텐셜이 멀리까지 뻗어 아주 작은 각의 산란이 끝없이 많다는 것이다(적분이 발산한다). 두 가지 처방이 있다.</p>
+    <div class="compare">
+      <div><h4>콘웰–바이스코프</h4><p>이온 사이 평균 거리의 절반 \(\tfrac12N_I^{-1/3}\)보다 멀리 지나가는 전자는 산란되지 않는다고 잘라 낸다. 결과는 \(\mu_I \propto T^{3/2}/[N_I\ln(1 + b_\text{CW}T^2N_I^{-2/3})]\).</p></div>
+      <div><h4>브룩스–헤링</h4><p>자유 캐리어가 이온 전하를 가려(차폐) 퍼텐셜이 \(e^{-r/L_D}/r\)로 줄어든다고 본다(\(L_D\) 디바이 길이). 결과는 \(\mu_I \propto T^{3/2}/[N_I(\ln(1+b) - b/(1+b))]\), \(b \propto m^*T^2/n\). 오늘날 표준이다.</p></div>
+    </div>
+    <p>두 모형 모두 로그 인자를 빼면 \(\mu_I \propto T^{3/2}/N_I\)다. 중요한 것은 \(N_I\)가 <strong>이온화된 불순물의 총수</strong> \(N_D^+ + N_A^-\)라는 점이다. 보상된 시료는 캐리어는 적은데 산란체는 많아 이동도가 낮다.</p>
+    <figure class="mini" id="mini-ion">
+      <div class="mini-view"><canvas id="cv-ion"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>전자 에너지 <output id="ion-E-out"></output></span><input type="range" id="ion-E" min="5" max="120" step="1" value="26"></label><label class="check"><input type="checkbox" id="ion-scr"> 차폐(브룩스–헤링)</label><span class="readout" id="ion-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>양이온(가운데) 곁을 지나는 전자 궤적. 같은 충돌 변수에서 에너지를 4배로 올리면 꺾이는 각이 약 \(1/4\)이 된다(작은 각 근사 \(\theta \approx Zq^2/(4\pi\varepsilon E b)\)). 차폐를 켜면 멀리 지나가는 궤적은 거의 꺾이지 않는다 — 발산을 막는 브룩스–헤링의 생각이다.</figcaption>
+    </figure>
+    <h3>그 밖의 산란과 마티센 규칙</h3>
+    <p><span class="term">중성 불순물 산란</span><span class="en">(neutral impurity scattering)</span>은 전자를 붙든 도너나 중성 결함이 일으키며, 이동도가 온도와 거의 무관하고 \(1/N_0\)에 비례한다(에르긴소이). 상온 실리콘에서는 도너가 거의 다 이온화되어 있어 작지만, 동결 영역(수십 K)에서는 주요 기구가 된다. <span class="term">표면 거칠기 산란</span><span class="en">(surface roughness scattering)</span>은 MOSFET 반전층에서만 중요하며, 수직 전기장이 셀수록 커진다(\(\mu_\text{sr} \propto E_\perp^{-2}\) 정도). 그 밖에 전자–전자(캐리어–캐리어) 산란, 합금 산란(SiGe), 전위 산란도 있다.</p>
+    <p>여러 기구가 서로 독립이라면 단위 시간에 산란될 확률이 더해진다: \(1/\tau = 1/\tau_1 + 1/\tau_2 + \cdots\). 각 기구만 있을 때의 이동도 \(\mu_i = q\tau_i/m^*\)로 쓰면</p>
+    <div class="def"><span class="def-k">마티센 규칙</span>
+      <p>$$\frac{1}{\mu} = \frac{1}{\mu_L} + \frac{1}{\mu_I} + \frac{1}{\mu_0} + \cdots$$</p>
+      <p><span class="term">마티센 규칙</span><span class="en">(Matthiessen's rule)</span>은 저항이 직렬로 더해지듯 산란률이 더해진다는 뜻이다. 가장 낮은 이동도(가장 잦은 산란)가 전체를 좌우한다. 각 기구의 \(\tau\)가 전자 에너지에 따라 <em>다르게</em> 변하면 근사일 뿐이다 — 아래 실험대의 "에너지 의존" 칸에서 확인하라.</p>
+    </div>
+    <div class="predict" data-for="sim-mc">
+      <p>포논 산란률을 고정하고 불순물 산란률을 0에서 포논과 <em>같은</em> 값까지 올렸다(산란이 두 배로 잦아졌다). 이동도는?</p>
+      <div class="opts"><button class="opt">거의 그대로(포논이 지배하므로)</button><button class="opt" data-correct>정확히 절반</button><button class="opt">4분의 1</button><button class="opt">두 기구가 상쇄되어 늘어난다</button></div>
+      <div class="quiz-exp">산란률이 \(\Gamma\)에서 \(2\Gamma\)가 되면 \(\tau\)가 절반, \(\mu = q\tau/m^*\)도 절반이다. 마티센 규칙으로 \(1/\mu = 1/\mu_L + 1/\mu_L = 2/\mu_L\). 아래 몬테카를로에서 막대를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-mc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>산란 몬테카를로 실험대: 산란률을 끌어 이동도 재기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-mc"></canvas></div><div style="position:relative"><canvas id="cv-mc-bar"></canvas><span class="hint top">막대 끝 흰 원을 위아래로 끈다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>전기장 E <output id="mc-E-out"></output></span><input type="range" id="mc-E" min="0.5" max="5" step="0.1" value="2"></label>
+          <label class="check"><input type="checkbox" id="mc-en"> 에너지 의존 산란률(포논 ∝ v, 불순물 ∝ v⁻³)</label>
+          <div class="ctrl"><span>과녁</span><div class="seg" id="mc-goal"><button data-value="off" class="on">끄기</button><button data-value="on">μ 맞히기</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="mc-play" type="button"></button><button class="btn" id="mc-reset" type="button">측정 초기화</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">측정 τ (충돌 간격)</span><span class="v" id="mc-tau">—</span></div>
+        <div class="stat"><span class="k">측정 μ = v<sub>d</sub>/E</span><span class="v" id="mc-mu">—</span></div>
+        <div class="stat"><span class="k">마티센 예측</span><span class="v" id="mc-mat">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="mc-tg">—</span></div>
+      </div>
+      <div class="sim-note">전자 300개(Si 전자, \(m^* = 0.26\,m_0\), 300 K)가 산란 사이에 전기장으로 가속되고, 산란될 때마다 열분포에서 새 속도를 뽑는다. 왼쪽은 그중 80개, 오른쪽 위는 두 산란률 막대, 아래는 측정 이동도의 흐름이다. 해볼 것: ① 불순물 막대를 0으로 내리고 포논만 남겨 \(\mu_L\)을 잰 뒤, 불순물만 남겨 \(\mu_I\)를 재고, 둘 다 켰을 때 \(1/\mu = 1/\mu_L + 1/\mu_I\)인지 확인하라. ② "에너지 의존"을 켜고 두 막대를 모두 올리면 마티센 합이 측정값보다 20–40% 크게 나온다. 포논은 빠른 전자를, 불순물은 느린 전자를 주로 막아 "약한 고리"가 전자마다 다르기 때문이다. 측정값은 볼츠만 방정식의 "정확한 평균" \(\langle v^2\tau\rangle/\langle v^2\rangle\)과 몇 % 안에서 맞는다(이 모드에서 포논 막대는 1/ps 아래로 내려가지 않는다 — 산란이 없으면 빠른 전자가 끝없이 가속된다). ③ 과녁을 켜고 막대를 끌어 목표 이동도를 ±3% 안으로 맞혀라.</div>
+    </div>
+    <div class="example" data-title="마티센 규칙으로 온도를 바꾸기">
+      <p>\(N_D = 10^{17}\) cm⁻³인 실리콘의 전자 이동도가 300 K에서 721 cm²/(V·s), 같은 온도의 저도핑 이동도(격자 산란만)가 1414 cm²/(V·s)이다. (a) 이온화 불순물 산란만의 이동도 \(\mu_I\)는? (b) 이론 지수(\(\mu_L \propto T^{-3/2}\), \(\mu_I \propto T^{3/2}\))를 써서 400 K의 이동도를 어림하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 마티센 규칙을 거꾸로 써서 \(\mu_I\)를 뽑고, 두 기구를 각자의 지수로 옮긴 다음 다시 합친다.</div>
+        <div class="step"><b>풀이</b> (a) \(1/\mu_I = 1/721 - 1/1414 = 6.797\times10^{-4}\) → \(\mu_I = 1471\). (b) \((400/300)^{1.5} = 1.540\). \(\mu_L(400) = 1414/1.540 = 918\), \(\mu_I(400) = 1471\times1.540 = 2265\). \(1/\mu = 1/918 + 1/2265\) → \(\mu = 653\) cm²/(V·s).</div>
+        <div class="answer">(a) μ<sub>I</sub> ≈ 1.47×10³ cm²/(V·s) (b) μ(400 K) ≈ 653 cm²/(V·s)</div>
+        <div class="step"><b>검토</b> 온도를 올리면 격자 산란은 늘고 불순물 산란은 줄어 둘이 일부 상쇄된다. 그래서 \(10^{17}\) 시료의 이동도는 저도핑 시료(1414 → 918)보다 온도에 덜 민감하다(721 → 653). 실측 지수 −2.4를 쓰면 \(\mu_L(400) = 709\), \(\mu = 540\)으로 더 낮아진다. 3절의 경험식은 447을 준다 — 고농도에서는 단순 지수 모형이 크게 어긋날 수 있다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>TCAD 이동도 모델은 마티센 규칙을 조립한 것이다</strong><p>소자 시뮬레이터는 이동도를 "부품"의 조합으로 계산한다. 도핑 의존 저전계 이동도(Masetti, Caughey–Thomas, Arora)에 반전층의 표면 산란(Lombardi 모형: 음향 포논 \(\propto E_\perp^{-1/3}\), 표면 거칠기 \(\propto E_\perp^{-2}\))을 마티센 규칙으로 더하고, 그 결과를 다시 고전기장 속도 포화 모형(Canali)에 넣는다. 모형 하나만 바꿔도 켜짐 전류가 크게 달라지기 때문에, 공정이 바뀌면 이 매개변수를 측정으로 다시 맞춘다(보정). 각 모형의 식과 TCAD 안에서의 효과는 <a href="https://semi.euiyun.com/tcad/chapters/models.html">TCADBook · 이동도와 재결합 모델</a>에 있다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="mobility">
+    <h2>도핑·온도에 따른 이동도와 비저항</h2>
+    <p>실제 소자를 설계할 때 마티센 규칙을 처음부터 계산하는 사람은 없다. 대신 측정값에 맞춘 경험식을 쓴다. 가장 널리 쓰이는 것이 <span class="term">카우기–토머스 식</span><span class="en">(Caughey–Thomas formula)</span>이다. 저도핑에서는 격자 산란이 정한 \(\mu_\text{max}\), 고농도에서는 바닥값 \(\mu_\text{min}\)에 다가가고, 그 사이를 기준 농도 \(N_\text{ref}\) 근처에서 매끄럽게 잇는다.</p>
+    <div class="formula">$$\mu(N) = \mu_\text{min} + \frac{\mu_\text{max} - \mu_\text{min}}{1 + (N/N_\text{ref})^{\alpha}}$$<div class="where">\(N = N_D^+ + N_A^-\)(이온화된 불순물 총수). 온도 의존은 \(\mu_\text{max} \propto (T/300)^{-\gamma}\), \(\mu_\text{min} \propto (T/300)^{-0.57}\), \(N_\text{ref} \propto (T/300)^{2.4}\), \(\alpha \propto (T/300)^{-0.146}\)로 넣는다(아로라형). 고농도에서 \(\mu_\text{max}\)보다 \(\mu_\text{min}\)이 덜 변하는 것이 불순물 산란의 몫이다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>실리콘, 300 K</th><th class="num">μ<sub>max</sub></th><th class="num">μ<sub>min</sub></th><th class="num">N<sub>ref</sub> (cm⁻³)</th><th class="num">α</th><th class="num">γ</th></tr></thead>
+      <tbody>
+        <tr><td>전자</td><td class="num">1414</td><td class="num">68.5</td><td class="num">9.2×10¹⁶</td><td class="num">0.711</td><td class="num">2.42</td></tr>
+        <tr><td>정공</td><td class="num">470.5</td><td class="num">44.9</td><td class="num">2.23×10¹⁷</td><td class="num">0.719</td><td class="num">2.2</td></tr>
+      </tbody>
+    </table></div>
+    <p>이 매개변수로 계산한 값은 \(N = 10^{14}\)에서 전자 1404·정공 469, \(10^{17}\)에서 721·317, \(10^{19}\)에서 115·71 cm²/(V·s)다. 전자 이동도가 정공의 약 3배인 것은 전도도 질량(0.26 대 0.39)과 산란 차이가 겹친 결과다. 같은 도핑에서 소수 캐리어 이동도는 다수 캐리어 이동도와 조금 다르고(고농도에서 소수 쪽이 더 높다), 정밀한 소자 해석에서는 따로 쓴다.</p>
+    <p>이동도를 알면 비저항이 나온다. n형이면 \(\rho \approx 1/(qN_D\mu_n(N_D))\). 도핑을 늘리면 캐리어는 비례해서 늘지만 이동도가 함께 떨어지므로 \(\rho\)는 \(1/N\)보다 느리게 줄어든다. 도핑 대 비저항 곡선을 <span class="term">어빈 곡선</span><span class="en">(Irvin curve)</span>이라 하며, 웨이퍼 사양(예: "p형 붕소 8–12 Ω·cm")에서 도핑을 읽는 데 매일 쓴다.</p>
+    <div class="tangle" id="tg-rho">
+      <p>실리콘에 도펀트를 \(10^{x}\) cm⁻³, \(x =\) <span class="tn" data-var="x" data-min="13" data-max="20.5" data-step="0.05">15.00</span>만큼 넣으면 <span class="tn-out" data-out="N"></span>. 300 K 완전 이온화로 n형(인)이면 \(\mu_n =\) <span class="tn-out" data-out="mun"></span>, \(\rho =\) <span class="tn-out" data-out="rn"></span>, p형(붕소)이면 \(\mu_p =\) <span class="tn-out" data-out="mup"></span>, \(\rho =\) <span class="tn-out" data-out="rp"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <p>이 경험식으로 그린 곡선은 문헌 어빈 곡선(Irvin 1962, Thurber의 ASTM F723 변환식)과 \(10^{14}\)–\(10^{19}\) cm⁻³ 범위에서 대체로 10–20% 안에서 맞는다 — 어디까지나 <em>경험식 근사</em>다. 확인용 대표값: 1 Ω·cm는 n형 \(4.9\times10^{15}\), p형 \(1.5\times10^{16}\) cm⁻³에 해당하고, 10 Ω·cm는 n형 \(4.5\times10^{14}\), p형 \(1.4\times10^{15}\) cm⁻³이다. \(10^{19}\) cm⁻³ 이상에서는 불완전 이온화·띠 간격 축소(10장)·도펀트 뭉침이 겹쳐 측정 곡선과의 차이가 커진다.</p>
+    <div class="predict" data-for="sim-munt">
+      <p>300 K에서 400 K로 데우면 \(10^{14}\) cm⁻³ 시료와 \(10^{18}\) cm⁻³ 시료 중 이동도가 <em>비율로</em> 더 크게 떨어지는 쪽은?</p>
+      <div class="opts"><button class="opt" data-correct>\(10^{14}\) 시료 — 거의 격자 산란만 있으니 \(T^{-2.4}\)를 그대로 받는다</button><button class="opt">\(10^{18}\) 시료 — 불순물이 많을수록 온도에 민감하다</button><button class="opt">둘 다 같은 비율로 떨어진다</button><button class="opt">둘 다 늘어난다</button></div>
+      <div class="quiz-exp">경험식으로 \(10^{14}\): 1404 → 701(절반), \(10^{18}\): 277 → 213(23% 감소). 고농도 시료는 온도가 오르면 불순물 산란이 약해져 격자 산란 증가를 일부 상쇄한다. 아래 오른쪽 그래프에서 두 기구의 곡선이 만나는 온도를 찾아보라.</div>
+    </div>
+    <div class="sim" id="sim-munt">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>이동도 지도: 도핑과 온도를 끌어 보라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-mun"></canvas><span class="hint top">흰 원을 좌우로 끌어 도핑</span></div><div style="position:relative"><canvas id="cv-mut"></canvas><span class="hint top">흰 원을 좌우로 끌어 온도</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>캐리어</span><div class="seg" id="mu-type"><button data-value="n" class="on">전자</button><button data-value="p">정공</button></div></div>
+          <div class="ctrl"><span>격자 산란 지수 γ (두 기구 모형)</span><div class="seg" id="mu-g"><button data-value="th" class="on">이론 1.5</button><button data-value="ex">실측 2.2–2.4</button></div></div>
+          <label class="check"><input type="checkbox" id="mu-300" checked> 300 K 곡선 겹치기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">도핑 N, 온도 T</span><span class="v" id="mu-nt">—</span></div>
+        <div class="stat"><span class="k">이동도 μ (경험식)</span><span class="v" id="mu-mu">—</span></div>
+        <div class="stat"><span class="k">μ<sub>L</sub> · μ<sub>I</sub> (두 기구)</span><span class="v" id="mu-li">—</span></div>
+        <div class="stat"><span class="k">교차 온도 (μ<sub>L</sub> = μ<sub>I</sub>)</span><span class="v" id="mu-tx">—</span></div>
+        <div class="stat"><span class="k">비저항 ρ</span><span class="v" id="mu-rho">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 경험식 \(\mu(N)\)(실선: 선택한 온도, 점선: 300 K), 오른쪽은 선택한 도핑에서의 \(\mu(T)\)다. 오른쪽의 두 점선은 "두 기구 모형"이다: \(\mu_L = \mu_\text{max}(T/300)^{-\gamma}\), \(\mu_I = \mu_{I,300}(N)\,(T/300)^{3/2}\)(300 K에서 경험식과 맞도록 \(1/\mu_{I,300} = 1/\mu(N) - 1/\mu_\text{max}\)로 정함), 그리고 그 마티센 합(가는 선). 해볼 것: ① 도핑을 \(10^{18}\) 이상으로 올리면 저온에서 이동도가 <em>온도와 함께 오르는</em> 구간이 나타난다 — 불순물 산란이 지배하는 쪽이다. ② 이론 지수(1.5)에서는 마티센 합의 꼭대기가 정확히 교차 온도에 온다. 왜일까? (\(d\mu/dT = 0\) 조건을 써 보라.) ③ 정공으로 바꾸면 같은 \(N\)에서 교차 온도가 어떻게 달라지는가?</div>
+    </div>
+    <div class="drill" id="drill-mob" data-title="카우기–토머스 이동도와 비저항 반복 연습"></div>
+    <div class="example" data-title="보상된 시료의 비저항">
+      <p>실리콘에 인 \(N_D = 3\times10^{16}\)과 붕소 \(N_A = 1\times10^{16}\) cm⁻³가 함께 들어 있다(300 K, 완전 이온화). 카우기–토머스 매개변수(표)로 비저항을 구하고, 보상 없이 인만 \(2\times10^{16}\) 넣은 시료와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 캐리어 농도는 순 도핑 \(n = N_D - N_A\)로, 이동도는 산란체 총수 \(N_D + N_A\)로 정한다.</div>
+        <div class="step"><b>풀이</b> \(n = 2\times10^{16}\) cm⁻³. 보상 시료: \(N = 4\times10^{16}\), \((N/N_\text{ref})^{0.711} = (0.4348)^{0.711} = 0.5532\), \(\mu_n = 68.5 + 1345.5/1.5532 = 935\). \(\rho = 1/(1.602\times10^{-19}\times2\times10^{16}\times935) = 0.334\) Ω·cm. 보상 없음: \(N = 2\times10^{16}\), \(\mu_n = 1074\), \(\rho = 0.291\) Ω·cm.</div>
+        <div class="answer">보상 시료 ρ ≈ 0.334 Ω·cm, 비보상 ρ ≈ 0.291 Ω·cm (약 15% 높다)</div>
+        <div class="step"><b>검토</b> 캐리어 수가 같아도 산란체가 두 배라 이동도가 13% 낮다. 그래서 비저항만 재서 "순 도핑"을 읽으면, 보상된 시료에서는 도핑을 실제보다 낮게 잘못 읽는다. 카운터 도핑이 흔한 채널·웰 영역을 SIMS(원자 수)와 비저항(캐리어 수 × 이동도)으로 함께 보는 이유다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="highfield">
+    <h2>고전기장: 뜨거운 전자와 속도 포화</h2>
+    <p>\(v_d = \mu E\)는 표류 속도가 열속도보다 훨씬 작을 때만 맞다. 실리콘에서 전기장이 \(10^4\) V/cm를 넘으면 \(\mu E\)가 \(10^7\) cm/s를 넘어 열속도와 맞먹는다. 이때 전자는 충돌 사이에 전기장에게서 얻는 에너지 \(qEv_d\tau\)가 커져서, 격자에 내주는 속도보다 빨리 에너지를 쌓는다. 전자 무리의 평균 에너지가 격자 온도보다 높아진 상태를 <span class="term">뜨거운 전자</span><span class="en">(hot electrons)</span>라 하고, 그 평균 에너지를 \(\tfrac32 kT_e\)로 써서 전자 온도 \(T_e\)를 정의한다.</p>
+    <div class="formula">$$q\mu E^2 = \frac{\tfrac32 k(T_e - T)}{\tau_E} \quad\Rightarrow\quad T_e = T + \frac{2q\tau_E\mu E^2}{3k}$$<div class="where">왼쪽은 단위 시간에 전기장이 전자 하나에 해 주는 일(\(qEv_d\)), 오른쪽은 에너지 완화 시간 \(\tau_E\)(Si 약 0.1–0.3 ps)로 격자에 돌려주는 몫이다. 예: \(\tau_E = 0.2\) ps, \(\mu = 1400\), \(E = 10^4\) V/cm이면 \(T_e - T \approx 220\) K.</div></div>
+    <p>음향 포논은 한 번에 수 meV밖에 가져가지 못한다. 그러나 전자 에너지가 광학 포논 에너지 \(\hbar\omega_\text{op} \approx 63\) meV(5장, Si의 라만 포논)에 닿으면 사정이 달라진다. 광학 포논은 분산이 평평해 어떤 파수로도 만들 수 있으므로, 그 문턱을 넘은 전자는 거의 즉시 포논을 하나 내놓고 에너지와 운동량을 한꺼번에 잃는다. 전기장을 더 올려도 전자는 문턱을 넘자마자 원점으로 돌아가므로 평균 속도에 천장이 생긴다. 이것이 <span class="term">속도 포화</span><span class="en">(velocity saturation)</span>다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="전자 에너지의 시간 변화: 약한 전기장, 강한 전기장의 광학 포논 방출, 그리고 속도 포화">
+        <line x1="60" y1="220" x2="540" y2="220" class="s-axis"/><line x1="60" y1="40" x2="60" y2="220" class="s-axis"/>
+        <text class="t-dim" x="300" y="250" text-anchor="middle" style="font-size:12px">시간 →</text>
+        <text class="t-dim" x="22" y="130" text-anchor="middle" transform="rotate(-90 22 130)" style="font-size:12px">전자 에너지</text>
+        <line x1="60" y1="90" x2="540" y2="90" stroke="var(--bad)" stroke-dasharray="6 4" stroke-width="1.5"/>
+        <text x="544" y="94" style="font-size:12px;fill:var(--bad)">ħω<tspan dy="4" style="font-size:10px">op</tspan><tspan dy="-4"> ≈ 63 meV</tspan></text>
+        <line x1="60" y1="196" x2="540" y2="196" stroke="var(--text-faint)" stroke-dasharray="3 3"/>
+        <text class="t-dim" x="544" y="200" style="font-size:12px">3kT/2 ≈ 39 meV</text>
+        <g data-only="1">
+          <path d="M60,196 L100,188 L102,198 L150,186 L152,200 L200,190 L203,197 L250,185 L252,199 L300,188 L302,196 L350,186 L353,199 L400,190 L402,197 L450,187 L452,198 L500,189 L503,196 L540,190" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+          <text class="t" x="300" y="160" text-anchor="middle" style="font-weight:600">① 약한 전기장: 얻는 만큼 음향 포논에 준다, T<tspan dy="4" style="font-size:10px">e</tspan><tspan dy="-4"> ≈ T</tspan></text>
+        </g>
+        <g data-step="2">
+          <path d="M60,196 L80,186 L82,190 L130,150 L132,156 L170,120 L172,126 L200,96 L203,196 L230,170 L232,174 L270,130 L272,136 L298,92 L300,196 L330,160 L332,166 L370,112 L372,118 L392,92 L394,196 L430,150 L432,154 L468,104 L470,110 L484,92 L486,196 L520,154 L540,128" fill="none" stroke="var(--accent-2)" stroke-width="2.2"/>
+          <g fill="var(--bad)"><circle cx="201" cy="96" r="4.5"/><circle cx="299" cy="92" r="4.5"/><circle cx="393" cy="92" r="4.5"/><circle cx="485" cy="92" r="4.5"/></g>
+          <text class="t" x="300" y="66" text-anchor="middle" style="font-weight:600;fill:var(--accent-2)">② 강한 전기장: 문턱에 닿는 즉시 광학 포논 방출(●)</text>
+        </g>
+        <g data-step="3">
+          <rect x="590" y="40" width="200" height="180" rx="8" class="f-surface" stroke="var(--border)"/>
+          <line x1="610" y1="200" x2="780" y2="200" class="s-axis"/><line x1="610" y1="200" x2="610" y2="56" class="s-axis"/>
+          <path d="M610,200 L650,140 Q680,100 720,92 L780,90" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+          <line x1="610" y1="90" x2="780" y2="90" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <text class="t" x="700" y="82" text-anchor="middle" style="font-size:12px">v<tspan dy="4" style="font-size:10px">sat</tspan><tspan dy="-4"> ≈ 10⁷ cm/s</tspan></text>
+          <text class="t-dim" x="700" y="216" text-anchor="middle" style="font-size:12px">E →</text>
+          <text class="t-dim" x="626" y="70" style="font-size:12px">v<tspan dy="4" style="font-size:10px">d</tspan></text>
+          <text class="t" x="690" y="130" text-anchor="start" style="font-size:12px;fill:var(--accent)">μE</text>
+          <text class="t" x="300" y="34" text-anchor="middle" style="font-weight:600">③ 속도의 천장: 가속 → 방출 → 다시 가속</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>약한 전기장에서 전자는 얻는 에너지를 음향 포논 산란으로 바로바로 돌려준다. 평균 에너지가 열에너지 근처에 머물고 \(v_d = \mu E\)가 성립한다.</li><li>전기장이 세면 전자는 충돌 사이에 에너지를 쌓아 광학 포논 문턱(63 meV)까지 오르고, 닿는 순간 포논을 내놓고 바닥으로 떨어진다. 이 톱니가 빨라질 뿐 높이는 더 오르지 않는다.</li><li>그 결과 표류 속도는 \(\mu E\) 직선에서 벗어나 \(v_\text{sat}\)에 수렴한다. 실리콘 전자 \(v_\text{sat} \approx 1.0\)–\(1.07\times10^7\) cm/s, 정공 \(\approx 8\times10^6\) cm/s.</li></ol>
+      <figcaption>속도 포화의 그림. 전자는 문턱 에너지까지 가속되었다가 광학 포논을 내놓고 다시 출발하는 일을 되풀이하므로, 평균 속도는 문턱 에너지(와 질량)로 정해진다.</figcaption>
+    </figure>
+    <p>이 그림을 극단으로 몰아가면 포화 속도를 어림할 수 있다. 전자가 정지 상태에서 출발해 에너지 \(\hbar\omega_\text{op}\)까지 가속되었다가 멈추는 일을 되풀이한다고 하면, 운동량과 에너지 균형으로 다음 식이 나온다(Sze).</p>
+    <div class="formula">$$v_\text{sat} \approx \sqrt{\frac{8\,\hbar\omega_\text{op}}{3\pi\,m}} \approx 1\times10^7\ \text{cm/s}\ \ (\hbar\omega_\text{op} = 63\ \text{meV},\ m = m_0)$$<div class="where">질량에 \(m_0\)를 넣으면(Sze의 관례, Si 전자의 상태 밀도 질량 1.08과 비슷) 실측값과 맞지만, 전도도 질량 0.26을 넣으면 \(1.9\times10^7\)이 나온다. 이 거친 모형은 크기와 경향만 맞힌다. 정량값은 몬테카를로 계산이나 측정에서 온다.</div></div>
+    <div class="tangle" id="tg-vsat">
+      <p>광학 포논 에너지 <span class="tn" data-var="w" data-min="20" data-max="200" data-step="1" data-unit=" meV">63</span>, 질량 <span class="tn" data-var="m" data-min="0.05" data-max="1.50" data-step="0.01" data-unit=" m₀">1.00</span>이면 \(v_\text{sat} \approx\) <span class="tn-out" data-out="v"></span>. 이동도 <span class="tn" data-var="mu" data-min="100" data-max="9000" data-step="50" data-unit=" cm²/Vs">1400</span>인 캐리어가 이 속도에 닿는 전기장(\(\mu E = v_\text{sat}\))은 <span class="tn-out" data-out="Ec"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <p>소자 모형에서는 저전계 이동도와 포화 속도를 잇는 카우기–토머스형 식을 쓴다: \(v_d = \mu E/[1 + (\mu E/v_\text{sat})^\beta]^{1/\beta}\), 실리콘 전자 \(\beta = 2\), 정공 \(\beta = 1\). 포화 속도는 온도가 오르면 조금 줄어든다(광학 포논이 이미 많아 흡수·방출이 잦다).</p>
+    <h3>GaAs의 음미분 이동도</h3>
+    <p>GaAs 전도띠 바닥(Γ 골짜기)은 \(m^* = 0.067\,m_0\)으로 가벼워 저전계 이동도가 8500 cm²/(V·s)에 이른다. 그런데 Γ보다 약 0.3 eV 위에 질량이 훨씬 큰(상태 밀도 질량 약 \(0.5\,m_0\)) L 골짜기가 있다. 전기장이 3–4 kV/cm를 넘어 전자가 뜨거워지면 점점 많은 전자가 L 골짜기로 옮겨 가고(<span class="term">골짜기 사이 전이</span><span class="en">(intervalley transfer)</span>), 그곳에서는 무겁고 산란이 잦아 느리다. 그 결과 전기장을 올릴수록 평균 속도가 오히려 줄어드는 구간, 곧 \(dv_d/dE < 0\)인 <span class="term">음미분 이동도</span><span class="en">(negative differential mobility)</span>가 생긴다.</p>
+    <p>음미분 이동도 구간에 놓인 시료는 불안정하다. 우연히 전기장이 조금 센 곳이 생기면 그곳 전자가 느려져 전하가 쌓이고, 그 전하가 전기장을 더 키운다. 이렇게 생긴 고전계 영역(도메인)이 음극에서 양극으로 흘러가고, 도착하면 새 도메인이 생긴다. 전류가 주기 \(L/v_d\)로 진동하는 이 현상이 <span class="term">건 효과</span><span class="en">(Gunn effect)</span>이며, 길이 10 µm 시료면 약 10 GHz다. 건 다이오드는 마이크로파 발진기로 쓰였다. 실리콘은 위쪽 골짜기가 멀어 이런 일이 없다.</p>
+    <div class="predict" data-for="sim-ve">
+      <p>같은 드레인 전압 1 V에서 채널 길이를 1 µm에서 0.1 µm로 10배 줄였다. 실리콘 전자가 채널을 지나는 시간은 대략 몇 분의 1이 될까?</p>
+      <div class="opts"><button class="opt">1/100 — 거리는 1/10, 전기장은 10배라 속도도 10배</button><button class="opt" data-correct>약 1/12 — 속도가 포화되어 거의 거리만큼만 줄어든다</button><button class="opt">1/1000</button><button class="opt">그대로 — 포화되면 시간이 줄지 않는다</button></div>
+      <div class="quiz-exp">1 µm: 평균 전기장 10⁴ V/cm, \(v \approx 8.5\times10^6\) cm/s, 11.7 ps. 0.1 µm: 10⁵ V/cm, \(v \approx 1.07\times10^7\), 0.94 ps. 비는 약 1/12.5다. 이동도만으로 계산한 "1/100"은 포화를 무시한 값이다. 아래 그래프에서 L을 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-ve">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>속도–전기장 곡선과 짧은 채널</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ve"></canvas><span class="hint top">흰 원을 좌우로 끌어 전기장</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>캐리어</span><div class="seg" id="ve-c"><button data-value="n" class="on">Si 전자</button><button data-value="p">Si 정공</button><button data-value="g">GaAs 전자</button></div></div>
+          <label class="ctrl"><span>채널 길이 L <output id="ve-L-out"></output></span><input type="range" id="ve-L" min="1" max="4" step="0.01" value="2"></label>
+          <label class="ctrl"><span>드레인 전압 V <output id="ve-V-out"></output></span><input type="range" id="ve-V" min="0.05" max="3" step="0.05" value="1"></label>
+          <label class="check"><input type="checkbox" id="ve-lin" checked> 선형 예측 v = μE 함께</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">전기장 E (끄는 점)</span><span class="v" id="ve-E">—</span></div>
+        <div class="stat"><span class="k">표류 속도 v<sub>d</sub></span><span class="v" id="ve-v">—</span></div>
+        <div class="stat"><span class="k">미분 이동도 dv/dE</span><span class="v" id="ve-dm">—</span></div>
+        <div class="stat"><span class="k">채널 평균 전기장 V/L</span><span class="v" id="ve-Ea">—</span></div>
+        <div class="stat"><span class="k">통과 시간 L/v</span><span class="v" id="ve-t">—</span></div>
+      </div>
+      <div class="sim-note">로그–로그 그래프다. Si는 카우기–토머스형 식(전자 \(v_\text{sat} = 1.07\times10^7\), 정공 \(8.37\times10^6\) cm/s), GaAs는 골짜기 전이를 흉내 낸 경험식 \(v = (\mu E + v_s(E/E_0)^4)/(1 + (E/E_0)^4)\)(\(\mu = 8500\), \(v_s = 10^7\), \(E_0 = 4\) kV/cm, 정성용)이다. 세로 점선은 채널 평균 전기장 \(V/L\). 해볼 것: ① Si 전자에서 기울기가 1(옴 영역)에서 0(포화)으로 바뀌는 전기장을 읽어라. ② GaAs로 바꾸어 미분 이동도가 음수가 되는 구간을 찾아라. ③ L을 1 µm에서 30 nm로 줄이며 통과 시간과 "선형 예측"의 차이를 보라. 실제 수십 nm 채널에서는 전자가 산란 몇 번 만에 채널을 지나 잠시 \(v_\text{sat}\)를 넘는 <em>속도 과도</em>가 생긴다 — 이 그림(국소 평형)의 한계다.</div>
+    </div>
+    <div class="example" data-title="30 nm 채널의 평균 전기장과 통과 시간">
+      <p>채널 길이 30 nm인 n-MOSFET에 드레인 전압 1.0 V가 걸렸다. (a) 채널 평균 전기장, (b) 그 전기장에서 \(v_d = \mu E\)로 계산한 속도와 포화 모형(\(\mu = 1414\), \(v_\text{sat} = 1.07\times10^7\) cm/s, \(\beta = 2\))의 속도, (c) 포화 모형의 통과 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 평균 전기장 \(V/L\)을 구하고 \(\mu E/v_\text{sat}\)의 크기로 어느 영역인지 판단한다.</div>
+        <div class="step"><b>풀이</b> (a) \(E = 1.0/(30\times10^{-7}\ \text{cm}) = 3.33\times10^5\) V/cm. (b) \(\mu E = 1414\times3.33\times10^5 = 4.71\times10^8\) cm/s — 빛의 속도의 1.6%로 터무니없다. \(x = \mu E/v_\text{sat} = 44\), \(v_d = \mu E/\sqrt{1+x^2} = 1.0697\times10^7\) cm/s. (c) \(t = L/v_d = 3\times10^{-6}/1.07\times10^7 = 2.80\times10^{-13}\) s.</div>
+        <div class="answer">(a) 3.33×10⁵ V/cm (b) 선형 4.7×10⁸ cm/s(비물리적), 포화 모형 1.07×10⁷ cm/s (c) 약 0.28 ps</div>
+        <div class="step"><b>검토</b> 통과 시간 0.28 ps는 완화 시간(0.2 ps)과 비슷하다. 전자가 채널을 지나는 동안 산란이 한두 번뿐이라, "충돌이 수없이 많아 평균을 낸다"는 이 장의 전제가 흔들린다. 실제 짧은 채널에서는 소스 쪽에서 속도가 \(v_\text{sat}\)를 넘는 속도 과도와 준탄도 수송이 일어나며, 16장에서 다룬다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>짧은 채널의 구동 전류는 속도 포화가 정한다</strong><p>긴 채널 MOSFET의 포화 전류는 \(I_D = \tfrac12\mu C_\text{ox}(W/L)(V_{GS}-V_T)^2\)로 \(1/L\)에 비례하지만, 채널이 짧아 전자가 채널 대부분에서 \(v_\text{sat}\)로 달리면 \(I_D \approx WC_\text{ox}(V_{GS}-V_T)v_\text{sat}\)가 되어 \(L\)과 무관해지고 \(V_{GS}\)에 대해서도 선형이 된다. 미세화로 \(L\)을 줄여도 전류가 기대만큼 늘지 않는 이유이며, 업계가 이동도를 높이는 대신 변형·고이동도 채널로 "주입 속도" 자체를 키우는 쪽으로 간 배경이다. 단채널 효과와 함께 정리한 소자 관점은 <a href="https://semi.euiyun.com/device/chapters/scaling.html">DeviceBook · 스케일링과 단채널 효과</a>에 있다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="diffusion">
+    <h2>확산과 아인슈타인 관계</h2>
+    <p>전기장이 없어도 전류가 흐를 수 있다. 캐리어 농도가 고르지 않으면 무작위 열운동만으로도 많은 쪽에서 적은 쪽으로 알짜 흐름이 생긴다. 4장에서 고체 속 원자의 확산을 다룰 때 본 <span class="term">픽 법칙</span><span class="en">(Fick's law)</span>이 캐리어에도 그대로 성립한다.</p>
+    <div class="formula">$$F = -D\frac{dn}{dx}, \qquad J_{n,\text{diff}} = (-q)F_n = +qD_n\frac{dn}{dx}, \qquad J_{p,\text{diff}} = (+q)F_p = -qD_p\frac{dp}{dx}$$<div class="where">\(F\) 입자 흐름(개/(cm²·s)), \(D\) <span class="term">확산 계수</span><span class="en">(diffusion coefficient)</span>(cm²/s). 전자는 전하가 음수라, 전자가 농도 낮은 쪽(+\(x\))으로 흐르면 전류는 \(-x\) 방향이다. 부호를 외우기보다 "입자 흐름 × 전하"로 매번 따지는 편이 안전하다.</div></div>
+    <p>왜 농도 차이가 흐름을 만드는가? 1차원에서 입자가 \(\tau\)마다 거리 \(\ell\)씩 왼쪽이나 오른쪽으로 무작위로 뛴다고 하자. 어떤 면을 지나 오른쪽으로 가는 입자는 왼쪽 \(\ell\) 이내에 있던 입자의 절반, 왼쪽으로 가는 입자는 오른쪽 \(\ell\) 이내의 절반이다. 그 차이가 \(-\tfrac12\ell^2\,(dn/dx)/\tau\)이므로 \(D = \ell^2/2\tau\). 개별 입자는 방향을 고르지 않는데, 많은 쪽에 입자가 더 많을 뿐이다. 3차원 열운동으로 같은 셈을 하면 \(D = \tfrac13 v_\text{th}^2\tau\)가 된다. 여기에 \(v_\text{th}^2 = 3kT/m^*\)를 넣어 보자.</p>
+    <div class="formula">$$D = \frac13 v_\text{th}^2\tau = \frac{kT}{m^*}\tau = \frac{kT}{q}\cdot\frac{q\tau}{m^*} = \frac{kT}{q}\,\mu$$<div class="where">확산과 표류는 같은 열운동·같은 산란에서 나오므로 두 계수가 이어진다. 이 운동론 유도는 \(\tau\)가 일정하다는 가정을 썼지만, 결과 자체는 그 가정 없이 평형 조건만으로도 나온다(아래 단계별 그림).</div></div>
+    <div class="def"><span class="def-k">아인슈타인 관계</span>
+      <p>$$\frac{D_n}{\mu_n} = \frac{D_p}{\mu_p} = \frac{kT}{q} = 25.85\ \text{mV}\ \ (300\ \text{K})$$</p>
+      <p><span class="term">아인슈타인 관계</span><span class="en">(Einstein relation)</span>는 비축퇴(볼츠만) 반도체에서 성립한다. 실리콘 저도핑 값으로 \(D_n = 36.6\), \(D_p = 12.2\) cm²/s. 축퇴 도핑에서는 \(kT/q\) 대신 페르미 적분의 비를 쓴다(\(D/\mu\)가 커진다).</p>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="불균일 도핑에서 확산과 내장 전기장이 평형을 이루어 아인슈타인 관계가 나오는 네 단계">
+        <defs><marker id="ct-ar5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker><marker id="ct-ar6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker><marker id="ct-ar7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--bad)"/></marker></defs>
+        <rect x="40" y="40" width="360" height="150" rx="6" class="f-surface" stroke="var(--border)"/>
+        <g fill="var(--accent)">
+          <circle cx="60" cy="70" r="4"/><circle cx="72" cy="96" r="4"/><circle cx="58" cy="124" r="4"/><circle cx="80" cy="150" r="4"/><circle cx="66" cy="172" r="4"/><circle cx="90" cy="80" r="4"/><circle cx="96" cy="112" r="4"/><circle cx="104" cy="160" r="4"/><circle cx="120" cy="66" r="4"/><circle cx="124" cy="136" r="4"/><circle cx="140" cy="96" r="4"/><circle cx="150" cy="168" r="4"/><circle cx="170" cy="120" r="4"/><circle cx="190" cy="74" r="4"/><circle cx="210" cy="150" r="4"/><circle cx="240" cy="100" r="4"/><circle cx="280" cy="160" r="4"/><circle cx="320" cy="84" r="4"/><circle cx="370" cy="130" r="4"/>
+        </g>
+        <text class="t" x="220" y="30" text-anchor="middle" style="font-weight:600">N<tspan dy="4" style="font-size:10px">D</tspan><tspan dy="-4">(x)가 왼쪽에서 많은 n형 실리콘</tspan></text>
+        <g data-step="2">
+          <line x1="150" y1="210" x2="290" y2="210" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#ct-ar5)"/>
+          <text class="t" x="220" y="232" text-anchor="middle" style="font-size:12px;fill:var(--accent)">전자 확산 →</text>
+          <g class="t" style="font-size:15px;font-weight:700;fill:var(--accent-2)"><text x="64" y="208">+</text><text x="84" y="208">+</text><text x="104" y="208">+</text></g>
+          <g class="t" style="font-size:15px;font-weight:700;fill:var(--accent)"><text x="340" y="210">−</text><text x="360" y="210">−</text></g>
+        </g>
+        <g data-step="3">
+          <line x1="120" y1="258" x2="320" y2="258" stroke="var(--bad)" stroke-width="2.6" marker-end="url(#ct-ar7)"/>
+          <text class="t" x="220" y="280" text-anchor="middle" style="font-size:12px;fill:var(--bad)">내장 전기장 E → (전자는 ← 로 표류)</text>
+          <path d="M460,90 C560,96 640,130 760,170" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+          <text class="t" x="764" y="168" style="font-size:12px">E<tspan dy="4" style="font-size:10px">c</tspan></text>
+          <line x1="460" y1="200" x2="760" y2="200" stroke="var(--accent-2)" stroke-width="1.8" stroke-dasharray="7 4"/>
+          <text class="t" x="764" y="204" style="font-size:12px;fill:var(--accent-2)">E<tspan dy="4" style="font-size:10px">F</tspan></text>
+          <text class="t-dim" x="600" y="70" text-anchor="middle" style="font-size:12px">E<tspan dy="4" style="font-size:9px">c</tspan><tspan dy="-4"> − E</tspan><tspan dy="4" style="font-size:9px">F</tspan><tspan dy="-4"> = kT ln(N</tspan><tspan dy="4" style="font-size:9px">c</tspan><tspan dy="-4">/n) 가 오른쪽으로 커진다</tspan></text>
+        </g>
+        <g data-step="4">
+          <rect x="440" y="222" width="350" height="70" rx="8" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="615" y="248" text-anchor="middle" style="font-weight:600">J<tspan dy="4" style="font-size:10px">n</tspan><tspan dy="-4"> = qnμ</tspan><tspan dy="4" style="font-size:10px">n</tspan><tspan dy="-4">E + qD</tspan><tspan dy="4" style="font-size:10px">n</tspan><tspan dy="-4"> dn/dx = 0</tspan></text>
+          <text class="t" x="615" y="276" text-anchor="middle" style="font-weight:600;fill:var(--accent)">⇒ D<tspan dy="4" style="font-size:10px">n</tspan><tspan dy="-4">/μ</tspan><tspan dy="4" style="font-size:10px">n</tspan><tspan dy="-4"> = kT/q</tspan></text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>도너 농도가 왼쪽에서 높은 n형 시료. 각 위치에서 전자 수는 도너 수와 같으려 한다(\(n \approx N_D(x)\)).</li><li>전자는 농도가 낮은 오른쪽으로 확산한다. 그러면 왼쪽에는 짝 잃은 도너 이온(+)이, 오른쪽에는 남는 전자(−)가 생긴다.</li><li>분리된 전하가 왼쪽→오른쪽 방향의 내장 전기장을 만들고, 이 전기장이 전자를 왼쪽으로 되돌린다(표류). 띠 그림에서는 \(E_F\)가 평평하고 \(E_c\)가 오른쪽으로 올라간다 — 기울기가 \(qE\)다.</li><li>평형에서는 전류가 없으므로 표류와 확산이 정확히 상쇄된다. \(n = N_c e^{-(E_c - E_F)/kT}\)에서 \(dn/dx = -(n/kT)\,dE_c/dx = -(qE/kT)\,n\)을 넣으면 \(qn\mu_nE - qD_n(qE/kT)n = 0\), 곧 \(D_n/\mu_n = kT/q\).</li></ol>
+      <figcaption>아인슈타인 관계의 열역학적 유도. 볼츠만 분포(평형)와 "평형에서 알짜 전류 0"만 썼으므로 산란 기구와 무관하다. 확산을 되돌리는 데 필요한 전기장이 곧 불균일 도핑의 내장 전기장이다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-ein">
+      <p>이동도 <span class="tn" data-var="mu" data-min="20" data-max="9000" data-step="10" data-unit=" cm²/Vs">1414</span>, 온도 <span class="tn" data-var="T" data-min="50" data-max="600" data-step="5" data-unit=" K">300</span>에서 열전압 \(kT/q =\) <span class="tn-out" data-out="vt"></span>, 확산 계수 \(D = \mu kT/q =\) <span class="tn-out" data-out="D"></span>. 이 캐리어 무리가 <span class="tn" data-var="t" data-min="0.01" data-max="1000" data-step="0.01" data-unit=" ns">1.00</span> 동안 퍼지는 거리(1차원 표준 편차 \(\sqrt{2Dt}\))는 <span class="tn-out" data-out="L"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>표류–확산 전류식</h3>
+    <p>전기장과 농도 기울기가 함께 있으면 두 전류가 더해진다. 이것이 반도체 소자 해석 전체의 바탕인 <span class="term">표류–확산 전류식</span><span class="en">(drift–diffusion equations)</span>이다.</p>
+    <div class="formula">$$J_n = qn\mu_nE + qD_n\frac{dn}{dx}, \qquad J_p = qp\mu_pE - qD_p\frac{dp}{dx}, \qquad J = J_n + J_p$$<div class="where">아인슈타인 관계를 쓰면 \(J_n = \mu_n n\,dE_{Fn}/dx\)처럼 의사 페르미 준위 하나의 기울기로 묶을 수 있다(12장). 평형이면 \(E_F\)가 평평해 \(J_n = J_p = 0\)이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="전자와 정공의 표류·확산 입자 흐름과 전류 방향 네 가지">
+        <defs><marker id="ct-ar8" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker><marker id="ct-ar9" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker><marker id="ct-ar10" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <text class="t" x="150" y="28" text-anchor="middle" style="font-weight:600">E →, 농도는 오른쪽으로 감소</text>
+        <line x1="40" y1="44" x2="260" y2="44" stroke="var(--text-dim)" stroke-width="2" marker-end="url(#ct-ar10)"/>
+        <g class="t" style="font-size:13px">
+          <text x="300" y="28" style="font-weight:600">성분</text><text x="420" y="28" style="font-weight:600">입자 흐름</text><text x="600" y="28" style="font-weight:600">전류</text>
+          <text x="300" y="80">전자 표류</text><text x="300" y="130">전자 확산</text><text x="300" y="180">정공 표류</text><text x="300" y="230">정공 확산</text>
+        </g>
+        <line x1="500" y1="76" x2="420" y2="76" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#ct-ar8)"/><line x1="600" y1="76" x2="680" y2="76" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ct-ar10)"/>
+        <line x1="420" y1="126" x2="500" y2="126" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#ct-ar8)"/><line x1="680" y1="126" x2="600" y2="126" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ct-ar10)"/>
+        <line x1="420" y1="176" x2="500" y2="176" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#ct-ar9)"/><line x1="600" y1="176" x2="680" y2="176" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ct-ar10)"/>
+        <line x1="420" y1="226" x2="500" y2="226" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#ct-ar9)"/><line x1="600" y1="226" x2="680" y2="226" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ct-ar10)"/>
+        <g class="t-dim" style="font-size:12px"><text x="700" y="80">+qnμ<tspan dy="4" style="font-size:9px">n</tspan><tspan dy="-4">E</tspan></text><text x="700" y="130">qD<tspan dy="4" style="font-size:9px">n</tspan><tspan dy="-4">n′ &lt; 0</tspan></text><text x="700" y="180">+qpμ<tspan dy="4" style="font-size:9px">p</tspan><tspan dy="-4">E</tspan></text><text x="700" y="230">−qD<tspan dy="4" style="font-size:9px">p</tspan><tspan dy="-4">p′ &gt; 0</tspan></text></g>
+        <g fill="var(--accent)"><circle cx="60" cy="100" r="5"/><circle cx="78" cy="118" r="5"/><circle cx="64" cy="140" r="5"/><circle cx="96" cy="96" r="5"/><circle cx="110" cy="130" r="5"/><circle cx="140" cy="108" r="5"/><circle cx="180" cy="134" r="5"/><circle cx="230" cy="104" r="5"/></g>
+        <g fill="none" stroke="var(--accent-2)" stroke-width="2"><circle cx="58" cy="180" r="5"/><circle cx="76" cy="202" r="5"/><circle cx="92" cy="176" r="5"/><circle cx="66" cy="222" r="5"/><circle cx="112" cy="206" r="5"/><circle cx="150" cy="186" r="5"/><circle cx="196" cy="214" r="5"/><circle cx="240" cy="190" r="5"/></g>
+        <text class="t-dim" x="150" y="160" text-anchor="middle" style="font-size:12px">● 전자 ○ 정공</text>
+      </svg>
+      <figcaption>네 전류 성분의 방향. 전기장이 오른쪽이면 두 표류 전류는 모두 오른쪽이다. 확산은 입자가 모두 오른쪽(농도 낮은 쪽)으로 가지만, 전자의 전하가 음수라 전자 확산 전류만 왼쪽이 된다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-diff">
+      <p>상자 안 전자에 오른쪽으로 미는 힘(전기장)을 걸고 충분히 기다렸다. 상자 벽은 전자를 통과시키지 않는다. 최종 농도 분포는?</p>
+      <div class="opts"><button class="opt">모든 전자가 오른쪽 벽에 붙는다</button><button class="opt" data-correct>오른쪽으로 갈수록 지수함수로 늘어나는 분포에서 멈추고, 표류와 확산이 상쇄된다</button><button class="opt">고르게 퍼진다(확산이 이긴다)</button><button class="opt">계속 출렁이며 정상 상태가 없다</button></div>
+      <div class="quiz-exp">벽 쪽에 전자가 쌓일수록 기울기가 커져 확산 흐름이 표류를 정확히 상쇄한다. 그 분포가 볼츠만 분포 \(n \propto e^{-U/kT}\)과 일치하려면 \(D/\mu = kT/q\)여야 한다. 아래 실험대에서 \(D/\mu\)를 일부러 틀리게 해 보라.</div>
+    </div>
+    <div class="sim" id="sim-diff">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>무작위 걷기 실험대: 확산, 표류, 그리고 평형</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-diff"></canvas><span class="hint top">상자 안을 누르면 그 자리에 전자 60개 주입</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>처음 분포</span><div class="seg" id="df-init"><button data-value="step" class="on">왼쪽 절반</button><button data-value="pulse">가운데 펄스</button><button data-value="flat">고르게</button></div></div>
+          <label class="ctrl"><span>전기장 |E| (왼쪽 방향) <output id="df-E-out"></output></span><input type="range" id="df-E" min="0" max="2" step="0.05" value="0"></label>
+          <label class="ctrl"><span>D/μ (kT/q 단위) <output id="df-r-out"></output></span><input type="range" id="df-r" min="0.25" max="3" step="0.05" value="1"></label>
+          <div class="ctrl-row"><button class="btn" id="df-play" type="button"></button><button class="btn" id="df-reset" type="button">다시 시작</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">경과 시간</span><span class="v" id="df-t">—</span></div>
+        <div class="stat"><span class="k">가운데 면의 알짜 흐름 (측정)</span><span class="v" id="df-F">—</span></div>
+        <div class="stat"><span class="k">표류 + 확산 (식)</span><span class="v" id="df-Fp">—</span></div>
+        <div class="stat"><span class="k">분포의 감쇠 길이 vs kT/qE</span><span class="v" id="df-lam">—</span></div>
+      </div>
+      <div class="sim-note">길이 1 µm 상자, 전자 400개, \(\mu = 1400\) cm²/(V·s), 300 K(\(kT/q = 25.85\) mV). 매 순간 각 전자는 \(\Delta x = -\mu E\Delta t + \sqrt{2D\Delta t}\,\xi\)만큼 움직인다(\(\xi\)는 표준 정규 난수, 벽에서는 반사). 전기장은 왼쪽을 가리키므로 전자는 오른쪽으로 표류한다. 아래 막대는 농도, 주황 선은 "가운데 면을 지나는 흐름"이다. 해볼 것: ① 전기장 0에서 "왼쪽 절반"으로 시작해 측정 흐름이 \(-D\,dn/dx\)를 따르는지 보라. ② 전기장을 1 kV/cm쯤 걸고 기다리면 분포가 지수함수로 굳고 알짜 흐름이 0이 된다. 감쇠 길이가 \(kT/qE = 0.26\) µm와 맞는가? ③ \(D/\mu\)를 2로 바꾸면 정상 분포가 볼츠만 분포보다 완만해진다. 열평형이 깨진 셈이다 — 자연이 아인슈타인 관계를 지켜야 하는 이유다.</div>
+    </div>
+    <div class="example" data-title="확산 전류는 작은 기울기로도 크다">
+      <p>p형 실리콘의 한 영역에서 소수 캐리어 전자 농도가 1 µm 거리에 걸쳐 \(1.0\times10^{16}\)에서 \(1.0\times10^{14}\) cm⁻³로 직선적으로 줄어든다. 전자 이동도는 1250 cm²/(V·s), 300 K(\(kT/q = 25.85\) mV)이다. (a) \(D_n\), (b) 확산 전류 밀도의 크기와 방향, (c) 같은 전류를 \(n = 10^{16}\) cm⁻³의 표류로 만들려면 필요한 전기장을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 아인슈타인 관계로 \(D\)를 구하고 \(J = qD\,dn/dx\)에 넣는다. 방향은 입자 흐름 × 전하로 따진다.</div>
+        <div class="step"><b>풀이</b> (a) \(D_n = 1250\times0.02585 = 32.3\) cm²/s. (b) \(dn/dx = -(10^{16} - 10^{14})/10^{-4} = -9.9\times10^{19}\) cm⁻⁴. \(|J| = qD|dn/dx| = 1.602\times10^{-19}\times32.3\times9.9\times10^{19} = 513\) A/cm². 전자는 농도 낮은 +\(x\)로 흐르므로 전류는 \(-x\) 방향이다. (c) \(E = |J|/(qn\mu_n) = 513/(1.602\times10^{-19}\times10^{16}\times1250) = 256\) V/cm.</div>
+        <div class="answer">(a) D<sub>n</sub> = 32.3 cm²/s (b) |J| ≈ 513 A/cm², 농도가 높은 쪽(−x)으로 (c) 약 256 V/cm</div>
+        <div class="step"><b>검토</b> 1 µm에 걸친 농도 차이가 수백 V/cm의 전기장과 맞먹는다. 실제로 pn 접합 다이오드와 바이폴라 트랜지스터의 베이스에서는 이렇게 확산 전류가 주역이다. 513 A/cm²는 1 µm × 1 µm 면적에서 5 µA다.</div>
+      </details>
+    </div>
+    <h3>불균일 도핑의 내장 전기장</h3>
+    <p>단계별 그림의 결론을 거꾸로 쓰면, 도핑이 위치에 따라 변하는 시료에는 평형에서도 전기장이 있다. \(n \approx N_D(x)\)와 \(J_n = 0\)에서</p>
+    <div class="formula">$$E = -\frac{kT}{q}\,\frac{1}{N_D}\frac{dN_D}{dx}, \qquad N_D = N_0e^{-x/\lambda}\ \Rightarrow\ E = \frac{kT}{q\lambda}\ \ (\text{일정})$$<div class="where">\(N_D\)가 \(e\)배 줄어드는 거리 \(\lambda\)마다 전위가 \(kT/q\)씩 바뀐다. 이 근사는 \(\lambda\)가 디바이 길이보다 충분히 길 때(전하 중성이 거의 유지될 때) 맞다. 바이폴라 트랜지스터의 경사 베이스는 이 전기장으로 소수 캐리어를 밀어 베이스 통과 시간을 줄인다.</div></div>
+    <figure class="mini" id="mini-grad">
+      <div class="mini-view"><canvas id="cv-grad"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="gr-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위 그래프의 흰 원을 끌어 도핑 기울기(감쇠 길이 \(\lambda\))를 바꾼다. 아래는 같은 시료의 띠 그림: \(E_F\)는 평평하고 \(E_c\)가 올라가는 기울기가 내장 전기장 \(qE\)다. \(\lambda\)를 짧게 하면 기울기가 가팔라진다.</figcaption>
+    </figure>
+    <div class="example" data-title="지수 도핑 베이스의 내장 전기장">
+      <p>바이폴라 트랜지스터의 베이스 도핑이 \(N(x) = N_0e^{-x/\lambda}\), \(\lambda = 0.25\) µm로 줄어든다. 300 K(\(kT/q = 25.85\) mV)에서 내장 전기장과, 베이스 폭 1 µm에 걸친 전위차를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 지수 분포면 \((1/N)\,dN/dx = -1/\lambda\)가 일정하므로 전기장도 일정하다.</div>
+        <div class="step"><b>풀이</b> \(E = (kT/q)/\lambda = 0.02585\ \text{V}/(0.25\times10^{-4}\ \text{cm}) = 1.03\times10^3\) V/cm. 전위차 \(\Delta V = E\times10^{-4}\ \text{cm} = 0.103\) V \(= (kT/q)\ln(N(0)/N(1\ \mu\text{m})) = 0.02585\times4\).</div>
+        <div class="answer">E ≈ 1.03×10³ V/cm, 1 µm에 걸쳐 약 0.10 V</div>
+        <div class="step"><b>검토</b> 1 µm에서 도핑이 \(e^4 \approx 55\)배 줄 때 전위가 \(4kT/q\) 바뀐다. 이 전기장(약 1 kV/cm)은 이동도 1000짜리 소수 캐리어를 \(10^6\) cm/s로 밀어, 확산만으로 건널 때보다 베이스 통과가 몇 배 빨라진다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-dd" data-title="아인슈타인 관계 · 확산 전류 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="measure">
+    <h2>4탐침 측정과 변형으로 이동도 높이기</h2>
+    <p>비저항을 재는 가장 쉬운 방법은 시료 양 끝에 전극을 대고 \(V/I\)를 재는 것이다. 그러나 금속 탐침과 반도체 사이에는 접촉 저항과 확산 저항이 있어, 두 탐침으로는 시료 저항과 접촉 저항을 가를 수 없다. <span class="term">4탐침법</span><span class="en">(four-point probe)</span>은 바깥 두 탐침으로 전류를 흘리고 안쪽 두 탐침으로 전압만 잰다. 전압계에는 전류가 거의 흐르지 않으므로 접촉 저항에 걸리는 전압이 0이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="일렬 4탐침: 바깥 탐침의 전류, 안쪽 탐침의 전압, 간격 s와 시료 두께 t">
+        <defs><marker id="ct-ar11" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="60" y="150" width="680" height="90" class="f-acc-soft" stroke="var(--accent)"/>
+        <text class="t-dim" x="720" y="230" text-anchor="end" style="font-size:12px">시료 (비저항 ρ, 두께 t)</text>
+        <g fill="none" stroke="var(--accent)" stroke-width="1.4" opacity=".7">
+          <path d="M220,150 Q220,200 300,206 Q400,214 500,206 Q580,200 580,150"/>
+          <path d="M220,150 Q216,226 320,230 Q400,234 480,230 Q584,226 580,150"/>
+          <path d="M220,150 Q240,176 300,180 Q400,186 500,180 Q560,176 580,150"/>
+        </g>
+        <g fill="var(--text-dim)"><rect x="214" y="70" width="12" height="80"/><rect x="334" y="70" width="12" height="80"/><rect x="454" y="70" width="12" height="80"/><rect x="574" y="70" width="12" height="80"/></g>
+        <path d="M220,70 L220,40 L580,40 L580,70" fill="none" stroke="var(--text)" stroke-width="1.6"/>
+        <circle cx="400" cy="40" r="16" class="f-surface" stroke="var(--text)" stroke-width="1.6"/><text class="t" x="400" y="45" text-anchor="middle" style="font-weight:600">I</text>
+        <path d="M340,70 L340,100 L380,100 M420,100 L460,100 L460,70" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/>
+        <circle cx="400" cy="100" r="16" class="f-surface" stroke="var(--accent-2)" stroke-width="1.6"/><text x="400" y="105" text-anchor="middle" style="font-weight:600;fill:var(--accent-2)">V</text>
+        <line x1="220" y1="258" x2="340" y2="258" class="s-axis" marker-start="url(#ct-ar11)" marker-end="url(#ct-ar11)"/><text class="t" x="280" y="276" text-anchor="middle">s</text>
+        <line x1="340" y1="258" x2="460" y2="258" class="s-axis" marker-start="url(#ct-ar11)" marker-end="url(#ct-ar11)"/><text class="t" x="400" y="276" text-anchor="middle">s</text>
+        <line x1="460" y1="258" x2="580" y2="258" class="s-axis" marker-start="url(#ct-ar11)" marker-end="url(#ct-ar11)"/><text class="t" x="520" y="276" text-anchor="middle">s</text>
+        <line x1="760" y1="150" x2="760" y2="240" class="s-axis" marker-start="url(#ct-ar11)" marker-end="url(#ct-ar11)"/><text class="t" x="776" y="200" text-anchor="middle">t</text>
+        <text class="t-dim" x="110" y="120" style="font-size:12px">전류선</text>
+      </svg>
+      <figcaption>일렬 4탐침. 바깥 두 탐침(전류 \(I\))과 안쪽 두 탐침(전압 \(V\))이 같은 간격 \(s\)로 놓인다. 두께 \(t\)가 \(s\)보다 훨씬 크면 전류는 반구 모양으로, 훨씬 작으면 원기둥 모양으로 퍼진다.</figcaption>
+    </figure>
+    <p><b>두꺼운 시료(\(t \gg s\)).</b> 표면의 한 점에서 전류 \(I\)가 들어가면 반구 모양으로 퍼지므로 거리 \(r\)에서 전류 밀도는 \(I/2\pi r^2\), 전기장은 \(\rho I/2\pi r^2\), 전위는 \(\phi(r) = \rho I/2\pi r\)이다. 탐침 1에서 \(+I\), 탐침 4에서 \(-I\)가 드나들 때 탐침 2·3의 전위차를 겹침 원리로 더하면</p>
+    <div class="formula">$$V = \frac{\rho I}{2\pi}\left[\left(\frac1s - \frac1{2s}\right) - \left(\frac1{2s} - \frac1s\right)\right] = \frac{\rho I}{2\pi s} \quad\Rightarrow\quad \rho = 2\pi s\,\frac{V}{I}$$</div>
+    <p><b>얇은 막(\(t \ll s\)).</b> 전류가 두께 전체로 고르게 원기둥처럼 퍼지므로 전류 밀도는 \(I/2\pi rt\), 전위는 \(\phi(r) = -(\rho I/2\pi t)\ln r\)이다. 같은 겹침으로 \(V = (\rho I/\pi t)\ln2\). 막의 성질은 \(\rho/t\) 하나로만 나타나므로 이것을 <span class="term">면저항</span><span class="en">(sheet resistance)</span> \(R_s\)라 한다.</p>
+    <div class="def"><span class="def-k">면저항과 4탐침 공식</span>
+      <p>$$R_s = \frac{\rho}{t} = \frac{\pi}{\ln2}\,\frac{V}{I} = 4.532\,\frac{V}{I}\ \ [\Omega/\square]$$</p>
+      <p>정사각형 막 한 장(\(L = W\))의 저항은 크기와 무관하게 \(R_s\)다. 그래서 단위를 "Ω/□(옴 퍼 스퀘어)"로 쓴다. 길이 \(L\), 폭 \(W\)인 선의 저항은 \(R = R_s\,L/W\), 곧 "정사각형 몇 칸인가"로 센다. 도핑이 깊이에 따라 변하는 층이면 \(1/R_s = \int_0^{x_j}q\mu(N)\,N(x)\,dx\)다.</p>
+    </div>
+    <p>두 극한 사이(\(t \sim s\))에서는 바닥 경계가 만드는 "거울상 전류원"을 더해 보정한다. 바닥이 절연체(또는 역바이어스 접합)이면 \(\rho = 2\pi s(V/I)/G(t/s)\), \(G = 1 + 4s\sum_{n=1}^{\infty}\left[(s^2 + (2nt)^2)^{-1/2} - (4s^2 + (2nt)^2)^{-1/2}\right]\). \(t/s = 1\)이면 \(G = 1.50\), \(t/s < 0.4\)이면 얇은 막 공식과 1% 안에서 같다. 시료 가장자리까지의 거리가 \(s\)의 수십 배보다 작을 때도 따로 보정한다.</p>
+    <div class="predict" data-for="sim-4pp">
+      <p>같은 물질(같은 \(\rho\))로 만든 막을 두께만 절반으로 깎았다. 4탐침 \(V/I\)는? (막 두께는 탐침 간격보다 훨씬 얇다.)</p>
+      <div class="opts"><button class="opt">그대로 — 비저항이 같으니까</button><button class="opt" data-correct>두 배 — 면저항 \(\rho/t\)가 두 배가 된다</button><button class="opt">네 배</button><button class="opt">절반</button></div>
+      <div class="quiz-exp">얇은 막이면 \(V/I = R_s/4.532 = \rho/(4.532\,t)\)라 \(t\)에 반비례한다. 반대로 두꺼운 웨이퍼(\(t \gg s\))에서는 두께를 바꿔도 \(V/I\)가 거의 변하지 않는다. 아래에서 막 두께를 끌어 두 영역을 오가 보라.</div>
+    </div>
+    <div class="sim" id="sim-4pp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>4탐침 실험대: 면저항을 재서 도핑 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-4pp"></canvas><span class="hint top">탐침(흰 원)을 좌우로, 막 바닥(흰 네모)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>시료</span><div class="seg" id="fp-mode"><button data-value="free" class="on">자유 탐구</button><button data-value="game">비밀 시료</button></div></div>
+          <label class="ctrl"><span>도핑(자유 탐구) / 내 추정(비밀 시료) <output id="fp-N-out"></output></span><input type="range" id="fp-N" min="14" max="20.5" step="0.05" value="17"></label>
+          <div class="ctrl"><span>도펀트</span><div class="seg" id="fp-type"><button data-value="n" class="on">n형(인)</button><button data-value="p">p형(붕소)</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="fp-check" type="button">추정 확인</button><button class="btn" id="fp-new" type="button">새 비밀 시료</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">간격 s, 두께 t</span><span class="v" id="fp-st">—</span></div>
+        <div class="stat"><span class="k">측정 V/I</span><span class="v" id="fp-vi">—</span></div>
+        <div class="stat"><span class="k">2πs·V/I (두꺼운 시료 식)</span><span class="v" id="fp-bulk">—</span></div>
+        <div class="stat"><span class="k">4.532·V/I (얇은 막 식)</span><span class="v" id="fp-thin">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="fp-msg">—</span></div>
+      </div>
+      <div class="sim-note">막은 바닥이 절연된(SOI나 역바이어스 접합 위) 균일 도핑 실리콘이고, \(V/I\)는 거울상 공식으로 계산한 "측정값"이다(잡음 ±0.5%). 비저항–도핑 변환은 3절의 경험식(300 K, 완전 이온화)을 쓴다. 해볼 것: ① 두께를 탐침 간격보다 크게 하면 "두꺼운 시료 식"이, 작게 하면 "얇은 막 식"(× t)이 참 비저항과 맞는다. 중간에서는 둘 다 틀린다. ② "비밀 시료"를 고르면 도핑이 숨겨진 막이 나온다(두께는 끌어서 보이는 값이 실제 두께). \(V/I\)에서 \(R_s\), \(\rho = R_st\), 그리고 3절 tangle이나 어빈 곡선으로 도핑을 구해 슬라이더에 넣고 확인을 누르라. 정답과 1.25배 이내면 성공이다.</div>
+    </div>
+    <div class="example" data-title="이온 주입층의 면저항에서 도핑 읽기">
+      <p>p형 웨이퍼에 인을 주입하고 활성화 어닐한 뒤 4탐침으로 쟀더니 \(I = 1.00\) mA에서 \(V = 17.7\) mV였다. 접합 깊이는 0.25 µm이고 층 안 도핑이 균일하다고 보자(pn 접합이 바닥을 절연한다). (a) 면저항, (b) 층의 평균 비저항, (c) 3절의 경험식으로 어림한 도핑을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 층 두께(0.25 µm)가 탐침 간격(약 1 mm)보다 훨씬 얇으므로 얇은 막 공식을 쓴다.</div>
+        <div class="step"><b>풀이</b> (a) \(R_s = 4.532\times17.7/1.00 = 80.2\) Ω/□. (b) \(\rho = R_st = 80.2\times0.25\times10^{-4} = 2.01\times10^{-3}\) Ω·cm. (c) \(\rho = 1/(qN\mu_n(N))\)를 풀면 \(N \approx 3.5\times10^{19}\) cm⁻³ (그때 \(\mu_n \approx 88\) cm²/(V·s)).</div>
+        <div class="answer">(a) R<sub>s</sub> ≈ 80 Ω/□ (b) ρ ≈ 2.0×10⁻³ Ω·cm (c) N ≈ 3.5×10¹⁹ cm⁻³</div>
+        <div class="step"><b>검토</b> 소스·드레인 확장 영역 규모의 값이다. \(N\mu\)의 곱만 재므로 도핑과 이동도를 따로 알 수 없고, 실제 층은 가우스 분포라 평균값일 뿐이다. 주입량(dose)과 비교하면 활성화율을 어림할 수 있다: 균일 \(3.5\times10^{19}\) × 0.25 µm \(= 8.8\times10^{14}\) cm⁻²가 활성화된 셈이다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>면저항 지도로 이온 주입과 어닐을 검사한다</strong><p>이온 주입 공정에서 가장 많이 쓰는 측정은 모니터 웨이퍼의 4탐침 면저항이다. 웨이퍼 전체에 수십–수백 점을 찍어 지도를 그리면 주입량 균일도(빔 주사 문제)와 어닐 온도 균일도(램프 가열 문제)가 한눈에 보인다. 같은 주입량이라도 활성화가 덜 되거나 비정질 층이 덜 회복되면 \(R_s\)가 올라가므로, 면저항은 "도펀트가 몇 개 들어갔나"(SIMS)와 "그중 몇 개가 일을 하나"를 잇는다. 주입 계측 전반은 <a href="https://semi.euiyun.com/doping/chapters/metrology.html">DopingBook · 계측</a>에 있다.</p></div>
+    <h3>변형으로 이동도 높이기</h3>
+    <p>\(\mu = q\tau/m^*\)에서 공정이 손댈 수 있는 것은 \(m^*\)와 \(\tau\)다. 실리콘 결정을 일부러 늘이거나 누르면 띠 구조가 바뀌어 둘 다 좋아진다(<a href="band-structure.html">8장</a>의 변형에 따른 띠 변화). 대표적인 예가 격자 상수가 큰 이완된 \(\text{Si}_{1-x}\text{Ge}_x\) 위에 얇게 기른 <em>2축 인장 변형 실리콘</em>이다. 면 방향으로 늘어난 실리콘에서는 여섯 골짜기의 대칭이 깨져, 면에 수직인 축의 두 골짜기(Δ2)가 내려가고 면 안 축의 네 골짜기(Δ4)가 올라간다. 이 <span class="term">골짜기 갈라짐</span><span class="en">(valley splitting)</span>은 Ge 분율 \(x\)에 대해 약 \(0.67x\) eV다.</p>
+    <p>전자가 Δ2로 몰리면 두 가지가 좋아진다. 첫째, Δ2 골짜기는 긴 축이 면에 수직이라 면 안 수송에 가벼운 \(m_t = 0.19\)만 보인다(평균 0.26 → 0.19). 둘째, 갈라짐이 광학 포논 에너지보다 커지면 Δ2↔Δ4 골짜기 사이 산란이 억제되어 \(\tau\)도 늘어난다. 실측 전자 이동도 향상은 \(x = 0.2\)–0.3에서 1.5–2배로, 질량 효과만으로 설명되는 1.35배보다 크다. 정공은 반대로 <em>압축</em> 변형이 효과적이다. pMOS 소스·드레인에 SiGe를 길러 채널을 [110] 방향으로 누르면 무거운·가벼운 정공 띠가 갈라지고 채널 방향 질량이 줄어, 정공 이동도가 2배 가까이 오른다.</p>
+    <figure class="mini" id="mini-strain">
+      <div class="mini-view"><canvas id="cv-strain"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>아래 SiGe의 Ge 분율 x <output id="st-x-out"></output></span><input type="range" id="st-x" min="0" max="0.4" step="0.01" value="0.2"></label><span class="readout" id="st-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>이완된 \(\text{Si}_{1-x}\text{Ge}_x\) 위 인장 변형 실리콘의 골짜기 에너지(왼쪽)와 점유율·면 안 전도도 질량(오른쪽). 골짜기 갈라짐 \(\Delta E \approx 0.67x\) eV, 점유는 볼츠만 분포(축퇴도 2:4)로 계산했다. 질량 효과만 담은 어림이며, 골짜기 사이 산란 억제는 빠져 있다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>변형 Si·SiGe 채널: 90 nm 세대부터의 표준 기술</strong><p>2003년 무렵 90 nm 공정부터 로직 트랜지스터는 채널에 일부러 응력을 넣는다. nMOS에는 인장(게이트 위 SiN 응력막, 소스·드레인 Si:C나 고농도 인 에피), pMOS에는 압축(소스·드레인의 내장 SiGe)이 표준이 되었고, 핀펫과 나노시트에서도 소스·드레인 에피가 응력원이다. 이동도가 오르면 같은 크기에서 켜짐 전류가 늘고, 속도 포화 영역에서도 소스 끝의 주입 속도가 함께 오른다. 응력은 3장의 임계 두께와 5장의 라만 측정으로 관리한다. 에피택시와 SiGe 변형의 공정 쪽 이야기는 <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a>에 있다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>캐리어는 열속도 \(v_\text{th} = \sqrt{3kT/m^*}\)(Si 전자 약 \(2.3\times10^7\) cm/s)로 무작위 운동하며 완화 시간 \(\tau\)(약 0.2 ps)마다 산란된다. 전기장은 그 위에 작은 표류 속도 \(v_d = \mu E\)를 얹는다. 이동도는 \(\mu = q\tau/m^*\), 질량은 전도도 유효 질량(Si 전자 \(1/m_c = \tfrac13(1/m_l + 2/m_t)\) → 0.26)이다.</li>
+      <li>표류 전류 \(J = q(n\mu_n + p\mu_p)E = \sigma E\), \(\rho = 1/\sigma\). 전자와 정공의 표류 전류는 같은 방향으로 더해진다.</li>
+      <li>음향 포논 산란은 \(\mu_L \propto T^{-3/2}\)(Si 실측 약 \(T^{-2.4}\): 골짜기 사이·광학 포논 몫), 이온화 불순물 산란은 \(\mu_I \propto T^{3/2}/N_I\)(콘웰–바이스코프·브룩스–헤링의 로그 인자), 중성 불순물은 \(T\)와 무관, 표면 거칠기는 \(E_\perp^{-2}\)쯤이다. 독립 기구는 마티센 규칙 \(1/\mu = \sum 1/\mu_i\)로 합친다.</li>
+      <li>실리콘 300 K 이동도는 카우기–토머스 식 \(\mu = \mu_\text{min} + (\mu_\text{max}-\mu_\text{min})/(1 + (N/N_\text{ref})^\alpha)\)로 쓴다: 전자 1414 → 68, 정공 470 → 45 cm²/(V·s). \(N\)은 이온화 불순물 총수이고, 비저항–도핑 관계(어빈 곡선)는 1 Ω·cm ≈ n형 \(5\times10^{15}\), p형 \(1.5\times10^{16}\) cm⁻³다.</li>
+      <li>\(10^4\) V/cm 이상에서 전자는 뜨거워지고 광학 포논(63 meV) 방출로 에너지를 잃어 속도가 포화된다: Si 전자 \(v_\text{sat} \approx 1.0\)–\(1.07\times10^7\), 정공 \(\approx 8\times10^6\) cm/s. GaAs는 Γ→L 골짜기 전이로 음미분 이동도(건 효과)를 보인다. 짧은 채널의 평균 전기장 \(V/L\)은 \(10^5\) V/cm를 넘어 전류가 \(v_\text{sat}\)로 정해진다.</li>
+      <li>확산은 \(F = -D\,dn/dx\), \(J_n = qn\mu_nE + qD_n\,dn/dx\), \(J_p = qp\mu_pE - qD_p\,dp/dx\). 평형(알짜 전류 0, 볼츠만 분포)에서 아인슈타인 관계 \(D/\mu = kT/q\)가 나오고, 불균일 도핑에는 내장 전기장 \(E = -(kT/q)(1/N)\,dN/dx\)가 생긴다.</li>
+      <li>4탐침은 접촉 저항을 피한다: 두꺼운 시료 \(\rho = 2\pi sV/I\), 얇은 막 \(R_s = \rho/t = (\pi/\ln2)V/I = 4.532\,V/I\). 변형(이완 SiGe 위 인장 Si, SiGe 소스·드레인의 압축)은 골짜기·띠를 갈라 \(m^*\)를 줄이고 \(\tau\)를 늘려 이동도를 높인다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(q = 1.602\times10^{-19}\) C, \(m_0 = 9.109\times10^{-31}\) kg, 300 K에서 \(kT/q = 25.85\) mV. 실리콘 카우기–토머스 매개변수는 3절 표를 쓴다. 답이 ±1% 이내면 정답이다(따로 적은 경우 제외).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="이동도와 완화 시간" data-answer="0.104" data-label="τ =" data-unit="ps">
+        <div class="prob-q"><p>실리콘 저도핑 정공 이동도 470 cm²/(V·s), 전도도 질량 \(0.39\,m_0\)에서 정공의 완화 시간은?</p></div>
+        <div class="prob-hint">\(\tau = \mu m^*/q\), \(\mu\)를 m²/(V·s)로.</div>
+        <div class="prob-sol"><p>\(\tau = 0.0470\times0.39\times9.109\times10^{-31}/1.602\times10^{-19} = 1.04\times10^{-13}\) s \(= 0.104\) ps. 전자(0.21 ps)의 절반쯤이고, 질량도 1.5배라 이동도는 전자의 1/3이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="표류 속도" data-answer="6.75e5; 2.95" data-label="v_d =; v_d/v_th =" data-unit="cm/s; %">
+        <div class="prob-q"><p>이동도 1350 cm²/(V·s)인 전자가 500 V/cm에서 표류하는 속도와, 그것이 열속도 \(2.29\times10^7\) cm/s의 몇 %인지 구하라.</p></div>
+        <div class="prob-sol"><p>\(v_d = 1350\times500 = 6.75\times10^5\) cm/s. \(6.75\times10^5/2.29\times10^7 = 2.95\%\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="비저항" data-answer="0.960" data-label="ρ =" data-unit="Ω·cm">
+        <div class="prob-q"><p>인 \(5.0\times10^{15}\) cm⁻³로 도핑한 실리콘(완전 이온화, \(\mu_n = 1300\) cm²/(V·s))의 비저항은? 정공 기여는 무시한다.</p></div>
+        <div class="prob-sol"><p>\(\rho = 1/(qn\mu_n) = 1/(1.602\times10^{-19}\times5\times10^{15}\times1300) = 0.960\) Ω·cm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="마티센 규칙" data-answer="548" data-label="μ =" data-unit="cm²/(V·s)">
+        <div class="prob-q"><p>격자 산란만의 이동도가 1400, 이온화 불순물 산란만의 이동도가 900 cm²/(V·s)이면 전체 이동도는?</p></div>
+        <div class="prob-sol"><p>\(1/\mu = 1/1400 + 1/900 = 1.825\times10^{-3}\) → \(\mu = 548\) cm²/(V·s). 낮은 쪽(900)보다도 낮다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="격자 산란의 온도 의존" data-answer="709; 918" data-label="γ = 2.4:; γ = 1.5:" data-unit="cm²/(V·s); cm²/(V·s)">
+        <div class="prob-q"><p>저도핑 실리콘의 300 K 전자 이동도가 1414 cm²/(V·s)이다. \(\mu_L \propto T^{-\gamma}\)로 400 K 이동도를 (a) 실측 지수 \(\gamma = 2.4\), (b) 이론 지수 \(\gamma = 1.5\)로 구하라.</p></div>
+        <div class="prob-sol"><p>(a) \(1414\times(4/3)^{-2.4} = 1414\times0.5013 = 709\). (b) \(1414\times(4/3)^{-1.5} = 918\). 칩이 100 K 뜨거워지면 이동도가 거의 절반 — 자체 발열이 성능을 깎는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="카우기–토머스" data-answer="996; 0.209" data-label="μ_n =; ρ =" data-unit="cm²/(V·s); Ω·cm">
+        <div class="prob-q"><p>인 \(3\times10^{16}\) cm⁻³로 도핑한 실리콘의 300 K 전자 이동도를 카우기–토머스 식(\(\mu_\text{max} = 1414\), \(\mu_\text{min} = 68.5\), \(N_\text{ref} = 9.2\times10^{16}\), \(\alpha = 0.711\))으로 구하고 비저항을 계산하라.</p></div>
+        <div class="prob-sol"><p>\((3/9.2)^{0.711} = 0.4508\), \(\mu = 68.5 + 1345.5/1.4508 = 996\). \(\rho = 1/(1.602\times10^{-19}\times3\times10^{16}\times996) = 0.209\) Ω·cm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="보상" data-answer="375; 0.833" data-label="μ_p =; ρ =" data-unit="cm²/(V·s); Ω·cm">
+        <div class="prob-q"><p>붕소 \(3\times10^{16}\)과 인 \(1\times10^{16}\) cm⁻³가 함께 든 실리콘의 정공 이동도와 비저항은? (정공: \(\mu_\text{max} = 470.5\), \(\mu_\text{min} = 44.9\), \(N_\text{ref} = 2.23\times10^{17}\), \(\alpha = 0.719\))</p></div>
+        <div class="prob-hint">캐리어 농도는 \(N_A - N_D\), 이동도는 \(N_A + N_D\)로.</div>
+        <div class="prob-sol"><p>\(p = 2\times10^{16}\). \(N = 4\times10^{16}\): \((4/22.3)^{0.719} = 0.2906\), \(\mu_p = 44.9 + 425.6/1.2906 = 375\). \(\rho = 1/(1.602\times10^{-19}\times2\times10^{16}\times375) = 0.833\) Ω·cm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="산란 기구">
+        <div class="prob-q"><p>\(10^{18}\) cm⁻³로 도핑한 실리콘을 100 K에서 200 K로 데웠더니 이동도가 <em>늘었다</em>. 이 온도 구간을 지배하는 산란 기구는?</p></div>
+        <div class="prob-choices"><button>음향 포논 산란</button><button data-correct>이온화 불순물 산란</button><button>광학 포논 방출</button><button>표면 거칠기 산란</button></div>
+        <div class="prob-sol"><p>온도가 오를 때 이동도가 느는 기구는 \(\mu_I \propto T^{3/2}\)인 이온화 불순물 산란뿐이다. 빠른 전자일수록 이온 곁을 빨리 지나 덜 꺾인다. 포논 산란은 온도가 오르면 늘어난다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="속도 포화와 구동 전류" data-answer="2.07" data-label="I_D/W =" data-unit="mA/µm">
+        <div class="prob-q"><p>게이트 산화막 정전 용량 \(C_\text{ox} = 3.45\times10^{-6}\) F/cm²(유효 두께 1 nm), \(V_{GS} - V_T = 0.6\) V인 짧은 채널 nMOS에서 전자가 채널 전체에서 \(v_\text{sat} = 1.0\times10^7\) cm/s로 달린다고 하자. 폭 1 µm당 포화 전류 \(I_D = WC_\text{ox}(V_{GS}-V_T)v_\text{sat}\)는?</p></div>
+        <div class="prob-sol"><p>\(I_D/W = 3.45\times10^{-6}\times0.6\times1.0\times10^7 = 20.7\) A/cm \(= 2.07\) mA/µm. 실제 소자는 직렬 저항·반전층 두께·소스 쪽 주입 속도 때문에 이 상한의 절반쯤을 낸다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="아인슈타인 관계" data-answer="11.6" data-label="D_p =" data-unit="cm²/s">
+        <div class="prob-q"><p>300 K에서 정공 이동도가 450 cm²/(V·s)이면 확산 계수는?</p></div>
+        <div class="prob-sol"><p>\(D_p = \mu_p kT/q = 450\times0.02585 = 11.6\) cm²/s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="확산 전류" data-answer="216" data-label="|J| =" data-unit="A/cm²">
+        <div class="prob-q"><p>전자 농도가 2 µm에 걸쳐 \(1.0\times10^{16}\)에서 \(1.0\times10^{15}\) cm⁻³로 직선적으로 줄고, \(D_n = 30\) cm²/s이다. 전자 확산 전류 밀도의 크기는?</p></div>
+        <div class="prob-sol"><p>\(|dn/dx| = 9\times10^{15}/2\times10^{-4} = 4.5\times10^{19}\) cm⁻⁴. \(|J| = 1.602\times10^{-19}\times30\times4.5\times10^{19} = 216\) A/cm². 방향은 농도가 높은 쪽이다(전자는 낮은 쪽으로 흐른다).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="내장 전기장" data-answer="2380" data-label="E =" data-unit="V/cm">
+        <div class="prob-q"><p>n형 층의 도너 농도가 0.5 µm 깊이에서 표면값의 1/100로 지수적으로 줄어든다. 300 K 평형에서 층 안의 내장 전기장 크기는?</p></div>
+        <div class="prob-hint">\(1/\lambda = \ln100/0.5\ \mu\text{m}\), \(E = (kT/q)/\lambda\).</div>
+        <div class="prob-sol"><p>\(1/\lambda = 4.605/(0.5\times10^{-4}\ \text{cm}) = 9.21\times10^4\) cm⁻¹. \(E = 0.02585\times9.21\times10^4 = 2.38\times10^3\) V/cm. 전기장은 깊은 쪽(도핑 낮은 쪽)을 가리켜 전자를 표면 쪽으로 되민다. 층 전체의 전위차는 \(0.02585\ln100 = 0.119\) V.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="면저항" data-answer="56.2; 2.25e-3" data-label="R_s =; ρ =" data-unit="Ω/□; Ω·cm">
+        <div class="prob-q"><p>두께 0.40 µm인 SOI 실리콘 막을 4탐침으로 쟀더니 1.00 mA에서 12.4 mV였다(탐침 간격 1 mm). 면저항과 비저항은?</p></div>
+        <div class="prob-sol"><p>\(t/s = 4\times10^{-4} \ll 1\)이라 얇은 막 공식. \(R_s = 4.532\times12.4 = 56.2\) Ω/□, \(\rho = R_st = 56.2\times0.4\times10^{-4} = 2.25\times10^{-3}\) Ω·cm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="4탐침과 어빈 곡선" data-answer="0.503; 3.22e16" data-tol="1%; 6%" data-label="ρ =; N_A =" data-unit="Ω·cm; cm⁻³">
+        <div class="prob-q"><p>가로·세로·두께가 모두 수 cm인 붕소 도핑 실리콘 덩어리(두꺼운 시료)를 간격 1.00 mm의 4탐침으로 재니 \(V/I = 0.800\) Ω이었다. 비저항을 구하고, 카우기–토머스 정공 이동도를 써서 붕소 농도를 구하라(\(N_A\)는 6% 이내 허용).</p></div>
+        <div class="prob-hint">\(t \gg s\)이므로 \(\rho = 2\pi sV/I\). 농도는 \(\rho = 1/(qN_A\mu_p(N_A))\)를 시행착오로 푼다.</div>
+        <div class="prob-sol"><p>\(\rho = 2\pi\times0.100\ \text{cm}\times0.800\ \Omega = 0.503\) Ω·cm. \(N_A = 3.0\times10^{16}\)이면 \(\mu_p = 389\), \(\rho = 0.535\); \(3.3\times10^{16}\)이면 \(\mu_p = 385\), \(\rho = 0.492\). 사이를 맞추면 \(N_A \approx 3.2\times10^{16}\) cm⁻³. 두께가 \(s\)와 비슷한 웨이퍼(예: 775 µm)였다면 보정 인자 \(G(t/s)\)가 필요하다 — 6절 실험대에서 확인하라.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="건 효과">
+        <div class="prob-q"><p>GaAs에서 전기장이 약 3.5 kV/cm를 넘으면 표류 속도가 전기장과 함께 줄어드는 가장 큰 이유는?</p></div>
+        <div class="prob-choices"><button>전자가 정공과 재결합해 사라진다</button><button>광학 포논이 모두 소진된다</button><button data-correct>전자가 질량이 크고 산란이 잦은 위쪽 L 골짜기로 옮겨 간다</button><button>충돌 이온화로 캐리어가 늘어난다</button></div>
+        <div class="prob-sol"><p>Γ 골짜기(\(m^* = 0.067\))에서 약 0.3 eV 위의 L 골짜기(무겁고 느리다)로의 전이가 평균 속도를 떨어뜨린다. 그 결과 음미분 이동도가 생기고, 도메인이 형성·이동하며 건 발진이 일어난다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>상온 실리콘 전자의 열속도(약 \(2\times10^7\) cm/s)는 1 kV/cm의 표류 속도보다 15배쯤 크다. 그런데 전기장이 없으면 전류가 0인 까닭은?</p><div class="opts">
+        <button class="opt">열운동은 전자가 아니라 원자의 운동이라서</button><button class="opt" data-correct>열운동 방향이 무작위라 전자 무리의 평균 속도가 0이므로</button><button class="opt">열속도는 전도띠 밖의 전자 속도라서</button><button class="opt">산란이 열운동을 완전히 멈추게 하므로</button>
+      </div><div class="quiz-exp">전류는 평균 속도에 비례한다. 열운동은 크지만 평균이 0이고, 전기장이 그 위에 작은 치우침 \(v_d\)를 얹을 때만 알짜 전류가 생긴다.</div></div>
+      <div class="quiz-q"><p>같은 실리콘에서 도핑을 \(10^{15}\)에서 \(10^{18}\) cm⁻³로 1000배 늘리면 비저항은?</p><div class="opts">
+        <button class="opt">정확히 1/1000이 된다</button><button class="opt" data-correct>1/1000보다 덜 줄어든다(약 1/200) — 이동도가 함께 떨어지므로</button><button class="opt">1/1000보다 더 줄어든다 — 이동도도 늘어나므로</button><button class="opt">거의 그대로다</button>
+      </div><div class="quiz-exp">n형으로 \(\rho\)는 4.58 → 0.0225 Ω·cm(약 1/200). 캐리어는 1000배지만 이동도가 1362 → 277로 약 1/5이 된다.</div></div>
+      <div class="quiz-q"><p>아인슈타인 관계 \(D/\mu = kT/q\)의 근거로 가장 알맞은 것은?</p><div class="opts">
+        <button class="opt">특정 산란 기구(음향 포논)의 계산 결과</button><button class="opt">옴의 법칙</button><button class="opt" data-correct>열평형에서 알짜 전류가 0이고 캐리어가 볼츠만 분포를 따른다는 조건</button><button class="opt">전하 보존 법칙</button>
+      </div><div class="quiz-exp">내장 전기장 속 평형 분포 \(n \propto e^{-U/kT}\)에서 표류와 확산이 상쇄되려면 \(D/\mu = kT/q\)여야 한다. 산란 기구와 무관하며, 축퇴되면 형태가 바뀐다.</div></div>
+      <div class="quiz-q"><p>짧은 채널 MOSFET에서 채널 길이를 절반으로 줄여도(같은 전압) 포화 전류가 2배가 되지 않는 주된 이유는?</p><div class="opts">
+        <button class="opt">이동도가 채널 길이에 비례해서</button><button class="opt" data-correct>평균 전기장이 커서 전자 속도가 이미 \(v_\text{sat}\) 근처에 묶여 있으므로</button><button class="opt">확산 전류가 표류 전류를 상쇄해서</button><button class="opt">4탐침 측정 오차 때문에</button>
+      </div><div class="quiz-exp">\(I_D \approx WC_\text{ox}(V_{GS}-V_T)v_\text{sat}\)이면 \(L\)이 식에서 빠진다. 긴 채널 식 \(\propto 1/L\)이 더는 맞지 않는다.</div></div>
+      <div class="quiz-q"><p>4탐침법이 2탐침법보다 반도체 비저항을 정확히 재는 핵심 이유는?</p><div class="opts">
+        <button class="opt">탐침이 많을수록 전류가 커서</button><button class="opt">탐침 간격을 줄일 수 있어서</button><button class="opt" data-correct>전압을 전류가 흐르지 않는 탐침으로 재므로 접촉·확산 저항의 전압 강하가 빠진다</button><button class="opt">면저항이 두께와 무관해서</button>
+      </div><div class="quiz-exp">금속–반도체 접촉에는 큰 접촉 저항이 있다. 전압 탐침에는 전류가 거의 흐르지 않아 그 저항에 걸리는 전압이 0이다(켈빈 측정과 같은 원리).</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const QE = 1.602176634e-19, ME = 9.1093837015e-31, KB = 1.380649e-23, KBEV = 8.617333262e-5, TAU = 2 * Math.PI;
+  const VT300 = KBEV * 300;
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sci = (x, d = 2) => { if (!isFinite(x)) return "—"; if (x === 0) return "0"; const e = Math.floor(Math.log10(Math.abs(x)) + 1e-12); if (e >= -2 && e <= 3) { const t = x.toPrecision(d + 1); if (!/e/.test(t)) return t; } const m = x / Math.pow(10, e); return m.toFixed(d) + "×10" + String(e).split("").map((c) => SUP[c]).join(""); };
+  const handle = (ctx, x, y, col, r = 12) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const sqHandle = (ctx, x, y, col, r = 11) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.rect(x - r, y - r, 2 * r, 2 * r); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const dot = (ctx, x, y, r, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+  const poly = (ctx, pts, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); };
+  /** 차트 픽셀 → 값 (선형/로그) */
+  const invX = (ch, o, px) => { const f = (px - ch.box.x) / ch.box.w; return o.logX ? Math.pow(10, Math.log10(o.x[0]) + f * (Math.log10(o.x[1]) - Math.log10(o.x[0]))) : o.x[0] + f * (o.x[1] - o.x[0]); };
+  const invY = (ch, o, py) => { const f = (ch.box.y + ch.box.h - py) / ch.box.h; return o.logY ? Math.pow(10, Math.log10(o.y[0]) + f * (Math.log10(o.y[1]) - Math.log10(o.y[0]))) : o.y[0] + f * (o.y[1] - o.y[0]); };
+  const logFmt = (v) => { const e = Math.round(Math.log10(v)); return Math.abs(Math.log10(v) - e) < 1e-6 ? "10" + String(e).split("").map((c) => SUP[c]).join("") : String(v); };
+  /** TeX 과학 표기: 2.23\times10^{17} (계수가 1이면 10^{e}) */
+  const texSci = (x, d = 2) => { const e = Math.floor(Math.log10(x) + 1e-9), m = x / Math.pow(10, e); const ms = Math.abs(m - 1) < 1e-9 ? "" : (d === 0 ? m.toFixed(0) : m.toFixed(d)) + "\\times"; return ms + "10^{" + e + "}"; };
+  const muCT = (N, t) => Solid.mobility(N, t, 300);
+  const mobStr = (m) => m.toFixed(0) + " <small>cm²/(V·s)</small>";
+  const rhoStr = (r) => (r >= 1000 ? sci(r, 2) : r >= 1 ? r.toPrecision(3) : sci(r, 2)) + " <small>Ω·cm</small>";
+
+  /* ---------------------------------------------------------- 머리: 열운동 + 표류 몬테카를로 */
+  {
+    const N = 40, vth = 0.32, gam = 3.2, acc = 1.1;   // 화면 단위: 폭 1 = 캔버스 폭, 시간 s
+    const st = { ex: 0.55, ey: 0, mvx: 0, mvy: 0, touched: 0 };
+    const P0 = [];
+    for (let i = 0; i < N; i++) P0.push({ x: Math.random(), y: Math.random(), vx: SB.randn() * vth / Math.SQRT2, vy: SB.randn() * vth / Math.SQRT2, f: 0 });
+    const trail = [[], []];
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal();
+      // 배경 전기장 선
+      const mag = Math.hypot(st.ex, st.ey);
+      if (mag > 0.03) {
+        const ux = st.ex / mag, uy = st.ey / mag;
+        ctx.save(); ctx.globalAlpha = 0.18 + 0.25 * mag;
+        for (let gx = 40; gx < w; gx += 110) for (let gy = 34; gy < h; gy += 80) SB.arrow(ctx, gx - 16 * ux, gy - 16 * uy, gx + 16 * ux, gy + 16 * uy, { color: P.faint, width: 1.4, head: 6 });
+        ctx.restore();
+      }
+      // 자취
+      trail.forEach((tr, k) => { if (tr.length < 2) return; ctx.save(); ctx.strokeStyle = k ? P.accent2 : P.accent; ctx.globalAlpha = 0.55; ctx.lineWidth = 1.4; ctx.beginPath(); let prev = null; tr.forEach((p) => { const x = p[0] * w, y = p[1] * w; if (prev && Math.hypot(x - prev[0], y - prev[1]) > w * 0.3) ctx.moveTo(x, y); else if (prev) ctx.lineTo(x, y); else ctx.moveTo(x, y); prev = [x, y]; }); ctx.stroke(); ctx.restore(); });
+      P0.forEach((p, i) => {
+        const x = p.x * w, y = p.y * w;
+        if (p.f > 0) { ctx.save(); ctx.strokeStyle = P.warn; ctx.globalAlpha = p.f; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 10 - 6 * p.f, 0, TAU); ctx.stroke(); ctx.restore(); }
+        dot(ctx, x, y, i < 2 ? 5.5 : 4.2, i === 1 ? P.accent2 : P.accent);
+      });
+      // 평균 속도 화살표(측정) 와 전기장 핸들
+      const cx = w * 0.5, cy = h * 0.5, sc = w * 0.9;
+      SB.arrow(ctx, cx, cy, cx + st.mvx * sc, cy + st.mvy * sc, { color: P.text, width: 4, head: 13 });
+      SB.label(ctx, "⟨v⟩ 측정(전자 40개 평균)", cx, cy - 24, { size: 12, color: P.text, bold: true });
+      const ax = w - Math.min(90, w * 0.2), ay = h - 62, R = Math.min(62, w * 0.14);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.arc(ax, ay, R, 0, TAU); ctx.stroke(); ctx.restore();
+      const hx = ax + st.ex * R, hy = ay + st.ey * R;
+      if (mag > 0.03) SB.arrow(ctx, ax, ay, hx, hy, { color: P.accent2, width: 3 });
+      handle(ctx, hx, hy, P.accent2);
+      SB.label(ctx, "E", ax - R - 12, ay - R + 6, { size: 14, color: P.accent2, bold: true });
+      const vdv = Math.hypot(st.mvx, st.mvy) / vth;
+      SB.label(ctx, `|⟨v⟩| / v_th = ${vdv.toFixed(2)}  (전자는 E 반대쪽)`, 12, 16, { align: "left", size: 12, color: P.dim });
+      SB.label(ctx, "실제 Si, 1 kV/cm: 0.06", 12, 34, { align: "left", size: 11, color: P.dim });
+      self._ax = [ax, ay, R]; self._h = [hx, hy];
+    }, { aspect: 0.42, minHeight: 260, maxHeight: 380 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "E", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "E") return; const [ax, ay, R] = cv._ax; let ex = (x - ax) / R, ey = (y - ay) / R; const m = Math.hypot(ex, ey); if (m > 1) { ex /= m; ey /= m; } st.ex = ex; st.ey = ey; st.touched = 1; },
+    });
+    SB.loop("hero", (dt) => {
+      const H = cv.h / cv.w, steps = 4, d = dt / steps;
+      let sx = 0, sy = 0;
+      for (let s = 0; s < steps; s++) {
+        P0.forEach((p, i) => {
+          p.vx -= acc * st.ex * d; p.vy -= acc * st.ey * d;
+          p.x += p.vx * d; p.y += (p.vy * d) / 1;
+          if (p.x < 0) p.x += 1; if (p.x > 1) p.x -= 1;
+          if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
+          if (Math.random() < gam * d) { p.vx = SB.randn() * vth / Math.SQRT2; p.vy = SB.randn() * vth / Math.SQRT2; p.f = 1; }
+          p.f = Math.max(0, p.f - d * 3);
+        });
+      }
+      P0.forEach((p) => { sx += p.vx; sy += p.vy; });
+      const k = Math.min(1, dt / 1.5);
+      st.mvx += (sx / N - st.mvx) * k; st.mvy += (sy / N - st.mvy) * k;
+      for (let j = 0; j < 2; j++) { trail[j].push([P0[j].x, P0[j].y]); if (trail[j].length > 90) trail[j].shift(); }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- tangle: μ = qτ/m* */
+  SB.tangle("tg-mob", (v) => {
+    const mu = (QE * v.tau * 1e-12) / (v.m * ME) * 1e4;            // cm²/(V·s)
+    const vth = Math.sqrt((3 * KB * 300) / (v.m * ME)) * 100;        // cm/s
+    const vd = mu * v.E, l = vth * v.tau * 1e-12 * 1e7;              // nm
+    let msg = "";
+    if (vd > 0.3 * vth) msg = "표류가 열속도의 30%를 넘었다 — 4절의 고전기장 영역이라 \\(v_d = \\mu E\\)를 믿을 수 없다.";
+    else if (Math.abs(v.m - 0.26) < 0.005 && Math.abs(v.tau - 0.21) < 0.005) msg = "저도핑 실리콘 전자(1414 cm²/(V·s))와 거의 같다.";
+    else if (mu > 5000) msg = "GaAs(8500)나 InSb(약 77000)처럼 질량이 가벼운 반도체의 영역이다.";
+    else if (mu < 200) msg = "고농도 도핑 실리콘이나 유기 반도체 정도의 낮은 이동도다.";
+    return { mu: mu.toFixed(0) + " cm²/(V·s)", vd: sci(vd, 2) + " cm/s", vth: sci(vth, 2) + " cm/s", ratio: ((vd / vth) * 100).toFixed(vd / vth < 0.01 ? 2 : 1) + "%", l: l.toFixed(1) + " nm", msg };
+  }, { onChange: () => { const el = document.querySelector('#tg-mob [data-out="msg"]'); if (el) SB.math(el); } });
+
+  /* ---------------------------------------------------------- 미니: 이동한 맥스웰 분포 */
+  {
+    const sig = Math.sqrt((KB * 300) / (0.26 * ME)) * 100;   // cm/s, 한 성분 표준 편차
+    let cv = null;
+    const getE = SB.range("mx-E", (v) => v.toFixed(1) + " kV/cm", () => cv && cv.redraw());
+    $("mx-zoom").addEventListener("change", () => cv && cv.redraw());
+    cv = SB.canvas("cv-mx", (ctx, w, h) => {
+      const P = pal(), E = getE() * 1000, vd = -1414 * E, zoom = $("mx-zoom").checked;
+      const span = zoom ? 0.25e7 : 5e7, x0 = zoom ? -span + vd / 2 : -span, x1 = zoom ? span + vd / 2 : span;
+      const g = (v, c) => Math.exp(-((v - c) ** 2) / (2 * sig * sig));
+      const A = [], B = [];
+      for (let i = 0; i <= 300; i++) { const v = x0 + ((x1 - x0) * i) / 300; A.push([v / 1e7, g(v, 0)]); B.push([v / 1e7, g(v, vd)]); }
+      const ymin = zoom ? 0.95 : 0;
+      const ch = SB.chart(ctx, { x: 46, y: 16, w: w - 60, h: h - 62 }, { x: [x0 / 1e7, x1 / 1e7], y: [ymin, 1.06], xLabel: "vₓ (10⁷ cm/s)", yLabel: zoom ? "f (꼭대기 확대)" : "f(vₓ)", yTicks: [], series: [{ data: A, color: P.faint, width: 2, dash: [5, 4] }, { data: B, color: P.accent, width: 2.6, fill: SB.color("accent-soft") }] });
+      const xd = ch.X(vd / 1e7);
+      SB.dashLine(ctx, xd, ch.box.y, xd, ch.box.y + ch.box.h, P.accent2, [4, 3]);
+      if (Math.abs(vd) > 1) SB.arrow(ctx, ch.X(0), ch.box.y + 14, xd, ch.box.y + 14, { color: P.accent2, width: 2.4, head: 8 });
+      SB.label(ctx, "v_d", xd + (vd < 0 ? -14 : 14), ch.box.y + 30, { size: 12, color: P.accent2, bold: true });
+      const r = Math.abs(vd) / sig;
+      $("mx-r").innerHTML = `v<sub>d</sub> = ${sci(vd, 2)} cm/s · |v<sub>d</sub>|/σ = ${r.toFixed(3)}` + (E > 1e4 ? ` · <b style="color:var(--bad)">10 kV/cm 이상: 실제로는 가열·포화로 이 그림이 깨진다</b>` : "");
+    }, { aspect: 0.38, minHeight: 190, maxHeight: 260 });
+  }
+
+  /* ---------------------------------------------------------- 미니: 이온화 불순물 궤적 */
+  {
+    let cv = null;
+    const getE = SB.range("ion-E", (v) => v.toFixed(0) + " meV", () => cv && cv.redraw());
+    $("ion-scr").addEventListener("change", () => cv && cv.redraw());
+    function orbit(b, C, LD, cx, cy, xs, w, h) {
+      // 단위 질량, 처음 속력 1, 인력 F = -C r̂ /r² (차폐 시 e^{-r/LD}(1+r/LD))
+      let x = xs - cx, y = b, vx = 1, vy = 0; const pts = [[cx + x, cy - y]], dt = 0.6;
+      for (let i = 0; i < 3000; i++) {
+        const r = Math.hypot(x, y), s = LD ? Math.exp(-r / LD) * (1 + r / LD) : 1, f = (-C * s) / (r * r * r);
+        vx += f * x * dt * 0.5; vy += f * y * dt * 0.5; x += vx * dt; y += vy * dt;
+        const r2 = Math.hypot(x, y), s2 = LD ? Math.exp(-r2 / LD) * (1 + r2 / LD) : 1, f2 = (-C * s2) / (r2 * r2 * r2);
+        vx += f2 * x * dt * 0.5; vy += f2 * y * dt * 0.5;
+        if (i % 3 === 0) pts.push([cx + x, cy - y]);
+        if (cx + x < -20 || cx + x > w + 20 || cy - y < -20 || cy - y > h + 20) break;
+      }
+      return { pts, ang: (Math.atan2(vy, vx) * 180) / Math.PI };
+    }
+    cv = SB.canvas("cv-ion", (ctx, w, h) => {
+      const P = pal(), E = getE(), cx = w * 0.5, cy = h * 0.56, b0 = Math.min(w, h) * 0.16, scr = $("ion-scr").checked;
+      const C = 0.5 * b0 * (26 / E), LD = scr ? 1.4 * b0 : 0;
+      if (scr) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.5; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(cx, cy, LD, 0, TAU); ctx.stroke(); ctx.restore(); SB.label(ctx, "디바이 길이", cx + LD * 0.72, cy - LD * 0.72 - 8, { size: 11, color: P.accent2 }); }
+      let ang0 = 0;
+      [0.35, 0.6, 1, 1.6, 2.4].forEach((f, i) => {
+        const o = orbit(f * b0, C, LD, cx, cy, 10, w, h);
+        poly(ctx, o.pts, f === 1 ? P.accent : P.dim, f === 1 ? 2.6 : 1.4);
+        if (f === 1) ang0 = o.ang;
+        SB.label(ctx, `b=${f}`, 10, cy - f * b0 - 9, { align: "left", size: 10, color: P.dim });
+      });
+      dot(ctx, cx, cy, 11, P.accent2); SB.label(ctx, "+", cx, cy + 1, { size: 15, color: "#fff", bold: true, bg: P.accent2 });
+      $("ion-r").innerHTML = `b = 1에서 꺾인 각 ${Math.abs(ang0).toFixed(1)}° · 러더퍼드 단면 ∝ 1/E² → 26 meV 대비 ${((26 / E) ** 2).toFixed(2)}배`;
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 290 });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 산란 몬테카를로 */
+  {
+    const NP = 300, NS = 80, SIG = Math.sqrt((KB * 300) / (0.26 * ME)) / 1e5;   // 10⁷ cm/s 단위
+    const ACC = (QE * 1e5) / (0.26 * ME) * 1e-12 / 1e5;   // (10⁷ cm/s)/ps per kV/cm
+    const MUPS = ((QE * 1e-12) / (0.26 * ME)) * 1e4;      // cm²/(V·s) per ps
+    const VREF = Math.sqrt(3) * SIG, GCAP = 200, DT = 0.002;
+    const st = { gph: 4.8, gim: 0, en: false, goal: "off", target: 700, ok: false };
+    let parts = [], tsim = 0, sumV = 0, nEv = 0, tFlight = 0, trace = [], A = null, B = null;
+    const getE = SB.range("mc-E", (v) => v.toFixed(1) + " kV/cm", () => reset());
+    $("mc-en").addEventListener("change", () => { st.en = $("mc-en").checked; reset(); });
+    SB.seg("mc-goal", (v) => { st.goal = v; if (v === "on") st.target = 10 * Math.round((300 + Math.random() * 1000) / 10); st.ok = false; upd(); });
+    const rate = (v) => {
+      if (!st.en) return st.gph + st.gim;
+      const r = v / VREF;
+      return st.gph * Math.max(0.25, r) + Math.min(GCAP, st.gim / Math.max(1e-3, r * r * r));
+    };
+    // 산란 뒤 속력 분포 ∝ Γ(v) v² e^(−v²/2σ²): 평형(맥스웰)을 정확히 유지하고 가열을 매번 격자로 돌려보낸다
+    const NBN = 800, VM = 7 * SIG, cdf = new Float64Array(NBN + 1);
+    function buildCdf() { for (let i = 1; i <= NBN; i++) { const v = ((i - 0.5) / NBN) * VM; cdf[i] = cdf[i - 1] + rate(v) * v * v * Math.exp((-v * v) / (2 * SIG * SIG)); } }
+    const sampleSpeed = () => { const u = Math.random() * cdf[NBN]; let lo = 0, hi = NBN; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cdf[m] < u) lo = m; else hi = m; } return ((lo + (u - cdf[lo]) / (cdf[hi] - cdf[lo] || 1)) / NBN) * VM; };
+    function init() {
+      parts = [];
+      for (let i = 0; i < NP; i++) parts.push({ v: [SB.randn() * SIG, SB.randn() * SIG, SB.randn() * SIG], x: Math.random(), y: Math.random(), f: 0 });
+    }
+    function reset() { if (st.en && st.gph < 1) st.gph = 1; buildCdf(); tsim = 0; sumV = 0; nEv = 0; tFlight = 0; trace = []; st.ok = false; upd(); }
+    // 맥스웰 평균: ⟨v²τ⟩/⟨v²⟩ (볼츠만 방정식 결과)
+    function avgMu(fn) {
+      let a = 0, b = 0;
+      for (let i = 1; i <= 600; i++) { const v = (i / 600) * 7 * SIG, f = v * v * Math.exp((-v * v) / (2 * SIG * SIG)), g = fn(v); a += f * v * v * (g > 0 ? 1 / g : 0); b += f * v * v; }
+      return (MUPS * a) / b;
+    }
+    const theory = () => {
+      if (!st.en) { const g = st.gph + st.gim; return { exact: MUPS / g, mat: MUPS / g, mph: st.gph ? MUPS / st.gph : Infinity, mim: st.gim ? MUPS / st.gim : Infinity }; }
+      const r = (v) => v / VREF;
+      const mph = st.gph ? avgMu((v) => st.gph * Math.max(0.25, r(v))) : Infinity;
+      const mim = st.gim ? avgMu((v) => Math.min(GCAP, st.gim / Math.max(1e-3, r(v) ** 3))) : Infinity;
+      return { exact: avgMu(rate), mat: 1 / ((isFinite(mph) ? 1 / mph : 0) + (isFinite(mim) ? 1 / mim : 0)), mph, mim };
+    };
+    const measured = () => (tsim > 0 ? (sumV / tsim) * 1e7 / (getE() * 1000) : NaN);
+    function upd() {
+      const th = theory(), mu = measured();
+      SB.stat("mc-tau", nEv > 20 ? (tFlight / nEv).toFixed(3) + " <small>ps</small>" + (!st.en ? ` <small>(1/Γ = ${(1 / (st.gph + st.gim)).toFixed(3)})</small>` : "") : "—");
+      const err = tsim > 0 ? Math.min(99, 100 * 0.083 * Math.sqrt(0.5 / Math.max(tsim, 0.5)) / Math.max(0.05, (sumV / tsim))) : 0;
+      SB.stat("mc-mu", isFinite(mu) && tsim > 2 ? mu.toFixed(0) + ` <small>± ${(Math.abs(mu) * err / 100).toFixed(0)} (${tsim.toFixed(0)} ps)</small>` : "측정 중…");
+      const fmtMu = (m) => (isFinite(m) ? m.toFixed(0) : "∞");
+      SB.stat("mc-mat", st.en ? `${fmtMu(th.mat)} <small>(μ<sub>L</sub> ${fmtMu(th.mph)}, μ<sub>I</sub> ${fmtMu(th.mim)} · 정확한 평균 ${fmtMu(th.exact)})</small>` : `${fmtMu(th.mat)} <small>(μ<sub>L</sub> ${fmtMu(th.mph)}, μ<sub>I</sub> ${fmtMu(th.mim)})</small>`);
+      if (st.goal === "on") {
+        const good = isFinite(mu) && tsim > 20 && Math.abs(mu - st.target) / st.target < 0.03;
+        if (good) st.ok = true;
+        SB.stat("mc-tg", `${st.target} <small>cm²/(V·s)</small> ` + (st.ok ? '<b style="color:var(--ok)">성공!</b>' : tsim < 20 ? "<small>(20 ps 이상 재야 판정)</small>" : `<small>${mu > st.target ? "높다" : "낮다"}</small>`));
+      } else SB.stat("mc-tg", "<small>꺼짐</small>");
+    }
+    init(); buildCdf();
+    A = SB.canvas("cv-mc", (ctx, w, h) => {
+      const P = pal();
+      ctx.save(); ctx.strokeStyle = P.border; ctx.strokeRect(6, 6, w - 12, h - 12); ctx.restore();
+      for (let i = 0; i < NS; i++) {
+        const p = parts[i], x = 6 + p.x * (w - 12), y = 6 + p.y * (h - 12);
+        if (p.f > 0) { ctx.save(); ctx.strokeStyle = P.warn; ctx.globalAlpha = p.f; ctx.beginPath(); ctx.arc(x, y, 9 - 5 * p.f, 0, TAU); ctx.stroke(); ctx.restore(); }
+        dot(ctx, x, y, 3.6, P.accent);
+      }
+      SB.arrow(ctx, w - 24, 26, w - 24 - 70, 26, { color: P.accent2, width: 2.6 });
+      SB.label(ctx, `E = ${getE().toFixed(1)} kV/cm`, w - 100, 44, { size: 11, color: P.accent2, align: "right" });
+      const vd = tsim > 0 ? sumV / tsim : 0;
+      SB.arrow(ctx, w / 2, h - 26, w / 2 + Math.max(-w * 0.4, Math.min(w * 0.4, vd * w * 0.6)), h - 26, { color: P.text, width: 3.4 });
+      SB.label(ctx, `⟨vₓ⟩ = ${sci(vd * 1e7, 2)} cm/s`, w / 2, h - 46, { size: 12, color: P.text, bold: true });
+    }, { aspect: 0.5, minHeight: 200, maxHeight: 280 });
+    const bo = { y: [0, 20] };
+    B = SB.canvas("cv-mc-bar", (ctx, w, h, self) => {
+      const P = pal(), bw = Math.min(150, w * 0.34), top = 34, bot = h - 52, H = bot - top;
+      const Y = (g) => bot - (g / 20) * H;
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(40, top); ctx.lineTo(40, bot); ctx.lineTo(40 + bw, bot); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; ctx.font = "11px " + SB.color("mono"); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      [0, 5, 10, 15, 20].forEach((g) => { ctx.fillText(String(g), 36, Y(g)); }); ctx.restore();
+      SB.label(ctx, "산란률 Γ (1/ps)", 40, 16, { align: "left", size: 11, color: P.dim });
+      const bars = [{ id: "ph", g: st.gph, c: P.accent, lab: "포논" }, { id: "im", g: st.gim, c: P.accent2, lab: "불순물" }];
+      const hs = [];
+      bars.forEach((b, i) => {
+        const x = 40 + bw * (0.12 + i * 0.46), ww = bw * 0.34;
+        ctx.fillStyle = b.c; ctx.globalAlpha = 0.75; ctx.fillRect(x, Y(b.g), ww, bot - Y(b.g)); ctx.globalAlpha = 1;
+        SB.label(ctx, b.lab, x + ww / 2, bot + 22, { size: 11, color: b.c, bold: true });
+        SB.label(ctx, b.g.toFixed(1), x + ww / 2, bot + 37, { size: 11, color: P.text, mono: true });
+        handle(ctx, x + ww / 2, Y(b.g), b.c); hs.push({ id: b.id, x: x + ww / 2, y: Y(b.g), r: 16 });
+      });
+      self._hs = hs; self._Y = [top, bot];
+      // 측정 이동도 흐름
+      const th = theory(), x0 = 40 + bw + 62, cw = w - x0 - 10;
+      if (cw > 80) {
+        const tmax = Math.max(30, tsim);
+        const ymax = Math.max(400, 1.6 * (isFinite(th.exact) ? th.exact : 1000), st.goal === "on" ? st.target * 1.4 : 0);
+        const hl = [{ y: th.mat, color: P.dim, label: "마티센", dash: [5, 4] }];
+        if (st.en) hl.push({ y: th.exact, color: P.ok, label: "정확", dash: [2, 3] });
+        if (st.goal === "on") hl.push({ y: st.target, color: P.warn, label: "과녁", dash: [8, 3] });
+        SB.chart(ctx, { x: x0, y: top, w: cw, h: H }, { x: [0, tmax], y: [0, Math.min(ymax, 8000)], xLabel: "t (ps)", yLabel: "측정 μ", series: [{ data: trace, color: P.text, width: 2 }], hlines: hl.filter((l) => isFinite(l.y)) });
+      }
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 290 });
+    SB.drag(B, { handles: () => B._hs || [], move: (id, x, y) => {
+      if (!id || !B._Y) return; const [top, bot] = B._Y; let g = Math.round(((bot - y) / (bot - top)) * 20 * 10) / 10; g = SB.clamp(g, 0, 20);
+      if (id === "ph") { st.gph = g; if (st.gph + st.gim < 0.5) st.gph = 0.5 - st.gim; } else { st.gim = g; if (st.gph + st.gim < 0.5) st.gim = 0.5 - st.gph; }
+      reset(); A.redraw();
+    } });
+    $("mc-reset").addEventListener("click", () => { init(); reset(); A.redraw(); B.redraw(); });
+    upd();
+    let frame = 0;
+    const loop = SB.loop("sim-mc", () => {
+      const E = getE(), a = ACC * E, steps = 200;
+      for (let s = 0; s < steps; s++) {
+        let vs = 0;
+        for (let i = 0; i < NP; i++) {
+          const p = parts[i], v = p.v;
+          v[0] += a * DT;
+          const sp = Math.hypot(v[0], v[1], v[2]), g = rate(sp);
+          if (Math.random() < 1 - Math.exp(-g * DT)) {
+            const n = sampleSpeed(), c = 2 * Math.random() - 1, ph = TAU * Math.random(), sn = Math.sqrt(1 - c * c);
+            v[0] = n * c; v[1] = n * sn * Math.cos(ph); v[2] = n * sn * Math.sin(ph); nEv++; if (i < NS) p.f = 1;
+          }
+          vs += v[0];
+        }
+        sumV += (vs / NP) * DT; tsim += DT; tFlight += NP * DT;
+      }
+      for (let i = 0; i < NS; i++) { const p = parts[i]; p.x = (p.x + p.v[0] * 0.012 + 1) % 1; p.y = (p.y + p.v[1] * 0.012 + 1) % 1; p.f = Math.max(0, p.f - 0.08); }
+      if (frame++ % 3 === 0) { const mu = measured(); if (isFinite(mu)) trace.push([tsim, mu]); if (trace.length > 400) trace = trace.filter((_, k) => k % 2 === 0); upd(); }
+      A.redraw(); B.redraw();
+    });
+    SB.play("mc-play", loop);
+  }
+
+  /* ---------------------------------------------------------- tangle: 비저항–도핑 */
+  SB.tangle("tg-rho", (v) => {
+    const N = Math.pow(10, v.x), mn = muCT(N, "n"), mp = muCT(N, "p"), rn = Solid.siResistivity(N, "n"), rp = Solid.siResistivity(N, "p");
+    let msg = "";
+    if (N > 1e19) msg = "이 영역은 불완전 이온화·띠 간격 축소 때문에 경험식과 실측의 차이가 커진다.";
+    else if (rn > 0.85 && rn < 1.18) msg = "n형 1 Ω·cm 근처 — 흔한 소자용 웨이퍼 사양이다.";
+    else if (rp > 7 && rp < 13) msg = "p형 약 10 Ω·cm — 로직 공정에서 가장 흔한 p형 기판 사양(8–12 Ω·cm)이다.";
+    else if (N < 3e13) msg = "이 정도 순도는 FZ(부유 대역) 실리콘의 영역이다. 진성 농도와 비교해 보라.";
+    return { N: "N = " + sci(N, 2) + " cm⁻³", mun: mn.toFixed(0), rn: rhoStr(rn).replace(/<\/?small>/g, ""), mup: mp.toFixed(0), rp: rhoStr(rp).replace(/<\/?small>/g, ""), msg };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: μ(N, T) */
+  {
+    const st = { N: 1e17, T: 300, type: "n", g: "th" };
+    let A = null, B = null;
+    const oA = { x: [1e13, 1e21], y: [20, 3e4], logX: true, logY: true };
+    const oB = { x: [100, 600], y: [20, 3e4], logY: true };
+    const model = () => {
+      const P = Solid.mobParams[st.type], g = st.g === "th" ? 1.5 : P.g, m300 = Solid.mobility(st.N, st.type, 300);
+      const mI300 = 1 / Math.max(1e-9, 1 / m300 - 1 / P.max);
+      const L = (T) => P.max * Math.pow(T / 300, -g), I = (T) => mI300 * Math.pow(T / 300, 1.5);
+      const Tx = 300 * Math.pow(P.max / mI300, 1 / (g + 1.5));
+      return { L, I, M: (T) => 1 / (1 / L(T) + 1 / I(T)), Tx, g };
+    };
+    SB.seg("mu-type", (v) => { st.type = v; upd(); });
+    SB.seg("mu-g", (v) => { st.g = v; upd(); });
+    $("mu-300").addEventListener("change", () => upd());
+    function upd() {
+      const m = model(), mu = Solid.mobility(st.N, st.type, st.T);
+      SB.stat("mu-nt", `${sci(st.N, 2)} <small>cm⁻³</small>, ${st.T.toFixed(0)} <small>K</small>`);
+      SB.stat("mu-mu", mobStr(mu));
+      SB.stat("mu-li", `${m.L(st.T).toFixed(0)} · ${m.I(st.T) > 1e5 ? sci(m.I(st.T), 1) : m.I(st.T).toFixed(0)} <small>(합 ${m.M(st.T).toFixed(0)})</small>`);
+      SB.stat("mu-tx", m.Tx < 50 ? "50 K 미만 <small>(격자 지배)</small>" : m.Tx > 2000 ? "2000 K 초과 <small>(불순물 지배)</small>" : m.Tx.toFixed(0) + " <small>K</small>");
+      SB.stat("mu-rho", rhoStr(Solid.siResistivity(st.N, st.type, st.T)));
+      if (A) A.redraw(); if (B) B.redraw();
+    }
+    A = SB.canvas("cv-mun", (ctx, w, h, self) => {
+      const P = pal(), ser = [];
+      ["n", "p"].forEach((t) => {
+        const d = [], d3 = [];
+        for (let i = 0; i <= 160; i++) { const N = Math.pow(10, 13 + (8 * i) / 160); d.push([N, Solid.mobility(N, t, st.T)]); d3.push([N, Solid.mobility(N, t, 300)]); }
+        const col = t === "n" ? P.accent : P.accent2, on = t === st.type;
+        if ($("mu-300").checked && st.T !== 300) ser.push({ data: d3, color: col, width: 1.3, dash: [4, 4] });
+        ser.push({ data: d, color: col, width: on ? 2.8 : 1.6 });
+      });
+      const ch = SB.chart(ctx, { x: 52, y: 24, w: w - 64, h: h - 70 }, { ...oA, xLabel: "도핑 N (cm⁻³)", yLabel: "μ (cm²/V·s)", xFmt: logFmt, xTicks: [1e13, 1e15, 1e17, 1e19, 1e21], yTicks: [100, 1000, 10000], yFmt: (v) => String(v), series: ser });
+      SB.label(ctx, "전자", ch.X(3e13), ch.Y(Solid.mobility(3e13, "n", st.T)) - 12, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, "정공", ch.X(3e13), ch.Y(Solid.mobility(3e13, "p", st.T)) + 14, { size: 11, color: P.accent2, bold: true });
+      const px = ch.X(st.N), py = ch.Y(Solid.mobility(st.N, st.type, st.T));
+      handle(ctx, px, py, st.type === "n" ? P.accent : P.accent2); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.72, minHeight: 240, maxHeight: 330 });
+    B = SB.canvas("cv-mut", (ctx, w, h, self) => {
+      const P = pal(), m = model(), E = [], L = [], I = [], M = [];
+      for (let T = 100; T <= 600; T += 5) { E.push([T, Solid.mobility(st.N, st.type, T)]); L.push([T, m.L(T)]); I.push([T, m.I(T)]); M.push([T, m.M(T)]); }
+      const col = st.type === "n" ? P.accent : P.accent2;
+      const vl = m.Tx > 100 && m.Tx < 600 ? [{ x: m.Tx, color: P.warn, label: "교차", dash: [3, 3] }] : [];
+      const ch = SB.chart(ctx, { x: 52, y: 24, w: w - 64, h: h - 70 }, { ...oB, xLabel: "온도 T (K)", yLabel: "μ (cm²/V·s)", yTicks: [100, 1000, 10000], yFmt: (v) => String(v), xTicks: [100, 200, 300, 400, 500, 600],
+        series: [{ data: L, color: P.ok, width: 1.6, dash: [6, 4] }, { data: I, color: P.bad, width: 1.6, dash: [6, 4] }, { data: M, color: P.dim, width: 1.4 }, { data: E, color: col, width: 2.8 }], vlines: vl });
+      SB.label(ctx, `μ_L ∝ T^−${m.g.toFixed(m.g === 1.5 ? 1 : 2)}`, ch.X(140), ch.Y(Math.min(2.5e4, m.L(140))) + (m.L(140) > 2.2e4 ? 14 : -12), { size: 11, color: P.ok, bold: true, align: "left" });
+      const yI = m.I(560); if (yI < 2.8e4 && yI > 25) SB.label(ctx, "μ_I ∝ T^1.5", ch.X(560), ch.Y(yI) - 12, { size: 11, color: P.bad, bold: true, align: "right" });
+      const px = ch.X(st.T), py = ch.Y(Solid.mobility(st.N, st.type, st.T));
+      handle(ctx, px, py, col); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.72, minHeight: 240, maxHeight: 330 });
+    SB.drag(A, { free: true, handles: () => (A._h ? [{ id: "N", x: A._h[0], y: A._h[1], r: 16 }] : []), move: (id, x) => { if (!A._ch) return; const N = SB.clamp(invX(A._ch, oA, x), 1e13, 1e21); st.N = Math.pow(10, Math.round(Math.log10(N) * 20) / 20); upd(); } });
+    SB.drag(B, { free: true, handles: () => (B._h ? [{ id: "T", x: B._h[0], y: B._h[1], r: 16 }] : []), move: (id, x) => { if (!B._ch) return; st.T = Math.round(SB.clamp(invX(B._ch, oB, x), 100, 600) / 5) * 5; upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 이동도와 비저항 */
+  SB.drill("drill-mob", () => {
+    const t = Math.random() < 0.5 ? "n" : "p", P = Solid.mobParams[t];
+    const N = [1, 2, 3, 5][Math.floor(Math.random() * 4)] * Math.pow(10, 15 + Math.floor(Math.random() * 4));
+    const x = Math.pow(N / P.Nref, P.a), mu = P.min + (P.max - P.min) / (1 + x), rho = 1 / (QE * N * mu);
+        const Nt = (N / Math.pow(10, Math.floor(Math.log10(N)))).toFixed(0) + "\\times10^{" + Math.floor(Math.log10(N)) + "}";
+    return {
+      q: `<p>${t === "n" ? "인을" : "붕소를"} \\(${Nt}\\) cm⁻³ 넣은 실리콘(300 K, 완전 이온화). 카우기–토머스 ${t === "n" ? "전자" : "정공"} 매개변수 \\(\\mu_\\text{max} = ${P.max}\\), \\(\\mu_\\text{min} = ${P.min}\\), \\(N_\\text{ref} = ${texSci(P.Nref, 2)}\\), \\(\\alpha = ${P.a}\\)로 다수 캐리어 이동도와 비저항을 구하라.</p>`,
+      answer: [mu, rho], label: ["μ =", "ρ ="], unit: ["cm²/(V·s)", "Ω·cm"], tol: "2%",
+      sol: `\\((N/N_\\text{ref})^{\\alpha} = ${x.toFixed(4)}\\), \\(\\mu = ${P.min} + ${(P.max - P.min).toFixed(1)}/${(1 + x).toFixed(4)} = ${mu.toFixed(0)}\\). \\(\\rho = 1/(qN\\mu) = ${rho.toPrecision(3)}\\) Ω·cm.`,
+    };
+  });
+
+  /* ---------------------------------------------------------- tangle: 포화 속도 어림 */
+  SB.tangle("tg-vsat", (v) => {
+    const vs = Math.sqrt((8 * v.w * 1e-3 * QE) / (3 * Math.PI * v.m * ME)) * 100, Ec = vs / v.mu;
+    let msg = "";
+    if (Math.abs(v.w - 63) < 1.5 && Math.abs(v.m - 1) < 0.02) msg = "Si 전자 실측 1.0–1.07×10⁷ cm/s와 맞는다(Sze의 관례).";
+    else if (v.m < 0.35) msg = "전도도 질량처럼 가벼운 질량을 넣으면 실측보다 훨씬 크게 나온다 — 이 모형은 크기만 맞히는 어림이다.";
+    else if (v.w > 100) msg = "포논 에너지가 큰 GaN(약 92 meV)·다이아몬드(165 meV)는 실제로 포화 속도가 크다.";
+    return { v: sci(vs, 2) + " cm/s", Ec: sci(Ec, 2) + " V/cm", msg };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 속도–전기장 */
+  {
+    const st = { E: 1e4, c: "n" };
+    const vGaAs = (E) => { const r = Math.pow(E / 4e3, 4); return (8500 * E + 1e7 * r) / (1 + r); };
+    const curve = { n: (E) => Solid.driftVelocity(E, 1414, "n"), p: (E) => Solid.driftVelocity(E, 470.5, "p"), g: vGaAs };
+    const mu0 = { n: 1414, p: 470.5, g: 8500 };
+    const o = { x: [1e2, 1e6], y: [1e5, 1e8], logX: true, logY: true };
+    let cv = null;
+    const getL = SB.range("ve-L", (v) => { const L = Math.pow(10, v); return L >= 1000 ? (L / 1000).toFixed(L >= 1e4 ? 0 : 2) + " µm" : L.toFixed(0) + " nm"; }, () => upd());
+    const getV = SB.range("ve-V", (v) => v.toFixed(2) + " V", () => upd());
+    SB.seg("ve-c", (v) => { st.c = v; upd(); });
+    $("ve-lin").addEventListener("change", () => upd());
+    function upd() {
+      const f = curve[st.c], v = f(st.E), dm = (f(st.E * 1.01) - f(st.E * 0.99)) / (0.02 * st.E);
+      const L = Math.pow(10, getL()) * 1e-7, Ea = getV() / L, va = f(Ea), t = (L / va) * 1e12, tl = (L / (mu0[st.c] * Ea)) * 1e12;
+      SB.stat("ve-E", sci(st.E, 2) + " <small>V/cm</small>");
+      SB.stat("ve-v", sci(v, 2) + " <small>cm/s</small>");
+      SB.stat("ve-dm", (dm < 0 ? '<b style="color:var(--bad)">' + dm.toFixed(0) + "</b>" : dm.toFixed(0)) + " <small>cm²/(V·s)" + (dm < 0 ? " 음미분!" : "") + "</small>");
+      SB.stat("ve-Ea", sci(Ea, 2) + " <small>V/cm</small>");
+      SB.stat("ve-t", (t < 1 ? t.toFixed(3) : t.toPrecision(3)) + ` <small>ps (μE로는 ${tl < 1 ? tl.toFixed(4) : tl.toPrecision(3)})</small>`);
+      if (cv) cv.redraw();
+    }
+    cv = SB.canvas("cv-ve", (ctx, w, h, self) => {
+      const P = pal(), ser = [], cols = { n: P.accent, p: P.accent2, g: P.ok }, names = { n: "Si 전자", p: "Si 정공", g: "GaAs 전자" };
+      ["n", "p", "g"].forEach((k) => { const d = []; for (let i = 0; i <= 200; i++) { const E = Math.pow(10, 2 + (4 * i) / 200); d.push([E, curve[k](E)]); } ser.push({ data: d, color: cols[k], width: k === st.c ? 3 : 1.4 }); });
+      if ($("ve-lin").checked) ser.push({ data: [[1e2, mu0[st.c] * 1e2], [1e6, mu0[st.c] * 1e6]], color: cols[st.c], width: 1.4, dash: [5, 4] });
+      const L = Math.pow(10, getL()) * 1e-7, Ea = getV() / L;
+      const vl = Ea >= 1e2 && Ea <= 1e6 ? [{ x: Ea, color: P.warn, label: "V/L", dash: [4, 3] }] : [];
+      const ch = SB.chart(ctx, { x: 60, y: 26, w: w - 76, h: h - 74 }, { ...o, xLabel: "전기장 E (V/cm)", yLabel: "표류 속도 (cm/s)", xFmt: logFmt, yFmt: logFmt, series: ser, vlines: vl, hlines: [{ y: Solid.vsat.n, color: P.faint, label: "Si v_sat", dash: [2, 4] }] });
+      ["n", "p", "g"].forEach((k, i) => SB.label(ctx, names[k], ch.box.x + 8, ch.box.y + 12 + i * 16, { align: "left", size: 11, color: cols[k], bold: k === st.c }));
+      if (Ea >= 1e2 && Ea <= 1e6) dot(ctx, ch.X(Ea), ch.Y(curve[st.c](Ea)), 5, P.warn);
+      const px = ch.X(st.E), py = ch.Y(curve[st.c](st.E));
+      handle(ctx, px, py, cols[st.c]); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.6, minHeight: 260, maxHeight: 380 });
+    SB.drag(cv, { free: true, handles: () => (cv._h ? [{ id: "E", x: cv._h[0], y: cv._h[1], r: 16 }] : []), move: (id, x) => { if (!cv._ch) return; st.E = SB.clamp(invX(cv._ch, o, x), 1e2, 1e6); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- tangle: 아인슈타인 관계 */
+  SB.tangle("tg-ein", (v) => {
+    const vt = KBEV * v.T, D = v.mu * vt, L = Math.sqrt(2 * D * v.t * 1e-9) * 1e4;
+    let msg = "";
+    if (v.mu === 1414 && v.T === 300) msg = "저도핑 실리콘 전자: \\(D_n \\approx 36.6\\) cm²/s.";
+    else if (v.T < 120) msg = "저온에서는 \\(kT/q\\)가 작아 같은 이동도라도 확산이 약하다(그 대신 저온 이동도는 대개 훨씬 크다).";
+    else if (v.mu >= 8000) msg = "GaAs 전자 정도 — 확산 계수가 200 cm²/s를 넘는다.";
+    return { vt: (vt * 1000).toFixed(2) + " mV", D: D.toPrecision(3) + " cm²/s", L: L >= 1000 ? (L / 1000).toPrecision(3) + " mm" : L.toPrecision(3) + " µm", msg };
+  }, { onChange: () => { const el = document.querySelector('#tg-ein [data-out="msg"]'); if (el) SB.math(el); } });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 무작위 걷기 확산 */
+  {
+    const L = 1, NB = 25, MU = 1400, DT = 0.25, SUB = 8;   // µm, ps
+    const st = { init: "step", t: 0, flux: 0, cross: 0 };
+    let xs = [], ys = [], cv = null, smooth = new Array(NB).fill(0), fluxEma = 0;
+    const getE = SB.range("df-E", (v) => v.toFixed(2) + " kV/cm", () => { fluxEma = 0; });
+    const getR = SB.range("df-r", (v) => v.toFixed(2), () => { fluxEma = 0; });
+    const vd = () => MU * getE() * 1e3 * 1e4 * 1e-12;               // µm/ps (오른쪽 +)
+    const Dc = () => getR() * MU * VT300 * 1e8 * 1e-12;              // µm²/ps
+    function seed(kind) {
+      xs = []; ys = []; st.t = 0; fluxEma = 0;
+      for (let i = 0; i < 400; i++) { let x; if (kind === "step") x = Math.random() * 0.5; else if (kind === "pulse") x = 0.5 + 0.02 * SB.randn(); else x = Math.random(); xs.push(SB.clamp(x, 0, L)); ys.push(Math.random()); }
+      smooth.fill(0);
+    }
+    SB.seg("df-init", (v) => { st.init = v; seed(v); });
+    $("df-reset").addEventListener("click", () => seed(st.init));
+    seed("step");
+    const hist = () => { const c = new Array(NB).fill(0); xs.forEach((x) => { c[Math.min(NB - 1, Math.floor((x / L) * NB))]++; }); return c; };
+    function fitLam(c) {
+      // ln n 대 x 가중 직선 맞춤
+      let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+      c.forEach((n, i) => { if (n < 3) return; const x = ((i + 0.5) / NB) * L, y = Math.log(n), wgt = n; S += wgt; Sx += wgt * x; Sy += wgt * y; Sxx += wgt * x * x; Sxy += wgt * x * y; });
+      const den = S * Sxx - Sx * Sx; if (S < 10 || Math.abs(den) < 1e-12) return NaN;
+      return (S * Sxy - Sx * Sy) / den;
+    }
+    function readout() {
+      const c = smooth, bw = L / NB;
+      // 가운데 ±6칸 직선 맞춤으로 n(0.5)와 dn/dx
+      let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+      for (let i = 6; i <= 18; i++) { const x = (i + 0.5) * bw - 0.5 * L, y = c[i] / bw; S++; Sx += x; Sy += y; Sxx += x * x; Sxy += x * y; }
+      const dn = (S * Sxy - Sx * Sy) / (S * Sxx - Sx * Sx), nC = (Sy - dn * Sx) / S;
+      const pred = nC * vd() - Dc() * dn;
+      SB.stat("df-t", st.t.toFixed(0) + " <small>ps</small>");
+      SB.stat("df-F", (fluxEma >= 0 ? "+" : "") + fluxEma.toFixed(3) + " <small>개/ps (→ +)</small>");
+      SB.stat("df-Fp", (pred >= 0 ? "+" : "") + pred.toFixed(3) + ` <small>(표류 ${(nC * vd()).toFixed(3)}, 확산 ${(-Dc() * dn).toFixed(3)})</small>`);
+      const s = fitLam(c), lb = getE() > 0.02 ? VT300 / (getE() * 1e3) * 1e4 : Infinity;
+      SB.stat("df-lam", getE() > 0.02 && isFinite(s) && s > 0.2 ? `${(1 / s).toFixed(3)} <small>µm vs ${lb.toFixed(3)} µm</small>` + (Math.abs(getR() - 1) > 0.05 && st.t > 400 ? ' <small style="color:var(--bad)">볼츠만과 어긋남</small>' : "") : getE() > 0.02 ? "<small>기다리는 중…</small>" : `<small>E = 0: 평형은 고른 분포</small>`);
+    }
+    cv = SB.canvas("cv-diff", (ctx, w, h, self) => {
+      const P = pal(), x0 = 24, x1 = w - 24, top = 32, bh = h * 0.33, hy0 = top + bh + 30, hy1 = h - 34;
+      const X = (x) => x0 + (x / L) * (x1 - x0);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 2; ctx.strokeRect(x0, top, x1 - x0, bh); ctx.restore();
+      xs.forEach((x, i) => dot(ctx, X(x), top + 4 + ys[i] * (bh - 8), 2.4, P.accent));
+      // 가운데 면과 흐름
+      SB.dashLine(ctx, X(0.5), top, X(0.5), hy1, P.warn, [3, 3]);
+      const fl = SB.clamp(fluxEma * 120, -w * 0.35, w * 0.35);
+      if (Math.abs(fl) > 3) SB.arrow(ctx, X(0.5), top + bh + 14, X(0.5) + fl, top + bh + 14, { color: P.warn, width: 3 });
+      if (getE() > 0.01) { SB.arrow(ctx, x1 - 8, top + 12, x1 - 8 - 30 - 30 * getE(), top + 12, { color: P.accent2, width: 2.4, head: 8 }); SB.label(ctx, "E", x1 - 52 - 30 * getE(), top + 12, { size: 12, color: P.accent2, bold: true }); }
+      // 히스토그램
+      const c = smooth, mx = Math.max(40, ...c) * 1.1, bw = (x1 - x0) / NB;
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(x0, hy1); ctx.lineTo(x1, hy1); ctx.stroke(); ctx.restore();
+      c.forEach((n, i) => { const hh = (n / mx) * (hy1 - hy0); ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0 + i * bw + 1, hy1 - hh, bw - 2, hh); ctx.fillStyle = P.accent; ctx.fillRect(x0 + i * bw + 1, hy1 - hh, bw - 2, 2); });
+      if (getE() > 0.02) {
+        const lb = VT300 / (getE() * 1e3) * 1e4, NT = xs.length, pts = [];
+        for (let i = 0; i <= 100; i++) { const x = (i / 100) * L, nb = (NT * (L / NB) * Math.exp((x - L) / lb)) / (lb * (1 - Math.exp(-L / lb))); pts.push([X(x), hy1 - (nb / mx) * (hy1 - hy0)]); }
+        poly(ctx, pts, P.text, 1.6, [5, 4]);
+        SB.label(ctx, "볼츠만 평형 e^(−qEx/kT)", x0 + 6, hy0 + 2, { align: "left", size: 11, color: P.text });
+      }
+      SB.label(ctx, "0", x0, h - 22, { size: 11, color: P.dim }); SB.label(ctx, "x = 1 µm", x1 - 18, h - 22, { size: 11, color: P.dim });
+      SB.label(ctx, `전자 ${xs.length}개`, x0 + 4, top + bh + 14, { align: "left", size: 11, color: P.dim });
+      self._box = [x0, x1, top, bh];
+    }, { aspect: 0.62, minHeight: 280, maxHeight: 400 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => {
+      const b = cv._box; if (!b || y < b[2] || y > b[2] + b[3] || x < b[0] || x > b[1] || xs.length > 800) return;
+      const xx = ((x - b[0]) / (b[1] - b[0])) * L; for (let i = 0; i < 60; i++) { xs.push(SB.clamp(xx + 0.01 * SB.randn(), 0, L)); ys.push(Math.random()); }
+    } });
+    let fr = 0;
+    const loop = SB.loop("sim-diff", () => {
+      const v = vd(), D = Dc(), sg = Math.sqrt(2 * D * DT);
+      let cross = 0;
+      for (let s = 0; s < SUB; s++) {
+        for (let i = 0; i < xs.length; i++) {
+          const a = xs[i]; let x = a + v * DT + sg * SB.randn();
+          if (x < 0) x = -x; if (x > L) x = 2 * L - x; x = SB.clamp(x, 0, L);
+          if (a < 0.5 && x >= 0.5) cross++; else if (a >= 0.5 && x < 0.5) cross--;
+          xs[i] = x;
+        }
+      }
+      st.t += SUB * DT;
+      const f = cross / (SUB * DT);
+      fluxEma += (f - fluxEma) * 0.04;
+      const c = hist(); for (let i = 0; i < NB; i++) smooth[i] += (c[i] - smooth[i]) * 0.15;
+      if (fr++ % 4 === 0) readout();
+      cv.redraw();
+    });
+    SB.play("df-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 미니: 불균일 도핑의 내장 전기장 */
+  {
+    const N0 = 1e18, NC = Solid.semis.Si.Nc, st = { lam: 0.25 };
+    const o = { x: [0, 1], y: [1e13, 1e19], logY: true };
+    const cv = SB.canvas("cv-grad", (ctx, w, h, self) => {
+      const P = pal(), hh = h * 0.5, d = [];
+      for (let i = 0; i <= 100; i++) { const x = i / 100; d.push([x, N0 * Math.exp(-x / st.lam)]); }
+      const ch = SB.chart(ctx, { x: 56, y: 14, w: w - 70, h: hh - 38 }, { ...o, yLabel: "N_D", yFmt: logFmt, yTicks: [1e14, 1e16, 1e18], xTicks: [0, 0.25, 0.5, 0.75, 1], xFmt: () => "", series: [{ data: d, color: P.accent, width: 2.6 }] });
+      const hx = ch.X(0.5), hy = ch.Y(N0 * Math.exp(-0.5 / st.lam));
+      handle(ctx, hx, hy, P.accent); self._h = [hx, hy]; self._ch = ch;
+      // 띠 그림
+      const kT = VT300, ec = (x) => kT * Math.log(NC / (N0 * Math.exp(-x / st.lam)));
+      const emax = Math.max(0.3, ec(1) + 0.03);
+      const ch2 = SB.chart(ctx, { x: 56, y: hh + 4, w: w - 70, h: h - hh - 48 }, { x: [0, 1], y: [-0.05, emax], xLabel: "깊이 x (µm)", yLabel: "E − E_F (eV)", xTicks: [0, 0.25, 0.5, 0.75, 1], series: [{ data: d.map(([x]) => [x, ec(x)]), color: P.text, width: 2.6 }], hlines: [{ y: 0, color: P.accent2, label: "E_F", dash: [6, 4] }] });
+      SB.label(ctx, "E_c", ch2.X(0.04), ch2.Y(ec(0.04)) - 12, { size: 12, color: P.text, bold: true });
+      const xa = 0.62, xb = 0.9; SB.arrow(ctx, ch2.X(xa), ch2.Y(ec(xa)) + 18, ch2.X(xb), ch2.Y(ec(xa)) + 18, { color: P.bad, width: 2.4 });
+      SB.label(ctx, "E (내장)", ch2.X((xa + xb) / 2), ch2.Y(ec(xa)) + 32, { size: 11, color: P.bad, bold: true });
+      const E = kT / (st.lam * 1e-4);
+      $("gr-r").innerHTML = `λ = ${st.lam.toFixed(3)} µm · E = kT/(qλ) = ${sci(E, 2)} V/cm · 1 µm에 걸친 전위차 ${(kT / st.lam).toFixed(3)} V`;
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 16 }] : []), move: (id, x, y) => { if (!cv._ch) return; const Ny = SB.clamp(invY(cv._ch, o, y), 1e13, N0 * 0.95); st.lam = SB.clamp(0.5 / Math.log(N0 / Ny), 0.1, 5); } });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 아인슈타인·확산 전류 */
+  SB.drill("drill-dd", () => {
+    const mu = 100 * (3 + Math.floor(Math.random() * 12)), T = [250, 300, 350, 400][Math.floor(Math.random() * 4)];
+    const n1 = [1, 2, 5][Math.floor(Math.random() * 3)] * 1e16, n2 = n1 / [10, 100][Math.floor(Math.random() * 2)], d = [0.5, 1, 2, 5][Math.floor(Math.random() * 4)];
+    const vt = KBEV * T, D = mu * vt, J = QE * D * ((n1 - n2) / (d * 1e-4));
+    return {
+      q: `<p>이동도 \\(\\mu = ${mu}\\) cm²/(V·s)인 전자가 온도 ${T} K에 있다(\\(k = 8.617\\times10^{-5}\\) eV/K). 전자 농도가 ${d} µm에 걸쳐 \\(${(n1 / 1e16).toFixed(0)}\\times10^{16}\\)에서 \\(${texSci(n2, 0)}\\) cm⁻³로 직선적으로 줄어든다. 확산 계수와 확산 전류 밀도의 크기를 구하라.</p>`,
+      answer: [D, J], label: ["D =", "|J| ="], unit: ["cm²/s", "A/cm²"], tol: "1.5%",
+      sol: `\\(kT/q = ${(vt * 1000).toFixed(2)}\\) mV, \\(D = ${mu}\\times${vt.toFixed(5)} = ${D.toPrecision(3)}\\) cm²/s. \\(|dn/dx| = ${sci((n1 - n2) / (d * 1e-4), 3)}\\) cm⁻⁴, \\(|J| = qD|dn/dx| = ${J.toPrecision(3)}\\) A/cm².`,
+    };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 4탐침 */
+  {
+    const st = { s: 1.0, lt: -0.3, mode: "free", type: "n", secret: null, msg: "" };   // s mm, lt = log10(t / mm)
+    let cv = null;
+    const Gf = (r) => { if (r < 0.02) return (2 / r) * Math.LN2; let s = 0; const nmax = Math.min(40000, Math.ceil(60 / r)); for (let n = 1; n <= nmax; n++) { const a = 2 * n * r; s += 1 / Math.sqrt(1 + a * a) - 1 / Math.sqrt(4 + a * a); } return 1 + 4 * s; };
+    const getN = SB.range("fp-N", (v) => sci(Math.pow(10, v), 2) + " cm⁻³", () => upd());
+    const segT = SB.seg("fp-type", (v) => { st.type = v; upd(); });
+    function newSecret() {
+      const lg = 14.3 + Math.random() * 5.5, type = Math.random() < 0.5 ? "n" : "p";
+      st.secret = { N: Math.pow(10, lg), type }; st.msg = ""; segT.set(type, false); st.type = type; upd();
+    }
+    SB.seg("fp-mode", (v) => { st.mode = v; if (v === "game" && !st.secret) newSecret(); st.msg = ""; upd(); });
+    $("fp-new").addEventListener("click", () => { if (st.mode !== "game") { st.mode = "game"; document.querySelectorAll("#fp-mode button").forEach((b) => { b.classList.toggle("on", b.dataset.value === "game"); }); } newSecret(); });
+    $("fp-check").addEventListener("click", () => {
+      if (st.mode !== "game" || !st.secret) { st.msg = "‘비밀 시료’를 먼저 고르세요"; upd(); return; }
+      const g = Math.pow(10, getN()), r = g / st.secret.N;
+      st.msg = r < 1.25 && r > 0.8 ? `<b style="color:var(--ok)">성공!</b> 정답 ${sci(st.secret.N, 2)} cm⁻³` : r > 1 ? `추정이 ${r.toFixed(1)}배 높다` : `추정이 ${(1 / r).toFixed(1)}배 낮다`;
+      upd();
+    });
+    const trueN = () => (st.mode === "game" && st.secret ? st.secret.N : Math.pow(10, getN()));
+    const trueType = () => (st.mode === "game" && st.secret ? st.secret.type : st.type);
+    function meas() {
+      const s = st.s / 10, t = Math.pow(10, st.lt) / 10, rho = Solid.siResistivity(trueN(), trueType());   // cm
+      const G = Gf(t / s), noise = 1 + 0.005 * Math.sin(st.s * 37.1 + st.lt * 91.7);
+      const VI = (rho * G) / (2 * Math.PI * s) * noise;
+      return { s, t, rho, G, VI };
+    }
+    function upd() {
+      const m = meas(), rb = 2 * Math.PI * m.s * m.VI, Rs = (Math.PI / Math.LN2) * m.VI, rt = Rs * m.t;
+      const tStr = m.t >= 0.1 ? (m.t * 10).toPrecision(3) + " mm" : (m.t * 1e4).toPrecision(3) + " µm";
+      SB.stat("fp-st", `${st.s.toFixed(2)} <small>mm</small>, ${tStr} <small>(t/s = ${(m.t / m.s).toPrecision(2)})</small>`);
+      SB.stat("fp-vi", (m.VI >= 1 ? m.VI.toPrecision(4) + " <small>Ω</small>" : (m.VI * 1000).toPrecision(4) + " <small>mΩ</small>"));
+      const ok = (x) => (st.mode === "free" && Math.abs(x / m.rho - 1) < 0.02 ? ' <b style="color:var(--ok)">✓</b>' : "");
+      SB.stat("fp-bulk", rhoStr(rb) + ok(rb));
+      SB.stat("fp-thin", `R<sub>s</sub> = ${Rs.toPrecision(4)} <small>Ω/□ → ×t =</small> ${rhoStr(rt)}` + ok(rt));
+      SB.stat("fp-msg", st.mode === "free" ? `참 ρ = ${rhoStr(m.rho)} <small>(보정 G = ${m.G.toPrecision(3)})</small>` : `비밀 시료: ${st.secret.type === "n" ? "n형" : "p형"}, 도핑 ? ${st.msg ? "· " + st.msg : ""}`);
+      if (cv) cv.redraw();
+    }
+    cv = SB.canvas("cv-4pp", (ctx, w, h, self) => {
+      const P = pal(), cx = w / 2, sy = Math.max(h * 0.34, 118), k = (w - 70) / (3 * 2.6);   // px per mm
+      const tpx = SB.map(st.lt, -4.3, 0.5, 6, h - sy - 30);   // 로그 눈금
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(14, sy, w - 28, tpx);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.strokeRect(14, sy, w - 28, tpx);
+      ctx.fillStyle = P.border; ctx.fillRect(14, sy + tpx, w - 28, 8);
+      SB.label(ctx, "절연 바닥(SOI 산화막·접합)", w - 20, sy + tpx + 18, { align: "right", size: 11, color: P.dim });
+      const xs = [-1.5, -0.5, 0.5, 1.5].map((f) => cx + f * st.s * k);
+      // 전류선
+      ctx.save(); ctx.beginPath(); ctx.rect(14, sy, w - 28, tpx); ctx.clip();
+      [0.35, 0.7, 1.05, 1.5].forEach((f) => { const span = xs[3] - xs[0], dep = f * span * 0.5; ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.55; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.ellipse(cx, sy, span / 2, dep, 0, 0, Math.PI); ctx.stroke(); });
+      ctx.restore();
+      xs.forEach((x, i) => { ctx.fillStyle = i === 0 || i === 3 ? P.text : P.accent2; ctx.fillRect(x - 3, sy - 54, 6, 54); });
+      poly(ctx, [[xs[0], sy - 54], [xs[0], sy - 70], [xs[3], sy - 70], [xs[3], sy - 54]], P.text, 1.4);
+      SB.label(ctx, "I", cx, sy - 70, { size: 13, bold: true });
+      poly(ctx, [[xs[1], sy - 54], [xs[1], sy - 36], [xs[2], sy - 36], [xs[2], sy - 54]], P.accent2, 1.4);
+      SB.label(ctx, "V", cx, sy - 36, { size: 13, bold: true, color: P.accent2 });
+      SB.dashLine(ctx, xs[2], sy - 8, xs[3], sy - 8, P.dim, [2, 2]);
+      SB.label(ctx, "s", (xs[2] + xs[3]) / 2, sy - 16, { size: 12, color: P.dim, bold: true });
+      handle(ctx, xs[3], sy - 54, P.text); sqHandle(ctx, cx, sy + tpx, P.accent);
+      SB.label(ctx, "두께 t (세로 눈금은 로그)", 20, sy + 12, { align: "left", size: 11, color: P.dim });
+      self._hs = [{ id: "s", x: xs[3], y: sy - 54, r: 16 }, { id: "t", x: cx, y: sy + tpx, r: 16 }]; self._g = { cx, k, sy };
+    }, { aspect: 0.58, minHeight: 270, maxHeight: 380 });
+    SB.drag(cv, { handles: () => cv._hs || [], move: (id, x, y) => {
+      const g = cv._g; if (!g) return;
+      if (id === "s") st.s = Math.round(SB.clamp((x - g.cx) / (1.5 * g.k), 0.2, 2.5) * 100) / 100;
+      if (id === "t") st.lt = Math.round(SB.clamp(SB.map(y - g.sy, 6, cv.h - g.sy - 30, -4.3, 0.5), -4.3, 0.5) * 50) / 50;
+      upd();
+    } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 변형 실리콘의 골짜기 */
+  {
+    const ml = 0.916, mt = 0.19, m0c = Solid.mCond(ml, mt);
+    let cv = null;
+    const getX = SB.range("st-x", (v) => v.toFixed(2), () => cv && cv.redraw());
+    cv = SB.canvas("cv-strain", (ctx, w, h) => {
+      const P = pal(), x = getX(), dE = 0.67 * x, kt = VT300;
+      const f2 = 2 / (2 + 4 * Math.exp(-dE / kt)), im = f2 / mt + (1 - f2) * (1 / ml + 1 / mt) / 2, mc = 1 / im;
+      const eps = (Solid.aSiGe(x) - 0.5431) / 0.5431;
+      const half = w * 0.5, y0 = h * 0.5, sc = (h * 0.32) / 0.27;
+      const y2 = y0 + (2 / 3) * dE * sc, y4 = y0 - (1 / 3) * dE * sc;
+      SB.dashLine(ctx, 20, y0, half - 20, y0, P.faint, [3, 3]); SB.label(ctx, "변형 없음", 24, y0 - 10, { align: "left", size: 10, color: P.dim });
+      poly(ctx, [[30, y4], [half - 30, y4]], P.accent2, 2.4); poly(ctx, [[30, y2], [half - 30, y2]], P.accent, 2.4);
+      const ell = (cx, cy, rx, ry, col, fill) => { ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = fill; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+      const qa = (half - 60) / 6;
+      for (let i = 0; i < 4; i++) ell(40 + qa * (i + 0.5), y4 - 14, 11, 5, P.accent2, SB.color("accent-2-soft"));
+      for (let i = 0; i < 2; i++) ell(40 + qa * (i + 4.5), y2 + 14, 5, 11, P.accent, SB.color("accent-soft"));
+      SB.label(ctx, "Δ4 (면 안 축)", half - 30, y4 - 34, { align: "right", size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, "Δ2 (면에 수직 축)", half - 30, y2 + 36, { align: "right", size: 11, color: P.accent, bold: true });
+      SB.label(ctx, `ΔE = ${(dE * 1000).toFixed(0)} meV`, 24, 16, { align: "left", size: 12, color: P.text, bold: true });
+      // 점유율 막대와 질량
+      const bx = half + 20, bw = w - bx - 20, by = 30;
+      ctx.fillStyle = P.accent; ctx.fillRect(bx, by, bw * f2, 20); ctx.fillStyle = P.accent2; ctx.fillRect(bx + bw * f2, by, bw * (1 - f2), 20);
+      SB.label(ctx, `Δ2 ${(f2 * 100).toFixed(0)}%`, bx + 4, by + 34, { align: "left", size: 11, color: P.accent, bold: true });
+      SB.label(ctx, `Δ4 ${((1 - f2) * 100).toFixed(0)}%`, bx + bw - 4, by + 34, { align: "right", size: 11, color: P.accent2, bold: true });
+      const gy = by + 64, gh = h - gy - 24, gmax = 1.5;
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(bx, gy + gh * (1 - 1 / gmax), bw * 0.4, gh / gmax);
+      ctx.fillStyle = P.ok; const gain = m0c / mc; ctx.fillRect(bx + bw * 0.55, gy + gh * (1 - gain / gmax), bw * 0.4, (gh * gain) / gmax);
+      SB.label(ctx, "변형 전", bx + bw * 0.2, gy + gh + 12, { size: 11, color: P.dim });
+      SB.label(ctx, `×${gain.toFixed(2)}`, bx + bw * 0.75, gy + gh * (1 - gain / gmax) - 10, { size: 12, color: P.ok, bold: true });
+      SB.label(ctx, "질량만의 μ", bx + bw * 0.75, gy + gh + 12, { size: 11, color: P.dim });
+      $("st-r").innerHTML = `2축 인장 변형 ε = ${(eps * 100).toFixed(2)}% · 면 안 전도도 질량 ${mc.toFixed(3)} m₀ (변형 전 ${m0c.toFixed(3)})`;
+    }, { aspect: 0.46, minHeight: 220, maxHeight: 300 });
+  }
+})();
+</script>
+</body>
+</html>
