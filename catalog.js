@@ -110,12 +110,12 @@ SB.registerCatalog({
    "level": "대학 2–3학년 · 반도체 기초",
    "description": "벡터 해석에서 출발해 정전기장과 유전체, 경계값 문제, 전류와 정자기장, 전자기 유도, 맥스웰 방정식, 평면파와 박막 반사, 전송선과 신호 무결성, 도파관, 복사, 수치 전자기학까지 — 커패시터·배선·플라스마 장비·박막 측정 속 전기장과 자기장을 직접 그리고 풀며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/electromagnetics/",
-   "published": 17,
+   "published": 18,
    "total": 18,
    "color": "#be123c",
    "colorDark": "#fb7185",
    "sims": 104,
-   "problems": 253
+   "problems": 326
   },
   {
    "id": "organic-chemistry",
