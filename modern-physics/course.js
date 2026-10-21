@@ -87,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "터널링",
       "누설 전류"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "harmonic-oscillator",
@@ -142,8 +141,7 @@ SB.registerCourse({
      "tags": [
       "페르미–디랙",
       "상태 밀도"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "molecular-bonding",
@@ -272,6 +270,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "tunneling": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
   "harmonic-oscillator": {
    "problems": 15,
    "examples": 8,
@@ -304,6 +314,18 @@ SB.registerCourse({
    "drills": 2,
    "minis": 5,
    "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "quantum-statistics": {
+   "problems": 14,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
    "steps": 3,
    "predicts": 3,
    "hero": 1
@@ -345,7 +367,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 11,
+ "published": 13,
  "total": 15,
  "url": "https://science.euiyun.com/modern-physics/"
 });
