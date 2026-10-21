@@ -1,0 +1,1485 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>과도 응답과 신호 무결성 · 전자기학 · SciBook</title>
+<meta name="description" content="계단파의 반사와 바운스 도표, TDR로 읽는 임피던스, RC 배선과 LC 선로의 경계, 엘모어 지연과 리피터, 손실 선로와 아이 패턴, 근단·원단 누화, 전원망 임피던스와 목표 임피던스 — 칩·패키지·HBM 배선을 직접 끌며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/electromagnetics/chapters/signal-integrity.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="과도 응답과 신호 무결성 · 전자기학 · SciBook">
+<meta property="og:description" content="계단파의 반사와 바운스 도표, TDR로 읽는 임피던스, RC 배선과 LC 선로의 경계, 엘모어 지연과 리피터, 손실 선로와 아이 패턴, 근단·원단 누화, 전원망 임피던스와 목표 임피던스 — 칩·패키지·HBM 배선을 직접 끌며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/electromagnetics/chapters/signal-integrity.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "과도 응답과 신호 무결성 · 전자기학 · SciBook", "headline": "13 과도 응답과 신호 무결성", "url": "https://science.euiyun.com/electromagnetics/chapters/signal-integrity.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "계단파의 반사와 바운스 도표, TDR로 읽는 임피던스, RC 배선과 LC 선로의 경계, 엘모어 지연과 리피터, 손실 선로와 아이 패턴, 근단·원단 누화, 전원망 임피던스와 목표 임피던스 — 칩·패키지·HBM 배선을 직접 끌며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 13, "dateModified": "2026-10-22", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/electromagnetics/#book", "name": "전자기학", "url": "https://science.euiyun.com/electromagnetics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "전자기학", "item": "https://science.euiyun.com/electromagnetics/"}, {"@type": "ListItem", "position": 3, "name": "13 과도 응답과 신호 무결성", "item": "https://science.euiyun.com/electromagnetics/chapters/signal-integrity.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/em.js"></script>
+</head>
+<body data-chapter="signal-integrity">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="transmission-lines">
+    <div class="eyebrow">Chapter 13</div>
+    <h1>과도 응답과 신호 무결성</h1>
+    <p class="lead">12장은 전송선을 한 진동수의 사인파로 다뤘다. 그런데 칩과 패키지를 오가는 신호는 사인파가 아니라 0과 1 사이를 수십 ps 만에 뛰어오르는 <em>계단</em>이다. 계단 하나에는 수십 GHz까지의 주파수 성분이 다 들어 있으므로, 선로 끝에서 되돌아온 반사와 이웃 선에서 넘어온 잡음, 구리의 표피 효과와 유전체 손실이 모두 파형에 그대로 찍힌다. 이 장은 같은 전신 방정식을 <b>시간 영역</b>에서 다시 푼다. 계단파가 선을 오가며 쌓이는 모습을 바운스 도표로 그리고, 그 반사를 거꾸로 이용하는 TDR로 숨은 결함을 찾는다. 이어서 칩 안의 가는 배선이 왜 파동이 아니라 확산처럼 움직이는지, 리피터가 어떻게 길이의 제곱을 직선으로 바꾸는지 보고, 손실 선로의 아이 패턴, 이웃 선 사이의 누화, 마지막으로 수백 암페어가 오가는 전원망의 임피던스까지 간다. 먼저 끝의 저항을 바꿔 가며 계단이 어떻게 메아리치는지 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">양 끝 손잡이를 위아래로 끌고, 빈 곳을 누르면 다시 출발</span></div>
+    <ul class="objectives">
+      <li>계단 원천이 선에 보내는 첫 진행파 \(V_1 = V_sZ_0/(R_s + Z_0)\)와 양 끝 반사 계수 \(\Gamma_S, \Gamma_L\)로 바운스 도표를 그리고, 임의 시각·위치의 전압과 최종값을 구한다.</li>
+      <li>직렬 종단과 병렬 종단의 원리와 득실(전력, 전압 진폭)을 비교한다.</li>
+      <li>TDR 파형에서 불연속의 위치 \(d = vt/2\)와 임피던스 \(Z = Z_0(1+\rho)/(1-\rho)\)를 읽고, 골·봉우리의 넓이로 병렬 \(C\)와 직렬 \(L\)을 추정한다.</li>
+      <li>손실 전신 방정식의 두 극한(확산과 파동)을 구별하고, 선 길이·상승 시간·\(R\)과 \(Z_0\)의 비로 RC 배선과 LC 선로의 경계를 정한다.</li>
+      <li>RC 나무의 엘모어 지연을 계산하고, 최적 리피터 수와 크기로 지연이 길이에 비례하게 됨을 보인다.</li>
+      <li>표피 손실(\(\propto\sqrt f\))과 유전 손실(\(\propto f\))로 삽입 손실을 구하고, 펄스 응답·부호간 간섭·아이 패턴·디엠퍼시스를 설명한다.</li>
+      <li>근단·원단 누화 계수 \(K_b, K_f\)로 누화 전압을 계산하고, 마이크로스트립과 스트립라인의 차이를 설명한다.</li>
+      <li>목표 임피던스 \(Z_t = V_{dd}\cdot(\text{허용 리플})/\Delta I\)를 정하고, 디커플링 커패시터 계층과 반공진 봉우리로 전원망 임피던스를 설계한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="bounce">
+    <h2>계단파의 반사와 바운스 도표</h2>
+    <p>내부 저항 \(R_s\)인 원천이 \(t = 0\)에 \(V_s\)로 뛰어오른다고 하자. 선 끝에 무엇이 달려 있든 그 소식은 편도 지연 \(t_d = \ell/v\)가 지나야 원천에 돌아온다. 그러니 처음 \(2t_d\) 동안 원천에게 선은 <b>저항 \(Z_0\)</b>로만 보인다. 원천, \(R_s\), \(Z_0\)가 만드는 전압 분배가 선에 실려 나가는 첫 진행파를 정한다.</p>
+    <div class="formula">$$V_1 = V_s\,\frac{Z_0}{R_s + Z_0}, \qquad \Gamma_L = \frac{R_L - Z_0}{R_L + Z_0}, \qquad \Gamma_S = \frac{R_s - Z_0}{R_s + Z_0}$$<div class="where">진행파 \(V_1\)이 부하에 닿으면 \(\Gamma_LV_1\)이 되돌아오고, 원천에 닿은 그 파동은 다시 \(\Gamma_S\)배가 되어 부하로 간다. 한 점의 전압은 그때까지 그 점을 지나간 모든 진행파의 합이다. 12장의 반사 계수와 같은 식이지만 여기서는 저항(실수)만 다룬다.</div></div>
+    <p>이 왕복을 시간축 위에 지그재그로 그린 것이 <span class="term">바운스 도표</span><span class="en">(bounce diagram, lattice diagram)</span>다. 가로축은 선 위 위치, 세로축은 아래로 흐르는 시간이다. 각 대각선 위에 그 파동의 크기를 적고, 양 끝에서 도착한 파동을 차례로 더하면 끝 전압의 계단이 나온다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 330" role="img" aria-label="3.3 V, 10 Ω 원천이 50 Ω 개방 선을 구동할 때의 바운스 도표를 네 단계로 그린다">
+        <defs>
+          <marker id="si-a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="si-a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <g class="t">
+          <text x="250" y="22" text-anchor="middle" style="font-weight:700">원천 z = 0</text>
+          <text x="550" y="22" text-anchor="middle" style="font-weight:700">부하 z = ℓ (개방)</text>
+          <text x="250" y="316" text-anchor="middle" class="t-dim">Γ_S = (10−50)/(10+50) = −2/3</text>
+          <text x="550" y="316" text-anchor="middle" class="t-dim">Γ_L = +1</text>
+        </g>
+        <line x1="250" y1="34" x2="250" y2="290" class="s-axis" stroke-width="2"/>
+        <line x1="550" y1="34" x2="550" y2="290" class="s-axis" stroke-width="2"/>
+        <g class="t t-dim" style="font-size:12px">
+          <text x="236" y="44" text-anchor="end">0</text><text x="236" y="124" text-anchor="end">2t_d</text><text x="236" y="204" text-anchor="end">4t_d</text><text x="236" y="284" text-anchor="end">6t_d</text>
+          <text x="564" y="84">t_d</text><text x="564" y="164">3t_d</text><text x="564" y="244">5t_d</text>
+        </g>
+        <line x1="250" y1="40" x2="545" y2="78" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#si-a1)"/>
+        <text class="t" x="400" y="50" text-anchor="middle" style="fill:var(--accent);font-weight:700">+2.75 V</text>
+        <g data-only="1"><text class="t" x="400" y="200" text-anchor="middle">t = 0: 선은 50 Ω으로 보인다 → V₁ = 3.3 × 50/60 = 2.75 V</text></g>
+        <g data-step="2">
+          <line x1="550" y1="80" x2="255" y2="118" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#si-a2)"/>
+          <text class="t" x="400" y="112" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">+2.75</text>
+          <text class="t" x="600" y="84" style="font-weight:700">V_L = 2.75 + 2.75 = 5.50 V</text>
+        </g>
+        <g data-step="3">
+          <line x1="250" y1="120" x2="545" y2="158" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#si-a1)"/>
+          <text class="t" x="400" y="130" text-anchor="middle" style="fill:var(--accent);font-weight:700">−1.83</text>
+          <text class="t" x="20" y="124" style="font-weight:700">V_S = 3.67 V</text>
+          <line x1="550" y1="160" x2="255" y2="198" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#si-a2)"/>
+          <text class="t" x="400" y="192" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">−1.83</text>
+          <text class="t" x="600" y="164" style="font-weight:700">V_L = 5.50 − 3.67 = 1.83 V</text>
+        </g>
+        <g data-step="4">
+          <line x1="250" y1="200" x2="545" y2="238" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#si-a1)"/>
+          <text class="t" x="400" y="210" text-anchor="middle" style="fill:var(--accent);font-weight:700">+1.22</text>
+          <line x1="550" y1="240" x2="255" y2="278" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#si-a2)"/>
+          <text class="t" x="400" y="272" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">+1.22</text>
+          <text class="t" x="20" y="204" style="font-weight:700">V_S = 3.06 V</text>
+          <text class="t" x="600" y="244" style="font-weight:700">V_L = 4.28 V</text>
+          <text class="t" x="600" y="284" class="t-dim">… → 3.3 V로 수렴(링잉)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>\(t = 0\): 원천은 아직 부하를 모른다. 선은 50 Ω 저항처럼 보이고 2.75 V의 진행파가 출발한다.</li><li>\(t = t_d\): 개방 끝(\(\Gamma_L = +1\))에서 같은 크기로 되돌아온다. 부하 전압은 입사 + 반사 = 5.50 V로 원천 전압 3.3 V를 넘는다.</li><li>\(t = 2t_d\): 원천의 \(\Gamma_S = -2/3\)이 −1.83 V를 다시 보낸다. 이것이 부하에서 또 반사되어 \(3t_d\)에 부하 전압은 1.83 V로 떨어진다.</li><li>파동의 크기는 왕복마다 \(\Gamma_S\Gamma_L = -2/3\)배가 되며 부호가 바뀐다. 부하 전압은 3.3 V 위아래로 흔들리며 수렴한다(링잉).</li></ol>
+      <figcaption>바운스 도표: 대각선 하나가 편도 하나다. 끝 전압은 그 끝에 닿은 모든 대각선의 크기를 더한 값이다.</figcaption>
+    </figure>
+    <p>충분히 오래 기다리면 끝 전압은 직류 회로의 답 \(V_\infty = V_sR_L/(R_s + R_L)\)에 이른다. 파동의 합이 이 값으로 수렴한다는 것은 등비급수로 확인된다.</p>
+    <div class="callout deep"><strong>파동의 합 = 직류 답</strong><p>부하 전압은 \(V_L = V_1(1 + \Gamma_L)\big[1 + \Gamma_S\Gamma_L + (\Gamma_S\Gamma_L)^2 + \cdots\big] = \dfrac{V_1(1+\Gamma_L)}{1 - \Gamma_S\Gamma_L}\)로 다가간다. \(1 + \Gamma_L = 2R_L/(R_L + Z_0)\), \(1 - \Gamma_S\Gamma_L = 2Z_0(R_s + R_L)/\big[(R_s + Z_0)(R_L + Z_0)\big]\)를 넣으면 \(Z_0\)가 모두 지워지고 \(V_sR_L/(R_s + R_L)\)만 남는다. 선의 특성 임피던스는 <em>어떻게</em> 가는지만 정하고, <em>어디에</em> 도착하는지는 정하지 않는다.</p></div>
+    <div class="tangle" id="tg-launch">
+      <p>\(V_s\) = <span class="tn" data-var="Vs" data-min="0.5" data-max="5" data-step="0.1" data-unit=" V">1.8</span>인 계단을 내부 저항 <span class="tn" data-var="Rs" data-min="0" data-max="150" data-step="1" data-unit=" Ω">15</span>로 \(Z_0\) = <span class="tn" data-var="Z0" data-min="20" data-max="120" data-step="1" data-unit=" Ω">50</span> 선에 보내면 첫 진행파는 <span class="tn-out" data-out="V1"></span>이고 \(\Gamma_S\) = <span class="tn-out" data-out="GS"></span>이다. 부하 \(R_L\) = <span class="tn" data-var="RL" data-min="1" data-max="1000" data-step="1">1000</span>이면 \(\Gamma_L\) = <span class="tn-out" data-out="GL"></span>, 부하에 처음 서는 전압은 <span class="tn-out" data-out="VL1"></span>, 최종값은 <span class="tn-out" data-out="Vf"></span>이다. <span data-out="note"></span></p>
+    </div>
+    <h3>링잉과 종단</h3>
+    <p>CMOS 출력단은 내부 저항이 \(Z_0\)보다 작고(\(\Gamma_S &lt; 0\)) 받는 쪽 게이트 입력은 거의 개방이다(\(\Gamma_L \approx +1\)). 그래서 \(\Gamma_S\Gamma_L &lt; 0\)이 되어 부하 전압이 최종값 위아래로 번갈아 넘친다. 이것이 <span class="term">링잉</span><span class="en">(ringing)</span>이다. 넘침은 받는 쪽 소자의 산화막에 스트레스를 주고, 아래로 처지는 순간 논리 문턱을 다시 건너 거짓 펄스를 만든다. 반대로 \(R_s &gt; Z_0\)이면 \(\Gamma_S\Gamma_L &gt; 0\)이라 넘침 없이 계단을 여러 번 밟아 천천히 오른다. 둘 다 좋지 않다. 반사를 한쪽 끝에서 끊는 것이 <b>종단</b>이다.</p>
+    <div class="compare">
+      <div><h4><span class="term">직렬 종단</span><span class="en">(series termination)</span></h4><p>원천 쪽에 저항을 직렬로 넣어 \(R_s + R_t = Z_0\)로 만든다(\(\Gamma_S = 0\)). 선에는 절반 높이 \(V_s/2\)가 실려 가고, 개방 부하에서 두 배로 반사되어 한 번에 \(V_s\)가 된다. 반사파는 원천에서 흡수된다. 직류 전류가 없어 전력을 쓰지 않지만, 선 중간에서는 \(2t_d\) 동안 절반 전압에 머무르므로 받는 쪽이 선 끝 하나일 때만 쓴다(점대점 연결, DDR의 DQ 라인).</p></div>
+      <div><h4><span class="term">병렬 종단</span><span class="en">(parallel termination)</span></h4><p>부하 쪽에 \(R_L = Z_0\)를 접지(또는 \(V_{TT}\))로 단다(\(\Gamma_L = 0\)). 첫 파동이 그대로 최종값이고 선 위 어디서나 깨끗하다. 대신 출력이 높을 때 \(V^2/Z_0\)의 직류 전력을 계속 먹고, 원천 저항과의 전압 분배로 진폭이 줄어든다. 여러 수신단이 선에 매달린 버스나 고속 직렬 링크의 수신단(온다이 종단, ODT)에 쓴다.</p></div>
+    </div>
+    <div class="predict" data-for="sim-bounce">
+      <p>\(V_s\) = 1 V, \(R_s\) = 10 Ω인 원천이 \(Z_0\) = 50 Ω, 끝이 개방인 선을 구동한다. 부하 전압의 <b>최댓값</b>은 얼마쯤일까?</p>
+      <div class="opts"><button class="opt">1.0 V — 원천 전압을 넘을 수 없다</button><button class="opt">0.83 V — 첫 진행파 크기</button><button class="opt" data-correct>약 1.67 V — 첫 진행파가 개방 끝에서 두 배가 된다</button><button class="opt">2.0 V — 개방 끝은 언제나 원천 전압의 두 배</button></div>
+      <div class="quiz-exp">\(V_1 = 50/60 = 0.833\) V, 개방 끝에서 \(1 + \Gamma_L = 2\)배가 되어 1.67 V. 원천의 \(\Gamma_S = -2/3\)이 다음 왕복에서 이것을 깎아 0.56 V로 떨어뜨린다. 아래에서 \(R_s\)를 50 Ω으로 올리면 넘침이 사라지는 것을 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-bounce">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>바운스 도표 실험실: 첫 도착에 바로 안착시키기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-lat"></canvas><span class="hint">오른쪽 손잡이로 시각 커서를 끈다</span></div><div><canvas id="cv-lat2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>원천 저항 R<sub>s</sub> <output id="bc-rs-out"></output></span><input type="range" id="bc-rs" min="0" max="200" step="1" value="10"></label>
+          <label class="ctrl"><span>특성 임피던스 Z<sub>0</sub> <output id="bc-z0-out"></output></span><input type="range" id="bc-z0" min="25" max="100" step="1" value="50"></label>
+          <label class="ctrl"><span>부하 저항 R<sub>L</sub> <output id="bc-rl-out"></output></span><input type="range" id="bc-rl" min="0" max="200" step="1" value="200"></label>
+          <label class="check"><input type="checkbox" id="bc-open" checked> 부하 개방(∞)</label>
+          <div class="ctrl-row"><button class="btn" id="bc-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">V₁</span><span class="v" id="bc-v1">—</span></div>
+        <div class="stat"><span class="k">Γ_S · Γ_L</span><span class="v" id="bc-g">—</span></div>
+        <div class="stat"><span class="k">최종값 V∞</span><span class="v" id="bc-vf">—</span></div>
+        <div class="stat"><span class="k">최대 부하 전압</span><span class="v" id="bc-vmax">—</span></div>
+        <div class="stat"><span class="k">±5% 안착 시각</span><span class="v" id="bc-set">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="bc-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(V_s\) = 1 V의 이상 계단. 왼쪽 바운스 도표의 대각선 위 숫자는 각 진행파의 크기, 양옆의 숫자는 그 순간 끝 전압이다. 오른쪽 위는 커서 시각의 \(V(z)\), 아래는 원천 끝(파랑)·부하 끝(빨강)의 \(V(t)\). 해볼 것: ① \(R_s\) &lt; \(Z_0\)에서 링잉, \(R_s\) &gt; \(Z_0\)에서 계단식 상승을 비교한다. ② <b>목표</b>: 부하 전압이 첫 도착(\(t_d\))부터 0.95–1.05 V 안에 머물게 하라. 방법이 두 가지 있다. ③ \(R_L\) = 0(단락)에서 부하 전압은 늘 0이지만 원천 쪽 전압은 \(2t_d\)마다 바뀐다.</div>
+    </div>
+    <div class="example" data-title="CMOS 구동단의 링잉과 직렬 종단">
+      <p>출력 저항 10 Ω인 3.3 V 구동단이 \(Z_0\) = 50 Ω, 편도 지연 1.0 ns인 선으로 개방(게이트 입력) 부하를 구동한다. (a) 부하 전압을 1, 3, 5 ns에서 구하라. (b) 링잉을 없애려면 직렬 저항을 얼마로 해야 하며, 그때 부하 파형은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(V_1\), \(\Gamma_S\), \(\Gamma_L\)을 구해 바운스 도표를 그린다. 부하에는 홀수 \(t_d\)마다 두 파동(입사 + 반사)이 한꺼번에 더해진다.</div>
+        <div class="step"><b>풀이</b> (a) \(V_1 = 3.3\times50/60 = 2.75\) V, \(\Gamma_S = -40/60 = -2/3\), \(\Gamma_L = +1\). \(t = 1\) ns: \(2\times2.75 = 5.50\) V. 원천에서 \(-2/3\times2.75 = -1.833\) V가 돌아오므로 \(t = 3\) ns: \(5.50 + 2(-1.833) = 1.83\) V. 다음 파동 \(+1.222\) V로 \(t = 5\) ns: \(1.83 + 2.44 = 4.28\) V. (b) \(R_t = Z_0 - R_s = 40\) Ω. 그러면 \(V_1 = 3.3/2 = 1.65\) V이고 개방 끝에서 두 배가 되어 1 ns에 정확히 3.3 V에 서며, 반사파는 원천에서 흡수된다(\(\Gamma_S = 0\)).</div>
+        <div class="answer">(a) 5.50 V, 1.83 V, 4.28 V (→ 3.3 V로 수렴) &nbsp; (b) 40 Ω, 1 ns에 바로 3.3 V</div>
+        <div class="step"><b>검토</b> 넘침 5.5 V는 3.3 V 소자의 입력 보호 다이오드를 켤 만큼 크다. 링잉의 주기는 \(4t_d\) = 4 ns(\(\Gamma_S\Gamma_L &lt; 0\)이라 왕복 두 번에 한 주기)다. 직렬 종단은 실제로는 구동단 저항의 공정·전압·온도 변동 때문에 완벽하지 않아 작은 계단이 남는다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-bounce" data-title="바운스 전압 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="tdr">
+    <h2>TDR: 시간으로 읽는 임피던스</h2>
+    <p>반사는 골칫거리이지만 거꾸로 쓰면 탐지기가 된다. <span class="term">시간 영역 반사 측정</span><span class="en">(time-domain reflectometry, TDR)</span>은 50 Ω 원천에서 빠른 계단을 보내고 같은 자리에서 전압을 기록한다. 선이 고르면 입사 계단 \(V_i\)만 보이고, 임피던스가 바뀌는 곳이 있으면 그곳의 반사 계수 \(\rho\)만큼의 계단이 왕복 시간 뒤에 덧붙는다.</p>
+    <div class="formula">$$v_{\text{TDR}}(t) = V_i\big[1 + \rho(t)\big], \qquad d = \frac{v\,t}{2}, \qquad Z = Z_0\,\frac{1 + \rho}{1 - \rho}$$<div class="where">TDR 업계에서는 시간 영역 반사 계수를 \(\rho\)로 쓴다. \(t\)는 계단 출발부터 반사가 돌아올 때까지의 <b>왕복</b> 시간이라 거리로 바꿀 때 2로 나눈다. \(v = c/\sqrt{\varepsilon_{r,\text{eff}}}\). 첫 불연속 너머는 이미 한 번 투과·반사된 신호로 보므로 정확히 읽으려면 앞쪽부터 차례로 벗겨 내야 한다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="TDR 파형의 대표 모양: 개방, 단락, 높은 임피던스 구간, 낮은 임피던스 구간, 직렬 인덕턴스, 병렬 커패시턴스">
+        <g class="t" style="font-size:13px;font-weight:700">
+          <text x="130" y="24" text-anchor="middle">개방 끝</text><text x="400" y="24" text-anchor="middle">단락 끝</text><text x="670" y="24" text-anchor="middle">높은 Z 구간</text>
+          <text x="130" y="170" text-anchor="middle">낮은 Z 구간</text><text x="400" y="170" text-anchor="middle">직렬 L (본드 와이어)</text><text x="670" y="170" text-anchor="middle">병렬 C (비아·패드)</text>
+        </g>
+        <g fill="none" stroke-width="1" stroke="var(--grid)">
+          <line x1="30" y1="95" x2="240" y2="95"/><line x1="300" y1="95" x2="510" y2="95"/><line x1="570" y1="95" x2="780" y2="95"/>
+          <line x1="30" y1="240" x2="240" y2="240"/><line x1="300" y1="240" x2="510" y2="240"/><line x1="570" y1="240" x2="780" y2="240"/>
+        </g>
+        <g fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linejoin="round">
+          <path d="M30 140 L45 95 L130 95 L142 45 L240 45"/>
+          <path d="M300 140 L315 95 L400 95 L412 140 L510 140"/>
+          <path d="M570 140 L585 95 L640 95 L648 75 L700 75 L708 95 L780 95"/>
+          <path d="M30 285 L45 240 L100 240 L108 262 L160 262 L168 240 L240 240"/>
+          <path d="M300 285 L315 240 L380 240 C392 240 395 212 405 212 C415 212 420 240 440 240 L510 240"/>
+          <path d="M570 285 L585 240 L650 240 C662 240 665 268 675 268 C685 268 690 240 710 240 L780 240"/>
+        </g>
+        <g class="t t-dim" style="font-size:12px">
+          <text x="150" y="40">ρ = +1 → 2V_i</text><text x="420" y="134">ρ = −1 → 0</text><text x="650" y="66">Z &gt; Z₀ (ρ &gt; 0)</text>
+          <text x="112" y="280">Z &lt; Z₀ (ρ &lt; 0)</text><text x="420" y="208">봉우리 넓이 = L/2Z₀</text><text x="692" y="282">골 넓이 = Z₀C/2</text>
+          <text x="34" y="112">V_i</text>
+        </g>
+      </svg>
+      <figcaption>TDR 파형 읽는 법. 위로 올라가면 임피던스가 커진 곳(유도성), 내려가면 작아진 곳(용량성)이다. 짧은 구간이나 집중 소자는 계단 대신 봉우리·골로 보이며, 그 넓이(ρ의 시간 적분)가 소자 값을 준다.</figcaption>
+    </figure>
+    <p>집중 소자 하나는 계단 대신 짧은 봉우리나 골을 남긴다. 선 중간에 병렬로 붙은 작은 커패시턴스 \(C\)는 계단이 지나는 순간 잠깐 단락처럼 전류를 빨아들여 \(v_r = -\tfrac{Z_0C}{2}\,dV_i/dt\)의 음의 반사를 만든다. 직렬 인덕턴스 \(L\)은 반대로 잠깐 개방처럼 굴어 \(v_r = \tfrac{L}{2Z_0}\,dV_i/dt\)의 양의 반사를 만든다. 계단 전체에 대해 적분하면 상승 시간과 상관없는 넓이가 남는다.</p>
+    <div class="formula">$$\int \rho\,dt = -\frac{Z_0C}{2}\quad(\text{병렬 } C), \qquad \int \rho\,dt = +\frac{L}{2Z_0}\quad(\text{직렬 } L), \qquad |\rho|_{\max} \approx \frac{Z_0C}{2t_r}\ \text{또는}\ \frac{L}{2Z_0t_r}$$<div class="where">골·봉우리의 <b>깊이</b>는 계단의 <span class="term">상승 시간</span><span class="en">(rise time)</span> \(t_r\)에 반비례하지만 <b>넓이</b>는 그대로다. 그래서 0.5 pF 비아도 \(t_r\) = 200 ps로는 6%짜리 얕은 골이 되어 잡음에 묻힌다. 짧은 선 조각도 같다: 길이 \(t_s\)(지연)인 높은 임피던스 \(Z_h\) 조각은 \(L \approx Z_ht_s\), 낮은 임피던스 \(Z_l\) 조각은 \(C \approx t_s/Z_l\)처럼 보인다.</div></div>
+    <p>두 불연속이 \(\Delta d &lt; vt_r/2\)보다 가까우면 반사가 겹쳐 하나로 보인다. 패키지 안의 수 mm짜리 구조를 가려내려면 \(t_r\)이 수십 ps 이하여야 하는 이유다. 오늘날 패키지·인터포저 고장 분석용 TDR은 10 ps 안팎의 상승 시간을 쓴다.</p>
+    <div class="tangle" id="tg-tdr">
+      <p>유효 비유전율 <span class="tn" data-var="er" data-min="1" data-max="12" data-step="0.1">4.0</span>인 선에서 반사가 계단 출발 <span class="tn" data-var="t" data-min="0.1" data-max="10" data-step="0.05" data-unit=" ns">1.20</span> 뒤에 돌아왔다면 불연속은 <span class="tn-out" data-out="d"></span> 앞에 있다. 그 자리의 반사 계수가 <span class="tn" data-var="rho" data-min="-0.95" data-max="0.95" data-step="0.01">0.20</span>이면 50 Ω 계측기 기준 임피던스는 <span class="tn-out" data-out="Z"></span>이다. 상승 시간 <span class="tn" data-var="tr" data-min="5" data-max="300" data-step="5" data-unit=" ps">35</span>로 가려낼 수 있는 두 불연속의 최소 간격은 약 <span class="tn-out" data-out="res"></span>이다.</p>
+    </div>
+    <div class="sim" id="sim-tdr">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>TDR 탐정: 숨은 불연속 찾기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-tdr"></canvas><span class="hint top">선 위의 ▼ 표지를 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="td-mode"><button data-value="build" class="on">직접 만들기</button><button data-value="game">숨은 결함 찾기</button></div></div>
+          <div class="ctrl" id="td-kind-wrap"><span>불연속 종류</span><div class="seg" id="td-kind"><button data-value="C" class="on">병렬 C</button><button data-value="L">직렬 L</button><button data-value="Zh">Z↑ 구간</button><button data-value="Zl">Z↓ 구간</button></div></div>
+          <label class="ctrl" id="td-val-wrap"><span>크기 <output id="td-val-out"></output></span><input type="range" id="td-val" min="0" max="100" step="1" value="40"></label>
+          <div class="ctrl" id="td-end-wrap"><span>선 끝</span><div class="seg" id="td-end"><button data-value="50" class="on">50 Ω</button><button data-value="open">개방</button><button data-value="short">단락</button></div></div>
+          <label class="ctrl"><span>상승 시간 t<sub>r</sub> <output id="td-tr-out"></output></span><input type="range" id="td-tr" min="10" max="200" step="5" value="40"></label>
+          <div class="ctrl" id="td-guess-wrap" hidden><span>내 판정</span><div class="seg" id="td-guess"><button data-value="C" class="on">병렬 C</button><button data-value="L">직렬 L</button><button data-value="Zh">Z↑</button><button data-value="Zl">Z↓</button></div></div>
+          <div class="ctrl-row" id="td-game-btns" hidden><button class="btn primary" id="td-check" type="button">판정</button><button class="btn" id="td-new" type="button">새 문제</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">표지 위치</span><span class="v" id="td-pos">—</span></div>
+        <div class="stat"><span class="k">왕복 시간</span><span class="v" id="td-t">—</span></div>
+        <div class="stat"><span class="k">ρ (표지)</span><span class="v" id="td-rho">—</span></div>
+        <div class="stat"><span class="k">면적 추정 ±3 cm</span><span class="v" id="td-area">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="td-res">—</span></div>
+      </div>
+      <div class="sim-note">50 Ω 계측기, 길이 30 cm, \(v = 1.5\times10^8\) m/s(\(\varepsilon_{r,\text{eff}}\) ≈ 4)인 50 Ω 선. 가로축은 왕복 시간을 거리 \(d = vt/2\)로 바꾼 것이라 위의 선 그림과 눈금이 같다. "면적 추정"은 표지 ±3 cm 안의 \(\int\rho\,dt\)를 \(C = -2\int\rho\,dt/Z_0\) 또는 \(L = 2Z_0\int\rho\,dt\)로 바꾼 값이다. 해볼 것: ① 0.5 pF 비아를 \(t_r\) = 20 ps와 200 ps로 보고, 골의 깊이와 면적 추정값을 비교한다. ② 선 끝을 개방·단락으로 바꿔 끝 반사를 확인한다. ③ "숨은 결함 찾기"에서 표지를 결함 위치(±1 cm)에 놓고 종류를 맞혀라.</div>
+    </div>
+    <div class="example" data-title="TDR 파형 읽기">
+      <p>50 Ω TDR로 \(\varepsilon_{r,\text{eff}} = 4.0\)인 기판 배선을 재었다. (a) 계단 출발 1.20 ns 뒤에 전압이 입사 계단의 1.20배로 올라 그대로 머문다. 그 위치와 임피던스는? (b) 다른 자리에서 \(\int\rho\,dt = -12.5\) ps인 골이 보였다. 병렬 커패시턴스는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(v = c/\sqrt{\varepsilon_{r,\text{eff}}}\), \(d = vt/2\), \(Z = Z_0(1+\rho)/(1-\rho)\), \(C = -2\int\rho\,dt/Z_0\).</div>
+        <div class="step"><b>풀이</b> (a) \(v = 2.998\times10^8/2 = 1.499\times10^8\) m/s, \(d = 1.499\times10^8\times1.20\times10^{-9}/2 = 0.0899\) m. \(\rho = 0.20\)이므로 \(Z = 50\times1.2/0.8 = 75\) Ω. (b) \(C = 2\times12.5\times10^{-12}/50 = 5.0\times10^{-13}\) F.</div>
+        <div class="answer">(a) 약 9.0 cm 지점부터 75 Ω &nbsp; (b) 0.50 pF</div>
+        <div class="step"><b>검토</b> 계단이 올라간 채 머물면 그 뒤가 모두 75 Ω이라는 뜻이다(긴 구간). 75 Ω 구간이 짧았다면 다시 50 Ω 수준으로 돌아온다. 0.5 pF는 BGA 볼 패드나 두꺼운 기판의 관통 비아 하나 정도다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>패키지 고장 분석과 테스트 경로의 TDR</strong><p>패키지 단선을 X선으로 찾기 전에 TDR을 먼저 댄다. 의심 핀과 정상품의 같은 핀에 계단을 넣어 두 파형을 겹쳐 보면, 끊어진 본드 와이어나 금이 간 범프는 정상품에서는 칩 쪽 커패시턴스(골)로 이어지던 파형이 그보다 앞에서 개방(위로 꺾임)으로 바뀌는 자리로 나타난다. 그 왕복 시간 차이를 \(d = vt/2\)로 바꾸면 기판 안인지, 범프인지, 칩 위인지가 정해져 다음 단계(X선·단면 연마)의 위치를 좁힌다. 테스트 쪽에서는 프로브 카드·로드보드의 신호 경로가 50 Ω으로 이어지는지, 소켓·커넥터 같은 불연속이 얼마나 큰지를 TDR로 재고, 그 지연을 ATE의 타이밍 보정(디스큐)에 쓴다. → <a href="https://semi.euiyun.com/failure/chapters/nondestructive.html">FailureBook · 비파괴 검사(TDR)</a> · <a href="https://semi.euiyun.com/test/chapters/interface.html">TestBook · 프로브 카드·로드보드·핸들러</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="rc-lc">
+    <h2>RC 배선과 LC 선로의 경계</h2>
+    <p>12장의 전신 방정식을 직렬 저항 \(R\)과 함께 시간 영역에서 쓰면(누설 \(G = 0\)) 전압은 다음 식을 따른다.</p>
+    <div class="formula">$$\frac{\partial^2 V}{\partial z^2} = RC\,\frac{\partial V}{\partial t} + LC\,\frac{\partial^2 V}{\partial t^2}$$<div class="where">\(R, L, C\)는 단위 길이 값(Ω/m, H/m, F/m). 오른쪽 둘째 항만 남으면 속력 \(1/\sqrt{LC}\)의 <b>파동 방정식</b>, 첫째 항만 남으면 확산 계수 \(1/RC\)의 <b>확산 방정식</b>이다. 어느 항이 이기는지는 신호의 시간 척도 \(t\)와 \(L/R\)의 비로 정해진다: \(t \ll L/R\)이면 파동, \(t \gg L/R\)이면 확산.</div></div>
+    <p>칩 안의 배선은 단면이 수십 nm에서 1 µm 남짓이라 저항이 단위 mm당 수십–수천 Ω에 이른다. 단위 길이 인덕턴스는 0.2–0.5 nH/mm 정도라 \(L/R\)은 1 ps보다도 짧다. 그러니 칩 안 신호에 대해서는 확산 항이 이기고, 선은 <span class="term">분포 RC 선</span><span class="en">(distributed RC line)</span>이 된다. 확산에는 파면이 없다. 끝 전압은 길이 \(\ell\)과 상관없이 즉시 조금씩 오르기 시작하지만, 반값에 이르는 시간은 \(\ell^2\)에 비례한다.</p>
+    <div class="formula">$$t_{50} \approx 0.38\,R_wC_w \quad(\text{분포 RC, 이상 구동}), \qquad t_{50} = 0.69\,RC \quad(\text{집중 RC}), \qquad R_wC_w = rc\,\ell^2$$<div class="where">\(R_w = r\ell\), \(C_w = c\ell\)는 선 전체 저항과 커패시턴스. 분포 선은 앞쪽 커패시턴스가 적은 저항을 거쳐 충전되므로 같은 \(RC\)의 집중 회로보다 빠르다. 길이를 두 배로 하면 지연은 네 배가 된다.</div></div>
+    <figure class="mini" id="mini-rcd">
+      <div class="mini-view"><canvas id="cv-rcd"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>시간 t/(R<sub>w</sub>C<sub>w</sub>) <output id="rcd-t-out"></output></span><input type="range" id="rcd-t" min="0" max="100" step="1" value="20"></label>
+        <button class="btn" id="rcd-play" type="button"></button>
+        <span class="readout" id="rcd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>끝이 열린 분포 RC 선에 \(t = 0\)부터 1 V를 건 때의 \(V(z, t)\) (<code>EM.tl.rcLine</code>, 푸리에 급수 해). 전압이 파면 없이 번져 들어가며, 끝 전압(오른쪽 그래프)은 \(0.38\,R_wC_w\)에서 반값을 지난다. 시간축이 \(R_wC_w\) 단위이므로 이 그림은 모든 길이에 그대로 쓰인다 — 길이만 \(\ell^2\)으로 시간을 늘린다.</figcaption>
+    </figure>
+    <p>그렇다면 언제 인덕턴스가 중요해질까? 두 조건이 함께 맞아야 한다. 첫째, 신호가 파동처럼 움직일 만큼 빨라야 한다: 상승 시간이 왕복 시간보다 짧아 \(t_r &lt; 2t_d\)이면 반사가 파형에 보인다. 둘째, 선의 저항이 파면을 다 먹어 버리지 않아야 한다: 저손실 근사에서 감쇠 상수 \(\alpha = R/2Z_0\)이므로 파면의 크기는 \(e^{-r\ell/2Z_0}\)로 줄어든다. \(r\ell &gt; 2Z_0\)이면 파면이 \(e^{-1}\) 아래로 줄어 RC 확산이 지배한다. 두 조건을 길이로 쓰면 인덕턴스가 중요한 길이의 창이 나온다.</p>
+    <div class="formula">$$\frac{t_r}{2\sqrt{lc}} \;&lt;\; \ell \;&lt;\; \frac{2}{r}\sqrt{\frac{l}{c}} = \frac{2Z_0}{r}$$<div class="where">\(r, l, c\)는 단위 길이 값. 왼쪽보다 짧으면 집중 소자로 충분하고(상승 동안 반사가 여러 번 오가 평균된다), 오른쪽보다 길면 RC로 충분하다. 손실이 큰 칩 안 배선은 오른쪽 한계가 수십 µm–수 mm에 불과해 창이 닫히고, 두꺼운 최상위 금속(전역 배선·클럭)이나 패키지·기판 배선에서는 창이 열린다. 실무에서는 "선 길이가 상승 에지의 공간 길이 \(vt_r\)의 1/6을 넘으면 전송선으로 다룬다"는 어림도 쓴다.</div></div>
+    <div class="tangle" id="tg-rc">
+      <p>단위 길이 저항 <span class="tn" data-var="r" data-min="1" data-max="2000" data-step="1" data-unit=" Ω/mm">200</span>, 커패시턴스 0.20 pF/mm, 인덕턴스 0.20 nH/mm(\(Z_0\) = 31.6 Ω)인 선의 길이가 <span class="tn" data-var="L" data-min="0.1" data-max="30" data-step="0.1" data-unit=" mm">1.0</span>이면 비행 시간은 <span class="tn-out" data-out="tof"></span>, RC 지연 \(0.38R_wC_w\)는 <span class="tn-out" data-out="rc"></span>, \(R_w/2Z_0\) = <span class="tn-out" data-out="ratio"></span>이다. <span data-out="verdict"></span></p>
+    </div>
+    <div class="predict" data-for="sim-rlc">
+      <p>저항이 큰 칩 안 배선(\(r\) = 200 Ω/mm)의 길이를 2 mm에서 4 mm로 두 배 늘렸다. 끝 전압이 반값에 이르는 시간은?</p>
+      <div class="opts"><button class="opt">거의 그대로 — 신호는 빛의 속력 근처로 간다</button><button class="opt">두 배 — 길이에 비례</button><button class="opt" data-correct>약 네 배 — 길이의 제곱에 비례</button><button class="opt">절반 — 저항이 커지면 전류가 줄어 빨리 충전된다</button></div>
+      <div class="quiz-exp">\(R_w\)와 \(C_w\)가 모두 길이에 비례하므로 \(R_wC_w \propto \ell^2\). 아래에서 \(r\)을 0.5 Ω/mm로 내리면 같은 실험에서 지연이 길이에 비례(비행 시간)하는 것을 볼 수 있다.</div>
+    </div>
+    <div class="sim" id="sim-rlc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>파동에서 확산으로: RLC 선의 계단 응답</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-rlc"></canvas><span class="hint top">선 오른쪽 끝 손잡이를 끌어 길이를 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>단위 길이 저항 r <output id="rl-r-out"></output></span><input type="range" id="rl-r" min="0" max="100" step="0.5" value="82.5"></label>
+          <label class="ctrl"><span>길이 ℓ <output id="rl-len-out"></output></span><input type="range" id="rl-len" min="0.5" max="20" step="0.1" value="2"></label>
+          <label class="ctrl"><span>구동 저항 R<sub>s</sub> <output id="rl-rs-out"></output></span><input type="range" id="rl-rs" min="0" max="200" step="1" value="30"></label>
+          <div class="ctrl-row"><button class="btn" id="rl-play" type="button"></button><button class="btn" id="rl-replay" type="button">다시 보내기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">R<sub>w</sub> = rℓ</span><span class="v" id="rl-Rw">—</span></div>
+        <div class="stat"><span class="k">비행 시간 t<sub>d</sub></span><span class="v" id="rl-td">—</span></div>
+        <div class="stat"><span class="k">0.69R<sub>s</sub>C<sub>w</sub> + 0.38R<sub>w</sub>C<sub>w</sub></span><span class="v" id="rl-rc">—</span></div>
+        <div class="stat"><span class="k">측정한 t₅₀</span><span class="v" id="rl-t50">—</span></div>
+        <div class="stat"><span class="k">R<sub>w</sub>/2Z₀</span><span class="v" id="rl-ratio">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="rl-verdict">—</span></div>
+      </div>
+      <div class="sim-note">\(l\) = 0.20 nH/mm, \(c\) = 0.20 pF/mm(\(Z_0\) = 31.6 Ω, 6.3 ps/mm), 끝은 개방, 원천 상승 시간 5 ps. 40마디 RLC 사다리를 시간 적분했다. 위는 선 위 전압 \(V(z)\)의 시간 변화, 아래는 끝 전압 \(V(\ell, t)\)와 비행 시간(점선), RC 추정(일점쇄선). 해볼 것: ① \(r\) = 0.5 Ω/mm에서 파면이 왕복하는 것(\(R_s\) ≈ \(Z_0\)이면 한 번에 안착)을 본다. ② \(r\)을 올려 \(R_w/2Z_0\)이 1을 넘으면 파면이 사라지고 확산으로 바뀐다. ③ RC 영역에서 길이를 두 배로 하면 \(t_{50}\)이 네 배가 되는지 확인한다.</div>
+    </div>
+    <div class="example" data-title="칩 배선인가, 전송선인가">
+      <p>단위 길이 \(c\) = 0.20 pF/mm, \(l\) = 0.20 nH/mm인 두 배선이 있다. (a) 중간층 배선: \(r\) = 200 Ω/mm, 길이 1.0 mm. (b) 패키지 기판 배선: \(r\) = 0.010 Ω/mm, 길이 20 mm, 상승 시간 30 ps. 각각 RC로 다룰지 전송선으로 다룰지 판정하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(Z_0 = \sqrt{l/c}\), \(t_d = \ell\sqrt{lc}\), RC 지연 \(0.38R_wC_w\), 그리고 \(r\ell\)과 \(2Z_0\), \(t_r\)과 \(2t_d\)를 비교한다.</div>
+        <div class="step"><b>풀이</b> \(Z_0 = \sqrt{0.2\times10^{-9}/0.2\times10^{-12}} = 31.6\) Ω, 지연 6.32 ps/mm. (a) \(R_w = 200\) Ω \(&gt; 2Z_0 = 63\) Ω, \(0.38R_wC_w = 0.38\times200\times0.20\times10^{-12} = 15.2\) ps ≫ \(t_d\) = 6.3 ps → RC 선. (b) \(R_w = 0.20\) Ω ≪ 63 Ω, \(t_d = 126\) ps이고 \(t_r = 30\) ps \(&lt; 2t_d\) → 전송선(반사·종단을 따져야 한다).</div>
+        <div class="answer">(a) RC 확산 선(\(t_{50}\) ≈ 15 ps) &nbsp; (b) LC 전송선(\(t_d\) ≈ 126 ps)</div>
+        <div class="step"><b>검토</b> 같은 \(l, c\)라도 단면 넓이(→ \(r\))와 길이가 판정을 가른다. 칩 위에서도 두꺼운 최상위 금속의 수 mm짜리 클럭 배선은 \(r\)이 수 Ω/mm라 창 안에 들어와 인덕턴스를 따져야 한다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="elmore">
+    <h2>엘모어 지연과 리피터</h2>
+    <p>칩 배선은 한 줄로 끝나지 않는다. 구동단 하나가 갈래 친 배선을 따라 여러 게이트를 먹이는 <b>RC 나무</b>가 보통이다. 이런 회로의 정확한 계단 응답은 마디 수만큼의 지수 함수가 섞인 복잡한 식이지만, 설계 도구는 수백만 개의 망을 빨리 평가해야 한다. 1948년 엘모어가 내놓은 근사가 지금도 배치·배선 도구의 기본이다.</p>
+    <div class="def"><span class="def-k"><span class="term">엘모어 지연</span><span class="en">(Elmore delay)</span></span>
+      <p>원천에서 마디 \(i\)까지 RC 나무의 지연을 \(\tau_i = \sum_k R_{ik}C_k\)로 어림한다. \(C_k\)는 마디 \(k\)의 커패시턴스, \(R_{ik}\)는 원천에서 \(i\)로 가는 길과 원천에서 \(k\)로 가는 길이 <b>함께 지나는</b> 저항의 합이다. 수학적으로는 마디 \(i\) 임펄스 응답의 1차 모멘트(평균 시각)이며, 50% 지연은 단일 극점처럼 \(t_{50} \approx 0.69\,\tau_i\)로 잡는다.</p>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="구동 저항 하나와 두 갈래 배선으로 된 RC 나무에서 마디 2의 엘모어 지연을 구하는 네 단계">
+        <g fill="none" stroke="var(--text)" stroke-width="2">
+          <path d="M60 120 H90 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10 H260"/>
+          <path d="M260 120 V70 H330 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10 H520"/>
+          <path d="M260 120 V170 H330 l6 -10 l12 20 l12 -20 l12 20 l12 -20 l6 10 H520"/>
+          <path d="M260 120 V200 M248 200 H272 M248 208 H272 M260 208 V226"/>
+          <path d="M520 70 V110 M508 110 H532 M508 118 H532 M520 118 V136"/>
+          <path d="M520 170 V210 M508 210 H532 M508 218 H532 M520 218 V236"/>
+        </g>
+        <g class="t" style="font-size:13px">
+          <text x="30" y="125" style="font-weight:700">V_s</text>
+          <text x="150" y="102" text-anchor="middle">R₀ = 1 kΩ</text>
+          <text x="390" y="52" text-anchor="middle">R₂ = 500 Ω</text>
+          <text x="390" y="152" text-anchor="middle">R₃ = 400 Ω</text>
+          <text x="282" y="210">C₁ = 20 fF</text>
+          <text x="540" y="120">C₂ = 30 fF (마디 2)</text>
+          <text x="540" y="220">C₃ = 50 fF (마디 3)</text>
+          <text x="248" y="114" text-anchor="end">1</text>
+        </g>
+        <g data-step="2">
+          <path d="M60 120 H260 V70 H520" fill="none" stroke="var(--accent)" stroke-width="5" opacity=".35"/>
+          <text class="t" x="560" y="40" style="fill:var(--accent);font-weight:700">원천 → 마디 2의 길: R₀, R₂</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="40" y="262" style="fill:var(--accent-2)">C₁, C₃의 공통 저항 = R₀ (갈림점 앞까지) · C₂의 공통 저항 = R₀ + R₂</text>
+        </g>
+        <g data-step="4">
+          <text class="t" x="40" y="288" style="font-weight:700">τ₂ = R₀(C₁+C₂+C₃) + R₂C₂ = 100 ps + 15 ps = 115 ps → t₅₀ ≈ 0.69τ₂ ≈ 79 ps</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>구동 저항 \(R_0\) 뒤에서 배선이 두 갈래로 나뉜다. 각 마디의 커패시턴스는 배선과 게이트 입력을 합친 값이다.</li><li>마디 2의 지연을 구하려면 원천에서 마디 2까지의 길을 표시한다.</li><li>각 커패시터마다, 그 커패시터로 가는 길이 이 길과 겹치는 저항만 센다. \(C_3\)으로 가는 전류는 \(R_3\)도 지나지만 \(R_3\)은 마디 2로 가는 길에 없으므로 세지 않는다.</li><li>곱을 모두 더한다. \(R_0\)은 모든 커패시터를 충전하는 전류가 함께 지나므로 가장 큰 몫을 차지한다 — 구동단을 키우는 효과가 큰 까닭이다.</li></ol>
+      <figcaption>RC 나무의 엘모어 지연. "공통 경로 저항 × 커패시턴스"의 합이다.</figcaption>
+    </figure>
+    <p>균일한 분포 선(\(R_w\), \(C_w\))을 마디로 잘게 나눠 같은 계산을 하면 \(\tau = R_wC_w/2\)이다. 여기에 구동 저항 \(R_d\)와 끝 부하 \(C_L\)을 더한 식이 실무에서 가장 많이 쓰인다.</p>
+    <div class="formula">$$\tau = R_d\,(C_w + C_L) + R_w\Big(\frac{C_w}{2} + C_L\Big), \qquad t_{50} \approx 0.69\,R_d(C_w + C_L) + R_w\big(0.38\,C_w + 0.69\,C_L\big)$$<div class="where">둘째 식은 분포 선 부분에 엘모어 값(0.69 × 0.5 = 0.345) 대신 정확한 0.38을 쓴 보정형이다(배선 RC 지연의 표준 어림). 엘모어 지연은 RC 나무에서 50% 지연의 상한임이 증명되어 있어, 배치 단계의 빠르고 보수적인 추정으로 쓰인다.</div></div>
+    <div class="example" data-title="RC 나무의 엘모어 지연">
+      <p>위 그림의 RC 나무에서 마디 2와 마디 3의 엘모어 지연과 50% 지연 어림을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 각 커패시터에 대해 공통 경로 저항을 찾아 곱한다.</div>
+        <div class="step"><b>풀이</b> 모든 커패시터가 공유하는 \(R_0\)의 몫: \(1000\times(20+30+50)\) fF = 100 ps. 마디 2: \(+R_2C_2 = 500\times30\) fF = 15 ps → \(\tau_2\) = 115 ps. 마디 3: \(+R_3C_3 = 400\times50\) fF = 20 ps → \(\tau_3\) = 120 ps. \(t_{50} \approx 0.69\tau\): 79.4 ps, 82.8 ps.</div>
+        <div class="answer">\(\tau_2\) = 115 ps (\(t_{50}\) ≈ 79 ps), \(\tau_3\) = 120 ps (\(t_{50}\) ≈ 83 ps)</div>
+        <div class="step"><b>검토</b> 큰 커패시턴스 \(C_3\)이 달린 가지가 더 느리다. 마디 2에서 보면 \(C_3\)은 \(R_0\)을 통해서만 영향을 준다 — 갈래 가지의 부하는 공통 경로를 무겁게 해 다른 가지도 늦춘다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-elmore" data-title="구동단 + 배선 + 부하의 엘모어 지연"></div>
+    <h3>리피터: 제곱을 직선으로</h3>
+    <p>배선 RC 지연이 \(\ell^2\)으로 늘어나면 긴 배선은 금세 감당할 수 없게 된다. 해결책은 배선을 \(k\)토막으로 자르고 토막마다 인버터(버퍼)를 넣어 다시 구동하는 것이다. 이 중계 증폭기를 <span class="term">리피터</span><span class="en">(repeater)</span>라 한다. 토막 하나의 RC 지연은 \((\ell/k)^2\)에 비례하므로 \(k\)개를 합해도 \(\ell^2/k\)로 줄고, 대신 리피터마다 자기 지연이 더해진다. 최소 크기 인버터의 출력 저항을 \(R_0\), 입력 커패시턴스를 \(C_0\)라 하고 리피터를 \(h\)배 키우면(저항 \(R_0/h\), 입력 \(hC_0\)), 전체 지연은</p>
+    <div class="formula">$$T(k, h) = k\Big[0.69\,\frac{R_0}{h}\Big(\frac{C_w}{k} + hC_0\Big) + \frac{R_w}{k}\Big(0.38\,\frac{C_w}{k} + 0.69\,hC_0\Big)\Big]$$
+    $$k_{\text{opt}} = \sqrt{\frac{0.38\,R_wC_w}{0.69\,R_0C_0}}, \qquad h_{\text{opt}} = \sqrt{\frac{R_0C_w}{R_wC_0}}, \qquad T_{\text{opt}} \approx 2.40\sqrt{R_0C_0\,R_wC_w} = 2.40\,\ell\sqrt{R_0C_0\,rc}$$<div class="where">\(\partial T/\partial k = 0\), \(\partial T/\partial h = 0\)에서 얻는다(바코글루). \(R_wC_w \propto \ell^2\)이므로 \(T_{\text{opt}}\)는 \(\ell\)에 <b>비례</b>한다. 최적 토막 길이 \(\ell/k_{\text{opt}}\)와 최적 크기 \(h_{\text{opt}}\)는 길이와 상관없는 공정 상수이며, 최적점에서는 리피터 자체 지연과 배선 지연이 비슷한 몫을 차지한다.</div></div>
+    <div class="sim" id="sim-rep">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>리피터 설계: 지연 110% 안에서 면적 최소로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rep"></canvas></div><div><canvas id="cv-rep2"></canvas><span class="hint top">지도 위 점을 끌어 (k, h)를 고른다</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>배선층</span><div class="seg" id="rp-layer"><button data-value="local">국부(M1–M2)</button><button data-value="mid" class="on">중간층</button><button data-value="global">전역(최상위)</button></div></div>
+          <label class="ctrl"><span>배선 길이 ℓ <output id="rp-len-out"></output></span><input type="range" id="rp-len" min="0.5" max="20" step="0.5" value="10"></label>
+          <div class="ctrl-row"><button class="btn" id="rp-opt" type="button">최적점으로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">현재 지연 T</span><span class="v" id="rp-T">—</span></div>
+        <div class="stat"><span class="k">T<sub>opt</sub> (k, h)</span><span class="v" id="rp-Topt">—</span></div>
+        <div class="stat"><span class="k">리피터 없이</span><span class="v" id="rp-T1">—</span></div>
+        <div class="stat"><span class="k">면적 k·h</span><span class="v" id="rp-A">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="rp-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(R_0\) = 8 kΩ, \(C_0\) = 0.5 fF(\(R_0C_0\) = 4 ps). 배선층: 국부 \(r\) = 1.0 Ω/µm, \(c\) = 0.18 fF/µm · 중간층 0.10 Ω/µm, 0.20 fF/µm · 전역 0.02 Ω/µm, 0.22 fF/µm. 오른쪽은 \(T/T_{\text{opt}}\)의 지도(가로 \(k\), 세로 \(h\) 로그), ★가 최적점, 굵은 선이 110% 등고선. 왼쪽 위는 리피터 배치, 아래는 길이에 따른 지연(리피터 없음: 제곱, 최적: 직선). 해볼 것: ① 최적점 근처는 바닥이 평평해 \(k\)나 \(h\)를 조금 줄여도 지연은 거의 늘지 않는다. ② <b>목표</b>: \(T \le 1.1\,T_{\text{opt}}\)를 지키면서 면적(전력) \(k\cdot h\)를 최소의 105% 안으로 줄여라. ③ 국부 배선은 저항이 커서 1 mm만 넘어도 리피터가 필요하다.</div>
+    </div>
+    <div class="example" data-title="10 mm 배선의 최적 리피터">
+      <p>\(r\) = 0.10 Ω/µm, \(c\) = 0.20 fF/µm인 10 mm 배선을 \(R_0\) = 8 kΩ, \(C_0\) = 0.5 fF 공정의 인버터로 구동한다. 최적 리피터 수와 크기, 그때의 지연을 구하고 리피터 없이 배선 RC만의 지연 \(0.38R_wC_w\)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(R_w = r\ell\), \(C_w = c\ell\)를 구해 바코글루 식에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(R_w = 0.10\times10^4 = 1000\) Ω, \(C_w = 0.20\times10^{4}\) fF = 2.0 pF, \(R_wC_w = 2.0\) ns, \(R_0C_0 = 4.0\) ps. \(k_{\text{opt}} = \sqrt{0.38\times2.0\times10^{-9}/(0.69\times4.0\times10^{-12})} = 16.6\), \(h_{\text{opt}} = \sqrt{8000\times2.0\times10^{-12}/(1000\times0.5\times10^{-15})} = 179\). \(T_{\text{opt}} = 2.40\sqrt{4.0\times10^{-12}\times2.0\times10^{-9}} = 2.40\times89.4\) ps = 215 ps. 배선 RC만: \(0.38\times2.0\) ns = 760 ps.</div>
+        <div class="answer">\(k \approx 17\), \(h \approx 180\), \(T_{\text{opt}} \approx 215\) ps (리피터 없이 760 ps 이상)</div>
+        <div class="step"><b>검토</b> 토막 길이 \(10/16.6 = 0.6\) mm, 크기 180배 — 실제 설계도 중간층에서 수백 µm–1 mm마다 리피터를 둔다. 리피터 없이 구동단을 \(h_{\text{opt}}\)로 키워도 지연은 886 ps라 리피터의 효과는 네 배 이상이다. mm당 21.5 ps는 SiO₂ 속 빛의 속력(약 6.6 ps/mm)보다 여전히 몇 배 느리다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>배선이 트랜지스터보다 느려진 시대</strong><p>미세화로 트랜지스터는 빨라졌지만 배선 단면은 줄어 \(r\)이 급증했다. 구리 선폭이 전자 평균 자유 경로(약 40 nm)에 가까워지면 표면·결정립계 산란으로 비저항이 덩어리 값의 몇 배로 커지고, 장벽층(TaN)이 단면을 더 깎는다. 그 결과 최신 공정의 국부 배선은 수십 Ω/µm에 이르러 리피터 간격이 수십 µm로 줄었고, 큰 칩에서는 리피터가 수백만 개, 전력의 상당 부분을 차지한다. 루테늄·몰리브데넘 같은 장벽 없는 금속, 후면 전원 공급(BSPDN)으로 앞면 배선을 신호에 양보하는 구조가 모두 이 \(r\)과 싸우는 시도다. → <a href="https://semi.euiyun.com/digital/chapters/wire.html">DigitalBook · 배선: 칩 안의 도로(분산 RC와 리피터)</a> · <a href="https://semi.euiyun.com/digital/chapters/delay.html">DigitalBook · 게이트 지연과 논리적 노력</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="lossy">
+    <h2>손실 선로와 아이 패턴</h2>
+    <p>칩 밖으로 나가면 배선이 굵어져 선은 다시 전송선이 된다. 그러나 수십 Gb/s에서는 패키지와 기판의 손실이 문제다. 손실은 두 갈래다. 도체 손실은 표피 효과(10장) 때문에 전류가 표면 \(\delta = 1/\sqrt{\pi f\mu\sigma}\) 안으로 몰려 저항이 \(\sqrt f\)로 커지는 것이고, 유전 손실은 기판 수지의 분극이 전기장을 늦게 따라가며 \(\tan\delta\)만큼 열을 내는 것이다. 저손실 근사의 감쇠 상수는</p>
+    <div class="formula">$$\alpha = \alpha_c + \alpha_d \approx \frac{R(f)}{2Z_0} + \frac{G(f)\,Z_0}{2}, \qquad R(f) \propto \sqrt f, \qquad \alpha_d = \frac{\omega}{2}\sqrt{LC}\,\tan\delta = \frac{\pi f\sqrt{\varepsilon_{r,\text{eff}}}\tan\delta}{c}$$<div class="where">\(G = \omega C\tan\delta\). 길이 \(\ell\)의 <span class="term">삽입 손실</span><span class="en">(insertion loss)</span>은 \(\text{IL} = 8.686\,\alpha\ell\) dB(1 Np = 8.686 dB). 표피 손실은 \(\sqrt f\), 유전 손실은 \(f\)에 비례하므로 높은 주파수일수록 유전 손실이 지배한다. 실제 도체는 표면 거칠기 때문에 \(\sqrt f\)보다 조금 더 빨리 는다.</div></div>
+    <figure class="mini" id="mini-loss">
+      <div class="mini-view"><canvas id="cv-loss"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>길이 <output id="ls-len-out"></output></span><input type="range" id="ls-len" min="5" max="50" step="1" value="25"></label>
+        <div class="seg" id="ls-mat"><button data-value="fr4" class="on">FR-4</button><button data-value="low">저손실</button></div>
+        <span class="readout" id="ls-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>기판 배선의 삽입 손실 = 표피(\(\sqrt f\), 파랑) + 유전(\(f\), 주황). 세로선 손잡이를 끌어 주파수를 고른다. FR-4(\(\varepsilon_r\) = 4.0, \(\tan\delta\) = 0.020)와 저손실 수지(\(\varepsilon_r\) = 3.4, \(\tan\delta\) = 0.004)를 비교하면, 고속 서버 기판이 비싼 저손실 재료를 쓰는 까닭이 보인다(표피 계수 0.060 dB/(cm·√GHz)).</figcaption>
+    </figure>
+    <div class="tangle" id="tg-diel">
+      <p>\(\varepsilon_r\) = <span class="tn" data-var="er" data-min="2" data-max="5" data-step="0.1">4.0</span>, \(\tan\delta\) = <span class="tn" data-var="td" data-min="0.001" data-max="0.03" data-step="0.001">0.020</span>인 기판에서 <span class="tn" data-var="f" data-min="1" data-max="56" data-step="1" data-unit=" GHz">8</span>의 유전 손실은 <span class="tn-out" data-out="a"></span>이다. 길이 <span class="tn" data-var="L" data-min="1" data-max="60" data-step="1" data-unit=" cm">25</span>이면 유전 손실만 <span class="tn-out" data-out="IL"></span>, 진폭으로는 <span class="tn-out" data-out="amp"></span>만 남는다.</p>
+    </div>
+    <p>손실이 주파수에 따라 다르면 파형이 일그러진다. 1 UI(단위 간격, 비트 하나의 길이)짜리 펄스 하나를 보내면, 높은 주파수 성분이 더 깎여 받는 쪽에서는 낮고 넓게 퍼진 <span class="term">펄스 응답</span><span class="en">(pulse response)</span>이 된다. 그 꼬리가 이웃 비트의 표본 시각에 걸려 남는 값을 커서라 부르고, 이것이 다른 비트의 판정을 흔드는 것이 <span class="term">부호간 간섭</span><span class="en">(intersymbol interference, ISI)</span>이다. 긴 무작위 비트열의 파형을 2 UI 창으로 잘라 모두 겹쳐 그리면 가운데 눈 모양의 빈 곳이 생기는데, 이것이 <span class="term">아이 패턴</span><span class="en">(eye diagram)</span>이다. 눈의 세로 열림(아이 높이)은 잡음 여유, 가로 열림(아이 폭)은 타이밍 여유다.</p>
+    <p>NRZ 신호의 기본 주파수 성분은 <span class="term">나이퀴스트 주파수</span><span class="en">(Nyquist frequency)</span> \(f_N = (\text{비트율})/2\)이고, 채널 손실은 보통 이 주파수에서 잰다. 손실을 되돌리는 기법이 <b>등화</b>다. 송신단의 <span class="term">디엠퍼시스</span><span class="en">(de-emphasis)</span>는 2탭 FIR \(y_n = (1-a)\,x_n - a\,x_{n-1}\)로 비트가 바뀔 때만 크게, 같은 비트가 이어지면 작게 보내 미리 고주파를 키운다(저주파 진폭이 \(1-2a\)로 준다). 수신단에서는 고주파 이득을 키우는 CTLE와, 이미 판정한 비트의 꼬리를 빼는 DFE를 쓴다.</p>
+    <div class="sim" id="sim-eye">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>손실 채널의 아이 패턴: 눈을 다시 떠라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-pulse"></canvas></div><div><canvas id="cv-eye"></canvas><span class="hint top">표본점 ◆을 좌우로 끈다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>비트율 <output id="ey-rate-out"></output></span><input type="range" id="ey-rate" min="2" max="32" step="1" value="16"></label>
+          <label class="ctrl"><span>선 길이 <output id="ey-len-out"></output></span><input type="range" id="ey-len" min="5" max="50" step="1" value="20"></label>
+          <div class="ctrl"><span>기판</span><div class="seg" id="ey-mat"><button data-value="fr4" class="on">FR-4</button><button data-value="low">저손실</button></div></div>
+          <label class="ctrl"><span>디엠퍼시스 a <output id="ey-a-out"></output></span><input type="range" id="ey-a" min="0" max="0.40" step="0.01" value="0"></label>
+          <div class="ctrl-row"><button class="btn" id="ey-chal" type="button">도전 과제 불러오기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">IL @ f<sub>N</sub></span><span class="v" id="ey-il">—</span></div>
+        <div class="stat"><span class="k">주 커서 / ISI 합</span><span class="v" id="ey-isi">—</span></div>
+        <div class="stat"><span class="k">아이 높이(표본점)</span><span class="v" id="ey-h">—</span></div>
+        <div class="stat"><span class="k">아이 폭</span><span class="v" id="ey-w">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="ey-goal">—</span></div>
+      </div>
+      <div class="sim-note">채널 \(H(f) = \exp[-\alpha_c\ell(1+j) - \alpha_d\ell]\) (표피 손실의 위상까지 넣은 인과적 모형)에 수신 대역 \(0.75\times\)비트율의 가우스 필터를 곱하고 FFT로 펄스 응답을 만들었다(<code>EM.fft</code>). 신호는 PRBS7(127비트) NRZ ±0.5, 아이 높이는 송신 진폭 1에 대한 비율이다. 왼쪽: 1 UI 펄스의 응답과 UI 간격의 커서(점). 해볼 것: ① 8 → 16 → 32 Gb/s로 올리며 같은 선에서 눈이 닫히는 것을 본다. ② FR-4를 저손실로 바꾸면 유전 손실이 1/5로 준다. ③ <b>도전</b>: 16 Gb/s, FR-4, 30 cm에서 디엠퍼시스와 표본점을 조절해 아이 높이를 15% 이상 열어라.</div>
+    </div>
+    <div class="example" data-title="FR-4 기판 25 cm의 손실 예산">
+      <p>16 Gb/s NRZ 신호가 FR-4(\(\varepsilon_r\) = 4.0, \(\tan\delta\) = 0.020) 기판 배선 25 cm를 지난다. 표피 손실 계수가 0.060 dB/(cm·√GHz)일 때 나이퀴스트 주파수에서의 유전 손실, 도체 손실, 전체 삽입 손실과 남는 진폭 비율은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(f_N\) = 8 GHz. \(\alpha_d = \pi f\sqrt{\varepsilon_r}\tan\delta/c\)를 dB로 바꿔 길이를 곱하고, 도체 손실은 \(0.060\sqrt{f}\,\ell\)로 구한다.</div>
+        <div class="step"><b>풀이</b> \(\alpha_d = \pi(8\times10^9)(2.0)(0.020)/2.998\times10^8 = 3.35\) Np/m = 29.1 dB/m → 25 cm에서 7.28 dB. 도체: \(0.060\times\sqrt8\times25 = 4.24\) dB. 합 11.5 dB, 진폭 비율 \(10^{-11.5/20} = 0.265\).</div>
+        <div class="answer">유전 7.3 dB + 도체 4.2 dB = 11.5 dB, 진폭은 약 27%</div>
+        <div class="step"><b>검토</b> 8 GHz에서 이미 유전 손실이 도체 손실보다 크다. 같은 길이를 저손실 수지(\(\tan\delta\) = 0.004, \(\varepsilon_r\) = 3.4)로 바꾸면 유전 손실은 약 1.3 dB로 준다. 시뮬레이터에서 이 조건(16 Gb/s, 25 cm)의 눈은 등화 없이도 겨우 열려 있다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>SerDes의 아이, HBM의 넓고 느린 버스</strong><p>PCIe·이더넷 SerDes는 핀 하나로 수십 Gb/s를 보내므로 위에서 본 손실과 싸우는 것이 설계의 대부분이다. 송신 FFE, 수신 CTLE·DFE를 겹겹이 쓰고, 112 Gb/s급부터는 한 기호에 2비트를 싣는 PAM4로 나이퀴스트 주파수를 절반으로 낮춘다. HBM은 정반대 전략이다. 핀당 수 Gb/s로 느리게 보내는 대신 1024개(HBM4는 2048개)의 선을 나란히 깐다. 이렇게 많은 선은 기판으로는 깔 수 없어, 실리콘 인터포저 위 선폭 1 µm 안팎의 미세 배선으로 GPU와 메모리를 수 mm 거리에서 잇는다. 이 배선은 \(r\)이 커서 이 장의 기준으로는 RC에 가까운 손실 선이고, 종단 없이 짧게 써서 전력을 아낀다. 선이 촘촘하니 누화와 동시 스위칭 잡음이 다음 문제가 된다. → <a href="https://semi.euiyun.com/soc/chapters/io.html">SoCBook · 인터럽트·DMA·고속 I/O(아이 다이어그램)</a> · <a href="https://semi.euiyun.com/memory/chapters/hbm.html">MemoryBook · HBM과 3D 적층</a> · <a href="https://semi.euiyun.com/packaging/chapters/interposer.html">PackagingBook · 2.5D와 인터포저</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="crosstalk">
+    <h2>누화</h2>
+    <p>나란히 달리는 두 선은 서로의 전기장과 자기장 속에 있다. 단위 길이 상호 커패시턴스 \(C_m\)은 공격선(aggressor) 전압의 변화 \(dV/dt\)에 비례하는 전류를 피해선(victim)에 주입하고, 상호 인덕턴스 \(L_m\)은 공격선 전류의 변화 \(dI/dt\)에 비례하는 기전력을 유도한다. 이렇게 넘어온 잡음이 <span class="term">누화</span><span class="en">(crosstalk)</span>다. 주입된 잡음은 피해선 위에서 양쪽으로 나뉘어 퍼지는데, 용량성 성분은 양쪽에 같은 부호로, 유도성 성분은 반대 부호로 간다. 그래서 공격파 반대쪽(원천 쪽)으로 가는 잡음에서는 둘이 더해지고, 공격파와 함께 가는 잡음에서는 둘이 빼진다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="결합된 두 선: 공격선의 계단이 오른쪽으로 갈 때 피해선의 근단에는 넓은 근단 누화, 원단에는 좁은 원단 누화가 나타난다">
+        <defs>
+          <marker id="si-a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="si-a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <rect x="120" y="60" width="520" height="10" rx="3" fill="var(--accent)" opacity=".8"/>
+        <rect x="120" y="130" width="520" height="10" rx="3" fill="var(--accent-2)" opacity=".8"/>
+        <g class="t" style="font-size:13px">
+          <text x="380" y="48" text-anchor="middle" style="fill:var(--accent);font-weight:700">공격선 — 계단이 오른쪽으로 진행</text>
+          <text x="380" y="165" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">피해선 (양 끝 정합 종단)</text>
+          <text x="60" y="140" text-anchor="middle">근단</text><text x="700" y="140" text-anchor="middle">원단</text>
+        </g>
+        <line x1="300" y1="65" x2="380" y2="65" stroke="var(--accent)" stroke-width="3" marker-end="url(#si-a3)"/>
+        <g stroke="var(--text-dim)" stroke-width="1.2" stroke-dasharray="3 3"><line x1="340" y1="72" x2="340" y2="128"/><line x1="356" y1="72" x2="356" y2="128"/><line x1="372" y1="72" x2="372" y2="128"/></g>
+        <text class="t t-dim" x="392" y="104" style="font-size:12px">에지가 지나는 곳에서 Cm·Lm 결합</text>
+        <line x1="330" y1="150" x2="250" y2="150" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#si-a4)"/>
+        <text class="t" x="200" y="190" text-anchor="middle" style="font-size:12px">후방: Cm/C + Lm/L (더해짐)</text>
+        <line x1="380" y1="150" x2="460" y2="150" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#si-a4)"/>
+        <text class="t" x="520" y="190" text-anchor="middle" style="font-size:12px">전방: Cm/C − Lm/L (빼짐)</text>
+        <g fill="none" stroke-width="2.4">
+          <path d="M20 250 L40 250 L52 222 L120 222 L132 250 L160 250" stroke="var(--accent-2)"/>
+          <path d="M640 236 L690 236 L696 262 L704 262 L710 236 L780 236" stroke="var(--accent-2)"/>
+        </g>
+        <g class="t t-dim" style="font-size:12px">
+          <text x="90" y="214" text-anchor="middle">NEXT: 높이 K_b·V, 폭 2t_d</text>
+          <text x="710" y="226" text-anchor="middle">FEXT: K_f(t_d/t_r)V, 폭 t_r</text>
+        </g>
+      </svg>
+      <figcaption>근단 누화와 원단 누화. 공격 에지가 선을 지나는 동안 피해선 근단에는 뒤로 흘러온 잡음이 \(2t_d\) 동안 쌓여 넓은 펄스가 되고, 원단에는 에지와 함께 달려온 잡음이 한꺼번에 도착해 좁고 높은 펄스가 된다.</figcaption>
+    </figure>
+    <p>약하게 결합된 무손실 선이 양 끝에서 정합 종단되어 있고, 공격선에 상승 시간 \(t_r\)인 계단 \(V_a(t)\)가 들어갈 때 피해선 양 끝의 전압은 다음과 같다.</p>
+    <div class="formula">$$V_{\text{NE}}(t) = K_b\big[V_a(t) - V_a(t - 2t_d)\big], \qquad K_b = \frac14\Big(\frac{C_m}{C} + \frac{L_m}{L}\Big)$$
+    $$V_{\text{FE}}(t) = K_f\,t_d\,\frac{dV_a}{dt}\Big|_{t - t_d}, \qquad K_f = \frac12\Big(\frac{C_m}{C} - \frac{L_m}{L}\Big), \qquad |V_{\text{FE}}|_{\max} = |K_f|\,\frac{t_d}{t_r}\,V$$<div class="where"><span class="term">근단 누화</span><span class="en">(near-end crosstalk, NEXT)</span>는 높이가 \(K_bV\)에서 <b>포화</b>한다(선이 \(\ell &gt; vt_r/2\), 곧 \(2t_d &gt; t_r\)일 때). 더 길어지면 펄스 폭만 넓어진다. <span class="term">원단 누화</span><span class="en">(far-end crosstalk, FEXT)</span>는 결합 길이 \(t_d\)에 비례해 끝없이 커지고 에지가 빠를수록 크다. <code>EM.tl.crosstalk(Cm, C, Lm, L)</code>가 \(K_b, K_f\)를 준다.</div></div>
+    <p>균질한 유전체 속에 묻힌 스트립라인에서는 TEM 파의 성질 때문에 \(C_m/C = L_m/L\)이 성립해 FEXT가 0이다. 위가 공기인 마이크로스트립에서는 전기력선 일부가 공기로 새어 \(C_m/C\)가 \(L_m/L\)보다 작아 FEXT가 음수로 나타난다. 같은 이야기를 모드로 하면, 결합된 두 선에는 같은 전압으로 움직이는 <span class="term">우모드</span><span class="en">(even mode)</span>와 반대 전압으로 움직이는 <span class="term">기모드</span><span class="en">(odd mode)</span>가 있고(\(Z_{\text{odd}} &lt; Z_0 &lt; Z_{\text{even}}\)), 불균질한 매질에서는 두 모드의 속력이 달라 원단에 도착하는 시각이 어긋난다 — 그 어긋남이 FEXT다.</p>
+    <div class="predict" data-for="sim-xt">
+      <p>같은 간격, 같은 길이의 두 선을 마이크로스트립에서 스트립라인(위아래 접지면 사이 균질한 유전체)으로 바꿔 깔았다. 원단 누화(FEXT)는?</p>
+      <div class="opts"><button class="opt">두 배가 된다 — 접지면이 둘이라 결합이 세진다</button><button class="opt">거의 같다 — 간격이 같으므로</button><button class="opt" data-correct>거의 0이 된다 — 균질 매질에서 \(C_m/C = L_m/L\)</button><button class="opt">부호만 바뀐다</button></div>
+      <div class="quiz-exp">\(K_f \propto C_m/C - L_m/L\)이 0이 된다. 근단 누화는 남는다(오히려 접지면이 가까워 결합 자체는 줄어든다). 아래 시뮬레이터에서 구조를 바꿔 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-xt">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>누화 줄이기: 가장 좁은 간격 찾기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-xt"></canvas><span class="hint">피해선(파랑)을 좌우로 끈다</span></div><div><canvas id="cv-xt2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>구조</span><div class="seg" id="xt-st"><button data-value="ms" class="on">마이크로스트립</button><button data-value="sl">스트립라인</button></div></div>
+          <label class="ctrl"><span>간격 s/h <output id="xt-s-out"></output></span><input type="range" id="xt-s" min="0.5" max="6" step="0.05" value="1"></label>
+          <label class="ctrl"><span>결합 길이 <output id="xt-len-out"></output></span><input type="range" id="xt-len" min="1" max="30" step="0.5" value="10"></label>
+          <label class="ctrl"><span>상승 시간 t<sub>r</sub> <output id="xt-tr-out"></output></span><input type="range" id="xt-tr" min="20" max="500" step="5" value="50"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">C<sub>m</sub>/C, L<sub>m</sub>/L</span><span class="v" id="xt-k">—</span></div>
+        <div class="stat"><span class="k">K<sub>b</sub>, K<sub>f</sub></span><span class="v" id="xt-kk">—</span></div>
+        <div class="stat"><span class="k">NEXT 최대</span><span class="v" id="xt-ne">—</span></div>
+        <div class="stat"><span class="k">FEXT 최대</span><span class="v" id="xt-fe">—</span></div>
+        <div class="stat"><span class="k">포화 길이 vt<sub>r</sub>/2</span><span class="v" id="xt-sat">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="xt-goal">—</span></div>
+      </div>
+      <div class="sim-note">선폭 \(w = h\)(유전체 두께), 양 끝 정합 종단. 결합 비율은 교과서적 근사 \(L_m/L \approx 0.6/[1 + (D/h)^2]\)(\(D = s + w\), 중심 간격), 마이크로스트립은 \(C_m/C \approx 0.8\,L_m/L\), \(\varepsilon_{r,\text{eff}}\) = 2.7, 스트립라인은 \(C_m/C = L_m/L\), \(\varepsilon_r\) = 3.6으로 두었다(실제 값은 2D 장 풀이로 추출한다). 오른쪽: 공격선 1 V 계단에 대한 피해선 근단(빨강)·원단(파랑) 전압(%), 초록 띠는 ±2%. 해볼 것: ① 길이를 늘리면 NEXT는 포화하고 FEXT는 계속 커진다. ② \(t_r\)을 키우면 FEXT는 줄지만 NEXT는(포화 영역에서) 그대로다. ③ <b>목표</b>: 마이크로스트립, 10 cm, 50 ps에서 NEXT ≤ 2%, |FEXT| ≤ 2%를 함께 만족하는 가장 좁은 간격을 찾아라.</div>
+    </div>
+    <div class="example" data-title="기판 배선의 근단·원단 누화">
+      <p>마이크로스트립 두 선의 결합이 \(C_m/C\) = 0.080, \(L_m/L\) = 0.10이다. 길이 15 cm(\(v = 1.5\times10^8\) m/s), 공격선에 상승 시간 100 ps인 1 V 계단이 들어간다. 근단·원단 누화의 크기와 근단 누화 펄스의 폭은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(K_b, K_f\)를 구하고 \(t_d = \ell/v\)와 \(t_r\)을 비교해 포화 여부를 본다.</div>
+        <div class="step"><b>풀이</b> \(K_b = (0.080 + 0.10)/4 = 0.045\), \(K_f = (0.080 - 0.10)/2 = -0.010\). \(t_d = 0.15/1.5\times10^8 = 1.0\) ns \(\gg t_r/2\)이므로 NEXT는 포화: \(0.045\times1\) V = 45 mV, 폭 \(2t_d\) = 2.0 ns. FEXT: \(-0.010\times(1.0\text{ ns}/100\text{ ps})\times1\) V = −0.10 V, 폭 약 100 ps.</div>
+        <div class="answer">NEXT 45 mV(폭 2 ns), FEXT −100 mV(폭 약 0.1 ns)</div>
+        <div class="step"><b>검토</b> 결합 계수는 FEXT 쪽이 작지만 \(t_d/t_r\) = 10배로 증폭되어 오히려 더 크다. 포화 길이는 \(vt_r/2\) = 7.5 mm라 그보다 긴 기판 배선에서 NEXT는 길이를 줄여도 그대로다. 스트립라인으로 옮기면 FEXT는 사라진다.</div>
+      </details>
+    </div>
+    <p>실무의 누화 대책은 식에서 바로 나온다. 간격을 넓힌다(\(L_m, C_m \propto 1/[1+(D/h)^2]\) — 기준면을 가깝게, 간격은 선폭의 3배 이상: "3W 규칙"). 평행 구간을 짧게 한다(FEXT). 에지를 필요 이상으로 빠르게 만들지 않는다. 민감한 선은 스트립라인으로 묻고, 두 선의 <em>차</em>로 신호를 보내는 차동 신호로 공통 잡음을 상쇄한다. 칩 안에서는 이웃 선이 반대로 스위칭할 때 결합 커패시턴스가 두 배로 보이는 밀러 효과가 지연 변동의 주요 원인이라, 중요한 선 옆에는 접지 차폐선을 깐다.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="pdn">
+    <h2>전원망 임피던스</h2>
+    <p>신호선만 전송선이 아니다. 칩에 전원을 대는 <span class="term">전원 분배망</span><span class="en">(power delivery network, PDN)</span>도 VRM(전압 조정기)에서 기판, 패키지, 범프를 거쳐 트랜지스터까지 가는 RLC 회로다. 큰 프로세서는 1 V 미만에서 수백 A를 쓰고, 클럭이 켜지거나 연산이 몰리는 순간 전류가 ns 안에 수십 A씩 뛴다. 그 전류 변화가 전원망 임피던스를 지나며 전압을 흔든다: \(\Delta V = Z(f)\,\Delta I(f)\). 그래서 설계 목표는 "넓은 주파수에서 임피던스를 일정 값 아래로"이다.</p>
+    <div class="formula">$$Z_t = \frac{V_{dd}\times(\text{허용 리플})}{\Delta I}$$<div class="where"><span class="term">목표 임피던스</span><span class="en">(target impedance)</span>. 예: \(V_{dd}\) = 0.75 V, 허용 리플 4%, 순간 전류 변화 10 A이면 \(Z_t\) = 3 mΩ. 이 값을 DC부터 칩의 전류 변화가 미치는 가장 높은 주파수(수백 MHz–GHz)까지 지키는 것이 전원 무결성(PI) 설계다. 저항만 생각한 직류 전압 강하가 IR 강하, 인덕턴스로 생기는 순간 강하가 \(L\,dI/dt\)다.</div></div>
+    <div class="tangle" id="tg-zt">
+      <p>공급 전압 <span class="tn" data-var="V" data-min="0.5" data-max="1.8" data-step="0.05" data-unit=" V">0.75</span>, 허용 리플 <span class="tn" data-var="r" data-min="1" data-max="10" data-step="0.5" data-unit=" %">4.0</span>, 순간 전류 변화 <span class="tn" data-var="I" data-min="1" data-max="200" data-step="1" data-unit=" A">10</span>이면 목표 임피던스는 <span class="tn-out" data-out="Zt"></span>다. 패키지 루프 인덕턴스가 <span class="tn" data-var="L" data-min="1" data-max="50" data-step="1" data-unit=" pH">3</span>이고 전류가 1 ns에 걸쳐 변한다면 \(L\,\Delta I/\Delta t\) = <span class="tn-out" data-out="Ldi"></span>로, 허용 리플 <span class="tn-out" data-out="dv"></span>와 비교된다.</p>
+    </div>
+    <p>한 종류의 부품으로는 이 넓은 범위를 덮을 수 없다. 실제 커패시터는 등가 직렬 저항(ESR)과 등가 직렬 인덕턴스(ESL)를 가진 직렬 RLC다. 자기 공진 주파수 \(f_{\text{SRF}} = 1/(2\pi\sqrt{\text{ESL}\cdot C})\) 아래에서는 커패시터, 위에서는 인덕터로 보이고, 공진점에서 임피던스는 ESR까지 떨어진다. 같은 커패시터 \(n\)개를 병렬로 달면 \(C\)는 \(n\)배, ESL·ESR은 \(1/n\)이 되어 \(f_{\text{SRF}}\)는 그대로이고 골만 깊어진다. 그래서 주파수 대역마다 다른 계층의 <span class="term">디커플링 커패시터</span><span class="en">(decoupling capacitor)</span>를 둔다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 290" role="img" aria-label="전원망의 계층: VRM, 벌크 커패시터, 기판 MLCC, 패키지 커패시터, 온다이 커패시턴스가 직렬 인덕턴스로 이어지고 각각 담당하는 주파수 대역이 다르다">
+        <g fill="none" stroke="var(--text)" stroke-width="2">
+          <path d="M40 90 H130 M200 90 H290 M360 90 H450 M520 90 H610 M680 90 H760"/>
+          <path d="M130 90 c5 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 12 -16 19 0" stroke="var(--accent-2)"/>
+          <path d="M290 90 c5 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 12 -16 19 0" stroke="var(--accent-2)"/>
+          <path d="M450 90 c5 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 12 -16 19 0" stroke="var(--accent-2)"/>
+          <path d="M610 90 c5 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 15 -16 17 0 c2 -16 12 -16 19 0" stroke="var(--accent-2)"/>
+          <path d="M80 90 V130 M66 130 H94 M66 138 H94 M80 138 V160"/>
+          <path d="M245 90 V130 M231 130 H259 M231 138 H259 M245 138 V160"/>
+          <path d="M405 90 V130 M391 130 H419 M391 138 H419 M405 138 V160"/>
+          <path d="M565 90 V130 M551 130 H579 M551 138 H579 M565 138 V160"/>
+          <path d="M740 90 V130 M726 130 H754 M726 138 H754 M740 138 V160"/>
+          <path d="M40 160 H760" stroke="var(--text-dim)"/>
+        </g>
+        <g class="t" style="font-size:13px;font-weight:700">
+          <text x="40" y="62">VRM</text><text x="80" y="182" text-anchor="middle">벌크</text><text x="245" y="182" text-anchor="middle">기판 MLCC</text><text x="405" y="182" text-anchor="middle">패키지 커패시터</text><text x="565" y="182" text-anchor="middle">(범프 앞 마디)</text><text x="740" y="182" text-anchor="middle">온다이 C</text>
+        </g>
+        <g class="t t-dim" style="font-size:12px">
+          <text x="165" y="62" text-anchor="middle">기판 면 L</text><text x="325" y="62" text-anchor="middle">소켓·BGA L</text><text x="485" y="62" text-anchor="middle">패키지 비아 L</text><text x="645" y="62" text-anchor="middle">범프 L</text>
+          <text x="80" y="200" text-anchor="middle">수백 µF–mF</text><text x="245" y="200" text-anchor="middle">1–47 µF</text><text x="405" y="200" text-anchor="middle">0.1–2 µF</text><text x="740" y="200" text-anchor="middle">수백 nF–µF</text>
+        </g>
+        <g>
+          <rect x="40" y="226" width="140" height="20" rx="4" fill="var(--accent-2)" opacity=".25"/><rect x="170" y="226" width="160" height="20" rx="4" fill="var(--accent-2)" opacity=".4"/>
+          <rect x="320" y="226" width="170" height="20" rx="4" fill="var(--accent)" opacity=".3"/><rect x="480" y="226" width="280" height="20" rx="4" fill="var(--accent)" opacity=".5"/>
+        </g>
+        <g class="t" style="font-size:12px">
+          <text x="110" y="241" text-anchor="middle">DC–100 kHz</text><text x="250" y="241" text-anchor="middle">100 kHz–10 MHz</text><text x="405" y="241" text-anchor="middle">1–100 MHz</text><text x="620" y="241" text-anchor="middle">50 MHz 이상</text>
+          <text x="400" y="276" text-anchor="middle" class="t-dim">오른쪽(칩)으로 갈수록 커패시턴스는 작지만 칩에 가까워 루프 인덕턴스가 작다 → 더 높은 주파수를 맡는다</text>
+        </g>
+      </svg>
+      <figcaption>전원망의 계층 구조. 각 단계의 커패시터는 자기보다 바깥(왼쪽) 인덕턴스가 막는 높은 주파수의 전류를 대신 대 준다. 경계마다 앞 단의 인덕턴스와 뒤 단의 커패시턴스가 병렬 공진을 만든다.</figcaption>
+    </figure>
+    <p>문제는 계층 사이의 경계다. 칩 쪽에서 보면 온다이 커패시턴스 \(C_{\text{die}}\)와 패키지 쪽 루프 인덕턴스 \(L_{\text{pkg}}\)가 <b>병렬</b>로 놓인다. 병렬 LC는 \(f_0 = 1/(2\pi\sqrt{L_{\text{pkg}}C_{\text{die}}})\)에서 임피던스가 치솟는 <span class="term">반공진</span><span class="en">(anti-resonance)</span>을 만들고, 그 높이는 대략 \(Q\sqrt{L/C}\), \(Q = \sqrt{L/C}/R\)이다. 칩과 패키지 사이의 이 봉우리는 보통 50–200 MHz에 있고, 전류가 한 번에 뛰면 이 주파수로 출렁이는 가장 깊은 처짐(<span class="term">첫 처짐</span><span class="en">(first droop)</span>)이 생긴다. 대책은 \(C_{\text{die}}\)를 늘리고(봉우리를 낮추고 왼쪽으로), \(L_{\text{pkg}}\)를 줄이고(패키지 커패시터를 칩 바로 아래에), 적당한 저항으로 공진을 누르는 것이다.</p>
+    <div class="sim" id="sim-pdn">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>전원망 설계: 모든 주파수에서 목표 임피던스 아래로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-pdn"></canvas><span class="hint top">● 손잡이: 좌우 = 커패시터 한 개 값, 위아래 = 개수</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온다이 C <output id="pd-cd-out"></output></span><input type="range" id="pd-cd" min="0" max="100" step="1" value="30"></label>
+          <label class="ctrl"><span>순간 전류 ΔI <output id="pd-di-out"></output></span><input type="range" id="pd-di" min="5" max="40" step="1" value="10"></label>
+          <label class="ctrl"><span>MLCC 개수 <output id="pd-nm-out"></output></span><input type="range" id="pd-nm" min="1" max="60" step="1" value="10"></label>
+          <label class="ctrl"><span>패키지 커패시터 개수 <output id="pd-np-out"></output></span><input type="range" id="pd-np" min="0" max="30" step="1" value="4"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">목표 Z<sub>t</sub></span><span class="v" id="pd-zt">—</span></div>
+        <div class="stat"><span class="k">최대 |Z| (주파수)</span><span class="v" id="pd-max">—</span></div>
+        <div class="stat"><span class="k">MLCC / 패키지 C</span><span class="v" id="pd-caps">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="pd-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(V_{dd}\) = 0.75 V, 허용 리플 4%(30 mV). 망: VRM(0.5 mΩ, 2 nH) ∥ 벌크 1880 µF → 기판 면(0.1 mΩ, 30 pH) → MLCC 뱅크(개당 ESR 3 mΩ, ESL 300 pH) → 소켓·BGA(0.2 mΩ, 10 pH) → 패키지 커패시터(개당 ESR 5 mΩ, ESL 40 pH) → 범프(0.1 mΩ, 1 pH) → 온다이 C(ESR 1 mΩ). 굵은 선이 칩에서 본 \(|Z(f)|\), 점선은 각 뱅크 혼자의 임피던스, 빨간 띠는 목표를 넘는 구간. 해볼 것: ① 온다이 C를 늘려 100 MHz 근처 반공진 봉우리가 낮아지고 왼쪽으로 가는 것을 본다. ② MLCC 개수를 늘리면 골은 깊어지지만 공진 주파수는 그대로다. ③ <b>목표</b>: 1 kHz–1 GHz 전체에서 \(|Z| \le Z_t\)를 만족하라. 온다이 C는 칩 면적이므로 가능한 한 적게.</div>
+    </div>
+    <figure class="mini" id="mini-droop">
+      <div class="mini-view"><canvas id="cv-droop"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>온다이 C <output id="dr-c-out"></output></span><input type="range" id="dr-c" min="100" max="2000" step="50" value="500"></label>
+        <label class="ctrl"><span>루프 L <output id="dr-l-out"></output></span><input type="range" id="dr-l" min="1" max="20" step="0.5" value="3"></label>
+        <span class="readout" id="dr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>첫 처짐. \(t = 0\)에 칩 전류가 10 A 뛰면(상승 1 ns) 처음 순간에는 온다이 C만 전류를 댈 수 있다. 패키지 쪽 \(L\)을 통한 전류가 따라올 때까지 전압이 처지고, \(f_0 = 1/2\pi\sqrt{LC}\)로 출렁이며 회복한다. 처짐의 크기는 대략 \(\Delta I\sqrt{L/C}\)(점선)이다(직렬 저항 0.6 mΩ, 패키지 커패시터 쪽을 이상 전원으로 둔 2차 회로).</figcaption>
+    </figure>
+    <div class="example" data-title="목표 임피던스와 칩–패키지 반공진">
+      <p>\(V_{dd}\) = 0.75 V, 허용 리플 4%, 순간 전류 변화 10 A인 칩이 있다. 칩에서 패키지 커패시터까지의 루프 인덕턴스가 3.0 pH, 온다이 커패시턴스가 1.0 µF이다. 목표 임피던스, 반공진 주파수, 특성 임피던스 \(\sqrt{L/C}\)를 구하고 감쇠가 없을 때 첫 처짐의 상한을 어림하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(Z_t = V_{dd}\times0.04/\Delta I\), \(f_0 = 1/(2\pi\sqrt{LC})\). 계단 전류에 대한 LC 회로의 전압 진폭은 \(\Delta I\sqrt{L/C}\)이다.</div>
+        <div class="step"><b>풀이</b> \(Z_t = 0.75\times0.04/10 = 3.0\) mΩ. \(f_0 = 1/(2\pi\sqrt{3.0\times10^{-12}\times1.0\times10^{-6}}) = 91.9\) MHz. \(\sqrt{L/C} = \sqrt{3.0\times10^{-6}} = 1.73\) mΩ. 처짐 상한 \(\approx 10\times1.73\) mΩ = 17.3 mV.</div>
+        <div class="answer">\(Z_t\) = 3.0 mΩ, \(f_0\) ≈ 92 MHz, \(\sqrt{L/C}\) ≈ 1.7 mΩ, 첫 처짐 ≲ 17 mV (허용 30 mV)</div>
+        <div class="step"><b>검토</b> \(\sqrt{L/C} &lt; Z_t\)이므로 반공진 봉우리가 적당히 감쇠되면 목표를 지킬 수 있다. 온다이 C가 250 nF로 줄면 \(\sqrt{L/C}\) = 3.5 mΩ로 목표를 넘는다 — 칩 면적의 수 %를 디커플링 셀에 쓰는 이유다. 전류 변화가 1 ns보다 느리면(주파수 성분이 \(f_0\) 아래) 처짐은 이보다 작다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>디캡 셀, IR 강하, 패키지의 커패시터</strong><p>칩 설계에서는 표준 셀 사이 빈자리마다 MOS 커패시터로 만든 디캡 셀을 깔아 온다이 C를 만들고, 전원망 분석 도구로 정적 IR 강하와 동적 전압 강하 지도를 그려 서명(사인오프)한다. 디캡 셀은 게이트 누설 전류를 먹고 면적을 차지하므로 필요한 곳에만 둔다. 패키지에서는 칩 바로 아래 기판 뒷면(랜드 쪽)에 커패시터를 달거나 기판 속에 박막 커패시터를 묻어 루프 인덕턴스를 줄인다. AI 가속기처럼 수백 A를 쓰는 칩에서는 VRM 자체를 패키지 바로 아래로 옮기는 수직 전원 공급까지 쓴다. 메모리 쪽에서는 HBM 스택의 TSV 전원 경로가 같은 문제를 겪는다. → <a href="https://semi.euiyun.com/design/chapters/power.html">DesignBook · 전력과 신뢰성(전원망과 IR 드롭)</a> · <a href="https://semi.euiyun.com/packaging/chapters/substrate.html">PackagingBook · 기판과 패키지 형태</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>계단이 선에 실리는 순간 선은 저항 \(Z_0\)로 보여 \(V_1 = V_sZ_0/(R_s + Z_0)\)가 출발한다. 양 끝에서 \(\Gamma_L, \Gamma_S\)배로 반사되며, 한 점의 전압은 지나간 파동의 합이다(바운스 도표). 최종값은 직류 답 \(V_sR_L/(R_s + R_L)\)이다.</li>
+      <li>\(\Gamma_S\Gamma_L &lt; 0\)이면 링잉, \(&gt; 0\)이면 계단식 상승. 직렬 종단(\(R_s = Z_0\))은 전력 없이 점대점 선을, 병렬 종단(\(R_L = Z_0\))은 직류 전력을 내고 버스·고속 수신단을 깨끗하게 한다.</li>
+      <li>TDR은 \(v(t) = V_i(1 + \rho)\)로 임피던스 지도를 그린다. 위치 \(d = vt/2\), \(Z = Z_0(1+\rho)/(1-\rho)\), 병렬 C의 골 넓이 \(-Z_0C/2\), 직렬 L의 봉우리 넓이 \(L/2Z_0\). 분해능은 \(vt_r/2\).</li>
+      <li>손실 전신 방정식은 \(t \ll L/R\)에서 파동, \(t \gg L/R\)에서 확산이다. 칩 안 배선은 분포 RC 선으로 \(t_{50} \approx 0.38\,rc\ell^2\), 인덕턴스는 \(t_r/2\sqrt{lc} &lt; \ell &lt; 2Z_0/r\)일 때만 중요하다.</li>
+      <li>엘모어 지연 \(\tau_i = \sum R_{ik}C_k\)는 RC 나무 지연의 빠르고 보수적인 어림이다. 최적 리피터(\(k_{\text{opt}}, h_{\text{opt}}\))는 지연을 \(T_{\text{opt}} \approx 2.40\,\ell\sqrt{R_0C_0rc}\)로 길이에 비례하게 만든다.</li>
+      <li>삽입 손실은 표피(\(\propto\sqrt f\))와 유전(\(\alpha_d = \pi f\sqrt{\varepsilon_r}\tan\delta/c\))의 합이다. 주파수에 따른 손실이 펄스를 퍼뜨려 ISI를 만들고 아이를 닫으며, FFE·CTLE·DFE 등화가 이를 되돌린다.</li>
+      <li>누화: NEXT \(= K_bV\)(포화), FEXT \(= K_f(t_d/t_r)V\)(길이·에지에 비례), 균질 매질에서 FEXT = 0. 전원망은 \(Z_t = V_{dd}\cdot\text{리플}/\Delta I\) 아래로 설계하며, 칩–패키지 반공진 \(1/2\pi\sqrt{L_{\text{pkg}}C_{\text{die}}}\)이 첫 처짐을 정한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(c = 2.998\times10^8\) m/s. 따로 말이 없으면 원천은 이상 계단, 선은 무손실이다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="첫 진행파" data-answer="3.75; 5.00" data-label="V₁ =; V_L(t_d) =" data-unit="V; V">
+        <div class="prob-q"><p>5.0 V 계단, 내부 저항 25 Ω인 원천이 \(Z_0\) = 75 Ω 선을 거쳐 150 Ω 부하를 구동한다. 첫 진행파의 크기와, 그것이 부하에 처음 도착했을 때 부하 전압은?</p></div>
+        <div class="prob-hint">\(V_1 = V_sZ_0/(R_s + Z_0)\), 부하에서는 \(V_1(1 + \Gamma_L)\).</div>
+        <div class="prob-sol"><p>\(V_1 = 5.0\times75/100 = 3.75\) V. \(\Gamma_L = (150-75)/(150+75) = 1/3\), \(V_L = 3.75\times4/3 = 5.00\) V. (최종값은 \(5.0\times150/175 = 4.29\) V이므로 첫 도착이 넘친 상태다.)</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="바운스 도표" data-answer="2.57; 1.47" data-label="V_L(t_d) =; V_L(3t_d) =" data-unit="V; V">
+        <div class="prob-q"><p>1.8 V CMOS 구동단(출력 저항 20 Ω)이 50 Ω, 끝이 개방인 선을 구동한다. \(t = t_d\)와 \(t = 3t_d\) 직후의 부하 전압은?</p></div>
+        <div class="prob-hint">\(V_1 = 1.8\times50/70\), \(\Gamma_S = -30/70\), \(\Gamma_L = 1\). \(3t_d\)에는 \(\Gamma_SV_1\)이 두 번(입사 + 반사) 더해진다.</div>
+        <div class="prob-sol"><p>\(V_1 = 1.286\) V, \(V_L(t_d) = 2V_1 = 2.57\) V. 원천 반사 \(\Gamma_SV_1 = -0.551\) V, \(V_L(3t_d) = 2.571 + 2(-0.551) = 1.47\) V. 최종값 1.8 V를 향해 링잉한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="병렬 종단" data-answer="1.29; 33.1" data-label="V_high =; P =" data-unit="V; mW">
+        <div class="prob-q"><p>2번 문제의 선 끝에 50 Ω 병렬 종단을 접지로 달았다. 출력이 높을 때 부하 전압과 종단 저항이 쓰는 직류 전력은?</p></div>
+        <div class="prob-sol"><p>\(\Gamma_L = 0\)이므로 첫 파동이 최종값: \(V = 1.8\times50/70 = 1.29\) V. \(P = V^2/50 = 1.286^2/50 = 33.1\) mW. 진폭이 72%로 줄고 선 하나에 33 mW — 64비트 버스라면 2 W가 넘는다. 그래서 병렬 종단은 \(V_{dd}/2\)로 끌어올린 테브냉 종단이나 저진폭 신호와 함께 쓴다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="TDR 위치" data-answer="32.0" data-label="d =" data-unit="cm">
+        <div class="prob-q"><p>폴리에틸렌(\(\varepsilon_r\) = 2.25) 동축 케이블에 TDR을 대자 계단 출발 3.20 ns 뒤에 전압이 두 배로 뛰었다. 케이블은 계측기에서 몇 cm 지점에서 끊어졌나?</p></div>
+        <div class="prob-sol"><p>\(v = c/1.5 = 1.999\times10^8\) m/s, \(d = vt/2 = 1.999\times10^8\times3.20\times10^{-9}/2 = 0.320\) m. 두 배(\(\rho = +1\))이므로 개방.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="TDR 임피던스" data-answer="83.3" data-label="Z =" data-unit="Ω">
+        <div class="prob-q"><p>50 Ω TDR의 입사 계단이 200 mV이다. 어떤 지점부터 계측 전압이 250 mV로 올라 머문다. 그 뒤 선의 임피던스는?</p></div>
+        <div class="prob-sol"><p>\(1 + \rho = 250/200\) → \(\rho = 0.25\). \(Z = 50\times1.25/0.75 = 83.3\) Ω.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="집중 불연속" data-answer="2.00; 0.800" data-label="L =; C =" data-unit="nH; pF">
+        <div class="prob-q"><p>50 Ω 선의 TDR 파형에 넓이 \(\int\rho\,dt\) = +20 ps인 봉우리와 −20 ps인 골이 각각 보였다. 봉우리가 직렬 인덕턴스, 골이 병렬 커패시턴스 때문이라면 각각의 값은?</p></div>
+        <div class="prob-hint">\(\int\rho\,dt = L/2Z_0\), \(\int\rho\,dt = -Z_0C/2\).</div>
+        <div class="prob-sol"><p>\(L = 2Z_0\int\rho\,dt = 2\times50\times20\times10^{-12} = 2.00\) nH(본드 와이어 2 mm쯤). \(C = 2\times20\times10^{-12}/50 = 0.800\) pF.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="분포 RC" data-answer="6.08; 24.3" data-label="t₅₀(200 µm) =; t₅₀(400 µm) =" data-unit="ps; ps">
+        <div class="prob-q"><p>국부 배선의 \(r\) = 2.0 Ω/µm, \(c\) = 0.20 fF/µm이다. 이상 구동단으로 200 µm와 400 µm 길이를 구동할 때 배선 RC 지연 \(0.38R_wC_w\)는?</p></div>
+        <div class="prob-sol"><p>200 µm: \(R_w = 400\) Ω, \(C_w = 40\) fF, \(0.38\times400\times40\times10^{-15} = 6.08\) ps. 길이 두 배면 \(R_wC_w\)가 네 배: 24.3 ps.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="엘모어 지연" data-answer="560" data-label="τ =" data-unit="ps">
+        <div class="prob-q"><p>출력 저항 2.0 kΩ인 구동단이 \(R_w\) = 1.0 kΩ, \(C_w\) = 200 fF인 분포 배선을 거쳐 20 fF 게이트를 구동한다. 끝 마디의 엘모어 지연은?</p></div>
+        <div class="prob-sol"><p>\(\tau = R_d(C_w + C_L) + R_w(C_w/2 + C_L) = 2000\times220\) fF \(+ 1000\times120\) fF = 440 + 120 = 560 ps. (보정형 50% 지연은 \(0.69\times440 + 1000\times(76 + 13.8)\) fF ≈ 394 ps.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="리피터" data-answer="5.87; 76.0" data-label="k_opt =; T_opt =" data-unit="; ps">
+        <div class="prob-q"><p>\(r\) = 0.050 Ω/µm, \(c\) = 0.20 fF/µm인 5.0 mm 배선을 \(R_0C_0\) = 4.0 ps인 공정으로 구동한다. 최적 리피터 수(실수값)와 최적 지연은?</p></div>
+        <div class="prob-hint">\(R_w = 250\) Ω, \(C_w = 1.0\) pF.</div>
+        <div class="prob-sol"><p>\(R_wC_w = 250\) ps. \(k_{\text{opt}} = \sqrt{0.38\times250/(0.69\times4.0)} = 5.87\). \(T_{\text{opt}} = 2.404\sqrt{4.0\times250}\) ps = 76.0 ps. 실제로는 \(k\) = 6을 쓰며 지연은 거의 같다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="전송선 판정" data-answer="7.90; 1.32" data-label="vt_r =; ℓ_crit =" data-unit="mm; mm">
+        <div class="prob-q"><p>상승 시간 50 ps인 신호가 \(\varepsilon_{r,\text{eff}}\) = 3.6인 패키지 배선을 지난다. 상승 에지의 공간 길이 \(vt_r\)과, "선 길이가 \(vt_r/6\)을 넘으면 전송선으로 다룬다"는 어림의 임계 길이는?</p></div>
+        <div class="prob-sol"><p>\(v = c/\sqrt{3.6} = 1.580\times10^8\) m/s, \(vt_r = 7.90\) mm, \(\ell_{\text{crit}} = 7.90/6 = 1.32\) mm. 패키지 배선 대부분(수–수십 mm)은 전송선이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="유전 손실" data-answer="2.82" data-label="IL_d =" data-unit="dB">
+        <div class="prob-q"><p>저손실 기판(\(\varepsilon_r\) = 3.4, \(\tan\delta\) = 0.004)의 30 cm 배선에서 56 Gb/s PAM4 신호의 나이퀴스트 주파수 14 GHz의 유전 손실은 몇 dB인가?</p></div>
+        <div class="prob-sol"><p>\(\alpha_d = \pi(14\times10^9)\sqrt{3.4}(0.004)/2.998\times10^8 = 1.082\) Np/m. \(8.686\times1.082\times0.30 = 2.82\) dB.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="누화" data-answer="30.0; 6.00" data-label="NEXT =; ℓ_sat =" data-unit="mV; mm">
+        <div class="prob-q"><p>스트립라인 두 선의 결합이 \(C_m/C = L_m/L = 0.060\)이다. 공격선에 1.0 V, 상승 시간 80 ps 계단을 넣을 때 포화된 근단 누화 전압과 포화가 시작되는 결합 길이는(\(v = 1.5\times10^8\) m/s)? 원단 누화는 얼마인가?</p></div>
+        <div class="prob-sol"><p>\(K_b = (0.06 + 0.06)/4 = 0.030\) → 30.0 mV. 포화 길이 \(vt_r/2 = 1.5\times10^8\times80\times10^{-12}/2 = 6.00\) mm. \(K_f = 0\)이므로 원단 누화는 0.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="전원망" data-answer="1.50; 101" data-label="Z_t =; f₀ =" data-unit="mΩ; MHz">
+        <div class="prob-q"><p>0.90 V, 허용 리플 5%인 코어 전원에서 순간 전류 변화가 30 A이다. 목표 임피던스는? 칩–패키지 루프 인덕턴스 5.0 pH와 온다이 커패시턴스 500 nF가 만드는 반공진 주파수는? 이 설계가 목표를 지키기 어려운 이유를 \(\sqrt{L/C}\)로 설명하라.</p></div>
+        <div class="prob-sol"><p>\(Z_t = 0.90\times0.05/30 = 1.50\) mΩ. \(f_0 = 1/(2\pi\sqrt{5.0\times10^{-12}\times5.0\times10^{-7}}) = 101\) MHz. \(\sqrt{L/C} = 3.16\) mΩ로 이미 목표의 두 배이고, 반공진 봉우리는 그 \(Q\)배다. 온다이 C를 네 배 이상 늘리거나 루프 인덕턴스를 줄여야 한다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="종단">
+        <div class="prob-q"><p>점대점 연결에서 직류 전력을 쓰지 않으면서 링잉을 없애는 방법은?</p></div>
+        <div class="prob-choices"><button>부하 쪽에 \(Z_0\) 저항을 접지로 단다</button><button data-correct>원천 쪽에 \(R_s + R_t = Z_0\)가 되도록 직렬 저항을 넣는다</button><button>선을 더 길게 해 반사를 늦춘다</button><button>부하 쪽에 큰 커패시터를 단다</button></div>
+        <div class="prob-sol"><p>직렬 종단은 \(\Gamma_S = 0\)으로 원천에서 반사를 흡수한다. 개방 부하에서는 절반 진폭이 두 배로 반사되어 한 번에 최종값에 선다. 직류 경로가 없어 전력을 먹지 않는다. 부하 쪽 커패시터는 상승을 늦출 뿐 반사(첫 순간 \(\Gamma \approx -1\))를 없애지 못한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="TDR 해석">
+        <div class="prob-q"><p>패키지 핀의 TDR 파형에서 정상품은 3.0 cm 지점(칩 쪽)에 골이 하나 있는데, 불량품은 같은 자리 직전에 위로 크게 꺾인 뒤 입사 전압의 두 배에 머문다. 가장 그럴듯한 해석은?</p></div>
+        <div class="prob-choices"><button>칩의 입력 커패시턴스가 커졌다</button><button>기판 배선의 임피던스가 조금 낮아졌다</button><button data-correct>칩 직전(범프나 본드 와이어)에서 경로가 끊겼다(개방)</button><button>핀이 접지에 단락되었다</button></div>
+        <div class="prob-sol"><p>정상품의 골은 칩의 입력 커패시턴스다. 불량품이 그 앞에서 \(\rho = +1\)(두 배)로 머무는 것은 개방이다. 단락이면 0으로 떨어진다. 정상품과의 시간 차이로 끊긴 위치를 더 좁힐 수 있다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>계단을 보낸 직후 원천이 선을 \(Z_0\)로 보는 까닭은?</p><div class="opts">
+        <button class="opt">선의 직류 저항이 \(Z_0\)이기 때문</button><button class="opt" data-correct>부하의 정보가 원천에 돌아오는 데 \(2t_d\)가 걸리고, 그동안 선은 전압과 전류의 비가 \(Z_0\)인 진행파만 실어 나르기 때문</button><button class="opt">부하가 늘 \(Z_0\)로 정합되어 있기 때문</button><button class="opt">선의 커패시턴스가 처음에 단락처럼 굴기 때문</button>
+      </div><div class="quiz-exp">진행파 하나에서는 \(V^+/I^+ = Z_0\)이다(12장). 반사파가 돌아오기 전에는 원천이 진행파 하나만 보므로, 선 길이·부하와 상관없이 \(Z_0\)이다.</div></div>
+      <div class="quiz-q"><p>칩 안의 국부 배선이 전송선이 아니라 RC 선처럼 움직이는 가장 큰 이유는?</p><div class="opts">
+        <button class="opt">칩 안에는 자기장이 없어서</button><button class="opt">칩 안의 신호가 느려서</button><button class="opt" data-correct>단면이 작아 \(r\)이 커서 \(r\ell \gg 2Z_0\)(또는 \(L/R\)이 신호 시간보다 훨씬 짧아) 확산 항이 이기기 때문</button><button class="opt">칩 안의 유전체 유전율이 작아서</button>
+      </div><div class="quiz-exp">같은 \(l, c\)라도 \(r\)이 수백 Ω/mm이면 파면이 \(e^{-r\ell/2Z_0}\)로 금세 사라진다. 저항이 작은 최상위 두꺼운 금속의 긴 클럭선은 인덕턴스를 따져야 한다.</div></div>
+      <div class="quiz-q"><p>리피터를 최적으로 넣으면 긴 배선의 지연이 길이에 비례하게 된다. 이유는?</p><div class="opts">
+        <button class="opt">리피터가 신호를 빛의 속력으로 보내기 때문</button><button class="opt" data-correct>최적 토막 길이와 크기가 길이와 무관한 상수라, 지연이 같은 토막 지연 × 토막 수가 되기 때문</button><button class="opt">리피터가 배선 저항을 줄여 주기 때문</button><button class="opt">엘모어 근사가 길이에 비례하는 항만 남기기 때문</button>
+      </div><div class="quiz-exp">\(\ell/k_{\text{opt}} = \sqrt{0.69R_0C_0/(0.38rc)}\)로 길이와 무관하다. 토막 하나의 지연이 정해지면 전체는 토막 수 = 길이에 비례한다.</div></div>
+      <div class="quiz-q"><p>손실 채널에서 아이가 닫히는 주된 원인으로 옳은 것은?</p><div class="opts">
+        <button class="opt">모든 주파수 성분이 같은 비율로 줄어 신호가 작아지기 때문</button><button class="opt" data-correct>높은 주파수가 더 많이 깎여 펄스가 퍼지고, 그 꼬리가 이웃 비트에 겹치는(ISI) 때문</button><button class="opt">반사가 생기기 때문</button><button class="opt">선이 길면 빛의 속력이 느려지기 때문</button>
+      </div><div class="quiz-exp">손실이 주파수와 무관하다면 눈은 작아지기만 하고 수신 증폭으로 되살릴 수 있다. 주파수 의존 손실이 펄스 모양을 바꿔 ISI를 만드는 것이 문제이며, 등화는 그 주파수 의존성을 되돌린다.</div></div>
+      <div class="quiz-q"><p>전원망의 칩–패키지 반공진 봉우리를 낮추는 데 가장 <b>효과가 없는</b> 것은?</p><div class="opts">
+        <button class="opt">온다이 디캡을 늘린다</button><button class="opt">패키지 커패시터를 칩 바로 아래로 옮겨 루프 인덕턴스를 줄인다</button><button class="opt">공진을 누르는 적당한 직렬 저항(ESR)을 준다</button><button class="opt" data-correct>기판의 벌크 커패시터를 더 많이 단다</button>
+      </div><div class="quiz-exp">벌크 커패시터는 수 kHz–수백 kHz를 맡는다. 100 MHz 근처에서는 칩과 벌크 사이의 큰 인덕턴스 때문에 벌크 커패시터가 보이지 않는다. 고주파 봉우리는 칩 가까운 곳의 \(L\)과 \(C\)로만 바꿀 수 있다.</div></div>
+    </div>
+  </section>
+</main>
+
+
+<script>
+(function () {
+  "use strict";
+  const cx = EM.cx, PI = Math.PI, TAU = 2 * Math.PI, C0 = EM.const.c;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const rnd = (a, b, step) => Math.round((a + Math.random() * (b - a)) / step) * step;
+  const fR = (R) => (R === Infinity ? "∞" : R >= 1000 ? (R / 1000).toFixed(R >= 1e4 ? 0 : 2) + " kΩ" : R.toFixed(R < 10 ? 1 : 0) + " Ω");
+  const sgn = (x, d = 2) => (Math.abs(x) < 0.5 * Math.pow(10, -d) ? "0" : (x > 0 ? "+" : "−") + Math.abs(x).toFixed(d));
+  const fT = (s) => { const a = Math.abs(s); return a < 1e-9 ? (s * 1e12).toFixed(a < 1e-11 ? 1 : 0) + " ps" : a < 1e-6 ? (s * 1e9).toFixed(2) + " ns" : (s * 1e6).toFixed(2) + " µs"; };
+  const fV = (v, d = 2) => (Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v).toFixed(d) + " V";
+  const pathXY = (ctx, pts) => { ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); };
+
+  /* ================================================================ 머리: 계단파의 왕복 */
+  {
+    const Z0 = 50, TM = 10;
+    const st = { Rs: 12, RL: Infinity, t: 0 };
+    const u2R = (u) => (u >= 0.965 ? Infinity : 5 * Math.pow(400, SB.clamp(u, 0, 0.93) / 0.93));
+    const R2u = (R) => (R === Infinity ? 1 : (Math.log10(R / 5) / Math.log10(400)) * 0.93);
+    let B, vmax = 2, vmin = 0, hs = [], hl = [];
+    const rebuild = () => {
+      B = EM.tl.bounce(1, st.Rs, Z0, st.RL, 80);
+      hs = []; hl = []; vmax = 1.1; vmin = 0;
+      for (let t = 0; t <= TM + 1e-9; t += 0.02) { const a = B.vAt(0, t + 1e-9), b = B.vAt(1, t + 1e-9); hs.push([t, a]); hl.push([t, b]); vmax = Math.max(vmax, a, b); vmin = Math.min(vmin, a, b); }
+      for (let z = 0.25; z < 1; z += 0.25) for (let t = 0; t <= TM; t += 0.125) { const v = B.vAt(z, t + 1e-9); vmax = Math.max(vmax, v); vmin = Math.min(vmin, v); }
+      vmax = Math.ceil(vmax * 1.08 * 5) / 5; vmin = Math.floor(vmin * 1.08 * 5) / 5;
+    };
+    rebuild();
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 560;
+      const topH = Math.round(h * (narrow ? 0.5 : 0.52));
+      const xL = narrow ? 70 : 120, xR = w - (narrow ? 70 : 120);
+      const yTop = 52, yBot = topH - 12;
+      const yLine = yTop + ((yBot - yTop) * vmax) / (vmax - vmin), sc = (yBot - yTop) / (vmax - vmin);
+      const X = (z) => xL + z * (xR - xL), Yv = (v) => yLine - v * sc;
+      // 선(도체)과 기준선
+      SB.dashLine(ctx, xL, Yv(1), xR, Yv(1), P.faint, [2, 5]);
+      SB.label(ctx, "1 V", xL + 16, Yv(1) - 9, { size: 10, color: P.dim });
+      // V(z) 분포
+      const pts = []; for (let i = 0; i <= 240; i++) { const z = i / 240; pts.push([X(z), Yv(B.vAt(z, st.t))]); }
+      ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), yLine); pts.forEach((p) => ctx.lineTo(p[0], p[1])); ctx.lineTo(X(1), yLine); ctx.closePath();
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.6; pathXY(ctx, pts); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(xL, yLine); ctx.lineTo(xR, yLine); ctx.stroke(); ctx.restore();
+      // 진행 중인 파면
+      const n = Math.floor(st.t), wv = B.waves[n];
+      if (wv && st.t < TM) {
+        const f = st.t - n, z = wv.dir > 0 ? f : 1 - f, xx = X(z);
+        const ya = Math.min(Yv(B.vAt(Math.max(0, z - 0.01), st.t)), Yv(B.vAt(Math.min(1, z + 0.01), st.t))) - 16;
+        const yw = Math.max(yTop + 14, ya), xw = SB.clamp(xx, xL + 34, xR - 34);
+        SB.arrow(ctx, xx - wv.dir * 22, yw, xx + wv.dir * 4, yw, { color: wv.dir > 0 ? P.accent : P.accent2, width: 2.4, head: 8 });
+        SB.label(ctx, sgn(wv.amp, 3) + " V", xw - wv.dir * 8, yw - 13, { size: 11, bold: true, color: wv.dir > 0 ? P.accent : P.accent2 });
+      }
+      // 손잡이 트랙
+      const trk = (x, u, lab, col) => {
+        ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x, yTop); ctx.lineTo(x, yBot); ctx.stroke(); ctx.restore();
+        const y = yBot - u * (yBot - yTop); handle(ctx, x, y, col, 12);
+        SB.label(ctx, lab, x, yTop - 20, { size: 11, bold: true, color: col });
+        return y;
+      };
+      const xs = xL - (narrow ? 34 : 46), xr = xR + (narrow ? 34 : 46);
+      const ys = trk(xs, R2u(st.Rs), "Rs " + fR(st.Rs), P.accent2), yr = trk(xr, R2u(st.RL), "RL " + fR(st.RL), P.accent);
+      SB.label(ctx, "∞", xr + 18, yTop, { size: 10, color: P.dim }); SB.label(ctx, "5Ω", xr + 18, yBot, { size: 10, color: P.dim });
+      self._h = [[xs, ys], [xr, yr], [yTop, yBot]];
+      SB.label(ctx, narrow ? `V₁ ${B.V1.toFixed(2)} V · Γs ${sgn(B.GS)} · ΓL ${sgn(B.GL)}` : `Z₀ = 50 Ω · V₁ = ${B.V1.toFixed(2)} V · Γ_S = ${sgn(B.GS)} · Γ_L = ${sgn(B.GL)}`, w / 2, 12, { size: narrow ? 11 : 12, bold: true });
+      // 아래: V(t)
+      const box = { x: narrow ? 40 : 58, y: topH + 14, w: w - (narrow ? 52 : 80), h: h - topH - (narrow ? 74 : 62) };
+      const cut = (arr) => arr.filter((p) => p[0] <= st.t);
+      const ch = SB.chart(ctx, box, { x: [0, TM], y: [vmin, vmax], xTicks: [0, 2, 4, 6, 8, 10], series: [{ data: cut(hs), color: P.accent2, width: 2.4 }, { data: cut(hl), color: P.accent, width: 2.4 }], hlines: [{ y: B.vFinal, color: P.dim, label: "V∞ = " + B.vFinal.toFixed(2) + " V" }], vlines: [{ x: Math.min(st.t, TM), color: P.faint, dash: [2, 3] }] });
+      SB.label(ctx, "원천 끝 V(0,t)", box.x + 8, box.y + 10, { align: "left", size: 11, bold: true, color: P.accent2 });
+      SB.label(ctx, "부하 끝 V(ℓ,t)", box.x + 8, box.y + 26, { align: "left", size: 11, bold: true, color: P.accent });
+      SB.label(ctx, "가로축: t / t_d", box.x + box.w - 4, box.y - 4, { align: "right", size: 10, color: P.dim });
+      const tt = Math.min(st.t, TM);
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(tt), ch.Y(B.vAt(0, tt)), 4.5, 0, TAU); ctx.fill(); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(tt), ch.Y(B.vAt(1, tt)), 4.5, 0, TAU); ctx.fill(); ctx.restore();
+    }, { aspect: 0.56, minHeight: 380, maxHeight: 500 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._h ? [{ id: "rs", x: cv._h[0][0], y: cv._h[0][1], r: 14 }, { id: "rl", x: cv._h[1][0], y: cv._h[1][1], r: 14 }] : []),
+      down: (id) => { if (id == null) st.t = 0; },
+      move: (id, x, y) => {
+        if (id == null) return;
+        const [yT, yB] = cv._h[2], u = SB.clamp((yB - y) / (yB - yT), 0, 1), R = u2R(u);
+        if (id === "rs") st.Rs = R === Infinity ? 2000 : R; else st.RL = R;
+        rebuild();
+      },
+    });
+    SB.loop("hero", (dt) => { st.t += dt * 1.15; if (st.t > TM + 1.6) st.t = 0; cv.redraw(); });
+  }
+
+  /* ================================================================ 1절: 바운스 tangle */
+  SB.tangle("tg-launch", (v) => {
+    const V1 = (v.Vs * v.Z0) / (v.Rs + v.Z0), GS = (v.Rs - v.Z0) / (v.Rs + v.Z0), RL = v.RL >= 1000 ? Infinity : v.RL;
+    const GL = RL === Infinity ? 1 : (RL - v.Z0) / (RL + v.Z0), VL1 = V1 * (1 + GL), Vf = RL === Infinity ? v.Vs : (v.Vs * RL) / (v.Rs + RL);
+    const p = GS * GL;
+    const note = Math.abs(GS) < 0.02 || Math.abs(GL) < 0.02 ? "한쪽이 정합되어 반사가 한 번 이내로 끝난다." : p < 0 ? `Γ_S·Γ_L = ${p.toFixed(2)} &lt; 0 → 최종값 위아래로 흔들리는 링잉.` : `Γ_S·Γ_L = ${p.toFixed(2)} &gt; 0 → 넘침 없이 계단식으로 다가간다.`;
+    return { V1: V1.toFixed(3) + " V", GS: sgn(GS, 3), GL: sgn(GL, 3), VL1: VL1.toFixed(3) + " V", Vf: Vf.toFixed(3) + " V", note };
+  }, { fmt: { RL: (v) => (v >= 1000 ? "∞ (개방)" : v + " Ω") } });
+
+  /* ================================================================ 1절: 바운스 도표 시뮬레이터 */
+  {
+    const TM = 8;
+    let tc = 0, B, Rs = 10, Z0 = 50, RL = Infinity, vF = 1, lo = 0, hi = 2;
+    const calc = () => {
+      B = EM.tl.bounce(1, Rs, Z0, RL, 90);
+      vF = Rs + RL === 0 ? NaN : RL === Infinity ? 1 : RL / (Rs + RL);
+      lo = 0; hi = 1.1;
+      for (let t = 0; t <= TM; t += 0.05) for (const z of [0, 0.5, 1]) { const v = B.vAt(z, t + 1e-9); lo = Math.min(lo, v); hi = Math.max(hi, v); }
+      lo = Math.floor(lo * 1.1 * 5) / 5; hi = Math.ceil(hi * 1.1 * 5) / 5;
+    };
+    calc();
+    let cv2 = null;
+    const cv1 = SB.canvas("cv-lat", (ctx, w, h, self) => {
+      const P = pal(), x0 = 58, x1 = w - 58, top = 30, bot = h - 34;
+      const Y = (t) => top + (t / TM) * (bot - top);
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, top - 6); ctx.lineTo(x0, bot); ctx.moveTo(x1, top - 6); ctx.lineTo(x1, bot); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "원천", x0, 12, { size: 12, bold: true }); SB.label(ctx, "부하", x1, 12, { size: 12, bold: true });
+      const big = Math.max(...B.waves.map((q) => Math.abs(q.amp)), 1e-9);
+      B.waves.forEach((q, n) => {
+        if (n >= TM) return;
+        const xa = q.dir > 0 ? x0 : x1, xb = q.dir > 0 ? x1 : x0, ya = Y(n), yb = Y(n + 1);
+        const col = q.dir > 0 ? P.accent : P.accent2;
+        ctx.save(); ctx.strokeStyle = col; ctx.globalAlpha = 0.35 + 0.65 * Math.min(1, Math.abs(q.amp) / big); ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke(); ctx.restore();
+        if (Math.abs(q.amp) > 0.004 && w > 200) SB.label(ctx, sgn(q.amp, 3), (xa + xb) / 2 + (q.dir > 0 ? 16 : -16), (ya + yb) / 2 - 9, { size: 10, color: col, bold: true });
+      });
+      for (let k = 0; k <= TM; k++) {
+        if (k % 2 === 0) SB.label(ctx, B.vAt(0, k + 1e-6).toFixed(2), x0 - 6, Y(k), { size: 10, align: "right", color: P.accent2 });
+        else SB.label(ctx, B.vAt(1, k + 1e-6).toFixed(2), x1 + 6, Y(k), { size: 10, align: "left", color: P.accent });
+      }
+      // 커서
+      const yc = Y(tc);
+      SB.dashLine(ctx, x0, yc, x1, yc, P.warn, [5, 4]);
+      const n = Math.floor(tc), q = B.waves[n];
+      if (q && tc < TM) { const f = tc - n, z = q.dir > 0 ? f : 1 - f; ctx.save(); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(x0 + z * (x1 - x0), yc, 4, 0, TAU); ctx.fill(); ctx.restore(); }
+      const hx = x1 - 18; handle(ctx, hx, yc, P.warn, 12);
+      SB.label(ctx, "t = " + tc.toFixed(2) + "t_d", hx - 20, yc - 18, { size: 11, bold: true, color: P.warn, align: "right" });
+      self._hc = [hx, yc, top, bot];
+    }, { aspect: 1.05, minHeight: 330, maxHeight: 470 });
+    cv2 = SB.canvas("cv-lat2", (ctx, w, h) => {
+      const P = pal(), gap = 52, h1 = (h - 30 - gap) * 0.42;
+      const b1 = { x: 50, y: 16, w: w - 66, h: h1 }, b2 = { x: 50, y: 16 + h1 + gap, w: w - 66, h: h - 16 - h1 - gap - 40 };
+      const prof = []; for (let i = 0; i <= 200; i++) prof.push([i / 200, B.vAt(i / 200, tc)]);
+      SB.chart(ctx, b1, { x: [0, 1], y: [lo, hi], xTicks: [0, 0.5, 1], xFmt: (v) => (v === 0 ? "원천" : v === 1 ? "부하" : "z/ℓ = 0.5"), series: [{ data: prof, color: P.warn, width: 2.6, fill: SB.color("accent-soft") }], hlines: isFinite(vF) ? [{ y: vF, color: P.dim }] : [] });
+      SB.label(ctx, "커서 시각의 V(z)", b1.x + 6, b1.y + 8, { align: "left", size: 11, bold: true, color: P.warn });
+      const ds = [], dl = []; for (let t = 0; t <= TM + 1e-9; t += 0.02) { ds.push([t, B.vAt(0, t + 1e-9)]); dl.push([t, B.vAt(1, t + 1e-9)]); }
+      const hb = isFinite(vF) && vF > 0.5 ? [{ y0: 0.95, y1: 1.05, color: SB.color("accent-soft") }] : [];
+      SB.chart(ctx, b2, { x: [0, TM], y: [lo, hi], xLabel: "t / t_d", hbands: hb, series: [{ data: ds, color: P.accent2, width: 2.2 }, { data: dl, color: P.accent, width: 2.4 }], vlines: [{ x: tc, color: P.warn, dash: [5, 4] }] });
+      SB.label(ctx, "원천 끝", b2.x + 6, b2.y + 8, { align: "left", size: 11, bold: true, color: P.accent2 });
+      SB.label(ctx, "부하 끝", b2.x + 60, b2.y + 8, { align: "left", size: 11, bold: true, color: P.accent });
+    }, { aspect: 1.05, minHeight: 330, maxHeight: 470 });
+    const stats = () => {
+      SB.stat("bc-v1", B.V1.toFixed(3) + " V");
+      SB.stat("bc-g", sgn(B.GS * B.GL, 3));
+      SB.stat("bc-vf", isFinite(vF) ? vF.toFixed(3) + " V" : "정의 안 됨");
+      let vm = -Infinity; const arr = [];
+      for (let k = 1; k < 80; k += 2) { const v = B.vAt(1, k + 1e-6); arr.push([k, v]); vm = Math.max(vm, v); }
+      SB.stat("bc-vmax", vm.toFixed(3) + " V");
+      if (!isFinite(vF)) { SB.stat("bc-set", "—"); SB.stat("bc-goal", "—"); return; }
+      const tol = 0.05 * Math.max(Math.abs(vF), 0.1);
+      let last = 0; arr.forEach(([k, v]) => { if (Math.abs(v - vF) > tol) last = k; });
+      SB.stat("bc-set", last >= 77 ? "안착 안 함" : (last === 0 ? 1 : last + 2) + " t_d");
+      const ok = arr.every(([, v]) => v >= 0.95 && v <= 1.05);
+      SB.stat("bc-goal", ok ? `<span style="color:var(--ok)">달성 ✓ ${RL === Infinity || RL > 10 * Z0 ? "직렬 종단" : "병렬 종단"}</span>` : "미달성");
+    };
+    const upd = () => { Rs = rs(); Z0 = z0(); RL = $("bc-open").checked ? Infinity : rl(); calc(); stats(); cv1.redraw(); cv2.redraw(); };
+    const rs = SB.range("bc-rs", (v) => v + " Ω", upd), z0 = SB.range("bc-z0", (v) => v + " Ω", upd), rl = SB.range("bc-rl", (v) => v + " Ω", () => { $("bc-open").checked = false; upd(); });
+    $("bc-open").addEventListener("change", upd);
+    stats();
+    const loop = SB.loop("sim-bounce", (dt) => { tc += dt * 0.9; if (tc > TM) tc = 0; cv1.redraw(); cv2.redraw(); });
+    const sync = SB.play("bc-play", loop);
+    SB.drag(cv1, {
+      handles: () => (cv1._hc ? [{ id: "c", x: cv1._hc[0], y: cv1._hc[1], r: 14 }] : []),
+      down: () => { loop.stop(); sync && sync(); },
+      move: (id, x, y) => { const [, , top, bot] = cv1._hc; tc = SB.clamp(((y - top) / (bot - top)) * TM, 0, TM); cv2.redraw(); },
+    });
+  }
+
+  /* ================================================================ 1절: 드릴 */
+  SB.drill("drill-bounce", () => {
+    const Vs = pick([1.2, 1.8, 2.5, 3.3, 5]), Z0 = pick([40, 50, 60, 75]), Rs = rnd(5, 120, 5), RL = pick([Infinity, rnd(10, 300, 10)]);
+    const V1 = (Vs * Z0) / (Rs + Z0), GL = RL === Infinity ? 1 : (RL - Z0) / (RL + Z0), GS = (Rs - Z0) / (Rs + Z0);
+    const VL1 = V1 * (1 + GL), VL3 = VL1 + V1 * GL * GS * (1 + GL);
+    return {
+      q: `<p>\\(V_s = ${Vs}\\) V 계단, \\(R_s = ${Rs}\\) Ω, \\(Z_0 = ${Z0}\\) Ω, 부하 \\(R_L = ${RL === Infinity ? "\\infty" : RL}\\) Ω. 첫 진행파 \\(V_1\\), \\(t = t_d\\)와 \\(t = 3t_d\\) 직후의 부하 전압은?</p>`,
+      answer: [V1, VL1, VL3], label: ["V₁ =", "V_L(t_d) =", "V_L(3t_d) ="], unit: ["V", "V", "V"], tol: "1%",
+      sol: `\\(V_1 = ${Vs}\\times${Z0}/${Rs + Z0} = ${V1.toFixed(3)}\\) V, \\(\\Gamma_L = ${GL.toFixed(3)}\\), \\(\\Gamma_S = ${GS.toFixed(3)}\\). \\(V_L(t_d) = V_1(1+\\Gamma_L) = ${VL1.toFixed(3)}\\) V, \\(V_L(3t_d) = V_L(t_d) + V_1\\Gamma_L\\Gamma_S(1+\\Gamma_L) = ${VL3.toFixed(3)}\\) V.`,
+    };
+  });
+
+  /* ================================================================ 2절: TDR tangle */
+  SB.tangle("tg-tdr", (v) => {
+    const vel = C0 / Math.sqrt(v.er), d = (vel * v.t * 1e-9) / 2, Z = (50 * (1 + v.rho)) / (1 - v.rho), res = (vel * v.tr * 1e-12) / 2;
+    return { d: d >= 1 ? d.toFixed(3) + " m" : (d * 100).toFixed(1) + " cm", Z: Z.toFixed(1) + " Ω", res: res >= 0.01 ? (res * 100).toFixed(2) + " cm" : (res * 1000).toFixed(2) + " mm" };
+  });
+
+  /* ================================================================ 2절: TDR 시뮬레이터 */
+  {
+    const VEL = 1.5e8, LEN = 0.30, T = LEN / VEL, DT = 2e-12, TS = 4e-12, DMAX = 0.33;
+    const st = { mode: "build", kind: "C", u: 40, pos: 0.12, end: "50", tr: 40e-12, mk: 0.12, hid: null, score: 0, tries: 0, msg: "" };
+    const valOf = (kind, u) => kind === "C" ? 0.1e-12 * Math.pow(20, u / 100) : kind === "L" ? 0.2e-9 * Math.pow(25, u / 100) : kind === "Zh" ? 55 + 0.65 * u : 20 + 0.25 * u;
+    const valStr = (kind, val) => kind === "C" ? (val * 1e12).toFixed(2) + " pF" : kind === "L" ? (val * 1e9).toFixed(2) + " nH" : val.toFixed(0) + " Ω (3 cm)";
+    const segsFor = (d) => {
+      const p = SB.clamp(d.pos, 0.01, LEN - 0.04), t1 = Math.round(p / VEL / DT) * DT;
+      const mid = d.kind === "C" ? { Z0: TS / d.val, delay: TS } : d.kind === "L" ? { Z0: d.val / TS, delay: TS } : { Z0: d.val, delay: Math.round(0.03 / VEL / DT) * DT };
+      return [{ Z0: 50, delay: t1 }, mid, { Z0: 50, delay: Math.max(DT, T - t1 - mid.delay) }];
+    };
+    let res = null;
+    const cur = () => (st.mode === "game" ? st.hid : { kind: st.kind, val: valOf(st.kind, st.u), pos: st.pos });
+    const run = () => {
+      const d = cur(), RL = st.mode === "game" || st.end === "50" ? 50 : st.end === "open" ? Infinity : 0;
+      res = EM.tl.tdr(segsFor(d), { Rs: 50, RL, tr: st.tr, dt: DT, tmax: (2 * DMAX) / VEL });
+    };
+    const newGame = () => {
+      const kind = pick(["C", "L", "Zh", "Zl"]);
+      const val = kind === "C" ? rnd(0.3, 1.5, 0.1) * 1e-12 : kind === "L" ? rnd(1, 4, 0.5) * 1e-9 : kind === "Zh" ? rnd(65, 90, 5) : rnd(28, 40, 2);
+      st.hid = { kind, val, pos: rnd(0.04, 0.26, 0.005) }; st.mk = 0.15; st.msg = "";
+    };
+    const rhoAt = (t) => { if (!res) return 0; const i = SB.clamp(Math.round(t / DT), 0, res.vin.length - 1); return res.vin[i] - 1; };
+    const area = () => { const t0 = (2 * Math.max(0.005, st.mk - 0.03)) / VEL, t1 = (2 * (st.mk + 0.03)) / VEL; let s = 0; for (let i = Math.round(t0 / DT); i <= Math.round(t1 / DT) && i < res.vin.length; i++) s += (res.vin[i] - 1) * DT; return s; };
+    run();
+    const cv = SB.canvas("cv-tdr", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 520;
+      const box = { x: narrow ? 44 : 56, y: 112, w: w - (narrow ? 58 : 76), h: h - 112 - 46 };
+      const X = (d) => box.x + (d / DMAX) * box.w;
+      // 선 그림
+      const yl = 62, d = cur();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(0), yl); ctx.lineTo(X(LEN), yl); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(0), yl + 22); ctx.lineTo(X(LEN), yl + 22); ctx.stroke(); ctx.restore();
+      for (let k = 0; k <= 30; k += 5) { SB.label(ctx, k + "", X(k / 100), yl + 34, { size: 10, color: P.dim }); }
+      SB.label(ctx, "cm", X(0.315), yl + 34, { size: 10, color: P.dim });
+      SB.label(ctx, "TDR 50 Ω", X(0) - (narrow ? 4 : 8), yl - 20, { size: 11, bold: true, align: "left" });
+      // 끝 종단
+      const xe = X(LEN), endT = st.mode === "game" ? "50" : st.end;
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2;
+      if (endT === "50") { ctx.beginPath(); ctx.moveTo(xe, yl); for (let i = 0; i < 6; i++) ctx.lineTo(xe + (i % 2 ? -5 : 5), yl + 2 + (i + 0.5) * 3.3); ctx.lineTo(xe, yl + 22); ctx.stroke(); }
+      else if (endT === "short") { ctx.beginPath(); ctx.moveTo(xe, yl); ctx.lineTo(xe, yl + 22); ctx.stroke(); }
+      ctx.restore();
+      SB.label(ctx, endT === "50" ? "50 Ω" : endT === "open" ? "개방" : "단락", xe, yl - 14, { size: 10, color: P.dim });
+      // 불연속 그림
+      if (st.mode === "build") {
+        const xd = X(d.pos);
+        ctx.save(); ctx.strokeStyle = P.accent; ctx.fillStyle = P.accent; ctx.lineWidth = 2.4;
+        if (d.kind === "C") { ctx.beginPath(); ctx.moveTo(xd, yl); ctx.lineTo(xd, yl + 7); ctx.moveTo(xd - 8, yl + 7); ctx.lineTo(xd + 8, yl + 7); ctx.moveTo(xd - 8, yl + 13); ctx.lineTo(xd + 8, yl + 13); ctx.moveTo(xd, yl + 13); ctx.lineTo(xd, yl + 22); ctx.stroke(); }
+        else if (d.kind === "L") { ctx.beginPath(); ctx.moveTo(xd - 10, yl); for (let i = 0; i < 4; i++) ctx.arc(xd - 7.5 + i * 5, yl, 2.5, PI, 0); ctx.stroke(); }
+        else { ctx.lineWidth = d.kind === "Zh" ? 1.2 : 7; ctx.beginPath(); ctx.moveTo(xd, yl); ctx.lineTo(X(d.pos + 0.03), yl); ctx.stroke(); }
+        ctx.restore();
+        SB.label(ctx, valStr(d.kind, d.val), xd, yl + 48, { size: 10, bold: true, color: P.accent });
+      } else SB.label(ctx, "이 선 어딘가에 결함이 하나 숨어 있다", X(LEN / 2), yl + 48, { size: 11, color: P.dim });
+      // 표지
+      const mx = X(st.mk);
+      ctx.save(); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.moveTo(mx, yl - 4); ctx.lineTo(mx - 9, yl - 20); ctx.lineTo(mx + 9, yl - 20); ctx.closePath(); ctx.fill(); ctx.restore();
+      handle(ctx, mx, yl - 30, P.warn, 12);
+      self._mk = [mx, yl - 30]; self._X = [box.x, box.w];
+      // TDR 파형
+      const data = []; let lo = 0.6, hi = 1.4;
+      for (let i = 0; i < res.t.length; i += 1) { const dd = (VEL * res.t[i]) / 2; if (dd > DMAX) break; data.push([dd, res.vin[i]]); if (res.t[i] > st.tr * 1.5) { lo = Math.min(lo, res.vin[i]); hi = Math.max(hi, res.vin[i]); } }
+      lo = Math.floor((lo - 0.05) * 10) / 10; hi = Math.ceil((hi + 0.05) * 10) / 10;
+      const zl = [25, 75, 100].map((Z) => ({ y: 1 + (Z - 50) / (Z + 50), color: P.faint, label: Z + " Ω", dash: [2, 4] })).filter((q) => q.y > lo && q.y < hi);
+      SB.chart(ctx, box, { x: [0, DMAX], y: [lo, hi], xFmt: (v) => (v * 100).toFixed(0), xLabel: narrow ? "d = vt/2 (cm)" : "d = vt/2 (cm) — 왕복 시간 2d/v", yLabel: narrow ? "" : "v / V_i", series: [{ data, color: P.accent2, width: 2.4 }], hlines: [{ y: 1, color: P.dim, dash: [4, 4] }, ...zl], vlines: [{ x: st.mk, color: P.warn, dash: [5, 4] }], bands: [{ x0: Math.max(0, st.mk - 0.03), x1: st.mk + 0.03, color: SB.color("accent-soft") }] });
+      SB.label(ctx, `t_r = ${(st.tr * 1e12).toFixed(0)} ps`, box.x + box.w - 6, box.y + 10, { align: "right", size: 11, color: P.dim });
+      if (st.msg) SB.label(ctx, st.msg, box.x + box.w / 2, box.y + box.h - 14, { size: 12, bold: true, color: st.msg.startsWith("정답") ? P.ok : P.bad });
+    }, { aspect: 0.62, minHeight: 360, maxHeight: 480 });
+    const stats = () => {
+      const t = (2 * st.mk) / VEL, rho = rhoAt(t + st.tr / 2), A = area();
+      SB.stat("td-pos", (st.mk * 100).toFixed(1) + " cm");
+      SB.stat("td-t", (t * 1e9).toFixed(3) + " ns");
+      SB.stat("td-rho", sgn(rho, 3) + ` (${rho > -0.99 && rho < 0.99 ? ((50 * (1 + rho)) / (1 - rho)).toFixed(0) : rho > 0 ? "∞" : "0"} Ω)`);
+      SB.stat("td-area", Math.abs(A) < 0.3e-12 ? "—" : A < 0 ? `C ≈ ${((-2 * A) / 50 * 1e12).toFixed(2)} pF` : `L ≈ ${(2 * 50 * A * 1e9).toFixed(2)} nH`);
+      SB.stat("td-res", st.mode === "game" ? `맞힘 ${st.score} / ${st.tries}` : "—");
+    };
+    const full = () => { run(); stats(); cv.redraw(); };
+    const valR = SB.range("td-val", (u) => valStr(st.kind, valOf(st.kind, u)), (u) => { st.u = u; full(); });
+    SB.seg("td-kind", (k) => { st.kind = k; valR.set(st.u, true); full(); });
+    SB.seg("td-end", (e) => { st.end = e; full(); });
+    SB.seg("td-guess", () => {});
+    const guess = () => $("td-guess").querySelector("button.on").dataset.value;
+    SB.range("td-tr", (v) => v + " ps", (v) => { st.tr = v * 1e-12; full(); });
+    SB.seg("td-mode", (m) => {
+      st.mode = m; const g = m === "game";
+      ["td-kind-wrap", "td-val-wrap", "td-end-wrap"].forEach((id) => ($(id).style.display = g ? "none" : ""));
+      ["td-guess-wrap", "td-game-btns"].forEach((id) => ($(id).style.display = g ? "" : "none"));
+      if (g) newGame(); else { st.mk = st.pos; st.msg = ""; }
+      full();
+    });
+    $("td-new").addEventListener("click", () => { newGame(); full(); });
+    $("td-check").addEventListener("click", () => {
+      if (!st.hid) return;
+      const okT = guess() === st.hid.kind, okP = Math.abs(st.mk - st.hid.pos) <= 0.01;
+      st.tries++; if (okT && okP) st.score++;
+      const name = { C: "병렬 C", L: "직렬 L", Zh: "Z↑ 구간", Zl: "Z↓ 구간" }[st.hid.kind];
+      st.msg = (okT && okP ? "정답! " : "아쉽다 — ") + `${name} ${valStr(st.hid.kind, st.hid.val)}, ${(st.hid.pos * 100).toFixed(1)} cm`;
+      stats(); cv.redraw();
+    });
+    SB.drag(cv, {
+      handles: () => (cv._mk ? [{ id: "m", x: cv._mk[0], y: cv._mk[1], r: 14 }] : []),
+      move: (id, x) => {
+        const [bx, bw] = cv._X, d = SB.clamp(((x - bx) / bw) * DMAX, 0.01, LEN - 0.04);
+        st.mk = Math.round(d * 1000) / 1000;
+        if (st.mode === "build") { st.pos = st.mk; run(); }
+        stats();
+      },
+    });
+    ["td-guess-wrap", "td-game-btns"].forEach((id) => { $(id).hidden = false; $(id).style.display = "none"; });
+    stats();
+  }
+
+  /* ================================================================ 3절: 분포 RC 미니 */
+  {
+    let u = 20;
+    const tOf = (u) => 0.004 * Math.pow(500, u / 100);
+    const fam = [0.01, 0.03, 0.1, 0.3, 1, 2];
+    const cv = SB.canvas("cv-rcd", (ctx, w, h) => {
+      const P = pal(), narrow = w < 520, t = tOf(u);
+      const b1 = narrow ? { x: 44, y: 14, w: w - 58, h: (h - 100) / 2 } : { x: 50, y: 14, w: w / 2 - 70, h: h - 60 };
+      const b2 = narrow ? { x: 44, y: 14 + b1.h + 52, w: w - 58, h: (h - 100) / 2 } : { x: w / 2 + 40, y: 14, w: w / 2 - 56, h: h - 60 };
+      const series = fam.map((tf) => { const d = []; for (let i = 0; i <= 60; i++) d.push([i / 60, EM.tl.rcLine(1, 1, i / 60, tf)]); return { data: d, color: P.faint, width: 1.2 }; });
+      const cur = []; for (let i = 0; i <= 100; i++) cur.push([i / 100, EM.tl.rcLine(1, 1, i / 100, t)]);
+      series.push({ data: cur, color: P.accent, width: 2.8, fill: SB.color("accent-soft") });
+      SB.chart(ctx, b1, { x: [0, 1], y: [0, 1.05], xLabel: "위치 z / ℓ", yTicks: [0, 0.5, 1], series });
+      SB.label(ctx, "V(z, t)", b1.x + 8, b1.y + 8, { align: "left", size: 11, bold: true, color: P.accent });
+      const far = []; for (let i = 0; i <= 160; i++) { const tt = (2 * i) / 160; far.push([tt, EM.tl.rcLine(1, 1, 1, tt)]); }
+      const vf = EM.tl.rcLine(1, 1, 1, t);
+      SB.chart(ctx, b2, { x: [0, 2], y: [0, 1.05], xLabel: "t / (R_w C_w)", yTicks: [0, 0.5, 1], series: [{ data: far.filter((p) => p[0] <= t), color: P.accent2, width: 2.6 }, { data: far, color: P.faint, width: 1, dash: [3, 3] }], vlines: [{ x: 0.38, color: P.warn, label: "0.38" }], hlines: [{ y: 0.5, color: P.faint }], points: [{ x: Math.min(t, 2), y: vf, color: P.accent2, r: 5 }] });
+      SB.label(ctx, "끝 전압 V(ℓ, t)", b2.x + 8, b2.y + 8, { align: "left", size: 11, bold: true, color: P.accent2 });
+      $("rcd-r").textContent = `t = ${t.toFixed(3)} R_wC_w · V(ℓ) = ${vf.toFixed(3)} V`;
+    }, { aspect: 0.42, minHeight: 250, maxHeight: 340 });
+    const g = SB.range("rcd-t", (v) => tOf(v).toFixed(3), (v) => { u = v; cv.redraw(); });
+    const loop = SB.loop("mini-rcd", (dt) => { u += dt * 14; if (u > 100) u = 0; g.set(Math.round(u), true); cv.redraw(); });
+    SB.play("rcd-play", loop);
+  }
+
+  /* ================================================================ 3절: RC tangle */
+  SB.tangle("tg-rc", (v) => {
+    const l = 0.2e-9, c = 0.2e-12, Z0 = Math.sqrt(l / c), td = v.L * Math.sqrt(l * c), Rw = v.r * v.L, Cw = c * v.L, rc = 0.38 * Rw * Cw, ratio = Rw / (2 * Z0);
+    const verdict = ratio > 2 ? "파면이 거의 다 먹혀 <b>RC 확산 선</b>으로 다루면 된다." : ratio > 0.5 ? "<b>경계 영역</b>: 파면은 보이지만 크게 줄어든다 — RLC로 풀어야 한다." : "저항 손실이 작아 <b>LC 전송선</b>이다(상승 시간이  2t_d보다 짧으면 반사를 따져야 한다).";
+    return { tof: fT(td), rc: fT(rc), ratio: ratio.toFixed(2), verdict };
+  });
+
+  /* ================================================================ 3절: RLC 선 시뮬레이터 */
+  {
+    const lpm = 0.2e-6, cpm = 0.2e-9, Z0 = Math.sqrt(lpm / cpm), N = 40, TR = 5e-12, LMAX = 20;
+    const st = { r: 200, len: 2, Rs: 30, ph: 0, out: null };
+    const rOf = (u) => Math.pow(10, u / 25 - 1);
+    const simulate = () => {
+      const r = st.r * 1e3, len = st.len * 1e-3, Rs = st.Rs;
+      const dx = len / N, Ls = lpm * dx, Cs = cpm * dx, Rg = r * dx, Rw = r * len, Cw = cpm * len, td = len * Math.sqrt(lpm * cpm);
+      const est = 0.69 * Rs * Cw + 0.38 * Rw * Cw, tend = Math.max(5 * td, 2.6 * (est + td));
+      let dt = 0.8 * Math.max(0.5 * Math.sqrt(Ls * Cs), 0.2 * Rg * Cs); const steps = Math.ceil(tend / dt); dt = tend / steps;
+      const v = new Float64Array(N + 1), i = new Float64Array(N), cap = new Float64Array(N + 1).fill(Cs); cap[0] = Cs / 2; cap[N] = Cs / 2;
+      const a = Math.exp((-Rg * dt) / Ls), b = Rg > 0 ? (1 - a) / Rg : dt / Ls;
+      const NF = 240, every = Math.max(1, Math.floor(steps / NF)), frames = [], far = [[0, 0]];
+      let t50 = NaN;
+      frames.push({ t: 0, v: Array.from(v) });
+      for (let s = 1; s <= steps; s++) {
+        const t = s * dt, vs = Math.min(1, t / TR);
+        for (let k = 0; k < N; k++) i[k] = i[k] * a + (v[k] - v[k + 1]) * b;
+        if (Rs < 1e-9) v[0] = vs; else v[0] = (v[0] + (dt / cap[0]) * (vs / Rs - i[0])) / (1 + dt / (cap[0] * Rs));
+        for (let k = 1; k < N; k++) v[k] += (dt / cap[k]) * (i[k - 1] - i[k]);
+        v[N] += (dt / cap[N]) * i[N - 1];
+        if (isNaN(t50) && v[N] >= 0.5) t50 = t;
+        if (s % every === 0) { frames.push({ t, v: Array.from(v) }); far.push([t, v[N]]); }
+      }
+      st.out = { frames, far, td, est, t50, tend, Rw };
+      st.ph = 0;
+    };
+    simulate();
+    const cv = SB.canvas("cv-rlc", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 520, o = st.out;
+      const fi = Math.min(o.frames.length - 1, Math.floor(st.ph * (o.frames.length - 1))), fr = o.frames[fi];
+      const xl = narrow ? 44 : 56, xr = w - 24, X = (mm) => xl + (mm / LMAX) * (xr - xl);
+      const top = 26, yl = 132, sc = 128;
+      // 선 위 전압
+      const pts = fr.v.map((vv, k) => [X((k / N) * st.len), yl - Math.max(-0.2, Math.min(1.4, vv)) * (sc / 1.6)]);
+      ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), yl); pts.forEach((p) => ctx.lineTo(p[0], p[1])); ctx.lineTo(X(st.len), yl); ctx.closePath(); ctx.fillStyle = SB.color("accent-soft"); ctx.fill();
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; pathXY(ctx, pts); ctx.stroke();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(0), yl); ctx.lineTo(X(st.len), yl); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, X(0), yl - sc / 1.6, X(LMAX), yl - sc / 1.6, P.faint, [2, 5]);
+      SB.label(ctx, "1 V", X(0) - 18, yl - sc / 1.6, { size: 10, color: P.dim });
+      for (let k = 0; k <= LMAX; k += 5) SB.label(ctx, k + (k === LMAX ? " mm" : ""), X(k), yl + 14, { size: 10, color: P.dim });
+      handle(ctx, X(st.len), yl, P.accent2, 12);
+      self._he = [X(st.len), yl, xl, xr];
+      SB.label(ctx, `t = ${fT(fr.t)}`, xl, top - 8, { align: "left", size: 11, bold: true });
+      // 끝 전압
+      const box = { x: xl, y: yl + 40, w: xr - xl, h: h - yl - 40 - 44 };
+      const ymax = Math.max(1.1, ...o.far.map((p) => p[1])) * 1.05;
+      const vl = [{ x: o.td, color: P.accent2, label: "t_d" }];
+      if (o.est < o.tend) vl.push({ x: o.est, color: P.warn, dash: [8, 3, 2, 3], label: "RC 추정", row: 1 });
+      const pts2 = isFinite(o.t50) ? [{ x: o.t50, y: 0.5, color: P.text, r: 4 }] : [];
+      SB.chart(ctx, box, { x: [0, o.tend], y: [0, ymax], xFmt: (v) => (o.tend < 2e-9 ? (v * 1e12).toFixed(0) : (v * 1e9).toFixed(1)), xLabel: o.tend < 2e-9 ? "시간 (ps)" : "시간 (ns)", yTicks: [0, 0.5, 1], series: [{ data: o.far.filter((p) => p[0] <= fr.t), color: P.accent, width: 2.6 }], vlines: vl, hlines: [{ y: 0.5, color: P.faint }], points: pts2 });
+      SB.label(ctx, "끝 전압 V(ℓ, t)", box.x + box.w - 6, box.y + 8, { align: "right", size: 11, bold: true, color: P.accent });
+    }, { aspect: 0.66, minHeight: 360, maxHeight: 480 });
+    const stats = () => {
+      const o = st.out, ratio = o.Rw / (2 * Z0);
+      SB.stat("rl-Rw", fR(o.Rw)); SB.stat("rl-td", fT(o.td)); SB.stat("rl-rc", fT(o.est)); SB.stat("rl-t50", isFinite(o.t50) ? fT(o.t50) : "—");
+      SB.stat("rl-ratio", ratio.toFixed(2));
+      SB.stat("rl-verdict", ratio > 2 ? "RC 확산 선" : ratio > 0.5 ? "RLC 경계" : "LC 전송선");
+    };
+    const re = () => { simulate(); stats(); cv.redraw(); };
+    SB.range("rl-r", (u) => { const r = rOf(u); return (r < 10 ? r.toFixed(2) : r.toFixed(0)) + " Ω/mm"; }, (u) => { st.r = rOf(u); re(); });
+    const lenR = SB.range("rl-len", (v) => v.toFixed(1) + " mm", (v) => { st.len = v; re(); });
+    SB.range("rl-rs", (v) => v + " Ω", (v) => { st.Rs = v; re(); });
+    $("rl-replay").addEventListener("click", () => { st.ph = 0; cv.redraw(); });
+    const loop = SB.loop("sim-rlc", (dt) => { if (st.ph < 1) { st.ph = Math.min(1, st.ph + dt / 3.5); cv.redraw(); } });
+    SB.play("rl-play", loop);
+    SB.drag(cv, {
+      handles: () => (cv._he ? [{ id: "e", x: cv._he[0], y: cv._he[1], r: 14 }] : []),
+      move: (id, x) => { const [, , xl, xr] = cv._he; const mm = Math.round(SB.clamp(((x - xl) / (xr - xl)) * LMAX, 0.5, LMAX) * 10) / 10; if (mm !== st.len) { st.len = mm; lenR.set(mm, true); re(); } },
+    });
+    stats();
+  }
+
+  /* ================================================================ 4절: 엘모어 드릴 */
+  SB.drill("drill-elmore", () => {
+    const Rd = pick([0.5, 1, 2, 4, 8]) * 1e3, Rw = rnd(100, 2000, 50), Cw = rnd(20, 400, 10) * 1e-15, CL = rnd(2, 50, 1) * 1e-15;
+    const tau = EM.tl.elmore(Rd, Rw, Cw, CL);
+    return {
+      q: `<p>출력 저항 \\(R_d = ${Rd / 1000}\\) kΩ인 구동단이 \\(R_w = ${Rw}\\) Ω, \\(C_w = ${Math.round(Cw * 1e15)}\\) fF인 분포 배선을 거쳐 \\(C_L = ${Math.round(CL * 1e15)}\\) fF 게이트를 구동한다. 끝 마디의 엘모어 지연은?</p>`,
+      answer: tau * 1e12, label: "τ =", unit: "ps", tol: "1%",
+      sol: `\\(\\tau = R_d(C_w + C_L) + R_w(C_w/2 + C_L) = ${Rd}\\times${Math.round((Cw + CL) * 1e15)}\\text{ fF} + ${Rw}\\times${((Cw / 2 + CL) * 1e15).toFixed(1)}\\text{ fF} = ${(tau * 1e12).toFixed(1)}\\) ps.`,
+    };
+  });
+
+  /* ================================================================ 4절: 리피터 시뮬레이터 */
+  {
+    const R0 = 8000, Cg = 0.5e-15, LAY = { local: [1.0, 0.18], mid: [0.1, 0.2], global: [0.02, 0.22] }, HMIN = 5, HMAX = 1000;
+    const st = { layer: "mid", len: 10, k: 4, h: 40 };
+    const P0 = () => { const [r, c] = LAY[st.layer], Rw = r * st.len * 1000, Cw = c * 1e-15 * st.len * 1000; return { Rw, Cw }; };
+    const Tf = (k, h, w = P0()) => 0.69 * R0 * w.Cw / h + 0.69 * k * R0 * Cg + 0.38 * w.Rw * w.Cw / k + 0.69 * w.Rw * h * Cg;
+    /** 최적점: h_opt는 k와 무관, k는 1 이상의 정수 중 가장 좋은 것 */
+    const opt = (w = P0()) => { const kc = Math.sqrt((0.38 * w.Rw * w.Cw) / (0.69 * R0 * Cg)), h = Math.sqrt((R0 * w.Cw) / (w.Rw * Cg)); const ks = [Math.max(1, Math.floor(kc)), Math.max(1, Math.ceil(kc))]; const k = Tf(ks[0], h, w) <= Tf(ks[1], h, w) ? ks[0] : ks[1]; return { k, kc, h, T: Tf(k, h, w) }; };
+    const kmax = () => Math.min(130, Math.max(10, Math.ceil(opt().k * 2.4)));
+    /** T(k,h) = a/h + b·h + c_k = T* 의 두 근(h) */
+    const hRoots = (k, Ts, w = P0()) => { const a = 0.69 * R0 * w.Cw, b = 0.69 * w.Rw * Cg, ck = 0.69 * k * R0 * Cg + (0.38 * w.Rw * w.Cw) / k, B = Ts - ck, D = B * B - 4 * a * b; if (D < 0 || B <= 0) return null; return [(B - Math.sqrt(D)) / (2 * b), (B + Math.sqrt(D)) / (2 * b)]; };
+    const minArea = () => { const Ts = 1.1 * opt().T, KM = kmax(); let best = Infinity, bk = 0, bh = 0; for (let k = 1; k <= KM; k++) { const r = hRoots(k, Ts); if (r && r[1] >= HMIN) { const hh = Math.max(r[0], HMIN); if (k * hh < best) { best = k * hh; bk = k; bh = hh; } } } return { A: best, k: bk, h: bh }; };
+    const toOpt = () => { const o = opt(); st.k = o.k; st.h = SB.clamp(o.h, HMIN, HMAX); };
+    toOpt();
+    let cv2 = null;
+    const cv1 = SB.canvas("cv-rep", (ctx, w, h) => {
+      const P = pal(), xl = 22, xr = w - 22, yw = 46;
+      // 배선과 리피터
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(xl, yw); ctx.lineTo(xr, yw); ctx.stroke(); ctx.restore();
+      const sz = 5 + 9 * (Math.log10(st.h / HMIN) / Math.log10(HMAX / HMIN));
+      const nDraw = Math.min(st.k, 40);
+      for (let i = 0; i < nDraw; i++) {
+        const x = xl + ((i + 0.15) / nDraw) * (xr - xl);
+        ctx.save(); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.moveTo(x - sz * 0.8, yw - sz); ctx.lineTo(x - sz * 0.8, yw + sz); ctx.lineTo(x + sz * 0.9, yw); ctx.closePath(); ctx.fill(); ctx.restore();
+      }
+      SB.label(ctx, `${st.k}개 × ${st.h.toFixed(0)}배 · 토막 ${(st.len / st.k * 1000).toFixed(0)} µm`, w / 2, 14, { size: 11, bold: true });
+      // 지연 대 길이
+      const box = { x: 50, y: 86, w: w - 66, h: h - 86 - 44 };
+      const L0 = st.len, d1 = [], d2 = [];
+      let ymax = 0;
+      for (let i = 1; i <= 80; i++) {
+        const L = (20 * i) / 80, [r, c] = LAY[st.layer], ww = { Rw: r * L * 1000, Cw: c * 1e-15 * L * 1000 };
+        const t1 = Tf(1, st.h, ww) * 1e12, t2 = opt(ww).T * 1e12; d1.push([L, t1]); d2.push([L, t2]); if (L <= 20) ymax = Math.max(ymax, t2 * 2.2);
+      }
+      const Tc = Tf(st.k, st.h) * 1e12;
+      ymax = Math.max(ymax, Tc * 1.2);
+      SB.chart(ctx, box, { x: [0, 20], y: [0, ymax], xLabel: "배선 길이 (mm)", yLabel: "지연 (ps)", series: [{ data: d1, color: P.accent2, width: 2, dash: [5, 3] }, { data: d2, color: P.ok, width: 2.4 }], points: [{ x: L0, y: Tc, color: P.accent, r: 5 }] });
+      SB.label(ctx, "리피터 없음(제곱)", box.x + 8, box.y + 8, { align: "left", size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, "최적 리피터(직선)", box.x + 8, box.y + 24, { align: "left", size: 11, color: P.ok, bold: true });
+    }, { aspect: 0.95, minHeight: 300, maxHeight: 440 });
+    cv2 = SB.canvas("cv-rep2", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 48, y: 14, w: w - 62, h: h - 14 - 46 }, KM = kmax(), o = opt();
+      const nx = 64, ny = 50, vals = new Float64Array(nx * ny);
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const k = 1 + ((KM - 1) * (i + 0.5)) / nx, hh = HMIN * Math.pow(HMAX / HMIN, (j + 0.5) / ny); vals[j * nx + i] = Math.log(Tf(k, hh) / o.T) / Math.log(3); }
+      EM.heatmap(ctx, vals, nx, ny, box, { cmap: "seq", vmin: 0, vmax: 1, alpha: 0.85 });
+      const ch = SB.chart(ctx, box, { x: [1, KM], y: [HMIN, HMAX], logY: true, xLabel: "리피터 수 k", yLabel: "크기 h", series: [] });
+      // 110% 등고선
+      const Ts = 1.1 * o.T, lowC = [], upC = [];
+      for (let k = 1; k <= KM; k += (KM - 1) / 120) { const r = hRoots(k, Ts); if (r) { if (r[0] >= HMIN && r[0] <= HMAX) lowC.push([ch.X(k), ch.Y(r[0])]); if (r[1] >= HMIN && r[1] <= HMAX) upC.push([ch.X(k), ch.Y(r[1])]); } }
+      ctx.save(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.4; ctx.setLineDash([]); pathXY(ctx, lowC); ctx.stroke(); pathXY(ctx, upC); ctx.stroke(); ctx.restore();
+      const m = minArea();
+      if (m.k) { ctx.save(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(ch.X(m.k), ch.Y(m.h), 3.5, 0, TAU); ctx.fill(); ctx.restore(); }
+      SB.label(ctx, "★", ch.X(o.k), ch.Y(o.h), { size: 18, color: "#fff", bg: "rgba(0,0,0,0.55)" });
+      const px = ch.X(st.k), py = ch.Y(st.h); handle(ctx, px, py, P.accent, 12);
+      SB.label(ctx, "110%", ch.X(Math.max(1.5, o.k * 0.35)), ch.Y(Math.min(HMAX * 0.7, o.h * 3.5)), { size: 10, color: "#fff", bg: "rgba(0,0,0,0.5)" });
+      self._ch = ch; self._KM = KM;
+    }, { aspect: 0.95, minHeight: 300, maxHeight: 440 });
+    const stats = () => {
+      const o = opt(), T = Tf(st.k, st.h), m = minArea(), A = st.k * st.h;
+      SB.stat("rp-T", fT(T) + ` (${(T / o.T * 100).toFixed(0)}%)`);
+      SB.stat("rp-Topt", `${fT(o.T)} (${o.k}, ${o.h.toFixed(0)})`);
+      SB.stat("rp-T1", fT(Tf(1, Math.max(st.h, 1))));
+      SB.stat("rp-A", A.toFixed(0) + (isFinite(m.A) ? ` (최소 ${m.A.toFixed(0)})` : ""));
+      const ok = T <= 1.1 * o.T * 1.0001 && A <= 1.05 * m.A;
+      SB.stat("rp-goal", ok ? '<span style="color:var(--ok)">달성 ✓</span>' : T > 1.1 * o.T ? "지연 110% 초과" : `면적 ${(A / m.A * 100).toFixed(0)}% → 105% 이하로`);
+    };
+    const all = () => { stats(); cv1.redraw(); cv2.redraw(); };
+    SB.seg("rp-layer", (v) => { st.layer = v; toOpt(); all(); });
+    SB.range("rp-len", (v) => v.toFixed(1) + " mm", (v) => { st.len = v; st.k = Math.min(st.k, kmax()); all(); });
+    $("rp-opt").addEventListener("click", () => { toOpt(); all(); });
+    SB.drag(cv2, {
+      handles: () => (cv2._ch ? [{ id: "p", x: cv2._ch.X(st.k), y: cv2._ch.Y(st.h), r: 14 }] : []),
+      move: (id, x, y) => {
+        const b = cv2._ch.box, KM = cv2._KM;
+        st.k = Math.round(SB.clamp(1 + ((x - b.x) / b.w) * (KM - 1), 1, KM));
+        st.h = SB.clamp(HMIN * Math.pow(HMAX / HMIN, (b.y + b.h - y) / b.h), HMIN, HMAX);
+        stats(); cv1.redraw();
+      },
+    });
+    stats();
+  }
+
+  /* ================================================================ 5절: 채널 손실 공통 */
+  const MAT = { fr4: { er: 4.0, tand: 0.02 }, low: { er: 3.4, tand: 0.004 } };
+  const AS = 0.06; // 표피 계수 dB/(cm·√GHz)
+  const adCoef = (m) => (PI * 1e9 * Math.sqrt(MAT[m].er) * MAT[m].tand / C0) * 8.686 / 100; // dB/(cm·GHz)
+
+  /* ================================================================ 5절: 삽입 손실 미니 */
+  {
+    const st = { len: 25, mat: "fr4", f: 8 };
+    const cv = SB.canvas("cv-loss", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 50, y: 14, w: w - 66, h: h - 14 - 46 };
+      const ad = adCoef(st.mat), sk = [], di = [], tot = [];
+      let ymax = 0;
+      for (let i = 0; i <= 120; i++) { const f = (20 * i) / 120, a = AS * Math.sqrt(f) * st.len, b = ad * f * st.len; sk.push([f, a]); di.push([f, b]); tot.push([f, a + b]); ymax = Math.max(ymax, a + b); }
+      ymax = Math.ceil((ymax * 1.08) / 5) * 5;
+      const a = AS * Math.sqrt(st.f) * st.len, b = ad * st.f * st.len;
+      const ch = SB.chart(ctx, box, { x: [0, 20], y: [0, ymax], xLabel: "주파수 (GHz)", yLabel: "삽입 손실 (dB)", series: [{ data: sk, color: P.accent2, width: 2 }, { data: di, color: P.warn, width: 2 }, { data: tot, color: P.text, width: 2.6 }], vlines: [{ x: st.f, color: P.accent, dash: [5, 4] }], points: [{ x: st.f, y: a + b, color: P.accent, r: 5 }] });
+      handle(ctx, ch.X(st.f), box.y + box.h - 14, P.accent, 12);
+      self._ch = ch; self._hy = box.y + box.h - 14;
+      SB.label(ctx, "합계", box.x + 8, box.y + 8, { align: "left", size: 11, bold: true });
+      SB.label(ctx, "표피 ∝√f", box.x + 50, box.y + 8, { align: "left", size: 11, bold: true, color: P.accent2 });
+      SB.label(ctx, "유전 ∝f", box.x + 124, box.y + 8, { align: "left", size: 11, bold: true, color: P.warn });
+      $("ls-r").textContent = `${st.f.toFixed(1)} GHz: 표피 ${a.toFixed(1)} + 유전 ${b.toFixed(1)} = ${(a + b).toFixed(1)} dB (진폭 ${(100 * Math.pow(10, -(a + b) / 20)).toFixed(0)}%)`;
+    }, { aspect: 0.45, minHeight: 240, maxHeight: 330 });
+    SB.range("ls-len", (v) => v + " cm", (v) => { st.len = v; cv.redraw(); });
+    SB.seg("ls-mat", (v) => { st.mat = v; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (cv._ch ? [{ id: "f", x: cv._ch.X(st.f), y: cv._hy, r: 14 }] : []),
+      move: (id, x) => { const b = cv._ch.box; st.f = Math.round(SB.clamp(((x - b.x) / b.w) * 20, 0.1, 20) * 10) / 10; },
+    });
+  }
+
+  /* ================================================================ 5절: 유전 손실 tangle */
+  SB.tangle("tg-diel", (v) => {
+    const a = (PI * v.f * 1e9 * Math.sqrt(v.er) * v.td) / C0, dbm = a * 8.686, IL = (dbm * v.L) / 100;
+    return { a: `${a.toFixed(3)} Np/m = ${(dbm / 100).toFixed(3)} dB/cm`, IL: IL.toFixed(2) + " dB", amp: (100 * Math.pow(10, -IL / 20)).toFixed(0) + "%" };
+  });
+
+  /* ================================================================ 5절: 아이 패턴 시뮬레이터 */
+  {
+    const NS = 16, N = 2048, PRE = 4;
+    const st = { rate: 16, len: 20, mat: "fr4", a: 0, ph: 0, chal: false };
+    const bits = []; { let sr = 0x7f; for (let i = 0; i < 127; i++) { const nb = ((sr >> 6) ^ (sr >> 5)) & 1; sr = ((sr << 1) | nb) & 0x7f; bits.push(nb); } }
+    let q = null, im = 0, eyeH = [], wave = null;
+    const compute = () => {
+      const UI = 1 / (st.rate * 1e9), dt = UI / NS, re = new Float64Array(N), imz = new Float64Array(N), ad = adCoef(st.mat), f3 = 0.75 * st.rate;
+      for (let k = 0; k < NS; k++) re[k + PRE * NS] = 1;
+      EM.fft(re, imz);
+      for (let k = 0; k < N; k++) {
+        const kk = k <= N / 2 ? k : k - N, f = Math.abs(kk) / (N * dt) / 1e9;
+        const as = (AS * Math.sqrt(f) * st.len) / 8.686, adn = (ad * f * st.len) / 8.686, g = Math.exp(-0.5 * Math.LN2 * (f / f3) ** 2);
+        const mag = Math.exp(-as - adn) * g, ph = -as * Math.sign(kk), c = Math.cos(ph), s = Math.sin(ph);
+        const r0 = re[k] * c - imz[k] * s, i0 = re[k] * s + imz[k] * c; re[k] = r0 * mag; imz[k] = i0 * mag;
+      }
+      EM.fft(re, imz, true);
+      q = new Float64Array(N);
+      for (let i = 0; i < N; i++) q[i] = (1 - st.a) * re[i] - (i >= NS ? st.a * re[i - NS] : 0);
+      im = 0; for (let i = 0; i < N; i++) if (q[i] > q[im]) im = i;
+      // 파형: 비트 k의 표본 시각 = im + k·NS
+      const L = 127 * NS; wave = new Float64Array(L);
+      for (let s = 0; s < L; s++) { let v = 0; for (let n = -8; n < 110; n++) { const idx = im + (s % NS) - NS / 2 + n * NS; if (idx < 0 || idx >= N) continue; const kb = Math.floor(s / NS) - n; v += (bits[((kb % 127) + 127) % 127] ? 0.5 : -0.5) * q[idx]; } wave[s] = v; }
+      eyeH = [];
+      for (let p = 0; p < NS; p++) { let lo1 = 1e9, hi0 = -1e9; for (let k = 0; k < 127; k++) { const v = wave[k * NS + p]; if (bits[k]) lo1 = Math.min(lo1, v); else hi0 = Math.max(hi0, v); } eyeH.push(lo1 - hi0); }
+    };
+    compute();
+    let cvE = null;
+    const cvP = SB.canvas("cv-pulse", (ctx, w, h) => {
+      const P = pal(), box = { x: 48, y: 16, w: w - 62, h: h - 16 - 46 };
+      const d = [], cur = []; let lo = 0, hi = 0;
+      for (let i = im - 2 * NS; i <= im + 8 * NS; i++) { if (i < 0 || i >= N) continue; const x = (i - im) / NS; d.push([x, q[i]]); lo = Math.min(lo, q[i]); hi = Math.max(hi, q[i]); }
+      for (let n = -2; n <= 8; n++) { const i = im + n * NS; if (i >= 0 && i < N) cur.push({ x: n, y: q[i], color: n === 0 ? P.accent : P.warn, r: n === 0 ? 5 : 4 }); }
+      SB.chart(ctx, box, { x: [-2, 8], y: [Math.min(-0.1, lo * 1.2), Math.max(1, hi * 1.1)], xLabel: "시간 (UI), 0 = 주 커서", xTicks: [-2, 0, 2, 4, 6, 8], series: [{ data: d, color: P.accent2, width: 2.4 }], hlines: [{ y: 0, color: P.faint }], points: cur });
+      SB.label(ctx, "1 UI 펄스 응답과 커서", box.x + 8, box.y + 8, { align: "left", size: 11, bold: true, color: P.accent2 });
+    }, { aspect: 0.85, minHeight: 280, maxHeight: 420 });
+    cvE = SB.canvas("cv-eye", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 44, y: 16, w: w - 58, h: h - 16 - 46 };
+      const ch = SB.chart(ctx, box, { x: [-1, 1], y: [-0.75, 0.75], xLabel: "시간 (UI), 0 = 표본 기준", xTicks: [-1, -0.5, 0, 0.5, 1], yTicks: [-0.5, 0, 0.5], series: [] });
+      ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
+      ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.28; ctx.lineWidth = 1.2;
+      const L = wave.length;
+      for (let k = 0; k < 127; k++) {
+        ctx.beginPath();
+        for (let s = -NS; s <= NS; s++) { const idx = (((k * NS + NS / 2 + s) % L) + L) % L, v = wave[idx], x = ch.X(s / NS), y = ch.Y(v); s === -NS ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+        ctx.stroke();
+      }
+      ctx.restore();
+      // 표본점
+      const p = SB.clamp(Math.round(st.ph * NS), -NS / 2, NS / 2 - 1), eh = eyeH[p + NS / 2];
+      const xs = ch.X(p / NS);
+      SB.dashLine(ctx, xs, box.y, xs, box.y + box.h, P.warn, [4, 4]);
+      if (eh > 0) { ctx.save(); ctx.strokeStyle = P.ok; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(xs, ch.Y(eh / 2)); ctx.lineTo(xs, ch.Y(-eh / 2)); ctx.stroke(); ctx.restore(); }
+      ctx.save(); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.moveTo(xs, ch.Y(0) - 11); ctx.lineTo(xs + 11, ch.Y(0)); ctx.lineTo(xs, ch.Y(0) + 11); ctx.lineTo(xs - 11, ch.Y(0)); ctx.closePath(); ctx.fill(); ctx.restore();
+      self._ch = ch;
+      SB.label(ctx, `${st.rate} Gb/s · ${st.len} cm`, box.x + 6, box.y + 10, { align: "left", size: 11, bold: true });
+    }, { aspect: 0.85, minHeight: 280, maxHeight: 420 });
+    const stats = () => {
+      const fN = st.rate / 2, IL = (AS * Math.sqrt(fN) + adCoef(st.mat) * fN) * st.len;
+      let isi = 0; for (let n = -3; n <= 40; n++) { if (n === 0) continue; const i = im + n * NS; if (i >= 0 && i < N) isi += Math.abs(q[i]); }
+      SB.stat("ey-il", IL.toFixed(1) + " dB");
+      SB.stat("ey-isi", `${q[im].toFixed(2)} / ${isi.toFixed(2)}`);
+      const p = SB.clamp(Math.round(st.ph * NS), -NS / 2, NS / 2 - 1), eh = eyeH[p + NS / 2];
+      SB.stat("ey-h", eh > 0 ? (eh * 100).toFixed(0) + "%" : "닫힘");
+      const wOpen = eyeH.filter((v) => v > 0).length / NS;
+      SB.stat("ey-w", (wOpen * 100).toFixed(0) + "% UI");
+      const inChal = st.rate === 16 && st.len === 30 && st.mat === "fr4";
+      SB.stat("ey-goal", inChal ? (eh >= 0.15 ? '<span style="color:var(--ok)">달성 ✓ (15% 이상)</span>' : "16 Gb/s·30 cm: 아이 높이 ≥ 15%") : st.chal ? "조건이 바뀌었다(16 Gb/s, 30 cm, FR-4)" : "‘도전 과제 불러오기’");
+    };
+    const all = () => { compute(); stats(); cvP.redraw(); cvE.redraw(); };
+    const rateR = SB.range("ey-rate", (v) => v + " Gb/s", (v) => { st.rate = v; all(); });
+    const lenR = SB.range("ey-len", (v) => v + " cm", (v) => { st.len = v; all(); });
+    const matS = SB.seg("ey-mat", (v) => { st.mat = v; all(); });
+    const aR = SB.range("ey-a", (v) => `${v.toFixed(2)} (${(20 * Math.log10(1 / (1 - 2 * v))).toFixed(1)} dB)`, (v) => { st.a = v; all(); });
+    $("ey-chal").addEventListener("click", () => { st.chal = true; rateR.set(16, true); lenR.set(30, true); matS.set("fr4", false); aR.set(0, true); st.rate = 16; st.len = 30; st.mat = "fr4"; st.a = 0; st.ph = 0; all(); });
+    SB.drag(cvE, {
+      handles: () => (cvE._ch ? [{ id: "s", x: cvE._ch.X(st.ph), y: cvE._ch.Y(0), r: 14 }] : []),
+      move: (id, x) => { const b = cvE._ch.box; st.ph = SB.clamp(-1 + (2 * (x - b.x)) / b.w, -0.5, 0.4375); stats(); },
+    });
+    stats();
+  }
+
+  /* ================================================================ 6절: 누화 시뮬레이터 */
+  {
+    const st = { stt: "ms", s: 1, len: 10, tr: 50 };
+    const model = (s = st.s, o = st) => {
+      const D = s + 1, kl = 0.6 / (1 + D * D), kc = o.stt === "ms" ? 0.8 * kl : kl;
+      const vel = C0 / Math.sqrt(o.stt === "ms" ? 2.7 : 3.6), td = o.len / 100 / vel, tr = o.tr * 1e-12;
+      const K = EM.tl.crosstalk(kc, 1, kl, 1);
+      return { kl, kc, vel, td, tr, Kb: K.Kb, Kf: K.Kf, ne: K.Kb * Math.min(1, (2 * td) / tr), fe: (K.Kf * td) / tr };
+    };
+    const sMin = () => { for (let s = 0.5; s <= 6.0001; s += 0.05) { const m = model(s); if (m.ne <= 0.02 && Math.abs(m.fe) <= 0.02) return s; } return Infinity; };
+    let cv2 = null;
+    const cv1 = SB.canvas("cv-xt", (ctx, w, h, self) => {
+      const P = pal(), m = model(), hp = Math.min(30, (w - 40) / 8.6), yg = h - 46, yt = yg - hp, x0 = 22 + hp * 0.3;
+      const xa = x0, xv = x0 + hp * (1 + st.s), tw = hp, tt = 7;
+      // 유전체·접지면
+      ctx.save(); ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(8, st.stt === "sl" ? yt - hp - tt : yt, w - 16, st.stt === "sl" ? yg - (yt - hp - tt) : yg - yt); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; ctx.fillRect(8, yg, w - 16, 7); if (st.stt === "sl") ctx.fillRect(8, yt - hp - tt - 7, w - 16, 7); ctx.restore();
+      // 결합(장선 흉내)
+      ctx.save(); ctx.strokeStyle = P.warn; ctx.lineWidth = 1.4; ctx.globalAlpha = Math.min(0.9, 0.15 + m.kl * 6);
+      for (let i = 0; i < 4; i++) { const r = (xv - xa) / 2; ctx.beginPath(); ctx.ellipse((xa + xv + tw) / 2, yt - tt / 2, r - tw / 2 + 4 + i * 2, 8 + i * 7, 0, PI, 0); ctx.stroke(); }
+      ctx.restore();
+      ctx.save(); ctx.fillStyle = P.accent; ctx.fillRect(xa, yt - tt, tw, tt); ctx.fillStyle = P.accent2; ctx.fillRect(xv, yt - tt, tw, tt); ctx.restore();
+      SB.label(ctx, "공격", xa + tw / 2, yt + 14, { size: 11, bold: true, color: P.accent });
+      SB.label(ctx, "피해", xv + tw / 2, yt + 14, { size: 11, bold: true, color: P.accent2 });
+      handle(ctx, xv + tw / 2, yt - tt - 18, P.accent2, 12);
+      SB.dashLine(ctx, xa + tw, yt + 26, xv, yt + 26, P.dim, [2, 3]);
+      SB.label(ctx, `s = ${st.s.toFixed(2)}h`, (xa + tw + xv) / 2, yt + 40, { size: 11, color: P.dim });
+      SB.label(ctx, "h", x0 - 12, (yt + yg) / 2, { size: 11, color: P.dim });
+      SB.label(ctx, st.stt === "ms" ? "마이크로스트립 (위는 공기)" : "스트립라인 (균질 유전체)", w / 2, 14, { size: 12, bold: true });
+      // 결합 막대
+      const bx = w - 92, by = 36, bw = 70;
+      [["Lm/L", m.kl, P.accent2], ["Cm/C", m.kc, P.warn]].forEach(([lab, v, col], i) => {
+        ctx.save(); ctx.fillStyle = P.border; ctx.fillRect(bx, by + i * 22, bw, 9); ctx.fillStyle = col; ctx.fillRect(bx, by + i * 22, bw * Math.min(1, v / 0.25), 9); ctx.restore();
+        SB.label(ctx, `${lab} ${v.toFixed(3)}`, bx - 6, by + 4 + i * 22, { size: 10, align: "right", color: col });
+      });
+      self._hv = [xv + tw / 2, yt - tt - 18, x0, hp, tw];
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 400 });
+    cv2 = SB.canvas("cv-xt2", (ctx, w, h) => {
+      const P = pal(), m = model(), box = { x: 50, y: 16, w: w - 64, h: h - 16 - 46 };
+      const T = (2 * m.td + m.tr) * 1.2, ne = [], fe = [];
+      const Va = (t) => SB.clamp(t / m.tr, 0, 1);
+      for (let i = 0; i <= 600; i++) { const t = (T * i) / 600; ne.push([t * 1e9, 100 * m.Kb * (Va(t) - Va(t - 2 * m.td))]); const u = t - m.td; fe.push([t * 1e9, u >= 0 && u <= m.tr ? 100 * m.fe : 0]); }
+      const ymax = Math.max(4, 100 * m.ne * 1.25), ymin = Math.min(-4, 100 * m.fe * 1.25);
+      SB.chart(ctx, box, { x: [0, T * 1e9], y: [ymin, ymax], xLabel: "시간 (ns)", yLabel: "피해선 전압 (%)", hbands: [{ y0: -2, y1: 2, color: SB.color("ok-soft") }], series: [{ data: ne, color: P.accent, width: 2.4 }, { data: fe, color: P.accent2, width: 2.4 }], vlines: [{ x: m.td * 1e9, color: P.faint, label: "t_d" }, { x: 2 * m.td * 1e9, color: P.faint, label: "2t_d", row: 1 }], hlines: [{ y: 0, color: P.faint }] });
+      SB.label(ctx, "근단(NEXT)", box.x + box.w - 6, box.y + 10, { align: "right", size: 11, bold: true, color: P.accent });
+      SB.label(ctx, "원단(FEXT)", box.x + box.w - 6, box.y + 26, { align: "right", size: 11, bold: true, color: P.accent2 });
+      if (Math.abs(m.fe) > 0.3) SB.label(ctx, "약결합 근사의 범위를 넘는 큰 값", box.x + box.w / 2, box.y + box.h - 12, { size: 11, color: P.bad });
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 400 });
+    const stats = () => {
+      const m = model(), sm = sMin();
+      SB.stat("xt-k", `${m.kc.toFixed(3)}, ${m.kl.toFixed(3)}`);
+      SB.stat("xt-kk", `${m.Kb.toFixed(4)}, ${sgn(m.Kf, 4)}`);
+      SB.stat("xt-ne", (100 * m.ne).toFixed(2) + "%");
+      SB.stat("xt-fe", (m.fe >= 0 ? "" : "−") + Math.abs(100 * m.fe).toFixed(2) + "%");
+      SB.stat("xt-sat", ((m.vel * m.tr) / 2 * 1000).toFixed(1) + " mm");
+      const ok = m.ne <= 0.02 && Math.abs(m.fe) <= 0.02;
+      SB.stat("xt-goal", !isFinite(sm) ? "6h 안에서는 불가 — 길이·t_r을 바꿔라" : ok && st.s <= sm + 0.1 ? `<span style="color:var(--ok)">달성 ✓ s = ${st.s.toFixed(2)}h</span>` : ok ? `만족, 더 좁힐 수 있다` : "NEXT ≤ 2%, |FEXT| ≤ 2%");
+    };
+    const all = () => { stats(); cv1.redraw(); cv2.redraw(); };
+    SB.seg("xt-st", (v) => { st.stt = v; all(); });
+    const sR = SB.range("xt-s", (v) => v.toFixed(2), (v) => { st.s = v; all(); });
+    SB.range("xt-len", (v) => v + " cm", (v) => { st.len = v; all(); });
+    SB.range("xt-tr", (v) => v + " ps", (v) => { st.tr = v; all(); });
+    SB.drag(cv1, {
+      handles: () => (cv1._hv ? [{ id: "v", x: cv1._hv[0], y: cv1._hv[1], r: 14 }] : []),
+      move: (id, x) => { const [, , x0, hp, tw] = cv1._hv; st.s = Math.round(SB.clamp((x - tw / 2 - x0) / hp - 1, 0.5, 6) * 20) / 20; sR.set(st.s, true); stats(); cv2.redraw(); },
+    });
+    stats();
+  }
+
+  /* ================================================================ 7절: 목표 임피던스 tangle */
+  SB.tangle("tg-zt", (v) => {
+    const dv = v.V * v.r / 100, Zt = dv / v.I, Ldi = (v.L * 1e-12 * v.I) / 1e-9;
+    return { Zt: (Zt * 1e3).toFixed(2) + " mΩ", Ldi: (Ldi * 1e3).toFixed(1) + " mV", dv: (dv * 1e3).toFixed(1) + " mV" };
+  });
+
+  /* ================================================================ 7절: 전원망 임피던스 시뮬레이터 */
+  {
+    const VDD = 0.75, RIP = 0.04, ESL_M = 300e-12, ESR_M = 3e-3, ESL_P = 40e-12, ESR_P = 5e-3, RD = 1e-3;
+    const st = { cd: 245e-9, di: 10, nm: 10, Cm: 10e-6, np: 4, Cp: 1e-6 };
+    const cdOf = (u) => 100e-9 * Math.pow(20, u / 100);
+    const ser = (w, R, L, C) => ({ re: R, im: w * L - (C ? 1 / (w * C) : 0) });
+    const par = (a, b) => cx.div(cx.mul(a, b), cx.add(a, b));
+    const Z = (f) => {
+      const w = TAU * f;
+      let z = ser(w, 0.5e-3, 2e-9, 0);
+      z = par(z, ser(w, 1e-3, 0.25e-9, 1880e-6));
+      z = cx.add(z, ser(w, 0.1e-3, 30e-12, 0));
+      z = par(z, ser(w, ESR_M / st.nm, ESL_M / st.nm, st.Cm * st.nm));
+      z = cx.add(z, ser(w, 0.2e-3, 10e-12, 0));
+      if (st.np > 0) z = par(z, ser(w, ESR_P / st.np, ESL_P / st.np, st.Cp * st.np));
+      z = cx.add(z, ser(w, 0.1e-3, 1e-12, 0));
+      z = par(z, ser(w, RD, 0, st.cd));
+      return cx.abs(z);
+    };
+    const bankZ = (f, R, L, C, n) => { const w = TAU * f; return cx.abs(ser(w, R / n, L / n, C * n)); };
+    const srf = (L, C) => 1 / (TAU * Math.sqrt(L * C));
+    const scan = () => { let mx = 0, fm = 0; const curve = [], bad = []; let inBad = null; for (let e = 3; e <= 9.0001; e += 0.01) { const f = Math.pow(10, e), z = Z(f); curve.push([f, z * 1e3]); if (z > mx) { mx = z; fm = f; } const zt = (VDD * RIP) / st.di; if (z > zt && inBad === null) inBad = f; if (z <= zt && inBad !== null) { bad.push([inBad, f]); inBad = null; } } if (inBad !== null) bad.push([inBad, 1e9]); return { mx, fm, curve, bad }; };
+    let S = scan();
+    const cv = SB.canvas("cv-pdn", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 58, y: 16, w: w - 74, h: h - 16 - 48 }, zt = (VDD * RIP) / st.di * 1e3;
+      const bk = (R, L, C, n) => { const d = []; for (let e = 3; e <= 9.0001; e += 0.02) { const f = Math.pow(10, e); d.push([f, bankZ(f, R, L, C, n) * 1e3]); } return d; };
+      const series = [
+        { data: bk(ESR_M, ESL_M, st.Cm, st.nm), color: P.accent2, width: 1.3, dash: [4, 3] },
+        st.np > 0 ? { data: bk(ESR_P, ESL_P, st.Cp, st.np), color: P.ok, width: 1.3, dash: [4, 3] } : { data: [] },
+        { data: bk(RD, 0, st.cd, 1), color: P.dim, width: 1.3, dash: [4, 3] },
+        { data: S.curve, color: P.accent, width: 2.8 },
+      ];
+      const ch = SB.chart(ctx, box, { x: [1e3, 1e9], y: [0.1, 100], logX: true, logY: true, xLabel: "주파수 (Hz)", yLabel: "|Z| (mΩ)", xFmt: (v) => (v >= 1e9 ? "1G" : v >= 1e6 ? v / 1e6 + "M" : v / 1e3 + "k"), yFmt: (v) => String(v), bands: S.bad.map(([a, b]) => ({ x0: a, x1: b, color: SB.color("bad-soft") })), series, hlines: [{ y: zt, color: P.bad, dash: [6, 4], label: "Z_t = " + zt.toFixed(2) + " mΩ" }] });
+      const hm = [srf(ESL_M, st.Cm), (ESR_M / st.nm) * 1e3], hp = [srf(ESL_P, st.Cp), (ESR_P / Math.max(1, st.np)) * 1e3];
+      handle(ctx, ch.X(hm[0]), ch.Y(hm[1]), P.accent2, 12);
+      if (st.np > 0) handle(ctx, ch.X(hp[0]), ch.Y(hp[1]), P.ok, 12);
+      SB.label(ctx, "MLCC", ch.X(hm[0]), ch.Y(hm[1]) + 22, { size: 10, bold: true, color: P.accent2 });
+      if (st.np > 0) SB.label(ctx, "패키지 C", ch.X(hp[0]), ch.Y(hp[1]) + 22, { size: 10, bold: true, color: P.ok });
+      SB.label(ctx, "칩에서 본 |Z|", box.x + 8, box.y + 10, { align: "left", size: 11, bold: true, color: P.accent });
+      SB.label(ctx, "온다이 C (회색 점선)", box.x + 8, box.y + 26, { align: "left", size: 10, color: P.dim });
+      self._ch = ch; self._hm = hm; self._hp = hp;
+    }, { aspect: 0.6, minHeight: 330, maxHeight: 460 });
+    const nmR = SB.range("pd-nm", (v) => v + "개", (v) => { st.nm = v; all(); });
+    const npR = SB.range("pd-np", (v) => v + "개", (v) => { st.np = v; all(); });
+    const stats = () => {
+      const zt = (VDD * RIP) / st.di;
+      SB.stat("pd-zt", (zt * 1e3).toFixed(2) + " mΩ");
+      SB.stat("pd-max", `${(S.mx * 1e3).toFixed(2)} mΩ (${S.fm >= 1e6 ? (S.fm / 1e6).toFixed(0) + " MHz" : (S.fm / 1e3).toFixed(0) + " kHz"})`);
+      SB.stat("pd-caps", `${st.nm}×${(st.Cm * 1e6).toFixed(st.Cm < 1e-6 ? 2 : 1)} µF / ${st.np}×${(st.Cp * 1e6).toFixed(st.Cp < 1e-6 ? 2 : 1)} µF`);
+      SB.stat("pd-goal", S.mx <= zt ? `<span style="color:var(--ok)">달성 ✓ 온다이 ${(st.cd * 1e9).toFixed(0)} nF</span>` : `목표 초과 ×${(S.mx / zt).toFixed(2)}`);
+    };
+    const all = () => { S = scan(); stats(); cv.redraw(); };
+    SB.range("pd-cd", (u) => (cdOf(u) * 1e9).toFixed(0) + " nF", (u) => { st.cd = cdOf(u); all(); });
+    SB.range("pd-di", (v) => v + " A", (v) => { st.di = v; all(); });
+    SB.drag(cv, {
+      handles: () => { if (!cv._ch) return []; const c = cv._ch, a = [{ id: "m", x: c.X(cv._hm[0]), y: c.Y(cv._hm[1]), r: 14 }]; if (st.np > 0) a.push({ id: "p", x: c.X(cv._hp[0]), y: c.Y(cv._hp[1]), r: 14 }); return a; },
+      move: (id, x, y) => {
+        if (!id) return;
+        const b = cv._ch.box, f = Math.pow(10, 3 + (6 * (x - b.x)) / b.w), zm = Math.pow(10, -1 + (3 * (b.y + b.h - y)) / b.h) * 1e-3;
+        if (id === "m") { st.Cm = SB.clamp(1 / ((TAU * f) ** 2 * ESL_M), 0.47e-6, 47e-6); st.nm = Math.round(SB.clamp(ESR_M / zm, 1, 60)); nmR.set(st.nm, true); }
+        else { st.Cp = SB.clamp(1 / ((TAU * f) ** 2 * ESL_P), 0.047e-6, 4.7e-6); st.np = Math.round(SB.clamp(ESR_P / zm, 1, 30)); npR.set(st.np, true); }
+        S = scan(); stats();
+      },
+    });
+    stats();
+  }
+
+  /* ================================================================ 7절: 첫 처짐 미니 */
+  {
+    const DI = 10, RS = 0.6e-3, TR = 1e-9, TEND = 80e-9;
+    const st = { C: 500e-9, L: 3e-12 };
+    const run = () => {
+      const dt = 0.02e-9, out = []; let i = 0, v = 0, mn = 0;
+      const I = (t) => DI * SB.clamp(t / TR, 0, 1);
+      const der = (t, i, v) => [(-v - RS * i) / st.L, (i - I(t)) / st.C];
+      for (let t = 0; t <= TEND; t += dt) {
+        out.push([t * 1e9, v * 1e3]); mn = Math.min(mn, v);
+        const k1 = der(t, i, v), k2 = der(t + dt / 2, i + (dt / 2) * k1[0], v + (dt / 2) * k1[1]), k3 = der(t + dt / 2, i + (dt / 2) * k2[0], v + (dt / 2) * k2[1]), k4 = der(t + dt, i + dt * k3[0], v + dt * k3[1]);
+        i += (dt / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); v += (dt / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+      }
+      return { out, mn };
+    };
+    const cv = SB.canvas("cv-droop", (ctx, w, h) => {
+      const P = pal(), r = run(), box = { x: 52, y: 14, w: w - 68, h: h - 14 - 46 }, z0 = Math.sqrt(st.L / st.C), f0 = 1 / (TAU * Math.sqrt(st.L * st.C));
+      const ymin = Math.min(-40, Math.floor((r.mn * 1e3 * 1.2) / 10) * 10);
+      SB.chart(ctx, box, { x: [0, TEND * 1e9], y: [ymin, 10], xLabel: "시간 (ns)", yLabel: "전압 변화 (mV)", series: [{ data: r.out, color: P.accent, width: 2.6 }], hlines: [{ y: -30, color: P.bad, label: "허용 −30 mV" }, { y: -DI * z0 * 1e3, color: P.dim, dash: [3, 4], label: "−ΔI√(L/C)" }, { y: 0, color: P.faint }] });
+      $("dr-r").textContent = `처짐 ${(r.mn * 1e3).toFixed(1)} mV · f₀ = ${(f0 / 1e6).toFixed(0)} MHz · ΔI√(L/C) = ${(DI * z0 * 1e3).toFixed(1)} mV`;
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 320 });
+    SB.range("dr-c", (v) => v + " nF", (v) => { st.C = v * 1e-9; cv.redraw(); });
+    SB.range("dr-l", (v) => v.toFixed(1) + " pH", (v) => { st.L = v * 1e-12; cv.redraw(); });
+  }
+})();
+</script>
+</body>
+</html>
