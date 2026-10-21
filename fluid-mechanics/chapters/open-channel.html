@@ -1,0 +1,1638 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>개수로 유동 · 유체역학 · SciBook</title>
+<meta name="description" content="개수로 분류와 수력 반경, 표면파 속도와 프루드 수, 비에너지와 임계 수심, 바닥 융기와 초크, 매닝 식과 최적 수리 단면, 점변류 수면 곡선, 수력 도약, 위어와 수문을 흘려 보며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/open-channel.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="개수로 유동 · 유체역학 · SciBook">
+<meta property="og:description" content="개수로 분류와 수력 반경, 표면파 속도와 프루드 수, 비에너지와 임계 수심, 바닥 융기와 초크, 매닝 식과 최적 수리 단면, 점변류 수면 곡선, 수력 도약, 위어와 수문을 흘려 보며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/open-channel.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "개수로 유동 · 유체역학 · SciBook", "headline": "10 개수로 유동", "url": "https://science.euiyun.com/fluid-mechanics/chapters/open-channel.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "개수로 분류와 수력 반경, 표면파 속도와 프루드 수, 비에너지와 임계 수심, 바닥 융기와 초크, 매닝 식과 최적 수리 단면, 점변류 수면 곡선, 수력 도약, 위어와 수문을 흘려 보며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 10, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "10 개수로 유동", "item": "https://science.euiyun.com/fluid-mechanics/chapters/open-channel.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+</head>
+<body data-chapter="open-channel">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="bernoulli control-volume pipe-flow dimensional-analysis">
+    <div class="eyebrow">Chapter 10</div>
+    <h1>개수로 유동</h1>
+    <p class="lead">강, 운하, 하수관, 빗물이 흐르는 도로 옆 배수로 — 물이 대기에 닿은 <strong>자유 표면</strong>을 가진 채 중력으로 흐르면 관 유동과 전혀 다른 일이 벌어진다. 수심 자체가 미지수가 되고, 물결이 거슬러 올라갈 수 있느냐 없느냐(프루드 수)에 따라 흐름의 성격이 바뀌며, 빠른 흐름이 갑자기 느려질 때는 <em>수력 도약</em>이라는 거친 물기둥이 선다. 아래 수로에서 하류 수심을 끌어 도약을 움직여 보면서 시작하자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">오른쪽 흰 원(하류 수심)을 위아래로 끌어 보세요</span></div>
+    <ul class="objectives">
+      <li>개수로 흐름을 등류·점변류·급변류로 분류하고, 수력 반경 \(R_h = A_c/p\)와 수력 수심을 구한다.</li>
+      <li>얕은 물의 표면파 속도 \(c_0 = \sqrt{gy}\)를 유도하고, 프루드 수로 아임계·임계·초임계 흐름을 판정한다.</li>
+      <li>비에너지 선도로 교대 수심, 임계 수심 \(y_c = (q^2/g)^{1/3}\), \(E_\text{min} = 1.5y_c\)를 구하고 바닥 융기·폭 변화 위의 수면 변화와 초크를 예측한다.</li>
+      <li>셰지·매닝 식으로 등류의 유량과 등류 수심을 계산하고, 최적 수리 단면을 설계한다.</li>
+      <li>점변류 식 \(dy/dx = (S_0 - S_f)/(1 - \mathrm{Fr}^2)\)로 수면 곡선(M1–S3)의 모양을 판정한다.</li>
+      <li>운동량 방정식으로 수력 도약의 공액 수심과 에너지 손실을 구하고, 위어·수문으로 유량을 측정한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="classification">
+    <h2>개수로 유동의 분류와 수력 반경</h2>
+    <p><span class="term">개수로 유동</span><span class="en">(open-channel flow)</span>은 액체가 대기와 맞닿은 <span class="term">자유 표면</span><span class="en">(free surface)</span>을 가진 채 흐르는 유동이다. 자유 표면의 압력은 대기압이므로 관 유동처럼 압력 차가 물을 밀어 주지 못한다. 흐름을 일으키는 것은 <strong>중력</strong>(바닥 경사)이고, 흐름을 막는 것은 바닥과 벽의 마찰이다. 물이 가득 차지 않은 하수관도 개수로다.</p>
+    <p>관 유동에서는 단면이 정해져 있지만, 개수로에서는 <strong>수심 \(y\)가 흐름에 따라 스스로 정해지는 미지수</strong>다. 그래서 같은 유량이라도 수심과 속도의 조합이 여럿 가능하고, 이것이 이 장의 거의 모든 현상의 뿌리다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="개수로의 수심, 바닥 높이, 속도 수두, 에너지선, 바닥 경사의 정의">
+        <defs><marker id="oc-ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="oc-mb" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <line x1="40" y1="278" x2="770" y2="278" class="s-axis" stroke-dasharray="5 5"/>
+        <text class="t-dim" x="44" y="294">기준면 (z = 0)</text>
+        <path d="M40,200 L770,250 L770,278 L40,278 Z" class="f-surface"/>
+        <line x1="40" y1="200" x2="770" y2="250" class="s-line" stroke-width="2"/>
+        <path d="M40,110 L770,175 L770,250 L40,200 Z" fill="rgba(60,140,220,0.22)"/>
+        <line x1="40" y1="110" x2="770" y2="175" stroke="rgb(30,110,200)" stroke-width="2"/>
+        <line x1="40" y1="62" x2="770" y2="140" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="8 5"/>
+        <text class="t" x="560" y="108" style="fill:var(--accent-2)">에너지선 (경사 S<tspan baseline-shift="sub" font-size="10">f</tspan>)</text>
+        <text class="t" x="560" y="186" style="fill:rgb(30,110,200)">수면 (경사 S<tspan baseline-shift="sub" font-size="10">w</tspan>)</text>
+        <text class="t-dim" x="560" y="262">바닥 (경사 S<tspan baseline-shift="sub" font-size="10">0</tspan> = tan θ)</text>
+        <line x1="200" y1="211" x2="200" y2="278" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#oc-mb)" marker-end="url(#oc-mb)"/>
+        <text class="t" x="208" y="250">z</text>
+        <line x1="200" y1="124" x2="200" y2="209" stroke="var(--accent)" stroke-width="1.6" marker-start="url(#oc-mb)" marker-end="url(#oc-mb)"/>
+        <text class="t-acc" x="208" y="172">y (수심)</text>
+        <line x1="200" y1="79" x2="200" y2="122" stroke="var(--accent-2)" stroke-width="1.6" marker-start="url(#oc-mb)" marker-end="url(#oc-mb)"/>
+        <text class="t" x="208" y="104" style="fill:var(--accent-2)">V²/2g</text>
+        <line x1="300" y1="168" x2="390" y2="176" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#oc-ma)"/>
+        <text class="t-acc" x="318" y="160">V</text>
+        <text class="t-dim" x="60" y="40">전수두 H = z + y + V²/2g (수면 압력 = 대기압, 단면 안은 정수압 분포)</text>
+      </svg>
+      <figcaption>개수로의 기본 양. 정수압 분포에서는 단면의 어느 점에서나 \(z + p/\rho g\)가 수면 높이 \(z + y\)와 같으므로, 수면선이 곧 수력 구배선이다. 에너지선은 그보다 \(V^2/2g\) 위에 있고 마찰 때문에 \(S_f\)의 기울기로 내려간다.</figcaption>
+    </figure>
+
+    <h3>흐름의 분류</h3>
+    <p>흐름이 시간에 따라 변하지 않으면 <span class="term">정상 흐름</span><span class="en">(steady flow)</span>이다. 정상 흐름은 다시 흐름 방향으로 수심이 변하는지에 따라 나뉜다.</p>
+    <div class="compare">
+      <div><h4>등류 (uniform flow)</h4><p>수심과 평균 속도가 일정하다. 바닥 경사가 주는 중력과 마찰이 정확히 균형을 이뤄 \(S_f = S_w = S_0\). 이때의 수심이 <span class="term">등류 수심</span><span class="en">(normal depth)</span> \(y_n\)이다.</p></div>
+      <div><h4>점변류 (gradually varied flow)</h4><p>수심이 먼 거리에 걸쳐 천천히 변한다. 댐 뒤의 배수, 경사가 바뀌는 곳 등. 단면마다 정수압 분포가 유지된다.</p></div>
+      <div><h4>급변류 (rapidly varied flow)</h4><p>수심이 수심 정도의 짧은 거리에서 급변한다. 수력 도약, 위어 위의 흐름, 수문 아래, 자유 낙하. 유선 곡률이 커서 정수압 가정이 깨진다.</p></div>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 260" role="img" aria-label="수문, 수력 도약, 등류, 자유 낙하가 있는 수로에서 등류·점변류·급변류 구간">
+        <rect data-only="2" x="420" y="40" width="190" height="200" fill="var(--accent-soft)" opacity=".8"/>
+        <g data-only="3"><rect x="196" y="40" width="130" height="200" fill="var(--accent-2)" opacity=".14"/><rect x="610" y="40" width="130" height="200" fill="var(--accent-2)" opacity=".14"/></g>
+        <g data-only="4"><rect x="150" y="40" width="46" height="200" fill="var(--bad)" opacity=".14"/><rect x="326" y="40" width="94" height="200" fill="var(--bad)" opacity=".14"/><rect x="740" y="40" width="50" height="200" fill="var(--bad)" opacity=".14"/></g>
+        <path d="M20,90 L178,90 C186,140 192,206 200,210 L326,198 C350,198 360,150 420,150 L610,150 C660,152 710,165 748,190 C760,200 770,230 776,250" fill="none" stroke="rgb(30,110,200)" stroke-width="2.2"/>
+        <path d="M20,90 L178,90 C186,140 192,206 200,210 L326,198 C350,198 360,150 420,150 L610,150 C660,152 710,165 748,190 L748,230 L20,230 Z" fill="rgba(60,140,220,0.2)"/>
+        <line x1="20" y1="230" x2="750" y2="230" class="s-line" stroke-width="2"/><line x1="750" y1="230" x2="750" y2="256" class="s-line" stroke-width="2"/>
+        <rect x="174" y="30" width="10" height="168" class="f-elev" stroke="var(--text-dim)"/>
+        <text class="t-dim" x="150" y="24">수문</text>
+        <g class="t-dim" font-size="12"><text x="40" y="80">저수지</text><text x="340" y="140">수력 도약</text><text x="680" y="140">자유 낙하</text></g>
+        <text data-only="2" class="t-acc" x="440" y="190">등류: y = y<tspan baseline-shift="sub" font-size="10">n</tspan> 일정</text>
+        <g data-only="3" class="t" style="fill:var(--accent-2)"><text x="206" y="186">점변류(M3)</text><text x="616" y="216">점변류(M2)</text></g>
+        <g data-only="4" class="t" style="fill:var(--bad)"><text x="120" y="256">급변류</text><text x="336" y="256">급변류</text><text x="700" y="256">급변류</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>저수지 → 수문 → 빠르고 얕은 흐름 → 수력 도약 → 느리고 깊은 흐름 → 자유 낙하. 한 수로 안에 여러 흐름이 섞여 있다.</li>
+        <li><b>등류</b>: 수심이 변하지 않는 구간. 중력과 마찰이 균형을 이룬다.</li>
+        <li><b>점변류</b>: 수문 뒤에서 마찰로 서서히 두꺼워지는 구간, 낙하 지점을 향해 서서히 얇아지는 구간.</li>
+        <li><b>급변류</b>: 수문 바로 아래, 도약, 낙하 지점. 짧은 거리에서 수심이 크게 변한다.</li>
+      </ol>
+      <figcaption>한 수로 안의 등류·점변류·급변류. 급변류 구간을 검사 체적으로 감싸 운동량·에너지로 풀고, 점변류는 미분 방정식으로 적분한다.</figcaption>
+    </figure>
+
+    <h3>수력 반경과 레이놀즈 수</h3>
+    <p>원형이 아닌 단면의 크기를 하나의 길이로 대표하기 위해 <span class="term">수력 반경</span><span class="en">(hydraulic radius)</span>을 쓴다. 젖은 단면적 \(A_c\)를 물이 벽에 닿는 길이인 <span class="term">윤변</span><span class="en">(wetted perimeter)</span> \(p\)로 나눈 것이다. 자유 표면은 마찰이 거의 없으므로 윤변에 넣지 않는다.</p>
+    <div class="formula">$$R_h = \frac{A_c}{p}, \qquad y_h = \frac{A_c}{T}, \qquad \mathrm{Re} = \frac{\rho V R_h}{\mu} = \frac{V R_h}{\nu}$$<div class="where">\(T\): 수면 폭, \(y_h\): <span class="term">수력 수심</span><span class="en">(hydraulic depth)</span>(비직사각형 단면의 프루드 수에 쓴다). 직사각형 단면 \(b\times y\)에서 \(R_h = by/(b+2y)\)이고, 폭이 넓은 수로(\(b \gg y\))에서는 \(R_h \approx y\)이다. 원형관의 \(D_h = 4R_h\)와 혼동하지 말 것(만관 원형관에서 \(R_h = D/4\)).</div></div>
+    <p>개수로는 보통 \(\mathrm{Re} < 500\)이면 층류, \(\mathrm{Re} > 2500\)이면 난류로 본다(\(R_h\) 기준). 강과 수로는 거의 언제나 완전 난류이므로, 마찰은 레이놀즈 수보다 거칠기에 좌우된다 — 매닝 식이 레이놀즈 수를 포함하지 않는 이유다.</p>
+    <figure class="mini" id="mini-rh">
+      <div class="mini-view"><canvas id="cv-rh"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>단면</span><div class="seg" id="rh-shape"><button data-value="rect" class="on">직사각형</button><button data-value="trap">사다리꼴</button><button data-value="tri">삼각형</button><button data-value="circ">원형관</button></div></div>
+        <span class="readout" id="rh-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>수면의 흰 원을 위아래로 끌어 수심을 바꿔라. 굵은 주황 선이 윤변이다. 오른쪽 그래프의 점이 \(R_h\)를 따라 움직인다. 원형관에서는 \(R_h\)가 만관(\(y = D\))이 아니라 \(y \approx 0.81D\)에서 가장 크다 — 꼭대기 가까이에서는 윤변만 늘고 면적은 거의 늘지 않기 때문이다.</figcaption>
+    </figure>
+    <div class="example" data-title="사다리꼴 수로의 수력 반경">
+      <p>바닥 폭 3.0 m, 측면 경사 1:2(연직 1에 수평 2)인 사다리꼴 수로에 물이 1.2 m 깊이로 흐른다. 단면적, 윤변, 수력 반경, 수력 수심을 구하고, 평균 속도가 1.5 m/s일 때 흐름이 층류인지 난류인지 판정하라(\(\nu = 1.0\times10^{-6}\) m²/s).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 측면 경사 \(z = 2\)인 사다리꼴: \(A_c = (b + zy)y\), \(p = b + 2y\sqrt{1+z^2}\), \(T = b + 2zy\).</div>
+        <div class="step"><b>풀이</b> \(A_c = (3.0 + 2.4)(1.2) = 6.48\) m², \(p = 3.0 + 2(1.2)\sqrt5 = 8.37\) m, \(R_h = 6.48/8.37 = 0.775\) m, \(T = 3.0 + 4.8 = 7.8\) m, \(y_h = 6.48/7.8 = 0.831\) m. \(\mathrm{Re} = VR_h/\nu = (1.5)(0.775)/10^{-6} = 1.16\times10^6\).</div>
+        <div class="answer">\(A_c\) = 6.48 m², \(p\) = 8.37 m, \(R_h\) = 0.775 m, \(y_h\) = 0.831 m, Re ≈ 1.2×10⁶ (완전 난류)</div>
+        <div class="step"><b>검토</b> \(R_h\)는 수심보다 작다(벽의 영향). 난류 기준 2500보다 수백 배 크다 — 실제 수로는 사실상 언제나 난류다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="froude">
+    <h2>표면파 속도와 프루드 수</h2>
+    <p>잔잔한 연못에 돌을 던지면 원형 물결이 퍼진다. 이 물결의 속도가 개수로의 "음속"이다. 흐름이 물결보다 느리면 하류의 교란(댐, 수문)이 물결을 타고 상류로 전해져 상류 수심을 바꾼다. 흐름이 물결보다 빠르면 하류 소식은 상류로 결코 올라가지 못한다. 압축성 유동의 마하 수와 똑같은 구조다(11장).</p>
+    <h3>얕은 물의 파속</h3>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="작은 표면파를 따라 움직이는 좌표계에서 검사 체적에 연속과 운동량을 적용">
+        <defs><marker id="oc-mw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="oc-mw2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <line x1="40" y1="230" x2="760" y2="230" class="s-line" stroke-width="2"/>
+        <path d="M40,120 L370,120 C395,120 405,150 430,150 L760,150 L760,230 L40,230 Z" fill="rgba(60,140,220,0.22)"/>
+        <path d="M40,120 L370,120 C395,120 405,150 430,150 L760,150" fill="none" stroke="rgb(30,110,200)" stroke-width="2"/>
+        <g data-only="1">
+          <line x1="400" y1="100" x2="470" y2="100" stroke="var(--accent-2)" stroke-width="2.6" marker-end="url(#oc-mw2)"/><text class="t" x="420" y="90" style="fill:var(--accent-2)">파속 c</text>
+          <text class="t" x="560" y="200">정지한 물, 수심 y</text>
+          <line x1="150" y1="180" x2="190" y2="180" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#oc-mw)"/><text class="t-acc" x="120" y="200">δV (파 뒤의 물이 따라 움직임)</text>
+          <text class="t" x="120" y="110">수심 y + δy</text>
+          <text class="t-dim" x="40" y="30">① 땅에서 본 모습: 높이 δy인 파가 c로 오른쪽으로 진행한다 (비정상 흐름).</text>
+        </g>
+        <g data-step="2">
+          <line x1="720" y1="190" x2="640" y2="190" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#oc-mw)"/><text class="t-acc" x="660" y="180">c</text>
+          <line x1="200" y1="180" x2="130" y2="180" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#oc-mw)"/><text class="t-acc" x="132" y="170">c − δV</text>
+          <rect x="290" y="96" width="220" height="134" fill="none" stroke="var(--text-dim)" stroke-dasharray="6 4"/>
+          <text class="t-dim" x="40" y="30" data-only="2">② 파와 함께 움직이면 정상 흐름: 물이 c로 들어와 c − δV로 나간다.</text>
+          <text class="t-dim" x="40" y="30" data-only="3">③ 검사 체적에 연속·운동량 방정식(정수압, 마찰 무시).</text>
+          <text class="t-dim" x="40" y="50" data-only="2">연속: c y = (c − δV)(y + δy)  →  δV ≈ c δy / y</text>
+        </g>
+        <g data-step="3">
+          <line x1="510" y1="200" x2="470" y2="200" stroke="var(--text)" stroke-width="2" marker-end="url(#oc-mw)"/><text class="t" x="520" y="214">½ρgy²</text>
+          <line x1="290" y1="196" x2="330" y2="196" stroke="var(--text)" stroke-width="2" marker-end="url(#oc-mw)"/><text class="t" x="220" y="214">½ρg(y+δy)²</text>
+          <text class="t-acc" x="40" y="50">운동량: ½ρg(y+δy)² − ½ρgy² = ρcy[c − (c − δV)] = ρcy δV</text>
+          <text class="t-acc" x="40" y="70">→ g δy ≈ c δV = c² δy / y  →  c² = g y</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>높이 \(\delta y\)인 작은 파가 수심 \(y\)인 정지한 물로 \(c\)의 속도로 들어간다.</li>
+        <li>파와 같이 움직이는 관찰자에게는 정상 흐름이다. 연속 방정식(단위 폭)에서 \(\delta V \approx c\,\delta y/y\).</li>
+        <li>수평 운동량: 정수압 힘의 차 = 운동량 유출입 차. 두 식을 합치면 \(c^2 = gy\).</li>
+      </ol>
+      <figcaption>얕은 물의 파속 유도. 미소량의 곱(\(\delta y^2\), \(\delta y\,\delta V\))은 버렸다. 진폭이 크면 \(c^2 = gy(1+\delta y/y)(1+\delta y/2y)\)로 더 빨라진다 — 큰 파일수록 빨리 가서 앞이 가팔라진다.</figcaption>
+    </figure>
+    <div class="formula">$$c_0 = \sqrt{gy} \qquad (\text{얕은 물, } y \ll \lambda)$$<div class="where">파장 \(\lambda\)를 고려한 일반식은 \(c^2 = \dfrac{g\lambda}{2\pi}\tanh\dfrac{2\pi y}{\lambda}\)이다. \(y < \lambda/20\) 정도면 \(\tanh x \approx x\)라서 \(\sqrt{gy}\), 깊은 물(\(y > \lambda/2\))에서는 \(\sqrt{g\lambda/2\pi}\)로 수심과 무관해진다. 표면 장력은 파장 수 cm 이하의 잔물결에서만 중요하다.</div></div>
+    <div class="callout tip"><strong>쓰나미는 얕은 물의 파다</strong><p>대양의 깊이 4000 m는 쓰나미 파장(수백 km)에 비하면 아주 얕다. 그래서 \(c = \sqrt{9.81\times4000} = 198\) m/s ≈ 710 km/h — 제트기만큼 빠르다. 해안에 다가오며 수심이 줄면 느려지고, 뒤따르는 물이 쌓여 파고가 높아진다.</p></div>
+
+    <h3>프루드 수</h3>
+    <p>흐름 속도와 파속의 비가 <span class="term">프루드 수</span><span class="en">(Froude number)</span>다(7장의 무차원 수 Fr). 비직사각형 단면에서는 \(y\) 대신 수력 수심 \(y_h = A_c/T\)를 쓴다.</p>
+    <div class="formula">$$\mathrm{Fr} = \frac{V}{\sqrt{g\,y_h}}\qquad\begin{cases}\mathrm{Fr} < 1 & \text{아임계 흐름(subcritical): 느리고 깊다, 파가 상류로 간다}\\ \mathrm{Fr} = 1 & \text{임계 흐름(critical)}\\ \mathrm{Fr} > 1 & \text{초임계 흐름(supercritical): 빠르고 얕다, 파가 상류로 못 간다}\end{cases}$$</div>
+    <p>흐르는 물 위에서 파는 상류로 \(c_0 - V\), 하류로 \(c_0 + V\)의 속도로 간다(땅 기준). \(\mathrm{Fr} > 1\)이면 상류 쪽 속도가 음수 — 모든 교란이 하류로 휩쓸려 가고, 점 교란은 반각 \(\mu = \sin^{-1}(1/\mathrm{Fr})\)인 쐐기 모양 물결을 남긴다(마하 원뿔과 같다).</p>
+    <div class="tangle" id="tg-c">
+      <p>수심 <span class="tn" data-var="y" data-min="0.1" data-max="10" data-step="0.1" data-unit=" m">2.0</span>인 수로에 물이 <span class="tn" data-var="V" data-min="0" data-max="10" data-step="0.1" data-unit=" m/s">1.2</span>로 흐른다. 파속은 \(c_0 = \sqrt{gy}\) = <span class="tn-out" data-out="c"></span>, 프루드 수는 <span class="tn-out" data-out="Fr"></span>로 <span class="tn-out" data-out="reg"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-wave">
+      <p>\(\mathrm{Fr} = 2\)로 빠르게 흐르는 물에 돌을 던졌다. 돌이 떨어진 지점보다 <em>상류</em>에 물결이 닿을까?</p>
+      <div class="opts"><button class="opt">닿는다. 원형 물결은 모든 방향으로 퍼진다</button><button class="opt">닿지만 아주 약하다</button><button class="opt" data-correct>닿지 못한다. 물결 전체가 하류로 쓸려 간다</button><button class="opt">상류로만 퍼진다</button></div>
+      <div class="quiz-exp">물결의 상류쪽 끝은 \(c_0 - V = c_0(1-\mathrm{Fr}) < 0\)으로 움직인다 — 하류로 간다. 아래에서 유속을 바꿔 가며 확인하고, 연속 교란(막대)을 켜서 쐐기가 생기는 것을 보라.</div>
+    </div>
+    <div class="sim" id="sim-wave">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>흐르는 물에 돌 던지기 (위에서 본 수로)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-wave"></canvas><span class="hint">수면을 누르면 돌이 떨어진다 · 막대(흰 원)는 끌어 옮긴다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>유속 V <output id="wv-v-out"></output></span><input type="range" id="wv-v" min="0" max="8" step="0.1" value="1.5"></label>
+          <label class="ctrl"><span>수심 y <output id="wv-y-out"></output></span><input type="range" id="wv-y" min="0.1" max="3" step="0.05" value="1"></label>
+          <label class="check"><input type="checkbox" id="wv-stick"> 막대 꽂기(연속 교란, 0.3 s마다 물결)</label>
+          <label class="check"><input type="checkbox" id="wv-wedge" checked> 이론 쐐기선 \(\sin\mu = 1/\mathrm{Fr}\)</label>
+          <div class="ctrl-row"><button class="btn primary" id="wv-drop" type="button">가운데에 돌 던지기</button><button class="btn" id="wv-clear" type="button">지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">파속 c₀ = √(gy)</span><span class="v" id="wv-c">—</span></div>
+        <div class="stat"><span class="k">Fr = V/c₀</span><span class="v" id="wv-fr">—</span></div>
+        <div class="stat"><span class="k">상류쪽 파 속도 c₀ − V</span><span class="v" id="wv-up">—</span></div>
+        <div class="stat"><span class="k">쐐기 반각 μ</span><span class="v" id="wv-mu">—</span></div>
+      </div>
+      <div class="sim-note">작은 점은 물과 함께 떠내려가는 부유물이다. 해볼 것: ① V = 0에서 동심원, V를 키우면 원의 중심이 하류로 흘러가며 상류쪽 간격이 좁아진다. ② Fr = 1(예: y = 1 m에서 V ≈ 3.1 m/s)에서 물결의 상류 끝이 돌이 떨어진 자리에 멈춘다. ③ 막대를 켜고 Fr = 2로 맞추면 반각 30°인 쐐기가 생긴다. 수심을 줄이면 같은 V에서도 Fr이 커져 쐐기가 좁아진다.</div>
+    </div>
+    <div class="example" data-title="강물의 파속과 프루드 수">
+      <p>수심 2.0 m인 넓은 강이 1.2 m/s로 흐른다. (a) 얕은 물 파속과 프루드 수, (b) 상류·하류로 가는 파의 속도(땅 기준), (c) 100 m 하류에서 생긴 교란이 상류 관측점에 닿는 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(c_0 = \sqrt{gy}\), 흐르는 물 위의 파는 \(c_0 \mp V\).</div>
+        <div class="step"><b>풀이</b> (a) \(c_0 = \sqrt{(9.81)(2.0)} = 4.43\) m/s, \(\mathrm{Fr} = 1.2/4.43 = 0.271\). (b) 상류로 \(4.43 - 1.2 = 3.23\) m/s, 하류로 \(4.43 + 1.2 = 5.63\) m/s. (c) \(t = 100/3.23 = 31.0\) s.</div>
+        <div class="answer">(a) 4.43 m/s, Fr = 0.271 (아임계) (b) 3.23 m/s, 5.63 m/s (c) 31.0 s</div>
+        <div class="step"><b>검토</b> 아임계이므로 하류 교란이 상류로 전해진다. 하천에 보를 세우면 상류 수위가 오르는 것(배수 효과)도 이 때문이다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-fr" data-title="파속 · 프루드 수 · 임계 수심 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="specific-energy">
+    <h2>비에너지와 임계 수심</h2>
+    <p>수로 바닥에서 잰 단위 무게당 에너지를 <span class="term">비에너지</span><span class="en">(specific energy)</span>라 한다. 전수두 \(H = z + y + V^2/2g\)에서 바닥 높이 \(z\)를 뺀 것이다. 폭 \(b\)인 직사각형 수로에서 단위 폭 유량 \(q = Q/b = Vy\)를 쓰면</p>
+    <div class="formula">$$E_s = y + \frac{V^2}{2g} = y + \frac{q^2}{2g\,y^2}$$<div class="where">\(q\)가 정해지면 \(E_s\)는 수심 \(y\)만의 함수다. \(y \to 0\)이면 속도 수두가 무한대로, \(y \to \infty\)이면 \(E_s \to y\)(45° 선)로 다가간다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 330" role="img" aria-label="비에너지 선도: 두 유량에 대한 E–y 곡선, 임계점, 교대 수심">
+        <line x1="90" y1="300" x2="580" y2="300" class="s-axis"/><line x1="90" y1="300" x2="90" y2="22" class="s-axis"/>
+        <text class="t-dim" x="560" y="320">E<tspan baseline-shift="sub" font-size="10">s</tspan></text><text class="t-dim" x="64" y="30">y</text>
+        <line x1="90" y1="300" x2="487" y2="30" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <text class="t-dim" x="470" y="24">E = y (45°)</text>
+        <path d="M345,278 L288,274 L254,270 L233,266 L220,262 L213,258 L209,254 L207,250 L206,247 L209,239 L214,231 L221,223 L230,215 L239,207 L249,199 L259,191 L270,183 L280,175 L291,167 L303,159 L314,151 L325,143 L336,135 L348,127 L359,119 L371,111 L382,103 L394,95 L405,87 L417,79 L428,71 L440,63 L452,55 L463,47 L475,39" fill="none" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <text class="t-dim" x="300" y="290">q₁</text>
+        <path d="M537,270 L453,266 L397,262 L357,258 L329,254 L308,250 L294,246 L283,242 L275,238 L270,234 L267,230 L265,226 L264,221 L266,212 L270,204 L276,196 L283,188 L291,180 L300,172 L309,164 L319,156 L329,148 L339,140 L350,132 L360,124 L371,116 L382,108 L393,100 L404,92 L415,84 L426,76 L437,68 L449,60 L460,52 L472,44" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+        <text class="t-acc" x="520" y="262">q₂ > q₁</text>
+        <circle cx="264" cy="221" r="5" fill="var(--accent-2)"/>
+        <line x1="264" y1="221" x2="264" y2="300" stroke="var(--accent-2)" stroke-dasharray="3 3"/><line x1="90" y1="221" x2="264" y2="221" stroke="var(--accent-2)" stroke-dasharray="3 3"/>
+        <text class="t" x="96" y="215" style="fill:var(--accent-2)">y<tspan baseline-shift="sub" font-size="10">c</tspan></text><text class="t" x="240" y="318" style="fill:var(--accent-2)">E<tspan baseline-shift="sub" font-size="10">min</tspan> = 1.5y<tspan baseline-shift="sub" font-size="10">c</tspan></text>
+        <line x1="442" y1="40" x2="442" y2="300" stroke="var(--text-faint)" stroke-dasharray="2 4"/>
+        <circle cx="442" cy="64" r="5" fill="var(--accent)"/><circle cx="442" cy="265" r="5" fill="var(--accent)"/>
+        <text class="t" x="452" y="80">y₁: 아임계 (깊고 느림)</text><text class="t" x="452" y="250">y₂: 초임계 (얕고 빠름)</text>
+        <text class="t-dim" x="400" y="318">같은 E</text>
+        <text class="t-acc" x="600" y="110">윗가지 Fr &lt; 1</text><text class="t-acc" x="600" y="135">아랫가지 Fr &gt; 1</text><text class="t" x="600" y="160" style="fill:var(--accent-2)">코: Fr = 1</text>
+        <text class="t-dim" x="600" y="200">E &lt; E<tspan baseline-shift="sub" font-size="10">min</tspan>이면</text><text class="t-dim" x="600" y="220">이 유량은 흐를 수 없다</text>
+      </svg>
+      <figcaption>비에너지 선도. 하나의 \(E_s > E_\text{min}\)에 두 수심 — <span class="term">교대 수심</span><span class="en">(alternate depths)</span> — 이 대응한다. 곡선의 코(최소점)가 임계 상태이고, 유량이 클수록 곡선이 오른쪽으로 밀려난다.</figcaption>
+    </figure>
+    <h3>임계 수심</h3>
+    <p>\(dE_s/dy = 1 - q^2/(gy^3) = 0\)에서 비에너지가 최소가 된다. 이 수심이 <span class="term">임계 수심</span><span class="en">(critical depth)</span>이다.</p>
+    <div class="formula">$$y_c = \left(\frac{q^2}{g}\right)^{1/3}, \qquad V_c = \sqrt{g\,y_c}\;(\mathrm{Fr} = 1), \qquad E_\text{min} = y_c + \frac{y_c}{2} = \frac32\,y_c$$<div class="where">임계 상태에서는 속도 수두가 수심의 정확히 절반이다. 일반 단면에서는 \(dE_s/dy = 1 - Q^2T/(gA_c^3) = 0\), 즉 \(Q^2 T_c/(g A_c^3) = 1\)이 임계 조건이고 이는 \(\mathrm{Fr} = V/\sqrt{gA_c/T} = 1\)과 같다.</div></div>
+    <p>\(dE_s/dy = 1 - \mathrm{Fr}^2\)이므로 윗가지(\(dE_s/dy > 0\))는 아임계, 아랫가지(\(dE_s/dy < 0\))는 초임계다. 임계점 근처에서는 \(E_s\)가 조금만 변해도 수심이 크게 출렁인다 — 임계 수심 부근의 흐름이 불안정하고 물결이 이는 이유다.</p>
+    <div class="tangle" id="tg-yc">
+      <p>폭 <span class="tn" data-var="b" data-min="0.5" data-max="20" data-step="0.5" data-unit=" m">4.0</span>인 직사각형 수로에 <span class="tn" data-var="Q" data-min="0.5" data-max="100" data-step="0.5" data-unit=" m³/s">12.0</span>가 흐르면 \(q\) = <span class="tn-out" data-out="q"></span>, 임계 수심 \(y_c\) = <span class="tn-out" data-out="yc"></span>, 임계 속도 <span class="tn-out" data-out="Vc"></span>, \(E_\text{min}\) = <span class="tn-out" data-out="Em"></span>이다. 실제 수심이 <span class="tn" data-var="y" data-min="0.1" data-max="6" data-step="0.05" data-unit=" m">0.50</span>이면 Fr = <span class="tn-out" data-out="Fr"></span>(<span class="tn-out" data-out="reg"></span>)이고, 같은 비에너지 \(E_s\) = <span class="tn-out" data-out="E"></span>를 갖는 교대 수심은 <span class="tn-out" data-out="alt"></span>이다.</p>
+    </div>
+    <div class="example" data-title="교대 수심">
+      <p>폭 4.0 m인 직사각형 수로에 12 m³/s가 수심 0.50 m로 흐른다. 흐름의 상태, 비에너지, 임계 수심과 최소 비에너지, 그리고 교대 수심을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(q = Q/b\)로 \(E_s\)와 \(y_c\)를 구한 뒤, 같은 \(E_s\)를 주는 다른 근을 3차 방정식 \(y^3 - E_s y^2 + q^2/2g = 0\)에서 찾는다(반복법).</div>
+        <div class="step"><b>풀이</b> \(q = 3.0\) m²/s, \(V = 6.0\) m/s, \(\mathrm{Fr} = 6.0/\sqrt{(9.81)(0.50)} = 2.71\) → 초임계. \(E_s = 0.50 + 6.0^2/19.62 = 2.33\) m. \(y_c = (9/9.81)^{1/3} = 0.972\) m, \(E_\text{min} = 1.46\) m. 교대 수심: \(y = 2.335 - 0.4587/y^2\)를 \(y = 2.3\)에서 시작해 반복하면 \(y \to 2.24\) m.</div>
+        <div class="answer">초임계(Fr = 2.71), \(E_s\) = 2.33 m, \(y_c\) = 0.972 m, \(E_\text{min}\) = 1.46 m, 교대 수심 2.24 m (Fr = 0.285)</div>
+        <div class="step"><b>검토</b> 교대 수심은 \(y_c\)를 사이에 두고 한쪽은 얕고 한쪽은 깊다. 에너지는 같지만 2.24 m 쪽은 속도 수두가 0.09 m에 불과하다. 이 둘이 수력 도약의 공액 수심과는 다르다는 점에 주의(10.6절).</div>
+      </details>
+    </div>
+
+    <h3>바닥 융기 위의 흐름과 초크</h3>
+    <p>마찰을 무시하면 전수두가 보존되므로, 높이 \(\Delta z\)인 바닥 융기 위에서는 비에너지가 그만큼 줄어든다: \(E_{s2} = E_{s1} - \Delta z\). 비에너지 선도에서 점이 <em>같은 가지를 따라</em> 왼쪽으로 \(\Delta z\)만큼 이동한다. 이를 미분형으로 쓰면</p>
+    <div class="formula">$$\frac{dy}{dx} = -\frac{1}{1-\mathrm{Fr}^2}\,\frac{dz}{dx}, \qquad \frac{d(y+z)}{dx} = -\frac{\mathrm{Fr}^2}{1-\mathrm{Fr}^2}\,\frac{dz}{dx}$$<div class="where">아임계(\(\mathrm{Fr}<1\)): 융기 위에서 수심도, <strong>수면도</strong> 내려간다. 초임계(\(\mathrm{Fr}>1\)): 수심도 수면도 올라간다. \(\mathrm{Fr} = 1\)에서 식이 발산 — 임계 상태는 융기의 꼭대기(\(dz/dx = 0\))에서만 가능하다.</div></div>
+    <p>융기가 너무 높아 \(E_{s1} - \Delta z < E_\text{min}\)이 되면 주어진 유량이 그 위를 넘어갈 수 없다. 이를 <span class="term">초크</span><span class="en">(choking)</span>라 한다. 그러면 상류 수심이 올라가 에너지를 더 갖추고(\(E_{s1}' = E_\text{min} + \Delta z\)), 꼭대기에서 정확히 임계 수심이 되어 넘어간 뒤 하류에서는 초임계로 흘러내린다. 따라서 초크 없이 넘을 수 있는 최대 융기는 \(\Delta z_\text{max} = E_{s1} - \tfrac32 y_c\)이다.</p>
+    <div class="predict" data-for="sim-energy">
+      <p>느리게(아임계로) 흐르는 수로 바닥에 낮은 둔덕이 있다. 둔덕 위의 <em>수면</em>은 상류보다?</p>
+      <div class="opts"><button class="opt">올라간다(바닥이 올라갔으니까)</button><button class="opt" data-correct>내려간다</button><button class="opt">그대로다</button></div>
+      <div class="quiz-exp">아임계에서 \(E_s\)가 줄면 윗가지를 따라 수심이 \(\Delta z\)보다 더 많이 준다. 그래서 바닥이 올라가도 수면은 내려간다. 아래에서 융기를 끌어 올리며 왼쪽 수면과 오른쪽 선도의 두 점을 함께 보라. 초임계로 바꾸면 반대가 된다.</div>
+    </div>
+    <div class="sim" id="sim-energy">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>비에너지 선도와 바닥 융기 (도전: 초크 직전까지)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-en-side"></canvas></div><div><canvas id="cv-en-ey"></canvas></div></div><span class="hint">융기 꼭대기 · 점 ①을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>단위 폭 유량 q <output id="en-q-out"></output></span><input type="range" id="en-q" min="0.5" max="3" step="0.05" value="2"></label>
+          <label class="ctrl"><span>융기 높이 Δz <output id="en-dz-out"></output></span><input type="range" id="en-dz" min="0" max="1.5" step="0.005" value="0.15"></label>
+          <div class="ctrl"><span>상류 흐름</span><div class="seg" id="en-reg"><button data-value="sub" class="on">아임계</button><button data-value="sup">초임계</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="en-game" type="button">도전 시작</button><button class="btn" id="en-judge" type="button">판정</button></div>
+          <div class="readout" id="en-msg"></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">상류 y₁, Fr₁</span><span class="v" id="en-y1">—</span></div>
+        <div class="stat"><span class="k">E₁ / E<sub>min</sub></span><span class="v" id="en-e">—</span></div>
+        <div class="stat"><span class="k">꼭대기 y₂, Fr₂</span><span class="v" id="en-y2">—</span></div>
+        <div class="stat"><span class="k">수면 변화 Δ(y+z)</span><span class="v" id="en-dh">—</span></div>
+        <div class="stat"><span class="k">Δz<sub>max</sub> (초크 한계)</span><span class="v" id="en-dzm">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 점선은 에너지선이다(마찰 없음 → 수평). 해볼 것: ① 아임계에서 융기를 높이면 수면이 내려가고, 오른쪽 점 ②가 윗가지를 따라 코 쪽으로 간다. ② 초임계로 바꾸면 수면이 올라간다. ③ 점 ②가 코를 넘어가면 초크 — 상류 수심이 높아지고(①′) 꼭대기에서 임계 수심, 하류는 초임계가 된다. <b>도전</b>: 숫자가 가려진 상태에서 선도만 보고 초크가 일어나지 않는 가장 높은 융기를 맞혀라(97% 이상이면 완벽).</div>
+    </div>
+    <div class="example" data-title="둔덕 위의 수면">
+      <p>넓은 직사각형 수로에 \(q = 2.0\) m²/s가 수심 1.50 m로 흐른다. 바닥에 높이 0.15 m인 매끈한 둔덕이 있다. 마찰을 무시할 때 (a) 둔덕 꼭대기의 수심과 수면 변화, (b) 초크가 일어나지 않는 최대 둔덕 높이를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\mathrm{Fr}_1\)로 가지를 정하고, \(E_{s2} = E_{s1} - \Delta z\)를 만족하는 같은 가지의 근을 찾는다.</div>
+        <div class="step"><b>풀이</b> \(V_1 = 1.333\) m/s, \(\mathrm{Fr}_1 = 1.333/\sqrt{(9.81)(1.50)} = 0.348\) → 아임계. \(E_{s1} = 1.50 + 1.333^2/19.62 = 1.591\) m, \(E_{s2} = 1.441\) m. \(y = 1.441 - 0.2039/y^2\)를 반복하면 \(y_2 = 1.324\) m. 수면 변화 \(= (y_2 + \Delta z) - y_1 = 1.474 - 1.500 = -0.026\) m. (b) \(y_c = (4/9.81)^{1/3} = 0.742\) m, \(E_\text{min} = 1.112\) m, \(\Delta z_\text{max} = 1.591 - 1.112 = 0.478\) m.</div>
+        <div class="answer">(a) \(y_2\) = 1.32 m, 수면이 약 2.6 cm 내려간다 (b) \(\Delta z_\text{max}\) = 0.478 m</div>
+        <div class="step"><b>검토</b> 시뮬레이터에서 q = 2.0, 아임계 y₁ = 1.50 m로 맞추면 같은 값이 나온다. 수면 강하가 작은 것은 Fr이 작아 \(\mathrm{Fr}^2/(1-\mathrm{Fr}^2) = 0.14\)이기 때문이다.</div>
+      </details>
+    </div>
+
+    <h3>수로 폭의 변화</h3>
+    <p>바닥은 그대로 두고 폭을 \(b_1\)에서 \(b_2\)로 좁히면 비에너지는 같고 단위 폭 유량이 \(q_2 = Q/b_2\)로 커진다. 비에너지 선도에서는 점이 <em>더 큰 \(q\)의 곡선</em>으로 옮겨 간다. 같은 \(E_s\)에서 \(q\)가 커지면 아임계는 수심이 줄고, 초임계는 수심이 는다 — 융기와 같은 경향이다. 너무 좁히면 \(E_s < \tfrac32 y_{c2}\)가 되어 초크가 생긴다. 초크 없이 흘릴 수 있는 최대 단위 폭 유량은 \(q_\text{max} = \sqrt{g\,(2E_s/3)^3}\)이다.</p>
+    <figure class="mini" id="mini-width">
+      <div class="mini-view"><canvas id="cv-width"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>폭 비 b₂/b₁ <output id="wd-r-out"></output></span><input type="range" id="wd-r" min="0.3" max="1" step="0.01" value="0.67"></label>
+        <div class="ctrl"><span>상류</span><div class="seg" id="wd-reg"><button data-value="sub" class="on">아임계 y₁ = 1.5 m</button><button data-value="sup">초임계 y₁ = 0.4 m</button></div></div>
+        <span class="readout" id="wd-r-txt"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>폭 3 m 수로에 Q = 6 m³/s. 위는 평면도, 아래는 옆에서 본 수면이다. 폭 비를 줄이며 아임계에서는 수면이 가라앉고 초임계에서는 솟는 것, 그리고 어느 폭 이하에서 초크가 생기는지 찾아라.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="uniform-flow">
+    <h2>등류: 셰지 식과 매닝 식</h2>
+    <p>긴 수로에서 경사와 거칠기, 단면이 일정하면 흐름은 결국 수심이 변하지 않는 등류에 이른다. 길이 \(L\)인 검사 체적을 생각하자. 수심이 같으므로 양 끝의 정수압 힘은 상쇄되고, 운동량도 변하지 않는다. 남는 것은 물 무게의 경사 방향 성분과 벽 마찰뿐이다.</p>
+    <div class="formula">$$\rho g A_c L\sin\theta = \tau_w\,p\,L \quad\Rightarrow\quad \tau_w = \rho g R_h S_0 \qquad (S_0 = \tan\theta \approx \sin\theta)$$<div class="where">벽 전단 응력을 관 유동처럼 \(\tau_w = (f/8)\rho V^2\)으로 쓰면 아래 셰지 식이 나온다. 이 결과는 에너지 방정식의 수두 손실 \(h_L = S_0 L\)과 같은 말이다.</div></div>
+    <div class="formula">$$V_0 = C\sqrt{R_h S_0}, \quad C = \sqrt{8g/f}\ (\text{셰지 계수}) \qquad\qquad V_0 = \frac{a}{n}R_h^{2/3}S_0^{1/2}, \quad \dot V = \frac{a}{n}A_c R_h^{2/3}S_0^{1/2}$$<div class="where">왼쪽: <span class="term">셰지 식</span><span class="en">(Chézy equation, 1769)</span>. 오른쪽: <span class="term">매닝 식</span><span class="en">(Manning equation, 1889)</span> — 실험으로 \(C = (a/n)R_h^{1/6}\)임을 얻은 것. \(n\)은 <span class="term">매닝 계수</span><span class="en">(Manning coefficient)</span>이고, \(a = 1\) m\(^{1/3}\)/s(SI) 또는 1.486 ft\(^{1/3}\)/s(영국 단위)이다. 이 책에서는 SI만 쓰며 \(a\)를 생략한다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>수로 표면</th><th class="num">매닝 n</th><th>수로 표면</th><th class="num">매닝 n</th></tr></thead>
+      <tbody>
+        <tr><td>유리</td><td class="num">0.010</td><td>굴착 흙 수로(깨끗함)</td><td class="num">0.022</td></tr>
+        <tr><td>마감 콘크리트</td><td class="num">0.012</td><td>굴착 흙 수로(자갈 섞임)</td><td class="num">0.025</td></tr>
+        <tr><td>주철</td><td class="num">0.013</td><td>굴착 흙 수로(잡초)</td><td class="num">0.030</td></tr>
+        <tr><td>미마감 콘크리트</td><td class="num">0.014</td><td>자연 하천(깨끗하고 곧음)</td><td class="num">0.030</td></tr>
+        <tr><td>벽돌</td><td class="num">0.015</td><td>자연 하천(완만, 깊은 웅덩이)</td><td class="num">0.040</td></tr>
+        <tr><td>아스팔트</td><td class="num">0.016</td><td>범람원(관목)</td><td class="num">0.050</td></tr>
+        <tr><td>파형 금속관</td><td class="num">0.022</td><td>범람원(나무)</td><td class="num">0.15</td></tr>
+      </tbody>
+    </table></div>
+    <p>매닝 식은 SI 단위에서만 맞는 <em>차원이 있는 경험식</em>이다(\(n\)에 단위 s/m\(^{1/3}\)을 붙이기도 한다). 완전 난류를 전제로 하므로 Re가 아주 작은 얇은 흐름에는 맞지 않는다.</p>
+    <div class="tangle" id="tg-man">
+      <p>매닝 계수 <span class="tn" data-var="n" data-min="0.010" data-max="0.060" data-step="0.001">0.012</span>, 수력 반경 <span class="tn" data-var="R" data-min="0.1" data-max="5" data-step="0.05" data-unit=" m">0.62</span>, 바닥 경사 <span class="tn" data-var="S" data-min="0.0001" data-max="0.02" data-step="0.0001">0.0010</span>인 등류의 평균 속도는 <span class="tn-out" data-out="V"></span>이다(셰지 계수 C = <span class="tn-out" data-out="C"></span>, 마찰 계수로 환산하면 f = <span class="tn-out" data-out="f"></span>). 벽 전단 응력은 \(\tau_w = \rho g R_h S_0\) = <span class="tn-out" data-out="tau"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="사다리꼴 콘크리트 수로의 유량">
+      <p>바닥 폭 2.0 m, 측면 경사 45°(1:1)인 마감 콘크리트(\(n = 0.012\)) 사다리꼴 수로가 경사 0.001로 놓여 있다. 등류 수심이 1.0 m일 때 유량과 프루드 수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 단면 기하 → \(R_h\) → 매닝 식. 프루드 수는 수력 수심 \(y_h = A_c/T\)로.</div>
+        <div class="step"><b>풀이</b> \(A_c = (2.0 + 1.0)(1.0) = 3.0\) m², \(p = 2.0 + 2\sqrt2 = 4.83\) m, \(R_h = 0.621\) m. \(V = (1/0.012)(0.621)^{2/3}(0.001)^{1/2} = 1.92\) m/s, \(\dot V = (3.0)(1.92) = 5.76\) m³/s. \(T = 4.0\) m, \(y_h = 0.75\) m, \(\mathrm{Fr} = 1.92/\sqrt{(9.81)(0.75)} = 0.707\).</div>
+        <div class="answer">\(\dot V\) ≈ 5.76 m³/s, V = 1.92 m/s, Fr = 0.71 (아임계)</div>
+        <div class="step"><b>검토</b> 아래 수로 설계기에서 같은 조건(사다리꼴 1:1, b = 2, y = 1, S₀ = 0.001, n = 0.012)을 넣어 확인하라.</div>
+      </details>
+    </div>
+    <h3>등류 수심과 최적 수리 단면</h3>
+    <p>유량을 주고 수심 \(y_n\)을 구하는 문제는 \(A_c R_h^{2/3}\)가 \(y\)의 복잡한 함수라서 반복법(또는 근 찾기)으로 푼다. 반대로 같은 유량을 <em>가장 작은 단면적</em>으로 흘리려면 같은 면적에서 윤변이 가장 짧아야 한다(\(\dot V \propto A_c^{5/3}/p^{2/3}\)). 이런 단면을 <span class="term">최적 수리 단면</span><span class="en">(best hydraulic cross section)</span>이라 한다.</p>
+    <div class="callout deep"><strong>직사각형과 사다리꼴의 최적 단면</strong><p>직사각형: \(A_c = by\) 고정에서 \(p = A_c/y + 2y\). \(dp/dy = -A_c/y^2 + 2 = 0\) → \(A_c = 2y^2\), 즉 <strong>\(b = 2y\)</strong>, \(R_h = y/2\). 사다리꼴(측면이 수평과 \(\theta\)): \(A_c = (b + y\cot\theta)y\), \(p = b + 2y/\sin\theta\). \(b\)를 소거하고 \(y\)와 \(\theta\)에 대해 \(p\)를 최소화하면 <strong>\(\theta = 60°\), \(b = 2y/\sqrt3\)</strong> — 정육각형의 절반이다. 이때도 \(R_h = y/2\). 모든 단면 중 최적은 반원이다.</p></div>
+    <figure class="mini" id="mini-best">
+      <div class="mini-view"><canvas id="cv-best"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>측면</span><div class="seg" id="bs-z"><button data-value="0" class="on">직사각형</button><button data-value="1">45° (1:1)</button><button data-value="0.57735">60°</button></div></div>
+        <label class="ctrl"><span>b/y <output id="bs-r-out"></output></span><input type="range" id="bs-r" min="0.2" max="8" step="0.05" value="4"></label>
+        <span class="readout" id="bs-txt"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>단면적을 4 m²로 고정하고 바닥 폭과 수심의 비만 바꾼다. 오른쪽 그래프의 점이 윤변 \(p\)를 따라 움직인다. 최소점이 직사각형에서 b/y = 2, 60° 사다리꼴에서 b/y = 1.15임을 확인하고, 같은 경사·n에서 흘릴 수 있는 유량(최적 대비 %)을 보라.</figcaption>
+    </figure>
+    <div class="sim" id="sim-manning">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>매닝 수로 설계기 (도전: 목표 유량을 가장 작은 단면으로)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-man"></canvas><span class="hint">흰 원: 수면(수심)과 바닥 모서리(폭)를 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>단면</span><div class="seg" id="mn-shape"><button data-value="0" class="on">직사각형</button><button data-value="1">사다리꼴 1:1</button><button data-value="0.57735">사다리꼴 60°</button></div></div>
+          <label class="ctrl"><span>바닥 경사 S₀ <output id="mn-s-out"></output></span><input type="range" id="mn-s" min="-4" max="-1.7" step="0.02" value="-3"></label>
+          <label class="ctrl"><span>표면</span><select id="mn-n"></select></label>
+          <div class="ctrl-row"><button class="btn primary" id="mn-game" type="button">목표 유량 도전</button><button class="btn" id="mn-judge" type="button">판정</button></div>
+          <div class="readout" id="mn-msg"></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">A<sub>c</sub>, p</span><span class="v" id="mn-ap">—</span></div>
+        <div class="stat"><span class="k">R<sub>h</sub></span><span class="v" id="mn-rh">—</span></div>
+        <div class="stat"><span class="k">평균 속도 V</span><span class="v" id="mn-v">—</span></div>
+        <div class="stat"><span class="k">유량 Q</span><span class="v" id="mn-q">—</span></div>
+        <div class="stat"><span class="k">Fr</span><span class="v" id="mn-fr">—</span></div>
+      </div>
+      <div class="sim-note">단면 색은 벽에서 멀수록 빠르다는 난류 속도 분포의 근사다(최대 속도는 수면 가까운 가운데). 위 띠의 점은 V로 흘러가는 부유물이다. 해볼 것: ① 경사를 4배로 하면 Q가 2배(\(S_0^{1/2}\)). ② 수심을 2배로 하면 Q는 2배보다 훨씬 커진다. ③ 같은 단면에서 콘크리트 → 잡초 수로로 바꾸면 Q가 절반 이하. <b>도전</b>: 목표 Q ±3% 안에 들면서 단면적이 가장 작게 — 최적 수리 단면(점선)을 찾아라.</div>
+    </div>
+    <div class="example" data-title="등류 수심과 최적 단면">
+      <p>폭 3.0 m인 벽돌(\(n = 0.015\)) 직사각형 수로가 경사 0.0016으로 6.0 m³/s를 흘린다. (a) 등류 수심과 흐름 상태를 구하라. (b) 같은 유량·경사·재료에서 최적 수리 단면(직사각형)의 폭과 수심, 단면적은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(6.0 = (1/0.015)(3y)\left(\dfrac{3y}{3+2y}\right)^{2/3}(0.04)\)를 \(y\)에 대해 푼다. (b) \(b = 2y\), \(A_c = 2y^2\), \(R_h = y/2\)를 대입하면 \(y\)만의 식.</div>
+        <div class="step"><b>풀이</b> (a) 시행: \(y = 1.0\) → \(\dot V = 5.67\), \(y = 1.05\) → 6.04, 보간·반복으로 \(y_n = 1.039\) m. \(V = 1.93\) m/s, \(\mathrm{Fr} = 1.93/\sqrt{9.81\times1.039} = 0.603\); \(y_c = (2^2/9.81)^{1/3} = 0.742\) m \(< y_n\) → 아임계(완경사). (b) \(6.0 = (1/0.015)(2y^2)(y/2)^{2/3}(0.04)\) → \(y^{8/3} = 1.786\) → \(y = 1.243\) m, \(b = 2.486\) m, \(A_c = 3.09\) m².</div>
+        <div class="answer">(a) \(y_n\) = 1.04 m (Fr = 0.60, 아임계) (b) b = 2.49 m, y = 1.24 m, \(A_c\) = 3.09 m² (원래 3.12 m²)</div>
+        <div class="step"><b>검토</b> 원래 단면(b/y = 2.89)도 최적(b/y = 2)에 가까워 면적 차이는 1%뿐이다 — 최적점 근처에서 \(p\)의 곡선이 평평하기 때문이다(위 미니 실험). 실제 설계는 굴착·여유고·용지 비용까지 따진다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-man" data-title="매닝 식 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="gvf">
+    <h2>점변류와 수면 곡선</h2>
+    <p>댐 뒤, 경사가 바뀌는 곳, 수문 아래처럼 등류가 깨진 곳에서는 수심이 먼 거리에 걸쳐 천천히 변한다. 각 단면에서 정수압 분포와 등류의 마찰 법칙(매닝 식)이 <em>그 자리의 수심으로</em> 성립한다고 가정하고, 전수두 \(H = z + y + V^2/2g\)를 \(x\)로 미분하자. \(dz/dx = -S_0\), \(dH/dx = -S_f\)이고, 직사각형 수로에서 \(\dfrac{d}{dx}\dfrac{V^2}{2g} = -\dfrac{q^2}{gy^3}\dfrac{dy}{dx} = -\mathrm{Fr}^2\dfrac{dy}{dx}\)이므로</p>
+    <div class="formula">$$\frac{dy}{dx} = \frac{S_0 - S_f}{1 - \mathrm{Fr}^2}, \qquad S_f = \frac{n^2V^2}{R_h^{4/3}}$$<div class="where">\(S_f\): 에너지선 경사(마찰 경사). \(y > y_n\)이면 \(S_f < S_0\), \(y > y_c\)이면 \(\mathrm{Fr} < 1\). 분자와 분모의 부호만으로 수면이 올라가는지 내려가는지 알 수 있다.</div></div>
+    <p>바닥 경사는 등류 수심과 임계 수심의 대소로 나눈다: <strong>완경사</strong>(Mild, \(y_n > y_c\)), <strong>급경사</strong>(Steep, \(y_n < y_c\)), 임계 경사(C), 수평(H, \(S_0 = 0\)), 역경사(A, \(S_0 < 0\)). 실제 수심이 두 기준 수심보다 모두 크면 영역 1, 사이면 2, 모두 작으면 3이다. 이 조합이 수면 곡선의 이름이다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>곡선</th><th>수심 범위</th><th>dy/dx</th><th>대표적인 곳</th></tr></thead>
+      <tbody>
+        <tr><td>M1</td><td>\(y > y_n > y_c\)</td><td>+ (하류로 깊어짐)</td><td>완경사 하천의 댐·보 뒤 (배수 곡선)</td></tr>
+        <tr><td>M2</td><td>\(y_n > y > y_c\)</td><td>− (얕아짐)</td><td>자유 낙하·급경사로 바뀌는 곳의 상류 (저하 곡선)</td></tr>
+        <tr><td>M3</td><td>\(y_n > y_c > y\)</td><td>+</td><td>완경사 수로의 수문 아래 → 도약으로 끝남</td></tr>
+        <tr><td>S1</td><td>\(y > y_c > y_n\)</td><td>+</td><td>급경사 수로 끝의 댐 앞 (도약 뒤)</td></tr>
+        <tr><td>S2</td><td>\(y_c > y > y_n\)</td><td>−</td><td>완경사 → 급경사로 바뀐 직후</td></tr>
+        <tr><td>S3</td><td>\(y_c > y_n > y\)</td><td>+</td><td>급경사 수로의 수문 아래</td></tr>
+        <tr><td>H2, A2 / H3, A3</td><td>\(y > y_c\) / \(y < y_c\)</td><td>− / +</td><td>수평·역경사 수로의 낙하 상류 / 수문 아래</td></tr>
+      </tbody>
+    </table></div>
+    <p>규칙은 둘이다. ① 수면은 \(y \to y_n\)에서 등류 수심선에 <em>점근적으로</em> 다가간다(분자 → 0). ② \(y \to y_c\)에서 \(dy/dx \to \infty\) — 수면이 연직이 되려 하므로 점변류 가정이 깨지고, 수력 도약(초임계 → 아임계)이나 자유 낙하(아임계 → 임계)가 일어난다. 아임계 흐름은 <strong>하류</strong>의 조건이, 초임계 흐름은 <strong>상류</strong>의 조건이 지배한다(파가 가는 방향).</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="완경사 수로의 세 영역과 M1, M2, M3 수면 곡선">
+        <path d="M30,200 L770,250 L770,270 L30,270 Z" class="f-surface"/><line x1="30" y1="200" x2="770" y2="250" class="s-line" stroke-width="2"/>
+        <line x1="30" y1="120" x2="770" y2="170" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="8 5"/><text class="t-acc" x="36" y="112">y<tspan baseline-shift="sub" font-size="10">n</tspan> (등류 수심선)</text>
+        <line x1="30" y1="160" x2="770" y2="210" stroke="var(--accent-2)" stroke-width="1.5" stroke-dasharray="2 4"/><text class="t" x="36" y="154" style="fill:var(--accent-2)">y<tspan baseline-shift="sub" font-size="10">c</tspan> (임계 수심선)</text>
+        <g data-only="1" class="t-dim"><text x="380" y="100">영역 1</text><text x="380" y="170">영역 2</text><text x="380" y="210">영역 3</text><text x="560" y="30">완경사: y<tspan baseline-shift="sub" font-size="10">n</tspan> &gt; y<tspan baseline-shift="sub" font-size="10">c</tspan></text></g>
+        <g data-only="2"><path d="M30,120 C250,134 500,130 700,92 L700,245 L30,200 Z" fill="rgba(60,140,220,0.22)"/><path d="M30,120 C250,134 500,130 700,92" fill="none" stroke="rgb(30,110,200)" stroke-width="2.4"/><rect x="700" y="80" width="16" height="170" class="f-elev" stroke="var(--text-dim)"/><text class="t" x="280" y="100">M1 배수 곡선: 하류로 갈수록 깊어지며 댐에 닿는다</text></g>
+        <g data-only="3"><path d="M30,120 C350,144 560,170 700,205 L700,244 L30,200 Z" fill="rgba(60,140,220,0.22)"/><path d="M30,120 C350,144 560,170 700,205 C714,212 722,232 728,262" fill="none" stroke="rgb(30,110,200)" stroke-width="2.4"/><text class="t" x="250" y="110">M2 저하 곡선: 낙하 지점에서 임계 수심 부근</text></g>
+        <g data-only="4"><rect x="74" y="60" width="12" height="130" class="f-elev" stroke="var(--text-dim)"/><path d="M86,192 C200,198 300,204 380,200 L400,160 C450,155 600,160 770,170 L770,250 L86,203 Z" fill="rgba(60,140,220,0.22)"/><path d="M86,192 C200,198 300,204 380,200 L400,160 C450,155 600,160 770,170" fill="none" stroke="rgb(30,110,200)" stroke-width="2.4"/><text class="t" x="110" y="236">M3</text><text class="t" x="360" y="140">도약</text><text class="t" x="540" y="140">등류로 회복</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>완경사 수로에서 \(y_n\)과 \(y_c\) 두 선이 공간을 세 영역으로 나눈다.</li>
+        <li>하류에 댐: 수심이 \(y_n\)보다 커진다(영역 1). 상류로 가며 \(y_n\)에 점근 — M1.</li>
+        <li>하류 끝이 자유 낙하: 수심이 \(y_n\)과 \(y_c\) 사이(영역 2), 끝에서 \(y_c\) 부근 — M2.</li>
+        <li>수문 아래 초임계 흐름(영역 3): 마찰로 두꺼워지다 \(y_c\)에 닿기 전 도약 — M3.</li>
+      </ol>
+      <figcaption>완경사 수로의 세 가지 수면 곡선. 급경사 수로에서는 \(y_c\)선이 \(y_n\)선 위로 올라가 S1–S3가 된다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-gvf">
+      <p>완경사의 긴 하천 하류 끝에 보를 세워 수심을 등류 수심보다 높였다. 보에서 상류로 갈수록 수심은?</p>
+      <div class="opts"><button class="opt">보 바로 앞에서만 깊고 곧바로 등류 수심이 된다</button><button class="opt" data-correct>서서히 얕아지며 수 km에 걸쳐 등류 수심에 점근한다</button><button class="opt">상류로 갈수록 더 깊어진다</button><button class="opt">임계 수심까지 얕아지다 도약한다</button></div>
+      <div class="quiz-exp">M1 곡선이다. 분자 \(S_0 - S_f\)가 \(y \to y_n\)에서 0으로 가므로 점근적으로 다가가고, 경사가 작을수록 그 거리가 길다. 아래에서 길이 축(km)을 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-gvf">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수면 곡선 적분기 (M · S · H · A 곡선)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-gvf"></canvas><span class="hint">제어 수심(흰 원)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>바닥 경사</span><div class="seg" id="gv-slope"><button data-value="mild" class="on">완경사</button><button data-value="steep">급경사</button><button data-value="hor">수평</button><button data-value="adv">역경사</button></div></div>
+          <div class="ctrl"><span>제어 위치</span><div class="seg" id="gv-ctrl"><button data-value="down" class="on">하류 끝(댐·낙하)</button><button data-value="up">상류 끝(수문 아래)</button></div></div>
+          <label class="check"><input type="checkbox" id="gv-slopeinfo" checked> 기울기 부호 화살표</label>
+          <div class="readout" id="gv-msg"></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">S₀</span><span class="v" id="gv-s">—</span></div>
+        <div class="stat"><span class="k">y<sub>n</sub> / y<sub>c</sub></span><span class="v" id="gv-yn">—</span></div>
+        <div class="stat"><span class="k">곡선</span><span class="v" id="gv-name">—</span></div>
+        <div class="stat"><span class="k">특징 거리</span><span class="v" id="gv-len">—</span></div>
+      </div>
+      <div class="sim-note">넓은 직사각형 수로, q = 2 m²/s, n = 0.02 (y<sub>c</sub> = 0.742 m). 그림은 바닥을 수평으로 펴고 수심만 그렸으며 세로를 크게 과장했다. 해볼 것: ① 완경사·하류 제어에서 제어 수심을 y<sub>n</sub> 위/아래로 옮겨 M1·M2를 만들고, 상류에서 y<sub>n</sub>에 점근하는 것을 보라. ② 상류 제어로 바꿔 M3 → 도약. ③ 급경사에서 하류 제어 수심을 높이면 S1과 그 앞의 도약, 상류 제어로 S2·S3. ④ 수평·역경사에는 y<sub>n</sub>이 없다(H, A 곡선).</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="hydraulic-jump">
+    <h2>수력 도약</h2>
+    <p>초임계 흐름이 아임계 흐름으로 바뀌어야 할 때, 수면은 매끄럽게 임계 수심을 지나갈 수 없다(점변류 식이 발산). 대신 짧은 거리에서 수심이 급격히 뛰어오르며 거센 소용돌이(롤러)가 생긴다. 이것이 <span class="term">수력 도약</span><span class="en">(hydraulic jump)</span>이다. 내부의 난류 손실을 모르므로 에너지 방정식은 쓸 수 없지만, 도약을 감싼 검사 체적에 <strong>운동량 방정식</strong>을 쓰면 하류 수심이 정해진다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="수력 도약 검사 체적과 정수압 힘, 운동량 유속">
+        <defs><marker id="oc-mj" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker>
+          <marker id="oc-mj2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <line x1="40" y1="240" x2="760" y2="240" class="s-line" stroke-width="2"/>
+        <path d="M40,206 L300,206 C340,206 360,150 400,118 C430,96 470,104 500,100 L760,100 L760,240 L40,240 Z" fill="rgba(60,140,220,0.22)"/>
+        <path d="M40,206 L300,206 C340,206 360,150 400,118 C430,96 470,104 500,100 L760,100" fill="none" stroke="rgb(30,110,200)" stroke-width="2"/>
+        <g opacity=".55" fill="none" stroke="rgb(30,110,200)"><ellipse cx="400" cy="140" rx="40" ry="16"/><ellipse cx="440" cy="125" rx="30" ry="12"/></g>
+        <line x1="60" y1="206" x2="60" y2="240" stroke="var(--text-dim)"/><text class="t" x="66" y="230">y₁</text>
+        <line x1="700" y1="100" x2="700" y2="240" stroke="var(--text-dim)"/><text class="t" x="706" y="180">y₂</text>
+        <g data-only="1"><line x1="120" y1="222" x2="200" y2="222" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#oc-mj2)"/><text class="t-acc" x="140" y="196">V₁ (빠름, Fr₁ &gt; 1)</text><line x1="580" y1="170" x2="620" y2="170" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#oc-mj2)"/><text class="t-acc" x="570" y="160">V₂ (느림)</text><text class="t-dim" x="380" y="70">롤러(난류 소용돌이)</text></g>
+        <g data-step="2"><rect x="250" y="80" width="300" height="160" fill="none" stroke="var(--text-dim)" stroke-dasharray="6 4"/>
+          <line x1="200" y1="228" x2="248" y2="228" stroke="var(--text)" stroke-width="2.2" marker-end="url(#oc-mj)"/><text class="t" x="120" y="270">F₁ = ½ρg y₁² b</text>
+          <line x1="600" y1="180" x2="552" y2="180" stroke="var(--text)" stroke-width="2.2" marker-end="url(#oc-mj)"/><text class="t" x="560" y="270">F₂ = ½ρg y₂² b</text>
+          <text class="t-dim" x="40" y="30" data-only="2">검사 체적: 바닥 마찰은 짧은 거리라 무시. 수평 방향 힘은 양 끝의 정수압뿐.</text></g>
+        <g data-step="3"><text class="t-acc" x="40" y="30">F₁ − F₂ = ṁ(V₂ − V₁),  ṁ = ρ y₁V₁ b = ρ y₂V₂ b</text>
+          <text class="t-acc" x="40" y="52">→ y₂/y₁ = ½(−1 + √(1 + 8Fr₁²)),  h<tspan baseline-shift="sub" font-size="10">L</tspan> = (y₂ − y₁)³ / (4y₁y₂)</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>얕고 빠른 흐름(\(\mathrm{Fr}_1 > 1\))이 깊고 느린 흐름으로 바뀐다. 롤러에서 에너지가 열로 흩어진다.</li>
+        <li>도약 전후를 감싸는 검사 체적. 수평 힘은 양 끝의 정수압 힘 \(\tfrac12\rho g y^2 b\)뿐이다(바닥 마찰 무시).</li>
+        <li>운동량 방정식과 연속 방정식에서 공액 수심비를, 에너지 방정식에서 손실 수두를 얻는다.</li>
+      </ol>
+      <figcaption>수력 도약의 검사 체적 해석(5장). 운동량은 보존 법칙을 그대로 쓰고, 에너지는 손실 항으로 결과를 "측정"한다.</figcaption>
+    </figure>
+    <div class="callout deep"><strong>공액 수심 식의 유도</strong><p>운동량: \(\tfrac12 g(y_1^2 - y_2^2) = q(V_2 - V_1) = q^2\left(\dfrac1{y_2} - \dfrac1{y_1}\right)\). 좌변을 \(\tfrac12g(y_1-y_2)(y_1+y_2)\), 우변을 \(q^2(y_1 - y_2)/(y_1y_2)\)로 묶어 \(y_1 \ne y_2\)로 나누면 \(\tfrac12 g\,y_1y_2(y_1+y_2) = q^2\). 양변을 \(g y_1^3\)으로 나누면 \(\eta^2 + \eta - 2\mathrm{Fr}_1^2 = 0\) (\(\eta = y_2/y_1\)), 양의 근이 아래 식이다. 이 식은 \(y_1, y_2\)에 대해 대칭이라 \(y_1 = \tfrac12 y_2(-1+\sqrt{1+8\mathrm{Fr}_2^2})\)로도 쓸 수 있다. 같은 결론: <span class="term">비력</span><span class="en">(specific force)</span> \(M = q^2/(gy) + y^2/2\)가 도약 전후에 같다.</p></div>
+    <div class="formula">$$\frac{y_2}{y_1} = \frac12\left(-1 + \sqrt{1 + 8\mathrm{Fr}_1^2}\right), \qquad h_L = E_{s1} - E_{s2} = \frac{(y_2 - y_1)^3}{4y_1y_2}$$<div class="where">\(y_1, y_2\): <span class="term">공액 수심</span><span class="en">(conjugate/sequent depths)</span>. \(h_L > 0\)이려면 \(y_2 > y_1\) — 도약은 언제나 초임계에서 아임계로만 일어나고, 반대 방향의 "역도약"은 열역학 제2법칙에 어긋난다. 도약 뒤 \(\mathrm{Fr}_2 < 1\). 도약 길이는 대략 \(L_j \approx 6y_2\)(\(4.5 < \mathrm{Fr}_1 < 13\)).</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th class="num">Fr₁</th><th>이름</th><th class="num">y₂/y₁</th><th class="num">에너지 소산</th><th>모습</th></tr></thead>
+      <tbody>
+        <tr><td class="num">&lt; 1</td><td>도약 불가</td><td class="num">—</td><td class="num">—</td><td>이미 아임계</td></tr>
+        <tr><td class="num">1 – 1.7</td><td>파상 도약 (undular)</td><td class="num">1 – 2</td><td class="num">&lt; 5%</td><td>물결이 줄지어 서고 롤러가 없다</td></tr>
+        <tr><td class="num">1.7 – 2.5</td><td>약한 도약 (weak)</td><td class="num">2 – 3.1</td><td class="num">5 – 15%</td><td>작은 롤러, 매끄러운 수면</td></tr>
+        <tr><td class="num">2.5 – 4.5</td><td>진동 도약 (oscillating)</td><td class="num">3.1 – 5.9</td><td class="num">15 – 45%</td><td>분류가 불규칙하게 흔들려 하류에 큰 파를 보낸다 — 피해야 할 범위</td></tr>
+        <tr><td class="num">4.5 – 9</td><td>정상 도약 (steady)</td><td class="num">5.9 – 12</td><td class="num">45 – 70%</td><td>안정, 위치가 하류 수심에 둔감 — 정수지 설계 범위</td></tr>
+        <tr><td class="num">&gt; 9</td><td>강한 도약 (strong)</td><td class="num">&gt; 12</td><td class="num">70 – 85%</td><td>거칠고 격렬함</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tangle" id="tg-jump">
+      <p>수심 <span class="tn" data-var="y1" data-min="0.02" data-max="2" data-step="0.01" data-unit=" m">0.30</span>, 속도 <span class="tn" data-var="V1" data-min="0.5" data-max="20" data-step="0.1" data-unit=" m/s">8.0</span>로 흐르던 물은 Fr₁ = <span class="tn-out" data-out="Fr"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-jump">
+      <p>상류 수심 \(y_1\)은 그대로 두고 속도 \(V_1\)을 두 배로 했다(Fr₁ = 4 → 8). 도약 뒤 수심 \(y_2\)는 대략?</p>
+      <div class="opts"><button class="opt">그대로</button><button class="opt">약 1.4배</button><button class="opt" data-correct>약 2배</button><button class="opt">약 4배</button></div>
+      <div class="quiz-exp">\(\mathrm{Fr}_1\)이 크면 \(y_2/y_1 \approx \sqrt2\,\mathrm{Fr}_1\)이라 \(y_2\)는 \(V_1\)에 거의 비례한다(정확히는 5.18 → 10.8, 2.09배). 손실 수두는 \((y_2-y_1)^3\)에 비례해 훨씬 빨리 는다.</div>
+    </div>
+    <div class="sim" id="sim-jump">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수력 도약 계산기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-jump"></canvas></div><div><canvas id="cv-jump-e"></canvas></div></div><span class="hint">상류 수면의 흰 원(수심)과 속도 화살표 끝을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>상류 수심 y₁ <output id="jp-y-out"></output></span><input type="range" id="jp-y" min="0.05" max="1" step="0.01" value="0.3"></label>
+          <label class="ctrl"><span>상류 속도 V₁ <output id="jp-v-out"></output></span><input type="range" id="jp-v" min="1" max="14" step="0.1" value="8"></label>
+          <label class="check"><input type="checkbox" id="jp-m"> 비력 곡선 M(y)도 그리기</label>
+          <div class="readout" id="jp-type"></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Fr₁</span><span class="v" id="jp-fr1">—</span></div>
+        <div class="stat"><span class="k">y₂, V₂</span><span class="v" id="jp-y2">—</span></div>
+        <div class="stat"><span class="k">Fr₂</span><span class="v" id="jp-fr2">—</span></div>
+        <div class="stat"><span class="k">h<sub>L</sub> (h<sub>L</sub>/E₁)</span><span class="v" id="jp-hl">—</span></div>
+        <div class="stat"><span class="k">소산 동력 (단위 폭)</span><span class="v" id="jp-pw">—</span></div>
+      </div>
+      <div class="sim-note">오른쪽은 같은 q의 비에너지 곡선이다. 점 ①(초임계)에서 ②(아임계)로 수평으로 \(h_L\)만큼 왼쪽에 떨어진다 — 교대 수심(점선 원)보다 덜 깊다. 해볼 것: ① Fr₁을 1.5 부근으로 줄이면 파상 도약, 3–4에서 진동 도약, 6 이상에서 정상 도약. ② 손실 비 h<sub>L</sub>/E₁이 Fr₁과 함께 어떻게 커지는지 보라. ③ 비력 곡선을 켜면 ①과 ②가 같은 M 값(수직선) 위에 있다.</div>
+    </div>
+    <div class="example" data-title="여수로 끝의 수력 도약">
+      <p>여수로 끝에서 물이 수심 0.30 m, 속도 8.0 m/s로 수평 정수지에 들어가 도약한다. 도약 뒤 수심과 속도, 프루드 수, 손실 수두와 소산 비율, 단위 폭당 소산 동력, 도약 유형을 구하라(\(\rho = 1000\) kg/m³).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\mathrm{Fr}_1\) → 공액 수심 식 → 연속 → 손실 수두. 동력은 \(\dot W = \rho g q h_L\).</div>
+        <div class="step"><b>풀이</b> \(\mathrm{Fr}_1 = 8.0/\sqrt{9.81\times0.30} = 4.66\). \(y_2 = 0.15(-1 + \sqrt{1 + 8(4.66)^2}) = 1.83\) m, \(V_2 = (0.30)(8.0)/1.834 = 1.31\) m/s, \(\mathrm{Fr}_2 = 0.308\). \(h_L = (1.834 - 0.30)^3/(4\times0.30\times1.834) = 1.64\) m. \(E_{s1} = 0.30 + 64/19.62 = 3.56\) m → 소산 비율 46%. \(\dot W = (1000)(9.81)(2.4)(1.64) = 38.6\) kW/m.</div>
+        <div class="answer">\(y_2\) = 1.83 m, \(V_2\) = 1.31 m/s, Fr₂ = 0.31, \(h_L\) = 1.64 m (46%), 38.6 kW/m, 정상 도약(Fr₁ = 4.7)</div>
+        <div class="step"><b>검토</b> \(E_{s2} = 1.834 + 1.31^2/19.62 = 1.92\) m이고 \(E_{s1} - E_{s2} = 1.64\) m로 공식과 일치한다. 폭 20 m 정수지라면 약 0.8 MW가 물을 데우는 데 쓰인다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-jump" data-title="수력 도약 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="weirs">
+    <h2>유량 측정: 위어와 수문</h2>
+    <p>수로를 가로막는 구조물 위나 아래로 물을 흘리면 상류 수위 하나만 재어 유량을 알 수 있다. 구조물이 흐름을 임계 상태나 자유 분류로 만들어 하류의 영향을 끊기 때문이다(아임계 흐름을 지배하는 "제어 단면"이다).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="예연 위어와 광정 위어의 측면 그림, 위어 수두 H와 위어 높이 P_w">
+        <line x1="20" y1="230" x2="390" y2="230" class="s-line" stroke-width="2"/>
+        <rect x="250" y="150" width="8" height="80" class="f-elev" stroke="var(--text-dim)"/>
+        <path d="M20,96 L200,96 C230,98 245,104 258,112 C300,130 320,170 340,230 L310,230 C300,190 285,165 258,150 L250,150 L250,230 L20,230 Z" fill="rgba(60,140,220,0.22)"/>
+        <path d="M20,96 L200,96 C230,98 245,104 258,112 C300,130 320,170 340,230" fill="none" stroke="rgb(30,110,200)" stroke-width="2"/>
+        <line x1="60" y1="150" x2="250" y2="150" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <line x1="80" y1="96" x2="80" y2="150" stroke="var(--accent)" stroke-width="1.6"/><text class="t-acc" x="88" y="128">H</text>
+        <line x1="80" y1="150" x2="80" y2="230" stroke="var(--text-dim)" stroke-width="1.4"/><text class="t" x="88" y="196">P<tspan baseline-shift="sub" font-size="10">w</tspan></text>
+        <text class="t-dim" x="20" y="40">예연 위어: 날카로운 판, 물이 자유 분류(nappe)로 떨어진다</text>
+        <text class="t-dim" x="290" y="140">수맥</text>
+        <line x1="420" y1="230" x2="780" y2="230" class="s-line" stroke-width="2"/>
+        <rect x="560" y="160" width="140" height="70" class="f-elev" stroke="var(--text-dim)"/>
+        <path d="M420,100 L520,100 C550,102 560,118 580,124 L680,124 C700,126 712,150 730,230 L700,230 C690,190 700,160 700,160 L560,160 L560,230 L420,230 Z" fill="rgba(60,140,220,0.22)"/>
+        <path d="M420,100 L520,100 C550,102 560,118 580,124 L680,124 C700,126 712,150 730,230" fill="none" stroke="rgb(30,110,200)" stroke-width="2"/>
+        <line x1="450" y1="100" x2="450" y2="160" stroke="var(--accent)" stroke-width="1.6"/><line x1="440" y1="160" x2="560" y2="160" stroke="var(--text-faint)" stroke-dasharray="4 4"/><text class="t-acc" x="458" y="136">H</text>
+        <line x1="630" y1="124" x2="630" y2="160" stroke="var(--accent-2)" stroke-width="1.6"/><text class="t" x="636" y="148" style="fill:var(--accent-2)">y<tspan baseline-shift="sub" font-size="10">c</tspan> ≈ ⅔H</text>
+        <text class="t-dim" x="420" y="40">광정 위어: 넓은 마루 위에서 흐름이 임계 수심이 된다</text>
+      </svg>
+      <figcaption>위어 수두 \(H\)는 위어 마루에서 상류 수면까지의 높이로, 수면 강하가 없는 상류(대략 \(4H\) 이상 떨어진 곳)에서 잰다.</figcaption>
+    </figure>
+    <h3>예연 위어</h3>
+    <p><span class="term">예연 위어</span><span class="en">(sharp-crested weir)</span> 위의 흐름을 이상화해, 마루 위 수면에서 깊이 \(h\)인 곳의 속도를 \(\sqrt{2gh}\)로 보고 수맥 단면을 적분한다. 실제로는 수면 강하와 수맥 수축이 있으므로 <span class="term">위어 유량 계수</span><span class="en">(weir discharge coefficient)</span> \(C_{wd}\)를 곱한다.</p>
+    <div class="formula">$$\text{직사각형: }\dot V = C_{wd}\,\frac23\,b\sqrt{2g}\,H^{3/2}, \quad C_{wd} \approx 0.598 + 0.0897\frac{H}{P_w}\qquad \text{삼각(V 노치): }\dot V = C_{wd}\,\frac{8}{15}\tan\frac\theta2\sqrt{2g}\,H^{5/2},\quad C_{wd}\approx 0.58\text{–}0.62$$<div class="where">직사각형 계수식은 \(H/P_w < 2\)에서 쓰는 레보크(Rehbock)형 실험식이다. V 노치는 \(\dot V \propto H^{5/2}\)라서 유량이 작을 때도 수두가 커서 정밀하게 잴 수 있다(실험실 수로에 많이 쓴다).</div></div>
+    <figure class="mini" id="mini-weir">
+      <div class="mini-view"><canvas id="cv-weir"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>위어</span><div class="seg" id="wr-type"><button data-value="rect" class="on">직사각형 b = 1 m</button><button data-value="tri">90° V 노치</button></div></div>
+        <span class="readout" id="wr-txt"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>상류 수면의 흰 원을 끌어 위어 수두 \(H\)를 바꿔라(\(P_w\) = 0.6 m). 오른쪽 작은 그림은 하류에서 본 노치 단면이다. \(H\)를 2배로 하면 직사각형은 \(2^{1.5} = 2.8\)배, V 노치는 \(2^{2.5} = 5.7\)배가 된다.</figcaption>
+    </figure>
+    <h3>광정 위어</h3>
+    <p><span class="term">광정 위어</span><span class="en">(broad-crested weir)</span>는 마루가 길어서 그 위의 흐름이 수평한 평행류가 되고, 하류가 낮으면 마루 위에서 임계 상태가 된다. 비에너지 \(E_s \approx H\)(접근 속도 무시)이고 마루 위 수심이 \(y_c = \tfrac23 H\)이므로 단위 폭 유량은 \(q = \sqrt{g y_c^3}\)이다.</p>
+    <div class="formula">$$\dot V = C_{wd}\,b\sqrt g\left(\frac23\right)^{3/2}H^{3/2}, \qquad C_{wd} \approx \frac{0.65}{\sqrt{1 + H/P_w}}$$</div>
+    <figure class="mini" id="mini-broad">
+      <div class="mini-view"><canvas id="cv-broad"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>위어 높이 P<sub>w</sub> <output id="bw-p-out"></output></span><input type="range" id="bw-p" min="0.3" max="1.5" step="0.05" value="1"></label>
+        <span class="readout" id="bw-txt"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>상류 수면을 끌어 \(H\)를 바꿔라. 마루 위의 점선이 임계 수심 \(\tfrac23H\)이다. 물이 마루 위에서 임계 상태가 되므로 하류 수위가 마루보다 낮은 한 유량은 \(H\)만으로 정해진다.</figcaption>
+    </figure>
+    <h3>수문 아래 흐름</h3>
+    <p><span class="term">수문</span><span class="en">(sluice gate)</span> 아래로 나간 분류는 수문 개도 \(a\)보다 얇게 수축해(수축 계수 \(C_c \approx 0.61\)) \(y_2 = C_c a\)인 초임계 흐름이 된다. 상류 1과 수축부 2 사이에 베르누이 식(손실 무시)과 연속을 쓰면</p>
+    <div class="formula">$$y_1 + \frac{V_1^2}{2g} = y_2 + \frac{V_2^2}{2g},\quad y_1V_1 = y_2V_2 \;\Rightarrow\; V_2 = \sqrt{\frac{2g(y_1 - y_2)}{1 - (y_2/y_1)^2}},\qquad \dot V = C_d\,b\,a\sqrt{2g\,y_1}$$<div class="where">\(C_d\): 수문 유량 계수. 자유 유출에서 \(C_d = C_c/\sqrt{1 + C_c a/y_1}\) ≈ 0.55–0.60. 하류 수심이 \(y_2\)의 공액 수심보다 깊으면 도약이 수문까지 밀려와 분류를 덮는 <strong>잠긴 유출</strong>(drowned outflow)이 되고, 같은 \(y_1\)에서 유량이 줄어든다.</div></div>
+    <div class="predict" data-for="sim-gate">
+      <p>상류 수심을 그대로 두고 수문 개도 \(a\)를 두 배로 열었다(자유 유출). 유량은?</p>
+      <div class="opts"><button class="opt">정확히 2배</button><button class="opt" data-correct>2배보다 조금 적게</button><button class="opt">√2배</button><button class="opt">4배</button></div>
+      <div class="quiz-exp">\(\dot V = C_d b a\sqrt{2gy_1}\)에서 \(a\)에 비례하지만, \(a/y_1\)이 커지면 \(C_d\)가 조금 줄어든다(\(y_1\) = 2.5 m에서 a = 0.3 → 0.6 m면 1.94배). 아래에서 수문 아래쪽 흰 원을 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-gate">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수문 아래 흐름: 자유 유출과 잠긴 유출</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-gate"></canvas><span class="hint">상류 수면 · 수문 아래 끝 · 하류 수면의 흰 원을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>상류 수심 y₁ <output id="gt-y1-out"></output></span><input type="range" id="gt-y1" min="0.8" max="3" step="0.01" value="2.5"></label>
+          <label class="ctrl"><span>수문 개도 a <output id="gt-a-out"></output></span><input type="range" id="gt-a" min="0.1" max="1" step="0.01" value="0.4"></label>
+          <label class="ctrl"><span>하류 수심 y₃ <output id="gt-y3-out"></output></span><input type="range" id="gt-y3" min="0.2" max="2.6" step="0.01" value="1.0"></label>
+          <label class="check"><input type="checkbox" id="gt-egl" checked> 에너지선</label>
+          <div class="readout" id="gt-msg"></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">q (단위 폭)</span><span class="v" id="gt-q">—</span></div>
+        <div class="stat"><span class="k">C<sub>d</sub></span><span class="v" id="gt-cd">—</span></div>
+        <div class="stat"><span class="k">수축부 y₂, V₂</span><span class="v" id="gt-y2">—</span></div>
+        <div class="stat"><span class="k">Fr₂</span><span class="v" id="gt-fr">—</span></div>
+        <div class="stat"><span class="k">y₂의 공액 수심</span><span class="v" id="gt-conj">—</span></div>
+      </div>
+      <div class="sim-note">\(C_c\) = 0.61. 잠긴 유출은 수축부와 하류 사이 운동량, 상류와 수축부 사이 에너지를 함께 풀어 계산한다. 해볼 것: ① 개도를 2배로 해 유량 비를 보라. ② 하류 수심 y₃를 올리면 도약이 수문 쪽으로 다가온다. ③ y₃가 공액 수심을 넘으면 잠긴 유출 — 같은 y₁, a에서 q가 얼마나 줄어드는지 보라.</div>
+    </div>
+    <div class="example" data-title="직사각형 예연 위어와 수문">
+      <p>(a) 폭 2.0 m, 높이 \(P_w\) = 0.60 m인 직사각형 예연 위어의 수두가 0.30 m이다. 유량은? (b) 같은 수로(폭 2.0 m)에서 상류 수심 2.0 m, 개도 0.25 m인 수문이 자유 유출할 때 유량은(\(C_c\) = 0.61)?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이 (a)</b> \(C_{wd} = 0.598 + 0.0897(0.30/0.60) = 0.643\). \(\dot V = 0.643\times\tfrac23\times2.0\times\sqrt{19.62}\times0.30^{1.5} = 0.624\) m³/s.</div>
+        <div class="step"><b>풀이 (b)</b> \(y_2 = 0.61\times0.25 = 0.1525\) m. \(V_2 = \sqrt{2(9.81)(2.0 - 0.1525)/(1 - 0.07625^2)} = 6.04\) m/s. \(\dot V = 2.0\times0.1525\times6.04 = 1.84\) m³/s, \(C_d = 1.84/(2.0\times0.25\times\sqrt{19.62\times2.0}) = 0.588\).</div>
+        <div class="answer">(a) 0.624 m³/s (b) 1.84 m³/s (\(C_d\) ≈ 0.59)</div>
+        <div class="step"><b>검토</b> (b)의 \(\mathrm{Fr}_2 = 6.04/\sqrt{9.81\times0.1525} = 4.9\) — 수문 아래는 강한 초임계이고, 하류 수심이 충분하면 도약으로 아임계에 돌아온다(장 머리 애니메이션).</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>개수로 흐름은 중력이 몰고 마찰이 막는다. 수심이 미지수이며, 등류·점변류·급변류로 나눈다. 단면 크기는 수력 반경 \(R_h = A_c/p\)로 대표한다(넓은 수로 \(R_h \approx y\)).</li>
+      <li>얕은 물의 파속은 \(c_0 = \sqrt{gy}\). \(\mathrm{Fr} = V/\sqrt{gy_h}\)가 1보다 작으면 아임계(하류 조건이 지배), 크면 초임계(상류 조건이 지배)다.</li>
+      <li>비에너지 \(E_s = y + q^2/2gy^2\)는 임계 수심 \(y_c = (q^2/g)^{1/3}\)에서 최소 \(E_\text{min} = 1.5y_c\). 같은 \(E_s\)에 아임계·초임계 교대 수심이 있다.</li>
+      <li>바닥 융기·폭 축소에서 아임계는 수심(과 수면)이 내려가고 초임계는 올라간다. \(E_s\)가 \(E_\text{min}\)보다 작아지면 초크 — 상류 수심이 바뀐다.</li>
+      <li>등류: \(\tau_w = \rho gR_hS_0\), 매닝 식 \(V = (1/n)R_h^{2/3}S_0^{1/2}\)(SI). 최적 수리 단면은 \(R_h = y/2\)(직사각형 b = 2y, 사다리꼴은 60° 반육각형).</li>
+      <li>점변류 \(dy/dx = (S_0 - S_f)/(1-\mathrm{Fr}^2)\): 수면은 \(y_n\)에 점근하고 \(y_c\)에서 연직이 되려 한다. 완경사 M1–M3, 급경사 S1–S3.</li>
+      <li>수력 도약: \(y_2/y_1 = \tfrac12(-1+\sqrt{1+8\mathrm{Fr}_1^2})\), \(h_L = (y_2-y_1)^3/4y_1y_2\). 위어 \(\dot V \propto H^{3/2}\)(직사각형·광정), \(H^{5/2}\)(V 노치), 수문 \(\dot V = C_dba\sqrt{2gy_1}\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(g\) = 9.81 m/s², 물 \(\rho\) = 1000 kg/m³를 쓴다. 매닝 식은 SI 단위. 특별한 말이 없으면 마찰과 접근 속도는 문제에 주어진 대로만 고려한다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="수력 반경" data-answer="0.857" data-label="R<sub>h</sub> =" data-unit="m">
+        <div class="prob-q"><p>폭 4.0 m인 직사각형 수로에 물이 1.5 m 깊이로 흐른다. 수력 반경은?</p></div>
+        <div class="prob-sol"><p>\(A_c = 6.0\) m², \(p = 4.0 + 2(1.5) = 7.0\) m, \(R_h = 6.0/7.0 = 0.857\) m.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="프루드 수" data-answer="1.51" data-label="Fr =">
+        <div class="prob-q"><p>넓은 수로에서 수심 0.40 m, 평균 속도 3.0 m/s로 흐른다. 프루드 수는? (흐름의 상태도 생각해 보라.)</p></div>
+        <div class="prob-sol"><p>\(\mathrm{Fr} = 3.0/\sqrt{9.81\times0.40} = 3.0/1.981 = 1.51\) → 초임계.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="임계 수심" data-answer="1.37; 2.05" data-label="y<sub>c</sub> =; E<sub>min</sub> =" data-unit="m; m">
+        <div class="prob-q"><p>넓은 직사각형 수로의 단위 폭 유량이 5.0 m²/s이다. 임계 수심과 최소 비에너지는?</p></div>
+        <div class="prob-sol"><p>\(y_c = (25/9.81)^{1/3} = 1.366\) m, \(E_\text{min} = 1.5y_c = 2.05\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="교대 수심" data-answer="1.67; 1.59" data-label="E<sub>s</sub> =; y =" data-unit="m; m">
+        <div class="prob-q"><p>\(q = 2.0\) m²/s가 수심 0.40 m로 흐른다. 비에너지와, 같은 비에너지를 갖는 교대 수심을 구하라.</p></div>
+        <div class="prob-hint">\(y = E_s - q^2/(2gy^2)\)를 \(y \approx E_s\)에서 시작해 반복한다.</div>
+        <div class="prob-sol"><p>\(E_s = 0.40 + 4/(19.62\times0.16) = 1.674\) m. \(y = 1.674 - 0.2039/y^2\): 1.674 → 1.601 → 1.594 → 1.594 m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="초크" data-answer="0.939" data-label="Δz<sub>max</sub> =" data-unit="m">
+        <div class="prob-q"><p>넓은 수로에서 물이 수심 2.0 m, 속도 1.0 m/s로 흐른다. 마찰을 무시할 때, 상류 수심을 바꾸지 않고 넘을 수 있는 바닥 융기의 최대 높이는?</p></div>
+        <div class="prob-sol"><p>\(q = 2.0\) m²/s, \(E_{s1} = 2.0 + 1/19.62 = 2.051\) m, \(y_c = (4/9.81)^{1/3} = 0.7415\) m, \(E_\text{min} = 1.112\) m. \(\Delta z_\text{max} = 2.051 - 1.112 = 0.939\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="폭 축소" data-answer="1.33" data-label="y₂ =" data-unit="m">
+        <div class="prob-q"><p>폭 3.0 m인 직사각형 수로에 6.0 m³/s가 수심 1.50 m로 흐르다가 폭 2.0 m로 매끄럽게 좁아진다(바닥 높이 같음, 손실 무시). 좁은 곳의 수심은?</p></div>
+        <div class="prob-hint">\(E_s\)는 같고 \(q_2 = 3.0\) m²/s. 아임계 가지의 근을 찾는다. 먼저 초크 여부를 확인하라.</div>
+        <div class="prob-sol"><p>\(E_s = 1.50 + 2^2/(19.62\times2.25) = 1.591\) m. \(q_2 = 3.0\): \(y_{c2} = 0.972\) m, \(E_\text{min} = 1.458\) m \(< 1.591\) → 초크 없음. \(y = 1.591 - 0.4587/y^2\) 반복 → \(y_2 = 1.33\) m (수면이 0.17 m 내려간다).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="매닝 식" data-answer="5.30" data-label="Q =" data-unit="m³/s">
+        <div class="prob-q"><p>폭 5.0 m인 직사각형 흙 수로(\(n = 0.022\))가 경사 0.0005로 수심 1.2 m의 등류를 흘린다. 유량은?</p></div>
+        <div class="prob-sol"><p>\(A_c = 6.0\) m², \(p = 7.4\) m, \(R_h = 0.811\) m. \(V = (1/0.022)(0.811)^{2/3}(0.0005)^{1/2} = 0.884\) m/s. \(\dot V = 5.30\) m³/s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="등류 수심" data-answer="1.52" data-label="y<sub>n</sub> =" data-unit="m">
+        <div class="prob-q"><p>넓은 수로(\(R_h \approx y\))에서 \(q = 3.0\) m²/s, \(n = 0.030\), \(S_0 = 0.002\)이다. 등류 수심을 구하라. 이 경사는 완경사인가 급경사인가?</p></div>
+        <div class="prob-sol"><p>\(q = (1/n)y^{5/3}S_0^{1/2}\) → \(y_n = (qn/\sqrt{S_0})^{3/5} = (0.09/0.04472)^{0.6} = 1.52\) m. \(y_c = (9/9.81)^{1/3} = 0.972\) m \(< y_n\) → 완경사.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수력 도약" data-answer="1.32; 1.32" data-label="y₂ =; h<sub>L</sub> =" data-unit="m; m">
+        <div class="prob-q"><p>수심 0.20 m, \(\mathrm{Fr}_1 = 5.0\)인 흐름에서 수력 도약이 일어난다. 도약 뒤 수심과 손실 수두는?</p></div>
+        <div class="prob-sol"><p>\(y_2 = 0.10(-1 + \sqrt{201}) = 1.318\) m. \(h_L = (1.118)^3/(4\times0.20\times1.318) = 1.32\) m.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="도약 역산" data-answer="0.719; 9.56" data-label="y₁ =; 동력 =" data-unit="m; kW/m">
+        <div class="prob-q"><p>수평 수로의 도약 하류 수심이 1.80 m, 단위 폭 유량이 4.0 m²/s이다. 도약 전 수심과 단위 폭당 소산 동력을 구하라.</p></div>
+        <div class="prob-hint">공액 수심 식은 대칭이다: \(y_1 = \tfrac12y_2(-1+\sqrt{1+8\mathrm{Fr}_2^2})\).</div>
+        <div class="prob-sol"><p>\(V_2 = 2.222\) m/s, \(\mathrm{Fr}_2 = 2.222/\sqrt{9.81\times1.80} = 0.529\). \(y_1 = 0.90(-1+\sqrt{1+8(0.529)^2}) = 0.719\) m. \(h_L = (1.081)^3/(4\times0.719\times1.80) = 0.244\) m. \(\dot W = \rho gqh_L = 1000\times9.81\times4.0\times0.244 = 9.56\) kW/m. (확인: \(\mathrm{Fr}_1 = 2.09\), 약한 도약)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="V 노치 위어" data-answer="0.0428" data-label="Q =" data-unit="m³/s">
+        <div class="prob-q"><p>90° V 노치 위어의 수두가 0.25 m이고 \(C_{wd} = 0.58\)이다. 유량은?</p></div>
+        <div class="prob-sol"><p>\(\dot V = 0.58\times\tfrac{8}{15}\times\tan45°\times\sqrt{19.62}\times0.25^{2.5} = 0.58\times0.5333\times4.429\times0.03125 = 0.0428\) m³/s (42.8 L/s).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="수문과 도약" data-answer="4.89; 1.37" data-label="Q =; y₃ =" data-unit="m³/s; m">
+        <div class="prob-q"><p>폭 3.0 m 수로의 수문 상류 수심이 2.5 m, 개도가 0.40 m이다(\(C_c\) = 0.61, 손실 무시, 자유 유출). 유량과, 수축부 흐름이 도약할 때 도약 뒤 수심을 구하라.</p></div>
+        <div class="prob-sol"><p>\(y_2 = 0.244\) m, \(V_2 = \sqrt{2(9.81)(2.256)/(1-0.0976^2)} = 6.68\) m/s, \(\dot V = 3.0\times0.244\times6.68 = 4.89\) m³/s. \(\mathrm{Fr}_2 = 4.32\), \(y_3 = 0.122(-1+\sqrt{1+8(4.32)^2}) = 1.37\) m.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="최적 사다리꼴 단면" data-answer="1.64; 1.90" data-label="y =; b =" data-unit="m; m">
+        <div class="prob-q"><p>마감 콘크리트(\(n = 0.013\)) 사다리꼴 수로를 최적 수리 단면(측면 60°)으로 설계해 경사 0.001에서 10 m³/s를 흘리려 한다. 수심과 바닥 폭은?</p></div>
+        <div class="prob-hint">최적 사다리꼴: \(b = 2y/\sqrt3\), \(A_c = \sqrt3\,y^2\), \(R_h = y/2\).</div>
+        <div class="prob-sol"><p>\(10 = (1/0.013)\sqrt3\,y^2(y/2)^{2/3}(0.001)^{1/2}\) → \(y^{8/3} = 10\times0.013\times2^{2/3}/(\sqrt3\times0.03162) = 3.77\) → \(y = 1.64\) m, \(b = 2(1.644)/\sqrt3 = 1.90\) m.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="광정 위어" data-answer="1.28" data-label="Q =" data-unit="m³/s">
+        <div class="prob-q"><p>폭 4.0 m, 높이 \(P_w\) = 1.0 m인 광정 위어의 수두가 0.50 m이다. \(C_{wd} = 0.65/\sqrt{1+H/P_w}\)를 써서 유량을 구하라.</p></div>
+        <div class="prob-sol"><p>\(C_{wd} = 0.65/\sqrt{1.5} = 0.531\). \(\dot V = 0.531\times4.0\times\sqrt{9.81}\times(2/3)^{1.5}\times0.50^{1.5} = 1.28\) m³/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="초임계 흐름의 교란">
+        <div class="prob-q"><p>Fr = 2인 수로에 돌을 던졌다. 옳은 것은?</p></div>
+        <div class="prob-choices"><button>물결이 원형으로 퍼져 상류에도 닿는다.</button><button data-correct>물결은 하류로 쓸려 가고, 반각 30°인 쐐기 안에만 생긴다.</button><button>물결은 생기지 않는다.</button><button>물결이 상류로만 간다.</button></div>
+        <div class="prob-sol"><p>상류쪽 파속 \(c_0 - V = -c_0 < 0\)이므로 상류로 못 간다. 쐐기 반각 \(\sin^{-1}(1/2) = 30°\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수면 곡선">
+        <div class="prob-q"><p>완경사의 긴 수로가 끝에서 자유 낙하한다. 낙하 지점 상류의 수면 곡선과 낙하 지점 부근 수심은?</p></div>
+        <div class="prob-choices"><button>M1, 등류 수심보다 깊다</button><button data-correct>M2, 임계 수심 부근까지 얕아진다</button><button>M3, 도약이 생긴다</button><button>S2, 등류 수심에 점근한다</button></div>
+        <div class="prob-sol"><p>낙하가 하류 제어로 \(y_c\) 부근의 수심을 만들고, 상류로 가며 \(y_n\)에 점근한다: \(y_n > y > y_c\)인 M2 저하 곡선.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>임계 흐름에 대해 옳지 <em>않은</em> 것은?</p><div class="opts">
+        <button class="opt">주어진 유량에서 비에너지가 최소다.</button><button class="opt">속도 수두가 수심의 절반이다.</button><button class="opt" data-correct>주어진 비에너지에서 유량이 최소다.</button><button class="opt">Fr = 1이다.</button>
+      </div><div class="quiz-exp">주어진 비에너지에서 임계 상태는 유량이 <em>최대</em>다(\(q_\text{max} = \sqrt{g(2E_s/3)^3}\)). 그래서 광정 위어처럼 임계 단면이 유량을 "제어"한다.</div></div>
+      <div class="quiz-q"><p>아임계 흐름이 매끄러운 바닥 둔덕 위를 지날 때(초크 없음) 둔덕 위에서는?</p><div class="opts">
+        <button class="opt">수심과 수면이 모두 올라간다.</button><button class="opt" data-correct>수심과 수면이 모두 내려가고 속도가 빨라진다.</button><button class="opt">수심은 줄고 수면은 올라간다.</button><button class="opt">아무 변화가 없다.</button>
+      </div><div class="quiz-exp">\(d(y+z)/dx = -\mathrm{Fr}^2/(1-\mathrm{Fr}^2)\cdot dz/dx < 0\) (Fr &lt; 1, dz/dx &gt; 0 구간).</div></div>
+      <div class="quiz-q"><p>매닝 식에서 바닥 경사를 4배로 하면 같은 단면·수심의 유량은?</p><div class="opts">
+        <button class="opt">4배</button><button class="opt" data-correct>2배</button><button class="opt">1.59배</button><button class="opt">변하지 않는다</button>
+      </div><div class="quiz-exp">\(\dot V \propto S_0^{1/2}\) → \(\sqrt4 = 2\)배.</div></div>
+      <div class="quiz-q"><p>수력 도약에 대해 옳은 것은?</p><div class="opts">
+        <button class="opt">아임계 흐름이 초임계로 바뀌는 현상이다.</button><button class="opt">도약 전후의 비에너지가 같다.</button><button class="opt" data-correct>도약 전후의 비력(운동량 + 압력)이 같고 비에너지는 줄어든다.</button><button class="opt">도약 뒤 수심은 교대 수심과 같다.</button>
+      </div><div class="quiz-exp">운동량 보존으로 공액 수심이 정해지고, 에너지는 \(h_L\)만큼 잃는다. 그래서 공액 수심은 교대 수심보다 얕다.</div></div>
+      <div class="quiz-q"><p>단면적이 같은 직사각형 수로 중 같은 경사·재료에서 가장 많은 유량을 흘리는 것은?</p><div class="opts">
+        <button class="opt">폭이 수심과 같은 것(b = y)</button><button class="opt" data-correct>폭이 수심의 2배인 것(b = 2y)</button><button class="opt">폭이 수심의 4배인 것</button><button class="opt">아주 넓고 얕은 것</button>
+      </div><div class="quiz-exp">같은 면적에서 윤변이 최소일 때 \(R_h\)가 최대(= y/2)이고 유량도 최대다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const g = 9.81, pal = () => SB.palette();
+  const knob = (ctx, x, y, col) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col || SB.color("accent"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const surfCol = () => (SB.isDark() ? "rgba(120,200,255,.95)" : "rgba(30,110,200,.95)");
+  const ycrit = (q) => Flow.criticalDepth(q);
+  const Es = (y, q) => Flow.specificEnergy(y, q);
+  const alt = (E, q, br) => { const r = Flow.alternateDepths(E, q); return r ? (br === "sub" ? r[0] : r[1]) : NaN; };
+  const conj = (y, V) => 0.5 * y * (Math.sqrt(1 + (8 * V * V) / (g * y)) - 1);
+  const smooth = (t) => { t = SB.clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const f2 = (v, d = 2) => (isFinite(v) ? v.toFixed(d) : "—");
+  const regName = (Fr) => (Fr < 0.98 ? "아임계" : Fr > 1.02 ? "초임계" : "임계");
+  const jumpType = (Fr) => (Fr <= 1 ? "도약 없음" : Fr < 1.7 ? "파상 도약(undular)" : Fr < 2.5 ? "약한 도약(weak)" : Fr < 4.5 ? "진동 도약(oscillating)" : Fr < 9 ? "정상 도약(steady)" : "강한 도약(strong)");
+  const bisect = (f, a, b, n = 80) => { let fa = f(a); for (let i = 0; i < n; i++) { const m = 0.5 * (a + b), fm = f(m); if ((fa > 0) === (fm > 0)) { a = m; fa = fm; } else b = m; } return 0.5 * (a + b); };
+
+  /* 추적 입자: 수심 비율 s를 지키며 흐른다. geo(x) → {zb, eta, u} */
+  function Stream(n, x0, x1) {
+    const pts = [];
+    return {
+      pts,
+      init(geo) {
+        pts.length = 0; let hmax = 1e-6;
+        for (let i = 0; i <= 80; i++) { const G = geo(x0 + ((x1 - x0) * i) / 80); hmax = Math.max(hmax, G.eta - G.zb); }
+        let k = 0;
+        while (pts.length < n && k < n * 60) { k++; const x = x0 + Math.random() * (x1 - x0), G = geo(x); if (Math.random() * hmax < G.eta - G.zb) pts.push({ x, s: 0.04 + 0.92 * Math.random() }); }
+        while (pts.length < n) pts.push({ x: x0 + Math.random() * (x1 - x0), s: 0.04 + 0.92 * Math.random() });
+      },
+      step(dt, geo, mix) {
+        for (const p of pts) {
+          const G = geo(p.x); let u = G.u;
+          const m = mix ? mix(p.x, p.s) : 0;
+          if (m > 0) {
+            p.s = SB.clamp(p.s + (Math.random() - 0.5) * m * dt * 9, 0.03, 0.97);
+            u *= 1 - m * 0.6 * Math.random();
+            if (p.s > 0.65 && Math.random() < m * 0.6) u = -Math.abs(u) * 0.35;
+          }
+          p.x += u * dt;
+          if (!(p.x < x1) || !isFinite(p.x) || p.x < x0 - 0.05 * (x1 - x0)) { p.x = x0 + Math.random() * 0.01 * (x1 - x0); p.s = 0.04 + 0.92 * Math.random(); }
+        }
+      },
+      draw(ctx, W, geo, umax, r = 1.8) {
+        ctx.save();
+        for (const p of pts) {
+          if (p.x < x0) continue;
+          const G = geo(p.x), y = G.zb + p.s * (G.eta - G.zb);
+          ctx.fillStyle = Flow.ramp(Math.abs(G.u) / umax, 0.9);
+          ctx.beginPath(); ctx.arc(W.X(p.x), W.Y(y), r, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+      },
+    };
+  }
+  /* 물 채우기: zb ~ eta 사이 */
+  function water(ctx, W, x0, x1, top, bot, N = 160, alpha = 0.3) {
+    const T = [], B = [];
+    for (let i = 0; i <= N; i++) { const x = x0 + ((x1 - x0) * i) / N; T.push([W.X(x), W.Y(top(x))]); B.push([W.X(x), W.Y(bot(x))]); }
+    ctx.save(); ctx.fillStyle = Flow.waterColor(alpha); ctx.beginPath();
+    T.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
+    for (let i = B.length - 1; i >= 0; i--) ctx.lineTo(B[i][0], B[i][1]);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = surfCol(); ctx.lineWidth = 2; ctx.beginPath();
+    T.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+    ctx.restore();
+  }
+  function bedFill(ctx, W, x0, x1, zf, h, N = 120) {
+    const P = pal();
+    ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (let i = 0; i <= N; i++) { const x = x0 + ((x1 - x0) * i) / N; i ? ctx.lineTo(W.X(x), W.Y(zf(x))) : ctx.moveTo(W.X(x), W.Y(zf(x))); }
+    ctx.lineTo(W.X(x1), h); ctx.lineTo(W.X(x0), h); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); for (let i = 0; i <= N; i++) { const x = x0 + ((x1 - x0) * i) / N; i ? ctx.lineTo(W.X(x), W.Y(zf(x))) : ctx.moveTo(W.X(x), W.Y(zf(x))); } ctx.stroke();
+    ctx.restore();
+  }
+  function foam(ctx, W, x0, L, top, depth, t, n, amp) {
+    ctx.save(); ctx.fillStyle = SB.isDark() ? "rgba(230,245,255,.28)" : "rgba(255,255,255,.75)"; ctx.strokeStyle = SB.isDark() ? "rgba(160,210,255,.35)" : "rgba(30,110,200,.25)";
+    for (let k = 0; k < n; k++) {
+      const fr = (k * 0.618 + t * 0.35) % 1, x = x0 + L * 0.85 * fr, a = Math.sin(k * 12.9898) * 43758.5453, rr = a - Math.floor(a);
+      const y = top(x) - rr * depth * 0.45, r = (2 + 5 * rr) * amp * (1 - fr * 0.7);
+      ctx.beginPath(); ctx.arc(W.X(x), W.Y(y), Math.max(1, r), 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  /* M3(마찰로 두꺼워지는 초임계) 수면: 수평 바닥, 넓은 수로 */
+  function m3Profile(q, y0, x0, n, xmax, dx = 0.05) {
+    const out = []; let x = x0, y = y0;
+    while (x < xmax) { out.push([x, y]); const V = q / y, F2 = (V * V) / (g * y); if (F2 < 1.08) break; const Sf = (n * n * V * V) / Math.pow(y, 4 / 3); y += dx * (-Sf / (1 - F2)); x += dx; }
+    return out;
+  }
+  const profAt = (prof, x0, dx, x) => { if (x <= x0) return prof[0][1]; const i = Math.min(prof.length - 1, Math.floor((x - x0) / dx)); return prof[i][1]; };
+
+  /* ========================================================== 머리: 수문 → 도약 */
+  {
+    const q = 1.2, y1 = 0.2, a = y1 / 0.61, y0 = alt(Es(y1, q), q, "sub"), nH = 0.035, xs = 0.6;
+    const prof = m3Profile(q, y1, xs, nH, 34);
+    const st = { yt: 0.8, t: 0 };
+    let xj = 0, Lj = 5;
+    function jumpPos() {
+      if (st.yt >= conj(y1, q / y1)) return -1;
+      for (const [x, y] of prof) if (conj(y, q / y) <= st.yt) return x;
+      return 40;
+    }
+    const base = (x) => (x < xs ? lerp(a, y1, smooth(x / xs)) : profAt(prof, xs, 0.05, x));
+    function surf(x) {
+      if (x < 0) return y0;
+      if (xj < 0) return st.yt + 0.04 * Math.sin(x * 3 + st.t * 6) * Math.max(0, 1 - x / 5);
+      if (x < xj) return base(x);
+      const ya = base(xj), t = (x - xj) / Lj;
+      return ya + (st.yt - ya) * smooth(t * 1.3) + (t < 1 ? 0.05 * (st.yt - ya) * Math.sin(t * 9 - st.t * 5) * (1 - t) : 0);
+    }
+    function heff(x) {
+      if (x < -1.2) return y0;
+      if (x < 0) return lerp(y0, a, smooth((x + 1.2) / 1.2));
+      if (xj < 0) return lerp(a, st.yt, smooth(x / 4));
+      return surf(x);
+    }
+    const geo = (x) => { const h = Math.max(0.05, heff(x)); return { zb: 0, eta: h, u: q / h }; };
+    const mix = (x) => { if (xj < 0) return x > 0 && x < 5 ? 0.7 * (1 - x / 5) : 0; return x > xj && x < xj + Lj ? 1 - (x - xj) / Lj : 0; };
+    function upd() { xj = jumpPos(); Lj = 6 * st.yt; }
+    upd();
+    const S = Stream(260, -6, 31);
+    S.init(geo);
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal();
+      const W = Phys.world(ctx, w, h, { x: [-6, 30], y: [-0.3, 2.75], pad: [0, 0, 0, 0] });
+      self._W = W;
+      water(ctx, W, -6, 30, surf, () => 0, 220, 0.28);
+      S.draw(ctx, W, geo, 6.2, 1.7);
+      if (xj > 0 && xj < 30) foam(ctx, W, xj, Lj, surf, st.yt, st.t, 26, 1);
+      if (xj < 0) foam(ctx, W, 0.1, 4, surf, st.yt, st.t, 18, 0.8);
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, W.Y(0), w, h - W.Y(0)); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, W.Y(0)); ctx.lineTo(w, W.Y(0)); ctx.stroke();
+      ctx.fillStyle = SB.color("bg-elev") || P.surface; ctx.strokeStyle = P.dim; ctx.fillRect(W.X(-0.12), 0, W.X(0.12) - W.X(-0.12), W.Y(a)); ctx.strokeRect(W.X(-0.12), -2, W.X(0.12) - W.X(-0.12), W.Y(a) + 2); ctx.restore();
+      const Fr0 = q / y0 / Math.sqrt(g * y0), Fr1 = q / y1 / Math.sqrt(g * y1);
+      SB.label(ctx, `아임계 Fr = ${Fr0.toFixed(2)}`, W.X(-5.8), W.Y(1.7), { size: 11, color: P.dim, align: "left" });
+      SB.label(ctx, `초임계 Fr₁ = ${Fr1.toFixed(1)}`, W.X(3.6), W.Y(0.62), { size: 11, color: P.accent2 });
+      if (xj > 0 && xj < 29) SB.label(ctx, "수력 도약", W.X(Math.min(xj + Lj * 0.3, 26)), W.Y(Math.min(st.yt + 0.42, 2.5)), { size: 12, bold: true, color: P.accent });
+      else if (xj < 0) SB.label(ctx, "잠긴 도약: 하류 물이 수문까지 덮었다", W.X(9), W.Y(Math.min(st.yt + 0.4, 2.5)), { size: 11, color: P.warn });
+      else SB.label(ctx, "도약이 하류 밖으로 밀려났다 (하류 수심이 얕다)", W.X(15), W.Y(1.3), { size: 11, color: P.warn });
+      SB.dashLine(ctx, W.X(26.5), W.Y(st.yt), W.X(29.5), W.Y(st.yt), P.accent, [3, 3]);
+      SB.label(ctx, `하류 y₃ = ${st.yt.toFixed(2)} m`, W.X(27.4), W.Y(st.yt) - 18, { size: 11, color: P.text, align: "right" });
+      SB.label(ctx, `공액 수심(y₁) = ${conj(y1, q / y1).toFixed(2)} m`, W.X(-5.8), 12, { size: 11, color: P.dim, align: "left" });
+      const hx = W.X(28.5), hy = W.Y(st.yt); knob(ctx, hx, hy, P.accent); self._h = [hx, hy];
+    }, { aspect: 0.34, minHeight: 200, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "t" || !cv._W) return; st.yt = SB.clamp(cv._W.iy(y), 0.45, 1.6); upd(); } });
+    SB.loop("hero", (dt) => { st.t += dt; S.step(dt, geo, mix); cv.redraw(); });
+  }
+
+  /* ========================================================== 수력 반경 미니 */
+  {
+    let shape = "rect", y = 1.2; const D = 3, R = D / 2;
+    const sec = (sh, y) => {
+      if (sh === "rect") return { A: 4 * y, P: 4 + 2 * y, T: 4 };
+      if (sh === "trap") return { A: (3 + 1.5 * y) * y, P: 3 + 2 * y * Math.sqrt(3.25), T: 3 + 3 * y };
+      if (sh === "tri") return { A: y * y, P: 2 * y * Math.SQRT2, T: 2 * y };
+      const th = 2 * Math.acos(SB.clamp(1 - (2 * y) / D, -1, 1));
+      return { A: (D * D / 8) * (th - Math.sin(th)), P: (D * th) / 2, T: D * Math.sin(th / 2) };
+    };
+    const ymax = () => (shape === "circ" ? D * 0.995 : 3);
+    SB.seg("rh-shape", (v) => { shape = v; y = Math.min(y, ymax()); cv.redraw(); });
+    const cv = SB.canvas("cv-rh", (ctx, w, h, self) => {
+      const P = pal(), lw = w * 0.6;
+      const W = Phys.world(ctx, lw, h, { x: [-6.4, 6.4], y: [-0.3, 3.5], pad: [6, 6, 10, 10], equal: true });
+      self._W = W;
+      let walls, wet;
+      if (shape === "rect") { walls = [[-2, 3.4], [-2, 0], [2, 0], [2, 3.4]]; wet = [[-2, y], [-2, 0], [2, 0], [2, y]]; }
+      else if (shape === "trap") { walls = [[-1.5 - 5.1, 3.4], [-1.5, 0], [1.5, 0], [1.5 + 5.1, 3.4]]; wet = [[-1.5 - 1.5 * y, y], [-1.5, 0], [1.5, 0], [1.5 + 1.5 * y, y]]; }
+      else if (shape === "tri") { walls = [[-3.4, 3.4], [0, 0], [3.4, 3.4]]; wet = [[-y, y], [0, 0], [y, y]]; }
+      else {
+        walls = []; for (let i = 0; i <= 72; i++) { const al = (i / 72) * Math.PI * 2; walls.push([R * Math.sin(al), R - R * Math.cos(al)]); }
+        const be = Math.acos(SB.clamp(1 - y / R, -1, 1)); wet = []; for (let i = 0; i <= 60; i++) { const al = -be + (2 * be * i) / 60; wet.push([R * Math.sin(al), R - R * Math.cos(al)]); }
+      }
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.35); ctx.beginPath(); wet.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = surfCol(); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W.X(wet[0][0]), W.Y(wet[0][1])); ctx.lineTo(W.X(wet[wet.length - 1][0]), W.Y(wet[wet.length - 1][1])); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath(); walls.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.stroke();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 4.5; ctx.beginPath(); wet.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.stroke(); ctx.restore();
+      const s = sec(shape, y), hx = W.X(wet[wet.length - 1][0]), hy = W.Y(y);
+      SB.label(ctx, "윤변 p", W.X(0), W.Y(0) + 4 + (shape === "circ" ? 0 : 0), { size: 11, color: P.accent2, baseline: "top" });
+      knob(ctx, hx, hy, P.accent); self._h = [hx, hy];
+      // 오른쪽: Rh–y 그래프
+      const ym = ymax(), data = []; let rmax = 0;
+      for (let i = 1; i <= 80; i++) { const yy = (ym * i) / 80, ss = sec(shape, yy), r = ss.A / ss.P; data.push([yy, r]); rmax = Math.max(rmax, r); }
+      const bx = lw + 34, bw = Math.max(60, w - bx - 10);
+      SB.chart(ctx, { x: bx, y: 12, w: bw, h: h - 58 }, { x: [0, ym], y: [0, rmax * 1.15], xLabel: "y (m)", series: [{ data, color: P.accent, width: 2 }], points: [{ x: y, y: s.A / s.P, color: P.accent2, r: 5 }], xTicks: [0, 1, 2, 3].filter((v) => v <= ym), yFmt: (v) => v.toFixed(1) });
+      SB.label(ctx, "Rₕ", bx + 14, 18, { size: 11, color: P.dim });
+      document.getElementById("rh-r").innerHTML = `A<sub>c</sub> = ${s.A.toFixed(2)} m², p = ${s.P.toFixed(2)} m, R<sub>h</sub> = ${(s.A / s.P).toFixed(3)} m, T = ${s.T.toFixed(2)} m, y<sub>h</sub> = ${(s.A / Math.max(s.T, 1e-6)).toFixed(2)} m`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 330 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "y", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, py) => { if (id !== "y") return; y = SB.clamp(cv._W.iy(py), 0.05, ymax()); } });
+  }
+
+  /* ========================================================== 표면파 드래그 숫자 */
+  SB.tangle("tg-c", (v) => {
+    const c = Math.sqrt(g * v.y), Fr = v.V / c;
+    const msg = Fr < 0.98 ? `상류로 가는 파는 땅에 대해 ${(c - v.V).toFixed(2)} m/s, 하류로 가는 파는 ${(c + v.V).toFixed(2)} m/s로 간다.` : Fr > 1.02 ? `모든 물결이 하류로 쓸려 가며(상류쪽 끝 ${(c - v.V).toFixed(2)} m/s), 점 교란은 반각 μ = ${(Math.asin(1 / Fr) * 180 / Math.PI).toFixed(1)}°인 쐐기를 만든다.` : "상류로 가려는 파가 제자리에 멈춘다(정지파).";
+    return { c: c.toFixed(2) + " m/s", Fr: Fr.toFixed(3), reg: regName(Fr) + " 흐름이다", msg };
+  });
+
+  /* ========================================================== 돌 던지기 */
+  {
+    const L = 40, B = 14;
+    const st = { rings: [], stick: [12, 7], tS: 0, t: 0, fl: Array.from({ length: 70 }, () => [Math.random() * L, 0.5 + Math.random() * (B - 1)]) };
+    const getV = SB.range("wv-v", (v) => v.toFixed(1) + " m/s", () => stats());
+    const getY = SB.range("wv-y", (v) => v.toFixed(2) + " m", () => stats());
+    const stick = document.getElementById("wv-stick"), wedge = document.getElementById("wv-wedge");
+    const c0 = () => Math.sqrt(g * getY());
+    function stats() {
+      const c = c0(), V = getV(), Fr = V / c;
+      SB.stat("wv-c", c.toFixed(2) + " <small>m/s</small>");
+      SB.stat("wv-fr", Fr.toFixed(2) + ` <small>${regName(Fr)}</small>`);
+      SB.stat("wv-up", (c - V).toFixed(2) + " <small>m/s" + (c - V < -0.01 ? " (하류로 쓸림)" : "") + "</small>");
+      SB.stat("wv-mu", Fr > 1 ? (Math.asin(1 / Fr) * 180 / Math.PI).toFixed(1) + "°" : "— <small>(Fr ≤ 1)</small>");
+    }
+    const drop = (x, y) => { st.rings.push({ x, y, t0: st.t }); if (st.rings.length > 60) st.rings.shift(); };
+    const cv = SB.canvas("cv-wave", (ctx, w, h, self) => {
+      const P = pal(), c = c0(), V = getV();
+      const W = Phys.world(ctx, w, h, { x: [0, L], y: [-1.2, B + 1.2], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = Flow.waterColor(0.28); ctx.fillRect(W.X(0), W.Y(B), W.X(L) - W.X(0), W.Y(0) - W.Y(B));
+      ctx.beginPath(); ctx.rect(W.X(0), W.Y(B), W.X(L) - W.X(0), W.Y(0) - W.Y(B)); ctx.clip();
+      ctx.fillStyle = P.dim; st.fl.forEach(([x, y]) => { ctx.beginPath(); ctx.arc(W.X(x), W.Y(y), 1.6, 0, Math.PI * 2); ctx.fill(); });
+      ctx.lineWidth = 1.8;
+      st.rings.forEach((r) => {
+        const age = st.t - r.t0, rad = c * age, cx = r.x + V * age;
+        ctx.strokeStyle = SB.isDark() ? `rgba(150,215,255,${Math.max(0, 1 - age / 7)})` : `rgba(20,90,190,${Math.max(0, 1 - age / 7)})`;
+        ctx.beginPath(); ctx.arc(W.X(cx), W.Y(r.y), Math.max(0.5, rad * W.s), 0, Math.PI * 2); ctx.stroke();
+        if (age < 7 && !r.stick) { ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(W.X(cx - rad), W.Y(r.y), 3, 0, Math.PI * 2); ctx.fill(); }
+      });
+      const Fr = V / c;
+      if (stick.checked && wedge.checked && Fr > 1) {
+        const mu = Math.asin(1 / Fr), Lw = 45;
+        [1, -1].forEach((sg) => SB.dashLine(ctx, W.X(st.stick[0]), W.Y(st.stick[1]), W.X(st.stick[0] + Lw * Math.cos(mu)), W.Y(st.stick[1] + sg * Lw * Math.sin(mu)), P.accent2, [6, 4]));
+      }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(B)); ctx.lineTo(W.X(L), W.Y(B)); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(L), W.Y(0)); ctx.stroke(); ctx.restore();
+      if (V > 0.05) SB.arrow(ctx, W.X(1), W.Y(B - 1.2), W.X(1) + Math.min(80, 12 + V * 9), W.Y(B - 1.2), { color: P.text, width: 2, head: 7, label: "V" });
+      if (stick.checked) { const sx = W.X(st.stick[0]), sy = W.Y(st.stick[1]); knob(ctx, sx, sy, P.accent2); ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(sx, sy, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); self._st = [sx, sy]; } else self._st = null;
+      SB.label(ctx, `Fr = ${Fr.toFixed(2)}`, w - 50, 18, { bold: true, color: Fr > 1 ? P.accent2 : P.accent });
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 400 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._st ? [{ id: "stick", x: cv._st[0], y: cv._st[1], r: 14 }] : []),
+      down: (id, x, y) => { if (id === "stick" || !cv._W) return; const X = cv._W.ix(x), Y = cv._W.iy(y); if (X > 0 && X < L && Y > 0 && Y < B) drop(X, Y); },
+      move: (id, x, y) => { if (id !== "stick") return; st.stick = [SB.clamp(cv._W.ix(x), 1, L - 1), SB.clamp(cv._W.iy(y), 1, B - 1)]; },
+    });
+    SB.loop("sim-wave", (dt) => {
+      st.t += dt; const V = getV();
+      if (stick.checked) { st.tS += dt; while (st.tS > 0.3) { st.tS -= 0.3; st.rings.push({ x: st.stick[0], y: st.stick[1], t0: st.t, stick: true }); } }
+      st.rings = st.rings.filter((r) => st.t - r.t0 < 7).slice(-60);
+      st.fl.forEach((f) => { f[0] += V * dt; if (f[0] > L) { f[0] -= L; f[1] = 0.5 + Math.random() * (B - 1); } });
+      cv.redraw();
+    });
+    document.getElementById("wv-drop").addEventListener("click", () => drop(12, B / 2));
+    document.getElementById("wv-clear").addEventListener("click", () => { st.rings = []; });
+    stick.addEventListener("change", () => { st.rings = []; });
+    stats();
+  }
+
+  /* ========================================================== 드릴: 프루드·임계 */
+  SB.drill("drill-fr", () => {
+    const k = Math.floor(Math.random() * 4);
+    if (k === 0) { const y = (2 + Math.round(Math.random() * 28)) / 10, V = (5 + Math.round(Math.random() * 55)) / 10, Fr = V / Math.sqrt(g * y); return { q: `<p>넓은 수로에서 수심 \\(${y}\\) m, 평균 속도 \\(${V}\\) m/s로 흐른다. 프루드 수는?</p>`, answer: Fr, label: "Fr =", sol: `\\(\\mathrm{Fr} = V/\\sqrt{gy} = ${V}/\\sqrt{9.81\\times${y}} = ${Fr.toFixed(3)}\\) → ${regName(Fr)}` }; }
+    if (k === 1) { const b = 1 + Math.round(Math.random() * 9), Q = b * (0.5 + Math.round(Math.random() * 25) / 10), q = Q / b, yc = ycrit(q); return { q: `<p>폭 \\(${b}\\) m인 직사각형 수로에 \\(${Q.toFixed(1)}\\) m³/s가 흐른다. 임계 수심은?</p>`, answer: yc, label: "y<sub>c</sub> =", unit: "m", sol: `\\(q = ${q.toFixed(3)}\\) m²/s, \\(y_c = (q^2/g)^{1/3} = ${yc.toFixed(3)}\\) m, \\(E_\\text{min} = ${(1.5 * yc).toFixed(3)}\\) m` }; }
+    if (k === 2) { const y = (1 + Math.round(Math.random() * 99)) / 10, c = Math.sqrt(g * y); return { q: `<p>수심 \\(${y}\\) m인 잔잔한 물에서 얕은 물 표면파의 속도는?</p>`, answer: c, label: "c₀ =", unit: "m/s", sol: `\\(c_0 = \\sqrt{gy} = \\sqrt{9.81\\times${y}} = ${c.toFixed(2)}\\) m/s` }; }
+    const q = (5 + Math.round(Math.random() * 35)) / 10, y = (2 + Math.round(Math.random() * 28)) / 10, E = Es(y, q);
+    return { q: `<p>\\(q = ${q}\\) m²/s가 수심 \\(${y}\\) m로 흐른다. 비에너지는?</p>`, answer: E, label: "E<sub>s</sub> =", unit: "m", sol: `\\(E_s = y + q^2/(2gy^2) = ${y} + ${(q * q).toFixed(2)}/(19.62\\times${(y * y).toFixed(3)}) = ${E.toFixed(3)}\\) m` };
+  });
+
+  /* ========================================================== 임계 수심 드래그 숫자 */
+  SB.tangle("tg-yc", (v) => {
+    const q = v.Q / v.b, yc = ycrit(q), Fr = q / v.y / Math.sqrt(g * v.y), E = Es(v.y, q);
+    const other = Math.abs(Fr - 1) < 0.02 ? NaN : alt(E, q, Fr < 1 ? "sup" : "sub");
+    return { q: q.toFixed(2) + " m²/s", yc: yc.toFixed(3) + " m", Vc: Math.sqrt(g * yc).toFixed(2) + " m/s", Em: (1.5 * yc).toFixed(3) + " m", Fr: Fr.toFixed(2), reg: regName(Fr), E: E.toFixed(3) + " m", alt: isFinite(other) ? other.toFixed(3) + " m (" + (Fr < 1 ? "초임계" : "아임계") + ")" : "자기 자신(임계)" };
+  });
+
+  /* ========================================================== 비에너지 선도 + 바닥 융기 */
+  {
+    const st = { y1: 1.5, game: null, ax: { E: 3, y: 2.5 }, dragging: false };
+    const getQ = SB.range("en-q", (v) => v.toFixed(2) + " m²/s", (v) => { const r = st.y1 / ycrit(st.qPrev || v); st.y1 = r * ycrit(v); st.qPrev = v; fit(); draw(); });
+    const getDz = SB.range("en-dz", (v) => v.toFixed(3) + " m", () => draw());
+    st.qPrev = getQ();
+    const getReg = SB.seg("en-reg", (v) => { const q = getQ(), yc = ycrit(q), E = Es(st.y1, q), br = st.y1 > yc ? "sub" : "sup"; if (br !== v) { st.y1 = alt(E, q, v); if (!isFinite(st.y1)) st.y1 = v === "sub" ? 1.6 * yc : 0.6 * yc; } fit(); draw(); });
+    const bump = (x, dz) => (Math.abs(x) < 3 ? dz * Math.cos((Math.PI * x) / 6) ** 2 : 0);
+    function calc() {
+      const q = getQ(), dz = getDz(), yc = ycrit(q), Em = 1.5 * yc, E1 = Es(st.y1, q), br = st.y1 > yc ? "sub" : "sup";
+      const choke = E1 - dz < Em * (1 - 1e-9);
+      const E1e = choke ? Em + dz : E1, y1e = choke ? alt(E1e, q, "sub") : st.y1;
+      const y2 = choke ? yc : alt(E1 - dz, q, br);
+      return { q, dz, yc, Em, E1, br, choke, E1e, y1e, y2, dzmax: E1 - Em };
+    }
+    function depthAt(x, C) {
+      const E = C.E1e - bump(x, C.dz), b = C.choke ? (x < 0 ? "sub" : "sup") : C.br;
+      const y = alt(Math.max(E, C.Em), C.q, b);
+      return isFinite(y) ? y : C.yc;
+    }
+    function fit() { const C = calc(); st.ax = { E: Math.max(1.2, 1.18 * Math.max(C.E1, C.E1e)), y: Math.max(1.0, 1.25 * Math.max(st.y1, C.y1e, 1.6 * C.yc)) }; }
+    let C = calc();
+    const geo = (x) => { const zb = bump(x, st.game ? 0 : C.dz), y = st.game ? st.y1 : depthAt(x, C); return { zb, eta: zb + y, u: C.q / y }; };
+    const S = Stream(150, -10, 10);
+    S.init(geo);
+    let side, ey;
+    function draw() {
+      C = calc();
+      const hide = !!st.game, Fr1 = C.q / C.y1e / Math.sqrt(g * C.y1e), Fr2 = C.q / C.y2 / Math.sqrt(g * C.y2);
+      SB.stat("en-y1", `${C.y1e.toFixed(3)} <small>m</small>, ${Fr1.toFixed(2)}`);
+      SB.stat("en-e", hide ? "가림" : `${C.E1e.toFixed(3)} / ${C.Em.toFixed(3)} <small>m</small>`);
+      SB.stat("en-y2", hide ? "가림" : `${C.y2.toFixed(3)} <small>m</small>, ${Fr2.toFixed(2)}`);
+      SB.stat("en-dh", hide ? "가림" : `${(C.y2 + C.dz - C.y1e >= 0 ? "+" : "")}${(C.y2 + C.dz - C.y1e).toFixed(3)} <small>m</small>`);
+      SB.stat("en-dzm", hide ? "?" : `${C.dzmax.toFixed(3)} <small>m</small>`);
+      const msg = document.getElementById("en-msg");
+      if (!st.game && !st.judged) msg.innerHTML = C.choke ? `<b style="color:var(--bad)">초크!</b> 상류 수심이 ${st.y1.toFixed(2)} → ${C.y1e.toFixed(2)} m로 높아지고 꼭대기에서 임계 수심, 하류는 초임계.` + (C.br === "sup" ? " (상류 초임계 흐름은 도약으로 아임계가 되어 거슬러 올라온다.)" : "") : `초크 없음: 점 ②가 ${C.br === "sub" ? "윗가지" : "아랫가지"}에 있다.`;
+      side && side.redraw(); ey && ey.redraw();
+    }
+    side = SB.canvas("cv-en-side", (ctx, w, h, self) => {
+      const P = pal(), ym = Math.max(1.0, st.ax.y * 1.05, C.E1e * 1.12);
+      const W = Phys.world(ctx, w, h, { x: [-10, 10], y: [-0.08 * ym, ym], pad: [4, 4, 8, 4] });
+      self._W = W;
+      water(ctx, W, -10, 10, (x) => geo(x).eta, (x) => geo(x).zb, 160, 0.28);
+      S.draw(ctx, W, geo, (1.3 * C.q) / Math.min(C.y1e, C.y2, st.y1), 1.7);
+      bedFill(ctx, W, -10, 10, (x) => bump(x, C.dz), h);
+      if (!st.game) { SB.dashLine(ctx, W.X(-10), W.Y(C.E1e), W.X(10), W.Y(C.E1e), P.accent2, [6, 4]); SB.label(ctx, "에너지선", W.X(7.5), W.Y(C.E1e) - 10, { size: 11, color: P.accent2 }); }
+      else SB.label(ctx, "도전 중: 융기 위 수면 계산을 가렸다", w / 2, 16, { size: 11, color: P.warn });
+      SB.label(ctx, C.choke && !st.game ? "①′" : "①", W.X(-7.5), W.Y(geo(-7.5).eta) - 12, { bold: true, color: C.choke && !st.game ? P.warn : P.accent2 });
+      if (!st.game) SB.label(ctx, "②", W.X(0), W.Y(C.dz + C.y2) - 12, { bold: true, color: P.accent });
+      const hx = W.X(0), hy = W.Y(C.dz); knob(ctx, hx, hy, P.accent2); self._h = [hx, hy];
+    }, { aspect: 0.75, minHeight: 230, maxHeight: 340 });
+    ey = SB.canvas("cv-en-ey", (ctx, w, h, self) => {
+      const P = pal(), q = C.q, A = st.ax, data = [];
+      for (let i = 1; i <= 160; i++) { const y = (A.y * i) / 160, E = Es(y, q); if (E < A.E * 1.5) data.push([E, y]); }
+      const hide = !!st.game;
+      const ch = SB.chart(ctx, null, { x: [0, A.E], y: [0, A.y], xLabel: "비에너지 Eₛ (m)", yLabel: "수심 y (m)", series: [{ data: [[0, 0], [A.E, A.E]], color: P.faint, width: 1, dash: [4, 4] }, { data, color: P.accent, width: 2.2 }], vlines: hide ? [] : [{ x: C.Em, color: P.faint, label: "E_min" }], hlines: hide ? [] : [{ y: C.yc, color: P.accent2, label: "y_c" }] });
+      self._ch = ch;
+      const E1 = Es(st.y1, q), x1 = ch.X(E1), y1p = ch.Y(st.y1);
+      const from = C.choke && !hide ? [ch.X(C.E1e), ch.Y(C.y1e)] : [x1, y1p];
+      if (C.dz > 0.002) SB.arrow(ctx, from[0], from[1], from[0] - (ch.X(C.dz) - ch.X(0)), from[1], { color: P.text, width: 1.6, head: 7, label: "Δz", labelPos: "mid", labelSide: -1 });
+      if (!hide) {
+        if (C.choke) { ctx.save(); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(from[0], from[1], 5, 0, 7); ctx.fill(); ctx.restore(); SB.label(ctx, "①′", from[0] + 14, from[1] - 10, { bold: true, color: P.warn }); }
+        ctx.save(); ctx.fillStyle = C.choke ? P.bad : P.accent; ctx.beginPath(); ctx.arc(ch.X(C.choke ? C.Em : E1 - C.dz), ch.Y(C.y2), 6, 0, 7); ctx.fill(); ctx.restore();
+        SB.label(ctx, "②", ch.X(C.choke ? C.Em : E1 - C.dz) - 14, ch.Y(C.y2) - 10, { bold: true, color: P.accent });
+      }
+      knob(ctx, x1, y1p, P.accent2); SB.label(ctx, "①", x1 + 15, y1p - 10, { bold: true, color: P.accent2 });
+      self._h = [x1, y1p];
+    }, { aspect: 0.75, minHeight: 230, maxHeight: 340 });
+    SB.drag(side, { handles: () => (side._h ? [{ id: "dz", x: side._h[0], y: side._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "dz") return; getDz.set(Math.round(SB.clamp(side._W.iy(y), 0, 1.5) * 200) / 200); } });
+    SB.drag(ey, {
+      handles: () => (ey._h ? [{ id: "p1", x: ey._h[0], y: ey._h[1], r: 14 }] : []),
+      move: (id, x, py) => {
+        if (id !== "p1" || st.game) return;
+        const b = ey._ch.box, q = getQ(), yc = ycrit(q);
+        let y = (st.ax.y * (b.y + b.h - py)) / b.h;
+        y = SB.clamp(y, 0.35 * yc, st.ax.y * 0.98);
+        if (Math.abs(y - yc) < 0.04 * yc) y = y > yc ? 1.04 * yc : 0.96 * yc;
+        st.y1 = y; st.judged = false; getReg.set(y > yc ? "sub" : "sup", false); draw();
+      },
+      up: () => { fit(); draw(); },
+    });
+    document.getElementById("en-game").addEventListener("click", () => {
+      const q = Math.round((0.8 + Math.random() * 2) * 20) / 20, sub = Math.random() < 0.7, Fr = sub ? 0.25 + Math.random() * 0.35 : 1.8 + Math.random() * 1.2;
+      getQ.set(q, true); st.qPrev = q; st.y1 = Math.cbrt((q * q) / (g * Fr * Fr)); getReg.set(sub ? "sub" : "sup", false); getDz.set(0, true);
+      st.game = { dzmax: Es(st.y1, q) - 1.5 * ycrit(q) }; st.judged = false; fit();
+      document.getElementById("en-msg").innerHTML = "도전 중: 오른쪽 선도에서 Δz 화살표의 끝을 곡선의 코에 맞추듯 융기를 올린 뒤 ‘판정’을 누르라.";
+      draw();
+    });
+    document.getElementById("en-judge").addEventListener("click", () => {
+      const msg = document.getElementById("en-msg");
+      if (!st.game) { msg.textContent = "먼저 ‘도전 시작’을 누르세요."; return; }
+      const dz = getDz(), m = st.game.dzmax, pct = (dz / m) * 100;
+      msg.innerHTML = dz > m ? `<b style="color:var(--bad)">초크!</b> Δz = ${dz.toFixed(3)} m > Δz<sub>max</sub> = ${m.toFixed(3)} m` : `${pct >= 97 ? '<b style="color:var(--ok)">완벽!</b>' : pct >= 90 ? "<b>좋음</b>" : "더 높일 수 있다."} Δz = ${dz.toFixed(3)} m, 한계 ${m.toFixed(3)} m의 ${pct.toFixed(1)}%`;
+      st.game = null; st.judged = true; draw();
+    });
+    getDz.el.addEventListener("input", () => { st.judged = false; });
+    SB.loop("sim-energy", (dt) => { S.step(dt * 0.6, geo); side.redraw(); });
+    fit(); draw();
+  }
+
+  /* ========================================================== 폭 축소 미니 */
+  {
+    const Q = 6, b1 = 3, q1 = 2;
+    const getR = SB.range("wd-r", (v) => v.toFixed(2), () => upd());
+    let reg = "sub";
+    SB.seg("wd-reg", (v) => { reg = v; upd(); });
+    const bw = (x, r) => b1 * (1 - (1 - r) * (Math.abs(x) < 4 ? Math.cos((Math.PI * x) / 8) ** 2 : 0));
+    const pts = Array.from({ length: 90 }, () => ({ x: -10 + Math.random() * 20, f: -0.9 + 1.8 * Math.random() }));
+    let C = {};
+    function calc() {
+      const r = getR(), y1 = reg === "sub" ? 1.5 : 0.4, E = Es(y1, q1), q2 = Q / (b1 * r), Em2 = 1.5 * ycrit(q2), choke = E < Em2;
+      const qmax = Math.sqrt(g * Math.pow((2 * E) / 3, 3)), rmin = Q / b1 / qmax;
+      const Ee = choke ? Em2 : E;
+      const yAt = (x) => { const q = Q / bw(x, r), br = choke ? (x < 0 ? "sub" : "sup") : reg; const y = alt(Math.max(Ee, 1.5 * ycrit(q)), q, br); return isFinite(y) ? y : ycrit(q); };
+      return { r, y1, E, q2, choke, rmin, yAt, y2: yAt(0) };
+    }
+    function upd() {
+      C = calc();
+      const Fr2 = C.q2 / C.y2 / Math.sqrt(g * C.y2);
+      document.getElementById("wd-r-txt").innerHTML = `q₂ = ${C.q2.toFixed(2)} m²/s, y₂ = ${C.y2.toFixed(3)} m (Fr₂ = ${Fr2.toFixed(2)}), 수면 변화 ${(C.y2 - C.yAt(-9.9) >= 0 ? "+" : "")}${(C.y2 - C.yAt(-9.9)).toFixed(3)} m · 초크 한계 b₂/b₁ = ${C.rmin.toFixed(3)}` + (C.choke ? ' · <b style="color:var(--bad)">초크! 상류 수심이 바뀐다</b>' : "");
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-width", (ctx, w, h) => {
+      if (!C.yAt) C = calc();
+      const P = pal(), r = C.r, hp = h * 0.42;
+      // 평면도
+      const X = (x) => 8 + ((x + 10) / 20) * (w - 16), Yp = (yy) => hp / 2 - (yy / 1.6) * (hp / 2 - 8);
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, 0, w, hp); ctx.fillStyle = Flow.waterColor(0.3); ctx.beginPath();
+      for (let i = 0; i <= 100; i++) { const x = -10 + i / 5; i ? ctx.lineTo(X(x), Yp(bw(x, r) / 2)) : ctx.moveTo(X(x), Yp(bw(x, r) / 2)); }
+      for (let i = 100; i >= 0; i--) { const x = -10 + i / 5; ctx.lineTo(X(x), Yp(-bw(x, r) / 2)); }
+      ctx.closePath(); ctx.fill(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = P.text; pts.forEach((p) => { ctx.beginPath(); ctx.arc(X(p.x), Yp((p.f * bw(p.x, r)) / 2), 1.6, 0, 7); ctx.fill(); });
+      ctx.restore();
+      SB.label(ctx, "평면도", 34, 12, { size: 11, color: P.dim });
+      // 측면도
+      const y0 = hp + 8, Ys = (yy) => h - 14 - (yy / 2.0) * (h - 14 - y0 - 6);
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.3); ctx.beginPath(); ctx.moveTo(X(-10), Ys(0));
+      for (let i = 0; i <= 100; i++) { const x = -10 + i / 5; ctx.lineTo(X(x), Ys(C.yAt(x))); }
+      ctx.lineTo(X(10), Ys(0)); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = surfCol(); ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= 100; i++) { const x = -10 + i / 5; i ? ctx.lineTo(X(x), Ys(C.yAt(x))) : ctx.moveTo(X(x), Ys(C.yAt(x))); } ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.beginPath(); ctx.moveTo(0, Ys(0)); ctx.lineTo(w, Ys(0)); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, X(-10), Ys(C.choke ? 1.5 * ycrit(C.q2) : C.E), X(10), Ys(C.choke ? 1.5 * ycrit(C.q2) : C.E), P.accent2, [6, 4]);
+      SB.label(ctx, "측면도 (점선: 에너지선)", 80, y0 + 6, { size: 11, color: P.dim });
+    }, { aspect: 0.55, minHeight: 230, maxHeight: 340 });
+    SB.loop("mini-width", (dt) => {
+      pts.forEach((p) => { const b = bw(p.x, C.r || 1), y = C.yAt ? C.yAt(p.x) : 1; p.x += (Q / (b * y)) * dt * 0.8; if (p.x > 10) { p.x = -10; p.f = -0.9 + 1.8 * Math.random(); } });
+      cv.redraw();
+    });
+    upd();
+  }
+
+  /* ========================================================== 매닝 드래그 숫자 */
+  SB.tangle("tg-man", (v) => {
+    const V = (Math.pow(v.R, 2 / 3) * Math.sqrt(v.S)) / v.n, C = Math.pow(v.R, 1 / 6) / v.n, f = (8 * g) / (C * C), tau = 1000 * g * v.R * v.S;
+    return { V: V.toFixed(2) + " m/s", C: C.toFixed(1) + " m½/s", f: f.toFixed(4), tau: tau.toFixed(2) + " Pa", msg: `경사를 4배(${(4 * v.S).toFixed(4)})로 하면 속도는 ${(2 * V).toFixed(2)} m/s, 수력 반경을 2배로 하면 ${(V * Math.pow(2, 2 / 3)).toFixed(2)} m/s(1.59배)가 된다.` };
+  }, { fmt: { n: (x) => x.toFixed(3), S: (x) => x.toFixed(4) } });
+
+  /* ========================================================== 최적 단면 미니 */
+  {
+    const A = 4; let z = 0;
+    const getR = SB.range("bs-r", (v) => v.toFixed(2), () => cv.redraw());
+    SB.seg("bs-z", (v) => { z = Number(v); cv.redraw(); });
+    const geom = (r) => { const y = Math.sqrt(A / (r + z)); return { y, b: r * y, P: y * (r + 2 * Math.sqrt(1 + z * z)) }; };
+    const cv = SB.canvas("cv-best", (ctx, w, h) => {
+      const P = pal(), r = getR(), G = geom(r), rs = 2 * (Math.sqrt(1 + z * z) - z), Gs = geom(rs), lw = w * 0.5;
+      const W = Phys.world(ctx, lw, h, { x: [-6, 6], y: [-0.3, 4.8], pad: [6, 6, 8, 8], equal: true });
+      const wet = [[-G.b / 2 - z * G.y, G.y], [-G.b / 2, 0], [G.b / 2, 0], [G.b / 2 + z * G.y, G.y]];
+      const opt = [[-Gs.b / 2 - z * Gs.y, Gs.y], [-Gs.b / 2, 0], [Gs.b / 2, 0], [Gs.b / 2 + z * Gs.y, Gs.y]];
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.35); ctx.beginPath(); wet.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 4; ctx.beginPath(); wet.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.3; ctx.setLineDash([4, 4]); ctx.beginPath(); opt.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "점선: 최적 단면", lw / 2, h - 10, { size: 11, color: P.dim });
+      const data = []; for (let i = 0; i <= 120; i++) { const rr = 0.2 + (7.8 * i) / 120; data.push([rr, geom(rr).P]); }
+      const pm = Math.max(...data.map((d) => d[1]));
+      SB.chart(ctx, { x: lw + 40, y: 12, w: Math.max(60, w - lw - 50), h: h - 58 }, { x: [0, 8], y: [0, pm * 1.05], xLabel: "b/y", series: [{ data, color: P.accent, width: 2 }], vlines: [{ x: rs, color: P.ok, label: "최적" }], points: [{ x: r, y: G.P, color: P.accent2, r: 5 }], yFmt: (v) => v.toFixed(0) });
+      SB.label(ctx, "p (m)", lw + 58, 18, { size: 11, color: P.dim });
+      document.getElementById("bs-txt").innerHTML = `b = ${G.b.toFixed(2)} m, y = ${G.y.toFixed(2)} m, p = ${G.P.toFixed(2)} m (최소 ${Gs.P.toFixed(2)} m), R<sub>h</sub> = ${(A / G.P).toFixed(3)} m, 유량 = 최적의 ${(100 * Math.pow(Gs.P / G.P, 2 / 3)).toFixed(1)}%`;
+    }, { aspect: 0.48, minHeight: 210, maxHeight: 320 });
+  }
+
+  /* ========================================================== 매닝 수로 설계기 */
+  {
+    const NT = [["유리", 0.010], ["마감 콘크리트", 0.012], ["주철", 0.013], ["미마감 콘크리트", 0.014], ["벽돌", 0.015], ["아스팔트", 0.016], ["흙 수로(깨끗함)", 0.022], ["흙 수로(자갈)", 0.025], ["흙 수로(잡초)", 0.030], ["자연 하천", 0.035], ["범람원(관목)", 0.050]];
+    const sel = document.getElementById("mn-n");
+    NT.forEach(([k, n], i) => { const o = document.createElement("option"); o.value = n; o.textContent = `${k} (n = ${n.toFixed(3)})`; if (i === 1) o.selected = true; sel.append(o); });
+    const st = { b: 4, y: 1.5, z: 0, game: null, ghost: null, off: 0 };
+    const getS = SB.range("mn-s", (v) => Math.pow(10, v).toFixed(v < -3 ? 5 : 4), () => upd());
+    SB.seg("mn-shape", (v) => { st.z = Number(v); st.ghost = null; upd(); });
+    sel.addEventListener("change", () => upd());
+    const calc = (b = st.b, y = st.y) => { const z = st.z, A = (b + z * y) * y, P = b + 2 * y * Math.sqrt(1 + z * z), T = b + 2 * z * y, R = A / P, n = Number(sel.value), S = Math.pow(10, getS()), V = (Math.pow(R, 2 / 3) * Math.sqrt(S)) / n; return { A, P, T, R, V, Q: V * A, Fr: V / Math.sqrt((g * A) / T) }; };
+    function upd() {
+      const c = calc();
+      SB.stat("mn-ap", `${c.A.toFixed(2)} <small>m²</small>, ${c.P.toFixed(2)} <small>m</small>`);
+      SB.stat("mn-rh", c.R.toFixed(3) + " <small>m</small>");
+      SB.stat("mn-v", c.V.toFixed(2) + " <small>m/s</small>");
+      SB.stat("mn-q", c.Q.toFixed(2) + " <small>m³/s</small>");
+      SB.stat("mn-fr", c.Fr.toFixed(2) + ` <small>${regName(c.Fr)}</small>`);
+      if (st.game) { const e = (c.Q / st.game.Q - 1) * 100; document.getElementById("mn-msg").innerHTML = `목표 Q = <b>${st.game.Q.toFixed(1)} m³/s</b> (±3%) · 현재 ${e >= 0 ? "+" : ""}${e.toFixed(1)}% · 단면적 ${c.A.toFixed(2)} m²`; }
+      cv.redraw();
+    }
+    function optimum(Q) { const z = st.z, rs = 2 * (Math.sqrt(1 + z * z) - z); const y = bisect((y) => calc(rs * y, y).Q - Q, 0.01, 20); return { b: rs * y, y, A: calc(rs * y, y).A }; }
+    const cv = SB.canvas("cv-man", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), z = st.z, top = 36;
+      // 위: 평면 띠의 부유물
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.22); ctx.fillRect(0, 4, w, top - 10); ctx.fillStyle = P.text;
+      for (let i = 0; i < 26; i++) { const x = (((i * 53.7 + st.off) % w) + w) % w, yy = 8 + ((i * 7.3) % (top - 18)); ctx.beginPath(); ctx.arc(x, yy, 1.7, 0, 7); ctx.fill(); }
+      ctx.restore(); SB.label(ctx, `평균 속도 ${c.V.toFixed(2)} m/s로 흐르는 부유물`, w / 2, top - 2, { size: 10, color: P.dim });
+      const W = Phys.world(ctx, w, h, { x: [-11, 11], y: [-0.4, 5.1], pad: [6, 6, top + 6, 6], equal: true, alignY: 1 });
+      self._W = W;
+      const b = st.b, y = st.y, wet = [[-b / 2 - z * y, y], [-b / 2, 0], [b / 2, 0], [b / 2 + z * y, y]];
+      // 속도 분포(벽에서의 거리 근사)
+      const segs = [[wet[0], wet[1]], [wet[1], wet[2]], [wet[2], wet[3]]];
+      const dseg = (px, py, [p, q]) => { const dx = q[0] - p[0], dy = q[1] - p[1], t = SB.clamp(((px - p[0]) * dx + (py - p[1]) * dy) / (dx * dx + dy * dy), 0, 1); return Math.hypot(px - p[0] - t * dx, py - p[1] - t * dy); };
+      const cell = 6, cells = []; let dmax = 1e-6;
+      for (let py = W.Y(y); py < W.Y(0); py += cell) for (let px = W.X(wet[0][0]); px < W.X(wet[3][0]); px += cell) {
+        const X = W.ix(px + cell / 2), Y = W.iy(py + cell / 2); if (Y < 0 || Y > y) continue;
+        const half = b / 2 + z * Y; if (Math.abs(X) > half) continue;
+        const d = Math.min(...segs.map((s) => dseg(X, Y, s))); dmax = Math.max(dmax, d); cells.push([px, py, d]);
+      }
+      cells.forEach(([px, py, d]) => { ctx.fillStyle = Flow.ramp(0.12 + 0.8 * Math.pow(d / dmax, 0.45), 0.55); ctx.fillRect(px, py, cell + 0.5, cell + 0.5); });
+      ctx.save(); ctx.strokeStyle = surfCol(); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W.X(wet[0][0]), W.Y(y)); ctx.lineTo(W.X(wet[3][0]), W.Y(y)); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(W.X(-b / 2 - z * 5), W.Y(5)); ctx.lineTo(W.X(-b / 2), W.Y(0)); ctx.lineTo(W.X(b / 2), W.Y(0)); ctx.lineTo(W.X(b / 2 + z * 5), W.Y(5)); ctx.stroke();
+      if (st.ghost) { const G = st.ghost; ctx.strokeStyle = P.ok; ctx.lineWidth = 1.6; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(W.X(-G.b / 2 - z * G.y), W.Y(G.y)); ctx.lineTo(W.X(-G.b / 2), W.Y(0)); ctx.lineTo(W.X(G.b / 2), W.Y(0)); ctx.lineTo(W.X(G.b / 2 + z * G.y), W.Y(G.y)); ctx.closePath(); ctx.stroke(); }
+      ctx.restore();
+      SB.label(ctx, `b = ${b.toFixed(2)} m`, W.X(0), W.Y(0) + 12, { size: 11, color: P.text });
+      SB.label(ctx, `y = ${y.toFixed(2)} m`, W.X(0) + 46, W.Y(y) - 14, { size: 11, color: P.text });
+      const h1 = [W.X(0), W.Y(y)], h2 = [W.X(b / 2), W.Y(0)];
+      knob(ctx, h1[0], h1[1], P.accent); knob(ctx, h2[0], h2[1], P.accent2);
+      self._h1 = h1; self._h2 = h2;
+    }, { aspect: 0.6, minHeight: 280, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h1 ? [{ id: "y", x: cv._h1[0], y: cv._h1[1], r: 14 }, { id: "b", x: cv._h2[0], y: cv._h2[1], r: 14 }] : []),
+      move: (id, x, y) => { const W = cv._W; if (!W) return; if (id === "y") st.y = Math.round(SB.clamp(W.iy(y), 0.2, 4.5) * 100) / 100; if (id === "b") st.b = Math.round(SB.clamp(2 * W.ix(x), 0.5, 14) * 20) / 20; upd(); },
+    });
+    document.getElementById("mn-game").addEventListener("click", () => { st.game = { Q: Math.round(5 + Math.random() * 35) }; st.ghost = null; upd(); });
+    document.getElementById("mn-judge").addEventListener("click", () => {
+      const msg = document.getElementById("mn-msg"), c = calc();
+      if (!st.game) { msg.textContent = "먼저 ‘목표 유량 도전’을 누르세요."; return; }
+      const e = c.Q / st.game.Q - 1;
+      if (Math.abs(e) > 0.03) { msg.innerHTML = `아직 목표 밖이다: Q = ${c.Q.toFixed(2)} m³/s (${(e * 100).toFixed(1)}%). 수심이나 폭을 조정하라.`; return; }
+      const O = optimum(st.game.Q), sc = (100 * O.A) / c.A; st.ghost = O;
+      msg.innerHTML = `${sc >= 97 ? '<b style="color:var(--ok)">최적에 가깝다!</b>' : sc >= 85 ? "<b>좋다.</b>" : "목표는 맞혔지만 단면이 크다."} 단면 효율 ${sc.toFixed(1)}% — 최적: b = ${O.b.toFixed(2)} m, y = ${O.y.toFixed(2)} m, A = ${O.A.toFixed(2)} m² (초록 점선)`;
+      st.game = null; cv.redraw();
+    });
+    SB.loop("sim-manning", (dt) => { st.off += calc().V * dt * 30; cv.redraw(); });
+    upd();
+  }
+
+  /* ========================================================== 드릴: 매닝 */
+  SB.drill("drill-man", () => {
+    const k = Math.floor(Math.random() * 3), ns = [0.012, 0.013, 0.015, 0.022, 0.025, 0.030], n = ns[Math.floor(Math.random() * ns.length)], S = [0.0002, 0.0005, 0.001, 0.002, 0.005][Math.floor(Math.random() * 5)];
+    if (k === 0) { const b = 1 + Math.round(Math.random() * 7), y = (3 + Math.round(Math.random() * 22)) / 10, A = b * y, R = A / (b + 2 * y), Q = (A * Math.pow(R, 2 / 3) * Math.sqrt(S)) / n; return { q: `<p>폭 \\(${b}\\) m인 직사각형 수로(\\(n = ${n}\\), \\(S_0 = ${S}\\))에 수심 \\(${y}\\) m의 등류가 흐른다. 유량은?</p>`, answer: Q, label: "Q =", unit: "m³/s", sol: `\\(A_c = ${A.toFixed(2)}\\), \\(R_h = ${R.toFixed(3)}\\) m, \\(Q = (1/n)A_cR_h^{2/3}S_0^{1/2} = ${Q.toFixed(3)}\\) m³/s` }; }
+    if (k === 1) { const q = (5 + Math.round(Math.random() * 45)) / 10, yn = Math.pow((q * n) / Math.sqrt(S), 0.6); return { q: `<p>넓은 수로(\\(R_h\\approx y\\))에서 \\(q = ${q}\\) m²/s, \\(n = ${n}\\), \\(S_0 = ${S}\\)이다. 등류 수심은?</p>`, answer: yn, label: "y<sub>n</sub> =", unit: "m", sol: `\\(y_n = (qn/\\sqrt{S_0})^{3/5} = ${yn.toFixed(3)}\\) m (\\(y_c = ${ycrit(q).toFixed(3)}\\) m → ${yn > ycrit(q) ? "완경사" : "급경사"})` }; }
+    const R = (2 + Math.round(Math.random() * 28)) / 10, V = (Math.pow(R, 2 / 3) * Math.sqrt(S)) / n;
+    return { q: `<p>수력 반경 \\(${R}\\) m, \\(n = ${n}\\), \\(S_0 = ${S}\\)인 등류의 평균 속도는?</p>`, answer: V, label: "V =", unit: "m/s", sol: `\\(V = (1/n)R_h^{2/3}S_0^{1/2} = ${V.toFixed(3)}\\) m/s` };
+  });
+
+  /* ========================================================== 점변류 수면 곡선 */
+  {
+    const q = 2, n = 0.02, yc = ycrit(q);
+    const SL = { mild: { S: 0.0005, L: 3000, k: "M" }, steep: { S: 0.01, L: 400, k: "S" }, hor: { S: 0, L: 1500, k: "H" }, adv: { S: -0.0005, L: 1500, k: "A" } };
+    const st = { slope: "mild", ctrl: "down", yd: 2.2, yu: 0.3, t: 0 };
+    const yn = () => { const S = SL[st.slope].S; return S > 0 ? Math.pow((q * n) / Math.sqrt(S), 0.6) : NaN; };
+    const Sf = (y) => (n * n * q * q) / Math.pow(y, 10 / 3), F2 = (y) => (q * q) / (g * y * y * y);
+    const dydx = (y) => (SL[st.slope].S - Sf(y)) / (1 - F2(y));
+    let R = null;
+    const NAMES = { M1: "배수 곡선", M2: "저하 곡선", M3: "수문 아래, 도약으로 끝남", S1: "도약 뒤 댐 앞", S2: "급경사 진입 직후", S3: "수문 아래, y_n에 점근", H2: "수평 수로 저하", H3: "수평 수로 수문 아래", A2: "역경사 저하", A3: "역경사 수문 아래" };
+    function zone(y) {
+      const k = SL[st.slope].k, ynn = yn();
+      if (k === "M") return k + (y > ynn ? 1 : y > yc ? 2 : 3);
+      if (k === "S") return k + (y > yc ? 1 : y > ynn ? 2 : 3);
+      return k + (y > yc ? 2 : 3);
+    }
+    function integ(y0, x0, x1) {
+      const N = 500, dx = (x1 - x0) / N, pts = [[x0, y0]]; let y = y0, x = x0, stop = null;
+      for (let i = 0; i < N; i++) {
+        const k1 = dydx(y), k2 = dydx(y + 0.5 * dx * k1), k3 = dydx(y + 0.5 * dx * k2), k4 = dydx(y + dx * k3);
+        const yNew = y + (dx / 6) * (k1 + 2 * k2 + 2 * k3 + k4);
+        if (!isFinite(yNew) || Math.abs(yNew - yc) < 0.025 * yc || (yNew - yc) * (y - yc) < 0 || yNew < 0.05 || yNew > 8) { stop = x; break; }
+        y = yNew; x += dx; pts.push([x, y]);
+      }
+      return { pts, stop };
+    }
+    function solve() {
+      const L = SL[st.slope].L, ynn = yn(), out = { segs: [], jump: null, note: "", len: "—" };
+      if (st.ctrl === "down") {
+        const r = integ(st.yd, L, 0); const pts = r.pts.slice().reverse();
+        out.name = zone(st.yd);
+        if (r.stop != null && st.slope === "steep") {
+          const y2s = conj(ynn, q / ynn);
+          if (st.yd <= y2s) { out.segs.push([[0, ynn], [L, ynn]]); out.note = "하류 수심이 상류 초임계 흐름(y_n)의 공액 수심보다 얕아 도약이 하류 끝 밖으로 밀려났다."; out.name = "S (도약 없음)"; }
+          else { const keep = pts.filter((p) => p[1] >= y2s); const xj = keep.length ? keep[0][0] : L; out.segs.push([[0, ynn], [xj, ynn]]); out.segs.push(keep); out.jump = xj; out.note = `상류는 초임계 등류(y_n), x ≈ ${xj.toFixed(0)} m에서 도약해 S1 곡선으로 올라간다.`; out.len = `도약 x = ${xj.toFixed(0)} m`; }
+        } else {
+          out.segs.push(pts);
+          if (r.stop != null) out.note = "임계 수심에 닿아 점변류 가정이 깨진다.";
+          if (isFinite(ynn)) { const i = r.pts.findIndex((p) => Math.abs(p[1] - ynn) < 0.01 * ynn); out.len = i >= 0 ? `y_n의 1% 이내까지 ${(L - r.pts[i][0]).toFixed(0)} m` : `${L} m 안에 미도달`; }
+          if (!out.note) out.note = st.slope === "mild" ? (st.yd > ynn ? "하류 댐이 수위를 올렸다: 상류로 가며 y_n에 점근(배수)." : "하류가 낮다(낙하): 상류로 가며 y_n으로 회복.") : st.slope === "steep" ? "급경사에서 하류 제어 수심이 y_c보다 깊다." : "수평·역경사에는 등류가 없다: 상류로 갈수록 계속 깊어진다.";
+        }
+      } else {
+        const r = integ(st.yu, 0, L); out.name = zone(st.yu);
+        if (r.stop != null) {
+          let xj = r.stop, y2 = 1.5 * yc;
+          if (st.slope === "mild") { const j = r.pts.find((p) => conj(p[1], q / p[1]) <= ynn); if (j) xj = j[0]; y2 = ynn; }
+          const keep = r.pts.filter((p) => p[0] <= xj); out.segs.push(keep); out.jump = xj;
+          out.segs.push([[xj, y2], [L, y2]]);
+          out.note = st.slope === "mild" ? `M3가 두꺼워지다 x ≈ ${xj.toFixed(0)} m에서 등류 수심 y_n의 공액 수심에 닿아 도약한다.` : `y_c에 다가가 도약한다(도약 위치와 뒤 수심은 하류 조건에 따라 다르다 — 그림은 예시).`;
+          out.len = `도약 x = ${xj.toFixed(0)} m`;
+        } else {
+          out.segs.push(r.pts);
+          out.note = st.slope === "steep" ? "급경사의 초임계 흐름: 하류로 가며 y_n에 점근한다." : "";
+          if (isFinite(ynn)) { const i = r.pts.findIndex((p) => Math.abs(p[1] - ynn) < 0.01 * ynn); if (i >= 0) out.len = `y_n의 1% 이내까지 ${r.pts[i][0].toFixed(0)} m`; }
+        }
+      }
+      return out;
+    }
+    const depth = (x) => { for (const s of R.segs) { if (s.length < 2) continue; if (x >= s[0][0] - 1e-9 && x <= s[s.length - 1][0] + 1e-9) { let i = 1; while (i < s.length - 1 && s[i][0] < x) i++; const a = s[i - 1], b = s[i], t = (x - a[0]) / (b[0] - a[0] || 1); return a[1] + t * (b[1] - a[1]); } } const last = R.segs[R.segs.length - 1]; return x < R.segs[0][0][0] ? R.segs[0][0][1] : last[last.length - 1][1]; };
+    function upd() {
+      R = solve();
+      const S0 = SL[st.slope].S, ynn = yn();
+      SB.stat("gv-s", S0.toString());
+      SB.stat("gv-yn", `${isFinite(ynn) ? ynn.toFixed(3) : "없음"} / ${yc.toFixed(3)} <small>m</small>`);
+      SB.stat("gv-name", `${R.name} <small>${NAMES[R.name] || ""}</small>`);
+      SB.stat("gv-len", R.len);
+      document.getElementById("gv-msg").textContent = R.note;
+      cv && cv.redraw();
+    }
+    let cv = null;
+    SB.seg("gv-slope", (v) => { st.slope = v; clampC(); upd(); reinit(); });
+    SB.seg("gv-ctrl", (v) => { st.ctrl = v; upd(); reinit(); });
+    document.getElementById("gv-slopeinfo").addEventListener("change", () => cv.redraw());
+    function clampC() { const ynn = yn(); st.yd = SB.clamp(st.yd, 1.04 * yc, 3); st.yu = SB.clamp(st.yu, 0.12, 0.96 * yc); void ynn; }
+    upd();
+    const geo = (x) => { const y = Math.max(0.05, depth(x)), L = SL[st.slope].L; return { zb: 0, eta: y, u: ((q / y) * L) / 45 }; };
+    const mix = (x) => (R.jump != null && x > R.jump && x < R.jump + SL[st.slope].L * 0.03 ? 0.8 : 0);
+    let S = Stream(170, 0, 3000);
+    function reinit() { S = Stream(170, 0, SL[st.slope].L); S.init(geo); }
+    reinit();
+    cv = SB.canvas("cv-gvf", (ctx, w, h, self) => {
+      const P = pal(), L = SL[st.slope].L, ynn = yn();
+      let ymax = 1.5; R.segs.forEach((s) => s.forEach((p) => (ymax = Math.max(ymax, p[1] * 1.15))));
+      ymax = Math.min(ymax, 8.5);
+      const W = Phys.world(ctx, w, h, { x: [0, L], y: [0, ymax], pad: [36, 12, 12, 26] });
+      self._W = W;
+      W.axes({ xLabel: "x (m)", yLabel: "y (m)" });
+      water(ctx, W, 0, L, depth, () => 0, 240, 0.28);
+      S.draw(ctx, W, geo, (q / 0.2) * L / 45, 1.6);
+      if (isFinite(ynn)) { SB.dashLine(ctx, W.X(0), W.Y(ynn), W.X(L), W.Y(ynn), P.accent, [8, 5]); SB.label(ctx, "yₙ", W.X(L) - 14, W.Y(ynn) - 9, { size: 11, bold: true, color: P.accent }); }
+      SB.dashLine(ctx, W.X(0), W.Y(yc), W.X(L), W.Y(yc), P.accent2, [2, 4]); SB.label(ctx, "y_c", W.X(L) - 40, W.Y(yc) - 9, { size: 11, bold: true, color: P.accent2 });
+      if (R.jump != null) { foam(ctx, W, R.jump, L * 0.03, depth, depth(R.jump + L * 0.02), st.t, 10, 0.8); SB.label(ctx, "도약", W.X(R.jump), W.Y(depth(R.jump + L * 0.03)) - 16, { size: 11, bold: true, color: P.warn }); }
+      if (document.getElementById("gv-slopeinfo").checked) {
+        for (let i = 1; i <= 7; i++) { const x = (L * i) / 8, y = depth(x), d = dydx(y); if (!isFinite(d) || (R.jump != null && Math.abs(x - R.jump) < L * 0.05)) continue; const px = W.X(x), py = W.Y(y) - 16, s = SB.clamp(d * (W.sy / W.sx), -3, 3), ang = Math.atan(s), l = 16; SB.arrow(ctx, px - l * Math.cos(ang) / 2, py + l * Math.sin(ang) / 2, px + l * Math.cos(ang) / 2, py - l * Math.sin(ang) / 2, { color: P.text, width: 1.4, head: 5 }); }
+      }
+      const cx = st.ctrl === "down" ? L : 0, cy = st.ctrl === "down" ? st.yd : st.yu;
+      ctx.save(); ctx.fillStyle = P.dim;
+      if (st.ctrl === "up") ctx.fillRect(W.X(0) - 2, 0, 6, W.Y(st.yu / 0.61 > ymax ? ymax : st.yu / 0.61)); else ctx.fillRect(W.X(L) - 5, W.Y(st.yd * 0.9), 5, W.Y(0) - W.Y(st.yd * 0.9));
+      ctx.restore();
+      const hx = W.X(cx) + (st.ctrl === "down" ? -14 : 14), hy = W.Y(cy); knob(ctx, hx, hy, P.accent2); self._h = [hx, hy];
+      SB.label(ctx, `${R.name}`, W.X(L / 2), 16, { bold: true, size: 13, color: P.accent });
+    }, { aspect: 0.5, minHeight: 260, maxHeight: 400 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "c", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "c") return; const v = cv._W.iy(y); if (st.ctrl === "down") st.yd = v; else st.yu = v; clampC(); upd(); }, up: () => S.init(geo) });
+    SB.loop("sim-gvf", (dt) => { st.t += dt; S.step(dt, geo, mix); cv.redraw(); });
+  }
+
+  /* ========================================================== 도약 드래그 숫자 */
+  SB.tangle("tg-jump", (v) => {
+    const Fr = v.V1 / Math.sqrt(g * v.y1);
+    if (Fr <= 1) return { Fr: Fr.toFixed(2), msg: "아임계 흐름이라 도약이 일어나지 않는다 — 속도를 올리거나 수심을 줄여 보라." };
+    const J = Flow.hydraulicJump(v.y1, v.V1), E1 = Es(v.y1, v.y1 * v.V1);
+    return { Fr: Fr.toFixed(2), msg: `도약 뒤 수심은 y₂ = <b>${J.y2.toFixed(3)} m</b>(${(J.y2 / v.y1).toFixed(2)}배), 속도 ${J.V2.toFixed(2)} m/s(Fr₂ = ${J.Fr2.toFixed(2)})가 되고, 손실 수두 ${J.hL.toFixed(3)} m — 처음 비에너지의 <b>${((100 * J.hL) / E1).toFixed(0)}%</b>가 사라진다. ${jumpType(Fr)}, 길이 약 ${(6 * J.y2).toFixed(1)} m.` };
+  });
+
+  /* ========================================================== 수력 도약 계산기 */
+  {
+    const st = { sc: 1.83, ax: null, t: 0, drag: false };
+    const getY = SB.range("jp-y", (v) => v.toFixed(2) + " m", () => { upd(); if (!st.drag) fit(); });
+    const getV = SB.range("jp-v", (v) => v.toFixed(1) + " m/s", () => { upd(); if (!st.drag) fit(); });
+    const mChk = document.getElementById("jp-m");
+    let J;
+    function calc() { const y1 = getY(), V1 = getV(), Fr = V1 / Math.sqrt(g * y1), q = y1 * V1, H = Flow.hydraulicJump(y1, V1); return Object.assign({ y1, V1, Fr, q, ok: Fr > 1.0, E1: Es(y1, q) }, H); }
+    function fit() { J = calc(); st.sc = J.ok ? J.y2 : J.y1 * 1.4; const M = (y) => (J.q * J.q) / (g * y) + (y * y) / 2; st.ax = { E: 1.12 * Math.max(J.E1, M(J.y1)), y: 1.25 * Math.max(J.ok ? J.y2 : J.y1, ycrit(J.q)) }; S = Stream(200, -3 * st.sc, 9 * st.sc); S.init(geo); }
+    function surf(x) {
+      if (!J.ok || x < 0) return J.y1;
+      const Lj = 6 * J.y2, t = x / Lj, d = J.y2 - J.y1;
+      if (J.Fr < 1.7) return J.y1 + d * smooth(x / (2 * J.y2)) + 0.45 * d * Math.sin((2 * Math.PI * x) / (3 * J.y2) - st.t * 0.5) * Math.exp(-x / (6 * J.y2)) * smooth(x / J.y2);
+      const base = J.y1 + d * ((1 - Math.exp(-4 * Math.min(t, 1))) / (1 - Math.exp(-4)));
+      const rip = t < 1 ? 0.06 * d * Math.min(1, J.Fr / 6) * Math.sin(t * 14 - st.t * 6) * (1 - t) : 0;
+      return (t < 1 ? base : J.y2) + rip + (J.Fr > 2.5 && J.Fr < 4.5 ? 0.04 * d * Math.sin(x / J.y2 - st.t * 2.5) : 0);
+    }
+    const geo = (x) => { const y = Math.max(0.01, surf(x)); return { zb: 0, eta: y, u: J.q / y }; };
+    const mix = (x) => (J.ok && J.Fr >= 1.7 && x > 0 && x < 4.8 * J.y2 ? (1 - x / (4.8 * J.y2)) * Math.min(1, (J.Fr - 1) / 3) : 0);
+    let S;
+    function upd() {
+      J = calc();
+      SB.stat("jp-fr1", J.Fr.toFixed(2));
+      if (!J.ok) { ["jp-y2", "jp-fr2", "jp-hl", "jp-pw"].forEach((id) => SB.stat(id, "—")); document.getElementById("jp-type").innerHTML = "<b>Fr₁ ≤ 1: 도약이 일어나지 않는다.</b>"; }
+      else {
+        SB.stat("jp-y2", `${J.y2.toFixed(3)} <small>m</small>, ${J.V2.toFixed(2)} <small>m/s</small>`);
+        SB.stat("jp-fr2", J.Fr2.toFixed(3));
+        SB.stat("jp-hl", `${J.hL.toFixed(3)} <small>m</small> (${((100 * J.hL) / J.E1).toFixed(0)}%)`);
+        SB.stat("jp-pw", ((1000 * g * J.q * J.hL) / 1000).toFixed(1) + " <small>kW/m</small>");
+        document.getElementById("jp-type").innerHTML = `<b>${jumpType(J.Fr)}</b> · 길이 L<sub>j</sub> ≈ 6y₂ = ${(6 * J.y2).toFixed(2)} m · q = ${J.q.toFixed(2)} m²/s`;
+      }
+      cvA && cvA.redraw(); cvB && cvB.redraw();
+    }
+    let cvA = null, cvB = null;
+    J = calc(); fit();
+    cvA = SB.canvas("cv-jump", (ctx, w, h, self) => {
+      const P = pal(), s = st.sc;
+      const W = Phys.world(ctx, w, h, { x: [-3 * s, 9 * s], y: [-0.08 * s, 1.5 * s], pad: [0, 0, 8, 0] });
+      self._W = W;
+      water(ctx, W, -3 * s, 9 * s, surf, () => 0, 220, 0.28);
+      S.draw(ctx, W, geo, (1.1 * J.q) / J.y1, 1.7);
+      if (J.ok && J.Fr >= 1.7) foam(ctx, W, 0, 5 * J.y2, surf, J.y2, st.t, 24, Math.min(1.2, 0.4 + J.Fr / 8));
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, W.Y(0), w, h - W.Y(0)); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, W.Y(0)); ctx.lineTo(w, W.Y(0)); ctx.stroke(); ctx.restore();
+      if (J.ok) { SB.dashLine(ctx, W.X(7.6 * s), W.Y(0), W.X(7.6 * s), W.Y(J.y2), P.text, [3, 3]); SB.label(ctx, `y₂ = ${J.y2.toFixed(2)} m`, W.X(7.6 * s) - 6, W.Y(J.y2 / 2), { size: 11, align: "right" }); }
+      SB.label(ctx, `y₁ = ${J.y1.toFixed(2)} m`, 6, W.Y(J.y1) - 12, { size: 11, align: "left" });
+      const ax0 = W.X(-2.9 * s), ay = Math.max(14, W.Y(J.y1 + 0.32 * s)), k = Math.min(9, (w * 0.18) / 14), tip = ax0 + J.V1 * k;
+      SB.arrow(ctx, ax0, ay, tip, ay, { color: P.accent2, width: 2.2, head: 7 });
+      knob(ctx, tip, ay, P.accent2); SB.label(ctx, "V₁", tip + 4, ay - 16, { size: 11, bold: true, color: P.accent2 });
+      const hx = W.X(-0.5 * s), hy = W.Y(J.y1); knob(ctx, hx, hy, P.accent);
+      self._h = { y: [hx, hy], v: [tip, ay], ax0, k };
+    }, { aspect: 0.62, minHeight: 230, maxHeight: 340 });
+    cvB = SB.canvas("cv-jump-e", (ctx, w, h) => {
+      const P = pal(), A = st.ax, q = J.q, data = [], md = [];
+      for (let i = 1; i <= 160; i++) { const y = (A.y * i) / 160; data.push([Es(y, q), y]); md.push([(q * q) / (g * y) + (y * y) / 2, y]); }
+      const series = [{ data, color: P.accent, width: 2.2 }];
+      if (mChk.checked) series.push({ data: md, color: P.warn, width: 1.6, dash: [5, 4] });
+      const ch = SB.chart(ctx, null, { x: [0, A.E], y: [0, A.y], xLabel: mChk.checked ? "Eₛ (m) · 비력 M (m²)" : "비에너지 Eₛ (m)", yLabel: "수심 y (m)", series, hlines: [{ y: ycrit(q), color: P.faint, label: "y_c" }] });
+      const dot = (E, y, c, lab, hollow) => { ctx.save(); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ch.X(E), ch.Y(y), 5, 0, 7); hollow ? ctx.stroke() : ctx.fill(); ctx.restore(); if (lab) SB.label(ctx, lab, ch.X(E) + 13, ch.Y(y) - 9, { bold: true, color: c, size: 11 }); };
+      dot(J.E1, J.y1, P.accent2, "①");
+      if (J.ok) {
+        const E2 = Es(J.y2, q), ya = alt(J.E1, q, "sub");
+        dot(E2, J.y2, P.accent, "②");
+        if (isFinite(ya)) dot(J.E1, ya, P.dim, "교대", true);
+        SB.arrow(ctx, ch.X(J.E1), ch.Y(J.y2), ch.X(E2), ch.Y(J.y2), { color: P.bad, width: 1.6, head: 6, label: "h_L", labelPos: "mid" });
+        if (mChk.checked) { const M = (y) => (q * q) / (g * y) + (y * y) / 2; dot(M(J.y1), J.y1, P.warn); dot(M(J.y2), J.y2, P.warn); SB.dashLine(ctx, ch.X(M(J.y1)), ch.Y(J.y1), ch.X(M(J.y1)), ch.Y(J.y2), P.warn, [2, 3]); }
+      }
+    }, { aspect: 0.62, minHeight: 230, maxHeight: 340 });
+    mChk.addEventListener("change", () => { fit(); cvB.redraw(); });
+    SB.drag(cvA, {
+      handles: () => (cvA._h ? [{ id: "y", x: cvA._h.y[0], y: cvA._h.y[1], r: 14 }, { id: "v", x: cvA._h.v[0], y: cvA._h.v[1], r: 14 }] : []),
+      down: () => { st.drag = true; },
+      move: (id, x, y) => { const W = cvA._W; if (id === "y") getY.set(Math.round(SB.clamp(W.iy(y), 0.05, 1) * 100) / 100); if (id === "v") getV.set(Math.round(SB.clamp((x - cvA._h.ax0) / cvA._h.k, 1, 14) * 10) / 10); },
+      up: () => { st.drag = false; fit(); upd(); },
+    });
+    SB.loop("sim-jump", (dt) => { st.t += dt; S.step(dt * Math.min(1, 1.6 / Math.sqrt(st.sc)), geo, mix); cvA.redraw(); });
+    upd();
+  }
+
+  /* ========================================================== 드릴: 도약 */
+  SB.drill("drill-jump", () => {
+    const k = Math.floor(Math.random() * 3), y1 = (10 + Math.round(Math.random() * 50)) / 100;
+    if (k === 0) { const V1 = (40 + Math.round(Math.random() * 80)) / 10, J = Flow.hydraulicJump(y1, V1); return { q: `<p>수심 \\(${y1}\\) m, 속도 \\(${V1}\\) m/s인 흐름이 수평 수로에서 도약한다. 도약 뒤 수심은?</p>`, answer: J.y2, label: "y₂ =", unit: "m", sol: `\\(\\mathrm{Fr}_1 = ${J.Fr1.toFixed(3)}\\), \\(y_2 = \\tfrac12 y_1(-1+\\sqrt{1+8\\mathrm{Fr}_1^2}) = ${J.y2.toFixed(3)}\\) m` }; }
+    if (k === 1) { const Fr = (20 + Math.round(Math.random() * 80)) / 10, y2 = 0.5 * y1 * (Math.sqrt(1 + 8 * Fr * Fr) - 1), hL = Math.pow(y2 - y1, 3) / (4 * y1 * y2); return { q: `<p>수심 \\(${y1}\\) m, \\(\\mathrm{Fr}_1 = ${Fr}\\)인 흐름의 도약 손실 수두는?</p>`, answer: hL, label: "h<sub>L</sub> =", unit: "m", sol: `\\(y_2 = ${y2.toFixed(3)}\\) m, \\(h_L = (y_2-y_1)^3/(4y_1y_2) = ${hL.toFixed(3)}\\) m` }; }
+    const eta = (25 + Math.round(Math.random() * 75)) / 10, Fr = Math.sqrt(0.5 * eta * (eta + 1));
+    return { q: `<p>수력 도약의 공액 수심비가 \\(y_2/y_1 = ${eta}\\)이다. 도약 전 프루드 수는?</p>`, answer: Fr, label: "Fr₁ =", sol: `\\(\\eta^2 + \\eta = 2\\mathrm{Fr}_1^2\\) → \\(\\mathrm{Fr}_1 = \\sqrt{\\eta(\\eta+1)/2} = ${Fr.toFixed(3)}\\)` };
+  });
+
+  /* ========================================================== 예연 위어 미니 */
+  {
+    const Pw = 0.6, b = 1.0; let type = "rect", H = 0.25;
+    SB.seg("wr-type", (v) => { type = v; S.init(geo); cv.redraw(); });
+    const Qof = () => (type === "rect" ? (0.598 + (0.0897 * H) / Pw) * (2 / 3) * b * Math.sqrt(2 * g) * Math.pow(H, 1.5) : 0.58 * (8 / 15) * Math.sqrt(2 * g) * Math.pow(H, 2.5));
+    const v0 = () => Math.sqrt(2 * g * 0.5 * H), yc0 = () => Pw + 0.42 * H;
+    const xend = () => Math.min(1.7, v0() * Math.sqrt((2 * (yc0() - 0.22)) / g));
+    function eta0(x) { return Pw + H - 0.15 * H * smooth((x + 3 * H) / (3 * H)); }
+    function geo(x) {
+      const qv = v0() * 0.7 * H;
+      if (x < 0) { const zb = Pw * smooth((x + 0.8) / 0.8), e = eta0(x); return { zb, eta: e, u: qv / Math.max(0.02, e - zb) }; }
+      const V = v0(), yc = yc0() - (g * x * x) / (2 * V * V), th = (0.7 * H * V) / Math.sqrt(V * V + 2 * g * (yc0() - yc));
+      return { zb: yc - th / 2, eta: yc + th / 2, u: V };
+    }
+    const S = Stream(110, -2.5, 1.7);
+    const cvGeo = (x) => (x > xend() ? { zb: 0.22, eta: 0.22, u: v0() } : geo(x));
+    S.init(geo);
+    const cv = SB.canvas("cv-weir", (ctx, w, h, self) => {
+      const P = pal(), lw = w * 0.68;
+      const W = Phys.world(ctx, lw, h, { x: [-2.5, 1.7], y: [-0.05, 1.3], pad: [0, 0, 6, 0] });
+      self._W = W;
+      water(ctx, W, -2.5, 0, eta0, () => 0, 80, 0.28);
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.28); ctx.fillRect(W.X(0.03), W.Y(0.22), W.X(1.7) - W.X(0.03), W.Y(0) - W.Y(0.22)); ctx.restore();
+      water(ctx, W, 0, xend(), (x) => geo(x).eta, (x) => geo(x).zb, 60, 0.32);
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, lw, h); ctx.clip(); S.draw(ctx, W, (x) => cvGeo(x), 2 * v0() + 0.1, 1.6); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, W.Y(0), lw, h - W.Y(0)); ctx.fillStyle = P.dim; ctx.fillRect(W.X(0), W.Y(type === "rect" ? Pw : 1.25), Math.max(3, W.X(0.03) - W.X(0)), W.Y(0) - W.Y(type === "rect" ? Pw : 1.25)); ctx.restore();
+      SB.dashLine(ctx, W.X(-2.2), W.Y(Pw), W.X(0), W.Y(Pw), P.faint, [4, 4]);
+      SB.label(ctx, `H = ${H.toFixed(3)} m`, W.X(-1.4), W.Y(Pw + H / 2), { size: 11, color: P.accent });
+      const hx = W.X(-2.1), hy = W.Y(Pw + H); knob(ctx, hx, hy, P.accent); self._h = [hx, hy];
+      // 정면도
+      const fx0 = lw + 10, fw = w - fx0 - 8, fy0 = 24, fh = h - 50, X = (x) => fx0 + fw / 2 + (x / 1.5) * fw, Y = (y) => fy0 + fh - ((y - (Pw - 0.15)) / 0.85) * fh;
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.dim; ctx.beginPath();
+      if (type === "rect") { ctx.moveTo(X(-0.75), Y(1.3)); ctx.lineTo(X(-0.5), Y(1.3)); ctx.lineTo(X(-0.5), Y(Pw)); ctx.lineTo(X(0.5), Y(Pw)); ctx.lineTo(X(0.5), Y(1.3)); ctx.lineTo(X(0.75), Y(1.3)); }
+      else { ctx.moveTo(X(-0.75), Y(1.3)); ctx.lineTo(X(-0.55), Y(1.3)); ctx.lineTo(X(0), Y(Pw)); ctx.lineTo(X(0.55), Y(1.3)); ctx.lineTo(X(0.75), Y(1.3)); }
+      ctx.lineTo(X(0.75), Y(Pw - 0.15)); ctx.lineTo(X(-0.75), Y(Pw - 0.15)); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = Flow.waterColor(0.5); ctx.beginPath();
+      if (type === "rect") ctx.rect(X(-0.5), Y(Pw + H), X(0.5) - X(-0.5), Y(Pw) - Y(Pw + H)); else { ctx.moveTo(X(-H), Y(Pw + H)); ctx.lineTo(X(0), Y(Pw)); ctx.lineTo(X(H), Y(Pw + H)); ctx.closePath(); }
+      ctx.fill(); ctx.restore();
+      SB.label(ctx, "정면", fx0 + fw / 2, 12, { size: 11, color: P.dim });
+      const Q = Qof();
+      document.getElementById("wr-txt").innerHTML = `H = ${H.toFixed(3)} m · ${type === "rect" ? `C<sub>wd</sub> = ${(0.598 + (0.0897 * H) / Pw).toFixed(3)}` : "C<sub>wd</sub> = 0.58"} · Q = <b>${(Q * 1000).toFixed(1)} L/s</b>`;
+    }, { aspect: 0.5, minHeight: 210, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "h") return; H = SB.clamp(cv._W.iy(y) - Pw, 0.03, 0.5); }, up: () => S.init(geo) });
+    SB.loop("mini-weir", (dt) => { S.step(dt * 0.5, cvGeo); cv.redraw(); });
+  }
+
+  /* ========================================================== 광정 위어 미니 */
+  {
+    let H = 0.5;
+    const getP = SB.range("bw-p", (v) => v.toFixed(2) + " m", () => { S.init(geo); cv.redraw(); });
+    const yd = 0.12;
+    const bed = (x) => (x >= 0 && x <= 2 ? getP() : 0);
+    function eta(x) {
+      const Pw = getP(), yc = (2 * H) / 3;
+      if (x < -0.6) return Pw + H;
+      if (x < 0.8) return lerp(Pw + H, Pw + yc, smooth((x + 0.6) / 1.4));
+      if (x < 1.7) return Pw + yc;
+      if (x < 2) return lerp(Pw + yc, Pw + 0.72 * yc, smooth((x - 1.7) / 0.3));
+      return lerp(Pw + 0.72 * yc, yd, smooth((x - 2) / 0.9));
+    }
+    function zbE(x) { const Pw = getP(); if (x < 0) return Pw * smooth((x + 0.9) / 0.9); if (x <= 2) return Pw; return Pw * (1 - smooth((x - 2) / 0.9)); }
+    const qq = () => { const Pw = getP(); return (0.65 / Math.sqrt(1 + H / Pw)) * Math.sqrt(g) * Math.pow(2 / 3, 1.5) * Math.pow(H, 1.5); };
+    const geo = (x) => { const zb = Math.min(zbE(x), eta(x) - 0.03), e = eta(x); return { zb, eta: e, u: qq() / Math.max(0.03, e - zb) }; };
+    const S = Stream(120, -3, 3.4);
+    S.init(geo);
+    const cv = SB.canvas("cv-broad", (ctx, w, h, self) => {
+      const P = pal(), Pw = getP(), yc = (2 * H) / 3;
+      const W = Phys.world(ctx, w, h, { x: [-3, 3.4], y: [-0.05, 2.45], pad: [0, 0, 6, 0] });
+      self._W = W;
+      water(ctx, W, -3, 3.4, eta, (x) => Math.min(bed(x), eta(x)), 200, 0.28);
+      S.draw(ctx, W, geo, 2.2 * Math.sqrt(g * yc) + 0.1, 1.6);
+      bedFill(ctx, W, -3, 3.4, bed, h, 400);
+      SB.dashLine(ctx, W.X(0), W.Y(Pw + yc), W.X(2), W.Y(Pw + yc), P.accent2, [4, 3]);
+      SB.label(ctx, "y_c = ⅔H", W.X(1), W.Y(Pw + yc) - 12, { size: 11, color: P.accent2 });
+      SB.dashLine(ctx, W.X(-2.8), W.Y(Pw), W.X(0), W.Y(Pw), P.faint, [4, 4]);
+      SB.label(ctx, `H = ${H.toFixed(2)} m`, W.X(-1.6), W.Y(Pw + H / 2), { size: 11, color: P.accent });
+      const hx = W.X(-2.4), hy = W.Y(Pw + H); knob(ctx, hx, hy, P.accent); self._h = [hx, hy];
+      const C = 0.65 / Math.sqrt(1 + H / Pw);
+      document.getElementById("bw-txt").innerHTML = `C<sub>wd</sub> = ${C.toFixed(3)} · y<sub>c</sub> = ${yc.toFixed(3)} m · V<sub>c</sub> = ${Math.sqrt(g * yc).toFixed(2)} m/s · q = <b>${qq().toFixed(3)} m²/s</b> (폭 1 m당)`;
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "h") return; H = SB.clamp(cv._W.iy(y) - getP(), 0.05, 0.8); }, up: () => S.init(geo) });
+    SB.loop("mini-broad", (dt) => { S.step(dt * 0.7, geo); cv.redraw(); });
+  }
+
+  /* ========================================================== 수문 아래 흐름 */
+  {
+    const Cc = 0.61, nV = 0.03;
+    const getY1 = SB.range("gt-y1", (v) => v.toFixed(2) + " m", () => upd());
+    const getA = SB.range("gt-a", (v) => v.toFixed(2) + " m", () => upd());
+    const getY3 = SB.range("gt-y3", (v) => v.toFixed(2) + " m", () => upd());
+    const egl = document.getElementById("gt-egl");
+    egl.addEventListener("change", () => cv.redraw());
+    let C, t = 0;
+    function calc() {
+      const y1 = getY1(), a = Math.min(getA(), 0.85 * y1), y3 = Math.min(getY3(), 0.95 * y1);
+      const y2 = Cc * a, V2 = Math.sqrt((2 * g * (y1 - y2)) / (1 - (y2 / y1) ** 2)), qf = y2 * V2, cj = conj(y2, V2);
+      const drowned = y3 > cj;
+      let q = qf, yd = y2;
+      const ydq = (q) => Math.sqrt(Math.max(y3 * y3 + ((2 * q * q) / g) * (1 / y3 - 1 / y2), y2 * y2));
+      if (drowned) { q = bisect((q) => y1 + (q * q) / (2 * g * y1 * y1) - ydq(q) - (q * q) / (2 * g * y2 * y2), 1e-5, qf); yd = ydq(q); }
+      const prof = drowned ? null : m3Profile(q, y2, 0.5, nV, 26);
+      let xj = 40;
+      if (prof) for (const [x, y] of prof) if (conj(y, q / y) <= y3) { xj = x; break; }
+      return { y1, a, y3, y2, V2, qf, cj, drowned, q, yd, prof, xj, Lj: 6 * y3, E1: Es(y1, q), E3: Es(y3, q) };
+    }
+    const base = (x) => (x < 0.5 ? lerp(C.a, C.y2, smooth(x / 0.5)) : profAt(C.prof, 0.5, 0.05, x));
+    function surf(x) {
+      if (x < 0) return C.y1;
+      if (C.drowned) return lerp(C.yd, C.y3, smooth(x / 4)) + 0.04 * Math.sin(x * 3 - t * 5) * Math.max(0, 1 - x / 5);
+      if (x < C.xj) return base(x);
+      const ya = base(C.xj), s = (x - C.xj) / C.Lj;
+      return ya + (C.y3 - ya) * smooth(s * 1.3) + (s < 1 ? 0.05 * (C.y3 - ya) * Math.sin(s * 9 - t * 5) * (1 - s) : 0);
+    }
+    function heff(x) {
+      if (x < -1.2) return C.y1;
+      if (x < 0) return lerp(C.y1, C.a, smooth((x + 1.2) / 1.2));
+      if (C.drowned) return lerp(C.a, C.y3, smooth(x / 5));
+      return surf(x);
+    }
+    const geo = (x) => { const hh = Math.max(0.03, heff(x)); return { zb: 0, eta: hh, u: C.q / hh }; };
+    const mix = (x) => (C.drowned ? (x > 0 && x < 5 ? 0.7 * (1 - x / 5) : 0) : x > C.xj && x < C.xj + C.Lj ? 1 - (x - C.xj) / C.Lj : 0);
+    const Eat = (x) => {
+      if (x < 0.5) return C.E1;
+      if (C.drowned) return lerp(C.E1, C.E3, smooth(x / 5));
+      if (x < C.xj) return Es(Math.max(0.03, base(x)), C.q);
+      const Ea = Es(base(C.xj), C.q); return lerp(Ea, C.E3, smooth((x - C.xj) / C.Lj));
+    };
+    function upd() {
+      C = calc();
+      SB.stat("gt-q", C.q.toFixed(3) + " <small>m²/s</small>");
+      SB.stat("gt-cd", (C.q / (C.a * Math.sqrt(2 * g * C.y1))).toFixed(3));
+      SB.stat("gt-y2", `${C.y2.toFixed(3)} <small>m</small>, ${(C.q / C.y2).toFixed(2)} <small>m/s</small>`);
+      SB.stat("gt-fr", (C.q / C.y2 / Math.sqrt(g * C.y2)).toFixed(2));
+      SB.stat("gt-conj", C.cj.toFixed(3) + " <small>m</small>");
+      const m = document.getElementById("gt-msg");
+      m.innerHTML = C.drowned ? `<b style="color:var(--warn)">잠긴 유출</b>: y₃ > 공액 수심. 같은 y₁, a에서 q가 자유 유출(${C.qf.toFixed(3)})보다 ${(100 * (1 - C.q / C.qf)).toFixed(1)}% 적다. 수문 바로 뒤 수심 ${C.yd.toFixed(2)} m.` : C.xj < 26 ? `<b>자유 유출</b>: 초임계 분류가 마찰로 두꺼워지다 x ≈ ${C.xj.toFixed(1)} m에서 도약한다.` : "<b>자유 유출</b>: 하류 수심이 얕아 도약이 그림 밖 하류로 밀려났다.";
+      cv && cv.redraw();
+    }
+    let cv = null;
+    upd();
+    const S = Stream(240, -6, 25);
+    S.init(geo);
+    cv = SB.canvas("cv-gate", (ctx, w, h, self) => {
+      const P = pal();
+      const W = Phys.world(ctx, w, h, { x: [-6, 24], y: [-0.25, 3.45], pad: [0, 0, 4, 0] });
+      self._W = W;
+      water(ctx, W, -6, 24, surf, () => 0, 240, 0.28);
+      S.draw(ctx, W, geo, (1.1 * C.q) / C.y2, 1.7);
+      if (!C.drowned && C.xj < 24) foam(ctx, W, C.xj, C.Lj, surf, C.y3, t, 22, 0.9);
+      if (C.drowned) foam(ctx, W, 0.15, 4, surf, C.y3, t, 16, 0.8);
+      if (egl.checked) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.6; ctx.setLineDash([6, 4]); ctx.beginPath(); for (let i = 0; i <= 200; i++) { const x = -6 + (30 * i) / 200, y = Math.min(Eat(x), 3.4); i ? ctx.lineTo(W.X(x), W.Y(y)) : ctx.moveTo(W.X(x), W.Y(y)); } ctx.stroke(); ctx.restore(); SB.label(ctx, "에너지선", W.X(-4.6), W.Y(Math.min(C.E1, 3.3)) - 10, { size: 11, color: P.accent2 }); }
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(0, W.Y(0), w, h - W.Y(0)); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, W.Y(0)); ctx.lineTo(w, W.Y(0)); ctx.stroke();
+      ctx.fillStyle = P.dim; ctx.fillRect(W.X(-0.15), 0, W.X(0.15) - W.X(-0.15), W.Y(C.a)); ctx.restore();
+      const hs = { y1: [W.X(-4), W.Y(C.y1)], a: [W.X(0), W.Y(C.a) + 2], y3: [W.X(21), W.Y(surf(21))] };
+      knob(ctx, ...hs.y1, P.accent); knob(ctx, ...hs.a, P.accent2); knob(ctx, ...hs.y3, P.accent);
+      SB.label(ctx, `y₁ = ${C.y1.toFixed(2)} m`, hs.y1[0] + 50, hs.y1[1] - 14, { size: 11 });
+      SB.label(ctx, `a = ${C.a.toFixed(2)} m`, hs.a[0] + 40, hs.a[1] + 18, { size: 11, color: P.accent2 });
+      SB.label(ctx, `y₃ = ${C.y3.toFixed(2)} m`, hs.y3[0] - 44, hs.y3[1] - 16, { size: 11 });
+      self._h = hs;
+    }, { aspect: 0.45, minHeight: 230, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? Object.keys(cv._h).map((k) => ({ id: k, x: cv._h[k][0], y: cv._h[k][1], r: 14 })) : []),
+      move: (id, x, y) => { const v = cv._W.iy(y); if (id === "y1") getY1.set(Math.round(SB.clamp(v, 0.8, 3) * 100) / 100); if (id === "a") getA.set(Math.round(SB.clamp(v, 0.1, 1) * 100) / 100); if (id === "y3") getY3.set(Math.round(SB.clamp(v, 0.2, 2.6) * 100) / 100); },
+    });
+    SB.loop("sim-gate", (dt) => { t += dt; S.step(dt, geo, mix); cv.redraw(); });
+  }
+})();
+</script>
+</body>
+</html>

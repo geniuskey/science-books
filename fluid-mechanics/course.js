@@ -141,8 +141,7 @@ SB.registerCourse({
      "tags": [
       "프루드 수",
       "수력 도약"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "compressible-flow",
@@ -309,9 +308,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 5,
    "hero": 1
+  },
+  "open-channel": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 5,
+   "hero": 1
   }
  },
- "published": 9,
+ "published": 10,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
