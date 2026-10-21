@@ -515,6 +515,7 @@
   EM.wireRacExact = function (sigma, a, f, mur = 1) {
     // Z/Rdc = (ka/2)·J0(ka)/J1(ka), k = (1−j)/δ  — 복소 베셀 급수
     const d = EM.skinDepth(sigma, f, mur), k = { re: 1 / d, im: -1 / d }, z = cx.scale(k, a);
+    if (a / d > 18) return a / (2 * d) + 0.25 + (3 * d) / (64 * a); // 큰 a/δ: 점근 전개 (급수는 상쇄 오차)
     const J = (n, z) => { let term = cx.of(1, 0), s = cx.of(0, 0); const z2 = cx.scale(cx.mul(z, z), -0.25); for (let m = 0; m < 200; m++) { if (m > 0) term = cx.div(cx.mul(term, z2), m * (m + n)); s = cx.add(s, term); if (cx.abs(term) < 1e-16 * cx.abs(s)) break; } let pre = cx.of(1, 0); for (let i = 1; i <= n; i++) pre = cx.scale(cx.mul(pre, z), 0.5 / i); return cx.mul(pre, s); };
     const r = cx.mul(cx.scale(z, 0.5), cx.div(J(0, z), J(1, z)));
     return r.re;
