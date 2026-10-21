@@ -126,8 +126,7 @@ SB.registerCourse({
      "tags": [
       "스핀",
       "파울리 원리"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -297,6 +296,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "spin-atoms": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 13,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
   "molecular-bonding": {
    "problems": 15,
    "examples": 7,
@@ -334,7 +345,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 10,
+ "published": 11,
  "total": 15,
  "url": "https://science.euiyun.com/modern-physics/"
 });
