@@ -180,8 +180,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -342,9 +341,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 4,
    "hero": 1
+  },
+  "property-tables": {
+   "problems": 10,
+   "examples": 0,
+   "sims": 6,
+   "figures": 2,
+   "drills": 1,
+   "minis": 1,
+   "tangles": 3,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 12,
+ "published": 13,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
