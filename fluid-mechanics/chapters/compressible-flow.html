@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>압축성 유동 입문 · 유체역학 · SciBook</title>
+<meta name="description" content="음속과 마하 수, 마하 원뿔, 정체 상태량, 등엔트로피 노즐 유동과 초크, 라발 노즐의 배압 작동, 수직·경사 충격파와 프란틀–마이어 팽창파를 시뮬레이터로 직접 흘려 보며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/compressible-flow.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="압축성 유동 입문 · 유체역학 · SciBook">
+<meta property="og:description" content="음속과 마하 수, 마하 원뿔, 정체 상태량, 등엔트로피 노즐 유동과 초크, 라발 노즐의 배압 작동, 수직·경사 충격파와 프란틀–마이어 팽창파를 시뮬레이터로 직접 흘려 보며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/compressible-flow.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "압축성 유동 입문 · 유체역학 · SciBook", "headline": "11 압축성 유동 입문", "url": "https://science.euiyun.com/fluid-mechanics/chapters/compressible-flow.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "음속과 마하 수, 마하 원뿔, 정체 상태량, 등엔트로피 노즐 유동과 초크, 라발 노즐의 배압 작동, 수직·경사 충격파와 프란틀–마이어 팽창파를 시뮬레이터로 직접 흘려 보며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 11, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "11 압축성 유동 입문", "item": "https://science.euiyun.com/fluid-mechanics/chapters/compressible-flow.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+</head>
+<body data-chapter="compressible-flow">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="bernoulli control-volume dimensional-analysis">
+    <div class="eyebrow">Chapter 11</div>
+    <h1>압축성 유동 입문</h1>
+    <p class="lead">지금까지는 밀도가 일정하다고 놓고 풀었다. 그런데 여객기는 음속의 85%로 날고, 로켓 노즐 출구의 가스는 음속의 서너 배로 뿜어져 나온다. 이렇게 빠르면 공기가 눈에 띄게 압축되고, 정보를 전하는 압력파의 속도인 <strong>음속</strong>이 유동을 지배하게 된다. 그 결과 비압축성 직관과 정반대인 일들이 생긴다. 좁아지는 관에서 오히려 느려지는 흐름이 있고, 아무리 당겨도 더 늘지 않는 유량이 있고, 두께가 1마이크로미터도 안 되는 면에서 압력이 몇 배로 뛰기도 한다. 아래 음원의 속도를 끌어 올려 음속을 넘겨 보면서 시작하자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">아래 막대의 손잡이를 좌우로 끌어 음원의 마하 수를 바꾼다</span></div>
+    <ul class="objectives">
+      <li>이상 기체의 엔탈피·엔트로피·등엔트로피 관계를 쓰고, 검사 체적으로 음속 \(c = \sqrt{kRT}\)를 유도한다.</li>
+      <li>마하 수로 유동 영역(비압축·아음속·천음속·초음속·극초음속)을 구분하고, 마하 원뿔과 마하 각 \(\sin\mu = 1/\text{Ma}\)을 설명한다.</li>
+      <li>정체 온도·압력·밀도를 마하 수로 나타내고 비행체 표면 온도와 압축성 피토관 문제를 푼다.</li>
+      <li>면적–속도 관계 \(dA/A = (\text{Ma}^2-1)\,dV/V\)로 노즐·디퓨저를 해석하고, 임계 상태와 \(A/A^*\), 초크 질량 유량을 구한다.</li>
+      <li>수축–확대 노즐의 배압에 따른 작동 상태와 수직 충격파 관계식, 경사 충격파의 θ–β–M 관계, 프란틀–마이어 팽창을 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="sound">
+    <h2>이상 기체 열역학과 음속</h2>
+    <p>유동이 느릴 때는 압력이 조금 변해도 밀도는 거의 그대로라서 \(\rho\)를 상수로 둘 수 있었다. 속도가 음속에 가까워지면 압력 변화가 커지고, 그에 따라 밀도와 온도도 함께 바뀐다. 이제는 운동량 방정식만으로 부족하고 <strong>에너지 방정식과 상태 방정식</strong>을 같이 풀어야 한다. 이런 유동을 <span class="term">압축성 유동</span><span class="en">(compressible flow)</span>이라 한다. 이 장의 기체는 모두 비열이 일정한 이상 기체로 본다.</p>
+    <div class="def"><span class="def-k">이상 기체 관계식 (비열 일정)</span>
+      <p>상태 방정식 \(p = \rho R T\), 내부 에너지 \(u = c_v T\), <span class="term">엔탈피</span><span class="en">(enthalpy)</span> \(h = u + p/\rho = c_p T\). 비열 사이에는 \(c_p - c_v = R\)이고 <span class="term">비열비</span><span class="en">(specific heat ratio)</span>는 \(k = c_p/c_v\)이다. 따라서 \(c_p = kR/(k-1)\)이고, 공기(\(R = 287\) J/(kg·K), \(k = 1.4\))는 \(c_p = 1004.5\) J/(kg·K)이다.</p>
+    </div>
+    <p><span class="term">엔트로피</span><span class="en">(entropy)</span> 변화는 깁스 관계식 \(T\,ds = dh - dp/\rho\)를 적분해 얻는다. 마찰도 열전달도 없는 과정, 곧 <span class="term">등엔트로피 과정</span><span class="en">(isentropic process)</span>에서는 \(ds = 0\)이므로 세 상태량이 서로 거듭제곱 관계로 묶인다.</p>
+    <div class="formula">$$s_2 - s_1 = c_p\ln\frac{T_2}{T_1} - R\ln\frac{p_2}{p_1}, \qquad \frac{p}{\rho^k} = \text{일정}, \qquad \frac{T_2}{T_1} = \left(\frac{p_2}{p_1}\right)^{(k-1)/k} = \left(\frac{\rho_2}{\rho_1}\right)^{k-1}$$<div class="where">등엔트로피 관계는 노즐 속 유동처럼 빠르고(열전달할 시간이 없음) 벽 마찰의 영향이 작은 유동에서 아주 잘 맞는다. 충격파 안에서는 성립하지 않는다(11.6절).</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>기체</th><th class="num">R [J/(kg·K)]</th><th class="num">k</th><th class="num">c<sub>p</sub> [J/(kg·K)]</th><th class="num">c at 20 °C [m/s]</th></tr></thead>
+      <tbody>
+        <tr><td>공기</td><td class="num">287.0</td><td class="num">1.40</td><td class="num">1004.5</td><td class="num">343</td></tr>
+        <tr><td>헬륨</td><td class="num">2077</td><td class="num">1.667</td><td class="num">5193</td><td class="num">1007</td></tr>
+        <tr><td>수소</td><td class="num">4124</td><td class="num">1.405</td><td class="num">14300</td><td class="num">1305</td></tr>
+        <tr><td>이산화탄소</td><td class="num">188.9</td><td class="num">1.289</td><td class="num">842</td><td class="num">267</td></tr>
+        <tr><td>아르곤</td><td class="num">208.1</td><td class="num">1.667</td><td class="num">520</td><td class="num">319</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>음속: 약한 압력파의 전파 속도</h3>
+    <p><span class="term">음속</span><span class="en">(speed of sound)</span>은 아주 약한 압력 교란이 정지한 매질 속을 퍼져 나가는 속도다. 관 속 피스톤을 살짝 밀면 바로 앞의 기체가 압축되고, 그 압축이 다음 층으로 계속 넘어간다. 파면을 따라 움직이는 검사 체적을 잡으면 음속을 바로 구할 수 있다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="파면을 따라 움직이는 검사 체적으로 음속을 유도하는 네 단계">
+        <defs><marker id="cf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker>
+          <marker id="cf-ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="cf-arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <rect x="40" y="70" width="720" height="110" class="f-surface" stroke="var(--border)"/>
+        <rect x="40" y="70" width="360" height="110" fill="var(--accent)" opacity=".12"/>
+        <line x1="400" y1="62" x2="400" y2="188" stroke="var(--accent)" stroke-width="3"/>
+        <rect x="22" y="70" width="18" height="110" fill="var(--text-dim)"/>
+        <text class="t-dim" x="220" y="210" text-anchor="middle">압축된 기체: p + dp, ρ + dρ</text>
+        <text class="t-dim" x="580" y="210" text-anchor="middle">정지한 기체: p, ρ, T</text>
+        <g data-only="1">
+          <line x1="410" y1="45" x2="480" y2="45" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#cf-ara)"/><text class="t-acc" x="490" y="50">파면 속도 c</text>
+          <line x1="200" y1="125" x2="250" y2="125" stroke="var(--text)" stroke-width="2.2" marker-end="url(#cf-ar)"/><text class="t" x="190" y="115" text-anchor="end">dV</text>
+          <text class="t" x="600" y="128" text-anchor="middle">V = 0</text>
+        </g>
+        <g data-step="2">
+          <rect x="330" y="60" width="140" height="130" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+          <text class="t" x="400" y="250" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">파면과 함께 움직이는 검사 체적 (정상 유동이 된다)</text>
+          <line x1="560" y1="125" x2="480" y2="125" stroke="var(--text)" stroke-width="2.2" marker-end="url(#cf-ar)"/><text class="t" x="565" y="118">c</text>
+          <line x1="320" y1="125" x2="250" y2="125" stroke="var(--text)" stroke-width="2.2" marker-end="url(#cf-ar)"/><text class="t" x="230" y="118" text-anchor="end">c − dV</text>
+        </g>
+        <g data-only="3"><text class="t" x="400" y="30" text-anchor="middle">질량: ρcA = (ρ + dρ)(c − dV)A  →  c dρ = ρ dV</text></g>
+        <g data-only="4"><text class="t" x="400" y="22" text-anchor="middle">운동량: pA − (p + dp)A = ṁ[(c − dV) − c]  →  dp = ρc dV</text>
+          <text class="t-acc" x="400" y="46" text-anchor="middle" style="font-weight:700">둘을 나누면 c² = dp/dρ = (∂p/∂ρ)ₛ = kRT</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>피스톤이 dV로 밀리면 압축 파면이 정지 기체 속으로 속도 c로 나아간다. 파면 뒤의 기체는 dV로 따라 움직인다.</li>
+        <li>파면에 올라탄 관찰자에게는 기체가 오른쪽에서 c로 들어와 c − dV로 나간다. 이렇게 보면 정상 유동이다.</li>
+        <li>질량 보존: 들어오는 질량 유량과 나가는 질량 유량이 같다. 2차 미소량을 버리면 c dρ = ρ dV.</li>
+        <li>운동량 보존: 압력 차이가 운동량 변화를 만든다(마찰 없음). 두 식에서 dV를 소거하면 c² = dp/dρ.</li>
+      </ol>
+      <figcaption>음속의 유도. 파면은 아주 약하고 빠르게 지나가 열전달도 마찰도 없으므로 이 과정은 등엔트로피 과정이다.</figcaption>
+    </figure>
+    <div class="formula">$$c = \sqrt{\left(\frac{\partial p}{\partial \rho}\right)_s} = \sqrt{kRT} \quad(\text{이상 기체}), \qquad c = \sqrt{\frac{E_v}{\rho}} \quad(\text{액체·고체, } E_v\text{: 체적 탄성 계수})$$<div class="where">이상 기체의 음속은 <strong>온도만의 함수</strong>다. 압력이나 밀도를 따로 바꿔도 온도가 같으면 음속은 같다. 물은 \(E_v \approx 2.2\) GPa이므로 \(c \approx 1480\) m/s다.</div></div>
+    <div class="tangle" id="tg-sound">
+      <p>온도 <span class="tn" data-var="T" data-min="-80" data-max="1200" data-step="5" data-unit=" °C">20</span>에서 음속은 공기 <span class="tn-out" data-out="air"></span>, 헬륨 <span class="tn-out" data-out="he"></span>, 수소 <span class="tn-out" data-out="h2"></span>, 이산화탄소 <span class="tn-out" data-out="co2"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout deep"><strong>뉴턴의 실수: 등온인가, 등엔트로피인가</strong><p>뉴턴은 음파가 등온 과정이라고 보고 \(c = \sqrt{p/\rho} = \sqrt{RT}\)를 얻었다. 15 °C 공기라면 288 m/s로, 측정값 340 m/s보다 약 15% 작다. 라플라스는 압축과 팽창이 너무 빨라 열이 오갈 틈이 없다는 점을 지적했다. 그래서 과정은 단열이고, 마찰도 없으므로 등엔트로피다. \(p \propto \rho^k\)를 쓰면 \(dp/d\rho = kp/\rho\)가 되어 \(\sqrt{k} = 1.18\)배만큼 보정된다.</p></div>
+    <div class="sim" id="sim-pulse">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>관 속 압력파: 피스톤을 밀어 음파를 보내라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-pulse"></canvas><span class="hint">왼쪽 피스톤 손잡이를 좌우로 끌어 본다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>기체</span><div class="seg" id="pu-gas"><button data-value="air" class="on">공기</button><button data-value="he">He</button><button data-value="h2">H₂</button><button data-value="co2">CO₂</button></div></div>
+          <label class="ctrl"><span>온도 T <output id="pu-T-out"></output></span><input type="range" id="pu-T" min="-50" max="600" step="10" value="20"></label>
+          <label class="check"><input type="checkbox" id="pu-graph" checked> 압력 교란 p′ 그래프</label>
+          <div class="ctrl-row"><button class="btn primary" id="pu-go" type="button">펄스 한 번</button><button class="btn" id="pu-race" type="button">경주: 온도 2배</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">음속 c = √(kRT)</span><span class="v" id="pu-c">—</span></div>
+        <div class="stat"><span class="k">관 3 m 통과 시간</span><span class="v" id="pu-t">—</span></div>
+        <div class="stat"><span class="k">측정한 통과 시간</span><span class="v" id="pu-meas">—</span></div>
+        <div class="stat"><span class="k">ρc (피스톤 1 m/s당 Δp)</span><span class="v" id="pu-z">—</span></div>
+      </div>
+      <div class="sim-note">화면은 1/400로 느리게 돌린다. 점은 기체 입자이고, 입자의 변위는 보기 쉽게 크게 키웠다. 해볼 것: ① 피스톤을 빠르게 밀었다 당기면 입자가 몰린 곳(압축)과 성긴 곳(팽창)이 같은 속도로 오른쪽으로 간다. 입자 하나하나는 제자리에서 앞뒤로 흔들리기만 한다. ② 기체를 He로 바꾸면 펄스가 약 3배 빨라진다. \(R\)이 크기 때문이다. ③ '경주' 버튼은 절대 온도가 2배인 관을 아래에 띄운다. 통과 시간이 \(1/\sqrt2\)로 줄어드는지 확인하라.</div>
+    </div>
+    <div class="example" data-title="기체와 온도에 따른 음속">
+      <p>(a) 고도 약 10 km의 공기(−50 °C)와 (b) 20 °C 헬륨에서 음속을 구하라. 헬륨은 \(R = 2077\) J/(kg·K), \(k = 1.667\)이다. 같은 온도에서 헬륨의 음속은 공기의 몇 배인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 이상 기체이므로 \(c = \sqrt{kRT}\)에 절대 온도를 넣는다.</div>
+        <div class="step"><b>풀이</b> (a) \(T = 223.15\) K, \(c = \sqrt{1.4(287)(223.15)} = 299\) m/s. (b) \(T = 293.15\) K, \(c = \sqrt{1.667(2077)(293.15)} = 1007\) m/s. 20 °C 공기는 343 m/s이므로 비는 \(1007/343 = 2.94\)이다.</div>
+        <div class="answer">(a) 299 m/s (b) 1007 m/s, 공기의 약 2.94배</div>
+        <div class="step"><b>검토</b> 분자량이 작을수록(R이 클수록) 음속이 빠르다. 헬륨을 마시면 목소리가 높아지는 것도 이 때문이다. 성도(목 안의 공명 공간)의 공명 주파수가 \(c\)에 비례하기 때문이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="mach">
+    <h2>마하 수와 유동 영역, 마하 원뿔</h2>
+    <p>유동 속도를 그 자리의 음속으로 나눈 값이 <span class="term">마하 수</span><span class="en">(Mach number)</span>다. 7장에서 보았듯이 \(\text{Ma}^2\)은 관성력과 압축성 힘(탄성력)의 비이기도 하다. 압축성의 효과는 Ma 하나로 판가름 난다.</p>
+    <div class="formula">$$\text{Ma} = \frac{V}{c}, \qquad \frac{\rho_0}{\rho} = \left(1 + \frac{k-1}{2}\text{Ma}^2\right)^{1/(k-1)} \;\Rightarrow\; \frac{\Delta\rho}{\rho_0} \approx \frac{\text{Ma}^2}{2} \quad(\text{Ma} \ll 1)$$<div class="where">정지 상태(\(\rho_0\))로부터 Ma까지 가속할 때의 밀도 변화(11.3절에서 유도한다). Ma = 0.3에서 약 4.4%다. 그래서 공학에서는 <strong>Ma &lt; 0.3이면 비압축성</strong>으로 다룬다.</div></div>
+    <figure class="mini" id="mini-rho">
+      <div class="mini-view"><canvas id="cv-rho"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>마하 수 Ma <output id="rh-M-out"></output></span><input type="range" id="rh-M" min="0" max="1.5" step="0.01" value="0.3"></label>
+        <span class="readout" id="rh-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>정체 상태에서 Ma까지 가속할 때 밀도가 몇 % 줄어드는지 보여 준다. 점선은 저속 근사 \(\text{Ma}^2/2\)이다. 5% 기준선을 넘는 지점이 Ma ≈ 0.3이다. 시속 360 km(Ma ≈ 0.3)를 넘는 자동차·열차의 공력 해석에서 압축성을 고려하기 시작하는 이유다.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>영역</th><th>마하 수</th><th>특징과 예</th></tr></thead>
+      <tbody>
+        <tr><td>비압축성</td><td>Ma &lt; 0.3</td><td>밀도 변화 5% 미만. 배관, 풍력 터빈, 대부분의 자동차</td></tr>
+        <tr><td><span class="term">아음속</span><span class="en">(subsonic)</span></td><td>0.3 – 0.8</td><td>압축성 보정이 필요하다. 어디에도 충격파가 없다. 터보프롭 항공기</td></tr>
+        <tr><td><span class="term">천음속</span><span class="en">(transonic)</span></td><td>0.8 – 1.2</td><td>날개 윗면 등 국소적으로 초음속 영역과 약한 충격파가 생긴다. 항력 급증. 여객기 순항(Ma 0.85)</td></tr>
+        <tr><td><span class="term">초음속</span><span class="en">(supersonic)</span></td><td>1.2 – 5</td><td>정보가 상류로 거슬러 가지 못한다. 충격파와 팽창파. 전투기, 콩코드, 로켓 노즐</td></tr>
+        <tr><td><span class="term">극초음속</span><span class="en">(hypersonic)</span></td><td>Ma &gt; 5</td><td>충격층이 얇고 매우 뜨겁다. 해리·이온화가 일어난다. 재돌입 캡슐, 스크램제트</td></tr>
+      </tbody>
+    </table></div>
+    <h3>움직이는 음원과 마하 원뿔</h3>
+    <p>음원이 일정한 간격으로 소리를 내며 움직인다고 하자. 각 파면은 그 소리를 낸 지점을 중심으로 \(c\)의 속도로 커진다. 음원이 음속보다 느리면 앞쪽 파면이 촘촘해질 뿐 음원 앞에도 소리가 먼저 간다(도플러 효과). Ma = 1이면 모든 파면이 음원 위치에 겹쳐 쌓인다. Ma &gt; 1이면 음원이 자기 소리를 앞지르고, 파면들은 원뿔 하나를 감싸게 된다. 이것이 <span class="term">마하 원뿔</span><span class="en">(Mach cone)</span>이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 235" role="img" aria-label="Ma 0, 0.5, 1, 2에서 움직이는 음원이 만드는 파면 패턴">
+        <defs><clipPath id="cf-clip0"><rect x="4" y="4" width="192" height="200" rx="8"/></clipPath><clipPath id="cf-clip1"><rect x="204" y="4" width="192" height="200" rx="8"/></clipPath><clipPath id="cf-clip2"><rect x="404" y="4" width="192" height="200" rx="8"/></clipPath><clipPath id="cf-clip3"><rect x="604" y="4" width="192" height="200" rx="8"/></clipPath></defs>
+        <rect x="4" y="4" width="192" height="200" rx="8" class="f-surface" stroke="var(--border)"/><rect x="204" y="4" width="192" height="200" rx="8" class="f-surface" stroke="var(--border)"/><rect x="404" y="4" width="192" height="200" rx="8" class="f-surface" stroke="var(--border)"/><rect x="604" y="4" width="192" height="200" rx="8" class="f-surface" stroke="var(--border)"/>
+        <g clip-path="url(#cf-clip0)"><circle cx="100.0" cy="105" r="85.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.35"/><circle cx="100.0" cy="105" r="68.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.48"/><circle cx="100.0" cy="105" r="51.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.61"/><circle cx="100.0" cy="105" r="34.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.74"/><circle cx="100.0" cy="105" r="17.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.87"/><circle cx="100" cy="105" r="5" fill="var(--text)"/></g><text class="t" x="100" y="226" text-anchor="middle">Ma = 0 (정지)</text>
+        <g clip-path="url(#cf-clip1)"><circle cx="297.5" cy="105" r="85.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.35"/><circle cx="306.0" cy="105" r="68.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.48"/><circle cx="314.5" cy="105" r="51.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.61"/><circle cx="323.0" cy="105" r="34.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.74"/><circle cx="331.5" cy="105" r="17.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.87"/><circle cx="340" cy="105" r="5" fill="var(--text)"/><line x1="348" y1="105" x2="364" y2="105" class="s-line" stroke-width="2" marker-end="url(#cf-ar)"/></g><text class="t" x="300" y="226" text-anchor="middle">Ma = 0.5 (아음속)</text>
+        <g clip-path="url(#cf-clip2)"><circle cx="495.0" cy="105" r="75.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.35"/><circle cx="510.0" cy="105" r="60.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.48"/><circle cx="525.0" cy="105" r="45.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.61"/><circle cx="540.0" cy="105" r="30.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.74"/><circle cx="555.0" cy="105" r="15.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.87"/><line x1="570" y1="10" x2="570" y2="200" stroke="var(--accent-2)" stroke-width="2.4"/><circle cx="570" cy="105" r="5" fill="var(--text)"/><line x1="578" y1="105" x2="592" y2="105" class="s-line" stroke-width="2" marker-end="url(#cf-ar)"/></g><text class="t" x="500" y="226" text-anchor="middle">Ma = 1 (음속)</text>
+        <g clip-path="url(#cf-clip3)"><circle cx="685.0" cy="105" r="45.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.35"/><circle cx="703.0" cy="105" r="36.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.48"/><circle cx="721.0" cy="105" r="27.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.61"/><circle cx="739.0" cy="105" r="18.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.74"/><circle cx="757.0" cy="105" r="9.0" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity="0.87"/><path d="M662.4,40.0 L775,105 L662.4,170.0" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/><path d="M741.0,105 A34,34 0 0 1 745.6,88.0" fill="none" stroke="var(--accent-2)" stroke-width="1.2"/><text class="t" x="725" y="99" style="fill:var(--accent-2);font-weight:700">μ</text><circle cx="775" cy="105" r="5" fill="var(--text)"/></g><text class="t" x="700" y="226" text-anchor="middle">Ma = 2 (초음속)</text>
+      </svg>
+      <figcaption>같은 시간 간격으로 낸 다섯 파면. 초음속이면 파면이 원뿔(주황) 안에만 있다. 원뿔 바깥은 아직 소리가 닿지 않은 '침묵 영역'이다.</figcaption>
+    </figure>
+    <p>시간 \(t\) 동안 음원은 \(Vt\)만큼 가고, 그때 낸 파면의 반지름은 \(ct\)다. 원뿔의 반각, 곧 <span class="term">마하 각</span><span class="en">(Mach angle)</span>은 직각삼각형에서 바로 나온다.</p>
+    <div class="formula">$$\sin\mu = \frac{ct}{Vt} = \frac{1}{\text{Ma}}$$<div class="where">Ma = 1이면 μ = 90°(평면 파면), Ma가 커질수록 원뿔이 뾰족해진다. 원뿔면이 지나가는 순간 땅 위의 관찰자는 <span class="term">소닉 붐</span><span class="en">(sonic boom)</span>을 듣는다.</div></div>
+    <div class="sim" id="sim-mach">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>슐리렌 사진 판독: 마하 각을 재서 탄환의 속도를 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-mach"></canvas><span class="hint">흰 원을 끌어 선을 원뿔면에 맞춘다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="ma-mode"><button data-value="game" class="on">도전: 숨은 Ma</button><button data-value="free">자유 실험</button></div></div>
+          <label class="ctrl"><span>자유 실험 Ma <output id="ma-M-out"></output></span><input type="range" id="ma-M" min="0.3" max="4" step="0.05" value="2"></label>
+          <label class="check"><input type="checkbox" id="ma-fronts" checked> 개별 파면 보기</label>
+          <div class="ctrl-row"><button class="btn primary" id="ma-check" type="button">판독 확인</button><button class="btn" id="ma-new" type="button">새 탄환</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">내가 잰 μ</span><span class="v" id="ma-mu">—</span></div>
+        <div class="stat"><span class="k">추정 Ma = 1/sin μ</span><span class="v" id="ma-est">—</span></div>
+        <div class="stat"><span class="k">실제 Ma</span><span class="v" id="ma-true">?</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="ma-score">0 / 0</span></div>
+      </div>
+      <div class="sim-note">탄환과 함께 움직이는 기준틀에서 본 모습이다. 파면은 뒤로 흘러가며 커진다. 해볼 것: ① 도전 모드에서 선을 원뿔면에 겹치고 '판독 확인'을 누르라. 오차 5% 안이면 명중이다. ② Ma가 클수록 μ가 작아져서 각도 1°의 오차가 Ma 추정에 더 크게 번진다. Ma 3.5와 1.3에서 판독 난이도를 비교해 보라. ③ 자유 실험에서 Ma를 1 아래로 내리면 원뿔이 사라지고 파면이 탄환 앞으로 나간다.</div>
+    </div>
+    <div class="tangle" id="tg-boom">
+      <p>음속이 <span class="tn" data-var="c" data-min="280" data-max="345" data-step="1" data-unit=" m/s">299</span>인 고도 <span class="tn" data-var="h" data-min="1" data-max="20" data-step="0.5" data-unit=" km">10</span>를 마하 <span class="tn" data-var="M" data-min="1.05" data-max="5" data-step="0.05">2.00</span>로 나는 비행기의 마하 각은 <span class="tn-out" data-out="mu"></span>다. 비행기가 머리 위를 지나고 <span class="tn-out" data-out="t"></span> 뒤에 소닉 붐이 들린다. 그 순간 비행기는 <span class="tn-out" data-out="x"></span> 앞에 있다.</p>
+    </div>
+    <div class="example" data-title="소닉 붐이 들리는 시각">
+      <p>마하 2.0으로 고도 10.0 km를 수평 비행하는 전투기가 관찰자 바로 위를 지났다. 대기의 음속을 299 m/s로 균일하게 보면, 관찰자는 몇 초 뒤에 소닉 붐을 듣는가? 그때 전투기는 수평으로 얼마나 앞서 있는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 원뿔면이 관찰자에게 닿을 때 비행기–관찰자 선은 수평과 μ를 이룬다. 따라서 \(x = h/\tan\mu\), \(t = x/V\).</div>
+        <div class="step"><b>풀이</b> \(\mu = \sin^{-1}(1/2.0) = 30.0^\circ\), \(V = 2.0 \times 299 = 598\) m/s. \(x = 10.0\text{ km}/\tan30^\circ = 17.3\) km, \(t = 17\,320/598 = 28.9\) s.</div>
+        <div class="answer">약 28.9 s 뒤, 비행기는 17.3 km 앞</div>
+        <div class="step"><b>검토</b> 실제 대기는 고도가 낮을수록 따뜻해 음속이 커지므로 원뿔면이 휘어진다. 그래도 크기는 같은 정도다. 위 드래그 숫자 문단에서 고도와 Ma를 바꿔 보라.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="stagnation">
+    <h2>정체 상태량</h2>
+    <p>3장의 정체압은 흐름을 마찰 없이 멈추었을 때의 압력이었다. 압축성 유동에서도 같은 생각을 쓴다. 유동을 <strong>단열·등엔트로피적으로</strong> 정지시켰을 때 얻는 상태가 <span class="term">정체 상태</span><span class="en">(stagnation state)</span>이고, 그 상태량을 아래첨자 0으로 쓴다. 일과 열전달이 없는 정상 유동의 에너지 방정식(5장)에서 위치 에너지를 무시하면 다음을 얻는다.</p>
+    <div class="formula">$$h_0 = h + \frac{V^2}{2} \;\Rightarrow\; T_0 = T + \frac{V^2}{2c_p}$$<div class="where">\(T_0\): <span class="term">정체 온도</span><span class="en">(stagnation temperature)</span>, \(V^2/2c_p\): 동적 온도. 단열 유동이면 마찰이나 충격파가 있어도 \(T_0\)는 유선을 따라 일정하다.</div></div>
+    <p>\(V^2 = \text{Ma}^2 kRT\)와 \(c_p = kR/(k-1)\)을 대입하면 온도비가 마하 수만의 함수가 된다. 정체 압력과 정체 밀도는 여기에 등엔트로피 관계를 적용해 얻는다.</p>
+    <div class="formula">$$\frac{T_0}{T} = 1 + \frac{k-1}{2}\text{Ma}^2, \qquad \frac{p_0}{p} = \left(1 + \frac{k-1}{2}\text{Ma}^2\right)^{k/(k-1)}, \qquad \frac{\rho_0}{\rho} = \left(1 + \frac{k-1}{2}\text{Ma}^2\right)^{1/(k-1)}$$<div class="where">공기(k = 1.4)라면 \(T_0/T = 1 + 0.2\text{Ma}^2\)이고 지수는 각각 3.5와 2.5다. \(p_0\)는 등엔트로피 정지를 전제하므로 마찰이나 충격파가 있으면 <strong>줄어든다</strong>.</div></div>
+    <h3>빠른 비행체의 표면 온도</h3>
+    <p>비행체 코끝이나 날개 앞전의 정체점에서는 공기가 멈추면서 운동 에너지가 모두 엔탈피로 바뀐다. 표면 온도는 대략 \(T_0\)에 이른다. 경계층이 있는 표면은 회복 계수 \(r \approx 0.85\)–0.9만큼 조금 덜 뜨겁다. 여객기 속도에서는 수십 도에 그치지만 마하 3에서는 300 °C를 넘는다. SR-71의 동체를 티타늄으로 만든 까닭이다.</p>
+    <div class="tangle" id="tg-stag">
+      <p>고도 <span class="tn" data-var="z" data-min="0" data-max="20" data-step="0.5" data-unit=" km">11</span>(대기 온도 <span class="tn-out" data-out="T"></span>, 음속 <span class="tn-out" data-out="c"></span>)에서 <span class="tn" data-var="V" data-min="50" data-max="1800" data-step="10" data-unit=" m/s">250</span>로 날면 Ma = <span class="tn-out" data-out="M"></span>이고, 정체점의 공기 온도는 <span class="tn-out" data-out="T0"></span>까지 오른다(<span class="tn-out" data-out="dT"></span> 상승). <span data-out="msg"></span></p>
+      <canvas id="cv-stag"></canvas>
+    </div>
+    <div class="example" data-title="순항 중인 여객기의 정체 상태">
+      <p>여객기가 고도 11 km(\(T = 216.65\) K)에서 250 m/s로 순항한다. 마하 수, 기수 정체점의 온도, 그리고 정체 압력과 정압의 비 \(p_0/p\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 그 고도의 음속으로 Ma를 구한 뒤 \(T_0 = T + V^2/2c_p\), \(p_0/p = (T_0/T)^{3.5}\).</div>
+        <div class="step"><b>풀이</b> \(c = \sqrt{1.4(287)(216.65)} = 295.0\) m/s → Ma = 0.847. \(T_0 = 216.65 + 250^2/(2\times1004.5) = 216.65 + 31.1 = 247.8\) K. \(p_0/p = (247.8/216.65)^{3.5} = 1.60\).</div>
+        <div class="answer">Ma = 0.847, T₀ = 248 K (−25 °C), p₀/p = 1.60</div>
+        <div class="step"><b>검토</b> 바깥 공기가 −57 °C여도 기수는 −25 °C까지 데워진다. 비압축성 베르누이로 \(p_0/p\)를 구하면 \(1 + 0.7\text{Ma}^2 = 1.50\)이 되어 7% 작게 나온다.</div>
+      </details>
+    </div>
+    <h3>압축성 피토관</h3>
+    <p>아음속 피토관은 정체 압력 \(p_0\)와 정압 \(p\)를 잰다. 비압축성 베르누이 식 \(p_0 - p = \tfrac12\rho V^2 = \tfrac12 kp\,\text{Ma}^2\)은 Ma가 커질수록 오차가 커진다. 정확한 식 \(p_0/p = (1+0.2\text{Ma}^2)^{3.5}\)를 이항 전개하면 차이가 무엇인지 보인다.</p>
+    <div class="formula">$$\frac{p_0 - p}{\tfrac12\rho V^2} = 1 + \frac{\text{Ma}^2}{4} + \frac{2-k}{24}\text{Ma}^4 + \cdots$$<div class="where">첫 항 1이 베르누이 식이고, 나머지 항이 압축성 보정이다. Ma = 0.3에서 보정은 약 2%다.</div></div>
+    <figure class="mini" id="mini-pitot">
+      <div class="mini-view"><canvas id="cv-pitot"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>마하 수 Ma <output id="pt-M-out"></output></span><input type="range" id="pt-M" min="0.05" max="1" step="0.01" value="0.5"></label>
+        <span class="readout" id="pt-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 Ma에서 정확한 등엔트로피 \(p_0/p\)(실선)와 베르누이 근사(점선)를 비교한다. 피토관 압력에서 거꾸로 속도를 구할 때 베르누이를 쓰면 속도를 과대평가한다. 그 오차를 아래 읽음에서 확인하라.</figcaption>
+    </figure>
+    <div class="example" data-title="압축성 피토관으로 마하 수 구하기">
+      <p>아음속 풍동에서 피토관이 정체 압력 120 kPa, 정압 80.0 kPa를 가리킨다. 등엔트로피 관계로 마하 수를 구하고, 비압축성 베르누이로 구한 값과 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(p_0/p = (1+0.2\text{Ma}^2)^{3.5}\)를 Ma에 대해 푼다. 베르누이는 \(p_0 - p = \tfrac12 kp\,\text{Ma}^2\).</div>
+        <div class="step"><b>풀이</b> \(p_0/p = 1.50\) → \(\text{Ma} = \sqrt{5[(1.50)^{1/3.5} - 1]} = 0.784\). 베르누이: \(\text{Ma} = \sqrt{2(40.0)/(1.4\times80.0)} = 0.845\).</div>
+        <div class="answer">Ma = 0.784 (베르누이로는 0.845, 7.8% 과대)</div>
+        <div class="step"><b>검토</b> 압축성 때문에 같은 속도에서 정체 압력이 더 크게 오른다. 그래서 압력 차이를 베르누이로 풀면 속도가 크게 나온다. 항공기 대기 속도계는 압축성 식으로 눈금을 매긴다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-stag" data-title="정체 상태량 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="isentropic">
+    <h2>1차원 등엔트로피 유동</h2>
+    <p>노즐이나 디퓨저처럼 단면적이 천천히 변하는 관의 유동은 <strong>준1차원</strong>으로 다룬다. 각 단면에서 상태량이 균일하다고 보는 것이다. 여기에 정상·단열·무마찰을 가정하면 유동은 등엔트로피이고, 정체 상태량 \(T_0\), \(p_0\), \(\rho_0\)가 관 전체에서 일정하다. 그러면 남는 질문은 하나다. <em>단면적이 바뀌면 속도는 어떻게 바뀌는가?</em></p>
+    <div class="callout deep"><strong>면적–속도 관계의 유도</strong>
+      <p>질량 유량 \(\rho A V\)가 일정하므로 로그 미분하면 \(\dfrac{d\rho}{\rho} + \dfrac{dA}{A} + \dfrac{dV}{V} = 0\). 마찰 없는 유선 운동량(오일러) 식은 \(dp = -\rho V\,dV\)이다. 등엔트로피 유동이면 \(dp = c^2 d\rho\)이므로 \(\dfrac{d\rho}{\rho} = -\dfrac{V\,dV}{c^2} = -\text{Ma}^2\dfrac{dV}{V}\). 이것을 연속 방정식에 넣으면 아래 식이 나온다.</p>
+    </div>
+    <div class="formula">$$\frac{dA}{A} = \left(\text{Ma}^2 - 1\right)\frac{dV}{V}, \qquad \frac{d\rho}{\rho} = -\text{Ma}^2\,\frac{dV}{V}$$<div class="where">Ma &lt; 1이면 괄호가 음수라서 면적이 줄 때 속도가 는다(비압축성 직관과 같다). Ma &gt; 1이면 괄호가 양수라서 <strong>면적이 늘 때 속도가 는다</strong>. 초음속에서는 밀도가 속도보다 빨리 줄어서, 같은 질량을 통과시키려면 면적이 더 필요하기 때문이다.</div></div>
+    <div class="compare">
+      <div><h4>아음속 (Ma &lt; 1)</h4><p>수축 관 = <b>노즐</b>(가속, 압력 감소). 확대 관 = <b>디퓨저</b>(감속, 압력 회복). 수도꼭지와 벤투리관이 그 예다.</p></div>
+      <div><h4>초음속 (Ma &gt; 1)</h4><p>확대 관 = 노즐(가속). 수축 관 = 디퓨저(감속). 로켓 노즐의 넓어지는 종 모양과 초음속 흡입구의 좁아지는 목이 그 예다.</p></div>
+      <div><h4>Ma = 1</h4><p>\(dA = 0\)인 곳, 곧 <b>최소 단면적(목)</b>에서만 음속에 이를 수 있다. 아음속을 초음속으로 바꾸려면 먼저 좁아졌다가 다시 넓어지는 관이 필요하다.</p></div>
+    </div>
+    <div class="predict" data-for="sim-duct">
+      <p>Ma = 2.5의 초음속 공기가 단면적이 점점 줄어드는 관에 들어간다(마찰 없음). 관을 따라 속도와 압력은?</p>
+      <div class="opts"><button class="opt">속도 증가, 압력 감소</button><button class="opt" data-correct>속도 감소, 압력 증가</button><button class="opt">속도·압력 모두 그대로</button><button class="opt">속도·압력 모두 증가</button></div>
+      <div class="quiz-exp">\(\text{Ma}^2 - 1 &gt; 0\)이므로 \(dA &lt; 0\)이면 \(dV &lt; 0\)이다. 초음속 수축 관은 디퓨저다. 아래에서 입구 Ma를 2.5로 두고 벽 손잡이를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-duct">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>면적–속도 관계: 관 벽을 끌어 모양을 바꿔라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-duct"></canvas><span class="hint top">벽의 흰 원 다섯 개를 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>입구 마하 수</span><div class="seg" id="du-M"><button data-value="0.3" class="on">0.3</button><button data-value="0.6">0.6</button><button data-value="1.5">1.5</button><button data-value="2.5">2.5</button></div></div>
+          <div class="ctrl"><span>모양 예시</span><div class="seg" id="du-shape"><button data-value="conv">수축</button><button data-value="div">확대</button><button data-value="cd" class="on">수축–확대</button></div></div>
+          <label class="check"><input type="checkbox" id="du-pts" checked> 추적 입자</label>
+          <label class="check"><input type="checkbox" id="du-p" checked> p/p₀ 곡선</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">A*/A<sub>입구</sub></span><span class="v" id="du-as">—</span></div>
+        <div class="stat"><span class="k">최소 단면의 Ma</span><span class="v" id="du-mt">—</span></div>
+        <div class="stat"><span class="k">출구 Ma</span><span class="v" id="du-me">—</span></div>
+        <div class="stat"><span class="k">상태</span><span class="v" id="du-st">—</span></div>
+      </div>
+      <div class="sim-note">입구 Ma와 질량 유량을 고정하고 각 단면에서 \(A/A^*\)로 Ma를 구한다. 입자 색은 속력이다(파랑 느림 → 빨강 빠름). 해볼 것: ① 입구 Ma 0.6에서 관을 좁히면 빨라지고 넓히면 느려진다. 1.5나 2.5로 바꾸면 정반대가 된다. ② 아음속 입구에서 목을 계속 좁혀 \(A &lt; A^*\)가 되게 하면 그 유량은 통과할 수 없다(초크, 붉은 표시). 목에서 Ma = 1이 되는 순간을 찾아라. ③ 초음속 입구에서 목을 \(A^*\)보다 좁히면 무슨 일이 생길지 생각해 보라(실제로는 입구 앞에 충격파가 선다).</div>
+    </div>
+    <h3>임계 상태와 면적비 A/A*</h3>
+    <p>Ma = 1인 가상의 단면 상태를 <span class="term">임계 상태</span><span class="en">(critical state)</span>라 하고 별표(*)를 붙인다. 실제로 목에서 Ma = 1이 아니어도, 같은 \(T_0\), \(p_0\)와 같은 질량 유량으로 등엔트로피 가속해 Ma = 1이 되는 단면적 \(A^*\)를 기준으로 쓰면 편하다. 공기의 임계 상태량은 \(T^*/T_0 = 0.8333\), \(p^*/p_0 = 0.5283\), \(\rho^*/\rho_0 = 0.6339\)이다.</p>
+    <div class="formula">$$\frac{T^*}{T_0} = \frac{2}{k+1}, \qquad \frac{p^*}{p_0} = \left(\frac{2}{k+1}\right)^{k/(k-1)}, \qquad \frac{A}{A^*} = \frac{1}{\text{Ma}}\left[\frac{2}{k+1}\left(1 + \frac{k-1}{2}\text{Ma}^2\right)\right]^{\frac{k+1}{2(k-1)}}$$<div class="where">\(A/A^*\)는 \(\rho^* V^* = \rho V \cdot A/A^*\)에 앞의 관계식들을 넣어 얻는다. Ma = 1에서 최솟값 1을 가지므로, \(A/A^* &gt; 1\)인 값 하나에 <strong>아음속 해와 초음속 해 두 개</strong>가 대응한다.</div></div>
+    <figure class="mini" id="mini-astar">
+      <div class="mini-view"><canvas id="cv-astar"></canvas><span class="hint top">빨간 수평선을 위아래로 끈다</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>면적비 A/A* <output id="as-A-out"></output></span><input type="range" id="as-A" min="1" max="5" step="0.01" value="2"></label>
+        <span class="readout" id="as-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(A/A^*\) 곡선(로그 눈금)은 Ma = 1에서 바닥을 찍는다. 수평선과 곡선이 만나는 두 점이 같은 면적비의 아음속 해와 초음속 해다. 어느 해를 고를지는 면적이 아니라 <em>노즐 바깥 조건</em>(배압)이 정한다.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th class="num">Ma</th><th class="num">T/T₀</th><th class="num">p/p₀</th><th class="num">ρ/ρ₀</th><th class="num">A/A*</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0.3</td><td class="num">0.9823</td><td class="num">0.9395</td><td class="num">0.9564</td><td class="num">2.0351</td></tr>
+        <tr><td class="num">0.5</td><td class="num">0.9524</td><td class="num">0.8430</td><td class="num">0.8852</td><td class="num">1.3398</td></tr>
+        <tr><td class="num">0.8</td><td class="num">0.8865</td><td class="num">0.6560</td><td class="num">0.7400</td><td class="num">1.0382</td></tr>
+        <tr><td class="num">1.0</td><td class="num">0.8333</td><td class="num">0.5283</td><td class="num">0.6339</td><td class="num">1.0000</td></tr>
+        <tr><td class="num">1.5</td><td class="num">0.6897</td><td class="num">0.2724</td><td class="num">0.3950</td><td class="num">1.1762</td></tr>
+        <tr><td class="num">2.0</td><td class="num">0.5556</td><td class="num">0.1278</td><td class="num">0.2300</td><td class="num">1.6875</td></tr>
+        <tr><td class="num">2.5</td><td class="num">0.4444</td><td class="num">0.0585</td><td class="num">0.1317</td><td class="num">2.6367</td></tr>
+        <tr><td class="num">3.0</td><td class="num">0.3571</td><td class="num">0.0272</td><td class="num">0.0762</td><td class="num">4.2346</td></tr>
+      </tbody>
+    </table></div>
+    <div class="example" data-title="면적비로 단면 찾기">
+      <p>공기가 덕트 속을 등엔트로피로 흐른다. 단면적 20.0 cm²인 곳에서 Ma = 0.40이다. (a) Ma = 1이 되는 단면적 \(A^*\)와 (b) 목 이후 확대부에서 Ma = 2.0이 되는 단면적을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(A^*\)는 유동 전체에서 하나다(등엔트로피). \(A^* = A_1/(A/A^*)_{0.4}\)를 구한 뒤 \(A_2 = A^*(A/A^*)_{2.0}\).</div>
+        <div class="step"><b>풀이</b> \((A/A^*)_{0.4} = \dfrac{1}{0.4}\left[\dfrac{1 + 0.2(0.16)}{1.2}\right]^{3} = 1.590\) → \(A^* = 20.0/1.590 = 12.6\) cm². \((A/A^*)_{2.0} = 1.6875\) → \(A_2 = 12.58 \times 1.6875 = 21.2\) cm².</div>
+        <div class="answer">(a) A* = 12.6 cm² (b) A = 21.2 cm²</div>
+        <div class="step"><b>검토</b> Ma 0.4인 입구(20.0 cm²)와 Ma 2.0인 확대부(21.2 cm²)는 면적이 거의 같다. 그래도 속도는 전혀 다르다. 면적만으로는 Ma가 정해지지 않고, 목을 지나며 어느 가지를 탔는지가 중요하다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-isen" data-title="등엔트로피 표 반복 연습 (k = 1.4)"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="nozzle">
+    <h2>노즐 유동: 초크와 라발 노즐</h2>
+    <h3>수축 노즐과 초크</h3>
+    <p>큰 탱크(\(p_0\), \(T_0\))의 공기가 수축 노즐을 지나 압력이 \(p_b\)인 공간, 곧 <span class="term">배압</span><span class="en">(back pressure)</span> 영역으로 나간다. \(p_b = p_0\)이면 흐름이 없다. \(p_b\)를 낮추면 출구 속도와 질량 유량이 는다. 그런데 출구는 최소 단면이라서 거기서 도달할 수 있는 최대 속도는 Ma = 1이다. 출구가 Ma = 1에 이르는 배압이 \(p_b = p^* = 0.528p_0\)다. 그보다 더 낮추어도 그 소식(압력파)이 음속으로 흐르는 출구를 거슬러 탱크 쪽으로 올라가지 못한다. 그래서 유량은 더 늘지 않는다. 이 상태를 <span class="term">초크</span><span class="en">(choked flow)</span>라 한다.</p>
+    <div class="formula">$$\dot m_\text{max} = \rho^* V^* A^* = A^* p_0\sqrt{\frac{k}{RT_0}}\left(\frac{2}{k+1}\right)^{\frac{k+1}{2(k-1)}} = 0.6847\,\frac{A^*p_0}{\sqrt{RT_0}} \quad(k = 1.4)$$<div class="where">초크 유량은 \(p_0\)에 비례하고 \(\sqrt{T_0}\)에 반비례한다. <strong>배압과는 무관하다</strong>. 그래서 초크 노즐(임계 노즐)은 정밀한 기체 유량계로 쓰인다.</div></div>
+    <div class="predict" data-for="sim-conv">
+      <p>수축 노즐이 이미 초크된 상태(\(p_b = 0.4p_0\))에서 배압을 진공에 가깝게 더 낮추면 질량 유량은?</p>
+      <div class="opts"><button class="opt">배압에 반비례해 계속 증가</button><button class="opt">약간 증가</button><button class="opt" data-correct>변하지 않는다</button><button class="opt">줄어든다</button></div>
+      <div class="quiz-exp">출구가 이미 Ma = 1이므로 하류의 압력 변화가 상류로 전달되지 않는다. 출구 압력은 \(p^*\)에 머물고, 나머지 팽창은 노즐 밖의 팽창파에서 일어난다(부족 팽창).</div>
+    </div>
+    <div class="sim" id="sim-conv">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수축 노즐: 배압을 끌어 내려 초크시켜라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-conv"></canvas><span class="hint top">아래 그래프의 흰 원을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>배압 p<sub>b</sub>/p₀ <output id="cn-pb-out"></output></span><input type="range" id="cn-pb" min="0.05" max="1" step="0.005" value="0.8"></label>
+          <label class="ctrl"><span>탱크 압력 p₀ <output id="cn-p0-out"></output></span><input type="range" id="cn-p0" min="150" max="1000" step="10" value="500"></label>
+          <label class="ctrl"><span>탱크 온도 T₀ <output id="cn-T0-out"></output></span><input type="range" id="cn-T0" min="250" max="800" step="10" value="400"></label>
+          <label class="check"><input type="checkbox" id="cn-pe" checked> 출구 압력비 곡선(점선)</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">출구 Ma</span><span class="v" id="cn-me">—</span></div>
+        <div class="stat"><span class="k">출구 압력 p<sub>e</sub></span><span class="v" id="cn-pe-v">—</span></div>
+        <div class="stat"><span class="k">질량 유량 (A<sub>e</sub> = 3 cm²)</span><span class="v" id="cn-m">—</span></div>
+        <div class="stat"><span class="k">상태</span><span class="v" id="cn-st">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 배압을 1에서 0.528까지 낮추면 유량이 빠르게 늘다가 기울기가 0이 되며 평평해진다. ② 0.528보다 낮추면 출구 압력이 \(p^*\)에 고정되고, 노즐 밖에서 팽창파(부채꼴)가 생긴다. ③ 초크 상태에서 \(p_0\)를 2배로 하면 유량도 2배가 된다. \(T_0\)를 4배로 하면 유량은 절반이 된다.</div>
+    </div>
+    <div class="tangle" id="tg-choke">
+      <p>지름 <span class="tn" data-var="D" data-min="1" data-max="100" data-step="1" data-unit=" mm">20</span>인 목을 통해 <span class="tn" data-var="p0" data-min="110" data-max="5000" data-step="10" data-unit=" kPa">500</span>, <span class="tn" data-var="T0" data-min="200" data-max="1500" data-step="10" data-unit=" K">400</span>의 공기가 대기(101.3 kPa)로 나간다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="압축 공기 탱크의 초크 유량">
+      <p>공기 탱크(\(p_0 = 500\) kPa, \(T_0 = 400\) K)가 출구 단면적 3.00 cm²인 수축 노즐로 대기(101.3 kPa)에 분출한다. 출구의 압력·온도·속도와 질량 유량을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 먼저 초크 여부를 판정한다. \(p_b/p_0 = 0.203 &lt; 0.528\)이므로 초크다. 출구는 임계 상태이고 \(A_e = A^*\)다.</div>
+        <div class="step"><b>풀이</b> \(p_e = 0.5283(500) = 264\) kPa, \(T_e = 0.8333(400) = 333\) K, \(V_e = \sqrt{1.4(287)(333.3)} = 366\) m/s. \(\dot m = 0.6847\dfrac{(3.00\times10^{-4})(500\times10^3)}{\sqrt{287(400)}} = 0.303\) kg/s.</div>
+        <div class="answer">p<sub>e</sub> = 264 kPa, T<sub>e</sub> = 333 K, V<sub>e</sub> = 366 m/s, ṁ = 0.303 kg/s</div>
+        <div class="step"><b>검토</b> 출구 압력(264 kPa)이 대기보다 높다. 노즐 밖에서 팽창이 마저 일어나는 부족 팽창이다. 확인: \(\rho_e = p_e/RT_e = 2.76\) kg/m³, \(\rho_e V_e A_e = 0.303\) kg/s.</div>
+      </details>
+    </div>
+
+    <h3>수축–확대(라발) 노즐</h3>
+    <p>초음속을 얻으려면 목에서 Ma = 1을 만든 뒤 넓어지는 관으로 계속 가속해야 한다. 이런 관을 <span class="term">수축–확대 노즐</span><span class="en">(converging–diverging nozzle)</span> 또는 <span class="term">라발 노즐</span><span class="en">(de Laval nozzle)</span>이라 한다. 그런데 목이 초크되었다고 해서 확대부가 저절로 초음속이 되지는 않는다. 확대부 유동이 앞 절의 두 해 가운데 어느 쪽을 타는지는 배압이 정한다. 면적비 \(A_e/A_t\)가 주어지면 기준 배압이 셋 생긴다.</p>
+    <ul>
+      <li>\(p_1\): 목만 겨우 Ma = 1이고 확대부는 다시 아음속(디퓨저)인 경우의 출구 압력. 아음속 해로 구한다.</li>
+      <li>\(p_3\): 확대부 전체가 초음속이고 출구 압력이 배압과 같은 <span class="term">설계 조건</span><span class="en">(design condition)</span>. 초음속 해로 구한다.</li>
+      <li>\(p_2\): 출구 바로 앞에 수직 충격파가 서는 경우. \(p_2 = p_3 \times (p_2/p_1)_\text{충격파}\).</li>
+    </ul>
+    <figure class="diagram steps" data-steps="5">
+      <svg viewBox="0 0 800 360" role="img" aria-label="배압에 따른 수축–확대 노즐 내부 압력 분포의 다섯 가지 경우">
+        <path d="M80.0,25.0 L93.6,25.3 L107.2,26.2 L120.8,27.6 L134.4,29.5 L148.0,31.8 L161.6,34.3 L175.2,37.1 L188.8,39.9 L202.4,42.7 L216.0,45.2 L229.6,47.5 L243.2,49.4 L256.8,50.8 L270.4,51.7 L284.0,52.0 L297.6,52.0 L311.2,51.9 L324.8,51.7 L338.4,51.4 L352.0,51.1 L365.6,50.7 L379.2,50.3 L392.8,49.8 L406.4,49.2 L420.0,48.6 L433.6,48.0 L447.2,47.3 L460.8,46.5 L474.4,45.8 L488.0,45.0 L501.6,44.2 L515.2,43.4 L528.8,42.6 L542.4,41.8 L556.0,41.0 L569.6,40.2 L583.2,39.5 L596.8,38.7 L610.4,38.0 L624.0,37.4 L637.6,36.8 L651.2,36.2 L664.8,35.7 L678.4,35.3 L692.0,34.9 L705.6,34.6 L719.2,34.3 L732.8,34.1 L746.4,34.0 L760.0,34.0" class="s-line" stroke-width="2.2"/>
+        <path d="M80.0,115.0 L93.6,114.7 L107.2,113.8 L120.8,112.4 L134.4,110.5 L148.0,108.2 L161.6,105.7 L175.2,102.9 L188.8,100.1 L202.4,97.3 L216.0,94.8 L229.6,92.5 L243.2,90.6 L256.8,89.2 L270.4,88.3 L284.0,88.0 L297.6,88.0 L311.2,88.1 L324.8,88.3 L338.4,88.6 L352.0,88.9 L365.6,89.3 L379.2,89.7 L392.8,90.2 L406.4,90.8 L420.0,91.4 L433.6,92.0 L447.2,92.7 L460.8,93.5 L474.4,94.2 L488.0,95.0 L501.6,95.8 L515.2,96.6 L528.8,97.4 L542.4,98.2 L556.0,99.0 L569.6,99.8 L583.2,100.5 L596.8,101.3 L610.4,102.0 L624.0,102.6 L637.6,103.2 L651.2,103.8 L664.8,104.3 L678.4,104.7 L692.0,105.1 L705.6,105.4 L719.2,105.7 L732.8,105.9 L746.4,106.0 L760.0,106.0" class="s-line" stroke-width="2.2"/>
+        <line x1="284" y1="20" x2="284" y2="330" stroke="var(--text-faint)" stroke-dasharray="3 4"/><text class="t-dim" x="284" y="14" text-anchor="middle">목</text>
+        <line x1="80" y1="150" x2="80" y2="330" class="s-axis"/><line x1="80" y1="330" x2="770" y2="330" class="s-axis"/>
+        <text class="t-dim" x="72" y="154" text-anchor="end">1</text><text class="t-dim" x="72" y="334" text-anchor="end">0</text><text class="t-dim" x="72" y="239" text-anchor="end">0.528</text>
+        <text class="t-dim" x="40" y="250" text-anchor="middle" transform="rotate(-90 40 250)">p/p₀</text>
+        <text class="t-dim" x="425" y="352" text-anchor="middle">노즐 축 방향 위치 x</text>
+        <line x1="80" y1="234.9" x2="770" y2="234.9" stroke="var(--text-faint)" stroke-dasharray="2 5"/>
+        <path d="M80.0,157.0 L93.6,157.1 L107.2,157.4 L120.8,158.0 L134.4,158.8 L148.0,159.9 L161.6,161.5 L175.2,163.7 L188.8,166.8 L202.4,170.9 L216.0,176.5 L229.6,183.9 L243.2,193.6 L256.8,205.6 L270.4,219.6 L284.0,235.0 L297.6,240.4 L311.2,245.8 L324.8,251.1 L338.4,256.2 L352.0,261.2 L365.6,266.0 L379.2,270.4 L392.8,274.6 L406.4,278.6 L420.0,282.2 L433.6,285.6 L447.2,288.6 L460.8,291.4 L474.4,294.0 L488.0,296.3 L501.6,298.4 L515.2,300.3 L528.8,302.0 L542.4,303.5 L556.0,304.9 L569.6,306.1 L583.2,307.2 L596.8,308.2 L610.4,309.1 L624.0,309.8 L637.6,310.5 L651.2,311.1 L664.8,311.6 L678.4,312.0 L692.0,312.3 L705.6,312.6 L719.2,312.8 L732.8,313.0 L746.4,313.1 L760.0,313.1" fill="none" stroke="var(--text-faint)" stroke-width="1.2" stroke-dasharray="5 4"/>
+        <g data-only="1"><path d="M80.0,153.4 L93.6,153.5 L107.2,153.6 L120.8,153.9 L134.4,154.2 L148.0,154.8 L161.6,155.5 L175.2,156.5 L188.8,157.8 L202.4,159.6 L216.0,161.9 L229.6,164.7 L243.2,167.9 L256.8,171.1 L270.4,173.5 L284.0,174.5 L297.6,174.4 L311.2,174.0 L324.8,173.4 L338.4,172.7 L352.0,171.8 L365.6,170.8 L379.2,169.7 L392.8,168.6 L406.4,167.5 L420.0,166.4 L433.6,165.3 L447.2,164.3 L460.8,163.4 L474.4,162.5 L488.0,161.6 L501.6,160.9 L515.2,160.2 L528.8,159.6 L542.4,159.0 L556.0,158.5 L569.6,158.0 L583.2,157.6 L596.8,157.2 L610.4,156.9 L624.0,156.6 L637.6,156.4 L651.2,156.2 L664.8,156.0 L678.4,155.8 L692.0,155.7 L705.6,155.6 L719.2,155.5 L732.8,155.4 L746.4,155.4 L760.0,155.4" fill="none" stroke="var(--accent)" stroke-width="2.6"/><text class="t-acc" x="560" y="146">(a) 완전 아음속 (벤투리관)</text></g>
+        <g data-step="2"><path d="M80.0,157.0 L93.6,157.1 L107.2,157.4 L120.8,158.0 L134.4,158.8 L148.0,159.9 L161.6,161.5 L175.2,163.7 L188.8,166.8 L202.4,170.9 L216.0,176.5 L229.6,183.9 L243.2,193.6 L256.8,205.6 L270.4,219.6 L284.0,234.9 L297.6,229.5 L311.2,224.1 L324.8,218.9 L338.4,213.8 L352.0,209.0 L365.6,204.4 L379.2,200.1 L392.8,196.0 L406.4,192.3 L420.0,188.9 L433.6,185.7 L447.2,182.9 L460.8,180.3 L474.4,178.0 L488.0,175.9 L501.6,174.0 L515.2,172.3 L528.8,170.8 L542.4,169.4 L556.0,168.2 L569.6,167.2 L583.2,166.2 L596.8,165.4 L610.4,164.7 L624.0,164.0 L637.6,163.5 L651.2,163.0 L664.8,162.6 L678.4,162.2 L692.0,161.9 L705.6,161.7 L719.2,161.5 L732.8,161.4 L746.4,161.3 L760.0,161.3" fill="none" stroke="var(--accent)" stroke-width="2.2" opacity=".55"/><circle cx="760" cy="161.3" r="4" fill="var(--accent)"/><text class="t-acc" x="766" y="165">p₁</text></g>
+        <g data-only="2"><text class="t-acc" x="440" y="146">(b) 목에서 Ma = 1, 확대부는 아음속 — 초크 시작</text></g>
+        <g data-step="3"><path d="M80.0,157.0 L93.6,157.1 L107.2,157.4 L120.8,158.0 L134.4,158.8 L148.0,159.9 L161.6,161.5 L175.2,163.7 L188.8,166.8 L202.4,170.9 L216.0,176.5 L229.6,183.9 L243.2,193.6 L256.8,205.6 L270.4,219.6 L284.0,235.0 L297.6,240.4 L311.2,245.8 L324.8,251.1 L338.4,256.2 L352.0,261.2 L365.6,266.0 L379.2,270.4 L392.8,274.6 L406.4,278.6 L420.0,282.2 L433.6,285.6 L447.2,288.6 L460.8,291.4 L474.4,294.0 L488.0,296.3 L491.6,296.9 L491.6,215.3 L501.6,213.1 L515.2,210.4 L528.8,208.2 L542.4,206.2 L556.0,204.4 L569.6,202.9 L583.2,201.6 L596.8,200.5 L610.4,199.5 L624.0,198.6 L637.6,197.9 L651.2,197.2 L664.8,196.7 L678.4,196.2 L692.0,195.8 L705.6,195.5 L719.2,195.3 L732.8,195.1 L746.4,195.0 L760.0,195.0" fill="none" stroke="var(--accent-2)" stroke-width="2.4" opacity=".9"/></g>
+        <g data-only="3"><line x1="491.6" y1="34" x2="491.6" y2="106" stroke="var(--accent-2)" stroke-width="4"/><text class="t" x="500" y="128" style="fill:var(--accent-2);font-weight:700">수직 충격파</text><text class="t" x="440" y="146" style="fill:var(--accent-2)">(c) 확대부 안 충격파: 앞은 초음속, 뒤는 아음속</text></g>
+        <g data-step="4"><line x1="760" y1="313.1" x2="760" y2="237.6" stroke="var(--warn)" stroke-width="2.4"/><circle cx="760" cy="237.6" r="4" fill="var(--warn)"/><text class="t" x="766" y="241" style="fill:var(--warn)">p₂</text></g>
+        <g data-only="4"><line x1="760" y1="30" x2="760" y2="110" stroke="var(--warn)" stroke-width="4"/><path d="M760,34 L800,70 M760,106 L800,70" stroke="var(--warn)" stroke-width="1.6" stroke-dasharray="4 3"/><text class="t" x="300" y="146" style="fill:var(--warn)">(d) 출구에 충격파(p₂). p₃ &lt; p<sub>b</sub> &lt; p₂이면 노즐 밖 경사 충격파: 과팽창</text></g>
+        <g data-step="5"><circle cx="760" cy="313.1" r="5" fill="var(--ok)"/><text class="t" x="766" y="317" style="fill:var(--ok)">p₃</text></g>
+        <g data-only="5"><path d="M80.0,157.0 L93.6,157.1 L107.2,157.4 L120.8,158.0 L134.4,158.8 L148.0,159.9 L161.6,161.5 L175.2,163.7 L188.8,166.8 L202.4,170.9 L216.0,176.5 L229.6,183.9 L243.2,193.6 L256.8,205.6 L270.4,219.6 L284.0,235.0 L297.6,240.4 L311.2,245.8 L324.8,251.1 L338.4,256.2 L352.0,261.2 L365.6,266.0 L379.2,270.4 L392.8,274.6 L406.4,278.6 L420.0,282.2 L433.6,285.6 L447.2,288.6 L460.8,291.4 L474.4,294.0 L488.0,296.3 L501.6,298.4 L515.2,300.3 L528.8,302.0 L542.4,303.5 L556.0,304.9 L569.6,306.1 L583.2,307.2 L596.8,308.2 L610.4,309.1 L624.0,309.8 L637.6,310.5 L651.2,311.1 L664.8,311.6 L678.4,312.0 L692.0,312.3 L705.6,312.6 L719.2,312.8 L732.8,313.0 L746.4,313.1 L760.0,313.1" fill="none" stroke="var(--ok)" stroke-width="2.6"/><path d="M760,34 L800,14 M760,34 L800,30 M760,34 L800,48 M760,106 L800,126 M760,106 L800,110 M760,106 L800,92" stroke="var(--ok)" stroke-width="1.4"/><text class="t" x="330" y="146" style="fill:var(--ok)">(e) 설계 조건 p₃. p<sub>b</sub> &lt; p₃이면 노즐 밖 팽창파: 부족 팽창</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>p<sub>b</sub>가 p₀보다 조금 낮다. 전체가 아음속이고, 목에서 압력이 가장 낮은 벤투리관 유동이다. 유량은 p<sub>b</sub>에 따라 변한다.</li>
+        <li>p<sub>b</sub> = p₁. 목이 막 Ma = 1에 닿는다. 이제 유량은 최대(초크)이고, p<sub>b</sub>를 더 낮추어도 바뀌지 않는다.</li>
+        <li>p₂ &lt; p<sub>b</sub> &lt; p₁. 목 뒤에서 초음속으로 가속하다가 수직 충격파로 아음속이 되고, 그 뒤 디퓨저로 압력을 회복해 p<sub>b</sub>에 맞춘다. p<sub>b</sub>를 낮출수록 충격파가 출구 쪽으로 간다.</li>
+        <li>p<sub>b</sub> = p₂이면 충격파가 출구에 선다. 더 낮추면 노즐 안은 모두 초음속이고, 출구 압력이 배압보다 낮아 노즐 밖에 경사 충격파가 생긴다(과팽창).</li>
+        <li>p<sub>b</sub> = p₃이면 출구 압력이 배압과 같아 깔끔한 분류가 나간다(설계 조건). 더 낮추면 노즐 밖 팽창파에서 마저 팽창한다(부족 팽창).</li>
+      </ol>
+      <figcaption>면적비 A<sub>e</sub>/A<sub>t</sub> = 2.0인 노즐의 압력 분포. 회색 점선은 초음속 등엔트로피 해다. 이 노즐은 p₁ = 0.937p₀, p₂ = 0.513p₀, p₃ = 0.0939p₀이다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-nozzle">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>라발 노즐 시뮬레이터: 배압으로 충격파를 과녁에 세워라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-nozzle"></canvas><span class="hint top">그래프 오른쪽 끝의 흰 원(배압)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>배압 p<sub>b</sub>/p₀ <output id="nz-pb-out"></output></span><input type="range" id="nz-pb" min="0.02" max="1" step="0.002" value="0.75"></label>
+          <label class="ctrl"><span>출구 면적비 A<sub>e</sub>/A<sub>t</sub> <output id="nz-ar-out"></output></span><input type="range" id="nz-ar" min="1.3" max="3.5" step="0.05" value="2"></label>
+          <div class="ctrl"><span>그래프</span><div class="seg" id="nz-plot"><button data-value="p" class="on">p/p₀</button><button data-value="M">Ma</button><button data-value="T">T/T₀</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="nz-game" type="button">과녁 만들기</button><button class="btn" id="nz-show" type="button">p₁·p₂·p₃ 표시</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">작동 상태</span><span class="v" id="nz-st">—</span></div>
+        <div class="stat"><span class="k">충격파 위치 A<sub>s</sub>/A<sub>t</sub></span><span class="v" id="nz-as">—</span></div>
+        <div class="stat"><span class="k">충격파 직전 Ma</span><span class="v" id="nz-m1">—</span></div>
+        <div class="stat"><span class="k">출구 Ma, p<sub>e</sub>/p₀</span><span class="v" id="nz-me">—</span></div>
+        <div class="stat"><span class="k">유량 ṁ/ṁ<sub>초크</sub></span><span class="v" id="nz-m">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="nz-hit">—</span></div>
+      </div>
+      <div class="sim-note">위는 노즐과 입자(색 = 마하 수), 아래는 축 방향 분포다. 해볼 것: ① 배압을 1에서 천천히 내리며 (a)–(e) 다섯 상태를 차례로 지나 보라. p₁ 아래에서는 유량이 1에 고정된다. ② '과녁 만들기'를 누르면 확대부에 과녁(주황 점선)이 생긴다. 배압만 조절해 충격파를 과녁 ±2% 안에 세워라. 면적비를 바꾸면 같은 배압에서 충격파가 어디로 가는가? ③ 충격파 직후 압력이 뛰어오르고, 그 뒤 디퓨저로 압력이 더 오른다. 출구 압력이 정확히 배압이 되는 것을 확인하라.</div>
+    </div>
+    <div class="example" data-title="설계 마하 수 2인 라발 노즐">
+      <p>로켓 시험용 공기 노즐이 \(p_0 = 1.00\) MPa, \(T_0 = 500\) K에서 출구 Ma = 2.0으로 설계되었다. 필요한 면적비 \(A_e/A_t\), 설계 배압, 출구 온도와 출구 속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 설계 조건에서는 목이 임계(\(A_t = A^*\))이고 확대부 전체가 등엔트로피 초음속이다. Ma = 2.0의 등엔트로피 표 값을 쓴다.</div>
+        <div class="step"><b>풀이</b> \(A_e/A_t = (A/A^*)_{2.0} = 1.6875\). \(p_e = p_0/(1+0.2\cdot4)^{3.5} = 1000/7.824 = 128\) kPa. \(T_e = 500/1.8 = 278\) K, \(V_e = 2.0\sqrt{1.4(287)(277.8)} = 668\) m/s.</div>
+        <div class="answer">A<sub>e</sub>/A<sub>t</sub> = 1.69, p<sub>b,설계</sub> = 128 kPa, T<sub>e</sub> = 278 K, V<sub>e</sub> = 668 m/s</div>
+        <div class="step"><b>검토</b> 해수면(101 kPa)에서 쓰면 \(p_b &lt; p_e\)라서 약간 부족 팽창이다. 반대로 \(p_0\)를 낮추어 \(p_e\)가 대기압보다 많이 낮아지면 과팽창이 되고, 노즐 안으로 충격파가 들어올 수도 있다.</div>
+      </details>
+    </div>
+    <div class="callout tip"><strong>로켓 배기의 충격파 다이아몬드</strong><p>엔진 시험 영상에서 배기 분류에 밝은 마름모가 줄지어 보일 때가 있다. 과팽창이나 부족 팽창 때문에 출구 압력이 주위 압력과 다르면, 분류는 경사 충격파와 팽창파를 번갈아 거치며 주위 압력에 맞춰 간다. 그 반사 패턴이 마름모 무늬다. 고도가 오를수록 대기압이 낮아지므로 해수면용 노즐은 점점 부족 팽창 상태가 된다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="normal-shock">
+    <h2>수직 충격파</h2>
+    <p>초음속 유동이 갑자기 감속해야 할 때는 등엔트로피 과정으로는 감속하지 못한다. 대신 두께가 몇 개의 평균 자유 행로(대기압에서 0.1–1 μm)밖에 안 되는 얇은 면에서 압력·온도·밀도가 불연속처럼 뛴다. 유동에 수직인 이 면이 <span class="term">수직 충격파</span><span class="en">(normal shock wave)</span>다. 충격파 안에서는 점성과 열전도가 크게 작용하므로 비가역이다. 그러나 충격파를 감싸는 얇은 검사 체적에 보존 법칙만 적용하면 앞뒤 상태를 정확히 이을 수 있다.</p>
+    <div class="formula">$$\rho_1V_1 = \rho_2V_2, \qquad p_1 + \rho_1V_1^2 = p_2 + \rho_2V_2^2, \qquad h_1 + \frac{V_1^2}{2} = h_2 + \frac{V_2^2}{2}\;(T_{01} = T_{02})$$<div class="where">면적이 같고, 벽 마찰을 무시하며, 단열이다. 여기에 \(p = \rho RT\)를 더하면 미지수 넷(\(p_2, T_2, \rho_2, V_2\))에 식이 넷이다. 정리하면 모든 비가 \(\text{Ma}_1\)만의 함수가 된다.</div></div>
+    <div class="formula">$$\text{Ma}_2^2 = \frac{\text{Ma}_1^2 + \frac{2}{k-1}}{\frac{2k}{k-1}\text{Ma}_1^2 - 1}, \quad \frac{p_2}{p_1} = 1 + \frac{2k}{k+1}\left(\text{Ma}_1^2 - 1\right), \quad \frac{\rho_2}{\rho_1} = \frac{V_1}{V_2} = \frac{(k+1)\text{Ma}_1^2}{(k-1)\text{Ma}_1^2 + 2}$$<div class="where">\(T_2/T_1 = (p_2/p_1)/(\rho_2/\rho_1)\). 정체 압력비는 \(\dfrac{p_{02}}{p_{01}} = \left(\dfrac{\rho_2}{\rho_1}\right)^{k/(k-1)}\left(\dfrac{p_1}{p_2}\right)^{1/(k-1)} &lt; 1\)이다.</div></div>
+    <p>엔트로피는 \(T_0\)가 같으므로 정체 상태끼리 비교하면 간단하다. \(s_2 - s_1 = c_p\ln(T_{02}/T_{01}) - R\ln(p_{02}/p_{01}) = -R\ln(p_{02}/p_{01})\). 엔트로피는 늘기만 해야 하므로 \(p_{02} &lt; p_{01}\)이다. 정체 압력의 손실이 곧 충격파의 비가역성을 재는 척도다.</p>
+    <div class="predict" data-for="sim-shock">
+      <p>Ma₁ = 3의 공기가 수직 충격파를 지난다. 다음 중 충격파 뒤에서 <em>줄어드는</em> 양을 모두 고른 것은?</p>
+      <div class="opts"><button class="opt">정압과 온도</button><button class="opt">밀도와 정체 온도</button><button class="opt" data-correct>속도, 마하 수, 정체 압력</button><button class="opt">정체 온도만</button></div>
+      <div class="quiz-exp">정압·온도·밀도는 늘고, 정체 온도는 그대로(단열)다. 속도와 마하 수(아음속이 됨), 그리고 정체 압력(엔트로피 증가)은 준다. 아래에서 Ma₁을 바꾸며 막대들을 비교하라.</div>
+    </div>
+    <div class="sim" id="sim-shock">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수직 충격파 계산기: 상류 속도 화살표를 끌어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-shock"></canvas><span class="hint top">왼쪽 속도 화살표 끝의 흰 원을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>상류 마하 수 Ma₁ <output id="sh-M-out"></output></span><input type="range" id="sh-M" min="1" max="5" step="0.01" value="2"></label>
+          <label class="ctrl"><span>상류 온도 T₁ <output id="sh-T-out"></output></span><input type="range" id="sh-T" min="150" max="400" step="5" value="220"></label>
+          <label class="ctrl"><span>상류 압력 p₁ <output id="sh-p-out"></output></span><input type="range" id="sh-p" min="5" max="200" step="1" value="40"></label>
+          <label class="check"><input type="checkbox" id="sh-pts" checked> 입자 (색 = 온도)</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Ma₂</span><span class="v" id="sh-m2">—</span></div>
+        <div class="stat"><span class="k">p₂</span><span class="v" id="sh-p2">—</span></div>
+        <div class="stat"><span class="k">T₂</span><span class="v" id="sh-t2">—</span></div>
+        <div class="stat"><span class="k">V₁ → V₂</span><span class="v" id="sh-v">—</span></div>
+        <div class="stat"><span class="k">p₀₂/p₀₁</span><span class="v" id="sh-p0">—</span></div>
+        <div class="stat"><span class="k">Δs</span><span class="v" id="sh-s">—</span></div>
+      </div>
+      <div class="sim-note">아래 막대는 로그 눈금이다. 가운데 선(비 = 1)의 오른쪽은 증가, 왼쪽은 감소를 뜻한다. 해볼 것: ① 입자가 충격파를 지나면 느려지고 촘촘해진다. 간격 비가 \(\rho_2/\rho_1\)이다. Ma₁을 키워도 밀도비가 6(= (k+1)/(k−1))을 넘지 못하는 것을 확인하라. ② Ma₁ → 1이면 모든 비가 1에 다가가 충격파가 마하파로 약해진다. ③ Ma₁ = 2에서 정체 압력이 28% 사라진다. 초음속 흡입구가 수직 충격파 하나 대신 여러 개의 약한 경사 충격파로 감속하는 까닭이다.</div>
+    </div>
+    <figure class="mini" id="mini-ent">
+      <div class="mini-view"><canvas id="cv-ent"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>Ma₁ <output id="en-M-out"></output></span><input type="range" id="en-M" min="0.5" max="3" step="0.01" value="1.5"></label>
+        <span class="readout" id="en-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>수직 충격파 관계식은 수학적으로 Ma₁ &lt; 1에서도 해를 준다. 그 해는 '팽창 충격파'에 해당하는데 엔트로피가 <strong>줄어든다</strong>(붉은 영역). 열역학 제2법칙에 따라 충격파는 초음속에서 아음속으로 가는 압축 충격파만 존재한다.</figcaption>
+    </figure>
+    <div class="example" data-title="Ma 2.0 수직 충격파">
+      <p>Ma₁ = 2.0, \(p_1 = 40.0\) kPa, \(T_1 = 220\) K의 공기가 수직 충격파를 지난다. Ma₂, \(p_2\), \(T_2\), \(V_2\), 정체 압력 손실, 엔트로피 증가를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 수직 충격파 관계식(또는 표)에 Ma₁ = 2.0을 넣고 상류 값을 곱한다.</div>
+        <div class="step"><b>풀이</b> \(\text{Ma}_2^2 = (4 + 5)/(7\cdot4 - 1) = 1/3\) → Ma₂ = 0.577. \(p_2/p_1 = 1 + 1.1667(3) = 4.50\) → \(p_2 = 180\) kPa. \(\rho_2/\rho_1 = 2.4(4)/(0.4\cdot4+2) = 2.667\), \(T_2/T_1 = 4.5/2.667 = 1.6875\) → \(T_2 = 371\) K. \(V_1 = 2.0\sqrt{1.4(287)(220)} = 595\) m/s, \(V_2 = V_1/2.667 = 223\) m/s. \(p_{02}/p_{01} = 0.7209\)이므로 \(p_{01} = 40.0(1.8)^{3.5} = 313\) kPa에서 \(p_{02} = 226\) kPa로 떨어진다. \(\Delta s = -287\ln0.7209 = 93.9\) J/(kg·K).</div>
+        <div class="answer">Ma₂ = 0.577, p₂ = 180 kPa, T₂ = 371 K, V₂ = 223 m/s, p₀: 313 → 226 kPa(28% 손실), Δs = 93.9 J/(kg·K)</div>
+        <div class="step"><b>검토</b> \(T_0\)를 확인하자. 상류 \(220(1.8) = 396\) K, 하류 \(371(1 + 0.2/3) = 396\) K. 같다. 단열이므로 맞다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="노즐 안의 충격파 위치">
+      <p>면적비 \(A_e/A_t = 2.0\)인 라발 노즐에 공기가 흐르고 배압은 \(p_b = 0.75p_0\)이다. 확대부의 수직 충격파 위치 \(A_s/A_t\)와 충격파 직전 마하 수, 출구 마하 수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 기준 압력을 먼저 구한다. \(p_1 = 0.937p_0\), \(p_2 = 0.513p_0\)이므로 \(p_b = 0.75p_0\)는 그 사이이고, 충격파는 확대부 안에 있다. 충격파 뒤에서는 \(p_0\)가 \(p_{02}\)로 줄고 \(A^*\)는 \(A_2^* = A_t\,p_{01}/p_{02}\)로 커진다(질량 유량 보존). 미지수 \(p_{02}\)를 없애기 위해, 출구에서 계산할 수 있는 조합을 만든다.</div>
+        <div class="step"><b>풀이</b> \(\dfrac{p_eA_e}{p_{01}A_t} = \dfrac{p_e}{p_{02}}\dfrac{A_e}{A_2^*} = 0.75\times2.0 = 1.50\). 아음속 Ma에 대해 \(\dfrac{1}{(1+0.2\text{Ma}^2)^{3.5}}\cdot\left(\dfrac{A}{A^*}\right) = 1.50\)을 풀면 \(\text{Ma}_e = 0.380\), \(p_e/p_{02} = 0.905\). 따라서 \(p_{02}/p_{01} = 0.75/0.905 = 0.829\). 수직 충격파 표에서 \(p_{02}/p_{01} = 0.829\)인 \(\text{Ma}_1 = 1.76\)이고, 그 초음속 면적비가 \(A_s/A_t = (A/A^*)_{1.76} = 1.40\)이다.</div>
+        <div class="answer">A<sub>s</sub>/A<sub>t</sub> = 1.40, 충격파 직전 Ma = 1.76, 출구 Ma = 0.380</div>
+        <div class="step"><b>검토</b> 앞 그림의 (c)와 라발 노즐 시뮬레이터가 바로 이 경우다(p<sub>b</sub>/p₀ = 0.75, 면적비 2). 시뮬레이터의 읽음과 비교해 보라.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-shock" data-title="수직 충격파 반복 연습 (k = 1.4)"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="oblique">
+    <h2>경사 충격파와 팽창파</h2>
+    <p>초음속 유동이 쐐기나 압축 코너를 만나 각도 \(\theta\)만큼 꺾여야 할 때는 유동에 비스듬한 <span class="term">경사 충격파</span><span class="en">(oblique shock)</span>가 생긴다. 충격파와 상류 유동이 이루는 각을 충격파 각 \(\beta\)라 한다. 핵심은 간단하다. 속도를 충격파에 수직인 성분과 나란한 성분으로 나누면, <strong>나란한 성분은 변하지 않고</strong>(충격파 면을 따라서는 압력 차가 없다) 수직 성분만 수직 충격파처럼 바뀐다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="경사 충격파에서 속도의 수직·접선 성분 분해와 각 θ, β">
+        <defs><marker id="cf-arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <path d="M60,260 L330,260 L760,150 L760,260 Z" class="f-surface" stroke="var(--border)"/>
+        <line x1="60" y1="260" x2="330" y2="260" stroke="var(--text)" stroke-width="2"/><line x1="330" y1="260" x2="760" y2="150" stroke="var(--text)" stroke-width="2"/>
+        <line x1="330" y1="260" x2="590" y2="40" stroke="var(--accent-2)" stroke-width="4"/>
+        <text class="t" x="596" y="40" style="fill:var(--accent-2);font-weight:700">경사 충격파</text>
+        <path d="M410,260 A80,80 0 0 0 391.1,208.4" fill="none" stroke="var(--accent-2)" stroke-width="1.4"/><text class="t" x="420" y="230" style="fill:var(--accent-2)">β</text>
+        <path d="M450,260 A120,120 0 0 0 446.2,229.8" fill="none" stroke="var(--text)" stroke-width="1.4"/><text class="t" x="458" y="250">θ</text>
+        <line x1="330" y1="260" x2="470" y2="260" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <line x1="150" y1="170" x2="320" y2="170" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#cf-arc)"/><text class="t-acc" x="150" y="160">V₁ (Ma₁ &gt; 1)</text>
+        <line x1="485" y1="170" x2="620" y2="135.5" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#cf-arc)"/><text class="t-acc" x="630" y="135">V₂</text>
+        <g transform="translate(250,90)">
+          <line x1="0" y1="0" x2="120" y2="0" stroke="var(--accent)" stroke-width="2" marker-end="url(#cf-arc)"/>
+          <line x1="0" y1="0" x2="70" y2="-59.2" stroke="var(--text)" stroke-width="1.8" marker-end="url(#cf-ar)"/>
+          <line x1="70" y1="-59.2" x2="120" y2="0" stroke="var(--warn)" stroke-width="1.8" marker-end="url(#cf-ar)"/>
+          <text class="t" x="14" y="-40">V<tspan dy="4" font-size="10">t</tspan></text>
+          <text class="t" x="102" y="-36" style="fill:var(--warn)">V<tspan dy="4" font-size="10">n1</tspan></text>
+          <text class="t-dim" x="-10" y="20">상류: V₁ = V<tspan dy="4" font-size="10">t</tspan><tspan dy="-4"> + V</tspan><tspan dy="4" font-size="10">n1</tspan></text>
+        </g>
+        <text class="t-dim" x="520" y="290" text-anchor="middle">Mn1 = Ma₁ sin β → 수직 충격파 관계식 → Mn2, Ma₂ = Mn2 / sin(β − θ)</text>
+      </svg>
+      <figcaption>경사 충격파의 기하. 충격파에 나란한 성분 \(V_t\)는 그대로이고, 수직 성분만 \(V_{n1} \to V_{n2}\)로 줄어든다. 그래서 유동이 벽 쪽으로 θ만큼 꺾인다.</figcaption>
+    </figure>
+    <div class="formula">$$\text{Ma}_{n1} = \text{Ma}_1\sin\beta, \qquad \tan\theta = 2\cot\beta\,\frac{\text{Ma}_1^2\sin^2\beta - 1}{\text{Ma}_1^2(k + \cos2\beta) + 2}, \qquad \text{Ma}_2 = \frac{\text{Ma}_{n2}}{\sin(\beta - \theta)}$$<div class="where">이것이 <span class="term">θ–β–M 관계</span><span class="en">(theta–beta–Mach relation)</span>다. 주어진 Ma₁과 θ에 대해 β의 해가 두 개 있다. 작은 쪽이 <b>약한 해</b>(보통 실제로 나타나며 Ma₂ 대부분 &gt; 1), 큰 쪽이 <b>강한 해</b>(Ma₂ &lt; 1)다. θ가 그 Ma의 최대 꺾임각 \(\theta_\text{max}\)을 넘으면 붙은 경사 충격파가 없고, 물체 앞에 떨어진 <span class="term">분리 충격파</span><span class="en">(detached bow shock)</span>가 선다.</div></div>
+    <div class="predict" data-for="sim-wedge">
+      <p>Ma₁ = 2.0 유동 속 쐐기의 반각 θ를 10°에서 30°로 키우면 쐐기 끝의 충격파는?</p>
+      <div class="opts"><button class="opt">β만 조금 커지고 여전히 쐐기 끝에 붙어 있다</button><button class="opt" data-correct>θ<sub>max</sub>(≈ 23°)를 넘어 쐐기 앞으로 떨어져 활 모양이 된다</button><button class="opt">충격파가 사라진다</button><button class="opt">β가 작아진다</button></div>
+      <div class="quiz-exp">Ma 2에서 붙은 경사 충격파로 꺾을 수 있는 최대 각은 약 23.0°다. 그보다 크면 앞쪽에 분리 충격파가 생기고, 그 가운데 부분은 수직 충격파와 같다. 아래 쐐기 손잡이로 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-wedge">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>쐐기와 코너: 경사 충격파와 팽창 부채</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-wedge"></canvas><span class="hint">벽 끝의 흰 원을 위아래로 끈다</span></div><div><canvas id="cv-tbm"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>벽 모양</span><div class="seg" id="wg-mode"><button data-value="comp" class="on">압축 코너(쐐기)</button><button data-value="exp">팽창 코너</button></div></div>
+          <label class="ctrl"><span>상류 Ma₁ <output id="wg-M-out"></output></span><input type="range" id="wg-M" min="1.2" max="5" step="0.05" value="2"></label>
+          <label class="ctrl"><span>꺾임각 θ <output id="wg-th-out"></output></span><input type="range" id="wg-th" min="0" max="40" step="0.5" value="10"></label>
+          <label class="check"><input type="checkbox" id="wg-strong"> 강한 해도 그래프에 표시</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">β (약한 해)</span><span class="v" id="wg-b">—</span></div>
+        <div class="stat"><span class="k">θ<sub>max</sub></span><span class="v" id="wg-tm">—</span></div>
+        <div class="stat"><span class="k">Ma₂</span><span class="v" id="wg-m2">—</span></div>
+        <div class="stat"><span class="k">p₂/p₁</span><span class="v" id="wg-p">—</span></div>
+        <div class="stat"><span class="k">p₀₂/p₀₁</span><span class="v" id="wg-p0">—</span></div>
+      </div>
+      <div class="sim-note">오른쪽은 θ–β–M 선도다. 굵은 선이 현재 Ma₁이고 점이 현재 상태다. 해볼 것: ① θ → 0이면 β가 마하 각 \(\mu = \sin^{-1}(1/\text{Ma}_1)\)로 다가간다(무한히 약한 충격파 = 마하파). ② θ를 키워 θ<sub>max</sub>를 넘기면 충격파가 떨어져 나간다. Ma₁을 키우면 θ<sub>max</sub>도 커진다. ③ '팽창 코너'로 바꾸면 압력이 떨어지며 유동이 부채꼴 팽창파 속에서 매끄럽게 꺾이고 가속된다. 이 경우 정체 압력 손실이 0이다.</div>
+    </div>
+    <div class="example" data-title="쐐기의 경사 충격파">
+      <p>Ma₁ = 2.0의 공기가 반각 10.0°인 쐐기를 지난다. 약한 경사 충격파의 각 β, 충격파 뒤의 Ma₂와 압력비 \(p_2/p_1\)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> θ–β–M 관계에서 β를 수치로 푼다(약한 해). 그다음 \(\text{Ma}_{n1} = \text{Ma}_1\sin\beta\)로 수직 충격파 관계식을 쓴다.</div>
+        <div class="step"><b>풀이</b> \(\tan10^\circ = 2\cot\beta\dfrac{4\sin^2\beta - 1}{4(1.4 + \cos2\beta) + 2}\)를 풀면 \(\beta = 39.3^\circ\). \(\text{Ma}_{n1} = 2.0\sin39.3^\circ = 1.267\) → \(\text{Ma}_{n2} = 0.803\), \(p_2/p_1 = 1.707\). \(\text{Ma}_2 = 0.803/\sin(39.3^\circ - 10.0^\circ) = 1.64\).</div>
+        <div class="answer">β = 39.3°, Ma₂ = 1.64, p₂/p₁ = 1.71</div>
+        <div class="step"><b>검토</b> 마하 각(30°)보다 조금 큰 β다. 하류는 여전히 초음속이다. 정체 압력 손실은 1.5%에 불과하다. 같은 Ma 2에서 수직 충격파의 손실이 28%였던 것과 비교해 보라.</div>
+      </details>
+    </div>
+    <h3>프란틀–마이어 팽창파</h3>
+    <p>초음속 유동이 볼록한 코너를 돌아 <em>바깥쪽</em>으로 꺾이면 충격파 대신 코너에서 부채꼴로 퍼지는 무수한 마하파, 곧 <span class="term">팽창 부채</span><span class="en">(expansion fan)</span>가 생긴다. 각 마하파는 무한히 약하므로 팽창은 <strong>등엔트로피</strong>이고, 유동은 가속하며 압력과 온도가 내려간다. 꺾인 각과 마하 수의 관계는 <span class="term">프란틀–마이어 함수</span><span class="en">(Prandtl–Meyer function)</span> \(\nu\)로 표현된다.</p>
+    <div class="formula">$$\theta = \nu(\text{Ma}_2) - \nu(\text{Ma}_1), \qquad \nu(\text{Ma}) = \sqrt{\frac{k+1}{k-1}}\tan^{-1}\sqrt{\frac{k-1}{k+1}(\text{Ma}^2 - 1)} - \tan^{-1}\sqrt{\text{Ma}^2 - 1}$$<div class="where">\(\nu(1) = 0\)이고, Ma → ∞이면 \(\nu \to 130.45^\circ\)다(k = 1.4). 팽창 부채는 상류 마하선(각 \(\mu_1\))에서 시작해 하류 마하선(\(\mu_2\), 꺾인 벽 기준)에서 끝난다. 압력비는 등엔트로피 관계로 구한다.</div></div>
+    <figure class="mini" id="mini-pm">
+      <div class="mini-view"><canvas id="cv-pm"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>Ma₁ <output id="pm-M-out"></output></span><input type="range" id="pm-M" min="1" max="4" step="0.05" value="1.5"></label>
+        <label class="ctrl"><span>꺾임각 θ <output id="pm-th-out"></output></span><input type="range" id="pm-th" min="0" max="40" step="0.5" value="10"></label>
+        <span class="readout" id="pm-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>음속(Ma₁ = 1)에서 출발해도 볼록 코너를 돌면 초음속으로 가속된다. 부채의 첫 선과 마지막 선이 각각 \(\mu_1\), \(\mu_2\)의 마하선이다. 꺾임각이 클수록 압력이 크게 떨어진다. 로켓 노즐 출구의 부족 팽창, 초음속 에어포일 윗면의 가속이 이 현상이다.</figcaption>
+    </figure>
+    <div class="callout warn"><strong>충격파와 팽창파를 헷갈리지 말 것</strong><p>유동이 <em>자기 쪽으로</em> 꺾이는(오목, 압축) 코너에는 경사 충격파가 생긴다. 비가역이고, 압력이 갑자기 오르며, 정체 압력이 준다. 유동이 <em>바깥쪽으로</em> 꺾이는(볼록) 코너에는 팽창 부채가 생긴다. 등엔트로피이고, 압력이 연속적으로 내려가며, 정체 압력은 그대로다. 초음속 마름모 에어포일 문제는 앞전에서 충격파, 꼭짓점에서 팽창파, 뒷전에서 다시 충격파를 거치며 각 면의 압력을 구한다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>이상 기체에서 \(h = c_pT\), \(c_p = kR/(k-1)\)이고, 등엔트로피 과정은 \(p/\rho^k\) = 일정, \(T_2/T_1 = (p_2/p_1)^{(k-1)/k}\)이다. 음속은 \(c = \sqrt{(\partial p/\partial\rho)_s} = \sqrt{kRT}\)로 온도만의 함수다.</li>
+      <li>마하 수 Ma = V/c가 압축성을 정한다. Ma &lt; 0.3이면 밀도 변화 5% 미만이라 비압축성으로 다룬다. 초음속 물체는 반각 \(\sin\mu = 1/\text{Ma}\)인 마하 원뿔을 끈다.</li>
+      <li>정체 상태량: \(T_0/T = 1 + \tfrac{k-1}{2}\text{Ma}^2\), \(p_0/p = (T_0/T)^{k/(k-1)}\). 단열이면 \(T_0\)가 보존되고, 마찰이나 충격파가 있으면 \(p_0\)가 준다.</li>
+      <li>면적–속도 관계 \(dA/A = (\text{Ma}^2-1)dV/V\). 아음속은 수축 관에서, 초음속은 확대 관에서 가속한다. Ma = 1은 목에서만 가능하다. 면적비 \(A/A^*\) 하나에 아음속 해와 초음속 해가 하나씩 있다.</li>
+      <li>목이 Ma = 1에 이르면 초크된다. 이때 \(\dot m_\text{max} = 0.6847A^*p_0/\sqrt{RT_0}\)이고 배압과 무관하다. 수축 노즐은 \(p_b \le 0.528p_0\)에서 초크된다. 라발 노즐은 배압에 따라 아음속 → 초크 → 노즐 내 충격파 → 과팽창 → 설계 → 부족 팽창 순으로 작동한다.</li>
+      <li>수직 충격파는 초음속을 아음속으로 바꾸며 \(p\), \(T\), \(\rho\)를 높이고 \(V\), Ma, \(p_0\)를 낮춘다. \(T_0\)는 보존된다. \(\Delta s = -R\ln(p_{02}/p_{01}) &gt; 0\)이므로 압축 충격파만 존재한다.</li>
+      <li>경사 충격파는 수직 성분 \(\text{Ma}_1\sin\beta\)에만 수직 충격파 관계식을 적용한다(θ–β–M 관계). θ &gt; θ<sub>max</sub>이면 분리 충격파가 선다. 볼록 코너의 팽창은 등엔트로피 프란틀–마이어 팽창이며 \(\theta = \nu_2 - \nu_1\)이다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 공기는 \(R = 287\) J/(kg·K), \(k = 1.4\), \(c_p = 1004.5\) J/(kg·K)인 이상 기체로 본다. 답이 ±1% 이내면 정답이다. 등엔트로피 표와 충격파 관계식은 본문에 있다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="음속" data-answer="352" data-label="c =" data-unit="m/s">
+        <div class="prob-q"><p>35 °C 공기 속 음속은?</p></div>
+        <div class="prob-sol"><p>\(c = \sqrt{1.4(287)(308.15)} = 352\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="마하 수" data-answer="0.835" data-label="Ma =">
+        <div class="prob-q"><p>여객기가 고도 10 km(표준 대기 온도 223.15 K)에서 900 km/h로 난다. 마하 수는?</p></div>
+        <div class="prob-sol"><p>\(V = 250\) m/s, \(c = \sqrt{1.4(287)(223.15)} = 299.4\) m/s → Ma = 0.835.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="마하 각" data-answer="23.6" data-label="μ =" data-unit="°">
+        <div class="prob-q"><p>슐리렌 사진 속 탄환의 마하 수가 2.5이다. 마하 원뿔의 반각은?</p></div>
+        <div class="prob-sol"><p>\(\mu = \sin^{-1}(1/2.5) = 23.6^\circ\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="정체 온도" data-answer="322" data-label="T₀ =" data-unit="K">
+        <div class="prob-q"><p>20 °C 공기가 240 m/s로 흐른다. 정체 온도는?</p></div>
+        <div class="prob-sol"><p>\(T_0 = 293.15 + 240^2/(2\times1004.5) = 293.15 + 28.7 = 322\) K (48.7 °C).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="정체 압력" data-answer="91.5" data-label="p₀ =" data-unit="kPa">
+        <div class="prob-q"><p>정압 60.0 kPa에서 Ma = 0.80으로 흐르는 공기를 피토관으로 잴 때 피토관이 가리키는 정체 압력은?</p></div>
+        <div class="prob-sol"><p>\(p_0/p = (1 + 0.2\cdot0.64)^{3.5} = 1.524\) → \(p_0 = 91.5\) kPa. (베르누이로 구하면 \(60(1+0.7\cdot0.64) = 86.9\) kPa로 5% 작다.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="등엔트로피 관계" data-answer="0.607; 0.174" data-label="T/T₀ =; p/p₀ =">
+        <div class="prob-q"><p>Ma = 1.80인 등엔트로피 공기 유동에서 \(T/T_0\)와 \(p/p_0\)는?</p></div>
+        <div class="prob-sol"><p>\(T_0/T = 1 + 0.2(3.24) = 1.648\) → \(T/T_0 = 0.607\). \(p/p_0 = 0.6068^{3.5} = 0.174\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="면적비" data-answer="2.44" data-label="Ma =">
+        <div class="prob-q"><p>라발 노즐 확대부에서 면적비가 \(A/A^* = 2.50\)인 단면의 초음속 마하 수는?</p></div>
+        <div class="prob-hint">\(A/A^*\) 식을 Ma &gt; 1 구간에서 수치로 푼다. 표에서 Ma 2.5(2.637)보다 조금 작다.</div>
+        <div class="prob-sol"><p>이분법으로 \(A/A^*(\text{Ma}) = 2.50\), Ma &gt; 1을 풀면 Ma = 2.44. (같은 면적비의 아음속 해는 Ma = 0.24다.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="초크 유량" data-answer="0.126" data-label="ṁ =" data-unit="kg/s">
+        <div class="prob-q"><p>\(p_0 = 300\) kPa, \(T_0 = 290\) K인 공기 탱크에 지름 1.50 cm의 수축 노즐이 달려 대기로 분출한다. 질량 유량은?</p></div>
+        <div class="prob-hint">먼저 \(p_b/p_0 = 101.3/300 = 0.338 &lt; 0.528\)인지 확인한다.</div>
+        <div class="prob-sol"><p>초크 상태다. \(A = \pi(0.015)^2/4 = 1.767\times10^{-4}\) m². \(\dot m = 0.6847\,A p_0/\sqrt{RT_0} = 0.6847(1.767\times10^{-4})(3.00\times10^5)/\sqrt{287(290)} = 0.126\) kg/s.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="노즐 설계" data-answer="4.23; 54.4" data-label="A_e/A_t =; p_b =" data-unit="; kPa">
+        <div class="prob-q"><p>\(p_0 = 2.00\) MPa의 공기로 출구 Ma = 3.0을 얻는 라발 노즐을 설계하려 한다. 필요한 면적비 \(A_e/A_t\)와 설계 배압은?</p></div>
+        <div class="prob-sol"><p>\(A_e/A_t = (A/A^*)_{3.0} = \dfrac13\left[\dfrac{1 + 0.2\cdot9}{1.2}\right]^3 = 4.23\). \(p_e = 2000/(2.8)^{3.5} = 2000/36.73 = 54.4\) kPa.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수직 충격파" data-answer="0.475; 10.3" data-label="Ma₂ =; p₂/p₁ =">
+        <div class="prob-q"><p>Ma₁ = 3.0인 공기가 수직 충격파를 지난다. 하류 마하 수와 정압비는?</p></div>
+        <div class="prob-sol"><p>\(\text{Ma}_2^2 = (9 + 5)/(7\cdot9 - 1) = 14/62\) → Ma₂ = 0.475. \(p_2/p_1 = 1 + 1.1667(8) = 10.3\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="초음속 피토관" data-answer="1.87" data-label="Ma₁ =">
+        <div class="prob-q"><p>초음속 풍동에서 피토관 끝에 수직 충격파가 서 있다. 피토관은 충격파 뒤의 정체 압력 200 kPa를 가리키고, 벽의 정압 구멍은 상류 정압 40.0 kPa를 가리킨다. 상류 마하 수는?</p></div>
+        <div class="prob-hint">\(\dfrac{p_{02}}{p_1} = \dfrac{p_{02}}{p_{01}}\cdot\dfrac{p_{01}}{p_1}\). 두 비 모두 Ma₁의 함수다(레일리 피토관 식).</div>
+        <div class="prob-sol"><p>\(f(\text{Ma}_1) = (p_{02}/p_{01})(1+0.2\text{Ma}_1^2)^{3.5} = 200/40.0 = 5.00\)을 풀면 Ma₁ = 1.87. 충격파를 무시하고 등엔트로피로 풀면 1.71이 나와 틀린다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="노즐 안 충격파" data-answer="1.95; 2.17" data-label="A_s/A_t =; Ma₁ =">
+        <div class="prob-q"><p>면적비 \(A_e/A_t = 3.0\)인 라발 노즐의 배압이 \(p_b = 0.60p_0\)이다. 확대부 수직 충격파의 위치 \(A_s/A_t\)와 충격파 직전 마하 수를 구하라.</p></div>
+        <div class="prob-hint">\(p_eA_e/(p_{01}A_t) = 1.80\)을 만족하는 아음속 출구 Ma를 먼저 찾는다(본문 예제와 같은 방법).</div>
+        <div class="prob-sol"><p>\(\dfrac{A/A^*}{(1+0.2\text{Ma}_e^2)^{3.5}} = 1.80\) → Ma<sub>e</sub> = 0.318, \(p_e/p_{02} = 0.932\). \(p_{02}/p_{01} = 0.60/0.932 = 0.644\) → Ma₁ = 2.17, \(A_s/A_t = (A/A^*)_{2.17} = 1.95\). (확인: 이 노즐의 \(p_1 = 0.973p_0\), \(p_2 = 0.376p_0\)이므로 충격파는 확대부 안에 있다.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="경사 충격파" data-answer="32.2; 2.82" data-label="β =; p₂/p₁ =" data-unit="°; ">
+        <div class="prob-q"><p>Ma₁ = 3.0의 공기가 15.0° 압축 코너를 지난다. 약한 경사 충격파의 각과 압력비는?</p></div>
+        <div class="prob-hint">θ–β–M 관계를 β에 대해 푼다. 시뮬레이터의 θ–β–M 선도로 어림한 뒤 확인하라.</div>
+        <div class="prob-sol"><p>\(\beta = 32.2^\circ\). \(\text{Ma}_{n1} = 3.0\sin32.2^\circ = 1.60\) → \(p_2/p_1 = 1 + 1.1667(1.60^2 - 1) = 2.82\). (Ma₂ = 2.25)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="프란틀–마이어" data-answer="1.84" data-label="Ma₂ =">
+        <div class="prob-q"><p>Ma₁ = 1.50의 공기가 볼록 코너에서 10.0°만큼 바깥으로 꺾이며 팽창한다. 팽창 후 마하 수는?</p></div>
+        <div class="prob-sol"><p>\(\nu(1.5) = 11.91^\circ\) → \(\nu_2 = 21.91^\circ\) → Ma₂ = 1.84. 압력비 \(p_2/p_1 = (1+0.2\cdot2.25)^{3.5}/(1+0.2\cdot1.84^2)^{3.5} = 0.600\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="면적–속도">
+        <div class="prob-q"><p>Ma = 1.8의 초음속 공기가 단면적이 점점 커지는 관을 등엔트로피로 흐른다. 하류로 갈수록 옳은 것은?</p></div>
+        <div class="prob-choices"><button>속도 감소, 압력 증가</button><button data-correct>속도 증가, 압력·온도 감소</button><button>속도·압력 모두 증가</button><button>Ma가 1로 다가간다</button></div>
+        <div class="prob-sol"><p>\(dA/A = (\text{Ma}^2-1)dV/V\)에서 Ma &gt; 1, dA &gt; 0이면 dV &gt; 0이다. 초음속 확대 관은 노즐이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수직 충격파의 성질">
+        <div class="prob-q"><p>수직 충격파를 지나는 동안 변하지 <em>않는</em> 양은?</p></div>
+        <div class="prob-choices"><button>정체 압력</button><button>엔트로피</button><button data-correct>정체 온도</button><button>마하 수</button></div>
+        <div class="prob-sol"><p>충격파 검사 체적은 단열이고 일이 없으므로 \(h_0\), 곧 \(T_0\)가 보존된다. 정체 압력은 줄고 엔트로피는 는다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>같은 온도의 공기에서 압력을 2배로 높이면 음속은?</p><div class="opts">
+        <button class="opt">√2배</button><button class="opt">2배</button><button class="opt" data-correct>변하지 않는다</button><button class="opt">1/√2배</button>
+      </div><div class="quiz-exp">이상 기체에서 \(c = \sqrt{kRT}\)로 온도만의 함수다. 압력이 2배가 되면 밀도도 2배가 되어 \(p/\rho\)가 그대로다.</div></div>
+      <div class="quiz-q"><p>아음속으로 흐르는 수축–확대 관의 목에서 압력이 가장 낮았다. 목을 더 좁히면 목의 마하 수는 최대 얼마까지 오를 수 있는가?</p><div class="opts">
+        <button class="opt">제한이 없다</button><button class="opt" data-correct>1</button><button class="opt">0.528</button><button class="opt">√2</button>
+      </div><div class="quiz-exp">면적–속도 관계에 따라 Ma = 1은 dA = 0인 곳에서만 가능하다. 아음속 유동은 최소 단면적에서 Ma = 1을 넘을 수 없다. 거기서 초크된다.</div></div>
+      <div class="quiz-q"><p>초크된 라발 노즐의 배압을 p₂와 p₁ 사이에서 조금 더 낮추면 확대부의 수직 충격파는?</p><div class="opts">
+        <button class="opt">목 쪽으로 이동</button><button class="opt" data-correct>출구 쪽으로 이동</button><button class="opt">그대로</button><button class="opt">사라지고 아음속이 된다</button>
+      </div><div class="quiz-exp">배압이 낮을수록 충격파 전 Ma가 더 커져도 출구 압력을 맞출 수 있으므로 충격파가 하류로 밀려난다. p₂에서 출구에 닿는다.</div></div>
+      <div class="quiz-q"><p>Ma 2.0 공기를 아음속으로 감속하는 흡입구 설계로 정체 압력 손실이 가장 작은 것은?</p><div class="opts">
+        <button class="opt">수직 충격파 하나</button><button class="opt" data-correct>약한 경사 충격파 여러 개 뒤에 약한 수직 충격파</button><button class="opt">강한 해의 경사 충격파 하나</button><button class="opt">손실은 설계와 무관하다</button>
+      </div><div class="quiz-exp">충격파의 손실은 수직 마하 수 성분에 따라 급격히 커진다. 여러 개의 약한 충격파로 나누면 각각의 \(\text{Ma}_n\)이 1에 가까워 손실이 훨씬 적다.</div></div>
+      <div class="quiz-q"><p>초음속 유동이 볼록 코너를 돌아 팽창할 때 일정하게 유지되는 양은?</p><div class="opts">
+        <button class="opt">정압</button><button class="opt">마하 수</button><button class="opt" data-correct>정체 압력과 정체 온도</button><button class="opt">속도</button>
+      </div><div class="quiz-exp">프란틀–마이어 팽창은 등엔트로피이므로 \(p_0\)와 \(T_0\)가 모두 보존된다. 정압과 온도는 내려가고 Ma와 속도는 커진다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const K = 1.4, R = 287, CP = (K * R) / (K - 1);
+  const D2R = Math.PI / 180, R2D = 180 / Math.PI;
+  const isen = (M) => Flow.isentropic(Math.max(M, 1e-6));
+  const pOf = (M) => 1 / isen(M).pR;           // p/p0
+  const tOf = (M) => 1 / isen(M).TR;           // T/T0
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col || SB.color("accent"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  // 이분법 일반
+  const bisect = (f, a, b, n = 80) => { let fa = f(a); for (let i = 0; i < n; i++) { const m = 0.5 * (a + b), fm = f(m); if ((fa > 0) === (fm > 0)) { a = m; fa = fm; } else b = m; } return 0.5 * (a + b); };
+  // 경사 충격파 θ(β)
+  const thetaOf = (b, M) => Math.atan((2 / Math.tan(b)) * (M * M * Math.sin(b) ** 2 - 1) / (M * M * (K + Math.cos(2 * b)) + 2));
+  const thetaMax = (M) => { const mu = Math.asin(1 / M); let best = 0, bb = mu; for (let i = 0; i <= 400; i++) { const b = mu + (i / 400) * (Math.PI / 2 - mu), t = thetaOf(b, M); if (t > best) { best = t; bb = b; } } let a = Math.max(mu, bb - (Math.PI / 2 - mu) / 400), c = Math.min(Math.PI / 2, bb + (Math.PI / 2 - mu) / 400); for (let i = 0; i < 40; i++) { const m1 = a + (c - a) / 3, m2 = c - (c - a) / 3; thetaOf(m1, M) < thetaOf(m2, M) ? (a = m1) : (c = m2); } return { th: thetaOf(0.5 * (a + c), M), b: 0.5 * (a + c) }; };
+  const pmInv = (nu) => (nu <= 0 ? 1 : bisect((M) => Flow.prandtlMeyer(M) - nu, 1, 60, 70));
+
+  /* ---------------------------------------------------------- 머리: 움직이는 음원과 마하 원뿔 */
+  {
+    const CW = 16, C = 1.6, DT = 0.2, MMAX = 3;
+    const st = { M: 0.6, x: 5, t: 0, fronts: [], emit: 0 };
+    const trk = (w) => ({ x0: 70, x1: w - 70 });
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), s = w / CW, cy = (h - 46) / 2 + 4, X = (x) => x * s;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h - 46); ctx.clip();
+      ctx.lineWidth = 1.5;
+      for (const f of st.fronts) {
+        const r = (st.t - f.t) * C * s; if (r <= 0) continue;
+        ctx.strokeStyle = P.accent; ctx.globalAlpha = SB.clamp(1 - r / (w * 0.75), 0.08, 0.9);
+        ctx.beginPath(); ctx.arc(X(f.x), cy, r, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      const sx = X(st.x);
+      if (st.M > 1.001) {
+        const mu = Math.asin(1 / st.M), L = w * 1.2;
+        ctx.strokeStyle = P.accent2; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(sx - L * Math.cos(mu), cy - L * Math.sin(mu)); ctx.lineTo(sx, cy); ctx.lineTo(sx - L * Math.cos(mu), cy + L * Math.sin(mu)); ctx.stroke();
+        ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(sx, cy, 46, Math.PI, Math.PI + mu); ctx.stroke();
+        SB.label(ctx, `μ = ${(mu * R2D).toFixed(1)}°`, sx - 72, cy - 18, { color: P.accent2, bold: true });
+      } else if (st.M > 0.97) {
+        ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, h - 46); ctx.stroke();
+      }
+      ctx.restore();
+      // 음원
+      ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(sx, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      if (st.M > 0.02) SB.arrow(ctx, sx + 10, cy, sx + 10 + 18 + st.M * 18, cy, { color: P.text, width: 2.2, head: 8 });
+      const reg = st.M < 0.3 ? "비압축 영역에 가까운 아음속" : st.M < 0.97 ? "아음속: 앞쪽 파면이 촘촘하다(도플러)" : st.M <= 1.03 ? "Ma ≈ 1: 파면이 음원 앞에 겹쳐 쌓인다" : "초음속: 파면이 마하 원뿔 안에 갇힌다";
+      SB.label(ctx, reg, 12, h - 58, { color: P.dim, size: 12, align: "left" });
+      // 속도 막대
+      const T = trk(w), ty = h - 24;
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(T.x0, ty); ctx.lineTo(T.x1, ty); ctx.stroke();
+      const xm = (m) => T.x0 + (m / MMAX) * (T.x1 - T.x0);
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(T.x0, ty); ctx.lineTo(xm(st.M), ty); ctx.stroke(); ctx.restore();
+      [0, 1, 2, 3].forEach((m) => SB.label(ctx, String(m), xm(m), ty + 14, { size: 10, color: P.dim, mono: true }));
+      SB.label(ctx, "Ma", T.x0 - 30, ty, { size: 12, color: P.dim, bold: true });
+      SB.label(ctx, `Ma = ${st.M.toFixed(2)}`, T.x1 + 6, ty - 14, { size: 12, color: P.text, bold: true, align: "right", mono: true });
+      handle(ctx, xm(st.M), ty, P.accent, 10);
+      self._hx = xm(st.M); self._hy = ty;
+    }, { aspect: 0.42, minHeight: 250, maxHeight: 380 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._hx ? [{ id: "m", x: cv._hx, y: cv._hy, r: 14 }] : []),
+      move: (id, x) => { const T = trk(cv.w); let m = SB.clamp(((x - T.x0) / (T.x1 - T.x0)) * MMAX, 0, MMAX); if (Math.abs(m - 1) < 0.04) m = 1; st.M = m; },
+    });
+    SB.loop("hero", (dt) => {
+      st.t += dt; st.emit -= dt;
+      st.x += st.M * C * dt;
+      if (st.x > CW + 1.5) st.x = -1.5;
+      if (st.emit <= 0) { st.fronts.push({ x: st.x, t: st.t }); st.emit = DT; }
+      st.fronts = st.fronts.filter((f) => (st.t - f.t) * C < CW * 1.1);
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 음속 드래그 숫자 */
+  SB.tangle("tg-sound", (v) => {
+    const T = v.T + 273.15, cc = (k, r) => Math.sqrt(k * r * T);
+    const a = cc(1.4, 287);
+    return {
+      air: a.toFixed(0) + " m/s", he: cc(1.667, 2077).toFixed(0) + " m/s", h2: cc(1.405, 4124).toFixed(0) + " m/s", co2: cc(1.289, 188.9).toFixed(0) + " m/s",
+      msg: `절대 온도는 ${T.toFixed(1)} K다. 공기의 음속은 20 °C일 때(343 m/s)의 ${(a / 343.2).toFixed(2)}배로, √T에 비례한다.`,
+    };
+  });
+
+  /* ---------------------------------------------------------- 관 속 압력파 */
+  {
+    const GAS = { air: [1.4, 287], he: [1.667, 2077], h2: [1.405, 4124], co2: [1.289, 188.9] };
+    const L = 3, SLOW = 400, AMAX = 0.25;
+    const st = { gas: "air", Xp: 0, td: 0, hist: [{ t: -100, X: 0 }], auto: null, drag: false, race: false, sent: null, meas: [null, null] };
+    const getT = SB.range("pu-T", (v) => v + " °C", () => upd());
+    SB.seg("pu-gas", (v) => { st.gas = v; upd(); });
+    const chk = document.getElementById("pu-graph");
+    chk.addEventListener("change", () => cv.redraw());
+    const parts = Array.from({ length: 170 }, (_, i) => ({ x0: (i + Math.random()) / 170 * L, y: 0.12 + 0.76 * Math.random() }));
+    const cOf = (Tc) => { const [k, r] = GAS[st.gas]; return Math.sqrt(k * r * (Tc + 273.15)); };
+    const tubes = () => { const T = getT() + 273.15; return st.race ? [T, 2 * T] : [T]; };
+    const cAbs = (TK) => { const [k, r] = GAS[st.gas]; return Math.sqrt(k * r * TK); };
+    function Xat(t) { // 피스톤 변위(표시 시간)
+      const H = st.hist; if (t <= H[0].t) return H[0].X; if (t >= H[H.length - 1].t) return H[H.length - 1].X;
+      let lo = 0, hi = H.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; H[m].t <= t ? (lo = m) : (hi = m); }
+      const a = H[lo], b = H[hi], f = (t - a.t) / (b.t - a.t || 1); return a.X + f * (b.X - a.X);
+    }
+    function upd() {
+      const c = cOf(getT()), [, r] = GAS[st.gas], rho = 101325 / (r * (getT() + 273.15));
+      SB.stat("pu-c", c.toFixed(0) + " <small>m/s</small>");
+      SB.stat("pu-t", ((L / c) * 1000).toFixed(2) + " <small>ms</small>" + (st.race ? ` / ${((L / (c * Math.SQRT2)) * 1000).toFixed(2)} <small>ms</small>` : ""));
+      SB.stat("pu-z", (rho * c).toFixed(0) + " <small>Pa</small>");
+      const m = st.meas.filter((x) => x != null).map((x) => x.toFixed(2)).join(" / ");
+      SB.stat("pu-meas", m ? m + " <small>ms</small>" : "—");
+      cv && cv.redraw();
+    }
+    let cv = null;
+    cv = SB.canvas("cv-pulse", (ctx, w, h, self) => {
+      const P = pal(), Ts = tubes(), gH = chk.checked ? 92 : 0, nT = Ts.length;
+      const x0 = 46, x1 = w - 14, s = (x1 - x0) / (L + 0.3), X = (x) => x0 + (x + 0.3) * s;
+      const th = Math.min(nT > 1 ? 84 : 120, (h - gH - 20) / nT - 14), tubesBot = 14 + nT * (th + 18);
+      Ts.forEach((TK, j) => {
+        const top = 14 + j * (th + 18), c_d = cAbs(TK) / SLOW;
+        ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.border; ctx.fillRect(X(0), top, X(L) - X(0), th); ctx.strokeRect(X(-0.3), top, X(L) - X(-0.3), th); ctx.restore();
+        // 입자
+        ctx.save();
+        for (const p of parts) {
+          const xi = p.x0 + Xat(st.td - p.x0 / c_d);
+          if (xi < Xat(st.td) + 0.01) continue;
+          const u = (Xat(st.td - p.x0 / c_d) - Xat(st.td - p.x0 / c_d - 0.05)) / 0.05;
+          ctx.fillStyle = Flow.ramp(0.5 + u * 0.9, 0.95);
+          ctx.beginPath(); ctx.arc(X(xi), top + p.y * th, 2.6, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+        // 피스톤
+        const px = X(Xat(st.td));
+        ctx.save(); ctx.fillStyle = P.dim; ctx.fillRect(px - 8, top + 2, 8, th - 4); ctx.fillRect(X(-0.3), top + th / 2 - 3, px - 8 - X(-0.3), 6); ctx.restore();
+        SB.label(ctx, nT > 1 ? (j ? `T = ${TK.toFixed(0)} K (2배)` : `T = ${TK.toFixed(0)} K`) : `${{ air: "공기", he: "헬륨", h2: "수소", co2: "이산화탄소" }[st.gas]}, c = ${cAbs(TK).toFixed(0)} m/s`, X(L) - 6, top + 12, { align: "right", size: 11, color: P.dim });
+        if (j === 0) { handle(ctx, px - 4, top + th / 2, P.accent, 11); self._h = [px - 4, top + th / 2]; self._X = X; self._s = s; }
+      });
+      if (gH) {
+        const gt = tubesBot + 4, gb = h - 10, gm = (gt + gb) / 2, c_d = cAbs(Ts[0]) / SLOW;
+        ctx.save(); ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(X(0), gm); ctx.lineTo(X(L), gm); ctx.stroke();
+        ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath();
+        for (let i = 0; i <= 160; i++) {
+          const x = (i / 160) * L, tr = st.td - x / c_d, u = (Xat(tr) - Xat(tr - 0.05)) / 0.05;
+          const y = gm - SB.clamp(u, -1.6, 1.6) * (gb - gt) / 3.4; i ? ctx.lineTo(X(x), y) : ctx.moveTo(X(x), y);
+        }
+        ctx.stroke(); ctx.restore();
+        SB.label(ctx, "p′ ∝ ρc·u (위 관)", X(0) + 4, gt + 6, { align: "left", size: 11, color: P.accent2 });
+        SB.label(ctx, "x →", X(L) - 10, gb - 4, { size: 11, color: P.dim });
+      }
+    }, { aspect: 0.45, minHeight: 280, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      down: () => { st.drag = true; st.auto = null; },
+      move: (id, x) => { if (id !== "p") return; st.Xp = SB.clamp((x - cv._X(0)) / cv._s, -AMAX, AMAX); },
+      up: () => { st.drag = false; },
+    });
+    SB.loop("sim-pulse", (dt) => {
+      st.td += dt;
+      if (st.auto) { const a = (st.td - st.auto) / 0.13; st.Xp = 0.2 * Math.exp(-a * a); if (a > 4) { st.auto = null; st.Xp = 0; } }
+      st.hist.push({ t: st.td, X: st.Xp });
+      while (st.hist.length > 2 && st.hist[1].t < st.td - 12) st.hist.shift();
+      if (st.sent != null) {
+        tubes().forEach((TK, j) => { const tArr = st.sent + L / (cAbs(TK) / SLOW); if (st.meas[j] == null && st.td >= tArr) { st.meas[j] = ((tArr - st.sent) / SLOW) * 1000; upd(); } });
+      }
+      cv.redraw();
+    });
+    const fire = () => { st.auto = st.td + 0.25; st.sent = st.td + 0.25; st.meas = [null, null]; upd(); };
+    document.getElementById("pu-go").addEventListener("click", fire);
+    document.getElementById("pu-race").addEventListener("click", (e) => { st.race = !st.race; e.target.textContent = st.race ? "경주 끄기" : "경주: 온도 2배"; fire(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 밀도 변화 미니 */
+  {
+    const getM = SB.range("rh-M", (v) => v.toFixed(2), () => cv.redraw());
+    const cv = SB.canvas("cv-rho", (ctx, w, h) => {
+      const P = pal(), M = getM(), d = (m) => (1 - 1 / isen(m).rR) * 100;
+      const ex = [], ap = []; for (let i = 0; i <= 100; i++) { const m = (i / 100) * 1.5; ex.push([m, d(m)]); ap.push([m, 50 * m * m]); }
+      SB.chart(ctx, null, { x: [0, 1.5], y: [0, 60], xLabel: "Ma", yLabel: "Δρ/ρ₀ (%)",
+        series: [{ data: ex, color: P.accent, width: 2.4 }, { data: ap, color: P.dim, width: 1.4, dash: [5, 4] }],
+        hlines: [{ y: 5, color: P.warn, label: "5%" }], vlines: [{ x: 0.3, color: P.faint, label: "Ma 0.3" }],
+        points: [{ x: M, y: d(M), color: P.accent2, r: 6 }] });
+      document.getElementById("rh-r").textContent = `Δρ/ρ₀ = ${d(M).toFixed(2)}% (근사 Ma²/2: ${(50 * M * M).toFixed(2)}%)`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 마하 각 판독 게임 */
+  {
+    const st = { mode: "game", M: 2.2, alpha: 40 * D2R, revealed: false, right: 0, total: 0, phase: 0, msg: "" };
+    const newM = () => { st.M = Math.round((1.25 + Math.random() * 2.55) * 20) / 20; st.revealed = false; st.msg = ""; SB.stat("ma-true", "?"); };
+    newM();
+    const getM = SB.range("ma-M", (v) => v.toFixed(2), () => { if (st.mode === "free") cv.redraw(); stats(); });
+    SB.seg("ma-mode", (v) => { st.mode = v; st.msg = ""; if (v === "game") newM(); stats(); });
+    const prot = document.getElementById("ma-fronts");
+    const curM = () => (st.mode === "free" ? getM() : st.M);
+    function stats() {
+      const est = 1 / Math.sin(st.alpha);
+      SB.stat("ma-mu", (st.alpha * R2D).toFixed(1) + "°");
+      SB.stat("ma-est", est.toFixed(2));
+      if (st.mode === "free") SB.stat("ma-true", getM().toFixed(2));
+      else if (st.revealed) SB.stat("ma-true", st.M.toFixed(2));
+      SB.stat("ma-score", `${st.right} / ${st.total}`);
+    }
+    const cv = SB.canvas("cv-mach", (ctx, w, h, self) => {
+      const P = pal(), M = curM(), sx = w * 0.8, cy = h / 2, c = 46, DTf = 0.42;
+      if (prot.checked) for (let i = 0; i < 16; i++) {
+        const age = i * DTf + st.phase, r = c * age, x = sx - M * c * age;
+        ctx.save(); ctx.strokeStyle = P.accent; ctx.globalAlpha = SB.clamp(0.75 - age * 0.09, 0.08, 0.75); ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(x, cy, r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      }
+      // 탄환
+      ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.moveTo(sx + 14, cy); ctx.quadraticCurveTo(sx + 4, cy - 7, sx - 12, cy - 6); ctx.lineTo(sx - 12, cy + 6); ctx.quadraticCurveTo(sx + 4, cy + 7, sx + 14, cy); ctx.fill(); ctx.restore();
+      SB.arrow(ctx, sx + 20, cy, sx + 52, cy, { color: P.dim, width: 2, head: 7 });
+      // 실제 원뿔 (자유 모드 또는 공개 후)
+      if ((st.mode === "free" || st.revealed) && M > 1) {
+        const mu = Math.asin(1 / M), Lm = w;
+        ctx.save(); ctx.strokeStyle = P.ok; ctx.lineWidth = 2.4; ctx.setLineDash([7, 4]);
+        ctx.beginPath(); ctx.moveTo(sx + 14 - Lm * Math.cos(mu), cy - Lm * Math.sin(mu)); ctx.lineTo(sx + 14, cy); ctx.lineTo(sx + 14 - Lm * Math.cos(mu), cy + Lm * Math.sin(mu)); ctx.stroke(); ctx.restore();
+      }
+      // 사용자 선
+      const a = st.alpha, Lmax = Math.min(sx - 20, (cy - 36) / Math.sin(a)), L = Math.min(w * 0.5, Lmax);
+      const ex = sx + 14 - L * Math.cos(a), ey = cy - L * Math.sin(a);
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(sx + 14, cy); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.setLineDash([3, 4]); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(sx + 14, cy); ctx.lineTo(ex, cy + L * Math.sin(a)); ctx.stroke();
+      ctx.setLineDash([]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(sx + 14, cy, 40, Math.PI, Math.PI + a); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `μ = ${(a * R2D).toFixed(1)}°`, sx + 14 - 62 * Math.cos(a / 2), cy - 62 * Math.sin(a / 2), { color: P.accent2, bold: true, size: 12 });
+      handle(ctx, ex, ey, P.accent2, 10);
+      self._h = [ex, ey]; self._o = [sx + 14, cy];
+      if (st.msg) SB.label(ctx, st.msg, w / 2, 16, { bold: true, color: st.msg.startsWith("명중") ? P.ok : P.bad });
+      else SB.label(ctx, st.mode === "game" ? "숨은 Ma: 선을 원뿔면에 맞춘 뒤 '판독 확인'" : `자유 실험: Ma = ${M.toFixed(2)}`, w / 2, 16, { color: P.dim, size: 12 });
+    }, { aspect: 0.55, minHeight: 260, maxHeight: 400 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "a", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "a") return; st.alpha = SB.clamp(Math.atan2(cv._o[1] - y, cv._o[0] - x), 8 * D2R, 89 * D2R); stats(); },
+    });
+    SB.loop("sim-mach", (dt) => { st.phase = (st.phase + dt * 0.5) % 0.42; cv.redraw(); });
+    document.getElementById("ma-check").addEventListener("click", () => {
+      const est = 1 / Math.sin(st.alpha), M = curM(), err = (est - M) / M;
+      if (st.mode === "game" && !st.revealed) { st.total++; if (Math.abs(err) <= 0.05) st.right++; }
+      st.revealed = true;
+      st.msg = Math.abs(err) <= 0.05 ? `명중! 실제 Ma = ${M.toFixed(2)} (오차 ${(err * 100).toFixed(1)}%)` : `빗나감: 실제 Ma = ${M.toFixed(2)}, 추정 ${est.toFixed(2)} (오차 ${(err * 100).toFixed(0)}%)`;
+      stats(); cv.redraw();
+    });
+    document.getElementById("ma-new").addEventListener("click", () => { if (st.mode !== "game") st.mode = "game"; newM(); stats(); cv.redraw(); });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 소닉 붐 드래그 숫자 */
+  SB.tangle("tg-boom", (v) => {
+    const mu = Math.asin(1 / v.M), x = (v.h * 1000) / Math.tan(mu), t = x / (v.M * v.c);
+    return { mu: (mu * R2D).toFixed(1) + "°", t: t.toFixed(1) + " s", x: (x / 1000).toFixed(1) + " km" };
+  }, { fmt: { M: (x) => x.toFixed(2) } });
+
+  /* ---------------------------------------------------------- 정체 온도 드래그 숫자 */
+  {
+    let vals = { z: 11, V: 250 }, cv = null;
+    SB.tangle("tg-stag", (v) => {
+      vals = v;
+      const T = Flow.atmosphere(v.z * 1000).T, c = Math.sqrt(K * R * T), M = v.V / c, T0 = T + (v.V * v.V) / (2 * CP), T0c = T0 - 273.15;
+      const msg = M < 0.3 ? "이 속도에서는 온도 상승이 몇 도에 불과하다." : T0c < 100 ? "여객기·아음속 항공기 영역이다. 표면 가열은 구조에 큰 문제가 되지 않는다." : T0c < 150 ? "알루미늄 합금 구조의 한계(약 120–150 °C)에 다가간다. 콩코드(Ma 2.04, 약 127 °C)가 이 근처다." : T0c < 550 ? "알루미늄으로는 버틸 수 없다. 티타늄 구조가 필요하다(SR-71, Ma 3.2)." : "티타늄도 한계를 넘는다. 니켈 초합금이나 내열 타일, 삭마 재료가 필요한 극초음속 영역이다.";
+      return { T: `${T.toFixed(1)} K`, c: `${c.toFixed(0)} m/s`, M: M.toFixed(2), T0: `${T0.toFixed(0)} K (${T0c.toFixed(0)} °C)`, dT: `${(T0 - T).toFixed(0)} K`, msg };
+    }, { onChange: () => cv && cv.redraw() });
+    cv = SB.canvas("cv-stag", (ctx, w, h) => {
+      const P = pal(), T = Flow.atmosphere(vals.z * 1000).T, data = [];
+      for (let i = 0; i <= 90; i++) { const V = i * 20; data.push([V, T + (V * V) / (2 * CP) - 273.15]); }
+      const T0c = T + (vals.V * vals.V) / (2 * CP) - 273.15;
+      SB.chart(ctx, { x: 58, y: 12, w: w - 76, h: h - 52 }, { x: [0, 1800], y: [-80, 1400], xLabel: "비행 속도 V (m/s)", yLabel: "T₀ (°C)",
+        series: [{ data, color: P.accent, width: 2.2 }],
+        hlines: [{ y: 135, color: P.warn, label: "알루미늄 한계 ~135 °C" }, { y: 550, color: P.bad, label: "티타늄 한계 ~550 °C" }],
+        points: [{ x: vals.V, y: T0c, color: P.accent2, r: 6 }] });
+    }, { aspect: 0.4, minHeight: 190, maxHeight: 260 });
+  }
+
+  /* ---------------------------------------------------------- 압축성 피토관 미니 */
+  {
+    const getM = SB.range("pt-M", (v) => v.toFixed(2), () => cv.redraw());
+    const cv = SB.canvas("cv-pitot", (ctx, w, h) => {
+      const P = pal(), M = getM(), ex = [], be = [];
+      for (let i = 0; i <= 100; i++) { const m = i / 100; ex.push([m, isen(m).pR]); be.push([m, 1 + 0.7 * m * m]); }
+      const pc = isen(M).pR, Mb = Math.sqrt((pc - 1) / 0.7);
+      SB.chart(ctx, null, { x: [0, 1], y: [1, 2], xLabel: "Ma", yLabel: "p₀/p",
+        series: [{ data: ex, color: P.accent, width: 2.4 }, { data: be, color: P.dim, width: 1.5, dash: [5, 4] }],
+        points: [{ x: M, y: pc, color: P.accent, r: 6 }, { x: M, y: 1 + 0.7 * M * M, color: P.dim, r: 4 }] });
+      document.getElementById("pt-r").textContent = `정확 p₀/p = ${pc.toFixed(4)}, 베르누이 ${(1 + 0.7 * M * M).toFixed(4)} · 이 p₀로 베르누이가 추정하는 Ma = ${Mb.toFixed(3)} (+${((Mb / M - 1) * 100).toFixed(1)}%)`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 면적–속도 덕트 */
+  {
+    const XS = [0, 0.25, 0.5, 0.75, 1], SHAPES = { conv: [1.6, 1.4, 1.2, 1.0, 0.85], div: [0.85, 1.0, 1.2, 1.4, 1.6], cd: [1.6, 1.2, 0.9, 1.2, 1.6] };
+    const st = { A: SHAPES.cd.slice(), Min: 0.3, prof: null };
+    const N = 100;
+    const area = (x) => { let i = Math.min(3, Math.floor(x * 4)); const t = (x - XS[i]) / 0.25, f = (1 - Math.cos(Math.PI * t)) / 2; return st.A[i] + (st.A[i + 1] - st.A[i]) * f; };
+    function solve() {
+      const sup = st.Min > 1, As = st.A[0] / isen(st.Min).AR, M = [], p = [], V = [], choke = [];
+      let amin = Infinity;
+      for (let i = 0; i <= N; i++) {
+        const x = i / N, r = area(x) / As; amin = Math.min(amin, r);
+        const m = r <= 1 ? 1 : Flow.machFromArea(r, sup);
+        M.push(m); p.push(pOf(m)); V.push(m * Math.sqrt(tOf(m))); choke.push(r < 0.999);
+      }
+      st.prof = { As, M, p, V, choke, amin };
+      const ch = amin < 0.999;
+      let iMin = 0; for (let i = 0; i <= N; i++) if (area(i / N) < area(iMin / N)) iMin = i;
+      SB.stat("du-as", (As / st.A[0]).toFixed(3));
+      SB.stat("du-mt", ch ? "1 (초크)" : M[iMin].toFixed(3));
+      SB.stat("du-me", M[N].toFixed(3));
+      SB.stat("du-st", ch ? '<span style="color:var(--bad)">초크: A<sub>min</sub> &lt; A*</span>' : amin < 1.01 ? '<span style="color:var(--warn)">목에서 Ma ≈ 1</span>' : (sup ? "초음속 유지" : "아음속 유지"));
+    }
+    SB.seg("du-M", (v) => { st.Min = Number(v); solve(); cv.redraw(); });
+    SB.seg("du-shape", (v) => { st.A = SHAPES[v].slice(); solve(); cv.redraw(); });
+    st.Min = 0.3;
+    const ptsOn = document.getElementById("du-pts"), pOn = document.getElementById("du-p");
+    [ptsOn, pOn].forEach((e) => e.addEventListener("change", () => cv.redraw()));
+    const parts = Array.from({ length: 150 }, () => ({ x: Math.random(), s: Math.random() * 2 - 1 }));
+    const at = (arr, x) => { const f = SB.clamp(x, 0, 1) * N, i = Math.min(N - 1, Math.floor(f)); return arr[i] + (arr[i + 1] - arr[i]) * (f - i); };
+    solve();
+    const cv = SB.canvas("cv-duct", (ctx, w, h, self) => {
+      const P = pal(), pr = st.prof, x0 = 58, x1 = w - 22, X = (x) => x0 + x * (x1 - x0);
+      const dh = Math.round(h * 0.46), cy = dh / 2 + 4, hs = (dh / 2 - 10) / 2.0;
+      // 벽
+      const top = [], bot = []; for (let i = 0; i <= N; i++) { const x = i / N; top.push([X(x), cy - area(x) * hs]); bot.push([X(x), cy + area(x) * hs]); }
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.08); ctx.beginPath(); top.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); bot.slice().reverse().forEach((p) => ctx.lineTo(p[0], p[1])); ctx.closePath(); ctx.fill();
+      for (let i = 0; i < N; i++) if (pr.choke[i]) { ctx.fillStyle = "rgba(224,60,40,0.22)"; ctx.fillRect(X(i / N), top[i][1], X(1 / N) - X(0) + 0.5, bot[i][1] - top[i][1]); }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2.4;
+      [top, bot].forEach((arr) => { ctx.beginPath(); arr.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke(); });
+      ctx.restore();
+      // A* 표시
+      SB.dashLine(ctx, X(0), cy - pr.As * hs, X(1), cy - pr.As * hs, P.faint, [3, 5]);
+      SB.label(ctx, "A*", X(0) - 20, cy - pr.As * hs, { size: 11, color: P.dim });
+      if (ptsOn.checked) { ctx.save(); for (const p of parts) { const a = area(p.x); ctx.fillStyle = Flow.ramp(at(pr.V, p.x) / 1.8, 0.9); ctx.beginPath(); ctx.arc(X(p.x), cy + p.s * a * hs * 0.92, 2.4, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); }
+      for (let k = 1; k < 9; k++) { const x = k / 9, v = at(pr.V, x); SB.arrow(ctx, X(x) - 2, cy, X(x) - 2 + v * 26, cy, { color: P.text, width: 1.6, head: 6 }); }
+      if (pr.amin < 0.999) SB.label(ctx, "A < A*: 이 유량은 통과할 수 없다", w / 2, 12, { color: P.bad, bold: true, size: 12 });
+      self._hs = XS.map((x, i) => [X(x), cy - st.A[i] * hs]); self._cy = cy; self._sc = hs;
+      self._hs.forEach(([hx, hy]) => handle(ctx, hx, hy, P.accent, 9));
+      // 그래프
+      const Mmax = Math.max(1.2, ...pr.M) * 1.1;
+      const ser = [{ data: pr.M.map((m, i) => [i / N, m]), color: P.accent, width: 2.4 }];
+      if (pOn.checked) ser.push({ data: pr.p.map((q, i) => [i / N, q]), color: P.accent2, width: 2, dash: [6, 4] });
+      SB.chart(ctx, { x: x0, y: dh + 10, w: x1 - x0, h: h - dh - 48 }, { x: [0, 1], y: [0, Mmax], xLabel: "x / L", yLabel: "Ma · p/p₀", series: ser, hlines: [{ y: 1, color: P.faint, label: "Ma = 1" }] });
+      SB.label(ctx, "— Ma", x1 - 80, dh + 20, { color: P.accent, size: 11, align: "left" });
+      if (pOn.checked) SB.label(ctx, "-- p/p₀", x1 - 80, dh + 34, { color: P.accent2, size: 11, align: "left" });
+    }, { aspect: 0.75, minHeight: 360, maxHeight: 520 });
+    SB.drag(cv, {
+      handles: () => (cv._hs ? cv._hs.map(([x, y], i) => ({ id: i, x, y, r: 14 })) : []),
+      move: (id, x, y) => { if (id == null) return; st.A[id] = SB.clamp((cv._cy - y) / cv._sc, 0.4, 2.0); solve(); },
+    });
+    SB.loop("sim-duct", (dt) => {
+      if (ptsOn.checked) for (const p of parts) { p.x += at(st.prof.V, p.x) * dt * 0.45; if (p.x > 1) { p.x -= 1; p.s = Math.random() * 2 - 1; } }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- A/A* 두 해 미니 */
+  {
+    const getA = SB.range("as-A", (v) => v.toFixed(2), () => cv.redraw());
+    let box = null;
+    const cv = SB.canvas("cv-astar", (ctx, w, h, self) => {
+      const P = pal(), A = getA(), data = [];
+      for (let i = 1; i <= 200; i++) { const m = (i / 200) * 4; data.push([m, isen(m).AR]); }
+      const ms = Flow.machFromArea(A, false), mp = Flow.machFromArea(A, true);
+      const ch = SB.chart(ctx, null, { x: [0, 4], y: [0.9, 12], logY: true, yTicks: [1, 2, 3, 5, 10], xLabel: "Ma", yLabel: "A/A*",
+        series: [{ data, color: P.accent, width: 2.4 }], hlines: [{ y: A, color: P.bad, width: 2, dash: [] }],
+        vlines: [{ x: 1, color: P.faint }],
+        points: [{ x: ms, y: A, color: P.accent2, r: 6, label: `아음속 ${ms.toFixed(3)}` }, { x: mp, y: A, color: P.accent2, r: 6, label: `초음속 ${mp.toFixed(3)}` }] });
+      box = ch; handle(ctx, ch.box.x + ch.box.w - 14, ch.Y(A), P.bad, 9);
+      self._hy = ch.Y(A);
+      document.getElementById("as-r").textContent = `A/A* = ${A.toFixed(2)} → 아음속 해 Ma = ${ms.toFixed(3)}, 초음속 해 Ma = ${mp.toFixed(3)}`;
+    }, { aspect: 0.55, minHeight: 230, maxHeight: 320 });
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      move: (id, x, y) => { if (!box) return; const b = box.box, t = (b.y + b.h - y) / b.h, A = Math.pow(10, Math.log10(0.9) + t * (Math.log10(12) - Math.log10(0.9))); getA.set(Math.round(SB.clamp(A, 1, 5) * 100) / 100); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 수축 노즐과 초크 */
+  {
+    const PSTAR = pOf(1), AE = 3e-4;
+    const getPb = SB.range("cn-pb", (v) => v.toFixed(3), () => upd());
+    const getP0 = SB.range("cn-p0", (v) => v + " kPa", () => upd());
+    const getT0 = SB.range("cn-T0", (v) => v + " K", () => upd());
+    const peOn = document.getElementById("cn-pe"); peOn.addEventListener("change", () => cv.redraw());
+    const area = (x) => 1 + 1.5 * (1 + Math.cos(Math.PI * SB.clamp(x, 0, 1))) / 2;
+    const exitM = (pr) => (pr >= 0.9999 ? 0 : pr > PSTAR ? Math.sqrt(5 * (Math.pow(pr, -1 / 3.5) - 1)) : 1);
+    const mRatio = (pr) => { const m = exitM(pr); return m <= 0 ? 0 : 1 / isen(m).AR; };
+    let prof = null;
+    function upd() {
+      const pr = getPb(), Me = exitM(pr), As = Me > 0 ? 1 / isen(Me).AR : 0, M = [];
+      for (let i = 0; i <= 60; i++) { const x = i / 60; M.push(As > 0 ? Flow.machFromArea(area(x) / As, false) : 0); }
+      prof = { Me, M };
+      const p0 = getP0(), T0 = getT0(), mmax = (0.6847 * AE * p0 * 1e3) / Math.sqrt(R * T0);
+      SB.stat("cn-me", Me.toFixed(3));
+      SB.stat("cn-pe-v", (Math.max(pr, PSTAR) * p0).toFixed(1) + " <small>kPa</small>");
+      SB.stat("cn-m", (mRatio(pr) * mmax).toFixed(4) + " <small>kg/s</small>");
+      SB.stat("cn-st", pr <= PSTAR ? '<span style="color:var(--bad)">초크</span>' + (pr < PSTAR - 0.005 ? " · 부족 팽창" : "") : "아음속 (초크 전)");
+      cv && cv.redraw();
+    }
+    const parts = Array.from({ length: 130 }, () => ({ x: -0.45 + Math.random() * 2.1, s: Math.random() * 2 - 1 }));
+    const Vat = (x) => { if (!prof) return 0; if (x < 0) return 0.06 * prof.Me * (1 + x / 0.45 * 0.5); const xx = Math.min(x, 1), f = xx * 60, i = Math.min(59, Math.floor(f)), m = prof.M[i] + (prof.M[i + 1] - prof.M[i]) * (f - i); return m * Math.sqrt(tOf(m)); };
+    let chartBox = null, cv = null;
+    cv = SB.canvas("cv-conv", (ctx, w, h, self) => {
+      const P = pal(), pr = getPb(), sh = Math.round(h * 0.42), cy = sh / 2 + 4, hs = (sh / 2 - 12) / 2.6;
+      const X = (x) => 14 + ((x + 0.45) / 2.15) * (w - 28);
+      // 탱크
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.1); ctx.strokeStyle = P.text; ctx.lineWidth = 2.2;
+      ctx.fillRect(X(-0.45), cy - 2.6 * hs, X(0) - X(-0.45), 5.2 * hs);
+      ctx.beginPath(); ctx.moveTo(X(0), cy - 2.5 * hs); ctx.lineTo(X(0), cy - 2.6 * hs); ctx.lineTo(X(-0.45), cy - 2.6 * hs); ctx.lineTo(X(-0.45), cy + 2.6 * hs); ctx.lineTo(X(0), cy + 2.6 * hs); ctx.lineTo(X(0), cy + 2.5 * hs); ctx.stroke();
+      ctx.beginPath(); for (let i = 0; i <= 40; i++) { const x = i / 40; i ? ctx.lineTo(X(x), cy - area(x) * hs) : ctx.moveTo(X(x), cy - area(x) * hs); } ctx.stroke();
+      ctx.beginPath(); for (let i = 0; i <= 40; i++) { const x = i / 40; i ? ctx.lineTo(X(x), cy + area(x) * hs) : ctx.moveTo(X(x), cy + area(x) * hs); } ctx.stroke();
+      ctx.fillStyle = Flow.waterColor(0.06); ctx.fillRect(X(1), 4, X(1.7) - X(1), sh - 8);
+      ctx.restore();
+      SB.label(ctx, "탱크 p₀, T₀", X(-0.225), cy, { size: 11, color: P.dim });
+      SB.label(ctx, `배압 p_b = ${pr.toFixed(3)} p₀`, X(1.35), 14, { size: 11, color: P.dim });
+      // 입자
+      ctx.save();
+      for (const p of parts) {
+        const half = p.x < 0 ? 2.4 : p.x <= 1 ? area(p.x) : 1 + (pr < PSTAR ? (p.x - 1) * 0.9 * (PSTAR - pr) / PSTAR : 0);
+        const m = p.x < 0 ? 0 : p.x <= 1 ? Vat(p.x) : Vat(1);
+        ctx.fillStyle = Flow.ramp(m / 1.1, 0.9); ctx.beginPath(); ctx.arc(X(p.x), cy + p.s * half * hs * 0.9, 2.3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+      if (pr < PSTAR - 0.005) {
+        const n = 4, spread = 0.9 * (PSTAR - pr) / PSTAR;
+        [-1, 1].forEach((sg) => { for (let k = 0; k < n; k++) { const a = (k / (n - 1)) * spread * 0.9 + 0.15; const ex = X(1), ey = cy + sg * hs; SB.dashLine(ctx, ex, ey, ex + 70 * Math.cos(a), ey + sg * 70 * Math.sin(a), P.accent2, [4, 3]); } });
+        SB.label(ctx, "팽창파 (노즐 밖)", X(1.32), sh - 10, { size: 11, color: P.accent2 });
+      }
+      SB.label(ctx, `출구 Ma = ${prof ? prof.Me.toFixed(2) : "—"}`, X(0.75), sh - 10, { size: 11, color: P.text, bold: true });
+      // 그래프
+      const b = { x: 58, y: sh + 10, w: w - 80, h: h - sh - 52 };
+      const dm = [], dp = []; for (let i = 0; i <= 200; i++) { const q = i / 200; dm.push([q, mRatio(q)]); dp.push([q, Math.max(q, PSTAR)]); }
+      const ser = [{ data: dm, color: P.accent, width: 2.4 }]; if (peOn.checked) ser.push({ data: dp, color: P.accent2, width: 1.8, dash: [6, 4] });
+      const ch = SB.chart(ctx, b, { x: [0, 1], y: [0, 1.1], xLabel: "배압 p_b/p₀", yLabel: "ṁ/ṁ_max · p_e/p₀", series: ser, vlines: [{ x: PSTAR, color: P.warn, label: "p*/p₀ = 0.528" }], bands: [{ x0: 0, x1: PSTAR, color: "rgba(224,60,40,0.07)" }] });
+      chartBox = ch;
+      SB.label(ctx, "초크", ch.X(PSTAR / 2), ch.Y(1.05), { size: 11, color: P.bad, bold: true });
+      handle(ctx, ch.X(pr), ch.Y(mRatio(pr)), P.accent, 10);
+      self._h = [ch.X(pr), ch.Y(mRatio(pr))];
+    }, { aspect: 0.82, minHeight: 400, maxHeight: 560 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "pb", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x) => { if (id !== "pb" || !chartBox) return; const b = chartBox.box; getPb.set(Math.round(SB.clamp((x - b.x) / b.w, 0.05, 1) * 200) / 200); },
+    });
+    SB.loop("sim-conv", (dt) => {
+      for (const p of parts) {
+        const v = p.x < 0 ? 0.03 + 0.05 * (prof ? prof.Me : 0) : Vat(Math.min(p.x, 1));
+        p.x += v * dt * 0.55;
+        if (p.x > 1.7 || (p.x > 1 && v < 0.005)) { p.x = -0.45 + Math.random() * 0.1; p.s = Math.random() * 2 - 1; }
+      }
+      cv.redraw();
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 초크 유량 드래그 숫자 */
+  SB.tangle("tg-choke", (v) => {
+    const A = (Math.PI * (v.D / 1000) ** 2) / 4, pr = 101.325 / v.p0;
+    if (pr > pOf(1)) {
+      const Me = Math.sqrt(5 * (Math.pow(pr, -1 / 3.5) - 1)), m = ((0.6847 * A * v.p0 * 1e3) / Math.sqrt(R * v.T0)) / isen(Me).AR;
+      return { msg: `p<sub>b</sub>/p₀ = ${pr.toFixed(3)} &gt; 0.528이라 <b>초크되지 않는다</b>. 출구 Ma = ${Me.toFixed(3)}, 질량 유량은 ${m.toFixed(4)} kg/s다(배압에 따라 변한다).` };
+    }
+    const m = (0.6847 * A * v.p0 * 1e3) / Math.sqrt(R * v.T0);
+    return { msg: `p<sub>b</sub>/p₀ = ${pr.toFixed(3)} ≤ 0.528이라 목이 <b>초크</b>된다. 최대 질량 유량은 <b>${m < 0.1 ? m.toFixed(4) : m.toFixed(3)} kg/s</b>이고, 목의 압력은 ${(0.5283 * v.p0).toFixed(0)} kPa, 온도는 ${(v.T0 / 1.2).toFixed(0)} K, 속도는 ${Math.sqrt(K * R * v.T0 / 1.2).toFixed(0)} m/s다.` };
+  });
+
+  /* ---------------------------------------------------------- 라발 노즐 시뮬레이터 */
+  {
+    const XT = 0.3, AIN = 2.5, N = 120;
+    const st = { pr: 0.75, AR: 2, mode: "p", target: null, show: false, sol: null };
+    const area = (x) => (x < XT ? 1 + (AIN - 1) * (1 + Math.cos((Math.PI * x) / XT)) / 2 : 1 + (st.AR - 1) * (1 - Math.cos((Math.PI * (x - XT)) / (1 - XT))) / 2);
+    const p0RofM = (M) => Flow.normalShock(M).p0R;
+    function solve() {
+      const AR = st.AR, pr = st.pr;
+      const Msub = Flow.machFromArea(AR, false), Msup = Flow.machFromArea(AR, true);
+      const p1 = pOf(Msub), p3 = pOf(Msup), p2 = p3 * Flow.normalShock(Msup).pR;
+      const M = [], p = [];
+      let state, xs = null, M1 = null, mr = 1, pe;
+      if (pr >= p1) {
+        const Me = pr >= 0.99995 ? 0 : Math.sqrt(5 * (Math.pow(pr, -1 / 3.5) - 1)), As = Me > 0 ? AR / isen(Me).AR : 0;
+        for (let i = 0; i <= N; i++) { const m = As > 0 ? Flow.machFromArea(area(i / N) / As, false) : 0; M.push(m); p.push(pOf(m)); }
+        mr = As; state = pr >= 0.99995 ? "정지 (p<sub>b</sub> = p₀)" : pr - p1 < 0.002 ? "(b) 목 초크, 확대부 아음속" : "(a) 완전 아음속 · 초크 전"; pe = pr;
+      } else if (pr > p2) {
+        const Me = bisect((m) => isen(m).AR * pOf(m) - pr * AR, 1e-4, 1, 60), p0R = pr / pOf(Me);
+        M1 = bisect((m) => p0RofM(m) - p0R, 1.00001, 8, 60);
+        const Ash = isen(M1).AR; xs = bisect((x) => area(x) - Ash, XT, 1, 50);
+        const A2s = 1 / p0R;
+        for (let i = 0; i <= N; i++) {
+          const x = i / N;
+          if (x <= xs) { const m = Flow.machFromArea(area(x), x > XT); M.push(m); p.push(pOf(m)); }
+          else { const m = Flow.machFromArea(area(x) / A2s, false); M.push(m); p.push(p0R * pOf(m)); }
+        }
+        state = "(c) 확대부 안 수직 충격파"; pe = pr;
+      } else {
+        for (let i = 0; i <= N; i++) { const m = Flow.machFromArea(area(i / N), i / N > XT); M.push(m); p.push(pOf(m)); }
+        pe = p3;
+        state = pr > p2 - 0.003 ? "(d) 출구에 수직 충격파" : Math.abs(pr - p3) < 0.004 ? "(e) 설계 조건" : pr > p3 ? "과팽창: 노즐 밖 경사 충격파" : "부족 팽창: 노즐 밖 팽창파";
+      }
+      st.sol = { M, p, xs, M1, p1, p2, p3, mr, pe, state };
+      SB.stat("nz-st", state);
+      SB.stat("nz-as", xs != null ? (isen(M1).AR).toFixed(3) + ` <small>(x = ${xs.toFixed(2)})</small>` : "—");
+      SB.stat("nz-m1", M1 != null ? M1.toFixed(3) : "—");
+      SB.stat("nz-me", `${M[N].toFixed(3)}, ${pe.toFixed(3)}`);
+      SB.stat("nz-m", mr.toFixed(3));
+      if (st.target != null) {
+        const d = xs != null ? xs - st.target : null;
+        SB.stat("nz-hit", d == null ? `목표 x = ${st.target.toFixed(2)} · 충격파 없음` : Math.abs(d) <= 0.02 ? `<span style="color:var(--ok)">명중! (p<sub>b</sub>/p₀ = ${pr.toFixed(3)})</span>` : `목표 ${st.target.toFixed(2)} / 현재 ${xs.toFixed(2)} (${d > 0 ? "+" : ""}${d.toFixed(2)})`);
+      }
+    }
+    const getPb = SB.range("nz-pb", (v) => v.toFixed(3), (v) => { st.pr = v; solve(); cv.redraw(); });
+    SB.range("nz-ar", (v) => v.toFixed(2), (v) => { st.AR = v; solve(); cv.redraw(); });
+    SB.seg("nz-plot", (v) => { st.mode = v; cv.redraw(); });
+    document.getElementById("nz-show").addEventListener("click", () => { st.show = !st.show; cv.redraw(); });
+    document.getElementById("nz-game").addEventListener("click", () => {
+      const Amax = st.AR; let x; do { x = XT + 0.1 + Math.random() * (0.95 - XT - 0.1); } while (area(x) > Amax - 0.05 || area(x) < 1.08);
+      st.target = Math.round(x * 100) / 100; solve(); cv.redraw();
+    });
+    const parts = Array.from({ length: 170 }, () => ({ x: Math.random() * 1.07, s: Math.random() * 2 - 1 }));
+    const at = (arr, x) => { const f = SB.clamp(x, 0, 1) * N, i = Math.min(N - 1, Math.floor(f)); return arr[i] + (arr[i + 1] - arr[i]) * (f - i); };
+    solve();
+    let gBox = null;
+    const cv = SB.canvas("cv-nozzle", (ctx, w, h, self) => {
+      const P = pal(), S = st.sol, bx = 58, bw = w - 58 - 64, X = (x) => bx + x * bw;
+      const nh = Math.round(h * 0.38), cy = nh / 2 + 4, hs = (nh / 2 - 10) / Math.max(AIN, st.AR);
+      // 노즐 벽과 입자
+      const tp = [], bt = []; for (let i = 0; i <= 80; i++) { const x = i / 80; tp.push([X(x), cy - area(x) * hs]); bt.push([X(x), cy + area(x) * hs]); }
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.07); ctx.beginPath(); tp.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]))); bt.slice().reverse().forEach((q) => ctx.lineTo(q[0], q[1])); ctx.closePath(); ctx.fill();
+      for (const q of parts) {
+        const x = Math.min(q.x, 1), m = at(S.M, x), half = q.x <= 1 ? area(q.x) : st.AR;
+        ctx.fillStyle = Flow.ramp(m / 3, 0.9); ctx.beginPath(); ctx.arc(X(q.x), cy + q.s * half * hs * 0.9, 2.2, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; [tp, bt].forEach((arr) => { ctx.beginPath(); arr.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]))); ctx.stroke(); });
+      ctx.restore();
+      const ex = X(1), eh = st.AR * hs;
+      if (S.xs != null) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 4; const a = area(S.xs) * hs; ctx.beginPath(); ctx.moveTo(X(S.xs), cy - a); ctx.lineTo(X(S.xs), cy + a); ctx.stroke(); ctx.restore(); SB.label(ctx, "충격파", X(S.xs), 10, { color: P.accent2, bold: true, size: 11 }); }
+      if (st.target != null) { SB.dashLine(ctx, X(st.target), 4, X(st.target), h - 46, P.warn, [6, 4]); SB.label(ctx, "과녁", X(st.target), nh - 4, { color: P.warn, size: 11, bold: true }); }
+      if (S.xs == null && st.pr < S.p2 - 0.003 && Math.abs(st.pr - S.p3) >= 0.004) {
+        ctx.save(); ctx.strokeStyle = st.pr > S.p3 ? P.warn : P.accent2; ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]);
+        if (st.pr > S.p3) { ctx.beginPath(); ctx.moveTo(ex, cy - eh); ctx.lineTo(ex + 50, cy); ctx.lineTo(ex, cy + eh); ctx.stroke(); }
+        else [0.2, 0.5, 0.8].forEach((a) => { ctx.beginPath(); ctx.moveTo(ex, cy - eh); ctx.lineTo(ex + 50 * Math.cos(a), cy - eh - 50 * Math.sin(a) * 0.6 + 30 * (1 - a)); ctx.moveTo(ex, cy + eh); ctx.lineTo(ex + 50 * Math.cos(a), cy + eh + 50 * Math.sin(a) * 0.6 - 30 * (1 - a)); ctx.stroke(); });
+        ctx.restore();
+      }
+      SB.label(ctx, "목", X(XT), cy + hs + 12, { size: 11, color: P.dim });
+      // 그래프
+      const key = st.mode, arr = key === "p" ? S.p : key === "M" ? S.M : S.M.map(tOf);
+      const ymax = key === "M" ? Math.max(1.5, ...S.M) * 1.1 : 1.05;
+      const data = arr.map((v, i) => [i / N, v]);
+      const b = { x: bx, y: nh + 10, w: bw, h: h - nh - 56 };
+      const hl = [];
+      if (key === "p") { hl.push({ y: 0.5283, color: P.faint, label: "p*/p₀" }); if (st.show) { hl.push({ y: S.p1, color: P.accent, label: "p₁" }, { y: S.p2, color: P.warn, label: "p₂" }, { y: S.p3, color: P.ok, label: "p₃" }); } }
+      if (key === "M") hl.push({ y: 1, color: P.faint, label: "Ma = 1" });
+      const ch = SB.chart(ctx, b, { x: [0, 1], y: [0, ymax], xLabel: "노즐 위치 x", yLabel: key === "p" ? "p/p₀" : key === "M" ? "Ma" : "T/T₀", series: [{ data, color: P.accent, width: 2.6 }], vlines: [{ x: XT, color: P.faint }], hlines: hl });
+      // 배압 게이지
+      const gx = bx + bw + 34, Y = (v) => b.y + b.h - v * b.h;
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(gx, Y(0)); ctx.lineTo(gx, Y(1)); ctx.stroke(); ctx.restore();
+      if (st.show) [[S.p1, P.accent, "p₁"], [S.p2, P.warn, "p₂"], [S.p3, P.ok, "p₃"]].forEach(([v, c, l]) => { ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx - 9, Y(v)); ctx.lineTo(gx + 9, Y(v)); ctx.stroke(); ctx.restore(); SB.label(ctx, l, gx + 20, Y(v), { size: 10, color: c }); });
+      if (key === "p") SB.dashLine(ctx, ch.X(1), ch.Y(st.pr), gx, Y(st.pr), P.accent2, [3, 3]);
+      SB.label(ctx, "p_b/p₀", gx, b.y - 2 < 0 ? 8 : b.y - 4, { size: 10, color: P.dim });
+      handle(ctx, gx, Y(st.pr), P.accent2, 10);
+      gBox = { gx, Y0: Y(0), Y1: Y(1) }; self._h = [gx, Y(st.pr)];
+    }, { aspect: 0.85, minHeight: 440, maxHeight: 600 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "pb", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "pb" || !gBox) return; const v = SB.clamp((gBox.Y0 - y) / (gBox.Y0 - gBox.Y1), 0.02, 1); getPb.set(Math.round(v * 500) / 500); },
+    });
+    SB.loop("sim-nozzle", (dt) => {
+      const S = st.sol;
+      for (const q of parts) {
+        const m = at(S.M, Math.min(q.x, 1)), v = m * Math.sqrt(tOf(m));
+        q.x += Math.max(v, 0) * dt * 0.32;
+        if (q.x > 1.07) { q.x = Math.random() * 0.03; q.s = Math.random() * 2 - 1; }
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 수직 충격파 계산기 */
+  {
+    const XS = 0.5;
+    const getM = SB.range("sh-M", (v) => v.toFixed(2), () => upd());
+    const getT = SB.range("sh-T", (v) => v + " K", () => upd());
+    const getP = SB.range("sh-p", (v) => v + " kPa", () => upd());
+    const ptsOn = document.getElementById("sh-pts"); ptsOn.addEventListener("change", () => cv.redraw());
+    const parts = Array.from({ length: 160 }, () => ({ m: Math.random(), y: Math.random() * 2 - 1 }));
+    let S = null, cv = null;
+    function upd() {
+      const M = Math.max(1.0001, getM()), T1 = getT(), p1 = getP();
+      S = Flow.normalShock(M);
+      const c1 = Math.sqrt(K * R * T1), V1 = M * c1, V2 = V1 / S.rR, ds = -R * Math.log(S.p0R);
+      SB.stat("sh-m2", S.M2.toFixed(4));
+      SB.stat("sh-p2", (p1 * S.pR).toFixed(1) + " <small>kPa</small>");
+      SB.stat("sh-t2", (T1 * S.TR).toFixed(1) + " <small>K</small>");
+      SB.stat("sh-v", `${V1.toFixed(0)} → ${V2.toFixed(0)} <small>m/s</small>`);
+      SB.stat("sh-p0", S.p0R.toFixed(4));
+      SB.stat("sh-s", ds.toFixed(1) + " <small>J/(kg·K)</small>");
+      cv && cv.redraw();
+    }
+    const xOfM = (m) => { const fu = XS / (XS + (1 - XS) * S.rR); return m < fu ? (m / fu) * XS : XS + ((m - fu) / (1 - fu)) * (1 - XS); };
+    upd();
+    cv = SB.canvas("cv-shock", (ctx, w, h, self) => {
+      const P = pal(), M = getM(), dh = Math.round(h * 0.42), x0 = 14, x1 = w - 14, X = (x) => x0 + x * (x1 - x0), top = 22, bot = dh - 6, cy = (top + bot) / 2;
+      ctx.save(); ctx.fillStyle = P.surface; ctx.fillRect(X(0), top, X(1) - X(0), bot - top);
+      ctx.fillStyle = "rgba(224,60,40," + SB.clamp(0.04 * (S.TR - 1), 0, 0.25) + ")"; ctx.fillRect(X(XS), top, X(1) - X(XS), bot - top);
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0), top); ctx.lineTo(X(1), top); ctx.moveTo(X(0), bot); ctx.lineTo(X(1), bot); ctx.stroke(); ctx.restore();
+      if (ptsOn.checked) { ctx.save(); for (const p of parts) { const x = xOfM(p.m), hot = x > XS; ctx.fillStyle = Flow.ramp(hot ? 0.3 + 0.7 * SB.clamp((S.TR - 1) / 4, 0, 1) : 0.15, 0.9); ctx.beginPath(); ctx.arc(X(x), cy + p.y * (bot - top) * 0.44, 2.3, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); }
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(X(XS), top - 6); ctx.lineTo(X(XS), bot + 2); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "수직 충격파", X(XS), 10, { color: P.accent2, bold: true, size: 11 });
+      const sc = (X(XS) - X(0.06) - 16) / 5, ax = X(0.04), ay = cy;
+      const tip = ax + M * sc;
+      SB.arrow(ctx, ax, ay, tip, ay, { color: P.accent, width: 3.2, head: 10 });
+      SB.label(ctx, `Ma₁ = ${M.toFixed(2)}`, ax + 40, ay - 16, { color: P.accent, bold: true, size: 12 });
+      handle(ctx, tip, ay, P.accent, 10); self._h = [tip, ay]; self._sc = sc; self._ax = ax;
+      const v2 = (M / S.rR) * sc;
+      SB.arrow(ctx, X(XS) + 14, ay, X(XS) + 14 + v2, ay, { color: P.warn, width: 3.2, head: 10 });
+      SB.label(ctx, `Ma₂ = ${S.M2.toFixed(3)}`, X(XS) + 70, ay - 16, { color: P.warn, bold: true, size: 12 });
+      // 로그 막대
+      const items = [["p₂/p₁", S.pR], ["T₂/T₁", S.TR], ["ρ₂/ρ₁", S.rR], ["V₂/V₁", 1 / S.rR], ["Ma₂/Ma₁", S.M2 / M], ["p₀₂/p₀₁", S.p0R], ["T₀₂/T₀₁", 1]];
+      const by = dh + 16, rowH = (h - by - 24) / items.length, lx = 74, rx = w - 16, cx = (lx + rx) / 2, half = (rx - lx) / 2, L = 1.5;
+      const Xl = (v) => cx + SB.clamp(Math.log10(v) / L, -1, 1) * half;
+      ctx.save(); ctx.strokeStyle = P.grid; ctx.fillStyle = P.dim; ctx.font = font(10, true); ctx.textAlign = "center";
+      [0.05, 0.1, 0.3, 1, 3, 10, 30].forEach((v) => { const x = Xl(v); ctx.beginPath(); ctx.moveTo(x, by - 4); ctx.lineTo(x, by + items.length * rowH); ctx.stroke(); ctx.fillText(String(v), x, by + items.length * rowH + 12); });
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(cx, by - 4); ctx.lineTo(cx, by + items.length * rowH); ctx.stroke(); ctx.restore();
+      items.forEach(([lab, v], i) => {
+        const y = by + i * rowH + rowH * 0.18, bh = rowH * 0.64, xv = Xl(v);
+        ctx.save(); ctx.fillStyle = v >= 1 ? P.accent2 : P.accent; ctx.globalAlpha = 0.85; ctx.fillRect(Math.min(cx, xv), y, Math.max(2, Math.abs(xv - cx)), bh); ctx.restore();
+        SB.label(ctx, lab, lx - 6, y + bh / 2, { align: "right", size: 11, color: P.text });
+        SB.label(ctx, v.toFixed(3), v >= 1 ? Math.min(xv + 26, rx - 20) : Math.max(xv - 26, lx + 20), y + bh / 2, { size: 10, mono: true, color: P.text });
+      });
+    }, { aspect: 0.8, minHeight: 420, maxHeight: 560 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "v", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x) => { if (id !== "v") return; getM.set(Math.round(SB.clamp((x - cv._ax) / cv._sc, 1, 5) * 100) / 100); },
+    });
+    SB.loop("sim-shock", (dt) => {
+      const fu = XS / (XS + (1 - XS) * S.rR), V1s = getM() * 0.08, rate = (V1s * fu) / XS;
+      for (const p of parts) { p.m += rate * dt; if (p.m >= 1) { p.m -= 1; p.y = Math.random() * 2 - 1; } }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 엔트로피 미니 */
+  {
+    const getM = SB.range("en-M", (v) => v.toFixed(2), () => cv.redraw());
+    const ds = (m) => -Math.log(Flow.normalShock(m).p0R);
+    const cv = SB.canvas("cv-ent", (ctx, w, h) => {
+      const P = pal(), M = getM(), data = [];
+      for (let i = 0; i <= 125; i++) { const m = 0.5 + i * 0.02; data.push([m, ds(m)]); }
+      SB.chart(ctx, null, { x: [0.5, 3], y: [-0.4, 1.2], xLabel: "Ma₁", yLabel: "Δs/R", series: [{ data, color: P.accent, width: 2.4 }],
+        bands: [{ x0: 0.5, x1: 1, color: "rgba(224,60,40,0.12)" }], hlines: [{ y: 0, color: P.axis, dash: [] }],
+        points: [{ x: M, y: ds(M), color: M < 1 ? P.bad : P.ok, r: 6 }] });
+      const v = ds(M);
+      document.getElementById("en-r").textContent = M < 1 ? `Ma₁ = ${M.toFixed(2)}: Δs/R = ${v.toFixed(4)} < 0 → 제2법칙 위배, 불가능` : `Ma₁ = ${M.toFixed(2)}: Δs/R = ${v.toFixed(4)} ≥ 0 → 가능 (p₀₂/p₀₁ = ${Math.exp(-v).toFixed(4)})`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 팽창 부채 계산 도우미 */
+  // M1, θ(rad) → {nu1, M2, mu1, phi2, dAt(phi), MAt(phi)}  (코너는 원점, 벽이 아래로 θ 꺾임)
+  function expFan(M1, th) {
+    const nu1 = Flow.prandtlMeyer(Math.max(M1, 1.0001)), mu1 = Math.asin(1 / Math.max(M1, 1.0001));
+    const tab = []; for (let i = 0; i <= 40; i++) { const d = (i / 40) * th, M = pmInv(nu1 + d); tab.push({ d, M, phi: Math.asin(1 / M) - d }); }
+    const M2 = tab[40].M, phi2 = tab[40].phi;
+    const look = (phi) => { if (phi >= mu1 || th <= 0) return { d: 0, M: M1 }; if (phi <= phi2) return { d: th, M: M2 }; let i = 0; while (i < 39 && tab[i + 1].phi > phi) i++; const a = tab[i], b = tab[i + 1], f = (a.phi - phi) / (a.phi - b.phi || 1); return { d: a.d + f * (b.d - a.d), M: a.M + f * (b.M - a.M) }; };
+    return { nu1, M2, mu1, phi2, look };
+  }
+  // 팽창 코너 유선 적분 → [[x,y,speed]…]
+  function expStream(F, M1, y0, xEnd, step = 0.03) {
+    const pts = []; let x = -1.3, y = y0; const sp = (M) => M * Math.sqrt(tOf(M)) / (M1 * Math.sqrt(tOf(M1)));
+    for (let k = 0; k < 400 && x < xEnd; k++) {
+      const L = x <= 0 ? { d: 0, M: M1 } : F.look(Math.atan2(y, x));
+      pts.push([x, y, sp(L.M)]); x += step * Math.cos(L.d); y -= step * Math.sin(L.d);
+    }
+    return pts;
+  }
+  const drawPolyW = (ctx, W, pts, col, wd = 1.4) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.stroke(); ctx.restore(); };
+
+  /* ---------------------------------------------------------- 쐐기와 코너 */
+  {
+    const st = { mode: "comp", M: 2, th: 10, lines: [], parts: [] };
+    const XE = 2.6, XH = 2.0;
+    let info = null;
+    const getM = SB.range("wg-M", (v) => v.toFixed(2), (v) => { st.M = v; build(); });
+    const getTh = SB.range("wg-th", (v) => v.toFixed(1) + "°", (v) => { st.th = v; build(); });
+    SB.seg("wg-mode", (v) => { st.mode = v; if (v === "exp" && st.th > 35) { getTh.set(35, true); st.th = 35; } build(); });
+    const strong = document.getElementById("wg-strong"); strong.addEventListener("change", () => cv2.redraw());
+    function build() {
+      const M = st.M, th = st.th * D2R, ys = [0.12, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5];
+      st.lines = [];
+      if (st.mode === "comp") {
+        const tm = thetaMax(M), att = th <= tm.th;
+        let b = null, M2 = null, pR = null, p0R = null;
+        if (th < 1e-4) { b = Math.asin(1 / M); M2 = M; pR = 1; p0R = 1; }
+        else if (att) { b = bisect((x) => thetaOf(x, M) - th, Math.asin(1 / M), tm.b, 60); const Mn = M * Math.sin(b), S = Flow.normalShock(Mn); M2 = S.M2 / Math.sin(b - th); pR = S.pR; p0R = S.p0R; }
+        const sp2 = att ? (M2 * Math.sqrt(tOf(M2))) / (M * Math.sqrt(tOf(M))) : 0.4;
+        const wall = (x) => (x > 0 ? x * Math.tan(th) : 0);
+        const psi = Math.min(80 * D2R, Math.max(Math.asin(1 / M), th) + 22 * D2R), xb = (y) => -0.32 + (Math.sqrt(y * y + 0.09) - 0.3) / Math.tan(psi);
+        ys.forEach((y0) => {
+          const pts = [];
+          for (let x = -1.3; x <= XE; x += 0.03) {
+            let y;
+            if (att) { const xs = y0 / Math.tan(b); y = x < xs ? y0 : y0 + (x - xs) * Math.tan(th); pts.push([x, y, x < xs ? 1 : sp2]); }
+            else { const xx = xb(y0); if (x < xx) { pts.push([x, y0, 1]); continue; } const u = SB.clamp((x - xx) / 0.9, 0, 1), S = u * u * (3 - 2 * u); y = Math.max(y0 + wall(x) * S, wall(x) + 0.6 * y0); pts.push([x, y, 0.35 + 0.3 * S]); }
+          }
+          st.lines.push(pts);
+        });
+        info = { att, b, tm: tm.th, M2, pR, p0R, xb };
+        SB.stat("wg-b", att ? (b * R2D).toFixed(2) + "°" : '<span style="color:var(--bad)">분리 충격파</span>');
+        SB.stat("wg-tm", (tm.th * R2D).toFixed(2) + "°");
+        SB.stat("wg-m2", att ? M2.toFixed(3) : "아음속 영역 포함");
+        SB.stat("wg-p", att ? pR.toFixed(3) : "—");
+        SB.stat("wg-p0", att ? p0R.toFixed(4) : "—");
+      } else {
+        const F = expFan(M, th);
+        ys.forEach((y0) => st.lines.push(expStream(F, M, y0, XE)));
+        const pR = pOf(F.M2) / pOf(M);
+        info = { F, M2: F.M2, pR };
+        SB.stat("wg-b", "— (팽창 부채)");
+        SB.stat("wg-tm", `ν₁ = ${(F.nu1 * R2D).toFixed(2)}°, ν₂ = ${((F.nu1 + th) * R2D).toFixed(2)}°`);
+        SB.stat("wg-m2", F.M2.toFixed(3));
+        SB.stat("wg-p", pR.toFixed(3));
+        SB.stat("wg-p0", "1 (등엔트로피)");
+      }
+      // 입자: 선마다 호 길이 좌표
+      st.lines.forEach((L) => { let s = 0; L.forEach((p, i) => { if (i) s += Math.hypot(p[0] - L[i - 1][0], p[1] - L[i - 1][1]); p[3] = s; }); });
+      if (!st.parts.length) for (let i = 0; i < 90; i++) st.parts.push({ l: i % 8, s: Math.random() * 4 });
+      cv && cv.redraw(); cv2 && cv2.redraw();
+    }
+    let cv = null, cv2 = null, Wc = null;
+    build();
+    cv = SB.canvas("cv-wedge", (ctx, w, h, self) => {
+      const P = pal(), th = st.th * D2R, comp = st.mode === "comp";
+      const W = Phys.world(ctx, w, h, { x: [-1.3, XE], y: [comp ? -0.25 : -1.5, comp ? 1.75 : 1.7], pad: [4, 4, 4, 4], equal: true }); Wc = W;
+      const wall = (x) => (x <= 0 ? 0 : (comp ? 1 : -1) * x * Math.tan(th));
+      // 압력 색
+      if (comp && info.att && th > 0) { ctx.save(); ctx.fillStyle = `rgba(224,96,40,${SB.clamp(0.05 * Math.log2(info.pR) + 0.04, 0, 0.3)})`; ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(XE), W.Y(XE * Math.tan(info.b))); ctx.lineTo(W.X(XE), W.Y(wall(XE))); ctx.closePath(); ctx.fill(); ctx.restore(); }
+      if (!comp && th > 0) { const F = info.F; ctx.save(); ctx.fillStyle = "rgba(49,104,209,0.10)"; ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(3 * Math.cos(F.mu1)), W.Y(3 * Math.sin(F.mu1))); ctx.lineTo(W.X(XE), W.Y(1.7)); ctx.lineTo(W.X(XE), W.Y(wall(XE))); ctx.closePath(); ctx.fill(); ctx.restore(); }
+      // 유선
+      st.lines.forEach((L) => drawPolyW(ctx, W, L, P.faint, 1.3));
+      // 입자
+      ctx.save(); st.parts.forEach((q) => { const L = st.lines[q.l]; if (!L) return; const tot = L[L.length - 1][3]; const s = q.s % tot; let i = 1; while (i < L.length - 1 && L[i][3] < s) i++; const p = L[i]; ctx.fillStyle = Flow.ramp(0.15 + 0.5 * (comp ? 1 / p[2] - 1 : p[2] - 1) + 0.25, 0.95); ctx.beginPath(); ctx.arc(W.X(p[0]), W.Y(p[1]), 2.6, 0, Math.PI * 2); ctx.fill(); }); ctx.restore();
+      // 벽
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(W.X(-1.3), W.Y(0)); ctx.lineTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(XE), W.Y(wall(XE))); ctx.lineTo(W.X(XE), h); ctx.lineTo(W.X(-1.3), h); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      // 마하선 μ1
+      const mu1 = Math.asin(1 / st.M);
+      SB.dashLine(ctx, W.X(0), W.Y(0), W.X(3 * Math.cos(mu1)), W.Y(3 * Math.sin(mu1)), P.dim, [2, 4]);
+      if (comp) {
+        if (info.att && th > 0) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(4 * Math.cos(info.b)), W.Y(4 * Math.sin(info.b))); ctx.stroke(); ctx.restore(); SB.label(ctx, `β = ${(info.b * R2D).toFixed(1)}°`, W.X(0.95 * Math.cos(info.b)) - 34, W.Y(0.95 * Math.sin(info.b)), { color: P.accent2, bold: true }); }
+        else if (!info.att) { ctx.save(); ctx.strokeStyle = P.bad; ctx.lineWidth = 3.4; ctx.beginPath(); for (let y = 0; y <= 1.8; y += 0.03) { const x = info.xb(y); y ? ctx.lineTo(W.X(x), W.Y(y)) : ctx.moveTo(W.X(x), W.Y(y)); } ctx.stroke(); ctx.restore(); SB.label(ctx, "분리 충격파 (θ > θmax)", W.X(-1.25), W.Y(1.3), { color: P.bad, bold: true, align: "left" }); }
+      } else if (th > 0) {
+        const F = info.F; ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.3; ctx.setLineDash([5, 3]);
+        for (let k = 0; k <= 5; k++) { const ph = F.mu1 + (k / 5) * (F.phi2 - F.mu1); ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(4 * Math.cos(ph)), W.Y(4 * Math.sin(ph))); ctx.stroke(); }
+        ctx.restore(); SB.label(ctx, "팽창 부채", W.X(1.2 * Math.cos((F.mu1 + F.phi2) / 2)), W.Y(1.2 * Math.sin((F.mu1 + F.phi2) / 2)) - 10, { color: P.accent, bold: true });
+      }
+      SB.label(ctx, `Ma₁ = ${st.M.toFixed(2)} →`, W.X(-1.25), W.Y(comp ? 1.62 : 1.55), { size: 12, bold: true, align: "left" });
+      SB.label(ctx, `θ = ${st.th.toFixed(1)}°`, W.X(0.9), W.Y(wall(0.9)) + (comp ? 14 : 16), { size: 11, color: P.dim });
+      const hx = W.X(XH), hy = W.Y(wall(XH)); handle(ctx, hx, hy, P.accent2, 10); self._h = [hx, hy];
+    }, { aspect: 0.72, minHeight: 260, maxHeight: 400 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "w", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "w" || !Wc) return; const yy = Wc.iy(y) * (st.mode === "comp" ? 1 : -1); const t = Math.atan2(Math.max(0, yy), XH) * R2D; getTh.set(Math.round(SB.clamp(t, 0, st.mode === "comp" ? 40 : 35) * 2) / 2); },
+    });
+    cv2 = SB.canvas("cv-tbm", (ctx, w, h) => {
+      const P = pal();
+      if (st.mode === "comp") {
+        const Ms = [1.2, 1.5, 2, 3, 5], ser = [];
+        const curve = (M, wk) => { const tm = thetaMax(M), mu = Math.asin(1 / M), out = []; for (let i = 0; i <= 80; i++) { const b = wk ? mu + (i / 80) * (tm.b - mu) : tm.b + (i / 80) * (Math.PI / 2 - tm.b); out.push([thetaOf(b, M) * R2D, b * R2D]); } return out; };
+        Ms.forEach((M) => { ser.push({ data: curve(M, true), color: P.faint, width: 1.2 }); if (strong.checked) ser.push({ data: curve(M, false), color: P.faint, width: 1, dash: [4, 3] }); });
+        ser.push({ data: curve(st.M, true), color: P.accent, width: 2.6 }); if (strong.checked) ser.push({ data: curve(st.M, false), color: P.accent, width: 1.6, dash: [5, 4] });
+        const loc = []; for (let M = 1.1; M <= 6; M += 0.1) { const t = thetaMax(M); loc.push([t.th * R2D, t.b * R2D]); }
+        ser.push({ data: loc, color: P.bad, width: 1.2, dash: [2, 3] });
+        const pts = info.att && st.th > 0 ? [{ x: st.th, y: info.b * R2D, color: P.accent2, r: 6 }] : [];
+        SB.chart(ctx, null, { x: [0, 45], y: [0, 90], xLabel: "꺾임각 θ (°)", yLabel: "충격파 각 β (°)", series: ser, points: pts, vlines: info.att ? [] : [{ x: st.th, color: P.bad, label: "θ > θmax", dash: [] }] });
+        SB.label(ctx, `Ma = ${Ms.join(", ")} · 굵은 선 = ${st.M.toFixed(2)}`, w / 2 + 10, 10, { size: 10, color: P.dim });
+      } else {
+        const data = []; for (let i = 0; i <= 100; i++) { const M = 1 + i * 0.05; data.push([M, Flow.prandtlMeyer(M) * R2D]); }
+        const F = info.F, n1 = F.nu1 * R2D, n2 = n1 + st.th;
+        SB.chart(ctx, null, { x: [1, 6], y: [0, 90], xLabel: "Ma", yLabel: "ν (°)", series: [{ data, color: P.accent, width: 2.4 }], hlines: [{ y: n1, color: P.dim, label: "ν₁" }, { y: n2, color: P.accent2, label: "ν₂ = ν₁ + θ" }], points: [{ x: st.M, y: n1, color: P.dim, r: 5 }, { x: F.M2, y: n2, color: P.accent2, r: 6 }] });
+      }
+    }, { aspect: 0.72, minHeight: 260, maxHeight: 400 });
+    SB.loop("sim-wedge", (dt) => {
+      st.parts.forEach((q) => { const L = st.lines[q.l]; if (!L) return; const tot = L[L.length - 1][3], s = q.s % tot; let i = 1; while (i < L.length - 1 && L[i][3] < s) i++; q.s = (q.s % tot) + dt * 0.55 * L[i][2]; });
+      cv.redraw();
+    });
+    build();
+  }
+
+  /* ---------------------------------------------------------- 프란틀–마이어 미니 */
+  {
+    const getM = SB.range("pm-M", (v) => v.toFixed(2), () => cv.redraw());
+    const getTh = SB.range("pm-th", (v) => v.toFixed(1) + "°", () => cv.redraw());
+    const cv = SB.canvas("cv-pm", (ctx, w, h) => {
+      const P = pal(), M1 = Math.max(1.0001, getM()), th = getTh() * D2R, F = expFan(M1, th);
+      const W = Phys.world(ctx, w, h, { x: [-1.3, 2.6], y: [-1.5, 1.6], pad: [4, 4, 4, 4], equal: true });
+      [0.15, 0.4, 0.7, 1.0, 1.3].forEach((y0) => { const pts = expStream(F, M1, y0, 2.6); for (let i = 1; i < pts.length; i++) { ctx.save(); ctx.strokeStyle = Flow.ramp((pts[i][2] - 1) * 1.2 + 0.2); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W.X(pts[i - 1][0]), W.Y(pts[i - 1][1])); ctx.lineTo(W.X(pts[i][0]), W.Y(pts[i][1])); ctx.stroke(); ctx.restore(); } });
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(W.X(-1.3), W.Y(0)); ctx.lineTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(2.6), W.Y(-2.6 * Math.tan(th))); ctx.lineTo(W.X(2.6), h); ctx.lineTo(W.X(-1.3), h); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.6; [F.mu1, F.phi2].forEach((ph, k) => { ctx.setLineDash(k ? [6, 3] : []); ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(3.5 * Math.cos(ph)), W.Y(3.5 * Math.sin(ph))); ctx.stroke(); }); ctx.restore();
+      SB.label(ctx, `μ₁ = ${(F.mu1 * R2D).toFixed(1)}°`, W.X(1.1 * Math.cos(F.mu1)) - 30, W.Y(1.1 * Math.sin(F.mu1)), { size: 11, color: P.accent2 });
+      const pR = pOf(F.M2) / pOf(M1);
+      document.getElementById("pm-r").textContent = `ν₁ = ${(F.nu1 * R2D).toFixed(2)}° → ν₂ = ${((F.nu1 + th) * R2D).toFixed(2)}° · Ma₂ = ${F.M2.toFixed(3)} · p₂/p₁ = ${pR.toFixed(3)} · T₂/T₁ = ${(tOf(F.M2) / tOf(M1)).toFixed(3)}`;
+    }, { aspect: 0.6, minHeight: 230, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- 드릴 */
+  const rnd = (a, b, s) => Math.round((a + Math.random() * (b - a)) / s) * s;
+  SB.drill("drill-stag", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const T = rnd(220, 320, 5), V = rnd(100, 900, 10), T0 = T + (V * V) / (2 * CP);
+      return { q: `<p>온도 \\(T = ${T}\\) K인 공기가 \\(V = ${V}\\) m/s로 흐른다. 정체 온도 \\(T_0\\)는? (\\(c_p = 1004.5\\) J/(kg·K))</p>`, answer: T0, label: "T₀ =", unit: "K", sol: `\\(T_0 = T + V^2/2c_p = ${T} + ${V * V}/2009 = ${T0.toFixed(1)}\\) K` };
+    }
+    if (k === 1) {
+      const M = rnd(0.3, 2.5, 0.05), p = rnd(20, 100, 5), r = isen(M).pR;
+      return { q: `<p>정압 \\(p = ${p}\\) kPa, Ma = ${M.toFixed(2)}인 공기 유동의 정체 압력 \\(p_0\\)는?</p>`, answer: p * r, label: "p₀ =", unit: "kPa", sol: `\\(p_0/p = (1 + 0.2\\cdot${M.toFixed(2)}^2)^{3.5} = ${r.toFixed(4)}\\) → \\(p_0 = ${(p * r).toFixed(1)}\\) kPa` };
+    }
+    const T0 = rnd(280, 600, 10), M = rnd(0.5, 3, 0.1), T = T0 / isen(M).TR;
+    return { q: `<p>정체 온도 \\(T_0 = ${T0}\\) K인 공기가 Ma = ${M.toFixed(1)}로 흐른다. 정온 \\(T\\)와 속도 \\(V\\)는?</p>`, answer: [T, M * Math.sqrt(K * R * T)], label: ["T =", "V ="], unit: ["K", "m/s"], sol: `\\(T = T_0/(1+0.2\\,\\text{Ma}^2) = ${T.toFixed(1)}\\) K, \\(V = \\text{Ma}\\sqrt{kRT} = ${(M * Math.sqrt(K * R * T)).toFixed(0)}\\) m/s` };
+  });
+  SB.drill("drill-isen", () => {
+    const k = Math.floor(Math.random() * 4), M = rnd(0.2, 3, 0.05), I = isen(M), Ms = M.toFixed(2);
+    if (k === 0) return { q: `<p>Ma = ${Ms}에서 \\(T/T_0\\)는?</p>`, answer: 1 / I.TR, label: "T/T₀ =", sol: `\\(T/T_0 = 1/(1 + 0.2\\cdot${Ms}^2) = ${(1 / I.TR).toFixed(4)}\\)` };
+    if (k === 1) return { q: `<p>Ma = ${Ms}에서 \\(p/p_0\\)는?</p>`, answer: 1 / I.pR, label: "p/p₀ =", sol: `\\(p/p_0 = (1 + 0.2\\cdot${Ms}^2)^{-3.5} = ${(1 / I.pR).toFixed(4)}\\)` };
+    if (k === 2) return { q: `<p>Ma = ${Ms}에서 면적비 \\(A/A^*\\)는?</p>`, answer: I.AR, label: "A/A* =", sol: `\\(A/A^* = \\frac{1}{${Ms}}\\left[\\frac{1 + 0.2\\cdot${Ms}^2}{1.2}\\right]^3 = ${I.AR.toFixed(4)}\\)` };
+    const pr = rnd(0.55, 0.98, 0.01), Mx = Math.sqrt(5 * (Math.pow(pr, -1 / 3.5) - 1));
+    return { q: `<p>등엔트로피 아음속 유동에서 \\(p/p_0 = ${pr.toFixed(2)}\\)인 단면의 마하 수는?</p>`, answer: Mx, label: "Ma =", sol: `\\(\\text{Ma} = \\sqrt{5[(p_0/p)^{1/3.5} - 1]} = ${Mx.toFixed(4)}\\)` };
+  });
+  SB.drill("drill-shock", () => {
+    const k = Math.floor(Math.random() * 4), M = rnd(1.2, 4, 0.05), S = Flow.normalShock(M), Ms = M.toFixed(2);
+    if (k === 0) return { q: `<p>Ma₁ = ${Ms}인 수직 충격파 뒤의 마하 수 Ma₂는?</p>`, answer: S.M2, label: "Ma₂ =", sol: `\\(\\text{Ma}_2^2 = \\frac{${Ms}^2 + 5}{7\\cdot${Ms}^2 - 1}\\) → Ma₂ = ${S.M2.toFixed(4)}` };
+    if (k === 1) return { q: `<p>Ma₁ = ${Ms}인 수직 충격파의 정압비 \\(p_2/p_1\\)은?</p>`, answer: S.pR, label: "p₂/p₁ =", sol: `\\(p_2/p_1 = 1 + \\frac{2.8}{2.4}(${Ms}^2 - 1) = ${S.pR.toFixed(4)}\\)` };
+    if (k === 2) return { q: `<p>Ma₁ = ${Ms}인 수직 충격파의 온도비 \\(T_2/T_1\\)은?</p>`, answer: S.TR, label: "T₂/T₁ =", sol: `\\(p_2/p_1 = ${S.pR.toFixed(4)}\\), \\(\\rho_2/\\rho_1 = ${S.rR.toFixed(4)}\\) → \\(T_2/T_1 = ${S.TR.toFixed(4)}\\)` };
+    return { q: `<p>Ma₁ = ${Ms}인 수직 충격파의 정체 압력비 \\(p_{02}/p_{01}\\)은?</p>`, answer: S.p0R, label: "p₀₂/p₀₁ =", sol: `\\(\\rho_2/\\rho_1 = ${S.rR.toFixed(4)}\\), \\(p_2/p_1 = ${S.pR.toFixed(4)}\\) → \\(p_{02}/p_{01} = (\\rho_2/\\rho_1)^{3.5}(p_1/p_2)^{2.5} = ${S.p0R.toFixed(4)}\\)` };
+  });
+})();
+</script>
+</body>
+</html>

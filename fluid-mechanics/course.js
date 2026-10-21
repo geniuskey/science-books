@@ -152,8 +152,7 @@ SB.registerCourse({
      "tags": [
       "마하 수",
       "충격파"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "turbomachinery",
@@ -320,9 +319,21 @@ SB.registerCourse({
    "steps": 4,
    "predicts": 5,
    "hero": 1
+  },
+  "compressible-flow": {
+   "problems": 16,
+   "examples": 10,
+   "sims": 7,
+   "figures": 9,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 10,
+ "published": 11,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
