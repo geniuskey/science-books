@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>접합과 계면 · 고체물리 · SciBook</title>
+<meta name="description" content="pn 접합의 띠 그림과 내부 전위, 공핍층의 전기장과 C–V, 금속–반도체의 쇼트키 장벽과 페르미 준위 고정, 옴 접촉과 접촉 비저항, 이종 접합의 띠 어긋남과 2차원 전자 기체, MOS 계면의 띠 굽음과 문턱 조건을 직접 끌며 계산한다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/junctions.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="접합과 계면 · 고체물리 · SciBook">
+<meta property="og:description" content="pn 접합의 띠 그림과 내부 전위, 공핍층의 전기장과 C–V, 금속–반도체의 쇼트키 장벽과 페르미 준위 고정, 옴 접촉과 접촉 비저항, 이종 접합의 띠 어긋남과 2차원 전자 기체, MOS 계면의 띠 굽음과 문턱 조건을 직접 끌며 계산한다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/junctions.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "접합과 계면 · 고체물리 · SciBook", "headline": "13 접합과 계면", "url": "https://science.euiyun.com/solid-state/chapters/junctions.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "pn 접합의 띠 그림과 내부 전위, 공핍층의 전기장과 C–V, 금속–반도체의 쇼트키 장벽과 페르미 준위 고정, 옴 접촉과 접촉 비저항, 이종 접합의 띠 어긋남과 2차원 전자 기체, MOS 계면의 띠 굽음과 문턱 조건을 직접 끌며 계산한다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 13, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "13 접합과 계면", "item": "https://science.euiyun.com/solid-state/chapters/junctions.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+</head>
+<body data-chapter="junctions">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="carrier-statistics carrier-transport recombination">
+    <div class="eyebrow">Chapter 13</div>
+    <h1>접합과 계면</h1>
+    <p class="lead">트랜지스터 하나에는 성질이 다른 물질이 맞닿는 면이 여럿 있다. 소스와 채널 사이의 pn 접합, 실리사이드와 실리콘 사이의 금속–반도체 접촉, 게이트 산화막과 채널 사이의 MOS 계면, SiGe 소스·드레인과 실리콘 사이의 이종 접합. 전류가 흐르느냐 막히느냐는 거의 언제나 이런 계면에서 정해진다. 계면에서 일어나는 일은 결국 한 가지다. <b>열평형에서는 페르미 준위가 어디서나 같아야 하므로, 두 물질의 띠가 그 조건에 맞게 굽는다.</b> 이 장은 그 하나의 원리로 내부 전위와 공핍층, 쇼트키 장벽과 옴 접촉, 띠 어긋남, MOS의 반전을 차례로 계산한다. 다이오드 전류 식의 전체 유도와 트랜지스터 동작은 SemiBooks DeviceBook에 맡기고, 여기서는 <em>띠가 어떻게 맞춰지는가</em>에 집중한다. 아래에서 n형 조각이 p형 조각에 다가가 붙는 모습을 먼저 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">n형 조각(오른쪽)을 끌어 붙였다 떼어 보세요</span></div>
+    <ul class="objectives">
+      <li>p형과 n형을 붙이면 페르미 준위가 같아지도록 띠가 굽는다는 것을 설명하고, 내부 전위 \(V_{bi} = (k_BT/q)\ln(N_AN_D/n_i^2)\)를 계산한다(Si, \(10^{17}/10^{15}\) cm⁻³ → 0.71 V).</li>
+      <li>푸아송 방정식과 공핍 근사로 공핍 폭 \(W\), 양쪽 침투 깊이 \(x_p, x_n\), 최대 전기장 \(\mathcal E_{max}\), 전위 프로파일을 구하고, 바이어스에 따른 변화를 계산한다.</li>
+      <li>접합 정전 용량 \(C = \varepsilon_s/W\)와 \(1/C^2\)–\(V\) 직선의 기울기로 도핑 농도와 프로파일을 잰다.</li>
+      <li>순방향·역방향에서 의사 페르미 준위가 갈라지는 띠 그림을 그리고, 이상 다이오드의 \(J_0\)와 공핍층 열생성 전류의 크기를 비교한다.</li>
+      <li>일함수·전자 친화도로 쇼트키–모트 장벽 \(\phi_B = \phi_m - \chi\)를 구하고, 실리콘에서 이 규칙이 거의 맞지 않는 이유를 계면 상태와 페르미 준위 고정(고정 계수 \(S\), 전하 중립 준위)으로 설명한다.</li>
+      <li>열전자 방출 \(J = A^*T^2e^{-q\phi_B/k_BT}\)과 터널링 특성 에너지 \(E_{00}\)로 열전자·열전계·전계 방출을 구분하고, 접촉 비저항 \(\rho_c\)의 도핑 의존을 설명한다.</li>
+      <li>앤더슨 규칙으로 이종 접합의 \(\Delta E_c, \Delta E_v\)와 유형 I·II·III을 판정하고, Si/SiGe·GaAs/AlGaAs와 2차원 전자 기체의 형성을 설명한다.</li>
+      <li>MOS 계면의 평탄 띠 전압, 축적·공핍·반전의 띠 굽음, 표면 전위 \(\psi_s\)와 표면 전하 \(Q_s(\psi_s)\), 문턱 조건 \(\psi_s = 2\phi_F\)를 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="pn-bands">
+    <h2>pn 접합의 띠 맞추기와 내부 전위</h2>
+    <p>같은 실리콘 결정 안에서 한쪽은 붕소로, 다른 쪽은 인으로 도핑해 경계를 만든 것을 <span class="term">pn 접합</span><span class="en">(pn junction)</span>이라 한다. 실제로는 n형 웨이퍼 표면에 붕소를 이온 주입하고 어닐링해 만들며, 경계에서 도핑이 갑자기 바뀐다고 보는 것을 <span class="term">계단 접합</span><span class="en">(abrupt junction)</span>이라 한다. 이 장의 pn 계산은 모두 계단 접합이다.</p>
+    <p>10장에서 본 것처럼 페르미 준위의 위치는 도핑이 정한다. n형(\(N_D\))에서는 전도대 가까이 \(E_c - E_F = k_BT\ln(N_c/N_D)\), p형(\(N_A\))에서는 가전자대 가까이 \(E_F - E_v = k_BT\ln(N_v/N_A)\)에 있다. 두 조각을 떼어 놓고 진공 준위를 맞춰 그리면(같은 실리콘이므로 전자 친화도 \(\chi\)가 같아 \(E_c\)도 같은 높이) 페르미 준위가 어긋나 있다. 붙이는 순간 무엇이 일어나는지 단계별로 보자.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 320" role="img" aria-label="p형과 n형 반도체를 붙이면 페르미 준위가 같아지며 띠가 굽는 과정">
+<defs><marker id="jn-ar1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+<g data-only="1">
+<line x1="30" y1="40" x2="370" y2="40" class="s-line" stroke-dasharray="6 4" opacity=".6"/><line x1="430" y1="40" x2="770" y2="40" class="s-line" stroke-dasharray="6 4" opacity=".6"/>
+<text class="t-dim" x="400" y="34" text-anchor="middle" style="font-size:12px">진공 준위</text>
+<line x1="30" y1="100" x2="370" y2="100" stroke="var(--text)" stroke-width="2.4"/><line x1="30" y1="230" x2="370" y2="230" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="30" y1="205" x2="370" y2="205" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/>
+<text class="t" x="200.0" y="285" text-anchor="middle" style="font-weight:700">p형</text>
+<line x1="430" y1="100" x2="770" y2="100" stroke="var(--text)" stroke-width="2.4"/><line x1="430" y1="230" x2="770" y2="230" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="430" y1="128" x2="770" y2="128" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/>
+<text class="t" x="600.0" y="285" text-anchor="middle" style="font-weight:700">n형</text>
+<text class="t" x="36" y="94">E<tspan dy="4" style="font-size:10px">c</tspan></text><text class="t" x="36" y="250">E<tspan dy="4" style="font-size:10px">v</tspan></text>
+<text class="t" x="300" y="198" style="fill:var(--accent-2)">E<tspan dy="4" style="font-size:10px">F</tspan></text><text class="t" x="700" y="121" style="fill:var(--accent-2)">E<tspan dy="4" style="font-size:10px">F</tspan></text>
+<line x1="400" y1="128" x2="400" y2="205" stroke="var(--text-dim)" stroke-width="1.5" marker-start="url(#jn-ar1)" marker-end="url(#jn-ar1)"/><text class="t" x="408" y="172" style="font-size:12px">qV<tspan dy="4" style="font-size:9px">bi</tspan></text>
+<line x1="200" y1="40" x2="200" y2="100" stroke="var(--text-dim)" stroke-width="1.3" marker-start="url(#jn-ar1)" marker-end="url(#jn-ar1)"/><text class="t-dim" x="208" y="74" style="font-size:12px">χ</text><line x1="600" y1="40" x2="600" y2="100" stroke="var(--text-dim)" stroke-width="1.3" marker-start="url(#jn-ar1)" marker-end="url(#jn-ar1)"/><text class="t-dim" x="608" y="74" style="font-size:12px">χ</text>
+<circle cx="442.4" cy="87.7" r="4" fill="var(--accent)"/>
+<circle cx="466.7" cy="87.4" r="4" fill="var(--accent)"/>
+<circle cx="492.3" cy="90.6" r="4" fill="var(--accent)"/>
+<circle cx="509.1" cy="86.0" r="4" fill="var(--accent)"/>
+<circle cx="534.6" cy="89.6" r="4" fill="var(--accent)"/>
+<circle cx="565.0" cy="88.2" r="4" fill="var(--accent)"/>
+<circle cx="586.4" cy="88.1" r="4" fill="var(--accent)"/>
+<circle cx="607.4" cy="90.1" r="4" fill="var(--accent)"/>
+<circle cx="630.3" cy="85.8" r="4" fill="var(--accent)"/>
+<circle cx="652.2" cy="86.6" r="4" fill="var(--accent)"/>
+<circle cx="676.7" cy="90.6" r="4" fill="var(--accent)"/>
+<circle cx="700.6" cy="87.5" r="4" fill="var(--accent)"/>
+<circle cx="719.0" cy="90.8" r="4" fill="var(--accent)"/>
+<circle cx="747.7" cy="88.2" r="4" fill="var(--accent)"/>
+<circle cx="47.2" cy="244.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="70.1" cy="244.5" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="89.9" cy="243.8" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="113.4" cy="244.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="140.8" cy="239.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="156.4" cy="240.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="187.7" cy="241.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="207.3" cy="240.8" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="229.1" cy="241.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="250.5" cy="242.5" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="275.8" cy="244.4" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="299.8" cy="244.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="324.6" cy="244.9" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="345.7" cy="240.0" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+</g>
+<g data-only="2">
+<line x1="30" y1="100" x2="770" y2="100" stroke="var(--text)" stroke-width="2.4"/><line x1="30" y1="230" x2="770" y2="230" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="30" y1="205" x2="400" y2="205" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/><line x1="400" y1="128" x2="770" y2="128" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/>
+<line x1="400" y1="60" x2="400" y2="270" stroke="var(--text-faint)" stroke-width="1.5" stroke-dasharray="3 3"/>
+<circle cx="442.4" cy="87.7" r="4" fill="var(--accent)"/>
+<circle cx="466.7" cy="87.4" r="4" fill="var(--accent)"/>
+<circle cx="492.3" cy="90.6" r="4" fill="var(--accent)"/>
+<circle cx="509.1" cy="86.0" r="4" fill="var(--accent)"/>
+<circle cx="534.6" cy="89.6" r="4" fill="var(--accent)"/>
+<circle cx="565.0" cy="88.2" r="4" fill="var(--accent)"/>
+<circle cx="586.4" cy="88.1" r="4" fill="var(--accent)"/>
+<circle cx="607.4" cy="90.1" r="4" fill="var(--accent)"/>
+<circle cx="630.3" cy="85.8" r="4" fill="var(--accent)"/>
+<circle cx="652.2" cy="86.6" r="4" fill="var(--accent)"/>
+<circle cx="676.7" cy="90.6" r="4" fill="var(--accent)"/>
+<circle cx="700.6" cy="87.5" r="4" fill="var(--accent)"/>
+<circle cx="719.0" cy="90.8" r="4" fill="var(--accent)"/>
+<circle cx="747.7" cy="88.2" r="4" fill="var(--accent)"/>
+<circle cx="47.2" cy="244.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="70.1" cy="244.5" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="89.9" cy="243.8" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="113.4" cy="244.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="140.8" cy="239.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="156.4" cy="240.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="187.7" cy="241.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="207.3" cy="240.8" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="229.1" cy="241.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="250.5" cy="242.5" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="275.8" cy="244.4" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="299.8" cy="244.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="324.6" cy="244.9" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="345.7" cy="240.0" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<defs><marker id="jn-ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs><defs><marker id="jn-ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+<line x1="470" y1="70" x2="330" y2="70" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#jn-ar2)"/><text class="t" x="480" y="66" style="fill:var(--accent);font-size:12px">전자 확산 → p쪽</text>
+<line x1="330" y1="262" x2="470" y2="262" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#jn-ar3)"/><text class="t" x="320" y="266" text-anchor="end" style="fill:var(--accent-2);font-size:12px">정공 확산 → n쪽</text>
+<text class="t" x="400" y="300" text-anchor="middle" style="font-size:13px">E<tspan dy="4" style="font-size:9px">F</tspan><tspan dy="-4"> 가 서로 다르다 = 평형이 아니다 → 높은 E</tspan><tspan dy="4" style="font-size:9px">F</tspan><tspan dy="-4"> 쪽(n)의 전자가 낮은 쪽(p)으로 흐른다</tspan></text>
+</g>
+<g data-step="3">
+<rect x="330" y="60" width="180" height="215" fill="var(--accent-soft)" opacity=".55"/>
+<path d="M30.0,65.0 L33.7,65.0 L37.4,65.0 L41.1,65.0 L44.8,65.0 L48.5,65.0 L52.2,65.0 L55.9,65.0 L59.6,65.0 L63.3,65.0 L67.0,65.0 L70.7,65.0 L74.4,65.0 L78.1,65.0 L81.8,65.0 L85.5,65.0 L89.2,65.0 L92.9,65.0 L96.6,65.0 L100.3,65.0 L104.0,65.0 L107.7,65.0 L111.4,65.0 L115.1,65.0 L118.8,65.0 L122.5,65.0 L126.2,65.0 L129.9,65.0 L133.6,65.0 L137.3,65.0 L141.0,65.0 L144.7,65.0 L148.4,65.0 L152.1,65.0 L155.8,65.0 L159.5,65.0 L163.2,65.0 L166.9,65.0 L170.6,65.0 L174.3,65.0 L178.0,65.0 L181.7,65.0 L185.4,65.0 L189.1,65.0 L192.8,65.0 L196.5,65.0 L200.2,65.0 L203.9,65.0 L207.6,65.0 L211.3,65.0 L215.0,65.0 L218.7,65.0 L222.4,65.0 L226.1,65.0 L229.8,65.0 L233.5,65.0 L237.2,65.0 L240.9,65.0 L244.6,65.0 L248.3,65.0 L252.0,65.0 L255.7,65.0 L259.4,65.0 L263.1,65.0 L266.8,65.0 L270.5,65.0 L274.2,65.0 L277.9,65.0 L281.6,65.0 L285.3,65.0 L289.0,65.0 L292.7,65.0 L296.4,65.0 L300.1,65.0 L303.8,65.0 L307.5,65.0 L311.2,65.0 L314.9,65.0 L318.6,65.0 L322.3,65.0 L326.0,65.0 L329.7,65.0 L333.4,65.1 L337.1,65.3 L340.8,65.7 L344.5,66.3 L348.2,67.0 L351.9,67.9 L355.6,69.0 L359.3,70.2 L363.0,71.7 L366.7,73.2 L370.4,75.0 L374.1,76.9 L377.8,79.0 L381.5,81.2 L385.2,83.6 L388.9,86.2 L392.6,88.9 L396.3,91.9 L400.0,94.9 L403.7,98.1 L407.4,101.1 L411.1,104.0 L414.8,106.8 L418.5,109.4 L422.2,112.0 L425.9,114.5 L429.6,116.9 L433.3,119.1 L437.0,121.3 L440.7,123.3 L444.4,125.3 L448.1,127.1 L451.8,128.8 L455.5,130.4 L459.2,132.0 L462.9,133.4 L466.6,134.7 L470.3,135.9 L474.0,137.0 L477.7,137.9 L481.4,138.8 L485.1,139.6 L488.8,140.3 L492.5,140.8 L496.2,141.3 L499.9,141.6 L503.6,141.8 L507.3,142.0 L511.0,142.0 L514.7,142.0 L518.4,142.0 L522.1,142.0 L525.8,142.0 L529.5,142.0 L533.2,142.0 L536.9,142.0 L540.6,142.0 L544.3,142.0 L548.0,142.0 L551.7,142.0 L555.4,142.0 L559.1,142.0 L562.8,142.0 L566.5,142.0 L570.2,142.0 L573.9,142.0 L577.6,142.0 L581.3,142.0 L585.0,142.0 L588.7,142.0 L592.4,142.0 L596.1,142.0 L599.8,142.0 L603.5,142.0 L607.2,142.0 L610.9,142.0 L614.6,142.0 L618.3,142.0 L622.0,142.0 L625.7,142.0 L629.4,142.0 L633.1,142.0 L636.8,142.0 L640.5,142.0 L644.2,142.0 L647.9,142.0 L651.6,142.0 L655.3,142.0 L659.0,142.0 L662.7,142.0 L666.4,142.0 L670.1,142.0 L673.8,142.0 L677.5,142.0 L681.2,142.0 L684.9,142.0 L688.6,142.0 L692.3,142.0 L696.0,142.0 L699.7,142.0 L703.4,142.0 L707.1,142.0 L710.8,142.0 L714.5,142.0 L718.2,142.0 L721.9,142.0 L725.6,142.0 L729.3,142.0 L733.0,142.0 L736.7,142.0 L740.4,142.0 L744.1,142.0 L747.8,142.0 L751.5,142.0 L755.2,142.0 L758.9,142.0 L762.6,142.0 L766.3,142.0 L770.0,142.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<path d="M30.0,195.0 L33.7,195.0 L37.4,195.0 L41.1,195.0 L44.8,195.0 L48.5,195.0 L52.2,195.0 L55.9,195.0 L59.6,195.0 L63.3,195.0 L67.0,195.0 L70.7,195.0 L74.4,195.0 L78.1,195.0 L81.8,195.0 L85.5,195.0 L89.2,195.0 L92.9,195.0 L96.6,195.0 L100.3,195.0 L104.0,195.0 L107.7,195.0 L111.4,195.0 L115.1,195.0 L118.8,195.0 L122.5,195.0 L126.2,195.0 L129.9,195.0 L133.6,195.0 L137.3,195.0 L141.0,195.0 L144.7,195.0 L148.4,195.0 L152.1,195.0 L155.8,195.0 L159.5,195.0 L163.2,195.0 L166.9,195.0 L170.6,195.0 L174.3,195.0 L178.0,195.0 L181.7,195.0 L185.4,195.0 L189.1,195.0 L192.8,195.0 L196.5,195.0 L200.2,195.0 L203.9,195.0 L207.6,195.0 L211.3,195.0 L215.0,195.0 L218.7,195.0 L222.4,195.0 L226.1,195.0 L229.8,195.0 L233.5,195.0 L237.2,195.0 L240.9,195.0 L244.6,195.0 L248.3,195.0 L252.0,195.0 L255.7,195.0 L259.4,195.0 L263.1,195.0 L266.8,195.0 L270.5,195.0 L274.2,195.0 L277.9,195.0 L281.6,195.0 L285.3,195.0 L289.0,195.0 L292.7,195.0 L296.4,195.0 L300.1,195.0 L303.8,195.0 L307.5,195.0 L311.2,195.0 L314.9,195.0 L318.6,195.0 L322.3,195.0 L326.0,195.0 L329.7,195.0 L333.4,195.1 L337.1,195.3 L340.8,195.7 L344.5,196.3 L348.2,197.0 L351.9,197.9 L355.6,199.0 L359.3,200.2 L363.0,201.7 L366.7,203.2 L370.4,205.0 L374.1,206.9 L377.8,209.0 L381.5,211.2 L385.2,213.6 L388.9,216.2 L392.6,218.9 L396.3,221.9 L400.0,224.9 L403.7,228.1 L407.4,231.1 L411.1,234.0 L414.8,236.8 L418.5,239.4 L422.2,242.0 L425.9,244.5 L429.6,246.9 L433.3,249.1 L437.0,251.3 L440.7,253.3 L444.4,255.3 L448.1,257.1 L451.8,258.8 L455.5,260.4 L459.2,262.0 L462.9,263.4 L466.6,264.7 L470.3,265.9 L474.0,267.0 L477.7,267.9 L481.4,268.8 L485.1,269.6 L488.8,270.3 L492.5,270.8 L496.2,271.3 L499.9,271.6 L503.6,271.8 L507.3,272.0 L511.0,272.0 L514.7,272.0 L518.4,272.0 L522.1,272.0 L525.8,272.0 L529.5,272.0 L533.2,272.0 L536.9,272.0 L540.6,272.0 L544.3,272.0 L548.0,272.0 L551.7,272.0 L555.4,272.0 L559.1,272.0 L562.8,272.0 L566.5,272.0 L570.2,272.0 L573.9,272.0 L577.6,272.0 L581.3,272.0 L585.0,272.0 L588.7,272.0 L592.4,272.0 L596.1,272.0 L599.8,272.0 L603.5,272.0 L607.2,272.0 L610.9,272.0 L614.6,272.0 L618.3,272.0 L622.0,272.0 L625.7,272.0 L629.4,272.0 L633.1,272.0 L636.8,272.0 L640.5,272.0 L644.2,272.0 L647.9,272.0 L651.6,272.0 L655.3,272.0 L659.0,272.0 L662.7,272.0 L666.4,272.0 L670.1,272.0 L673.8,272.0 L677.5,272.0 L681.2,272.0 L684.9,272.0 L688.6,272.0 L692.3,272.0 L696.0,272.0 L699.7,272.0 L703.4,272.0 L707.1,272.0 L710.8,272.0 L714.5,272.0 L718.2,272.0 L721.9,272.0 L725.6,272.0 L729.3,272.0 L733.0,272.0 L736.7,272.0 L740.4,272.0 L744.1,272.0 L747.8,272.0 L751.5,272.0 L755.2,272.0 L758.9,272.0 L762.6,272.0 L766.3,272.0 L770.0,272.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="30" y1="170" x2="770" y2="170" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/><text class="t" x="740" y="163" style="fill:var(--accent-2)">E<tspan dy="4" style="font-size:10px">F</tspan></text>
+<text class="t" x="36" y="58">E<tspan dy="4" style="font-size:10px">c</tspan></text><text class="t" x="36" y="215">E<tspan dy="4" style="font-size:10px">v</tspan></text>
+<text class="t-dim" x="340" y="150" style="font-size:15px;font-weight:700">−</text>
+<text class="t-dim" x="352" y="172" style="font-size:15px;font-weight:700">−</text>
+<text class="t-dim" x="364" y="150" style="font-size:15px;font-weight:700">−</text>
+<text class="t-dim" x="376" y="172" style="font-size:15px;font-weight:700">−</text>
+<text class="t-dim" x="388" y="150" style="font-size:15px;font-weight:700">−</text>
+<text class="t-dim" x="408" y="150" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="422" y="172" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="436" y="150" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="450" y="172" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="464" y="150" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="478" y="172" style="font-size:14px;font-weight:700">+</text>
+<text class="t-dim" x="492" y="150" style="font-size:14px;font-weight:700">+</text>
+<line x1="460" y1="125" x2="350" y2="125" stroke="var(--warn)" stroke-width="2.2" marker-end="url(#jn-ar1)"/><text class="t" x="405" y="118" text-anchor="middle" style="fill:var(--warn);font-size:12px">ℰ</text>
+<line x1="660" y1="65" x2="660" y2="142" stroke="var(--text-dim)" stroke-width="1.5" marker-start="url(#jn-ar1)" marker-end="url(#jn-ar1)"/><line x1="600" y1="65" x2="680" y2="65" stroke="var(--text-faint)" stroke-dasharray="3 3"/><text class="t" x="668" y="108" style="font-size:12px">qV<tspan dy="4" style="font-size:9px">bi</tspan></text>
+<circle cx="45.0" cy="208.1" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="72.0" cy="208.7" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="99.0" cy="209.0" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="126.0" cy="209.7" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="153.0" cy="208.7" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="180.0" cy="209.6" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="207.0" cy="205.1" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="234.0" cy="207.3" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="261.0" cy="209.7" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="288.0" cy="208.2" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="315.0" cy="209.5" r="4" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+<circle cx="525.0" cy="133.4" r="4" fill="var(--accent)"/>
+<circle cx="546.0" cy="131.7" r="4" fill="var(--accent)"/>
+<circle cx="567.0" cy="132.8" r="4" fill="var(--accent)"/>
+<circle cx="588.0" cy="131.3" r="4" fill="var(--accent)"/>
+<circle cx="609.0" cy="131.1" r="4" fill="var(--accent)"/>
+<circle cx="630.0" cy="133.9" r="4" fill="var(--accent)"/>
+<circle cx="651.0" cy="132.9" r="4" fill="var(--accent)"/>
+<circle cx="672.0" cy="132.6" r="4" fill="var(--accent)"/>
+<circle cx="693.0" cy="129.4" r="4" fill="var(--accent)"/>
+<circle cx="714.0" cy="130.2" r="4" fill="var(--accent)"/>
+<circle cx="735.0" cy="133.2" r="4" fill="var(--accent)"/>
+<circle cx="756.0" cy="130.0" r="4" fill="var(--accent)"/>
+<text class="t" x="400" y="296" text-anchor="middle" style="font-size:13px">공핍층(이온화된 도펀트만 남음): 전기장 ℰ가 확산을 정확히 막는다</text>
+<text class="t" x="150" y="296" text-anchor="middle" style="font-weight:700">p</text><text class="t" x="650" y="296" text-anchor="middle" style="font-weight:700">n</text>
+</g></svg>
+      <ol class="steps-cap"><li>떼어 놓은 p형과 n형. 진공 준위와 \(E_c\)는 같은 높이지만, n형의 \(E_F\)가 p형보다 \(qV_{bi}\)만큼 높다. 페르미 준위는 전자의 화학 퍼텐셜이므로, 높은 쪽 전자가 낮은 쪽으로 가려 한다.</li><li>맞붙이면 농도 차이 때문에 n쪽 전자가 p쪽으로, p쪽 정공이 n쪽으로 확산한다. 넘어간 캐리어는 상대편의 다수 캐리어와 재결합해 사라진다.</li><li>경계 근처에는 움직일 수 없는 이온화된 도펀트만 남는다(p쪽 \(\text{B}^-\), n쪽 \(\text{P}^+\)). 이 전하가 n에서 p를 향하는 전기장을 만들어 확산을 되밀고, n쪽 띠가 \(qV_{bi}\)만큼 내려가 \(E_F\)가 평평해지면 평형이다.</li></ol>
+      <figcaption>pn 접합이 생기는 과정. 평형의 조건은 "전류 0"이고, 그것은 "\(E_F\) 평평"과 같은 말이다. 띠가 굽은 영역이 캐리어가 거의 없는 공핍층이다.</figcaption>
+    </figure>
+    <p>평형에서 전류가 0이라는 것은 확산 전류와 표류 전류가 전자·정공 각각에 대해 정확히 상쇄된다는 뜻이다. 전자 전류 \(J_n = n\mu_n\,dE_F/dx\)(11장의 표류–확산 식을 페르미 준위로 쓴 꼴)가 0이려면 \(dE_F/dx = 0\)이어야 한다. 그래서 열평형에서 페르미 준위는 계면을 지나도 어디서나 같고, 띠가 그 조건에 맞춰 굽는다. 이것이 이 장 전체의 원리다.</p>
+    <div class="def"><span class="def-k">내부 전위</span>
+      <p>평형 pn 접합에서 n쪽과 p쪽 중성 영역 사이의 정전 전위 차를 <span class="term">내부 전위</span><span class="en">(built-in potential)</span> \(V_{bi}\)라 한다. 떼어 놓았을 때 두 페르미 준위의 차이와 같다.</p>
+    </div>
+    <div class="formula">$$qV_{bi} = E_g - k_BT\ln\frac{N_c}{N_D} - k_BT\ln\frac{N_v}{N_A} = k_BT\ln\frac{N_AN_D}{n_i^2}$$<div class="where">둘째 등호는 \(n_i^2 = N_cN_ve^{-E_g/k_BT}\)를 쓴 것이다. 300 K에서 \(k_BT/q = 0.02585\) V. 실리콘 \(n_i\)는 약 \(1\times10^{10}\) cm⁻³(교재에 따라 9.65×10⁹–1.5×10¹⁰)이고, 이 책의 <code>Solid.ni('Si')</code>는 \(1.07\times10^{10}\) cm⁻³을 준다.</div></div>
+    <p>로그 안에 들어 있으므로 \(V_{bi}\)는 도핑에 둔하다. 도핑을 10배 바꿔도 \(V_{bi}\)는 \(0.02585\ln10 = 59.5\) mV만 바뀐다. 실리콘 접합의 \(V_{bi}\)는 거의 언제나 0.6–1.0 V이고, 띠 간격(1.12 V)을 넘지 못한다. 양쪽이 축퇴할 만큼 도핑해야 \(E_g/q\)에 가까워진다.</p>
+    <div class="tangle" id="tg-vbi">
+      <p>p쪽 <span class="tn" data-var="la" data-min="14" data-max="19.5" data-step="0.1">17</span>, n쪽 <span class="tn" data-var="ld" data-min="14" data-max="19.5" data-step="0.1">15</span>로 도핑한 실리콘 계단 접합(300 K, \(n_i = 1.07\times10^{10}\) cm⁻³)에서 p쪽 \(E_F\)는 가전자대 위 <span class="tn-out" data-out="ep"></span>, n쪽 \(E_F\)는 전도대 아래 <span class="tn-out" data-out="en"></span>에 있다. 붙이면 내부 전위는 \(V_{bi} =\) <span class="tn-out" data-out="vbi"></span>이고, 이것은 띠 간격의 <span class="tn-out" data-out="frac"></span>다.</p>
+      <canvas id="cv-tg-vbi"></canvas>
+    </div>
+    <div class="example" data-title="실리콘 계단 접합의 내부 전위">
+      <p>p쪽 \(N_A = 1\times10^{17}\) cm⁻³, n쪽 \(N_D = 1\times10^{15}\) cm⁻³인 실리콘 계단 접합의 300 K 내부 전위를 구하라. \(n_i = 1.07\times10^{10}\) cm⁻³, \(N_c = 2.86\times10^{19}\), \(N_v = 3.10\times10^{19}\) cm⁻³, \(E_g = 1.124\) eV, \(k_BT = 0.02585\) eV. 두 방법으로 계산해 서로 맞는지 확인하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> ① \(V_{bi} = (k_BT/q)\ln(N_AN_D/n_i^2)\). ② 떼어 놓은 두 조각의 페르미 준위 차이 \(E_g - (E_c - E_F)_n - (E_F - E_v)_p\).</div>
+        <div class="step"><b>풀이</b> ① \(N_AN_D/n_i^2 = 10^{32}/1.145\times10^{20} = 8.73\times10^{11}\), \(\ln = 27.50\), \(V_{bi} = 0.02585\times27.50 = 0.711\) V.<br>② \((E_c - E_F)_n = 0.02585\ln(2.86\times10^{19}/10^{15}) = 0.265\) eV, \((E_F - E_v)_p = 0.02585\ln(3.10\times10^{19}/10^{17}) = 0.148\) eV. \(qV_{bi} = 1.124 - 0.265 - 0.148 = 0.711\) eV.</div>
+        <div class="answer">\(V_{bi} \approx 0.71\) V</div>
+        <div class="step"><b>검토</b> 두 값이 같은 것은 \(n_i\)가 \(N_c, N_v, E_g\)와 서로 맞는 값이기 때문이다. 교재마다 \(n_i\)가 다르면 \(V_{bi}\)가 10–20 mV 달라진다 — 문제에 \(n_i\)가 주어지는 이유다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="depletion">
+    <h2>공핍층의 정전기: 푸아송 방정식과 공핍 근사</h2>
+    <p>띠가 얼마나 넓은 영역에서 굽는지는 전하가 정한다. 1차원 <span class="term">푸아송 방정식</span><span class="en">(Poisson's equation)</span>은</p>
+    <div class="formula">$$\frac{d^2V}{dx^2} = -\frac{d\mathcal E}{dx} = -\frac{\rho(x)}{\varepsilon_s}, \qquad \rho = q\,(p - n + N_D^+ - N_A^-)$$<div class="where">\(\varepsilon_s = 11.7\,\varepsilon_0 = 1.036\times10^{-12}\) F/cm (Si). \(\mathcal E = -dV/dx\)이므로 \(d\mathcal E/dx = \rho/\varepsilon_s\).</div></div>
+    <p>\(n\)과 \(p\)가 \(V\)에 지수로 의존하므로 이 식은 비선형이다. 그런데 띠가 \(k_BT\)의 몇 배만 굽어도 캐리어는 \(e^{-qV/k_BT}\)로 줄어 사실상 0이 된다. 그래서 경계 \(-x_p < x < x_n\) 안에서는 캐리어가 전혀 없고 이온만 있으며, 밖에서는 완전히 중성이라고 보는 <span class="term">공핍 근사</span><span class="en">(depletion approximation)</span>가 잘 맞는다. 그 안의 영역을 <span class="term">공핍층</span><span class="en">(depletion region)</span> 또는 공간 전하 영역이라 한다. 그러면 \(\rho\)가 계단 함수가 되어 적분이 쉬워진다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 470" role="img" aria-label="공핍 근사: 전하 밀도, 전기장, 전위, 띠 그림을 차례로 적분해 얻는다">
+<defs><marker id="jn-ar4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+<g data-step="1">
+<line x1="60" y1="70" x2="760" y2="70" class="s-axis"/>
+<text class="t" x="16" y="75" style="font-weight:600">ρ(x)</text>
+<rect x="300" y="70" width="60" height="45" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/>
+<rect x="360" y="55" width="180" height="15" fill="var(--accent-soft)" stroke="var(--accent)"/>
+<text class="t" x="292" y="102" text-anchor="end" style="fill:var(--accent-2);font-size:12px">−qN<tspan dy="4" style="font-size:9px">A</tspan></text>
+<text class="t" x="548" y="66" style="fill:var(--accent);font-size:12px">+qN<tspan dy="4" style="font-size:9px">D</tspan></text>
+<text class="t-dim" x="300" y="46" text-anchor="middle" style="font-size:12px">−x<tspan dy="4" style="font-size:9px">p</tspan></text><text class="t-dim" x="360" y="46" text-anchor="middle" style="font-size:12px">0</text><text class="t-dim" x="540" y="46" text-anchor="middle" style="font-size:12px">x<tspan dy="4" style="font-size:9px">n</tspan></text>
+<text class="t-dim" x="600" y="104" style="font-size:12px">N<tspan dy="4" style="font-size:9px">A</tspan><tspan dy="-4">x</tspan><tspan dy="4" style="font-size:9px">p</tspan><tspan dy="-4"> = N</tspan><tspan dy="4" style="font-size:9px">D</tspan><tspan dy="-4">x</tspan><tspan dy="4" style="font-size:9px">n</tspan><tspan dy="-4"> (넓이가 같다)</tspan></text>
+</g>
+<g data-step="2">
+<line x1="60" y1="180" x2="760" y2="180" class="s-axis"/>
+<text class="t" x="16" y="185" style="font-weight:600">ℰ(x)</text>
+<path d="M300,180 L360,240 L540,180 Z" fill="var(--warn)" opacity=".18" stroke="var(--warn)" stroke-width="2"/>
+<text class="t" x="370" y="244" style="fill:var(--warn);font-size:12px">−ℰ<tspan dy="4" style="font-size:9px">max</tspan></text>
+<text class="t-dim" x="80" y="210" style="font-size:12px">dℰ/dx = ρ/ε<tspan dy="4" style="font-size:9px">s</tspan><tspan dy="-4"> : 기울기 = 각 쪽 도핑</tspan></text>
+</g>
+<g data-step="3">
+<line x1="60" y1="290" x2="760" y2="290" class="s-axis"/>
+<text class="t" x="16" y="295" style="font-weight:600">V(x)</text>
+<path d="M60.0,290.0 L65.8,290.0 L71.7,290.0 L77.5,290.0 L83.3,290.0 L89.2,290.0 L95.0,290.0 L100.8,290.0 L106.7,290.0 L112.5,290.0 L118.3,290.0 L124.2,290.0 L130.0,290.0 L135.8,290.0 L141.7,290.0 L147.5,290.0 L153.3,290.0 L159.2,290.0 L165.0,290.0 L170.8,290.0 L176.7,290.0 L182.5,290.0 L188.3,290.0 L194.2,290.0 L200.0,290.0 L205.8,290.0 L211.7,290.0 L217.5,290.0 L223.3,290.0 L229.2,290.0 L235.0,290.0 L240.8,290.0 L246.7,290.0 L252.5,290.0 L258.3,290.0 L264.2,290.0 L270.0,290.0 L275.8,290.0 L281.7,290.0 L287.5,290.0 L293.3,290.0 L299.2,290.0 L305.0,289.9 L310.8,289.4 L316.7,288.6 L322.5,287.5 L328.3,286.1 L334.2,284.3 L340.0,282.2 L345.8,279.8 L351.7,277.0 L357.5,273.9 L363.3,270.6 L369.2,267.3 L375.0,264.1 L380.8,261.1 L386.7,258.1 L392.5,255.3 L398.3,252.5 L404.2,249.9 L410.0,247.4 L415.8,245.0 L421.7,242.7 L427.5,240.5 L433.3,238.4 L439.2,236.5 L445.0,234.6 L450.8,232.9 L456.7,231.3 L462.5,229.7 L468.3,228.3 L474.2,227.0 L480.0,225.8 L485.8,224.8 L491.7,223.8 L497.5,222.9 L503.3,222.2 L509.2,221.5 L515.0,221.0 L520.8,220.6 L526.7,220.3 L532.5,220.1 L538.3,220.0 L544.2,220.0 L550.0,220.0 L555.8,220.0 L561.7,220.0 L567.5,220.0 L573.3,220.0 L579.2,220.0 L585.0,220.0 L590.8,220.0 L596.7,220.0 L602.5,220.0 L608.3,220.0 L614.2,220.0 L620.0,220.0 L625.8,220.0 L631.7,220.0 L637.5,220.0 L643.3,220.0 L649.2,220.0 L655.0,220.0 L660.8,220.0 L666.7,220.0 L672.5,220.0 L678.3,220.0 L684.2,220.0 L690.0,220.0 L695.8,220.0 L701.7,220.0 L707.5,220.0 L713.3,220.0 L719.2,220.0 L725.0,220.0 L730.8,220.0 L736.7,220.0 L742.5,220.0 L748.3,220.0 L754.2,220.0 L760.0,220.0" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+<line x1="720" y1="290" x2="720" y2="220" stroke="var(--text-dim)" stroke-width="1.3" marker-start="url(#jn-ar4)" marker-end="url(#jn-ar4)"/><text class="t" x="728" y="260" style="font-size:12px">V<tspan dy="4" style="font-size:9px">bi</tspan><tspan dy="-4">−V</tspan></text>
+<text class="t-dim" x="80" y="260" style="font-size:12px">dV/dx = −ℰ : 넓이 = 전위 차</text>
+</g>
+<g data-step="4">
+<line x1="60" y1="400" x2="760" y2="400" class="s-axis"/>
+<text class="t" x="16" y="405" style="font-weight:600">E<tspan dy='4' style='font-size:10px'>c</tspan><tspan dy='-4'>(x)</tspan></text>
+<path d="M60.0,350.0 L65.8,350.0 L71.7,350.0 L77.5,350.0 L83.3,350.0 L89.2,350.0 L95.0,350.0 L100.8,350.0 L106.7,350.0 L112.5,350.0 L118.3,350.0 L124.2,350.0 L130.0,350.0 L135.8,350.0 L141.7,350.0 L147.5,350.0 L153.3,350.0 L159.2,350.0 L165.0,350.0 L170.8,350.0 L176.7,350.0 L182.5,350.0 L188.3,350.0 L194.2,350.0 L200.0,350.0 L205.8,350.0 L211.7,350.0 L217.5,350.0 L223.3,350.0 L229.2,350.0 L235.0,350.0 L240.8,350.0 L246.7,350.0 L252.5,350.0 L258.3,350.0 L264.2,350.0 L270.0,350.0 L275.8,350.0 L281.7,350.0 L287.5,350.0 L293.3,350.0 L299.2,350.0 L305.0,350.1 L310.8,350.6 L316.7,351.4 L322.5,352.5 L328.3,353.9 L334.2,355.7 L340.0,357.8 L345.8,360.2 L351.7,363.0 L357.5,366.1 L363.3,369.4 L369.2,372.7 L375.0,375.9 L380.8,378.9 L386.7,381.9 L392.5,384.7 L398.3,387.5 L404.2,390.1 L410.0,392.6 L415.8,395.0 L421.7,397.3 L427.5,399.5 L433.3,401.6 L439.2,403.5 L445.0,405.4 L450.8,407.1 L456.7,408.7 L462.5,410.3 L468.3,411.7 L474.2,413.0 L480.0,414.2 L485.8,415.2 L491.7,416.2 L497.5,417.1 L503.3,417.8 L509.2,418.5 L515.0,419.0 L520.8,419.4 L526.7,419.7 L532.5,419.9 L538.3,420.0 L544.2,420.0 L550.0,420.0 L555.8,420.0 L561.7,420.0 L567.5,420.0 L573.3,420.0 L579.2,420.0 L585.0,420.0 L590.8,420.0 L596.7,420.0 L602.5,420.0 L608.3,420.0 L614.2,420.0 L620.0,420.0 L625.8,420.0 L631.7,420.0 L637.5,420.0 L643.3,420.0 L649.2,420.0 L655.0,420.0 L660.8,420.0 L666.7,420.0 L672.5,420.0 L678.3,420.0 L684.2,420.0 L690.0,420.0 L695.8,420.0 L701.7,420.0 L707.5,420.0 L713.3,420.0 L719.2,420.0 L725.0,420.0 L730.8,420.0 L736.7,420.0 L742.5,420.0 L748.3,420.0 L754.2,420.0 L760.0,420.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<text class="t-dim" x="80" y="416" style="font-size:12px">E<tspan dy="4" style="font-size:9px">c</tspan><tspan dy="-4">(x) = 상수 − qV(x) : 전자 에너지는 전위의 거울상</tspan></text>
+</g>
+<g class="s-line" stroke-dasharray="3 3" opacity=".5"><line x1="300" y1="30" x2="300" y2="440"/><line x1="360" y1="30" x2="360" y2="440"/><line x1="540" y1="30" x2="540" y2="440"/></g>
+</svg>
+      <ol class="steps-cap"><li>공핍 근사의 전하: p쪽 \(-qN_A\)(폭 \(x_p\)), n쪽 \(+qN_D\)(폭 \(x_n\)). 전체가 중성이어야 하므로 \(N_Ax_p = N_Dx_n\) — 도핑이 낮은 쪽으로 공핍층이 깊이 뻗는다.</li><li>한 번 적분하면 전기장. 양쪽 끝에서 0이고 접합면에서 크기가 가장 큰 삼각형이며, 기울기가 각 쪽의 도핑이다. 방향은 n에서 p(−x)다.</li><li>다시 적분하면 전위. 두 포물선을 이어 붙인 모양이고 전체 높이가 \(V_{bi} - V\)(전기장 삼각형의 넓이)다.</li><li>전자 에너지 \(E_c(x) = \text{상수} - qV(x)\)는 전위를 뒤집은 것이다. 띠 그림의 굽은 부분은 결국 전하 분포를 두 번 적분한 모양이다.</li></ol>
+      <figcaption>공핍 근사로 \(\rho \to \mathcal E \to V \to E_c\)를 차례로 적분한다. \(N_A = 3N_D\)인 경우라 공핍층이 n쪽으로 3배 깊다.</figcaption>
+    </figure>
+    <p>적분 결과를 정리하면 다음과 같다(\(V\)는 p쪽에 건 전압, 순방향이 +).</p>
+    <div class="formula">$$W = x_n + x_p = \sqrt{\frac{2\varepsilon_s(V_{bi} - V)}{q}\left(\frac1{N_A} + \frac1{N_D}\right)}, \qquad x_n = \frac{N_A}{N_A + N_D}W, \quad x_p = \frac{N_D}{N_A + N_D}W$$
+    $$\mathcal E_{max} = \frac{qN_Dx_n}{\varepsilon_s} = \frac{qN_Ax_p}{\varepsilon_s} = \frac{2(V_{bi} - V)}{W}$$<div class="where">한쪽 도핑이 훨씬 높은 <span class="term">단측 접합</span><span class="en">(one-sided junction)</span>(예: p⁺n)에서는 \(W \approx \sqrt{2\varepsilon_s(V_{bi} - V)/qN_B}\), \(N_B\)는 낮은 쪽 도핑. 공핍층은 거의 다 낮은 쪽에 있다. <code>Solid.pn(Na, Nd, V)</code>가 이 값들을 준다.</div></div>
+    <div class="predict" data-for="sim-pn">
+      <p>\(N_A = 10^{17}\), \(N_D = 10^{15}\) cm⁻³인 접합에서 공핍층은 어떻게 나뉠까?</p>
+      <div class="opts"><button class="opt">양쪽에 반씩</button><button class="opt">대부분 p쪽(도핑이 높은 쪽)</button><button class="opt" data-correct>대부분 n쪽(도핑이 낮은 쪽), 약 99%</button><button class="opt">도핑과 무관하고 \(V_{bi}\)만으로 정해진다</button></div>
+      <div class="quiz-exp">전하 중성 \(N_Ax_p = N_Dx_n\) 때문에 \(x_n/x_p = N_A/N_D = 100\)이다. 공핍층의 99%가 n쪽에 있고 \(V_{bi}\)도 99%가 n쪽에 걸린다. 실험대에서 \(N_A\)를 \(N_D\)와 같게 만들면 대칭이 된다.</div>
+    </div>
+    <div class="sim" id="sim-pn">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>pn 접합 실험대: ρ(x) → ℰ(x) → V(x) → 띠 그림</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-pn"></canvas><span class="hint top">맨 아래 띠 그림의 n쪽 흰 원을 위아래로 끌면 바이어스가 바뀐다</span></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>p쪽 N<sub>A</sub> <output id="pn-a-out"></output></span><input type="range" id="pn-a" min="14" max="19" step="0.05" value="17"></label>
+          <label class="ctrl"><span>n쪽 N<sub>D</sub> <output id="pn-d-out"></output></span><input type="range" id="pn-d" min="14" max="19" step="0.05" value="15"></label>
+          <label class="ctrl"><span>인가 전압 V <output id="pn-v-out"></output></span><input type="range" id="pn-v" min="-60" max="0.6" step="0.01" value="0"></label>
+          <div class="ctrl-row"><button class="btn" id="pn-zero" type="button">V = 0</button><button class="btn primary" id="pn-new" type="button">새 도전</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">V<sub>bi</sub></span><span class="v" id="pn-vbi">—</span></div>
+        <div class="stat"><span class="k">W (x<sub>p</sub> / x<sub>n</sub>)</span><span class="v" id="pn-w">—</span></div>
+        <div class="stat"><span class="k">ℰ<sub>max</sub></span><span class="v" id="pn-e">—</span></div>
+        <div class="stat"><span class="k">C = ε<sub>s</sub>/W</span><span class="v" id="pn-c">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="pn-goal">—</span></div>
+      </div>
+      <div class="sim-note">네 그래프의 가로축은 같은 위치 \(x\)(μm, 접합면 0)다. 띠 그림의 \(E_{F}\)는 바이어스가 걸리면 p쪽(\(E_{Fp}\))과 n쪽(\(E_{Fn}\))으로 갈라져 그린다(다음 절). 도전: 정해진 역방향 전압을 걸었을 때 \(\mathcal E_{max}\)가 2.7–3.0×10⁵ V/cm 안에 들도록 도핑을 고른다. 실리콘의 애벌란시 항복 전기장이 대략 3×10⁵ V/cm이므로, "그 전압을 아슬아슬하게 견디는 가장 높은 도핑"을 찾는 셈이다. 해볼 것: ① \(N_A = N_D\)로 만들어 공핍층이 대칭이 되는지 보라. ② 역방향 전압을 4배로 하면 \(W\)와 \(\mathcal E_{max}\)는 몇 배가 되나(\(V_{bi}\)를 무시하면 2배). ③ 높은 역전압을 견디게 하려면 어느 쪽 도핑을 낮춰야 하나?</div>
+    </div>
+    <div class="example" data-title="공핍 폭과 최대 전기장">
+      <p>앞 예제의 접합(\(N_A = 10^{17}\), \(N_D = 10^{15}\) cm⁻³, \(V_{bi} = 0.711\) V)에서 ⓐ 0 V일 때 \(W, x_n, x_p, \mathcal E_{max}\), ⓑ 역방향 5 V(\(V = -5\) V)일 때 \(W, \mathcal E_{max}\)와 단위 넓이 정전 용량을 구하라. \(\varepsilon_s = 1.036\times10^{-12}\) F/cm.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(W = \sqrt{2\varepsilon_s(V_{bi} - V)(1/N_A + 1/N_D)/q}\), 나눔은 도핑의 반비례, \(\mathcal E_{max} = 2(V_{bi} - V)/W\).</div>
+        <div class="step"><b>풀이</b> ⓐ \(1/N_A + 1/N_D = 1.01\times10^{-15}\) cm³. \(W = \sqrt{2\times1.036\times10^{-12}\times0.711\times1.01\times10^{-15}/1.602\times10^{-19}} = 9.63\times10^{-5}\) cm \(= 0.963\) μm. \(x_n = W\times100/101 = 0.954\) μm, \(x_p = 9.5\) nm. \(\mathcal E_{max} = 2\times0.711/9.63\times10^{-5} = 1.48\times10^4\) V/cm.<br>ⓑ \(V_{bi} - V = 5.711\) V: \(W = 0.963\sqrt{5.711/0.711} = 2.73\) μm, \(\mathcal E_{max} = 2\times5.711/2.73\times10^{-4} = 4.18\times10^4\) V/cm, \(C = \varepsilon_s/W = 3.79\times10^{-9}\) F/cm² = 3.79 nF/cm².</div>
+        <div class="answer">ⓐ \(W = 0.96\) μm(\(x_n = 0.95\) μm, \(x_p = 9.5\) nm), \(\mathcal E_{max} = 1.5\times10^4\) V/cm. ⓑ \(W = 2.7\) μm, \(\mathcal E_{max} = 4.2\times10^4\) V/cm, \(C = 3.8\) nF/cm²</div>
+        <div class="step"><b>검토</b> 전기장 1.5×10⁴ V/cm는 1 μm에 1.5 V 정도로, 항복 전기장(3×10⁵)보다 20배 작다. \(W\)는 \(\sqrt{V_{bi} - V}\)에 비례하므로 역전압 5 V에서 2.8배가 됐다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-dep" data-title="공핍 폭 · 최대 전기장 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="bias">
+    <h2>바이어스: 정전 용량, 의사 페르미 준위, 누설 전류</h2>
+    <h3>접합 정전 용량과 C–V 도핑 측정</h3>
+    <p>역방향 전압을 조금 \(dV\) 바꾸면 공핍층 가장자리에서 이온 전하 \(dQ = qN_B\,dW\)가 드러나거나 덮인다. 두 도체판 사이 거리가 \(W\)인 축전기와 같아서, 단위 넓이 <span class="term">공핍 정전 용량</span><span class="en">(depletion capacitance)</span>은</p>
+    <div class="formula">$$C = \frac{dQ}{dV} = \frac{\varepsilon_s}{W}, \qquad \frac{1}{C^2} = \frac{2(V_{bi} - V)}{q\varepsilon_sN_B}\quad(\text{단측 접합})$$<div class="where">\(1/C^2\)를 \(V\)에 대해 그리면 직선이고, 기울기 \(-2/(q\varepsilon_sN_B)\)에서 도핑 \(N_B\)를, \(V\)축 절편에서 \(V_{bi}\)를 얻는다. 도핑이 깊이에 따라 바뀌면 국소 기울기가 공핍층 가장자리 \(x = W\)의 도핑을 준다: \(N(W) = \dfrac{2}{q\varepsilon_s}\left[-\dfrac{d(1/C^2)}{dV}\right]^{-1}\).</div></div>
+    <p>이것이 <span class="term">C–V 도핑 프로파일 측정</span><span class="en">(C–V profiling)</span>이다. 역전압을 올리며 \(W\)를 깊은 쪽으로 밀어 가면 각 깊이의 도핑을 읽을 수 있다. 수은 탐침을 웨이퍼에 대거나 쇼트키 접촉을 만들어 에피층 도핑을 재는 표준 방법이다. 아래에서 숨겨진 도핑을 C–V 자료만으로 맞혀 보자.</p>
+    <div class="sim" id="sim-cv">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>C–V 실험실: 1/C² 기울기로 숨은 도핑 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-cv"></canvas><span class="hint top">두 흰 원을 끌어 측정점에 직선을 맞춘다</span></div><div><canvas id="cv-cvp"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>n쪽 도핑 분포(p⁺n, N<sub>A</sub> = 10¹⁹)</span><div class="seg" id="cv-mode"><button data-value="u" class="on">균일(숨김)</button><button data-value="s">계단</button><button data-value="g">이온 주입</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="cv-new" type="button">새 시료</button><button class="btn" id="cv-check" type="button">정답 확인</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">직선 기울기</span><span class="v" id="cv-sl">—</span></div>
+        <div class="stat"><span class="k">→ N<sub>D</sub></span><span class="v" id="cv-n">—</span></div>
+        <div class="stat"><span class="k">→ V<sub>bi</sub> (절편)</span><span class="v" id="cv-vbi">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="cv-res">—</span></div>
+      </div>
+      <div class="sim-note">위: 0 V에서 −8 V까지 잰 \(1/C^2\)(단위 넓이, 측정 잡음 1%)와 네가 맞춘 직선. 아래: 이웃한 측정점의 기울기에서 얻은 \(N(W)\) 프로파일(점)과 실제 분포(선, 균일 모드에서는 정답 확인 뒤 보임). 해볼 것: ① 균일 시료에서 직선을 맞춰 도핑을 10% 안으로 맞혀라. ② 계단 시료에서는 \(1/C^2\) 직선이 한 번 꺾인다 — 꺾인 전압에서 공핍층 끝이 어느 깊이에 있나? ③ 이온 주입 시료의 봉우리 깊이를 아래 그래프에서 읽어라. 얕은 곳(0 V 근처)은 잴 수 없다는 점도 보라 — 0 V에서도 공핍층이 이미 있기 때문이다.</div>
+    </div>
+    <div class="example" data-title="C–V로 에피층 도핑 재기">
+      <p>넓이 \(100\times100\) μm²인 p⁺n 다이오드(\(N_A = 10^{19}\) cm⁻³)의 정전 용량이 0 V에서 2.18 pF, −4.0 V에서 0.923 pF였다. n쪽 도핑과 \(V_{bi}\)를 구하라. \(\varepsilon_s = 1.036\times10^{-12}\) F/cm.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 단위 넓이 \(C\)로 바꿔 \(1/C^2\)의 두 점을 잇고, 기울기와 절편을 읽는다.</div>
+        <div class="step"><b>풀이</b> 넓이 \(A = 10^{-4}\) cm². \(C/A\) = 21.8, 9.23 nF/cm² → \(1/C^2 = 2.10\times10^{15}\), \(1.174\times10^{16}\) cm⁴/F². 기울기 \(= (2.10\times10^{15} - 1.174\times10^{16})/4.0 = -2.41\times10^{15}\) cm⁴/(F²·V).<br>\(N_D = 2/(q\varepsilon_s\times2.41\times10^{15}) = 2/(1.602\times10^{-19}\times1.036\times10^{-12}\times2.41\times10^{15}) = 5.0\times10^{15}\) cm⁻³.<br>절편: \(1/C^2 = 0\)이 되는 \(V = 2.10\times10^{15}/2.41\times10^{15} = 0.87\) V.</div>
+        <div class="answer">\(N_D \approx 5.0\times10^{15}\) cm⁻³, \(V_{bi} \approx 0.87\) V</div>
+        <div class="step"><b>검토</b> \(n_i = 1.07\times10^{10}\)으로 계산한 \(V_{bi} = 0.02585\ln(10^{19}\times5\times10^{15}/n_i^2) = 0.871\) V와 맞는다. 실제 측정에서는 직렬 저항·누설·계면 상태 때문에 절편이 0.1 V쯤 어긋나기 쉬워, 도핑(기울기)이 \(V_{bi}\)(절편)보다 믿을 만하다.</div>
+      </details>
+    </div>
+    <div class="callout"><strong>현장의 C–V: 에피 도핑 관리</strong><p>에피 웨이퍼의 저항률과 도핑 깊이 분포는 수은 탐침 C–V(Hg-CV)로 매일 재는 관리 항목이다. 전극을 증착하지 않고 수은 방울을 쇼트키 접촉으로 써서 몇 분 만에 \(1/C^2\)–\(V\)를 얻는다. 같은 원리로 MOS 커패시터의 C–V는 산화막 두께, 고정 전하, 계면 상태 밀도를 준다(§13.7). 깊이 분해능은 디바이 길이 \(L_D = \sqrt{\varepsilon_sk_BT/q^2N}\)(10¹⁶ cm⁻³에서 약 40 nm) 정도로 제한된다. → <a href="https://semi.euiyun.com/device/chapters/pn.html">DeviceBook · pn 접합 I: 정전기</a> · <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율</a></p></div>
+
+    <h3>바이어스에서 갈라지는 의사 페르미 준위</h3>
+    <p>전압을 걸면 평형이 깨지므로 하나의 \(E_F\)로는 전자와 정공을 함께 기술할 수 없다. 12장에서 본 대로 전자와 정공에 각각 <span class="term">의사 페르미 준위</span><span class="en">(quasi-Fermi level)</span> \(E_{Fn}, E_{Fp}\)를 쓴다: \(n = n_ie^{(E_{Fn} - E_i)/k_BT}\), \(p = n_ie^{(E_i - E_{Fp})/k_BT}\). 공핍층은 좁고 전류에 비해 캐리어가 많아 두 준위가 거의 평평하므로, 공핍층 안에서는 \(E_{Fn} - E_{Fp} = qV\)이고</p>
+    <div class="formula">$$np = n_i^2\,e^{qV/k_BT}\qquad(\text{공핍층 안, 이른바 접합 법칙})$$<div class="where">순방향(\(V > 0\))이면 \(np > n_i^2\)(주입 → 재결합), 역방향이면 \(np < n_i^2\)(추출 → 생성). 공핍층 가장자리의 소수 캐리어 농도는 \(n_p(-x_p) = n_{p0}e^{qV/k_BT}\)가 되고, 중성 영역으로 들어가며 확산 길이 \(L_n\)에 걸쳐 평형값으로 돌아간다.</div></div>
+    <figure class="mini" id="mini-qf">
+      <div class="mini-view" style="position:relative"><canvas id="cv-qf"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>바이어스 V <output id="qf-v-out"></output></span><input type="range" id="qf-v" min="-0.5" max="0.6" step="0.01" value="0.4"></label><span class="readout" id="qf-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(N_A = 10^{17}\), \(N_D = 10^{16}\) cm⁻³, 확산 길이 \(L_n = L_p = 2\) μm(그림을 위해 짧게 잡음). 공핍층(음영) 안에서 \(E_{Fn}\)과 \(E_{Fp}\)는 평평하고 간격이 정확히 \(qV\)다. 순방향에서는 소수 캐리어 준위가 중성 영역으로 \(L\)만큼 파고들며 다수 캐리어 준위로 돌아가고, 역방향에서는 반대로 갈라진다.</figcaption>
+    </figure>
+    <p>소수 캐리어가 중성 영역에서 확산하며 재결합하는 것을 풀면(DeviceBook의 다이오드 장) <span class="term">이상 다이오드 식</span><span class="en">(ideal diode equation)</span>을 얻는다. 결과만 쓰면</p>
+    <div class="formula">$$J = J_0\left(e^{qV/k_BT} - 1\right), \qquad J_0 = qn_i^2\left(\frac{D_n}{L_nN_A} + \frac{D_p}{L_pN_D}\right)$$<div class="where">\(J_0\)는 <span class="term">포화 전류 밀도</span><span class="en">(saturation current density)</span>. \(n_i^2\)에 비례하므로 띠 간격에 지수로 민감하다. 앞의 접합에서 \(\tau = 1\) μs로 <code>Solid.J0</code>는 \(6.4\times10^{-11}\) A/cm²를 준다. 도핑이 낮은 쪽 항이 지배한다.</div></div>
+    <h3>역방향 누설: 공핍층의 열생성</h3>
+    <p>실리콘 다이오드의 역방향 전류는 \(J_0\)보다 훨씬 크다. 역방향의 공핍층은 \(np \ll n_i^2\)이라, 12장의 SRH 과정이 거꾸로 돌아 띠 간격 중간의 결함 준위를 거쳐 전자–정공 쌍을 만든다. 결함 준위가 \(E_i\)에 있고 \(\tau_n = \tau_p = \tau_0\)이면 SRH 식에서 \(n, p \to 0\)일 때 \(U = -n_i/2\tau_0\)이므로</p>
+    <div class="formula">$$J_{gen} = \frac{qn_iW}{2\tau_0} \;\propto\; n_i \propto e^{-E_g/2k_BT}, \qquad J_0 \propto n_i^2 \propto e^{-E_g/k_BT}$$<div class="where">생성 전류는 \(n_i\)에, 확산 전류는 \(n_i^2\)에 비례한다. \(n_i \ll N\)인 실리콘에서는 상온에서 생성 전류가 이기고, 고온으로 갈수록 확산 전류가 따라온다. 공핍 폭 \(W \propto \sqrt{V_{bi} + V_R}\) 때문에 생성 전류는 역전압에 따라 천천히 커진다.</div></div>
+    <div class="tangle" id="tg-leak">
+      <p>n⁺p 접합(\(N_D = 10^{20}\), \(N_A = 10^{17}\) cm⁻³)에 역방향 <span class="tn" data-var="vr" data-min="0" data-max="5" data-step="0.1" data-unit=" V">1.5</span>를 걸고 온도를 <span class="tn" data-var="T" data-min="250" data-max="420" data-step="1" data-unit=" K">300</span>로, 생성 수명을 \(\tau_0 =\) <span class="tn" data-var="lt" data-min="-9" data-max="-3" data-step="0.1">-6</span>로 두자. 공핍 폭은 <span class="tn-out" data-out="w"></span>, \(n_i =\) <span class="tn-out" data-out="ni"></span>이고, 생성 전류는 \(J_{gen} =\) <span class="tn-out" data-out="jg"></span>, 확산 포화 전류는 \(J_0 =\) <span class="tn-out" data-out="j0"></span>(같은 \(\tau\), \(D_n\)은 이동도 모형)다. <span data-out="who"></span></p>
+    </div>
+    <div class="example" data-title="역방향 누설: 생성 대 확산">
+      <p>n⁺p 접합(\(N_D = 10^{20}\), \(N_A = 10^{17}\) cm⁻³, \(n_i = 1.07\times10^{10}\) cm⁻³)에 역방향 1.5 V가 걸려 있다. p쪽 전자의 \(D_n = 20\) cm²/s, \(\tau_n = \tau_0 = 1\) μs이다. ⓐ 생성 전류 \(J_{gen}\)과 확산 전류 \(J_0\)(p쪽 항만)을 비교하라. ⓑ 85 °C(358 K)에서 \(n_i\)가 57배 커진다면 비는 어떻게 되나?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(V_{bi}\) → \(W\)(단측) → \(J_{gen} = qn_iW/2\tau_0\). \(J_0 = qn_i^2D_n/(L_nN_A)\), \(L_n = \sqrt{D_n\tau_n}\).</div>
+        <div class="step"><b>풀이</b> ⓐ \(V_{bi} = 0.02585\ln(10^{37}/1.145\times10^{20}) = 1.008\) V, \(W = \sqrt{2\times1.036\times10^{-12}\times2.508/(1.602\times10^{-19}\times10^{17})} = 0.180\) μm. \(J_{gen} = 1.602\times10^{-19}\times1.07\times10^{10}\times1.80\times10^{-5}/(2\times10^{-6}) = 1.5\times10^{-8}\) A/cm².<br>\(L_n = \sqrt{20\times10^{-6}} = 44.7\) μm, \(J_0 = 1.602\times10^{-19}\times1.145\times10^{20}\times20/(4.47\times10^{-3}\times10^{17}) = 8.2\times10^{-13}\) A/cm². 비 \(\approx 1.9\times10^4\).<br>ⓑ \(J_{gen}\)은 57배, \(J_0\)는 \(57^2 = 3.2\times10^3\)배 → 비는 \(1.9\times10^4/57 \approx 330\).</div>
+        <div class="answer">300 K: \(J_{gen} \approx 1.5\times10^{-8}\) A/cm² ≫ \(J_0 \approx 8\times10^{-13}\) A/cm²(약 2만 배). 85 °C에서도 생성 전류가 약 300배 크다.</div>
+        <div class="step"><b>검토</b> 누설의 온도 의존을 아레니우스로 그리면 활성화 에너지가 생성 전류는 \(E_g/2 \approx 0.56\) eV, 확산 전류는 \(E_g \approx 1.12\) eV다. 측정한 기울기가 어느 쪽에 가까운지로 누설의 원인을 가른다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>DRAM 리텐션과 접합 누설</strong><p>DRAM 셀 커패시터의 전하는 저장 노드 n⁺ 접합의 역방향 누설로 새어 나가고, 이것이 리프레시 주기(64 ms)를 정한다. 대부분의 셀은 위 계산처럼 작은 생성 전류만 흘리지만, 공핍층 안에 금속 오염이나 결함이 있는 소수의 "꼬리 셀"은 \(\tau_0\)가 수십 배 짧고, 강한 전기장이 결함을 통한 터널링을 도와 누설이 크게 늘어난다. 리텐션 분포의 활성화 에너지가 주 분포는 약 0.6 eV(\(E_g/2\), 생성), 꼬리는 더 작게 나오는 것이 그 증거다. 그래서 저장 노드 접합은 도핑을 완만하게 만들어 전기장을 낮추고, 웨이퍼 게터링으로 금속 오염을 관리한다. → <a href="https://semi.euiyun.com/memory/chapters/reliability.html">MemoryBook · 메모리 신뢰성(DRAM 리텐션)</a> · <a href="https://semi.euiyun.com/device/chapters/diode.html">DeviceBook · pn 접합 II: 다이오드 전류</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="schottky">
+    <h2>금속–반도체 접합: 쇼트키 장벽과 페르미 준위 고정</h2>
+    <h3>일함수, 전자 친화도, 쇼트키–모트 규칙</h3>
+    <p>금속과 반도체를 붙일 때도 원리는 같다. 다만 이번에는 두 물질의 기준이 다르므로 공통 기준인 진공 준위에서 잰다. 금속의 <span class="term">일함수</span><span class="en">(work function)</span> \(q\phi_m = E_{vac} - E_F\)는 7장에서 본 대로 전자 하나를 페르미 준위에서 꺼내는 데 드는 에너지다. 반도체는 \(E_F\)가 도핑에 따라 움직이므로, 대신 도핑과 무관한 <span class="term">전자 친화도</span><span class="en">(electron affinity)</span> \(q\chi = E_{vac} - E_c\)(Si 4.05 eV)를 물질 상수로 쓴다. 반도체 일함수는 \(q\phi_s = q\chi + (E_c - E_F)\)다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 380" role="img" aria-label="금속과 n형 반도체의 접촉 전후 띠 그림: 쇼트키–모트 장벽">
+<defs><marker id="jn-ar5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+<text class="t" x="200" y="22" text-anchor="middle" style="font-weight:700">접촉 전</text>
+<line x1="20" y1="50" x2="380" y2="50" class="s-line" stroke-dasharray="6 4" opacity=".6"/><text class="t-dim" x="24" y="44" style="font-size:12px">진공 준위</text>
+<rect x="20" y="254.0" width="120" height="96.0" fill="var(--accent-soft)" stroke="none"/><line x1="20" y1="254.0" x2="140" y2="254.0" stroke="var(--accent)" stroke-width="2.4"/><text class="t" x="80" y="372" text-anchor="middle">금속</text>
+<text class="t" x="80" y="272.0" text-anchor="middle" style="fill:var(--accent);font-size:12px">E<tspan dy="4" style="font-size:9px">F,m</tspan></text>
+<line x1="60" y1="50.0" x2="60" y2="254.0" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#jn-ar5)" marker-end="url(#jn-ar5)"/><text class="t" x="54" y="156.0" text-anchor="end" style="font-size:12px">qφ<tspan dy='4' style='font-size:9px'>m</tspan></text>
+<line x1="220" y1="212.0" x2="380" y2="212.0" stroke="var(--text)" stroke-width="2.4"/><line x1="220" y1="256.8" x2="380" y2="256.8" stroke="var(--text)" stroke-width="2.4"/><line x1="220" y1="220.0" x2="380" y2="220.0" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/>
+<text class="t" x="360" y="206.0" style="font-size:12px">E<tspan dy="4" style="font-size:9px">c</tspan></text><text class="t" x="360" y="272.8" style="font-size:12px">E<tspan dy="4" style="font-size:9px">v</tspan></text><text class="t" x="226" y="236.0" style="fill:var(--accent-2);font-size:12px">E<tspan dy="4" style="font-size:9px">F,s</tspan></text>
+<line x1="270" y1="50.0" x2="270" y2="212.0" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#jn-ar5)" marker-end="url(#jn-ar5)"/><text class="t" x="276" y="135.0" text-anchor="start" style="font-size:12px">qχ</text>
+<line x1="320" y1="50.0" x2="320" y2="220.0" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#jn-ar5)" marker-end="url(#jn-ar5)"/><text class="t" x="326" y="139.0" text-anchor="start" style="font-size:12px">qφ<tspan dy='4' style='font-size:9px'>s</tspan></text>
+<text class="t" x="300" y="372" text-anchor="middle">n형 반도체</text>
+<text class="t" x="610" y="22" text-anchor="middle" style="font-weight:700">접촉 후(열평형)</text>
+<rect x="440" y="254.0" width="120" height="96.0" fill="var(--accent-soft)"/><line x1="440" y1="254.0" x2="560" y2="254.0" stroke="var(--accent)" stroke-width="2.4"/><line x1="560" y1="40" x2="560" y2="350" stroke="var(--text-faint)" stroke-width="1.5"/>
+<path d="M560.0,212.0 L563.7,213.9 L567.3,215.7 L571.0,217.5 L574.7,219.2 L578.3,220.9 L582.0,222.5 L585.7,224.1 L589.3,225.6 L593.0,227.1 L596.7,228.5 L600.3,229.8 L604.0,231.1 L607.7,232.4 L611.3,233.5 L615.0,234.7 L618.7,235.8 L622.3,236.8 L626.0,237.8 L629.7,238.7 L633.3,239.5 L637.0,240.3 L640.7,241.1 L644.3,241.8 L648.0,242.5 L651.7,243.0 L655.3,243.6 L659.0,244.1 L662.7,244.5 L666.3,244.9 L670.0,245.2 L673.7,245.5 L677.3,245.7 L681.0,245.8 L684.7,245.9 L688.3,246.0 L692.0,246.0 L695.7,246.0 L699.3,246.0 L703.0,246.0 L706.7,246.0 L710.3,246.0 L714.0,246.0 L717.7,246.0 L721.3,246.0 L725.0,246.0 L728.7,246.0 L732.3,246.0 L736.0,246.0 L739.7,246.0 L743.3,246.0 L747.0,246.0 L750.7,246.0 L754.3,246.0 L758.0,246.0 L761.7,246.0 L765.3,246.0 L769.0,246.0 L772.7,246.0 L776.3,246.0 L780.0,246.0" fill="none" stroke="var(--text)" stroke-width="2.4"/><path d="M560.0,256.8 L563.7,258.7 L567.3,260.5 L571.0,262.3 L574.7,264.0 L578.3,265.7 L582.0,267.3 L585.7,268.9 L589.3,270.4 L593.0,271.9 L596.7,273.3 L600.3,274.6 L604.0,275.9 L607.7,277.2 L611.3,278.3 L615.0,279.5 L618.7,280.6 L622.3,281.6 L626.0,282.6 L629.7,283.5 L633.3,284.3 L637.0,285.1 L640.7,285.9 L644.3,286.6 L648.0,287.3 L651.7,287.8 L655.3,288.4 L659.0,288.9 L662.7,289.3 L666.3,289.7 L670.0,290.0 L673.7,290.3 L677.3,290.5 L681.0,290.6 L684.7,290.7 L688.3,290.8 L692.0,290.8 L695.7,290.8 L699.3,290.8 L703.0,290.8 L706.7,290.8 L710.3,290.8 L714.0,290.8 L717.7,290.8 L721.3,290.8 L725.0,290.8 L728.7,290.8 L732.3,290.8 L736.0,290.8 L739.7,290.8 L743.3,290.8 L747.0,290.8 L750.7,290.8 L754.3,290.8 L758.0,290.8 L761.7,290.8 L765.3,290.8 L769.0,290.8 L772.7,290.8 L776.3,290.8 L780.0,290.8" fill="none" stroke="var(--text)" stroke-width="2.4"/><path d="M560.0,50.0 L563.7,51.9 L567.3,53.7 L571.0,55.5 L574.7,57.2 L578.3,58.9 L582.0,60.5 L585.7,62.1 L589.3,63.6 L593.0,65.1 L596.7,66.5 L600.3,67.8 L604.0,69.1 L607.7,70.4 L611.3,71.5 L615.0,72.7 L618.7,73.8 L622.3,74.8 L626.0,75.8 L629.7,76.7 L633.3,77.5 L637.0,78.3 L640.7,79.1 L644.3,79.8 L648.0,80.5 L651.7,81.0 L655.3,81.6 L659.0,82.1 L662.7,82.5 L666.3,82.9 L670.0,83.2 L673.7,83.5 L677.3,83.7 L681.0,83.8 L684.7,83.9 L688.3,84.0 L692.0,84.0 L695.7,84.0 L699.3,84.0 L703.0,84.0 L706.7,84.0 L710.3,84.0 L714.0,84.0 L717.7,84.0 L721.3,84.0 L725.0,84.0 L728.7,84.0 L732.3,84.0 L736.0,84.0 L739.7,84.0 L743.3,84.0 L747.0,84.0 L750.7,84.0 L754.3,84.0 L758.0,84.0 L761.7,84.0 L765.3,84.0 L769.0,84.0 L772.7,84.0 L776.3,84.0 L780.0,84.0" fill="none" class="s-line" stroke-dasharray="6 4" opacity=".6"/>
+<line x1="440" y1="50" x2="560" y2="50" class="s-line" stroke-dasharray="6 4" opacity=".6"/>
+<line x1="560" y1="254.0" x2="780" y2="254.0" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/><text class="t" x="756" y="270.0" style="fill:var(--accent-2);font-size:12px">E<tspan dy="4" style="font-size:9px">F</tspan></text>
+<line x1="574" y1="212.0" x2="574" y2="254.0" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#jn-ar5)" marker-end="url(#jn-ar5)"/><text class="t" x="580" y="237.0" text-anchor="start" style="font-size:12px">qφ<tspan dy='4' style='font-size:9px'>B</tspan><tspan dy='-4'> = q(φ</tspan><tspan dy='4' style='font-size:9px'>m</tspan><tspan dy='-4'>−χ)</tspan></text>
+<line x1="560" y1="212.0" x2="730" y2="212.0" stroke="var(--text-faint)" stroke-dasharray="3 3"/>
+<line x1="722" y1="212.0" x2="722" y2="246.0" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#jn-ar5)" marker-end="url(#jn-ar5)"/><text class="t" x="728" y="233.0" text-anchor="start" style="font-size:12px">qV<tspan dy='4' style='font-size:9px'>bi</tspan></text>
+<text class="t" x="760" y="240.0" style="font-size:12px">E<tspan dy="4" style="font-size:9px">c</tspan></text>
+<rect x="560" y="322" width="130" height="22" fill="var(--accent-soft)" opacity=".6"/><text class="t-dim" x="625.0" y="338" text-anchor="middle" style="font-size:12px">공핍층 W (+ 이온)</text>
+<text class="t" x="500.0" y="372" text-anchor="middle">금속</text><text class="t" x="670" y="372" text-anchor="middle">반도체</text>
+</svg>
+      <figcaption>금속(φ<sub>m</sub> = 5.1 eV, Au)과 n형 실리콘(χ = 4.05 eV)을 붙이면, 반도체 전자가 금속으로 넘어가 반도체 쪽에 양이온 공핍층이 생기고 띠가 위로 굽는다. 금속 쪽 전하는 표면 몇 Å에 몰려 있어 금속 띠는 굽지 않는다. 계면의 전도대 높이 φ<sub>B</sub>는 금속에서 본 장벽이고 바이어스로 바뀌지 않는다.</figcaption>
+    </figure>
+    <p>n형 반도체에 \(\phi_m > \phi_s\)인 금속을 붙이면 반도체 전자가 금속으로 넘어가 페르미 준위가 맞춰진다. 반도체 쪽에는 이온화된 도너만 남는 공핍층이 생기고(pn 접합의 한쪽과 똑같다), 띠가 \(qV_{bi} = q(\phi_m - \phi_s)\)만큼 위로 굽는다. 계면에서 진공 준위가 연속이라고 보면, 금속의 \(E_F\)에서 반도체 전도대 끝까지의 높이는</p>
+    <div class="formula">$$q\phi_{Bn} = q(\phi_m - \chi)\quad(\text{n형}), \qquad q\phi_{Bp} = E_g - q(\phi_m - \chi)\quad(\text{p형})$$<div class="where">이것이 <span class="term">쇼트키 장벽</span><span class="en">(Schottky barrier)</span>의 <span class="term">쇼트키–모트 규칙</span><span class="en">(Schottky–Mott rule)</span>이다. 이 규칙대로라면 n형 실리콘에 Au(5.1 eV)는 1.05 eV, Ti(4.33 eV)는 0.28 eV, \(\phi_m < \chi\)인 금속은 장벽이 없는 옴 접촉이 되어야 한다. \(\phi_{Bn} + \phi_{Bp} = E_g/q\).</div></div>
+    <h3>실리콘에서는 거의 맞지 않는다: 계면 상태와 페르미 준위 고정</h3>
+    <p>실제로 재 보면 n형 실리콘의 장벽은 금속이 무엇이든 대개 0.5–0.9 eV 안에 몰린다. 일함수가 1.4 eV나 다른 Ti와 Pt의 장벽 차이가 0.4 eV뿐이다. 1947년 바딘은 그 원인을 계면에 있는 많은 전자 상태로 설명했다. 결정이 끝나는 표면과 계면에는 끊어진 결합과 금속 파동 함수가 띠 간격 속으로 스며든 상태(<em>금속 유도 간격 상태</em>, MIGS)가 띠 간격 안에 촘촘히 놓인다. 이런 <span class="term">계면 상태</span><span class="en">(interface states)</span>는 <span class="term">전하 중립 준위</span><span class="en">(charge neutrality level, CNL)</span> \(\phi_0\)(가전자대에서 잰 높이)까지 채워져 있을 때 중성이다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 320" role="img" aria-label="계면 상태가 페르미 준위를 전하 중립 준위 근처에 고정하는 과정">
+<defs><marker id="jn-ar8" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+<rect x="60" y="170" width="240" height="120" fill="var(--accent-soft)"/><line x1="60" y1="170" x2="760" y2="170" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 4"/><text class="t" x="70" y="162" style="fill:var(--accent-2);font-size:12px">E<tspan dy="4" style="font-size:9px">F</tspan></text><line x1="300" y1="40" x2="300" y2="295" stroke="var(--text-faint)" stroke-width="1.5"/>
+<text class="t" x="180" y="312" text-anchor="middle">금속</text><text class="t" x="540" y="312" text-anchor="middle">n형 Si</text>
+<g data-only="1"><path d="M300.0,86.0 L307.7,92.0 L315.3,97.7 L323.0,103.2 L330.7,108.3 L338.3,113.2 L346.0,117.8 L353.7,122.2 L361.3,126.2 L369.0,130.0 L376.7,133.5 L384.3,136.7 L392.0,139.7 L399.7,142.4 L407.3,144.8 L415.0,146.9 L422.7,148.7 L430.3,150.3 L438.0,151.6 L445.7,152.6 L453.3,153.3 L461.0,153.8 L468.7,154.0 L476.3,154.0 L484.0,154.0 L491.7,154.0 L499.3,154.0 L507.0,154.0 L514.7,154.0 L522.3,154.0 L530.0,154.0 L537.7,154.0 L545.3,154.0 L553.0,154.0 L560.7,154.0 L568.3,154.0 L576.0,154.0 L583.7,154.0 L591.3,154.0 L599.0,154.0 L606.7,154.0 L614.3,154.0 L622.0,154.0 L629.7,154.0 L637.3,154.0 L645.0,154.0 L652.7,154.0 L660.3,154.0 L668.0,154.0 L675.7,154.0 L683.3,154.0 L691.0,154.0 L698.7,154.0 L706.3,154.0 L714.0,154.0 L721.7,154.0 L729.3,154.0 L737.0,154.0 L744.7,154.0 L752.3,154.0 L760.0,154.0" fill="none" stroke="var(--text)" stroke-width="2.4"/><path d="M300.0,175.6 L307.7,181.6 L315.3,187.3 L323.0,192.8 L330.7,197.9 L338.3,202.8 L346.0,207.4 L353.7,211.8 L361.3,215.8 L369.0,219.6 L376.7,223.1 L384.3,226.3 L392.0,229.3 L399.7,232.0 L407.3,234.4 L415.0,236.5 L422.7,238.3 L430.3,239.9 L438.0,241.2 L445.7,242.2 L453.3,242.9 L461.0,243.4 L468.7,243.6 L476.3,243.6 L484.0,243.6 L491.7,243.6 L499.3,243.6 L507.0,243.6 L514.7,243.6 L522.3,243.6 L530.0,243.6 L537.7,243.6 L545.3,243.6 L553.0,243.6 L560.7,243.6 L568.3,243.6 L576.0,243.6 L583.7,243.6 L591.3,243.6 L599.0,243.6 L606.7,243.6 L614.3,243.6 L622.0,243.6 L629.7,243.6 L637.3,243.6 L645.0,243.6 L652.7,243.6 L660.3,243.6 L668.0,243.6 L675.7,243.6 L683.3,243.6 L691.0,243.6 L698.7,243.6 L706.3,243.6 L714.0,243.6 L721.7,243.6 L729.3,243.6 L737.0,243.6 L744.7,243.6 L752.3,243.6 L760.0,243.6" fill="none" stroke="var(--text)" stroke-width="2.4"/><path d="M300.0,150.0 L307.7,150.7 L315.3,151.2 L323.0,151.8 L330.7,152.3 L338.3,152.7 L346.0,153.0 L353.7,153.3 L361.3,153.6 L369.0,153.8 L376.7,153.9 L384.3,154.0 L392.0,154.0 L399.7,154.0 L407.3,154.0 L415.0,154.0 L422.7,154.0 L430.3,154.0 L438.0,154.0 L445.7,154.0 L453.3,154.0 L461.0,154.0 L468.7,154.0 L476.3,154.0 L484.0,154.0 L491.7,154.0 L499.3,154.0 L507.0,154.0 L514.7,154.0 L522.3,154.0 L530.0,154.0 L537.7,154.0 L545.3,154.0 L553.0,154.0 L560.7,154.0 L568.3,154.0 L576.0,154.0 L583.7,154.0 L591.3,154.0 L599.0,154.0 L606.7,154.0 L614.3,154.0 L622.0,154.0 L629.7,154.0 L637.3,154.0 L645.0,154.0 L652.7,154.0 L660.3,154.0 L668.0,154.0 L675.7,154.0 L683.3,154.0 L691.0,154.0 L698.7,154.0 L706.3,154.0 L714.0,154.0 L721.7,154.0 L729.3,154.0 L737.0,154.0 L744.7,154.0 L752.3,154.0 L760.0,154.0" fill="none" stroke="var(--text-faint)" stroke-width="2.4" stroke-dasharray="5 4"/><path d="M300.0,239.6 L307.7,240.3 L315.3,240.8 L323.0,241.4 L330.7,241.9 L338.3,242.3 L346.0,242.6 L353.7,242.9 L361.3,243.2 L369.0,243.4 L376.7,243.5 L384.3,243.6 L392.0,243.6 L399.7,243.6 L407.3,243.6 L415.0,243.6 L422.7,243.6 L430.3,243.6 L438.0,243.6 L445.7,243.6 L453.3,243.6 L461.0,243.6 L468.7,243.6 L476.3,243.6 L484.0,243.6 L491.7,243.6 L499.3,243.6 L507.0,243.6 L514.7,243.6 L522.3,243.6 L530.0,243.6 L537.7,243.6 L545.3,243.6 L553.0,243.6 L560.7,243.6 L568.3,243.6 L576.0,243.6 L583.7,243.6 L591.3,243.6 L599.0,243.6 L606.7,243.6 L614.3,243.6 L622.0,243.6 L629.7,243.6 L637.3,243.6 L645.0,243.6 L652.7,243.6 L660.3,243.6 L668.0,243.6 L675.7,243.6 L683.3,243.6 L691.0,243.6 L698.7,243.6 L706.3,243.6 L714.0,243.6 L721.7,243.6 L729.3,243.6 L737.0,243.6 L744.7,243.6 L752.3,243.6 L760.0,243.6" fill="none" stroke="var(--text-faint)" stroke-width="2.4" stroke-dasharray="5 4"/><text class="t" x="314" y="78.0" style="font-size:12px">φ<tspan dy="4" style="font-size:9px">m</tspan><tspan dy="-4"> = 5.1 eV(Au): φ</tspan><tspan dy="4" style="font-size:9px">B</tspan><tspan dy="-4"> = 1.05 eV</tspan></text><text class="t-dim" x="410" y="144.0" style="font-size:12px">φ<tspan dy="4" style="font-size:9px">m</tspan><tspan dy="-4"> = 4.3 eV(Ti): φ</tspan><tspan dy="4" style="font-size:9px">B</tspan><tspan dy="-4"> = 0.25 eV</tspan></text><text class="t" x="540" y="285" text-anchor="middle" style="font-size:13px">이상(쇼트키–모트): 금속을 바꾸면 장벽이 1:1로 바뀐다</text></g>
+<g data-only="2"><line x1="298" y1="86.0" x2="316" y2="86.0" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="95.0" x2="316" y2="95.0" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="103.9" x2="316" y2="103.9" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="112.9" x2="316" y2="112.9" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="121.8" x2="316" y2="121.8" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="130.8" x2="316" y2="130.8" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="139.8" x2="316" y2="139.8" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="148.7" x2="316" y2="148.7" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="157.7" x2="316" y2="157.7" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="166.6" x2="316" y2="166.6" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="175.6" x2="316" y2="175.6" stroke="var(--accent)" stroke-width="2"/></g>
+<g data-only="3"><line x1="298" y1="114.8" x2="316" y2="114.8" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="123.8" x2="316" y2="123.8" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="132.7" x2="316" y2="132.7" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="141.7" x2="316" y2="141.7" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="150.6" x2="316" y2="150.6" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="159.6" x2="316" y2="159.6" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="168.6" x2="316" y2="168.6" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="177.5" x2="316" y2="177.5" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="186.5" x2="316" y2="186.5" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="195.4" x2="316" y2="195.4" stroke="var(--accent)" stroke-width="2"/><line x1="298" y1="204.4" x2="316" y2="204.4" stroke="var(--accent)" stroke-width="2"/></g>
+<g data-only="2"><path d="M300.0,86.0 L307.7,92.0 L315.3,97.7 L323.0,103.2 L330.7,108.3 L338.3,113.2 L346.0,117.8 L353.7,122.2 L361.3,126.2 L369.0,130.0 L376.7,133.5 L384.3,136.7 L392.0,139.7 L399.7,142.4 L407.3,144.8 L415.0,146.9 L422.7,148.7 L430.3,150.3 L438.0,151.6 L445.7,152.6 L453.3,153.3 L461.0,153.8 L468.7,154.0 L476.3,154.0 L484.0,154.0 L491.7,154.0 L499.3,154.0 L507.0,154.0 L514.7,154.0 L522.3,154.0 L530.0,154.0 L537.7,154.0 L545.3,154.0 L553.0,154.0 L560.7,154.0 L568.3,154.0 L576.0,154.0 L583.7,154.0 L591.3,154.0 L599.0,154.0 L606.7,154.0 L614.3,154.0 L622.0,154.0 L629.7,154.0 L637.3,154.0 L645.0,154.0 L652.7,154.0 L660.3,154.0 L668.0,154.0 L675.7,154.0 L683.3,154.0 L691.0,154.0 L698.7,154.0 L706.3,154.0 L714.0,154.0 L721.7,154.0 L729.3,154.0 L737.0,154.0 L744.7,154.0 L752.3,154.0 L760.0,154.0" fill="none" stroke="var(--text-faint)" stroke-width="2.4" stroke-dasharray="5 4"/><path d="M300.0,175.6 L307.7,181.6 L315.3,187.3 L323.0,192.8 L330.7,197.9 L338.3,202.8 L346.0,207.4 L353.7,211.8 L361.3,215.8 L369.0,219.6 L376.7,223.1 L384.3,226.3 L392.0,229.3 L399.7,232.0 L407.3,234.4 L415.0,236.5 L422.7,238.3 L430.3,239.9 L438.0,241.2 L445.7,242.2 L453.3,242.9 L461.0,243.4 L468.7,243.6 L476.3,243.6 L484.0,243.6 L491.7,243.6 L499.3,243.6 L507.0,243.6 L514.7,243.6 L522.3,243.6 L530.0,243.6 L537.7,243.6 L545.3,243.6 L553.0,243.6 L560.7,243.6 L568.3,243.6 L576.0,243.6 L583.7,243.6 L591.3,243.6 L599.0,243.6 L606.7,243.6 L614.3,243.6 L622.0,243.6 L629.7,243.6 L637.3,243.6 L645.0,243.6 L652.7,243.6 L660.3,243.6 L668.0,243.6 L675.7,243.6 L683.3,243.6 L691.0,243.6 L698.7,243.6 L706.3,243.6 L714.0,243.6 L721.7,243.6 L729.3,243.6 L737.0,243.6 L744.7,243.6 L752.3,243.6 L760.0,243.6" fill="none" stroke="var(--text-faint)" stroke-width="2.4" stroke-dasharray="5 4"/><text class="t" x="322" y="106.0" style="fill:var(--accent);font-size:12px">계면 상태(D<tspan dy="4" style="font-size:9px">it</tspan><tspan dy="-4">)</tspan></text><line x1="270" y1="141.2" x2="340" y2="141.2" stroke="var(--warn)" stroke-width="2.4"/><text class="t" x="266" y="145.2" text-anchor="end" style="fill:var(--warn);font-size:12px">전하 중립 준위 φ<tspan dy="4" style="font-size:9px">0</tspan></text><text class="t" x="540" y="285" text-anchor="middle" style="font-size:13px">E<tspan dy="4" style="font-size:9px">F</tspan><tspan dy="-4">가 φ</tspan><tspan dy="4" style="font-size:9px">0</tspan><tspan dy="-4"> 아래에 있으면 계면 상태가 비어 + 전하 → 띠가 내려간다</tspan></text></g>
+<g data-only="3"><path d="M300.0,114.8 L307.7,119.0 L315.3,122.9 L323.0,126.6 L330.7,130.1 L338.3,133.3 L346.0,136.3 L353.7,139.1 L361.3,141.6 L369.0,143.9 L376.7,146.0 L384.3,147.8 L392.0,149.4 L399.7,150.7 L407.3,151.9 L415.0,152.8 L422.7,153.4 L430.3,153.8 L438.0,154.0 L445.7,154.0 L453.3,154.0 L461.0,154.0 L468.7,154.0 L476.3,154.0 L484.0,154.0 L491.7,154.0 L499.3,154.0 L507.0,154.0 L514.7,154.0 L522.3,154.0 L530.0,154.0 L537.7,154.0 L545.3,154.0 L553.0,154.0 L560.7,154.0 L568.3,154.0 L576.0,154.0 L583.7,154.0 L591.3,154.0 L599.0,154.0 L606.7,154.0 L614.3,154.0 L622.0,154.0 L629.7,154.0 L637.3,154.0 L645.0,154.0 L652.7,154.0 L660.3,154.0 L668.0,154.0 L675.7,154.0 L683.3,154.0 L691.0,154.0 L698.7,154.0 L706.3,154.0 L714.0,154.0 L721.7,154.0 L729.3,154.0 L737.0,154.0 L744.7,154.0 L752.3,154.0 L760.0,154.0" fill="none" stroke="var(--text)" stroke-width="2.4"/><path d="M300.0,204.4 L307.7,208.6 L315.3,212.5 L323.0,216.2 L330.7,219.7 L338.3,222.9 L346.0,225.9 L353.7,228.7 L361.3,231.2 L369.0,233.5 L376.7,235.6 L384.3,237.4 L392.0,239.0 L399.7,240.3 L407.3,241.5 L415.0,242.4 L422.7,243.0 L430.3,243.4 L438.0,243.6 L445.7,243.6 L453.3,243.6 L461.0,243.6 L468.7,243.6 L476.3,243.6 L484.0,243.6 L491.7,243.6 L499.3,243.6 L507.0,243.6 L514.7,243.6 L522.3,243.6 L530.0,243.6 L537.7,243.6 L545.3,243.6 L553.0,243.6 L560.7,243.6 L568.3,243.6 L576.0,243.6 L583.7,243.6 L591.3,243.6 L599.0,243.6 L606.7,243.6 L614.3,243.6 L622.0,243.6 L629.7,243.6 L637.3,243.6 L645.0,243.6 L652.7,243.6 L660.3,243.6 L668.0,243.6 L675.7,243.6 L683.3,243.6 L691.0,243.6 L698.7,243.6 L706.3,243.6 L714.0,243.6 L721.7,243.6 L729.3,243.6 L737.0,243.6 L744.7,243.6 L752.3,243.6 L760.0,243.6" fill="none" stroke="var(--text)" stroke-width="2.4"/><line x1="270" y1="170" x2="340" y2="170" stroke="var(--warn)" stroke-width="2.4"/><text class="t" x="330" y="106.79999999999998" style="font-size:12px">φ<tspan dy="4" style="font-size:9px">B</tspan><tspan dy="-4"> ≈ E</tspan><tspan dy="4" style="font-size:9px">g</tspan><tspan dy="-4"> − φ</tspan><tspan dy="4" style="font-size:9px">0</tspan><tspan dy="-4"> ≈ 0.7 eV — 금속과 거의 무관</tspan></text><text class="t" x="540" y="285" text-anchor="middle" style="font-size:13px">D<tspan dy="4" style="font-size:9px">it</tspan><tspan dy="-4">가 크면 E</tspan><tspan dy="4" style="font-size:9px">F</tspan><tspan dy="-4">가 φ</tspan><tspan dy="4" style="font-size:9px">0</tspan><tspan dy="-4">에 묶인다(고정) → 바딘 극한, S → 0</tspan></text></g>
+</svg>
+      <ol class="steps-cap"><li>이상적인 경우: 계면 상태가 없으면 장벽은 \(\phi_m - \chi\)이고, 금속을 바꾸면 장벽이 일함수만큼 그대로 바뀐다(실선 Au, 점선 Ti).</li><li>계면 상태를 넣는다. \(E_F\)가 중립 준위 \(\phi_0\)보다 아래면 그 사이의 상태가 비어 양전하를, 위면 채워져 음전하를 띤다. 이 계면 전하가 금속 전하와 쌍극자를 이뤄 반도체 공핍 전하 대신 \(E_F\) 차이를 떠맡는다.</li><li>계면 상태 밀도 \(D_{it}\)가 크면 \(E_F\)가 \(\phi_0\)에서 조금만 벗어나도 엄청난 전하가 생기므로, \(E_F\)는 \(\phi_0\) 근처에 묶인다. 이것이 <span class="term">페르미 준위 고정</span><span class="en">(Fermi level pinning)</span>이고, 장벽은 \(E_g - q\phi_0\) 근처로 금속과 거의 무관해진다(바딘 극한).</li></ol>
+      <figcaption>계면 상태가 페르미 준위를 붙잡는 과정. 실리콘의 계면 상태는 대부분 금속 유도 간격 상태라, 계면을 아무리 깨끗하게 만들어도 사라지지 않는다.</figcaption>
+    </figure>
+    <p>두 극한 사이를 잇는 경험식이 <span class="term">고정 계수</span><span class="en">(pinning factor)</span> \(S\)를 쓰는 식이다.</p>
+    <div class="formula">$$q\phi_{Bn} = S\,q(\phi_m - \chi) + (1 - S)(E_g - q\phi_0), \qquad S = \frac{d\phi_B}{d\phi_m} = \frac{\varepsilon_i}{\varepsilon_i + q^2D_{it}\delta}$$<div class="where">\(S = 1\)이면 쇼트키–모트, \(S = 0\)이면 완전 고정(바딘). 둘째 식은 두께 \(\delta\), 유전율 \(\varepsilon_i\)인 계면층과 계면 상태 밀도 \(D_{it}\)(cm⁻²eV⁻¹)를 가정한 모형(코울리–스체)이다. 실리콘의 측정값은 \(S \approx 0.1\)–0.3, \(\phi_0 \approx 0.3\)–0.45 eV. 이온 결합이 강한 물질(SiO₂, ZnO)일수록 \(S\)가 1에 가깝고, 공유 결합 반도체(Si, Ge, GaAs)는 작다. <code>Solid.schottky(phiM, chi, S, Eg, phi0)</code>.</div></div>
+    <div class="predict" data-for="sim-ms">
+      <p>쇼트키–모트 규칙으로는 n형 Si에서 Au(\(\phi_m\) = 5.1 eV)의 장벽이 Al(4.28 eV)보다 0.82 eV 높아야 한다. 실제로 잰 차이는?</p>
+      <div class="opts"><button class="opt">약 0.8 eV — 규칙이 잘 맞는다</button><button class="opt" data-correct>약 0.1 eV — 거의 차이가 없다</button><button class="opt">Al 쪽이 0.8 eV 더 높다</button><button class="opt">두 금속 모두 장벽이 없다(옴 접촉)</button></div>
+      <div class="quiz-exp">측정값은 Au 0.80 eV, Al 0.72 eV로 차이가 0.08 eV뿐이다. 0.82 eV 차이의 1/10이므로 \(S \approx 0.1\). 실험대에서 금속을 바꿔 가며 측정점이 쇼트키–모트 선(기울기 1)보다 훨씬 눕는 것을 보라.</div>
+    </div>
+    <div class="sim" id="sim-ms">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>쇼트키 실험대: 일함수와 고정 계수로 장벽 맞추기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-ms"></canvas><span class="hint top">금속의 E<sub>F</sub>(흰 원)를 위아래로 끌어 일함수를 바꾼다</span></div><div><canvas id="cv-msd"></canvas></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>금속</span><div class="seg" id="ms-m"><button data-value="Ti">Ti</button><button data-value="Al">Al</button><button data-value="W">W</button><button data-value="Cu">Cu</button><button data-value="Au" class="on">Au</button><button data-value="Ni">Ni</button><button data-value="Pt">Pt</button></div></div>
+          <label class="ctrl"><span>고정 계수 S <output id="ms-s-out"></output></span><input type="range" id="ms-s" min="0" max="1" step="0.01" value="1"></label>
+          <label class="ctrl"><span>중립 준위 φ<sub>0</sub> (E<sub>v</sub> 위) <output id="ms-p-out"></output></span><input type="range" id="ms-p" min="0.1" max="0.8" step="0.01" value="0.3"></label>
+          <label class="ctrl"><span>n형 도핑 N<sub>D</sub> <output id="ms-n-out"></output></span><input type="range" id="ms-n" min="15" max="18" step="0.1" value="16"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">φ<sub>m</sub></span><span class="v" id="ms-phm">—</span></div>
+        <div class="stat"><span class="k">쇼트키–모트 φ<sub>m</sub>−χ</span><span class="v" id="ms-mott">—</span></div>
+        <div class="stat"><span class="k">모형 φ<sub>B</sub></span><span class="v" id="ms-pb">—</span></div>
+        <div class="stat"><span class="k">V<sub>bi</sub> / W</span><span class="v" id="ms-vbi">—</span></div>
+        <div class="stat"><span class="k">측정 10점 RMS 오차</span><span class="v" id="ms-rms">—</span></div>
+      </div>
+      <div class="sim-note">위: 접촉 후 n형 Si(χ = 4.05 eV, \(E_g\) = 1.12 eV)의 띠 그림. 계면의 주황 막대가 중립 준위 \(\phi_0\)다. 아래: 열 가지 금속의 n-Si 장벽 대표 측정값(Sze 교재 값, 문헌마다 ±0.1 eV)과 모형 직선. 도전: \(S\)와 \(\phi_0\)를 조절해 측정 10점에 대한 RMS 오차를 0.100 eV 이하로 만들어라(쇼트키–모트 \(S = 1\)이면 0.38 eV). 해볼 것: ① \(S = 1\)에서 Pt의 장벽이 1.6 eV로 띠 간격을 넘는 모순을 보라. ② \(S = 0\)이면 금속을 바꿔도 띠 그림이 꿈쩍하지 않는다. ③ 도핑을 높이면 장벽 높이는 그대로지만 공핍층이 얇아진다 — 옴 접촉의 열쇠다(§13.5).</div>
+    </div>
+    <h3>영상력 장벽 낮춤</h3>
+    <p>장벽 근처의 전자는 금속 표면에 자신의 거울상 전하(영상 전하)를 만들어 끌려간다. 이 인력 퍼텐셜 \(-q^2/(16\pi\varepsilon_sx)\)이 공핍층 전기장 \(\mathcal E\)와 더해지면 장벽 꼭대기가 계면에서 조금 안쪽으로 물러나며 낮아진다. 이것이 <span class="term">영상력 장벽 낮춤</span><span class="en">(image-force barrier lowering, 쇼트키 효과)</span>이다.</p>
+    <div class="formula">$$\Delta\phi = \sqrt{\frac{q\mathcal E}{4\pi\varepsilon_s}}, \qquad x_m = \sqrt{\frac{q}{16\pi\varepsilon_s\mathcal E}}$$<div class="where">Si에서 \(\mathcal E = 10^5\) V/cm이면 \(\Delta\phi = 35\) mV(\(x_m = 1.8\) nm). 작아 보이지만 전류에는 \(e^{q\Delta\phi/k_BT} \approx 3.9\)배로 들어가고, 역전압이 커지면 \(\mathcal E\)가 커지므로 쇼트키 다이오드의 역방향 전류가 포화하지 않고 조금씩 늘어나는 원인이 된다.</div></div>
+    <h3>열전자 방출</h3>
+    <p>도핑이 보통인 쇼트키 접촉에서 전류는 장벽 위로 열적으로 넘어가는 전자가 나른다. 7장의 리처드슨–더시먼 식에서 일함수 자리에 장벽 높이가, 전자 질량 자리에 유효 질량이 들어간다.</p>
+    <div class="formula">$$J = A^*T^2e^{-q\phi_B/k_BT}\left(e^{qV/k_BT} - 1\right), \qquad A^* = \frac{4\pi qm^*k_B^2}{h^3} = 120\,\frac{m^*}{m}\ \text{A/(cm}^2\text{K}^2)$$<div class="where">이것이 <span class="term">열전자 방출</span><span class="en">(thermionic emission)</span> 식이다. <span class="term">리처드슨 상수</span><span class="en">(Richardson constant)</span> \(A^*\)는 n-Si 약 112, p-Si 약 32 A/(cm²K²). 순방향 전압은 반도체 쪽 장벽(\(V_{bi}\))만 낮추고 금속 쪽 장벽 \(\phi_B\)는 그대로다. <code>Solid.thermionic(phiB, V, T)</code>.</div></div>
+    <figure class="mini" id="mini-te">
+      <div class="mini-view" style="position:relative"><canvas id="cv-te"></canvas><span class="hint top">곡선 위 흰 원을 끌어 전압을 바꾼다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>장벽 φ<sub>B</sub> <output id="te-b-out"></output></span><input type="range" id="te-b" min="0.4" max="0.9" step="0.01" value="0.7"></label><span class="readout" id="te-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>쇼트키 다이오드(열전자 방출, \(A^* = 112\))와 앞 절의 pn 다이오드(\(J_0 = 6.4\times10^{-11}\) A/cm²)의 순방향 \(J\)–\(V\)(로그 눈금). 포화 전류가 10⁴–10⁷배 크므로 같은 전류를 0.2–0.4 V 낮은 전압에서 흘린다. 쇼트키 다이오드는 다수 캐리어 소자라 소수 캐리어 축적이 없어 스위칭도 빠르다.</figcaption>
+    </figure>
+    <div class="example" data-title="고정된 장벽과 열전자 방출 전류">
+      <p>n-Si(\(\chi = 4.05\) eV, \(E_g = 1.12\) eV) 위의 Au(\(\phi_m = 5.1\) eV)와 Al(4.28 eV) 접촉에서 \(S = 0.14\), \(\phi_0 = 0.43\) eV로 장벽을 구하라. 또 Au 접촉의 300 K 포화 전류 밀도와, 1 A/cm²를 흘리는 순방향 전압을 구하고 \(J_0 = 6.4\times10^{-11}\) A/cm²인 pn 다이오드와 비교하라. \(A^* = 112\) A/(cm²K²), \(k_BT = 0.02585\) eV.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\phi_B = S(\phi_m - \chi) + (1 - S)(E_g - \phi_0)\), \(J_s = A^*T^2e^{-\phi_B/V_T}\), \(V = V_T\ln(J/J_s + 1)\).</div>
+        <div class="step"><b>풀이</b> \((1 - S)(E_g - \phi_0) = 0.86\times0.69 = 0.593\) eV. Au: \(0.14\times1.05 + 0.593 = 0.740\) eV. Al: \(0.14\times0.23 + 0.593 = 0.626\) eV.<br>Au: \(J_s = 112\times300^2\times e^{-0.740/0.02585} = 1.008\times10^7\times3.69\times10^{-13} = 3.7\times10^{-6}\) A/cm². \(V(1\ \text{A/cm}^2) = 0.02585\ln(1/3.7\times10^{-6}) = 0.32\) V. pn: \(0.02585\ln(1/6.4\times10^{-11}) = 0.61\) V.</div>
+        <div class="answer">\(\phi_B\)(Au) ≈ 0.74 eV, \(\phi_B\)(Al) ≈ 0.63 eV(쇼트키–모트로는 1.05, 0.23 eV). Au 접촉 \(J_s \approx 3.7\times10^{-6}\) A/cm², 1 A/cm²에서 0.32 V(pn은 0.61 V).</div>
+        <div class="step"><b>검토</b> 측정값(Au 0.80, Al 0.72 eV)과 0.06–0.09 eV 차이로, 단순한 두 매개변수 모형 치고 괜찮다. 쇼트키 다이오드의 켜짐 전압이 낮은 것은 장벽이 \(V_{bi}\)가 아니라 \(\phi_B\)로 정해지고, 앞 인자 \(A^*T^2 \approx 10^7\) A/cm²가 pn의 \(qn_i^2D/LN\)보다 압도적으로 크기 때문이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="ohmic">
+    <h2>옴 접촉과 접촉 비저항</h2>
+    <p>트랜지스터의 소스·드레인에는 장벽이 없는 접촉, 즉 전류가 양방향으로 전압에 비례해 흐르는 <span class="term">옴 접촉</span><span class="en">(ohmic contact)</span>이 필요하다. 쇼트키–모트 규칙만 보면 \(\phi_m < \chi\)인 금속을 고르면 될 것 같지만, 페르미 준위 고정 때문에 실리콘에서는 어떤 금속을 써도 0.5–0.8 eV 장벽이 남는다. 그래서 장벽을 <em>낮추는</em> 대신 <em>얇게</em> 만든다. 계면 밑을 \(10^{20}\) cm⁻³ 이상으로 도핑하면 공핍 폭 \(W = \sqrt{2\varepsilon_s\phi_B/qN}\)이 몇 nm로 줄어, 전자가 장벽을 넘지 않고 <em>뚫고</em> 지나간다(현대물리 6장의 <a href="../../modern-physics/chapters/tunneling.html#wkb">WKB 터널링</a>).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="도핑이 높아지며 장벽이 얇아져 열전자 방출에서 열전계 방출, 전계 방출로 바뀌는 그림">
+<defs><marker id="jn-ar7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker><marker id="jn-ar6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+<rect x="20" y="200" width="40" height="70" fill="var(--accent-soft)"/><line x1="20" y1="200" x2="60" y2="200" stroke="var(--accent)" stroke-width="2.2"/><line x1="60" y1="60" x2="60" y2="270" stroke="var(--text-faint)"/>
+<path d="M60.0,70.0 L63.7,76.0 L67.3,81.8 L71.0,87.5 L74.7,93.1 L78.3,98.5 L82.0,103.7 L85.7,108.8 L89.3,113.8 L93.0,118.6 L96.7,123.2 L100.3,127.7 L104.0,132.1 L107.7,136.3 L111.3,140.3 L115.0,144.3 L118.7,148.0 L122.3,151.6 L126.0,155.1 L129.7,158.4 L133.3,161.6 L137.0,164.6 L140.7,167.5 L144.3,170.2 L148.0,172.8 L151.7,175.2 L155.3,177.5 L159.0,179.7 L162.7,181.7 L166.3,183.5 L170.0,185.2 L173.7,186.7 L177.3,188.1 L181.0,189.4 L184.7,190.5 L188.3,191.4 L192.0,192.2 L195.7,192.9 L199.3,193.4 L203.0,193.7 L206.7,193.9 L210.3,194.0 L214.0,194.0 L217.7,194.0 L221.3,194.0 L225.0,194.0 L228.7,194.0 L232.3,194.0 L236.0,194.0 L239.7,194.0 L243.3,194.0 L247.0,194.0 L250.7,194.0 L254.3,194.0 L258.0,194.0 L261.7,194.0 L265.3,194.0 L269.0,194.0 L272.7,194.0 L276.3,194.0 L280.0,194.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="60" y1="200" x2="270" y2="200" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text class="t" x="145" y="26" text-anchor="middle" style="font-weight:700">열전자 방출 (TE)</text><text class="t-dim" x="145" y="46" text-anchor="middle" style="font-size:12px">N ≲ 10¹⁷ cm⁻³, E₀₀ ≪ kT</text>
+<path d="M255,186 C190,160 100,40 66,64" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#jn-ar6)"/>
+<text class="t-dim" x="160" y="100" style="font-size:12px">장벽 위로 열적 들뜸</text>
+<text class="t-dim" x="145" y="292" text-anchor="middle" style="font-size:12px">공핍 폭 W ∝ 1/√N</text>
+<rect x="282" y="200" width="40" height="70" fill="var(--accent-soft)"/><line x1="282" y1="200" x2="322" y2="200" stroke="var(--accent)" stroke-width="2.2"/><line x1="322" y1="60" x2="322" y2="270" stroke="var(--text-faint)"/>
+<path d="M322.0,70.0 L325.7,84.7 L329.3,98.5 L333.0,111.3 L336.7,123.2 L340.3,134.2 L344.0,144.3 L347.7,153.4 L351.3,161.6 L355.0,168.9 L358.7,175.2 L362.3,180.7 L366.0,185.2 L369.7,188.8 L373.3,191.4 L377.0,193.1 L380.7,193.9 L384.3,194.0 L388.0,194.0 L391.7,194.0 L395.3,194.0 L399.0,194.0 L402.7,194.0 L406.3,194.0 L410.0,194.0 L413.7,194.0 L417.3,194.0 L421.0,194.0 L424.7,194.0 L428.3,194.0 L432.0,194.0 L435.7,194.0 L439.3,194.0 L443.0,194.0 L446.7,194.0 L450.3,194.0 L454.0,194.0 L457.7,194.0 L461.3,194.0 L465.0,194.0 L468.7,194.0 L472.3,194.0 L476.0,194.0 L479.7,194.0 L483.3,194.0 L487.0,194.0 L490.7,194.0 L494.3,194.0 L498.0,194.0 L501.7,194.0 L505.3,194.0 L509.0,194.0 L512.7,194.0 L516.3,194.0 L520.0,194.0 L523.7,194.0 L527.3,194.0 L531.0,194.0 L534.7,194.0 L538.3,194.0 L542.0,194.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="322" y1="200" x2="532" y2="200" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text class="t" x="407" y="26" text-anchor="middle" style="font-weight:700">열전계 방출 (TFE)</text><text class="t-dim" x="407" y="46" text-anchor="middle" style="font-size:12px">10¹⁷–10¹⁹, E₀₀ ≈ kT</text>
+<path d="M517,186 C482,170 452,140 346.4,140" fill="none" stroke="var(--accent)" stroke-width="2"/><line x1="342.4" y1="140" x2="328" y2="140" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#jn-ar6)"/>
+<text class="t-dim" x="412" y="128" style="font-size:12px">조금 들떠서 터널</text>
+<text class="t-dim" x="407" y="292" text-anchor="middle" style="font-size:12px">공핍 폭 W ∝ 1/√N</text>
+<rect x="544" y="200" width="40" height="70" fill="var(--accent-soft)"/><line x1="544" y1="200" x2="584" y2="200" stroke="var(--accent)" stroke-width="2.2"/><line x1="584" y1="60" x2="584" y2="270" stroke="var(--text-faint)"/>
+<path d="M584.0,70.0 L587.7,107.9 L591.3,138.9 L595.0,163.0 L598.7,180.2 L602.3,190.6 L606.0,194.0 L609.7,194.0 L613.3,194.0 L617.0,194.0 L620.7,194.0 L624.3,194.0 L628.0,194.0 L631.7,194.0 L635.3,194.0 L639.0,194.0 L642.7,194.0 L646.3,194.0 L650.0,194.0 L653.7,194.0 L657.3,194.0 L661.0,194.0 L664.7,194.0 L668.3,194.0 L672.0,194.0 L675.7,194.0 L679.3,194.0 L683.0,194.0 L686.7,194.0 L690.3,194.0 L694.0,194.0 L697.7,194.0 L701.3,194.0 L705.0,194.0 L708.7,194.0 L712.3,194.0 L716.0,194.0 L719.7,194.0 L723.3,194.0 L727.0,194.0 L730.7,194.0 L734.3,194.0 L738.0,194.0 L741.7,194.0 L745.3,194.0 L749.0,194.0 L752.7,194.0 L756.3,194.0 L760.0,194.0 L763.7,194.0 L767.3,194.0 L771.0,194.0 L774.7,194.0 L778.3,194.0 L782.0,194.0 L785.7,194.0 L789.3,194.0 L793.0,194.0 L796.7,194.0 L800.3,194.0 L804.0,194.0" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+<line x1="584" y1="200" x2="794" y2="200" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text class="t" x="669" y="26" text-anchor="middle" style="font-weight:700">전계 방출 (FE)</text><text class="t-dim" x="669" y="46" text-anchor="middle" style="font-size:12px">N ≳ 10¹⁹, E₀₀ ≫ kT</text>
+<line x1="779" y1="190" x2="590" y2="190" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#jn-ar6)"/>
+<text class="t-dim" x="654" y="176" style="font-size:12px">곧바로 터널</text>
+<text class="t-dim" x="669" y="292" text-anchor="middle" style="font-size:12px">공핍 폭 W ∝ 1/√N</text>
+</svg>
+      <figcaption>도핑이 높아질수록 장벽의 높이는 같은데 폭이 \(1/\sqrt N\)로 줄어, 주된 전도 경로가 장벽 위(TE) → 장벽 윗부분(TFE) → 페르미 준위 근처(FE)로 내려온다.</figcaption>
+    </figure>
+    <p>포물선 모양 장벽 \(E_c(x) - E_F = q\phi_B(1 - x/W)^2\)을 페르미 준위에서 뚫는 WKB 투과 확률을 계산하면 깔끔한 결과가 나온다.</p>
+    <div class="formula">$$T(E_F) = \exp\left(-2\int_0^W\kappa\,dx\right) = \exp\left(-\frac{q\phi_B}{E_{00}}\right), \qquad E_{00} = \frac{q\hbar}{2}\sqrt{\frac{N}{m^*\varepsilon_s}}$$<div class="where">\(E_{00}\)는 <span class="term">터널링 특성 에너지</span><span class="en">(tunneling characteristic energy)</span>로, 도핑의 제곱근에 비례한다. n-Si(\(m^* = 0.26m\), \(\varepsilon_r = 11.7\))에서 \(10^{18}\) cm⁻³이면 10.6 meV, \(10^{20}\)이면 106 meV. <code>Solid.E00(N)</code>.</div></div>
+    <p>\(E_{00}\)를 열에너지 \(k_BT\)와 비교하면 전도 방식이 갈린다. \(E_{00} \ll k_BT\)이면 터널링보다 열적 들뜸이 쉬워 열전자 방출(TE), \(E_{00} \approx k_BT\)이면 조금 들뜬 뒤 얇아진 윗부분을 뚫는 <span class="term">열전계 방출</span><span class="en">(thermionic-field emission, TFE)</span>, \(E_{00} \gg k_BT\)이면 페르미 준위에서 바로 뚫는 <span class="term">전계 방출</span><span class="en">(field emission, FE)</span>이다. 접촉의 질은 단위 넓이 저항인 <span class="term">접촉 비저항</span><span class="en">(specific contact resistivity)</span> \(\rho_c = (\partial J/\partial V)^{-1}_{V=0}\)(Ω·cm²)로 나타낸다.</p>
+    <div class="formula">$$\rho_c^{TE} = \frac{k_B}{qA^*T}e^{q\phi_B/k_BT}, \qquad \rho_c^{TFE} \propto e^{q\phi_B/E_0},\ \ E_0 = E_{00}\coth\frac{E_{00}}{k_BT}, \qquad \rho_c^{FE} \propto e^{q\phi_B/E_{00}}$$<div class="where">\(E_0\)는 TE(\(E_0 \to k_BT\))와 FE(\(E_0 \to E_{00}\))를 하나로 잇는다. 이 장의 그래프는 세 영역 모두에 TE의 앞 인자 \(k_B/qA^*T\)를 붙인 통합 근사 <code>Solid.contactRho</code>를 쓴다. 지수(기울기)는 맞지만 앞 인자를 단순화했으므로 TFE·FE 영역의 절대값은 실측보다 10–100배 클 수 있다 — <b>경향을 보는 그래프</b>다. FE 영역에서 \(\ln\rho_c \propto \phi_B/\sqrt N\)이라는 점이 핵심이다.</div></div>
+    <figure class="mini" id="mini-bar">
+      <div class="mini-view" style="position:relative"><canvas id="cv-bar"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>도핑 N<sub>D</sub> <output id="bar-n-out"></output></span><input type="range" id="bar-n" min="16" max="21" step="0.05" value="18"></label><label class="ctrl"><span>φ<sub>B</sub> <output id="bar-b-out"></output></span><input type="range" id="bar-b" min="0.2" max="0.9" step="0.01" value="0.65"></label><span class="readout" id="bar-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>금속/n-Si 계면의 장벽(가로축은 공핍 폭에 맞춰 늘고 준다). 화살표는 전류를 가장 많이 나르는 에너지 \(E_m = q\phi_B/\cosh^2(E_{00}/k_BT)\)(파도바니–스트래턴)에서 장벽을 지나는 경로다. 도핑을 올리면 장벽이 얇아지며 화살표가 장벽 꼭대기에서 페르미 준위로 내려온다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-rc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>접촉 비저항 지도: 도핑과 장벽으로 ρ<sub>c</sub> &lt; 10⁻⁸ Ω·cm² 만들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-rc"></canvas><span class="hint top">곡선 위 흰 원을 좌우로 끌어 도핑을 바꾼다</span></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>장벽 φ<sub>B</sub> <output id="rc-b-out"></output></span><input type="range" id="rc-b" min="0.1" max="0.9" step="0.01" value="0.65"></label>
+          <label class="ctrl"><span>온도 T <output id="rc-t-out"></output></span><input type="range" id="rc-t" min="77" max="450" step="1" value="300"></label>
+          <div class="ctrl"><span>접촉 단면</span><div class="seg" id="rc-a"><button data-value="1e-8">1 μm²</button><button data-value="8e-12" class="on">20×40 nm²</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="rc-nisi" type="button">NiSi 0.65 eV</button><button class="btn" id="rc-mis" type="button">MIS 0.15 eV</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">E<sub>00</sub> / k<sub>B</sub>T</span><span class="v" id="rc-e">—</span></div>
+        <div class="stat"><span class="k">영역</span><span class="v" id="rc-m">—</span></div>
+        <div class="stat"><span class="k">ρ<sub>c</sub></span><span class="v" id="rc-r">—</span></div>
+        <div class="stat"><span class="k">접촉 저항 ρ<sub>c</sub>/A</span><span class="v" id="rc-R">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="rc-goal">—</span></div>
+      </div>
+      <div class="sim-note">로그–로그 그래프. 색 띠는 TE / TFE / FE 영역(\(E_{00}\) < 0.2\(k_BT\), 0.2–2\(k_BT\), > 2\(k_BT\)), 흐린 곡선은 다른 장벽 높이 비교용이다. 과녁: 활성 도핑 한계 5×10²⁰ cm⁻³ 이하에서 \(\rho_c < 10^{-8}\) Ω·cm²(초록 띠)를 만들어라. 해볼 것: ① FE 영역에서 도핑을 4배 올리면 \(\rho_c\)가 몇 배 주나? ② 온도를 77 K로 내리면 TE 영역의 \(\rho_c\)는 폭발하지만 FE 영역은 거의 그대로다 — 옴 접촉이 터널링이라는 증거. ③ NiSi(0.65 eV)로는 5×10²⁰에서도 과녁에 못 미친다. 장벽을 얼마로 낮춰야 하나?</div>
+    </div>
+    <div class="example" data-title="터널링 에너지와 도핑에 따른 접촉 비저항">
+      <p>n-Si(\(m^* = 0.26m\), \(\varepsilon_r = 11.7\))에서 \(N_D = 10^{19}\)과 \(10^{20}\) cm⁻³의 \(E_{00}\)을 구하고 300 K 전도 방식을 판정하라. 장벽 0.60 eV일 때 \(E_0 = E_{00}\coth(E_{00}/k_BT)\)를 써서 두 도핑의 \(\rho_c\) 비를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E_{00} = (\hbar/2)\sqrt{N/(m^*\varepsilon_s)}\)(eV 단위로는 \(q\)가 약분), \(\rho_c \propto e^{\phi_B/E_0}\)이므로 비는 \(e^{\phi_B(1/E_{0,1} - 1/E_{0,2})}\).</div>
+        <div class="step"><b>풀이</b> \(N = 10^{20}\) cm⁻³ \(= 10^{26}\) m⁻³: \(\sqrt{10^{26}/(0.26\times9.109\times10^{-31}\times11.7\times8.854\times10^{-12})} = 2.02\times10^{33}\) (s·C)⁻¹, 여기에 \(\hbar/2 = 5.27\times10^{-35}\) J·s를 곱하면 \(E_{00} = 0.106\) eV. \(10^{19}\)은 \(\sqrt{10}\)배 작은 0.0337 eV.<br>\(k_BT = 0.02585\) eV: \(E_{00}/k_BT\) = 1.30(TFE), 4.12(FE).<br>\(E_0\)(10¹⁹) \(= 0.0337\coth1.30 = 0.0390\) eV, \(E_0\)(10²⁰) \(= 0.1065\coth4.12 = 0.1065\) eV. 비 \(= \exp[0.60(1/0.0390 - 1/0.1065)] = e^{9.74} = 1.7\times10^4\).</div>
+        <div class="answer">\(E_{00}\) = 34 meV(10¹⁹, TFE), 106 meV(10²⁰, FE). 도핑을 10배 올리면 \(\rho_c\)가 약 1.7×10⁴배 준다.</div>
+        <div class="step"><b>검토</b> TE였다면 \(\rho_c\)는 도핑과 무관했을 것이다. 도핑 10배가 저항을 네 자릿수 바꾸는 이 민감도 때문에, 소스·드레인의 <em>활성화된</em> 표면 도핑을 높이는 것(레이저 어닐링, 고체 용해도 이상 준안정 도핑)이 접촉 저항 개선의 첫째 수단이다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>실리사이드, 소스·드레인 접촉 저항, MIS 접촉</strong><p>소스·드레인 위에는 Ti 또는 Ni를 증착하고 열처리해 TiSi₂·NiSi 같은 <span class="term">실리사이드</span><span class="en">(silicide)</span>를 만든다. 실리사이드는 실리콘을 소모하며 아래로 자라 계면이 깨끗하고, 면저항이 낮다. 그래도 n-Si에 대한 장벽은 NiSi 약 0.65 eV, TiSi₂ 약 0.6 eV로 고정되어 있어, 접촉 저항은 결국 계면 도핑이 정한다. 접촉 면적이 (20 nm)² 수준으로 줄어든 첨단 노드에서는 \(\rho_c = 10^{-8}\) Ω·cm²도 1 kΩ 넘는 저항이 되어, 접촉 저항이 트랜지스터 전체 기생 저항의 절반 가까이를 차지한다. 목표는 \(10^{-9}\) Ω·cm² 이하다.</p><p><b>페르미 준위 고정 풀기.</b> 도핑을 고체 용해도 이상으로 올릴 수 없다면 장벽을 낮춰야 한다. 금속과 Si 사이에 1 nm 안팎의 절연막(TiO₂, ZnO 등)을 끼우면 금속 파동 함수가 Si 띠 간격으로 스며드는 것을 막아 금속 유도 간격 상태가 줄고, \(S\)가 커져 장벽이 0.1–0.2 eV까지 내려간다. 대신 절연막 자체를 터널링하는 저항이 더해지므로 두께에 최적점이 있다. 이 <span class="term">MIS 접촉</span><span class="en">(metal–insulator–semiconductor contact)</span>과 희토류 실리사이드(ErSi₁.₇, n-Si 장벽 약 0.3 eV), 도펀트 편석(실리사이드 계면에 도펀트를 몰아 쌍극자를 만듦)이 페르미 준위 고정을 완화하는 대표 방법이다. → <a href="https://semi.euiyun.com/device/chapters/ms.html">DeviceBook · 금속–반도체 접합</a> · <a href="https://semi.euiyun.com/doping/chapters/flow.html">DopingBook · 도핑 공정 흐름</a></p></div>
+    <div class="drill" id="drill-ms" data-title="쇼트키 장벽 · 열전자 방출 · E₀₀ 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="hetero">
+    <h2>이종 접합과 띠 어긋남</h2>
+    <p>띠 간격이 다른 두 반도체가 맞닿은 것이 <span class="term">이종 접합</span><span class="en">(heterojunction)</span>이다. 같은 결정 구조와 비슷한 격자 상수를 가진 물질이어야 결함 없이 에피 성장할 수 있다(3장의 격자 불일치와 임계 두께). 이종 접합에서는 띠 간격 차이 \(\Delta E_g\)가 전도대와 가전자대의 계단으로 나뉘는데, 이 <span class="term">띠 어긋남</span><span class="en">(band offset)</span> \(\Delta E_c\), \(\Delta E_v\)가 도핑과 무관한 계면의 성질이다.</p>
+    <div class="def"><span class="def-k">앤더슨 규칙</span>
+      <p>진공 준위가 계면에서 연속이라고 보면 전도대 계단은 전자 친화도의 차이다: \(\Delta E_c = \chi_A - \chi_B\), \(\Delta E_v = \Delta E_g - \Delta E_c\). 1962년 앤더슨이 Ge/GaAs에 쓴 이 <span class="term">앤더슨 규칙</span><span class="en">(Anderson's rule)</span>은 쇼트키–모트 규칙의 반도체판이다.</p>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="이종 접합의 띠 정렬 세 가지: 유형 I(포함), 유형 II(엇갈림), 유형 III(어긋남)">
+<rect x="35" y="90" width="110" height="130" fill="var(--accent-soft)" stroke="none"/>
+<rect x="145" y="70" width="110" height="180" fill="var(--accent-2-soft)" stroke="none"/>
+<line x1="35" y1="90" x2="145" y2="90" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="35" y1="220" x2="145" y2="220" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="145" y1="70" x2="255" y2="70" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="145" y1="250" x2="255" y2="250" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="145" y1="70" x2="145" y2="250" stroke="var(--text-faint)" stroke-width="1.4"/>
+<text class="t" x="90.0" y="159.0" text-anchor="middle" style="font-weight:700">A</text><text class="t" x="200.0" y="164.0" text-anchor="middle" style="font-weight:700">B</text>
+<text class="t" x="145" y="22" text-anchor="middle" style="font-weight:700;font-size:13px">유형 I · 포함(straddling)</text><text class="t-dim" x="145" y="40" text-anchor="middle" style="font-size:12px">GaAs/AlGaAs, SiGe/Si</text>
+<text class="t-dim" x="145" y="270" text-anchor="middle" style="font-size:12px">전자·정공 모두 A에 갇힘</text>
+<rect x="297" y="110" width="110" height="100" fill="var(--accent-soft)" stroke="none"/>
+<rect x="407" y="80" width="110" height="90" fill="var(--accent-2-soft)" stroke="none"/>
+<line x1="297" y1="110" x2="407" y2="110" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="297" y1="210" x2="407" y2="210" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="407" y1="80" x2="517" y2="80" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="407" y1="170" x2="517" y2="170" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="407" y1="80" x2="407" y2="210" stroke="var(--text-faint)" stroke-width="1.4"/>
+<text class="t" x="352.0" y="164.0" text-anchor="middle" style="font-weight:700">A</text><text class="t" x="462.0" y="129.0" text-anchor="middle" style="font-weight:700">B</text>
+<text class="t" x="407" y="22" text-anchor="middle" style="font-weight:700;font-size:13px">유형 II · 엇갈림(staggered)</text><text class="t-dim" x="407" y="40" text-anchor="middle" style="font-size:12px">변형 Si/SiGe, GaAsSb/GaAs</text>
+<text class="t-dim" x="407" y="270" text-anchor="middle" style="font-size:12px">전자는 A, 정공은 B</text>
+<rect x="559" y="170" width="110" height="65" fill="var(--accent-soft)" stroke="none"/>
+<rect x="669" y="80" width="110" height="60" fill="var(--accent-2-soft)" stroke="none"/>
+<line x1="559" y1="170" x2="669" y2="170" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="559" y1="235" x2="669" y2="235" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="669" y1="80" x2="779" y2="80" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="669" y1="140" x2="779" y2="140" stroke="var(--text)" stroke-width="2.2"/>
+<line x1="669" y1="80" x2="669" y2="235" stroke="var(--text-faint)" stroke-width="1.4"/>
+<text class="t" x="614.0" y="206.5" text-anchor="middle" style="font-weight:700">A</text><text class="t" x="724.0" y="114.0" text-anchor="middle" style="font-weight:700">B</text>
+<text class="t" x="669" y="22" text-anchor="middle" style="font-weight:700;font-size:13px">유형 III · 어긋남(broken gap)</text><text class="t-dim" x="669" y="40" text-anchor="middle" style="font-size:12px">InAs/GaSb</text>
+<text class="t-dim" x="669" y="270" text-anchor="middle" style="font-size:12px">A의 E_c가 B의 E_v보다 아래</text>
+</svg>
+      <figcaption>두 반도체 A(좁은 간격)와 B의 띠가 정렬되는 세 가지 방식. 유형 I은 전자와 정공을 같은 곳에 가두어 레이저·LED에, 유형 II는 둘을 갈라놓아 광검출기·태양 전지에, 유형 III은 전자가 한쪽 가전자대에서 다른 쪽 전도대로 바로 넘어가는 터널 소자에 쓴다.</figcaption>
+    </figure>
+    <p>앤더슨 규칙도 쇼트키–모트 규칙과 같은 이유로 자주 틀린다. 계면 원자 결합이 만드는 쌍극자와 계면 상태가 진공 준위를 계단 짓게 하기 때문이다. 그래서 실제 설계에는 광전자 분광(XPS)·광발광으로 잰 어긋남을 쓴다. 대표 예:</p>
+    <ul>
+      <li><b>GaAs/Al<sub>x</sub>Ga<sub>1−x</sub>As</b>: 격자 불일치 0.1% 미만의 이상적 짝. \(E_g = 1.424 + 1.247x\) eV(\(x < 0.45\)), 측정 \(\Delta E_c : \Delta E_v \approx 62 : 38\)의 유형 I. 앤더슨 규칙(\(\chi = 4.07 - 1.1x\))은 \(\Delta E_c\)를 크게 잡는다.</li>
+      <li><b>Si/Si<sub>1−x</sub>Ge<sub>x</sub></b>(Si 위에 변형된 SiGe): 띠 간격 차이의 거의 전부가 가전자대로 가서 \(\Delta E_v \approx 0.74x\) eV, \(\Delta E_c\)는 수십 meV 이하. 정공은 SiGe에 갇히고 전자는 거의 막히지 않는다. 반대로 완화된 SiGe 위의 인장 변형 Si에서는 Si 전도대가 0.1–0.2 eV 내려가 유형 II가 된다.</li>
+      <li><b>InAs/GaSb</b>: InAs의 전도대가 GaSb의 가전자대보다 약 0.15 eV 아래에 있는 유형 III(어긋난 간격).</li>
+    </ul>
+    <div class="predict" data-for="sim-het">
+      <p>앤더슨 규칙을 Ge(\(\chi\) = 4.00 eV, \(E_g\) = 0.66 eV)와 Si(4.05 eV, 1.12 eV)에 쓰면 어떤 유형이 나올까?</p>
+      <div class="opts"><button class="opt">유형 I: Ge의 띠가 Si의 띠 간격 안에 들어간다</button><button class="opt" data-correct>유형 II: Ge의 전도대와 가전자대가 모두 Si보다 높다</button><button class="opt">유형 III: 간격이 어긋난다</button><button class="opt">어긋남이 없다</button></div>
+      <div class="quiz-exp">\(E_c\): Ge 4.00, Si 4.05 eV(진공 아래) → Ge가 0.05 eV 높다. \(E_v\): Ge 4.66, Si 5.17 eV → Ge가 0.51 eV 높다. 둘 다 Ge가 높으니 엇갈린 유형 II다. 실측도 가전자대 어긋남이 대부분이고 전도대는 거의 평평해, "SiGe는 정공을 가둔다"는 결론이 같다. 실험대의 Si/Ge 프리셋에서 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-het">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>이종 접합 띠 맞추기: χ와 E<sub>g</sub>를 끌어 유형 만들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-het"></canvas><span class="hint top">E<sub>c</sub>(위 흰 원)를 끌면 χ, E<sub>v</sub>(아래 흰 원)를 끌면 E<sub>g</sub>가 바뀐다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>짝 고르기 (A / B)</span><div class="seg" id="het-p"><button data-value="gaas" class="on">GaAs/AlGaAs</button><button data-value="sige">Ge/Si</button><button data-value="inas">InAs/GaSb</button><button data-value="ingaas">InGaAs/InP</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="het-new" type="button">새 과녁</button><button class="btn" id="het-reset" type="button">값 되돌리기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">A: χ / E<sub>g</sub></span><span class="v" id="het-a">—</span></div>
+        <div class="stat"><span class="k">B: χ / E<sub>g</sub></span><span class="v" id="het-b">—</span></div>
+        <div class="stat"><span class="k">ΔE<sub>c</sub> / ΔE<sub>v</sub> (앤더슨)</span><span class="v" id="het-d">—</span></div>
+        <div class="stat"><span class="k">유형</span><span class="v" id="het-t">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="het-g">—</span></div>
+      </div>
+      <div class="sim-note">진공 준위(맨 위 점선)를 공통으로 두고 두 물질의 \(E_c\)를 \(\chi\)만큼, \(E_v\)를 \(\chi + E_g\)만큼 아래에 그린다. 프리셋을 고르면 아래에 실측 어긋남이 함께 나온다. 해볼 것: ① GaAs/AlGaAs에서 앤더슨 \(\Delta E_c\)와 실측을 비교하라. ② InAs/GaSb에서 B를 위로 끌어 유형 III → II → I로 바꿔 보라. ③ 과녁 단추가 주는 유형과 어긋남을 만들어라.</div>
+    </div>
+    <h3>변조 도핑과 2차원 전자 기체</h3>
+    <p>유형 I 이종 접합의 넓은 간격 쪽(AlGaAs)만 n형으로 도핑하고 좁은 쪽(GaAs)은 도핑하지 않으면, AlGaAs의 도너 전자가 \(\Delta E_c\)를 굴러 내려가 GaAs 쪽 계면에 모인다. 넘어간 전자와 뒤에 남은 도너 이온이 전기장을 만들어 GaAs 전도대가 계면에서 삼각형 우물로 굽고, 전자는 그 안에서 두께 방향 운동이 양자화된 채(현대물리 <a href="../../modern-physics/chapters/quantum-wells.html">양자 우물</a>) 면 방향으로만 자유롭게 움직인다. 이것이 <span class="term">2차원 전자 기체</span><span class="en">(two-dimensional electron gas, 2DEG)</span>다. 전자가 자신을 내놓은 도너와 공간적으로 떨어져 있으니 이온화 불순물 산란이 거의 없다 — 이 <span class="term">변조 도핑</span><span class="en">(modulation doping)</span> 덕분에 GaAs 2DEG의 이동도는 300 K에서 약 8000 cm²/(V·s), 저온에서는 10⁷ cm²/(V·s)를 넘는다. 2차원 상태 밀도와 양자 홀 효과는 16장에서 다룬다.</p>
+    <figure class="mini" id="mini-2deg">
+      <div class="mini-view" style="position:relative"><canvas id="cv-2deg"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>스페이서 d <output id="dg-d-out"></output></span><input type="range" id="dg-d" min="0" max="30" step="1" value="5"></label><label class="ctrl"><span>AlGaAs 도핑 <output id="dg-n-out"></output></span><input type="range" id="dg-n" min="17" max="18.5" step="0.05" value="18"></label><span class="readout" id="dg-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>n-Al<sub>0.3</sub>Ga<sub>0.7</sub>As / 도핑 안 한 스페이서 / GaAs의 전도대(\(\Delta E_c\) = 0.23 eV). 면 전자 밀도는 전하 중성과 \(\Delta E_c\) 조건으로 푼 \(n_s = \sqrt{2\varepsilon N_D\Delta V/q + N_D^2d^2} - N_Dd\)(\(\Delta V = \Delta E_c - E_d - E_{F0}\), 자기 일치)이다. 스페이서를 두껍게 하면 \(n_s\)는 줄지만 도너와 멀어져 이동도가 오른다 — HEMT 설계의 맞바꿈.</figcaption>
+    </figure>
+    <div class="example" data-title="GaAs/AlGaAs의 띠 어긋남">
+      <p>GaAs(\(\chi = 4.07\) eV, \(E_g = 1.424\) eV)와 Al<sub>0.3</sub>Ga<sub>0.7</sub>As(\(\chi = 4.07 - 1.1x\), \(E_g = 1.424 + 1.247x\))의 어긋남을 앤더슨 규칙으로 구하고, 실측 비율 \(\Delta E_c = 0.62\Delta E_g\)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 앤더슨: \(\Delta E_c = \chi_{GaAs} - \chi_{AlGaAs}\), \(\Delta E_v = \Delta E_g - \Delta E_c\).</div>
+        <div class="step"><b>풀이</b> AlGaAs: \(\chi = 4.07 - 0.33 = 3.74\) eV, \(E_g = 1.424 + 0.374 = 1.798\) eV. \(\Delta E_g = 0.374\) eV.<br>앤더슨: \(\Delta E_c = 0.33\) eV, \(\Delta E_v = 0.044\) eV(88 : 12). 실측 비율: \(\Delta E_c = 0.232\), \(\Delta E_v = 0.142\) eV.</div>
+        <div class="answer">앤더슨 \(\Delta E_c \approx 0.33\) eV, \(\Delta E_v \approx 0.04\) eV / 실측 \(\Delta E_c \approx 0.23\) eV, \(\Delta E_v \approx 0.14\) eV — 둘 다 유형 I</div>
+        <div class="step"><b>검토</b> 유형 판정은 같지만 크기는 0.1 eV 틀린다. 전자 친화도 자체가 표면 상태에 민감해 ±0.1 eV 오차가 있으므로, 그 차이로 구하는 어긋남은 근본적으로 부정확하다. 2DEG 계산에는 실측 0.23 eV를 쓴다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>SiGe HBT와 HEMT: 띠 어긋남으로 만드는 소자</strong><p>SiGe <span class="term">이종 접합 바이폴라 트랜지스터</span><span class="en">(HBT)</span>는 베이스만 SiGe로 바꾼다. \(\Delta E_v\)가 이미터(Si)에서 베이스로 들어가려는 정공을 막아 주므로 베이스를 진하게 도핑해도 전류 이득이 유지되고, Ge 조성을 기울여 만든 내부 전기장이 전자를 가속해 차단 주파수가 수백 GHz에 이른다 — 5G·위성 통신 RF 칩의 주력이다. AlGaAs/GaAs·AlGaN/GaN <span class="term">HEMT</span><span class="en">(high-electron-mobility transistor)</span>는 이 절의 2DEG를 채널로 쓴다. GaN HEMT는 분극 전하만으로 10¹³ cm⁻² 2DEG를 만들어 고주파 전력 증폭과 고속 충전기의 전력 소자로 쓰인다. 로직에서도 PMOS 소스·드레인을 SiGe로 에피 성장해 채널에 압축 변형을 주고 접촉 장벽을 낮춘다. → <a href="https://semi.euiyun.com/device/chapters/bjt.html">DeviceBook · 바이폴라 트랜지스터(HBT)</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="mos">
+    <h2>MOS 계면의 띠 굽음</h2>
+    <p>금속(또는 진하게 도핑한 다결정 실리콘)–산화막–반도체를 쌓은 <span class="term">MOS 구조</span><span class="en">(metal–oxide–semiconductor)</span>는 산화막이 전류를 막으므로 직류에서는 언제나 평형이다. 반도체 안의 \(E_F\)는 평평하고, 게이트 전압 \(V_G\)는 게이트와 반도체의 페르미 준위를 \(qV_G\)만큼 벌려 놓는다. 그 전압이 산화막과 반도체 표면에 나뉘어 걸리며 반도체 띠가 표면에서 굽는다. 굽은 양을 <span class="term">표면 전위</span><span class="en">(surface potential)</span> \(\psi_s\)(표면과 중성 영역의 전위 차, 띠가 아래로 굽으면 +)라 한다.</p>
+    <p>게이트와 반도체의 일함수가 다르면 \(V_G = 0\)에서도 띠가 굽어 있다. 띠를 평평하게 펴는 데 필요한 게이트 전압이 <span class="term">평탄 띠 전압</span><span class="en">(flat-band voltage)</span>이다.</p>
+    <div class="formula">$$V_{FB} = \phi_{ms} - \frac{Q_f}{C_{ox}}, \qquad \phi_{ms} = \phi_m - \left(\chi + \frac{E_c - E_F}{q}\right), \qquad C_{ox} = \frac{\varepsilon_{ox}}{t_{ox}}$$<div class="where">\(Q_f\)는 산화막·계면의 고정 전하(C/cm²), \(\varepsilon_{ox} = 3.9\,\varepsilon_0\)(SiO₂). n⁺ 다결정 실리콘 게이트는 \(\phi_m \approx \chi\)(4.05 eV), p⁺ 다결정은 \(\chi + E_g\)(5.17 eV)로 본다.</div></div>
+    <p>p형 기판(\(N_A\))에서 \(V_G\)를 바꾸면 세 영역을 지난다. <b>축적</b>(\(V_G < V_{FB}\), \(\psi_s < 0\)): 띠가 위로 굽어 표면에 정공이 모인다. <b>공핍</b>(\(0 < \psi_s < \phi_F\)): 띠가 아래로 굽어 정공이 밀려나고 이온화된 억셉터만 남는다. <b>반전</b>(\(\psi_s > \phi_F\)): 표면에서 \(E_i\)가 \(E_F\) 아래로 내려가 소수 캐리어인 전자가 다수가 된다. 여기서 \(\phi_F = (k_BT/q)\ln(N_A/n_i)\)는 중성 영역에서 \(E_i\)와 \(E_F\)의 간격이다.</p>
+    <p>반도체 표면의 전하 \(Q_s\)는 볼츠만 통계로 푸아송 방정식을 한 번 적분해 정확히 구할 수 있다(공핍 근사 없이).</p>
+    <div class="formula">$$Q_s(\psi_s) = \mp\sqrt{2\varepsilon_sk_BTN_A}\;\left[\left(e^{-\beta\psi_s} + \beta\psi_s - 1\right) + \frac{n_i^2}{N_A^2}\left(e^{\beta\psi_s} - \beta\psi_s - 1\right)\right]^{1/2}$$<div class="where">\(\beta = q/k_BT\), 부호는 \(\psi_s > 0\)이면 −(음전하). 첫째 괄호는 정공(축적에서 \(e^{-\beta\psi_s/2}\)로 커짐)과 억셉터(공핍에서 \(\sqrt{\psi_s}\)), 둘째는 전자(반전에서 \(e^{\beta\psi_s/2}\))다. 전자 항의 계수 \(n_i^2/N_A^2\)가 아주 작아서, \(\psi_s\)가 \(2\phi_F\)에 이르러야 억셉터 항을 따라잡는다. <code>Solid.mosQs(psi, Na)</code>.</div></div>
+    <div class="def"><span class="def-k">강반전의 문턱 조건</span>
+      <p>표면의 전자 농도가 중성 영역의 정공 농도 \(N_A\)와 같아지는 때, 즉 \(\psi_s = 2\phi_F\)를 강반전의 시작으로 정한다. 이때 공핍 폭은 최대값 \(W_{dm} = \sqrt{2\varepsilon_s(2\phi_F)/qN_A}\)에 이르고, 그 뒤로는 \(V_G\)를 올려도 \(\psi_s\)가 거의 늘지 않는다(전자 전하가 \(e^{\beta\psi_s/2}\)로 커지므로). 이 조건을 만드는 게이트 전압이 <span class="term">문턱 전압</span><span class="en">(threshold voltage)</span>이다.</p>
+    </div>
+    <div class="formula">$$V_G = V_{FB} + \psi_s - \frac{Q_s(\psi_s)}{C_{ox}}, \qquad V_T = V_{FB} + 2\phi_F + \frac{\sqrt{2\varepsilon_sqN_A(2\phi_F)}}{C_{ox}}$$</div>
+    <div class="sim" id="sim-mos">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>MOS 띠 굽음: 게이트를 끌어 축적 · 공핍 · 반전 만들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-mos"></canvas><span class="hint top">게이트의 E<sub>F</sub>(흰 원)를 위아래로 끈다</span></div><div><canvas id="cv-mosq"></canvas></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>게이트 전압 V<sub>G</sub> <output id="mos-v-out"></output></span><input type="range" id="mos-v" min="-2" max="3" step="0.005" value="0.5"></label>
+          <div class="ctrl"><span>기판 N<sub>A</sub></span><div class="seg" id="mos-na"><button data-value="1e16">10¹⁶</button><button data-value="1e17" class="on">10¹⁷</button><button data-value="1e18">10¹⁸</button></div></div>
+          <label class="ctrl"><span>산화막 t<sub>ox</sub> <output id="mos-t-out"></output></span><input type="range" id="mos-t" min="1" max="10" step="0.1" value="3"></label>
+          <div class="ctrl"><span>게이트</span><div class="seg" id="mos-g"><button data-value="4.05" class="on">n⁺ poly</button><button data-value="4.6">TiN</button><button data-value="5.17">p⁺ poly</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="mos-fb" type="button">V<sub>G</sub> = V<sub>FB</sub></button><button class="btn primary" id="mos-goal" type="button">문턱 찾기 도전</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">V<sub>FB</sub></span><span class="v" id="mos-fbv">—</span></div>
+        <div class="stat"><span class="k">ψ<sub>s</sub> (2φ<sub>F</sub>)</span><span class="v" id="mos-psi">—</span></div>
+        <div class="stat"><span class="k">상태</span><span class="v" id="mos-st">—</span></div>
+        <div class="stat"><span class="k">|Q<sub>s</sub>| / 반전 전자 n<sub>s</sub></span><span class="v" id="mos-q">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="mos-ch">—</span></div>
+      </div>
+      <div class="sim-note">위: 게이트 | 산화막 | p-Si의 띠 그림(산화막 두께는 보기 쉽게 늘려 그렸다). 실리콘 쪽 띠는 \(Q_s(\psi)\)로 \(d\psi/dx\)를 적분한 정확한 볼츠만 해다. 아래: \(|Q_s|\)–\(\psi_s\) 곡선(로그)과 지금의 점. 문턱 찾기 도전: 단추를 누르면 \(V_T\) 표시가 숨겨진다. 게이트를 끌어 \(\psi_s = 2\phi_F\)(±5 mV)를 만들면 그때의 \(V_G\)가 문턱 전압이다. 해볼 것: ① 반전에 들어간 뒤 \(V_G\)를 1 V 더 올려도 \(\psi_s\)는 0.1 V도 늘지 않는다 — 왜? ② \(N_A\)를 10배 올리면 \(V_T\)는 오르나 내리나? ③ 게이트를 p⁺ poly로 바꾸면 \(V_{FB}\)가 약 1.1 V 오른다.</div>
+    </div>
+    <div class="tangle" id="tg-vt">
+      <p>n⁺ 다결정 게이트, p-Si 기판 \(N_A =\) <span class="tn" data-var="la" data-min="15" data-max="18.5" data-step="0.1">17.5</span>, 산화막 <span class="tn" data-var="t" data-min="1" data-max="20" data-step="0.1" data-unit=" nm">2.0</span>(SiO₂)인 MOS에서 \(\phi_F =\) <span class="tn-out" data-out="pf"></span>, \(\phi_{ms} =\) <span class="tn-out" data-out="pms"></span>, 최대 공핍 폭 <span class="tn-out" data-out="wd"></span>, 공핍 전하 항 \(Q_{d}/C_{ox} =\) <span class="tn-out" data-out="qd"></span>이므로 문턱 전압은 \(V_T =\) <span class="tn-out" data-out="vt"></span>이다(\(Q_f = 0\), \(n_i = 1.07\times10^{10}\) cm⁻³).</p>
+    </div>
+    <div class="example" data-title="MOS의 문턱 전압">
+      <p>n⁺ 다결정 실리콘 게이트(\(\phi_m = \chi\)), p-Si \(N_A = 5\times10^{17}\) cm⁻³, SiO₂ 2.0 nm인 MOS의 문턱 전압을 구하라. \(Q_f = 0\), \(n_i = 1.07\times10^{10}\) cm⁻³, \(E_i\)는 띠 간격 한가운데(\(E_g/2 = 0.562\) eV), \(\varepsilon_{ox} = 3.45\times10^{-13}\) F/cm, \(\varepsilon_s = 1.036\times10^{-12}\) F/cm.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\phi_F\) → \(\phi_{ms} = -(E_g/2q + \phi_F)\) → \(Q_d = \sqrt{2\varepsilon_sqN_A\cdot2\phi_F}\) → \(V_T = \phi_{ms} + 2\phi_F + Q_d/C_{ox}\).</div>
+        <div class="step"><b>풀이</b> \(\phi_F = 0.02585\ln(5\times10^{17}/1.07\times10^{10}) = 0.457\) V, \(2\phi_F = 0.913\) V. \(\phi_{ms} = -(0.562 + 0.457) = -1.019\) V.<br>\(C_{ox} = 3.45\times10^{-13}/2\times10^{-7} = 1.73\times10^{-6}\) F/cm². \(Q_d = \sqrt{2\times1.036\times10^{-12}\times1.602\times10^{-19}\times5\times10^{17}\times0.913} = 3.89\times10^{-7}\) C/cm², \(Q_d/C_{ox} = 0.225\) V. \(W_{dm} = 48.6\) nm.<br>\(V_T = -1.019 + 0.913 + 0.225 = 0.12\) V.</div>
+        <div class="answer">\(V_T \approx 0.12\) V (\(\phi_{ms} = -1.02\) V, \(2\phi_F = 0.91\) V, \(Q_d/C_{ox} = 0.23\) V)</div>
+        <div class="step"><b>검토</b> n⁺ 게이트의 큰 음의 \(\phi_{ms}\)가 \(2\phi_F\)를 거의 지운다. 남은 0.23 V는 공핍 전하를 산화막이 감당하는 몫이다. 실제 소자에서는 반전층의 양자 구속(16장)과 다결정 게이트 공핍이 더해져 수십 mV 높아진다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>게이트 스택의 C–V와 TCAD</strong><p>MOS 커패시터의 고주파 C–V는 축적에서 \(C_{ox}\)(→ 산화막 두께, EOT), 평탄 띠 위치에서 \(V_{FB}\)(→ 일함수 차와 고정 전하), 공핍–반전 기울기의 늘어짐에서 계면 상태 밀도 \(D_{it}\)를 준다. 이 절의 \(Q_s(\psi_s)\)는 TCAD MOS 시뮬레이터가 푸는 식의 고전 극한이며, 1 nm대 EOT에서는 반전층 전자가 표면에서 1 nm쯤 떨어져 놓이는 양자 효과를 밀도 기울기 모형이나 슈뢰딩거–푸아송으로 보정한다. → <a href="https://semi.euiyun.com/device/chapters/mos.html">DeviceBook · MOS 커패시터</a> · <a href="https://semi.euiyun.com/tcad/chapters/moscap.html">TCADBook · MOS 커패시터와 양자 보정</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>열평형에서는 전류가 0이므로 페르미 준위가 계면을 지나 어디서나 같다. 서로 다른 물질을 붙이면 전하가 넘어가 이 조건을 만족하도록 띠가 굽는다 — 이 장의 모든 계면이 이 원리 하나로 설명된다.</li>
+      <li>pn 접합: \(V_{bi} = (k_BT/q)\ln(N_AN_D/n_i^2)\)(Si 0.6–1.0 V). 공핍 근사로 \(W = \sqrt{2\varepsilon_s(V_{bi} - V)(1/N_A + 1/N_D)/q}\), \(N_Ax_p = N_Dx_n\), \(\mathcal E_{max} = 2(V_{bi} - V)/W\). 공핍층은 낮은 도핑 쪽으로 뻗는다.</li>
+      <li>\(C = \varepsilon_s/W\), \(1/C^2\)–\(V\) 직선의 기울기가 도핑(프로파일), 절편이 \(V_{bi}\)다. 바이어스에서는 공핍층 안에서 \(E_{Fn} - E_{Fp} = qV\), \(np = n_i^2e^{qV/k_BT}\). 이상 다이오드 \(J_0 = qn_i^2(D_n/L_nN_A + D_p/L_pN_D)\), 실리콘의 역방향 누설은 대개 공핍층 열생성 \(qn_iW/2\tau_0\)가 지배한다.</li>
+      <li>쇼트키–모트 \(\phi_{Bn} = \phi_m - \chi\)는 실리콘에서 거의 맞지 않는다. 계면 상태(금속 유도 간격 상태)가 \(E_F\)를 전하 중립 준위에 고정해 \(\phi_B = S(\phi_m - \chi) + (1 - S)(E_g - \phi_0)\), Si의 \(S \approx 0.1\)–0.3. 영상력은 장벽을 \(\sqrt{q\mathcal E/4\pi\varepsilon_s}\)만큼 낮춘다.</li>
+      <li>열전자 방출 \(J = A^*T^2e^{-q\phi_B/k_BT}(e^{qV/k_BT} - 1)\). 옴 접촉은 장벽을 얇게(고농도 도핑) 만들어 터널링시킨다. \(E_{00} = (q\hbar/2)\sqrt{N/m^*\varepsilon_s}\)와 \(k_BT\)의 비가 TE·TFE·FE를 가르고, FE에서 \(\rho_c \propto e^{q\phi_B/E_{00}}\) — 도핑과 장벽이 접촉 저항을 정한다.</li>
+      <li>이종 접합의 앤더슨 규칙 \(\Delta E_c = \chi_A - \chi_B\)는 유형(I 포함, II 엇갈림, III 어긋남)은 대개 맞히지만 크기는 0.1 eV 단위로 틀린다. GaAs/AlGaAs는 \(\Delta E_c \approx 0.62\Delta E_g\), Si 위 SiGe는 거의 \(\Delta E_v\). 변조 도핑은 2DEG를 만든다.</li>
+      <li>MOS: \(V_G = V_{FB} + \psi_s - Q_s(\psi_s)/C_{ox}\). 축적(\(\psi_s < 0\))·공핍(\(0 < \psi_s < \phi_F\))·반전(\(\psi_s > \phi_F\)), 강반전 문턱 \(\psi_s = 2\phi_F\), \(V_T = V_{FB} + 2\phi_F + \sqrt{2\varepsilon_sqN_A2\phi_F}/C_{ox}\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>따로 주지 않으면 300 K, \(k_BT/q = 0.02585\) V, \(q = 1.602\times10^{-19}\) C, \(\varepsilon_s = 11.7\varepsilon_0 = 1.036\times10^{-12}\) F/cm, \(\varepsilon_{ox} = 3.9\varepsilon_0 = 3.453\times10^{-13}\) F/cm, 실리콘 \(\chi = 4.05\) eV, \(E_g = 1.12\) eV. 답이 ±1% 이내면 정답이다(따로 적은 경우 제외).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="내부 전위" data-answer="0.833" data-label="V_bi =" data-unit="V">
+        <div class="prob-q"><p>\(N_A = 10^{18}\), \(N_D = 10^{16}\) cm⁻³인 실리콘 계단 접합의 내부 전위는? \(n_i = 1.0\times10^{10}\) cm⁻³.</p></div>
+        <div class="prob-sol"><p>\(V_{bi} = 0.02585\ln(10^{34}/10^{20}) = 0.02585\times32.24 = 0.833\) V.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="단측 접합" data-answer="0.893; 0.340" data-label="V_bi =; W =" data-unit="V; μm">
+        <div class="prob-q"><p>n⁺p 접합(\(N_D = 10^{19}\), \(N_A = 10^{16}\) cm⁻³, \(n_i = 1.0\times10^{10}\) cm⁻³)의 내부 전위와 0 V에서의 공핍 폭은?</p></div>
+        <div class="prob-hint">\(W = \sqrt{2\varepsilon_sV_{bi}(1/N_A + 1/N_D)/q}\). \(1/N_D\)는 \(1/N_A\)의 0.1%다.</div>
+        <div class="prob-sol"><p>\(V_{bi} = 0.02585\ln(10^{35}/10^{20}) = 0.893\) V. \(W = \sqrt{2\times1.036\times10^{-12}\times0.893\times1.001\times10^{-16}/1.602\times10^{-19}} = 3.40\times10^{-5}\) cm = 0.340 μm. 거의 전부 p쪽이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="항복 전압 어림" data-answer="28.2" data-label="V_R =" data-unit="V">
+        <div class="prob-q"><p>앞 문제의 접합에서 최대 전기장이 3.0×10⁵ V/cm에 이르는 역방향 전압은? (항복 전압의 어림)</p></div>
+        <div class="prob-hint">\(\mathcal E_{max}^2 = 2q(V_{bi} + V_R)/[\varepsilon_s(1/N_A + 1/N_D)]\).</div>
+        <div class="prob-sol"><p>\(V_{bi} + V_R = \mathcal E_{max}^2\varepsilon_s(1/N_A + 1/N_D)/2q = 9\times10^{10}\times1.036\times10^{-12}\times1.001\times10^{-16}/(3.204\times10^{-19}) = 29.1\) V → \(V_R = 29.1 - 0.89 = 28.2\) V. 실제 항복 전기장은 도핑에 따라 조금 바뀐다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="C–V 도핑" data-answer="1.00e16" data-label="N_D =" data-unit="cm⁻³">
+        <div class="prob-q"><p>p⁺n 다이오드의 \(1/C^2\)–\(V\) 그래프(단위 넓이 \(C\))가 기울기 \(-1.20\times10^{15}\) cm⁴/(F²·V)인 직선이다. n쪽 도핑은?</p></div>
+        <div class="prob-sol"><p>\(N_D = 2/(q\varepsilon_s|{\rm slope}|) = 2/(1.602\times10^{-19}\times1.036\times10^{-12}\times1.20\times10^{15}) = 1.00\times10^{16}\) cm⁻³.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="바이어스 효과">
+        <div class="prob-q"><p>pn 접합의 역방향 전압을 0에서 \(3V_{bi}\)로 올렸다. 옳은 것은?</p></div>
+        <div class="prob-choices"><button>내부 전위 \(V_{bi}\)가 4배가 된다</button><button>공핍 폭이 4배, 정전 용량이 1/4이 된다</button><button data-correct>공핍 폭이 2배, 정전 용량이 1/2, 최대 전기장이 2배가 된다</button><button>최대 전기장은 그대로이고 공핍 폭만 커진다</button></div>
+        <div class="prob-sol"><p>\(V_{bi}\)는 도핑으로 정해지는 물질 성질이라 그대로다. 접합에 걸린 전체 전위가 \(V_{bi} + V_R = 4V_{bi}\)가 되고 \(W \propto \sqrt{V_{bi} + V_R}\)이므로 2배, \(C = \varepsilon_s/W\)는 1/2, \(\mathcal E_{max} = 2(V_{bi} + V_R)/W\)는 4/2 = 2배다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="이상 다이오드" data-answer="5.78e-12; 0.0696" data-label="J₀ =; J(0.6 V) =" data-unit="A/cm²; A/cm²">
+        <div class="prob-q"><p>\(N_A = 10^{17}\), \(N_D = 10^{16}\) cm⁻³인 접합에서 \(D_n = 20\), \(D_p = 10\) cm²/s, \(\tau_n = \tau_p = 1\) μs, \(n_i = 1.0\times10^{10}\) cm⁻³이다. 이상 다이오드의 \(J_0\)와 순방향 0.60 V에서의 전류 밀도는?</p></div>
+        <div class="prob-sol"><p>\(L_n = \sqrt{20\times10^{-6}} = 4.47\times10^{-3}\) cm, \(L_p = 3.16\times10^{-3}\) cm. \(J_0 = 1.602\times10^{-19}\times10^{20}\times[20/(4.47\times10^{-3}\times10^{17}) + 10/(3.16\times10^{-3}\times10^{16})] = 1.602\times10^{1}\times(4.47\times10^{-14} + 3.16\times10^{-13}) = 5.78\times10^{-12}\) A/cm². \(J = J_0(e^{0.6/0.02585} - 1) = 5.78\times10^{-12}\times1.20\times10^{10} = 0.0696\) A/cm². 도핑이 낮은 n쪽(정공 주입) 항이 88%다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="생성 전류" data-answer="4.01e-9" data-label="J_gen =" data-unit="A/cm²">
+        <div class="prob-q"><p>역방향 공핍 폭이 0.50 μm, 생성 수명 \(\tau_0 = 10\) μs, \(n_i = 1.0\times10^{10}\) cm⁻³일 때 공핍층 열생성 전류 밀도는?</p></div>
+        <div class="prob-sol"><p>\(J_{gen} = qn_iW/2\tau_0 = 1.602\times10^{-19}\times10^{10}\times5\times10^{-5}/(2\times10^{-5}) = 4.01\times10^{-9}\) A/cm².</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="쇼트키–모트" data-answer="1.60" data-label="φ_Bn =" data-unit="eV">
+        <div class="prob-q"><p>쇼트키–모트 규칙으로 n-Si 위 Pt(\(\phi_m = 5.65\) eV)의 장벽은? (이 값이 띠 간격보다 크다는 점도 생각해 보라.)</p></div>
+        <div class="prob-sol"><p>\(\phi_{Bn} = 5.65 - 4.05 = 1.60\) eV. 띠 간격(1.12 eV)보다 커서 p형 장벽 \(E_g - 1.60 < 0\)이 되는 모순이다. 실제 측정값은 0.9 eV 안팎 — 고정 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="페르미 준위 고정" data-answer="0.626; 0.817" data-label="φ_B(Al) =; φ_B(Pt) =" data-unit="eV; eV">
+        <div class="prob-q"><p>\(S = 0.14\), \(\phi_0 = 0.43\) eV(가전자대 위)로 n-Si 위 Al(4.28 eV)과 Pt(5.65 eV)의 장벽을 구하라.</p></div>
+        <div class="prob-sol"><p>\((1 - S)(E_g - \phi_0) = 0.86\times0.69 = 0.5934\) eV. Al: \(0.14\times0.23 + 0.5934 = 0.626\) eV. Pt: \(0.14\times1.60 + 0.5934 = 0.817\) eV. 일함수 차이 1.37 eV가 장벽 차이 0.19 eV로 줄었다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="열전자 방출" data-answer="1.75e-5; 0.343" data-label="J_s =; V =" data-unit="A/cm²; V">
+        <div class="prob-q"><p>장벽 0.70 eV인 n-Si 쇼트키 다이오드(\(A^* = 112\) A/(cm²K²))의 300 K 포화 전류 밀도와, 10 A/cm²를 흘리는 순방향 전압은?</p></div>
+        <div class="prob-sol"><p>\(J_s = 112\times9\times10^4\times e^{-0.70/0.02585} = 1.008\times10^7\times1.74\times10^{-12} = 1.75\times10^{-5}\) A/cm². \(V = 0.02585\ln(10/1.75\times10^{-5} + 1) = 0.343\) V.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="전계 방출 접촉" data-answer="0.106; 16.7" data-label="E₀₀ =; 비 =" data-unit="eV; ">
+        <div class="prob-q"><p>n-Si(\(m^* = 0.26m\), \(\varepsilon_r = 11.7\))에서 \(N_D = 1.0\times10^{20}\) cm⁻³의 \(E_{00}\)을 구하라. 장벽 0.60 eV에서 FE 근사 \(\rho_c \propto e^{q\phi_B/E_{00}}\)로, 도핑을 \(4.0\times10^{20}\)으로 올리면 \(\rho_c\)가 몇 분의 1로 주나? \(\hbar = 1.0546\times10^{-34}\) J·s, \(m = 9.109\times10^{-31}\) kg, \(\varepsilon_0 = 8.854\times10^{-12}\) F/m.</p></div>
+        <div class="prob-hint">\(E_{00}\) [eV] \(= (\hbar/2)\sqrt{N/(m^*\varepsilon_s)}\)를 SI로(\(N\)은 m⁻³). 도핑 4배면 \(E_{00}\)는 2배.</div>
+        <div class="prob-sol"><p>\(\sqrt{10^{26}/(0.26\times9.109\times10^{-31}\times1.036\times10^{-10})} = 2.019\times10^{33}\) (s·C)⁻¹, ×\(\hbar/2\) → \(E_{00} = 0.106\) eV. 4배 도핑에서 0.213 eV. 비 \(= \exp[0.60(1/0.1065 - 1/0.213)] = e^{2.82} = 16.7\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="앤더슨 규칙" data-answer="0.05; 0.51" data-tol="0.005" data-label="|ΔE_c| =; |ΔE_v| =" data-unit="eV; eV">
+        <div class="prob-q"><p>앤더슨 규칙으로 Ge(\(\chi = 4.00\) eV, \(E_g = 0.66\) eV)/Si(\(\chi = 4.05\) eV, \(E_g = 1.12\) eV) 접합의 전도대·가전자대 어긋남의 크기는? (±0.005 eV)</p></div>
+        <div class="prob-sol"><p>\(|\Delta E_c| = |4.00 - 4.05| = 0.05\) eV(Ge가 높다). \(E_v\)는 진공 아래 Ge 4.66, Si 5.17 eV → \(|\Delta E_v| = 0.51\) eV(Ge가 높다). 엇갈린 유형 II.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="띠 정렬 유형">
+        <div class="prob-q"><p>InAs(\(\chi = 4.90\) eV, \(E_g = 0.354\) eV)와 GaSb(\(\chi = 4.06\) eV, \(E_g = 0.726\) eV)의 접합은 앤더슨 규칙으로 어떤 유형인가?</p></div>
+        <div class="prob-choices"><button>유형 I(포함)</button><button>유형 II(엇갈림), 간격은 겹친다</button><button data-correct>유형 III(어긋남): InAs의 \(E_c\)가 GaSb의 \(E_v\)보다 아래</button><button>어긋남이 없다</button></div>
+        <div class="prob-sol"><p>InAs \(E_c\)는 진공 아래 4.90 eV, GaSb \(E_v\)는 4.06 + 0.726 = 4.786 eV. InAs 전도대가 GaSb 가전자대보다 0.11 eV 아래에 있으므로 두 띠 간격이 전혀 겹치지 않는 유형 III이다(실측 약 0.15 eV). 계면에서 GaSb 가전자대 전자가 InAs 전도대로 넘어가 전자·정공 층이 저절로 생긴다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="MOS 최대 공핍" data-answer="0.714; 0.304" data-label="2φ_F =; W_dm =" data-unit="V; μm">
+        <div class="prob-q"><p>p-Si \(N_A = 10^{16}\) cm⁻³(\(n_i = 1.0\times10^{10}\) cm⁻³)인 MOS의 강반전 표면 전위 \(2\phi_F\)와 최대 공핍 폭은?</p></div>
+        <div class="prob-sol"><p>\(\phi_F = 0.02585\ln10^6 = 0.357\) V, \(2\phi_F = 0.714\) V. \(W_{dm} = \sqrt{2\times1.036\times10^{-12}\times0.714/(1.602\times10^{-19}\times10^{16})} = 3.04\times10^{-5}\) cm = 0.304 μm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="문턱 전압" data-answer="0.142" data-tol="0.005" data-label="V_T =" data-unit="V">
+        <div class="prob-q"><p>p-Si \(N_A = 3.0\times10^{17}\) cm⁻³(\(n_i = 1.0\times10^{10}\)), SiO₂ 3.0 nm, \(\phi_{ms} = -1.00\) V, 고정 전하 \(Q_f/q = 5.0\times10^{10}\) cm⁻²(양)인 MOS의 문턱 전압은? (±5 mV)</p></div>
+        <div class="prob-hint">\(C_{ox} = \varepsilon_{ox}/t_{ox}\), \(V_{FB} = \phi_{ms} - Q_f/C_{ox}\).</div>
+        <div class="prob-sol"><p>\(C_{ox} = 3.453\times10^{-13}/3\times10^{-7} = 1.151\times10^{-6}\) F/cm². \(Q_f/C_{ox} = 8.01\times10^{-9}/1.151\times10^{-6} = 0.007\) V → \(V_{FB} = -1.007\) V. \(\phi_F = 0.02585\ln(3\times10^7) = 0.445\) V, \(2\phi_F = 0.890\) V. \(Q_d = \sqrt{2\times1.036\times10^{-12}\times1.602\times10^{-19}\times3\times10^{17}\times0.890} = 2.98\times10^{-7}\) C/cm², \(Q_d/C_{ox} = 0.259\) V. \(V_T = -1.007 + 0.890 + 0.259 = 0.142\) V.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>열평형의 계면에서 페르미 준위가 평평해야 하는 가장 근본적인 이유는?</p><div class="opts">
+        <button class="opt">두 물질의 전자 친화도가 같아서</button><button class="opt" data-correct>전자 전류가 \(n\mu_n\,dE_F/dx\)에 비례하므로, 전류 0이면 \(dE_F/dx = 0\)</button><button class="opt">공핍층에 캐리어가 없어서</button><button class="opt">진공 준위가 연속이어서</button>
+      </div><div class="quiz-exp">페르미 준위는 전자의 전기화학 퍼텐셜이다. 그 기울기가 표류와 확산을 합친 전류를 몰아가므로, 평형(전류 0)이면 어디서나 같다. 진공 준위 연속은 쇼트키–모트·앤더슨 규칙의 가정일 뿐 종종 틀린다.</div></div>
+      <div class="quiz-q"><p>p⁺n 접합(\(N_A \gg N_D\))에서 역방향 전압을 올리면 공핍층은 주로 어디로 넓어지는가?</p><div class="opts">
+        <button class="opt">p⁺쪽</button><button class="opt" data-correct>n쪽(도핑이 낮은 쪽)</button><button class="opt">양쪽에 똑같이</button><button class="opt">넓어지지 않는다</button>
+      </div><div class="quiz-exp">\(N_Ax_p = N_Dx_n\)이므로 같은 전하를 드러내려면 도핑이 낮은 쪽이 훨씬 깊이 공핍되어야 한다. 그래서 C–V는 낮은 쪽의 도핑을 잰다.</div></div>
+      <div class="quiz-q"><p>n-Si 위 여러 금속의 쇼트키 장벽이 일함수와 거의 무관하게 0.5–0.9 eV에 몰리는 이유는?</p><div class="opts">
+        <button class="opt">금속의 일함수 측정이 부정확해서</button><button class="opt">실리콘의 전자 친화도가 금속마다 달라서</button><button class="opt" data-correct>계면 상태가 페르미 준위를 전하 중립 준위 근처에 고정해서</button><button class="opt">영상력 장벽 낮춤 때문에</button>
+      </div><div class="quiz-exp">계면 상태(대부분 금속 유도 간격 상태)가 많으면 \(E_F\)가 중립 준위에서 조금만 벗어나도 큰 계면 전하가 생겨 \(E_F\)를 붙든다. 고정 계수 \(S\)가 Si에서 0.1–0.3에 불과하다. 영상력 낮춤은 수십 meV뿐이다.</div></div>
+      <div class="quiz-q"><p>실리콘 소스·드레인에 낮은 접촉 저항을 얻는 주된 방법은?</p><div class="opts">
+        <button class="opt">일함수가 아주 낮은 금속을 고른다</button><button class="opt" data-correct>계면을 \(10^{20}\) cm⁻³ 이상으로 도핑해 장벽을 얇게 만들어 터널링시킨다</button><button class="opt">온도를 높여 열전자 방출을 늘린다</button><button class="opt">접촉 면적을 줄인다</button>
+      </div><div class="quiz-exp">페르미 준위 고정 때문에 금속 선택으로는 장벽이 별로 안 바뀐다. 장벽 폭 \(\propto 1/\sqrt N\)을 줄여 전계 방출로 바꾸면 \(\rho_c \propto e^{q\phi_B/E_{00}}\)가 도핑에 따라 몇 자릿수 준다. 면적을 줄이면 저항 \(\rho_c/A\)는 오히려 커진다.</div></div>
+      <div class="quiz-q"><p>MOS에서 강반전 조건 \(\psi_s = 2\phi_F\)의 물리적 뜻은?</p><div class="opts">
+        <button class="opt">표면에서 \(E_F\)가 띠 간격 한가운데에 온다</button><button class="opt">공핍층이 사라진다</button><button class="opt" data-correct>표면 전자 농도가 기판의 정공 농도 \(N_A\)와 같아진다</button><button class="opt">산화막에 걸린 전압이 0이 된다</button>
+      </div><div class="quiz-exp">\(\psi_s = \phi_F\)에서 표면이 진성(\(E_i = E_F\))이 되고, \(2\phi_F\)에서 \(E_F - E_i\)가 기판의 \(E_i - E_F\)와 같아져 \(n_s = N_A\)가 된다. 그 뒤로 전자 전하가 지수로 늘어 공핍 폭은 최대값에 머문다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const K = Solid.const, qe = K.q, kBev = K.kBev;
+  const eps0 = 8.8541878128e-14, es = 11.7 * eps0, eox = 3.9 * eps0;   // F/cm
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const supx = (n) => String(n).split("").map((c) => SUP[c]).join("");
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const ex = Math.floor(Math.log10(Math.abs(x)) + 1e-12), m = x / Math.pow(10, ex);
+    if (ex >= -2 && ex <= 3) return Number(x.toPrecision(d + 1)).toString();
+    return m.toFixed(d) + "×10" + supx(ex);
+  };
+  const p10 = (lg, d = 1) => { const ex = Math.floor(lg + 1e-9), m = Math.pow(10, lg - ex); return (m.toFixed(d) === "1.0" || m.toFixed(d) === "1" ? "" : m.toFixed(d) + "×") + "10" + supx(ex); };
+  const logFmt = (v) => "10" + supx(Math.round(Math.log10(v)));
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const invX = (ch, o, px) => { const t = (px - ch.box.x) / ch.box.w; return o.logX ? Math.pow(10, Math.log10(o.x[0]) + t * (Math.log10(o.x[1]) - Math.log10(o.x[0]))) : o.x[0] + t * (o.x[1] - o.x[0]); };
+  const invY = (ch, o, py) => { const t = (ch.box.y + ch.box.h - py) / ch.box.h; return o.logY ? Math.pow(10, Math.log10(o.y[0]) + t * (Math.log10(o.y[1]) - Math.log10(o.y[0]))) : o.y[0] + t * (o.y[1] - o.y[0]); };
+  const font = (px, w) => (w ? w + " " : "") + px + "px " + SB.color("font");
+  const line = (ctx, pts, col, wd = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const NI = Solid.ni("Si"), EG = Solid.Eg("Si"), VT0 = kBev * 300;
+  const tsci = (x, d = 2) => { const ex = Math.floor(Math.log10(Math.abs(x)) + 1e-12); return (x / 10 ** ex).toFixed(d) + "\\times10^{" + ex + "}"; };
+  const fmtLen = (cm) => { const um = cm * 1e4; return um >= 1 ? um.toPrecision(3) + " μm" : (um * 1000).toPrecision(3) + " nm"; };
+
+  /* ---------------------------------------------------------- 머리: p와 n을 붙이면 */
+  {
+    const st = { gap: 1, t: 0, auto: true, phase: "wait", timer: 0.6, fly: [], dragOff: 0 };
+    const nE = 16, nH = 16;
+    const els = [], hos = [];
+    for (let i = 0; i < nE; i++) els.push({ u: (i + 0.5) / nE + (Math.random() - 0.5) * 0.04, ph: Math.random() * 6.28 });
+    for (let i = 0; i < nH; i++) hos.push({ u: (i + 0.5) / nH + (Math.random() - 0.5) * 0.04, ph: Math.random() * 6.28 });
+    let T = 0;
+    const geo = (w, h) => {
+      const pw = Math.min(330, (w - 50) / 2.25), gapMax = Math.max(20, w - 40 - 2 * pw);
+      const yV = h * 0.13, Ec = h * 0.34, Ev = h * 0.74, s = (Ev - Ec) / 1.12;
+      return { pw, gapMax, yV, Ec, Ev, s, xL: 20, xj: 20 + pw, Vbi: 0.72 * s, efp: Ev - 0.2 * s, efn: Ec + 0.2 * s };
+    };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), g = geo(w, h);
+      self._g = g;
+      const gap = st.gap * g.gapMax, nL = g.xj + gap, joined = st.gap <= 0.001;
+      const t = joined ? st.t : 0;
+      const dy = t * g.Vbi, wd = 0.42 * g.pw * Math.sqrt(t), xp = wd * 0.45, xn = wd * 0.55;
+      const off = (x) => {
+        if (!joined) return x >= nL ? 0 : 0;
+        const Vp = dy * xp / (xp + xn || 1), Vn = dy - Vp;
+        if (x <= g.xj - xp) return 0; if (x <= g.xj) return xp ? Vp * ((x - (g.xj - xp)) / xp) ** 2 : 0;
+        if (x <= g.xj + xn) return dy - (xn ? Vn * ((g.xj + xn - x) / xn) ** 2 : 0); return dy;
+      };
+      // 공핍층
+      if (joined && wd > 1) { ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = P.accent; ctx.fillRect(g.xj - xp, g.yV - 6, wd, g.Ev + dy - g.yV + 30); ctx.restore(); }
+      const seg = (a, b, y0, col, wdh, dash) => { const pts = []; for (let i = 0; i <= 80; i++) { const x = a + ((b - a) * i) / 80; pts.push([x, y0 + off(x)]); } line(ctx, pts, col, wdh, dash); };
+      const pieces = joined ? [[g.xL, g.xj + g.pw]] : [[g.xL, g.xj], [nL, nL + g.pw]];
+      pieces.forEach(([a, b]) => {
+        ctx.save(); ctx.globalAlpha = 0.05; ctx.fillStyle = P.text; ctx.fillRect(a, g.yV - 8, b - a, g.Ev + (joined ? dy : 0) - g.yV + 40); ctx.restore();
+        seg(a, b, g.yV, P.faint, 1.4, [6, 4]); seg(a, b, g.Ec, P.text, 2.6); seg(a, b, g.Ev, P.text, 2.6);
+      });
+      // 페르미 준위
+      if (joined) { const yF = g.efp; line(ctx, [[g.xL, yF], [g.xj - xp, yF]], P.accent2, 2, [7, 4]); line(ctx, [[g.xj - xp, yF], [g.xj + xn, g.efn + dy]], P.accent2, 1.2, [2, 4]); line(ctx, [[g.xj + xn, g.efn + dy], [g.xj + g.pw, g.efn + dy]], P.accent2, 2, [7, 4]); }
+      else { line(ctx, [[g.xL, g.efp], [g.xj, g.efp]], P.accent2, 2, [7, 4]); line(ctx, [[nL, g.efn], [nL + g.pw, g.efn]], P.accent2, 2, [7, 4]); }
+      // 이온
+      if (joined && wd > 8) {
+        ctx.save(); ctx.font = font(15, 700); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        const ym = (x) => (g.Ec + g.Ev) / 2 + off(x);
+        for (let x = g.xj - xp + 7; x < g.xj - 3; x += 13) { ctx.fillStyle = P.accent2; ctx.fillText("−", x, ym(x)); }
+        for (let x = g.xj + 7; x < g.xj + xn - 3; x += 13) { ctx.fillStyle = P.accent; ctx.fillText("+", x, ym(x) + 1); }
+        ctx.restore();
+        if (t > 0.35) SB.arrow(ctx, g.xj + xn * 0.8, g.yV + 14, g.xj - xp * 0.8, g.yV + 14, { color: P.warn, width: 2.2, label: "ℰ" });
+      }
+      // 캐리어
+      const nX = (u) => (joined ? g.xj : nL) + u * g.pw, pX = (u) => g.xL + u * g.pw;
+      ctx.save(); ctx.fillStyle = P.accent;
+      els.forEach((e) => { const x = nX(e.u); if (joined && x < g.xj + xn + 3) return; ctx.beginPath(); ctx.arc(x, g.Ec + off(x) - 7 - 2 * Math.sin(T * 3 + e.ph), 4, 0, 7); ctx.fill(); });
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2;
+      hos.forEach((e) => { const x = pX(e.u); if (joined && x > g.xj - xp - 3) return; ctx.beginPath(); ctx.arc(x, g.Ev + off(x) + 7 + 2 * Math.sin(T * 3 + e.ph), 4, 0, 7); ctx.stroke(); });
+      st.fly.forEach((f) => { ctx.globalAlpha = Math.max(0, Math.min(1, f.life)); if (f.e) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(f.x, g.Ec + off(f.x) - 7, 4, 0, 7); ctx.fill(); } else { ctx.beginPath(); ctx.arc(f.x, g.Ev + off(f.x) + 7, 4, 0, 7); ctx.stroke(); } });
+      ctx.restore();
+      // 글자
+      const yb = g.Ev + (joined ? dy : 0) + 24;
+      SB.label(ctx, "p형", g.xL + g.pw / 2, Math.min(h - 12, g.Ev + 26), { bold: true });
+      SB.label(ctx, "n형", (joined ? g.xj : nL) + g.pw / 2, Math.min(h - 12, yb), { bold: true });
+      SB.label(ctx, "E_c", g.xL + 18, g.Ec - 12, { size: 11, color: P.dim }); SB.label(ctx, "E_v", g.xL + 18, g.Ev - 12, { size: 11, color: P.dim });
+      SB.label(ctx, "E_F", g.xL + g.pw * 0.55, g.efp - 11, { size: 11, color: P.accent2 });
+      const mis = joined ? (1 - t) * 0.72 : 0.72;
+      SB.label(ctx, joined ? (t > 0.98 ? "평형: E_F 평평, 내부 전위 qV_bi = 0.72 eV만큼 띠가 굽음" : `전자·정공이 넘어가는 중 · E_F 차이 ${mis.toFixed(2)} eV`) : "떨어져 있음: n형의 E_F가 0.72 eV 높다", 12, 14, { align: "left", size: 12, color: P.dim });
+      const hx = (joined ? g.xj : nL) + g.pw / 2, hy = (g.Ec + g.Ev) / 2 + (joined ? dy : 0);
+      handle(ctx, hx, hy, P.accent, 12); self._h = [hx, hy];
+    }, { aspect: 0.42, minHeight: 240, maxHeight: 340 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      down: (id, x) => { if (id) { st.auto = false; st.dragOff = x - cv._h[0]; } },
+      move: (id, x) => {
+        if (id !== "n" || !cv._g) return;
+        const g = cv._g, nL = x - st.dragOff - g.pw / 2;
+        const gap = SB.clamp((nL - g.xj) / g.gapMax, 0, 1);
+        if (gap > 0.001 && st.gap <= 0.001) st.t = 0;
+        st.gap = gap < 0.03 ? 0 : gap;
+      },
+    });
+    SB.loop("hero", (dt) => {
+      dt = Math.min(dt, 0.05); T += dt;
+      if (st.auto) {
+        st.timer -= dt;
+        if (st.phase === "wait" && st.timer <= 0) st.phase = "approach";
+        if (st.phase === "approach") { st.gap = Math.max(0, st.gap - dt * 0.7); if (st.gap === 0) { st.phase = "join"; st.t = 0; } }
+        if (st.phase === "join" && st.t >= 1) { st.phase = "hold"; st.timer = 3; }
+        if (st.phase === "hold" && st.timer <= 0) { st.phase = "apart"; st.t = 0; st.gap = 0.01; }
+        if (st.phase === "apart") { st.gap = Math.min(1, st.gap + dt * 0.7); if (st.gap >= 1) { st.phase = "wait"; st.timer = 1.2; } }
+      }
+      if (st.gap <= 0.001 && st.t < 1) {
+        st.t = Math.min(1, st.t + dt / 2.4);
+        const g = cv._g;
+        if (g && Math.random() < dt * 9 * (1 - st.t)) {
+          st.fly.push({ e: true, x: g.xj + 10, v: -70, life: 1.4 });
+          st.fly.push({ e: false, x: g.xj - 10, v: 70, life: 1.4 });
+        }
+      }
+      st.fly.forEach((f) => { f.x += f.v * dt; f.life -= dt; });
+      st.fly = st.fly.filter((f) => f.life > 0 && st.gap <= 0.001);
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- tangle: 내부 전위 */
+  {
+    let cvt = null, cur = { la: 17, ld: 15 };
+    const Nc = Solid.Nc("Si"), Nv = Solid.Nv("Si");
+    SB.tangle("tg-vbi", (v) => {
+      cur = v;
+      const Na = 10 ** v.la, Nd = 10 ** v.ld;
+      const ep = VT0 * Math.log(Nv / Na), en = VT0 * Math.log(Nc / Nd), vbi = VT0 * Math.log((Na * Nd) / (NI * NI));
+      const fe = (e) => (e < 0 ? `${(-e).toFixed(3)} eV 안쪽(축퇴)` : e.toFixed(3) + " eV");
+      return { ep: fe(ep), en: fe(en), vbi: vbi.toFixed(3) + " V", frac: ((vbi / EG) * 100).toFixed(0) + "%" };
+    }, { fmt: { la: (x) => "N_A = " + p10(x) + " cm⁻³", ld: (x) => "N_D = " + p10(x) + " cm⁻³" }, onChange: () => cvt && cvt.redraw() });
+    cvt = SB.canvas("cv-tg-vbi", (ctx, w, h) => {
+      const P = pal(), Na = 10 ** cur.la, Nd = 10 ** cur.ld;
+      const ep = VT0 * Math.log(Nv / Na), vbi = VT0 * Math.log((Na * Nd) / (NI * NI));
+      const r = Solid.pn(Na, Nd, 0), fr = r.xp / r.W;
+      const y0 = 26, s = (h - 52) / (EG + 1.0), EcP = y0 + 0.05 * s, EFy = EcP + (EG - ep) * s;
+      const xj = w * 0.2 + w * 0.6 * fr, D = w * 0.6, xp = D * fr, xn = D - xp;
+      const off = (x) => { const Vp = vbi * fr, Vn = vbi - Vp; if (x <= xj - xp) return 0; if (x <= xj) return Vp * ((x - xj + xp) / xp) ** 2; if (x <= xj + xn) return vbi - Vn * ((xj + xn - x) / xn) ** 2; return vbi; };
+      ctx.save(); ctx.globalAlpha = 0.14; ctx.fillStyle = P.accent; ctx.fillRect(xj - xp, 8, D, h - 16); ctx.restore();
+      [0, EG].forEach((e) => { const pts = []; for (let i = 0; i <= 120; i++) { const x = 10 + ((w - 20) * i) / 120; pts.push([x, EcP + (e + off(x)) * s]); } line(ctx, pts, P.text, 2.4); });
+      line(ctx, [[10, EFy], [w - 10, EFy]], P.accent2, 2, [7, 4]);
+      SB.label(ctx, "E_F", w - 24, EFy - 10, { size: 11, color: P.accent2 });
+      SB.label(ctx, `qV_bi = ${vbi.toFixed(3)} eV`, w - 12, EcP + vbi * s * 0.5 + 4, { align: "right", size: 12, bold: true });
+      SB.label(ctx, `공핍: p쪽 ${(fr * 100).toFixed(fr < 0.01 ? 2 : 1)}% · n쪽 ${((1 - fr) * 100).toFixed(1)}% (W = ${fmtLen(r.W)})`, 12, h - 10, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.3, minHeight: 170, maxHeight: 230 });
+  }
+
+  /* ---------------------------------------------------------- pn 접합 실험대 */
+  {
+    const st = { VR: 10, frz: null };
+    const gA = SB.range("pn-a", (v) => p10(v) + " cm⁻³", () => draw());
+    const gD = SB.range("pn-d", (v) => p10(v) + " cm⁻³", () => draw());
+    const gV = SB.range("pn-v", (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " V", () => draw());
+    const calc = () => {
+      const Na = 10 ** gA(), Nd = 10 ** gD(), r0 = Solid.pn(Na, Nd, 0);
+      const V = Math.min(gV(), r0.Vbi - 0.05), r = Solid.pn(Na, Nd, V);
+      return Object.assign(r, { Na, Nd, V, Vt: r.Vbi - V, ep: VT0 * Math.log(Solid.Nv("Si") / Na) });
+    };
+    const cv = SB.canvas("cv-pn", (ctx, w, h, self) => {
+      const P = pal(), c = calc();
+      const xpu = c.xp * 1e4, xnu = c.xn * 1e4, Wu = c.W * 1e4;
+      const xl = -1.35 * Math.max(xpu, 0.25 * Wu), xr = 1.35 * Math.max(xnu, 0.25 * Wu);
+      const left = 62, pw = w - left - 14, gap = 10, ph = (h - 46 - 3 * gap - 8) / 4;
+      const box = (i) => ({ x: left, y: 8 + i * (ph + gap), w: pw, h: ph });
+      const xs = []; for (let i = 0; i <= 300; i++) xs.push(xl + ((xr - xl) * i) / 300);
+      const rho = (x) => (x < -xpu || x > xnu ? 0 : x < 0 ? -c.Na : c.Nd);
+      const Ef = (x) => (x < -xpu || x > xnu ? 0 : x < 0 ? -(qe * c.Na * (x * 1e-4 + c.xp)) / es : -(qe * c.Nd * (c.xn - x * 1e-4)) / es);
+      const Vx = (x) => { const Vp = c.Vt * c.xp / c.W, Vn = c.Vt - Vp; if (x <= -xpu) return 0; if (x <= 0) return Vp * ((x + xpu) / xpu) ** 2; if (x <= xnu) return c.Vt - Vn * ((xnu - x) / xnu) ** 2; return c.Vt; };
+      const mx = Math.max(c.Na, c.Nd) * 1.2, Emx = c.Emax / 1e3;
+      const noX = () => "";
+      const c1 = SB.chart(ctx, box(0), { x: [xl, xr], y: [-mx, mx], yLabel: "ρ/q (cm⁻³)", xFmt: noX, yTicks: [-Math.max(c.Na, c.Nd), 0, Math.max(c.Na, c.Nd)], yFmt: (v) => (v === 0 ? "0" : (v < 0 ? "−" : "+") + p10(Math.log10(Math.abs(v)), 0)), series: [{ data: xs.map((x) => [x, rho(x)]), color: P.accent, width: 2.2, fill: SB.color("accent-soft") }] });
+      { const mn = Math.min(c.Na, c.Nd), mxN = Math.max(c.Na, c.Nd), k = mxN / mn;
+        if (k > 8) { const sc = Math.min(k, 0.8 * mxN / mn), rr = (x) => rho(x) * (Math.abs(rho(x)) === mn ? sc : 1);
+          ctx.save(); ctx.beginPath(); ctx.rect(c1.box.x, c1.box.y, c1.box.w, c1.box.h); ctx.clip();
+          line(ctx, xs.map((x) => [c1.X(x), c1.Y(rr(x))]), P.accent, 1.4, [4, 3]); ctx.restore();
+          SB.label(ctx, `점선: 낮은 쪽 도핑을 ×${sci(sc, 1)} 확대`, c1.box.x + c1.box.w - 6, c1.box.y + c1.box.h - 10, { align: "right", size: 11, color: P.dim }); } }
+      const eTop = Math.max(Emx * 1.2, Emx > 200 ? 320 : 0);
+      const c2 = SB.chart(ctx, box(1), { x: [xl, xr], y: [-eTop, eTop * 0.12], yLabel: "ℰ (kV/cm)", xFmt: noX, yTicks: [-Math.round(Emx), 0], yFmt: (v) => (v === 0 ? "0" : String(v)), series: [{ data: xs.map((x) => [x, Ef(x) / 1e3]), color: P.warn, width: 2.2 }], hlines: eTop >= 300 ? [{ y: -300, color: P.bad, label: "−300 kV/cm (항복 어림)", dash: [4, 3] }] : [] });
+      const c3 = SB.chart(ctx, box(2), { x: [xl, xr], y: [-0.08 * c.Vt, c.Vt * 1.15], yLabel: "V (V)", xFmt: noX, yTicks: [0, Number(c.Vt.toPrecision(3))], series: [{ data: xs.map((x) => [x, Vx(x)]), color: P.accent, width: 2.2 }] });
+      const EcP = EG - c.ep, EvP = -c.ep;
+      let yr = [EvP - c.Vt - 0.25, EcP + 0.25];
+      if (st.frz) yr = st.frz; self._yr = yr;
+      const c4 = SB.chart(ctx, box(3), { x: [xl, xr], y: yr, yLabel: "E (eV)", xLabel: "위치 x (μm, 접합면 0)", yTicks: [], xFmt: (v) => String(Number(v.toPrecision(2))),
+        series: [{ data: xs.map((x) => [x, EcP - Vx(x)]), color: P.text, width: 2.4 }, { data: xs.map((x) => [x, EvP - Vx(x)]), color: P.text, width: 2.4 },
+          { data: [[xl, 0], [xnu, 0]], color: P.accent2, width: 2, dash: [7, 4] }, { data: [[-xpu, c.V], [xr, c.V]], color: P.accent, width: 2, dash: c.V === 0 ? [2, 9] : [7, 4] }] });
+      [c1, c2, c3, c4].forEach((ch) => { line(ctx, [[ch.X(-xpu), ch.box.y], [ch.X(-xpu), ch.box.y + ch.box.h]], P.faint, 1, [3, 3]); line(ctx, [[ch.X(xnu), ch.box.y], [ch.X(xnu), ch.box.y + ch.box.h]], P.faint, 1, [3, 3]); });
+      SB.label(ctx, `ℰmax = ${sci(c.Emax, 2)} V/cm`, c2.X(0) + 8, c2.Y(-Emx) + 2, { align: "left", size: 11, color: P.warn, bold: true });
+      SB.label(ctx, "E_Fp", c4.box.x + 22, c4.Y(0) - 9, { size: 11, color: P.accent2 });
+      SB.label(ctx, c.V === 0 ? "E_F" : "E_Fn", c4.box.x + c4.box.w - 26, c4.Y(c.V) - 9, { size: 11, color: P.accent });
+      SB.label(ctx, "p", c1.box.x + 12, c1.box.y + 10, { bold: true }); SB.label(ctx, "n", c1.box.x + c1.box.w - 12, c1.box.y + 10, { bold: true });
+      const hx = c4.X(xl + (xr - xl) * 0.88), hy = c4.Y(EcP - c.Vt);
+      handle(ctx, hx, hy, P.accent, 11);
+      self._c4 = c4; self._o4 = { x: [xl, xr], y: yr }; self._hh = [hx, hy]; self._EcP = EcP;
+    }, { aspect: 1.05, minHeight: 520, maxHeight: 700 });
+    function draw() {
+      const c = calc(); cv.redraw();
+      SB.stat("pn-vbi", c.Vbi.toFixed(3) + " V");
+      SB.stat("pn-w", `${fmtLen(c.W)} (${fmtLen(c.xp)} / ${fmtLen(c.xn)})`);
+      SB.stat("pn-e", sci(c.Emax, 2) + " V/cm");
+      SB.stat("pn-c", (c.C * 1e9).toPrecision(3) + " nF/cm²");
+      const atV = Math.abs(c.V + st.VR) < 0.06, ok = atV && c.Emax >= 2.7e5 && c.Emax <= 3.0e5;
+      SB.stat("pn-goal", ok ? `✔ V = −${st.VR} V에서 ℰmax ${sci(c.Emax, 2)}: 아슬아슬하게 견딤!` : !atV ? `V = −${st.VR} V를 걸고 ℰmax를 2.7–3.0×10⁵에` : c.Emax > 3e5 ? "✘ 항복! 도핑을 낮춰라" : "아직 여유 — 도핑을 더 높여 보라");
+    }
+    SB.drag(cv, {
+      handles: () => (cv._hh ? [{ id: "v", x: cv._hh[0], y: cv._hh[1], r: 14 }] : []),
+      down: (id) => { if (id) st.frz = cv._yr; },
+      move: (id, x, y) => {
+        if (id !== "v" || !cv._c4) return;
+        const E = invY(cv._c4, cv._o4, y), Vt = cv._EcP - E, c = calc();
+        gV.set(SB.clamp(Number((c.Vbi - Vt).toFixed(2)), -60, 0.6), true); draw();
+      },
+      up: () => { st.frz = null; draw(); },
+    });
+    $("pn-zero").addEventListener("click", () => { gV.set(0, true); draw(); });
+    $("pn-new").addEventListener("click", () => { let v; do { v = pick([5, 10, 20, 30, 50]); } while (v === st.VR); st.VR = v; draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 공핍 */
+  SB.drill("drill-dep", () => {
+    const Na = pick([1e16, 1e17, 1e18]), Nd = pick([1e15, 1e16, 1e17].filter((n) => n !== Na)), V = pick([0, -1, -2, -5, -10]), ni = 1e10, kT = 0.02585;
+    const Vbi = kT * Math.log((Na * Nd) / (ni * ni)), W = Math.sqrt(((2 * es * (Vbi - V)) / qe) * (1 / Na + 1 / Nd)), Em = (2 * (Vbi - V)) / W;
+    const tx = (n) => `10^{${Math.log10(n)}}`;
+    return {
+      q: `<p>실리콘 계단 접합 \\(N_A = ${tx(Na)}\\), \\(N_D = ${tx(Nd)}\\) cm⁻³에 \\(V = ${V}\\) V를 걸었다. 공핍 폭(μm)과 최대 전기장(V/cm)은? \\(n_i = 1.0\\times10^{10}\\) cm⁻³, \\(k_BT/q = 0.02585\\) V, \\(\\varepsilon_s = 1.036\\times10^{-12}\\) F/cm.</p>`,
+      answer: [W * 1e4, Em], label: ["W =", "ℰ<sub>max</sub> ="], unit: ["μm", "V/cm"], tol: "2%",
+      sol: `<p>\\(V_{bi} = 0.02585\\ln(N_AN_D/n_i^2) = ${Vbi.toFixed(3)}\\) V. \\(W = \\sqrt{2\\varepsilon_s(V_{bi} - V)(1/N_A + 1/N_D)/q} = ${(W * 1e4).toPrecision(3)}\\) μm. \\(\\mathcal E_{max} = 2(V_{bi} - V)/W = ${tsci(Em)}\\) V/cm.</p>`,
+    };
+  });
+
+  /* ---------------------------------------------------------- C–V 실험실 */
+  {
+    const Na = 1e19, VS = []; for (let v = 0; v >= -8.0001; v -= 0.5) VS.push(Number(v.toFixed(2)));
+    const st = { N: 5e15, mode: "u", data: [], prof: null, shown: false, h: [[-6.5, 0], [-1, 0]], ymax: 1 };
+    const gm = SB.seg("cv-mode", () => { build(); });
+    const profile = (m) => {
+      if (m === "u") return () => st.N;
+      if (m === "s") return (x) => (x < 1.5e-4 ? 2e15 : 2e16);
+      return (x) => 2e15 + 2e16 * Math.exp(-((x - 1.0e-4) ** 2) / (2 * (0.25e-4) ** 2));
+    };
+    function build() {
+      st.mode = gm(); st.shown = false;
+      if (st.mode === "u") st.N = 10 ** (14.7 + Math.random() * 2);
+      const N = profile(st.mode); st.prof = N;
+      const Vbi = VT0 * Math.log((Na * N(0)) / (NI * NI));
+      // 누적 적분 F(W) = (q/εs)∫ x N dx
+      const nx = 6000, xm = 12e-4, dx = xm / nx, F = [0];
+      for (let i = 1; i <= nx; i++) { const x = (i - 0.5) * dx; F.push(F[i - 1] + (qe / es) * x * N(x) * dx); }
+      const Wof = (U) => { let i = 1; while (i < nx && F[i] < U) i++; const f = (U - F[i - 1]) / (F[i] - F[i - 1] || 1); return (i - 1 + f) * dx; };
+      st.data = VS.map((V) => { const W = Wof(Vbi - V), C = (es / W) * (1 + 0.01 * SB.randn()); return { V, W, C, y: 1 / (C * 1e9) ** 2 }; });
+      st.ymax = Math.max(...st.data.map((d) => d.y)) * 1.12;
+      st.h = [[-6.5, st.ymax * 0.55], [-1, st.ymax * 0.2]];
+      SB.stat("cv-res", st.mode === "u" ? "직선을 맞춘 뒤 ‘정답 확인’" : "아래 프로파일을 보라");
+      cv.redraw(); cvp.redraw(); upd();
+    }
+    const o = () => ({ x: [-8.6, 1.4], y: [0, st.ymax] });
+    const fit = () => { const [[v1, y1], [v2, y2]] = st.h; const sl = (y2 - y1) / (v2 - v1); return { sl, N: sl < 0 ? 2 / (qe * es * -sl * 1e18) : NaN, V0: v1 - y1 / sl }; };
+    const cv = SB.canvas("cv-cv", (ctx, w, h, self) => {
+      const P = pal(), oo = o(), f = fit();
+      const ch = SB.chart(ctx, { x: 64, y: 30, w: w - 80, h: h - 76 }, { x: oo.x, y: oo.y, xLabel: "인가 전압 V (V)", yLabel: "1/C² ((cm²/nF)²)", vlines: [{ x: 0, color: P.faint, dash: [2, 3] }] });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      const yAt = (v) => st.h[0][1] + f.sl * (v - st.h[0][0]);
+      line(ctx, [[ch.X(oo.x[0]), ch.Y(yAt(oo.x[0]))], [ch.X(oo.x[1]), ch.Y(yAt(oo.x[1]))]], P.accent2, 2, [8, 5]);
+      st.data.forEach((d) => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(d.V), ch.Y(d.y), 3.8, 0, 7); ctx.fill(); });
+      ctx.restore();
+      self._h = st.h.map(([v, y]) => [ch.X(v), ch.Y(y)]);
+      self._h.forEach(([x, y]) => handle(ctx, x, y, P.accent2, 10));
+      self._ch = ch;
+    }, { aspect: 0.55, minHeight: 250, maxHeight: 340 });
+    const cvp = SB.canvas("cv-cvp", (ctx, w, h) => {
+      const P = pal(); if (!st.prof) return;
+      const pts = []; for (let i = 0; i < st.data.length - 1; i++) { const a = st.data[i], b = st.data[i + 1]; const sl = (b.y - a.y) / (b.V - a.V) * 1e18; if (sl < 0) pts.push([0.5 * (a.W + b.W) * 1e4, 2 / (qe * es * -sl)]); }
+      const Wm = Math.max(...st.data.map((d) => d.W)) * 1e4 * 1.15;
+      const ns = pts.map((p) => p[1]).concat([st.prof(0)]), lo = Math.min(...ns) / 4, hi = Math.max(...ns) * 4;
+      const tr = []; for (let i = 0; i <= 200; i++) { const x = (Wm * i) / 200; tr.push([x, st.prof(x * 1e-4)]); }
+      SB.chart(ctx, { x: 64, y: 12, w: w - 80, h: h - 58 }, { x: [0, Wm], y: [lo, hi], logY: true, xLabel: "공핍층 끝 깊이 W (μm)", yLabel: "N(W) (cm⁻³)", yFmt: logFmt,
+        series: st.mode !== "u" || st.shown ? [{ data: tr, color: P.text, width: 2, dash: [6, 4] }] : [], points: pts.map(([x, y]) => ({ x, y, r: 3.5, color: P.accent })),
+        bands: [{ x0: 0, x1: st.data[0].W * 1e4, color: SB.color("accent-soft") }] });
+      SB.label(ctx, "0 V에서도 이미 공핍 → 잴 수 없는 얕은 곳", 70, 24, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.42, minHeight: 190, maxHeight: 260 });
+    function upd() {
+      const f = fit();
+      SB.stat("cv-sl", f.sl < 0 ? sci(f.sl * 1e18, 2) + " cm⁴/(F²·V)" : "기울기가 음이어야 한다");
+      SB.stat("cv-n", isFinite(f.N) ? sci(f.N, 2) + " cm⁻³" : "—");
+      SB.stat("cv-vbi", isFinite(f.V0) && f.sl < 0 ? f.V0.toFixed(2) + " V" : "—");
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? cv._h.map(([x, y], i) => ({ id: i, x, y, r: 14 })) : []),
+      move: (id, x, y) => { if (id == null || !cv._ch) return; const oo = o(); st.h[id] = [SB.clamp(invX(cv._ch, oo, x), -8.5, 1.3), SB.clamp(invY(cv._ch, oo, y), 0, st.ymax)]; if (Math.abs(st.h[0][0] - st.h[1][0]) < 0.2) st.h[id][0] += id ? 0.2 : -0.2; upd(); },
+    });
+    $("cv-new").addEventListener("click", build);
+    $("cv-check").addEventListener("click", () => {
+      const f = fit(); st.shown = true; cvp.redraw();
+      if (st.mode !== "u") { SB.stat("cv-res", "균일 모드에서 겨룬다 · 실제 분포를 표시함"); return; }
+      const err = f.N / st.N - 1;
+      SB.stat("cv-res", isFinite(err) ? (Math.abs(err) < 0.1 ? `✔ 정답 ${sci(st.N, 2)} (오차 ${(err * 100).toFixed(1)}%)` : `✘ 실제 ${sci(st.N, 2)} (오차 ${(err * 100).toFixed(0)}%)`) : "직선을 먼저 맞춰라");
+    });
+    build();
+  }
+
+  /* ---------------------------------------------------------- 미니: 의사 페르미 준위 */
+  {
+    const Na = 1e17, Nd = 1e16, L = 2, Eiv = Solid.Ei("Si");
+    const gV = SB.range("qf-v", (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " V", () => cv.redraw());
+    const r0 = Solid.pn(Na, Nd, 0), phip = VT0 * Math.log(Na / NI);
+    const EiL = phip, EcL = EiL + (EG - Eiv), EvL = EiL - Eiv;
+    const cv = SB.canvas("cv-qf", (ctx, w, h) => {
+      const P = pal(), V = gV(), r = Solid.pn(Na, Nd, V), xp = r.xp * 1e4, xn = r.xn * 1e4, Vt = r.Vbi - V;
+      const psi = (x) => { const Vp = Vt * r.xp / r.W, Vn = Vt - Vp; if (x <= -xp) return 0; if (x <= 0) return Vp * ((x + xp) / xp) ** 2; if (x <= xn) return Vt - Vn * ((xn - x) / xn) ** 2; return Vt; };
+      const ex = Math.expm1(V / VT0), np0 = NI * NI / Na, pn0 = NI * NI / Nd;
+      const Efn = (x) => (x < -xp ? EiL - psi(x) + VT0 * Math.log((np0 + np0 * ex * Math.exp((x + xp) / L)) / NI) : V);
+      const Efp = (x) => (x > xn ? EiL - psi(x) - VT0 * Math.log((pn0 + pn0 * ex * Math.exp(-(x - xn) / L)) / NI) : 0);
+      const ch = SB.chart(ctx, { x: 46, y: 26, w: w - 60, h: h - 70 }, { x: [-6, 6], y: [EvL - (r0.Vbi + 0.5) - 0.1, EcL + 0.12], xLabel: "위치 x (μm)", yLabel: "E (eV)", yTicks: [], bands: [{ x0: -xp, x1: xn, color: SB.color("accent-soft") }] });
+      const xs = []; for (let i = 0; i <= 400; i++) xs.push(-6 + (12 * i) / 400);
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(EcL - psi(x))]), P.text, 2.4); line(ctx, xs.map((x) => [ch.X(x), ch.Y(EvL - psi(x))]), P.text, 2.4);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(EiL - psi(x))]), P.faint, 1, [2, 4]);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(Efn(x))]), P.accent, 2.4, [8, 4]);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(Efp(x))]), P.accent2, 2.4, [3, 3]);
+      ctx.restore();
+      SB.label(ctx, "E_Fn (전자)", ch.box.x + ch.box.w - 40, ch.Y(V) - 11, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, "E_Fp (정공)", ch.box.x + 40, ch.Y(0) + 12, { size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, "p (N_A = 10¹⁷)", ch.box.x + 50, ch.box.y - 12, { size: 11, color: P.dim }); SB.label(ctx, "n (N_D = 10¹⁶)", ch.box.x + ch.box.w - 50, ch.box.y - 12, { size: 11, color: P.dim });
+      SB.stat("qf-r", `E<sub>Fn</sub>−E<sub>Fp</sub> = ${V.toFixed(2)} eV · np = n<sub>i</sub>²·${sci(Math.exp(V / VT0), 1)} · J/J₀ = ${sci(ex, 1)}`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 누설 */
+  SB.tangle("tg-leak", (v) => {
+    const T = v.T, tau = 10 ** v.lt, r = Solid.pn(1e17, 1e20, -v.vr, "Si", T), ni = Solid.ni("Si", T);
+    const jg = (qe * ni * r.W) / (2 * tau), j0 = Solid.J0(1e17, 1e20, tau, tau, "Si", T), ra = jg / j0;
+    return { w: fmtLen(r.W), ni: sci(ni, 2) + " cm⁻³", jg: sci(jg, 2) + " A/cm²", j0: sci(j0, 2) + " A/cm²",
+      who: ra > 1 ? `생성 전류가 ${sci(ra, 1)}배 크다 — 실리콘 누설은 공핍층이 지배한다.` : `확산 전류가 ${sci(1 / ra, 1)}배 크다 — 고온에서는 n<sub>i</sub>² 항이 따라잡는다.` };
+  }, { fmt: { lt: (x) => { const t = 10 ** x; return t >= 1e-3 ? (t * 1e3).toPrecision(2) + " ms" : t >= 1e-6 ? (t * 1e6).toPrecision(2) + " μs" : (t * 1e9).toPrecision(2) + " ns"; } } });
+
+  /* ---------------------------------------------------------- 쇼트키 실험대 */
+  const MET = { Ti: [4.33, 0.50], Al: [4.28, 0.72], Ag: [4.26, 0.78], Cr: [4.5, 0.61], W: [4.55, 0.67], Mo: [4.6, 0.68], Cu: [4.65, 0.58], Au: [5.1, 0.80], Ni: [5.15, 0.61], Pt: [5.65, 0.90] };
+  {
+    const chi = 4.05, Eg = 1.12;
+    const st = { phm: 5.1 };
+    const gm = SB.seg("ms-m", (v) => { st.phm = MET[v][0]; draw(); });
+    const gS = SB.range("ms-s", (v) => v.toFixed(2), () => draw());
+    const gP = SB.range("ms-p", (v) => v.toFixed(2) + " eV", () => draw());
+    const gN = SB.range("ms-n", (v) => p10(v) + " cm⁻³", () => draw());
+    const model = (pm) => Solid.schottky(pm, chi, gS(), Eg, gP());
+    const rms = () => Math.sqrt(Object.values(MET).reduce((s, [pm, b]) => s + (model(pm) - b) ** 2, 0) / 10);
+    const near = () => { let best = null, bd = 0.03; for (const k in MET) { const d = Math.abs(MET[k][0] - st.phm); if (d < bd) { bd = d; best = k; } } return best; };
+    const calc = () => {
+      const Nd = 10 ** gN(), pB = model(st.phm), ecf = VT0 * Math.log(Solid.Nc("Si") / Nd), Vbi = pB - ecf;
+      const W = Vbi > 0 ? Math.sqrt((2 * es * Vbi) / (qe * Nd)) : Math.sqrt((es * VT0) / (qe * Nd));
+      return { Nd, pB, ecf, Vbi, W };
+    };
+    const cv = SB.canvas("cv-ms", (ctx, w, h, self) => {
+      const P = pal(), c = calc();
+      const top = 34, s = (h - top - 22) / 8.3, yVac = top + 0.6 * s, yEF = yVac + st.phm * s, xm = w * 0.26, xR = w - 12;
+      const Y = (E) => yEF - E * s;   // E: EF 기준(eV)
+      const Ec = (d) => { const b = c.Vbi > 0 ? Math.max(0, 1 - d / c.W) ** 2 : Math.exp(-d / c.W); return c.ecf + c.Vbi * b; };
+      const dmax = 2.4 * c.W, X = (d) => xm + ((xR - xm) * d) / dmax;
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = P.accent; ctx.fillRect(12, yEF, xm - 12, h - yEF - 10); ctx.restore();
+      line(ctx, [[12, yEF], [xm, yEF]], P.accent, 2.6);
+      line(ctx, [[12, yVac], [xm, yVac]], P.faint, 1.4, [6, 4]);
+      line(ctx, [[xm, top - 6], [xm, h - 10]], P.faint, 1.2);
+      const ds = []; for (let i = 0; i <= 160; i++) ds.push((dmax * i) / 160);
+      line(ctx, ds.map((d) => [X(d), Y(Ec(d))]), P.text, 2.6); line(ctx, ds.map((d) => [X(d), Y(Ec(d) - Eg)]), P.text, 2.6);
+      line(ctx, ds.map((d) => [X(d), Y(Ec(d) + chi)]), P.faint, 1.4, [6, 4]);
+      line(ctx, [[xm, yEF], [xR, yEF]], P.accent2, 2, [7, 4]);
+      // 계면 상태와 중립 준위
+      const yCNL = Y(c.pB - Eg + gP());
+      for (let k = 0; k <= 10; k++) { const y = Y(c.pB - (Eg * k) / 10); line(ctx, [[xm - 1, y], [xm + 9, y]], P.accent, 1.5); }
+      ctx.save(); ctx.fillStyle = P.warn; ctx.fillRect(xm - 14, yCNL - 2, 28, 4); ctx.restore();
+      // 쌍극자
+      const dip = st.phm - c.pB - chi;
+      if (Math.abs(dip) > 0.03) { SB.arrow(ctx, xm + 3, yVac, xm + 3, Y(c.pB + chi), { color: P.warn, width: 1.8, head: 7 }); SB.label(ctx, `계면 쌍극자 ${dip.toFixed(2)} eV`, xm + 10, (yVac + Y(c.pB + chi)) / 2, { align: "left", size: 11, color: P.warn }); }
+      // 장벽 표시
+      SB.arrow(ctx, xm + 22, yEF, xm + 22, Y(c.pB), { color: P.accent2, width: 1.8, head: 7 });
+      SB.label(ctx, `φB = ${c.pB.toFixed(2)} eV`, xm + 30, (yEF + Y(c.pB)) / 2 + 2, { align: "left", size: 12, bold: true, color: P.accent2 });
+      SB.label(ctx, "금속", (12 + xm) / 2, h - 18, { bold: true }); SB.label(ctx, "n-Si", (xm + xR) / 2, h - 18, { bold: true });
+      SB.label(ctx, `φm = ${st.phm.toFixed(2)} eV${near() ? " (" + near() + ")" : ""}`, (12 + xm) / 2, (yVac + yEF) / 2, { size: 12, bold: true });
+      SB.label(ctx, "E_vac", 30, yVac - 9, { size: 10, color: P.dim }); SB.label(ctx, "E_c", xR - 16, Y(c.ecf) - 10, { size: 11, color: P.dim }); SB.label(ctx, "E_F", xR - 16, yEF + 11, { size: 11, color: P.accent2 });
+            handle(ctx, (12 + xm) / 2, yEF, P.accent, 11); self._h = [(12 + xm) / 2, yEF]; self._s = s; self._yVac = yVac;
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 400 });
+    const cvd = SB.canvas("cv-msd", (ctx, w, h) => {
+      const P = pal(), xs = [4.0, 5.9];
+      const ch = SB.chart(ctx, { x: 58, y: 14, w: w - 72, h: h - 60 }, { x: xs, y: [0, 1.7], xLabel: "금속 일함수 φm (eV)", yLabel: "φBn (eV)",
+        series: [{ data: [[4.0, 4.0 - chi], [5.9, 5.9 - chi]], color: P.faint, width: 1.6, dash: [6, 4] }, { data: [[4.0, model(4.0)], [5.9, model(5.9)]], color: P.accent2, width: 2.6 }],
+        hlines: [{ y: Eg, color: P.dim, label: "E_g = 1.12 eV", dash: [3, 3] }] });
+      for (const k in MET) { const [pm, b] = MET[k]; ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(pm), ch.Y(b), 4.5, 0, 7); ctx.fill(); if (!['Cr', 'W', 'Mo'].includes(k)) SB.label(ctx, k, ch.X(pm) + (k === "Ag" ? -10 : 10), ch.Y(b) + (k === "Al" ? 11 : k === "Ag" ? -10 : -9), { size: 10, color: P.dim }); }
+      SB.label(ctx, "쇼트키–모트 (S = 1)", ch.X(5.62), ch.Y(1.42), { size: 11, color: P.dim, align: "right" });
+      handle(ctx, ch.X(st.phm), ch.Y(model(st.phm)), P.accent2, 7);
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+    function draw() {
+      const c = calc(); cv.redraw(); cvd.redraw();
+      SB.stat("ms-phm", st.phm.toFixed(2) + " eV" + (near() ? ` (${near()}, 측정 φB ${MET[near()][1].toFixed(2)})` : ""));
+      SB.stat("ms-mott", (st.phm - chi).toFixed(2) + " eV");
+      SB.stat("ms-pb", c.pB.toFixed(3) + " eV");
+      SB.stat("ms-vbi", c.Vbi > 0 ? `${c.Vbi.toFixed(2)} V / ${fmtLen(c.W)}` : "장벽 없음(축적)");
+      const e = rms(); SB.stat("ms-rms", e <= 0.1 ? `✔ ${e.toFixed(3)} eV — 측정에 맞췄다!` : e.toFixed(3) + " eV (목표 ≤ 0.100)");
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "m", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "m") return; st.phm = SB.clamp((y - cv._yVac) / cv._s, 3.8, 6.0); const n = near(); gm.set(n && ["Ti", "Al", "W", "Cu", "Au", "Ni", "Pt"].includes(n) ? n : "__", false); draw(); },
+    });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 미니: 열전자 방출 J–V */
+  {
+    const J0pn = Solid.J0(1e17, 1e15);
+    const st = { V: 0.3 };
+    const gB = SB.range("te-b", (v) => v.toFixed(2) + " eV", () => cv.redraw());
+    const o = { x: [0, 0.8], y: [1e-12, 1e4], logY: true };
+    const cv = SB.canvas("cv-te", (ctx, w, h, self) => {
+      const P = pal(), pB = gB(), Js = Solid.thermionic(pB, VT0 * Math.log(2), 300) ;
+      const xs = []; for (let i = 1; i <= 160; i++) xs.push((0.8 * i) / 160);
+      const ch = SB.chart(ctx, { x: 58, y: 30, w: w - 72, h: h - 74 }, { x: o.x, y: o.y, logY: true, yFmt: logFmt, yTicks: [1e-12, 1e-10, 1e-8, 1e-6, 1e-4, 1e-2, 1, 1e2, 1e4], xLabel: "순방향 전압 V (V)", yLabel: "J (A/cm²)",
+        series: [{ data: xs.map((v) => [v, Solid.thermionic(pB, v)]), color: P.accent, width: 2.6 }, { data: xs.map((v) => [v, J0pn * Math.expm1(v / VT0)]), color: P.accent2, width: 2.6 }],
+        hlines: [{ y: 1, color: P.faint, label: "1 A/cm²", dash: [3, 3] }] });
+      const J = Solid.thermionic(pB, st.V), hx = ch.X(st.V), hy = ch.Y(Math.min(1e4, Math.max(1e-12, J)));
+      SB.label(ctx, "쇼트키", ch.X(0.12), ch.Y(Solid.thermionic(pB, 0.12)) - 12, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, "pn", ch.X(0.5), ch.Y(J0pn * Math.expm1(0.5 / VT0)) + 14, { size: 11, color: P.accent2, bold: true });
+      handle(ctx, hx, hy, P.accent, 10); self._h = [hx, hy]; self._ch = ch;
+      const vs = VT0 * Math.log(1 / Js + 1), vp = VT0 * Math.log(1 / J0pn + 1);
+      SB.stat("te-r", `J<sub>s</sub> = ${sci(Js, 2)} A/cm² · V = ${st.V.toFixed(2)} V에서 J = ${sci(J, 2)} · 1 A/cm² 전압: 쇼트키 ${vs.toFixed(2)} V, pn ${vp.toFixed(2)} V`);
+    }, { aspect: 0.46, minHeight: 240, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "v", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "v" || !cv._ch) return; st.V = SB.clamp(invX(cv._ch, o, x), 0.01, 0.8); } });
+  }
+
+  /* ---------------------------------------------------------- 미니: 장벽 모양과 터널링 */
+  {
+    const gN = SB.range("bar-n", (v) => p10(v) + " cm⁻³", () => cv.redraw());
+    const gB = SB.range("bar-b", (v) => v.toFixed(2) + " eV", () => cv.redraw());
+    const cv = SB.canvas("cv-bar", (ctx, w, h) => {
+      const P = pal(), N = 10 ** gN(), pB = gB(), E00 = Solid.E00(N), kt = VT0;
+      const Eb = Math.max(-0.03, VT0 * Math.log(Solid.Nc("Si") / N)), Vb = Math.max(0.02, pB - Eb);
+      const W = Math.sqrt((2 * es * Vb) / (qe * N)) * 1e7;  // nm
+      const xm = SB.clamp(1.5 * W, 4, 300);
+      const ch = SB.chart(ctx, { x: 46, y: 26, w: w - 58, h: h - 70 }, { x: [-0.12 * xm, xm], y: [-0.25, pB + 0.2], xLabel: "계면에서 거리 (nm)", yLabel: "E − E_F (eV)", bands: [{ x0: -0.12 * xm, x1: 0, color: SB.color("accent-soft") }] });
+      const Ec = (x) => Eb + Vb * Math.max(0, 1 - x / W) ** 2;
+      const xs = []; for (let i = 0; i <= 200; i++) xs.push((xm * i) / 200);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(Ec(x))]), P.text, 2.6);
+      line(ctx, [[ch.X(-0.12 * xm), ch.Y(0)], [ch.X(xm), ch.Y(0)]], P.accent2, 1.8, [7, 4]);
+      const ch2 = Math.cosh(E00 / kt), Em = Eb + Vb / (ch2 * ch2), xc = W * (1 - Math.sqrt(Math.max(0, (Em - Eb) / Vb)));
+      const xr = Math.max(xc + 0.25 * xm, xm * 0.92);
+      if (Em > pB - 0.02) { line(ctx, [[ch.X(xr), ch.Y(Math.max(Em, 0.02))], [ch.X(xm * 0.5), ch.Y(pB + 0.08)], [ch.X(0.02 * xm), ch.Y(pB + 0.04)]], P.accent, 2.2); SB.arrow(ctx, ch.X(0.04 * xm), ch.Y(pB + 0.04), ch.X(-0.08 * xm), ch.Y(pB - 0.05), { color: P.accent, width: 2.2 }); }
+      else { line(ctx, [[ch.X(xr), ch.Y(Em)], [ch.X(xc), ch.Y(Em)]], P.accent, 2.4); SB.arrow(ctx, ch.X(xc), ch.Y(Em), ch.X(-0.08 * xm), ch.Y(Em), { color: P.accent, width: 2.2, dash: [4, 3] }); }
+      const mode = E00 < 0.2 * kt ? "열전자 방출 (TE)" : E00 > 2 * kt ? "전계 방출 (FE)" : "열전계 방출 (TFE)";
+      SB.label(ctx, `${mode} · E_m = ${Em.toFixed(2)} eV`, ch.box.x + ch.box.w - 6, ch.box.y + 10, { align: "right", size: 12, bold: true, color: P.accent });
+      SB.label(ctx, "금속", ch.X(-0.06 * xm), ch.box.y + ch.box.h - 10, { size: 11 });
+      SB.stat("bar-r", `W = ${W.toPrecision(3)} nm · E₀₀ = ${(E00 * 1000).toPrecision(3)} meV (= ${(E00 / kt).toFixed(2)} k<sub>B</sub>T) · E<sub>F</sub>에서 투과 e<sup>−φB/E₀₀</sup> = ${sci(Math.exp(-pB / E00), 1)}`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 310 });
+  }
+
+  /* ---------------------------------------------------------- 접촉 비저항 지도 */
+  {
+    const st = { lgN: 19.5 };
+    const gB = SB.range("rc-b", (v) => v.toFixed(2) + " eV", () => draw());
+    const gT = SB.range("rc-t", (v) => v.toFixed(0) + " K", () => draw());
+    const gA = SB.seg("rc-a", () => draw());
+    const o = { x: [1e17, 1e21], y: [1e-10, 1e4], logX: true, logY: true };
+    const rc = (pB, N, T) => Solid.contactRho(pB, N, T).rc;
+    const cv = SB.canvas("cv-rc", (ctx, w, h, self) => {
+      const P = pal(), pB = gB(), T = gT(), kt = kBev * T, e1 = Solid.E00(1e18);
+      const N1 = 1e18 * ((0.2 * kt) / e1) ** 2, N2 = 1e18 * ((2 * kt) / e1) ** 2;
+      const xs = []; for (let i = 0; i <= 200; i++) xs.push(10 ** (17 + (4 * i) / 200));
+      const ch = SB.chart(ctx, { x: 62, y: 16, w: w - 76, h: h - 62 }, { x: o.x, y: o.y, logX: true, logY: true, xFmt: logFmt, yFmt: logFmt, xLabel: "계면 도핑 N_D (cm⁻³)", yLabel: "ρc (Ω·cm²)",
+        series: [0.3, 0.5, 0.8].map((b) => ({ data: xs.map((N) => [N, rc(b, N, T)]), color: P.faint, width: 1.2, dash: [4, 4] })).concat([{ data: xs.map((N) => [N, rc(pB, N, T)]), color: P.accent, width: 2.8 }]),
+        vlines: [{ x: 5e20, color: P.bad, label: "활성 한계", dash: [3, 3], row: 2 }] });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      [[1e17, N1, P.series[0], "TE"], [N1, N2, P.series[1], "TFE"], [N2, 1e21, P.series[2], "FE"]].forEach(([a, b, col, lab]) => {
+        const x0 = ch.X(Math.max(a, 1e17)), x1 = ch.X(Math.min(b, 1e21)); if (x1 <= x0) return;
+        ctx.globalAlpha = 0.09; ctx.fillStyle = col; ctx.fillRect(x0, ch.box.y, x1 - x0, ch.box.h); ctx.globalAlpha = 1;
+        if (x1 - x0 > 30) SB.label(ctx, lab, (x0 + x1) / 2, ch.box.y + ch.box.h - 12, { size: 11, bold: true, color: P.dim });
+      });
+      ctx.globalAlpha = 0.18; ctx.fillStyle = P.ok; ctx.fillRect(ch.box.x, ch.Y(1e-8), ch.X(5e20) - ch.box.x, ch.box.y + ch.box.h - ch.Y(1e-8)); ctx.globalAlpha = 1;
+      ctx.restore();
+      SB.label(ctx, "과녁 ρc < 10⁻⁸", ch.X(3e17), ch.Y(3e-10), { size: 11, color: P.ok, bold: true, align: "left" });
+      SB.label(ctx, "φB = 0.3 / 0.5 / 0.8 eV (점선)", ch.box.x + 6, ch.box.y + 10, { size: 11, color: P.dim, align: "left" });
+      const N = 10 ** st.lgN, r = rc(pB, N, T), hx = ch.X(N), hy = ch.Y(SB.clamp(r, 1e-10, 1e4));
+      handle(ctx, hx, hy, P.accent, 10); self._h = [hx, hy]; self._ch = ch;
+    }, { aspect: 0.62, minHeight: 290, maxHeight: 420 });
+    function draw() {
+      cv.redraw();
+      const pB = gB(), T = gT(), N = 10 ** st.lgN, c = Solid.contactRho(pB, N, T), A = Number(gA());
+      SB.stat("rc-e", `${(c.E00 * 1000).toPrecision(3)} meV / ${(c.E00 / (kBev * T)).toFixed(2)}`);
+      SB.stat("rc-m", { TE: "열전자 방출", TFE: "열전계 방출", FE: "전계 방출" }[c.mode]);
+      SB.stat("rc-r", sci(c.rc, 2) + " Ω·cm² @ " + p10(st.lgN));
+      const R = c.rc / A; SB.stat("rc-R", R > 1e6 ? sci(R, 1) + " Ω" : R > 1e3 ? (R / 1e3).toPrecision(3) + " kΩ" : R.toPrecision(3) + " Ω");
+      SB.stat("rc-goal", c.rc < 1e-8 && N <= 5.0001e20 ? "✔ 과녁 명중!" : N > 5.0001e20 ? "도핑이 활성 한계를 넘었다" : "ρc를 10⁻⁸ 아래로");
+    }
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "n" || !cv._ch) return; st.lgN = SB.clamp(Math.log10(invX(cv._ch, o, x)), 17, 21); draw(); } });
+    $("rc-nisi").addEventListener("click", () => { gB.set(0.65, true); draw(); });
+    $("rc-mis").addEventListener("click", () => { gB.set(0.15, true); draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 쇼트키 */
+  SB.drill("drill-ms", () => {
+    const k = pick(Object.keys(MET)), pm = MET[k][0], S = pick([0.1, 0.15, 0.2, 0.27]), p0 = pick([0.3, 0.35, 0.4, 0.45]);
+    const pB = S * (pm - 4.05) + (1 - S) * (1.12 - p0), Js = 112 * 9e4 * Math.exp(-pB / 0.02585);
+    return {
+      q: `<p>n-Si(\\(\\chi = 4.05\\) eV, \\(E_g = 1.12\\) eV) 위 ${k}(\\(\\phi_m = ${pm}\\) eV) 접촉. 고정 계수 \\(S = ${S}\\), 중립 준위 \\(\\phi_0 = ${p0}\\) eV(가전자대 위)일 때 장벽 높이와 300 K 포화 전류 밀도(\\(A^* = 112\\) A/(cm²K²), \\(k_BT = 0.02585\\) eV)는?</p>`,
+      answer: [pB, Js], label: ["φ<sub>B</sub> =", "J<sub>s</sub> ="], unit: ["eV", "A/cm²"], tol: "3%",
+      sol: `<p>\\(\\phi_B = ${S}(${pm} - 4.05) + ${(1 - S).toFixed(2)}(1.12 - ${p0}) = ${pB.toFixed(3)}\\) eV. \\(J_s = 112\\times300^2 e^{-${pB.toFixed(3)}/0.02585} = ${sci(Js, 2)}\\) A/cm². (측정값 ${MET[k][1]} eV)</p>`,
+    };
+  });
+
+  /* ---------------------------------------------------------- 이종 접합 띠 맞추기 */
+  {
+    const PRE = {
+      gaas: { A: ["GaAs", 4.07, 1.424], B: ["Al₀.₃Ga₀.₇As", 3.74, 1.798], m: "실측: ΔEc ≈ 0.23, ΔEv ≈ 0.14 eV (62 : 38), 유형 I" },
+      sige: { A: ["Ge", 4.0, 0.66], B: ["Si", 4.05, 1.12], m: "실측(Si 위 변형 SiGe): ΔEv ≈ 0.74x eV, ΔEc ≈ 0 — 정공을 가둔다" },
+      inas: { A: ["InAs", 4.9, 0.354], B: ["GaSb", 4.06, 0.726], m: "실측: InAs Ec가 GaSb Ev보다 약 0.15 eV 아래, 유형 III" },
+      ingaas: { A: ["In₀.₅₃Ga₀.₄₇As", 4.51, 0.75], B: ["InP", 4.38, 1.344], m: "실측: ΔEc ≈ 0.22–0.25, ΔEv ≈ 0.35–0.38 eV, 유형 I" },
+    };
+    const st = { A: null, B: null, goal: "II" };
+    const gp = SB.seg("het-p", () => { load(); });
+    function load() { const p = PRE[gp()]; st.A = { n: p.A[0], chi: p.A[1], Eg: p.A[2] }; st.B = { n: p.B[0], chi: p.B[1], Eg: p.B[2] }; st.m = p.m; draw(); }
+    const type = () => {
+      const a = { c: -st.A.chi, v: -st.A.chi - st.A.Eg }, b = { c: -st.B.chi, v: -st.B.chi - st.B.Eg };
+      if (a.c <= b.v || b.c <= a.v) return "III";
+      if ((a.c <= b.c && a.v >= b.v) || (b.c <= a.c && b.v >= a.v)) return "I";
+      return "II";
+    };
+    const cv = SB.canvas("cv-het", (ctx, w, h, self) => {
+      const P = pal(); if (!st.A) return;
+      const top = 30, s = (h - top - 34) / 6.6, Y = (E) => top + -E * s, xm = w / 2, aL = 20, bR = w - 20;
+      line(ctx, [[aL, Y(0)], [bR, Y(0)]], P.faint, 1.4, [6, 4]); SB.label(ctx, "진공 준위", xm, Y(0) - 10, { size: 11, color: P.dim });
+      const blk = (m, x0, x1, col) => {
+        ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = col; ctx.fillRect(x0, Y(-m.chi), x1 - x0, m.Eg * s); ctx.restore();
+        line(ctx, [[x0, Y(-m.chi)], [x1, Y(-m.chi)]], P.text, 2.6); line(ctx, [[x0, Y(-m.chi - m.Eg)], [x1, Y(-m.chi - m.Eg)]], P.text, 2.6);
+        SB.label(ctx, m.n, (x0 + x1) / 2, Y(-m.chi - m.Eg / 2), { bold: true, size: 12 });
+      };
+      blk(st.A, aL, xm, P.accent); blk(st.B, xm, bR, P.accent2);
+      line(ctx, [[xm, Y(Math.max(-st.A.chi, -st.B.chi)) - 6], [xm, Y(Math.min(-st.A.chi - st.A.Eg, -st.B.chi - st.B.Eg)) + 6]], P.faint, 1.2);
+      const d = Solid.anderson(st.A.chi, st.A.Eg, st.B.chi, st.B.Eg);
+      SB.label(ctx, `ΔEc = ${d.dEc.toFixed(2)}`, xm + 8, (Y(-st.A.chi) + Y(-st.B.chi)) / 2, { align: "left", size: 11, color: P.accent });
+      SB.label(ctx, `ΔEv = ${d.dEv.toFixed(2)}`, xm + 8, (Y(-st.A.chi - st.A.Eg) + Y(-st.B.chi - st.B.Eg)) / 2, { align: "left", size: 11, color: P.accent2 });
+      SB.label(ctx, st.m, w / 2, h - 12, { size: 11, color: P.dim });
+      const hs = [["Ac", (aL + xm) * 0.5 - 40, Y(-st.A.chi)], ["Av", (aL + xm) * 0.5 - 40, Y(-st.A.chi - st.A.Eg)], ["Bc", (xm + bR) * 0.5 + 40, Y(-st.B.chi)], ["Bv", (xm + bR) * 0.5 + 40, Y(-st.B.chi - st.B.Eg)]];
+      hs.forEach(([, x, y], i) => handle(ctx, x, y, i < 2 ? P.accent : P.accent2, 10));
+      self._hs = hs; self._s = s; self._top = top;
+    }, { aspect: 0.6, minHeight: 300, maxHeight: 400 });
+    function draw() {
+      cv.redraw(); if (!st.A) return;
+      const d = Solid.anderson(st.A.chi, st.A.Eg, st.B.chi, st.B.Eg), t = type();
+      SB.stat("het-a", `${st.A.chi.toFixed(2)} / ${st.A.Eg.toFixed(2)} eV`); SB.stat("het-b", `${st.B.chi.toFixed(2)} / ${st.B.Eg.toFixed(2)} eV`);
+      SB.stat("het-d", `${d.dEc.toFixed(2)} / ${d.dEv.toFixed(2)} eV`);
+      SB.stat("het-t", { I: "유형 I (포함)", II: "유형 II (엇갈림)", III: "유형 III (어긋남)" }[t]);
+      SB.stat("het-g", t === st.goal ? `✔ 유형 ${st.goal} 완성!` : `유형 ${st.goal}을 만들어라`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._hs ? cv._hs.map(([id, x, y]) => ({ id, x, y, r: 14 })) : []),
+      move: (id, x, y) => {
+        if (!id) return; const E = -(y - cv._top) / cv._s, m = id[0] === "A" ? st.A : st.B;
+        if (id[1] === "c") m.chi = SB.clamp(-E, 2.5, 5.6); else m.Eg = SB.clamp(-E - m.chi, 0.1, 3.5);
+        draw();
+      },
+    });
+    $("het-new").addEventListener("click", () => { let g; do { g = pick(["I", "II", "III"]); } while (g === st.goal); st.goal = g; draw(); });
+    $("het-reset").addEventListener("click", load);
+    load();
+  }
+
+  /* ---------------------------------------------------------- 미니: 2DEG */
+  {
+    const e13 = 12.9 * eps0, hb = K.hbar, mstar = 0.067 * K.me, dEc = 0.23, Ed = 0.05;
+    const D2 = (mstar / (Math.PI * hb * hb)) * qe * 1e-4;   // cm⁻²eV⁻¹
+    const gd = SB.range("dg-d", (v) => v.toFixed(0) + " nm", () => cv.redraw());
+    const gn = SB.range("dg-n", (v) => p10(v) + " cm⁻³", () => cv.redraw());
+    const solve = (Nd, d) => {
+      let ns = 5e11, E0 = 0, Es = 0, EF0 = 0;
+      for (let i = 0; i < 80; i++) {
+        Es = (qe * ns) / e13; E0 = (Math.cbrt((hb * hb) / (2 * mstar)) * Math.pow((9 * Math.PI * qe * Es * 100) / 8, 2 / 3)) / qe; EF0 = E0 + ns / D2;
+        const dV = Math.max(0, dEc - Ed - EF0), nn = Math.sqrt((2 * e13 * Nd * dV) / qe + Nd * Nd * d * d) - Nd * d; ns = 0.5 * ns + 0.5 * nn;
+      }
+      return { ns, E0, Es, EF0 };
+    };
+    const cv = SB.canvas("cv-2deg", (ctx, w, h) => {
+      const P = pal(), Nd = 10 ** gn(), d = gd() * 1e-7, r = solve(Nd, d), wd = (r.ns / Nd) * 1e7, dn = gd();
+      const fnm = r.Es * 1e-7;   // eV/nm
+      const xl = -(dn + wd + 18), xr = 45;
+      const Ec = (x) => {
+        if (x >= 0) { const Vinf = 0.35; return -r.EF0 + Vinf * (1 - Math.exp((-x * fnm) / Vinf)); }
+        const ei = -r.EF0 + dEc;
+        if (x >= -dn) return ei + fnm * x;
+        const xx = -x - dn; if (xx <= wd) return ei - fnm * dn - fnm * (xx - (xx * xx) / (2 * wd));
+        return ei - fnm * dn - fnm * wd / 2;
+      };
+      const ch = SB.chart(ctx, { x: 46, y: 22, w: w - 58, h: h - 66 }, { x: [xl, xr], y: [-0.15, 0.42], xLabel: "위치 (nm, 계면 0)", yLabel: "E − E_F (eV)",
+        bands: [{ x0: xl, x1: -dn, color: SB.color("accent-2-soft") }] });
+      const xs = []; for (let i = 0; i <= 300; i++) xs.push(xl + ((xr - xl) * i) / 300);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(Ec(x))]), P.text, 2.6);
+      line(ctx, [[ch.box.x, ch.Y(0)], [ch.box.x + ch.box.w, ch.Y(0)]], P.accent2, 1.8, [7, 4]);
+      const e0 = -r.EF0 + r.E0, x0 = r.E0 / fnm;
+      line(ctx, [[ch.X(0), ch.Y(e0)], [ch.X(Math.min(xr, x0)), ch.Y(e0)]], P.accent, 2);
+      const nd = Math.min(18, Math.round(r.ns / 5e10));
+      ctx.fillStyle = P.accent; for (let i = 0; i < nd; i++) { const x = 0.4 + ((i * 0.37) % 1) * Math.min(x0 * 1.3, 12); ctx.beginPath(); ctx.arc(ch.X(x), ch.Y(e0 + 0.012 + 0.03 * ((i * 0.61) % 1)), 3, 0, 7); ctx.fill(); }
+      SB.label(ctx, "n-AlGaAs", ch.X((xl - dn) / 2), ch.box.y + 10, { size: 11, color: P.accent2, bold: true });
+      if (dn > 3) SB.label(ctx, "스페이서", ch.X(-dn / 2), ch.box.y + 26, { size: 10, color: P.dim });
+      SB.label(ctx, "GaAs (도핑 안 함)", ch.X(xr * 0.55), ch.box.y + 10, { size: 11, bold: true });
+      SB.label(ctx, "E_0", ch.X(Math.min(xr, x0)) + 14, ch.Y(e0), { size: 10, color: P.accent });
+      SB.label(ctx, "E_F", ch.box.x + ch.box.w - 14, ch.Y(0) - 9, { size: 10, color: P.accent2 });
+      SB.stat("dg-r", `n<sub>s</sub> = ${sci(r.ns, 2)} cm⁻² · 계면 전기장 ${sci(r.Es, 2)} V/cm · E₀ = ${(r.E0 * 1000).toFixed(0)} meV · 공핍된 도핑층 ${wd.toFixed(1)} nm`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 310 });
+  }
+
+  /* ---------------------------------------------------------- MOS 띠 굽음 */
+  {
+    const Eiv = Solid.Ei("Si"), chi = 4.05;
+    const st = { chal: false, done: false };
+    const gV = SB.range("mos-v", (v) => v.toFixed(3) + " V", () => draw());
+    const gT = SB.range("mos-t", (v) => v.toFixed(1) + " nm", () => draw());
+    const gNa = SB.seg("mos-na", () => draw());
+    const gG = SB.seg("mos-g", () => draw());
+    const calc = () => {
+      const Na = Number(gNa()), phm = Number(gG()), Cox = eox / (gT() * 1e-7), VG = gV();
+      const phiF = VT0 * Math.log(Na / NI), Ev = -(Eiv - phiF), Ec = Ev + EG, Ei = Ev + Eiv;
+      const VFB = phm - (chi + Ec);
+      const f = (p) => VFB + p - Solid.mosQs(p, Na) / Cox - VG;
+      const psi = Solid.bisect(f, -1.2, 1.6, 1e-9);
+      const Qs = Solid.mosQs(psi, Na), Wdm = Math.sqrt((2 * es * 2 * phiF) / (qe * Na));
+      const Qd = psi > VT0 ? Math.sqrt(2 * es * qe * Na * (psi - VT0)) : 0, ns = psi > 0 ? Math.max(0, (Math.abs(Qs) - Qd) / qe) : 0;
+      const VTd = VFB + 2 * phiF + Math.sqrt(2 * es * qe * Na * 2 * phiF) / Cox, VTx = VFB + 2 * phiF - Solid.mosQs(2 * phiF, Na) / Cox;
+      return { Na, Cox, VG, phiF, Ev, Ec, Ei, VFB, psi, Qs, Wdm, ns, VTd, VTx };
+    };
+    const profile = (c, xmax) => {
+      const E = (p) => Math.abs(Solid.mosQs(p, c.Na)) / es;
+      const pts = [[0, c.psi]]; let x = 0, p = c.psi, n = 0;
+      while (x < xmax && n < 6000 && Math.abs(p) > 2e-4) {
+        const e = E(p); let dx = Math.min(xmax / 300, (0.02 * Math.abs(p)) / (e + 1e-30)); dx = Math.max(dx, xmax * 1e-6);
+        p -= Math.sign(p) * e * dx; x += dx; n++; if (n % 3 === 0) pts.push([x, p]);
+      }
+      pts.push([x, 0]); pts.push([xmax, 0]); return pts;
+    };
+    const cv = SB.canvas("cv-mos", (ctx, w, h, self) => {
+      const P = pal(), c = calc();
+      const top = 14, Emax = 4.6, Emin = -3.4, s = (h - top - 30) / (Emax - Emin), Y = (E) => top + (Emax - E) * s;
+      const xg = w * 0.2, xo = w * 0.34, xR = w - 12, xmax = 2.0 * c.Wdm, X = (x) => xo + ((xR - xo) * x) / xmax;
+      const EFg = -c.VG, Vox = c.VG - c.VFB - c.psi;
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = P.accent; ctx.fillRect(10, Y(EFg), xg - 10, h - 20 - Y(EFg)); ctx.restore();
+      line(ctx, [[10, Y(EFg)], [xg, Y(EFg)]], P.accent, 2.6);
+      ctx.save(); ctx.globalAlpha = 0.1; ctx.fillStyle = P.text; ctx.fillRect(xg, top, xo - xg, h - top - 20); ctx.restore();
+      const Ecs = c.Ec - c.psi;
+      line(ctx, [[xg, Y(Ecs + 3.1 - Vox)], [xo, Y(Ecs + 3.1)]], P.dim, 2);
+      line(ctx, [[xg, Y(Ecs - EG - 4.8 - Vox)], [xo, Y(Ecs - EG - 4.8)]], P.dim, 2);
+      const pr = profile(c, xmax);
+      line(ctx, pr.map(([x, p]) => [X(x), Y(c.Ec - p)]), P.text, 2.6); line(ctx, pr.map(([x, p]) => [X(x), Y(c.Ev - p)]), P.text, 2.6);
+      line(ctx, pr.map(([x, p]) => [X(x), Y(c.Ei - p)]), P.faint, 1.2, [3, 4]);
+      line(ctx, [[xo, Y(0)], [xR, Y(0)]], P.accent2, 2, [7, 4]);
+      if (c.psi > c.phiF) { const n = Math.min(14, Math.round(Math.log10(c.ns + 1) - 8) * 2); ctx.fillStyle = P.accent; for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(xo + 6 + (i % 7) * 7, Y(Ecs) - 6 - Math.floor(i / 7) * 7, 3, 0, 7); ctx.fill(); } }
+      if (c.psi < -2 * VT0) { ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(xo + 6 + i * 7, Y(c.Ev - c.psi) + 7, 3, 0, 7); ctx.stroke(); } }
+      SB.label(ctx, "게이트", (10 + xg) / 2, h - 10, { size: 11, bold: true }); SB.label(ctx, "SiO₂", (xg + xo) / 2, h - 10, { size: 11, bold: true }); SB.label(ctx, "p-Si", (xo + xR) / 2, h - 10, { size: 11, bold: true });
+      SB.label(ctx, "E_c", xR - 14, Y(c.Ec) - 10, { size: 10, color: P.dim }); SB.label(ctx, "E_i", xR - 48, Y(c.Ei) - 9, { size: 10, color: P.dim }); SB.label(ctx, "E_F", xR - 14, Y(0) + 10, { size: 10, color: P.accent2 });
+      SB.label(ctx, `깊이 0–${fmtLen(xmax)}`, xR - 4, top + 8, { align: "right", size: 10, color: P.dim });
+      handle(ctx, (10 + xg) / 2, Y(EFg), P.accent, 11); self._h = [(10 + xg) / 2, Y(EFg)]; self._Y = [top, Emax, s];
+    }, { aspect: 0.6, minHeight: 300, maxHeight: 420 });
+    const cvq = SB.canvas("cv-mosq", (ctx, w, h) => {
+      const P = pal(), c = calc(), xs = []; for (let i = 0; i <= 300; i++) xs.push(-0.4 + (1.7 * i) / 300);
+      const ch = SB.chart(ctx, { x: 62, y: 14, w: w - 76, h: h - 58 }, { x: [-0.4, 1.3], y: [1e-9, 1e-4], logY: true, yFmt: logFmt, xLabel: "표면 전위 ψs (V)", yLabel: "|Qs| (C/cm²)",
+        series: [{ data: xs.map((p) => [p, Math.abs(Solid.mosQs(p, c.Na))]), color: P.accent, width: 2.4 }],
+        vlines: [{ x: 0, color: P.faint, label: "평탄 띠" }, { x: c.phiF, color: P.dim, label: "φF", row: 1 }, { x: 2 * c.phiF, color: P.warn, label: "2φF", row: 2 }],
+        bands: [{ x0: -0.4, x1: 0, color: SB.color("accent-2-soft") }, { x0: 2 * c.phiF, x1: 1.3, color: SB.color("accent-soft") }] });
+      SB.label(ctx, "축적", ch.X(-0.2), ch.box.y + ch.box.h - 12, { size: 11, color: P.dim }); SB.label(ctx, "공핍", ch.X(c.phiF * 0.5), ch.box.y + ch.box.h - 12, { size: 11, color: P.dim }); SB.label(ctx, "강반전", ch.X(Math.min(1.2, 2 * c.phiF + 0.15)), ch.box.y + ch.box.h - 12, { size: 11, color: P.dim });
+      handle(ctx, ch.X(SB.clamp(c.psi, -0.4, 1.3)), ch.Y(SB.clamp(Math.abs(c.Qs), 1e-9, 1e-4)), P.accent, 7);
+    }, { aspect: 0.48, minHeight: 210, maxHeight: 290 });
+    function draw() {
+      const c = calc(); cv.redraw(); cvq.redraw();
+      SB.stat("mos-fbv", c.VFB.toFixed(3) + " V");
+      SB.stat("mos-psi", `${c.psi.toFixed(3)} V (${(2 * c.phiF).toFixed(3)})`);
+      const stt = Math.abs(c.psi) < 0.003 ? "평탄 띠" : c.psi < 0 ? "축적" : c.psi < c.phiF ? "공핍" : c.psi < 2 * c.phiF ? "약반전" : "강반전";
+      SB.stat("mos-st", stt);
+      SB.stat("mos-q", `${sci(Math.abs(c.Qs), 2)} C/cm² / ${c.ns > 1e6 ? sci(c.ns, 1) + " cm⁻²" : "—"}`);
+      if (st.chal) {
+        if (Math.abs(c.psi - 2 * c.phiF) < 0.005) { st.done = true; }
+        SB.stat("mos-ch", st.done ? `✔ V<sub>T</sub> ≈ ${c.VG.toFixed(3)} V (식: 공핍 근사 ${c.VTd.toFixed(3)}, 정확 ${c.VTx.toFixed(3)})` : "ψs = 2φF ± 5 mV를 만들어라");
+      } else SB.stat("mos-ch", `V<sub>T</sub> = ${c.VTd.toFixed(3)} V (공핍 근사)`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "g", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "g") return; const [top, Emax, s] = cv._Y, E = Emax - (y - top) / s; gV.set(SB.clamp(Number((-E).toFixed(3)), -2, 3), true); draw(); },
+    });
+    $("mos-fb").addEventListener("click", () => { gV.set(Number(calc().VFB.toFixed(3)), true); draw(); });
+    $("mos-goal").addEventListener("click", () => { st.chal = true; st.done = false; gV.set(Number((calc().VFB + 0.1).toFixed(3)), true); draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- tangle: 문턱 전압 */
+  SB.tangle("tg-vt", (v) => {
+    const Na = 10 ** v.la, Cox = eox / (v.t * 1e-7), pf = VT0 * Math.log(Na / NI), pms = -(0.562 + pf);
+    const wd = Math.sqrt((2 * es * 2 * pf) / (qe * Na)), qd = Math.sqrt(2 * es * qe * Na * 2 * pf) / Cox;
+    return { pf: pf.toFixed(3) + " V", pms: pms.toFixed(3) + " V", wd: fmtLen(wd), qd: qd.toFixed(3) + " V", vt: (pms + 2 * pf + qd).toFixed(3) + " V" };
+  }, { fmt: { la: (x) => p10(x) + " cm⁻³" } });
+})();
+</script>
+</body>
+</html>
