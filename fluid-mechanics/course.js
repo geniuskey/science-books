@@ -76,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "운동량",
       "검사 체적"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "differential-analysis",
@@ -254,9 +253,21 @@ SB.registerCourse({
    "steps": 4,
    "predicts": 4,
    "hero": 1
+  },
+  "control-volume": {
+   "problems": 17,
+   "examples": 8,
+   "sims": 5,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
   }
  },
- "published": 4,
+ "published": 5,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
