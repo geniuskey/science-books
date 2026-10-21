@@ -66,7 +66,7 @@ SB.registerCatalog({
   {
    "id": "modern-physics",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "modern-physics/course.json",
    "code": "MP",
    "title": "현대물리학",
@@ -115,7 +115,7 @@ SB.registerCatalog({
    "id": "fluid-mechanics",
    "code": "FM",
    "field": "mechanics",
-   "status": "writing",
+   "status": "published",
    "manifest": "fluid-mechanics/course.json",
    "title": "유체역학",
    "en": "Fluid Mechanics",

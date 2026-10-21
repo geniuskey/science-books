@@ -5,7 +5,7 @@ SB.registerCourse({
  "en": "Modern Physics",
  "field": "physics",
  "level": "대학 2학년 · 반도체 기초",
- "status": "writing",
+ "status": "published",
  "description": "광자와 물질파, 슈뢰딩거 방정식, 양자 우물과 터널링, 수소 원자와 스핀, 양자 통계, 분자 결합에서 에너지 띠와 LED·레이저까지 — 반도체 소자와 공정을 떠받치는 양자역학을 직접 풀고 만지며 익히는 인터랙티브 교과서.",
  "accent": {
   "light": "#6d28d9",

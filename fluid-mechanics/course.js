@@ -5,7 +5,7 @@ SB.registerCourse({
  "en": "Fluid Mechanics",
  "field": "mechanics",
  "level": "대학 2–3학년 · 공학 유체역학",
- "status": "writing",
+ "status": "published",
  "description": "유체의 성질과 정역학, 베르누이 식, 검사 체적 해석, 나비에–스토크스와 퍼텐셜 유동, 차원 해석, 관 유동과 무디 선도, 경계층과 항력·양력, 개수로·압축성 유동, 펌프까지 — 흐름을 직접 그리고 흘려 보며 익히는 인터랙티브 공학 교과서.",
  "accent": {
   "light": "#0b7285",
