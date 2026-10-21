@@ -1,0 +1,270 @@
+/* 생성 파일 — course.json을 고치고 python3 tools/build.py 를 실행하세요. */
+SB.registerCourse({
+ "id": "electromagnetics",
+ "title": "전자기학",
+ "en": "Electromagnetics",
+ "field": "physics",
+ "level": "대학 2–3학년 · 반도체 기초",
+ "status": "writing",
+ "description": "벡터 해석에서 출발해 정전기장과 유전체, 경계값 문제, 전류와 정자기장, 전자기 유도, 맥스웰 방정식, 평면파와 박막 반사, 전송선과 신호 무결성, 도파관, 복사, 수치 전자기학까지 — 커패시터·배선·플라스마 장비·박막 측정 속 전기장과 자기장을 직접 그리고 풀며 익히는 인터랙티브 교과서.",
+ "accent": {
+  "light": "#be123c",
+  "dark": "#fb7185",
+  "light2": "#1d4ed8",
+  "dark2": "#60a5fa"
+ },
+ "mark": "<path d=\"M5 16c3-6 6-6 8.5 0s5.5 6 8.5 0 4-4 5-2\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"16\" cy=\"16\" r=\"10\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.4\" stroke-dasharray=\"2.5 2.5\"/><path d=\"M16 4v4M16 24v4\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>",
+ "parts": [
+  {
+   "title": "제1부 정전기학",
+   "chapters": [
+    {
+     "slug": "vector-analysis",
+     "num": "01",
+     "title": "벡터 해석",
+     "en": "Vector Analysis",
+     "desc": "직교·원통·구 좌표계, 선·면·부피 적분, 기울기·발산·회전의 뜻, 발산 정리와 스토크스 정리, 라플라시안, 헬름홀츠 정리와 디랙 델타 — 장(field)을 읽는 언어.",
+     "tags": [
+      "발산",
+      "회전"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "electrostatics",
+     "num": "02",
+     "title": "정전기장",
+     "en": "Electrostatic Fields",
+     "desc": "쿨롱 법칙과 중첩, 연속 전하 분포, 가우스 법칙(적분형·미분형), 정전 퍼텐셜과 등전위면, 전기 쌍극자와 다중극 전개, 정전 에너지와 에너지 밀도 — 정전기 방전(ESD)과 웨이퍼 대전.",
+     "tags": [
+      "가우스 법칙",
+      "전위"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "conductors-dielectrics",
+     "num": "03",
+     "title": "도체와 유전체",
+     "en": "Conductors and Dielectrics",
+     "desc": "정전 평형의 도체와 차폐, 분극과 속박 전하, 전기 변위 D와 유전율, 경계 조건, 정전 용량(평행판·동축·구), 유전체 속 에너지와 힘, 절연 파괴 — MIM·DRAM 커패시터와 high-k의 등가 산화막 두께.",
+     "tags": [
+      "유전율",
+      "정전 용량"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "boundary-value",
+     "num": "04",
+     "title": "경계값 문제",
+     "en": "Boundary-Value Problems",
+     "desc": "푸아송·라플라스 방정식과 유일성 정리, 영상법, 직각·원통·구 좌표 변수 분리, 르장드르 급수, 유한 차분과 이완법 — TCAD 푸아송 풀이와 배선 기생 용량 추출.",
+     "tags": [
+      "라플라스 방정식",
+      "영상법"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제2부 전류와 정자기학",
+   "chapters": [
+    {
+     "slug": "steady-currents",
+     "num": "05",
+     "title": "정상 전류",
+     "en": "Steady Electric Currents",
+     "desc": "전류 밀도와 연속 방정식, 점형 옴의 법칙, 전하 이완 시간, 저항 계산(면저항·퍼짐 저항·비아), 줄 열과 전류 밀집, 정전기장과의 쌍대성, 일렉트로마이그레이션과 블랙 식 — 배선 신뢰성.",
+     "tags": [
+      "전류 밀도",
+      "면저항"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "magnetostatics",
+     "num": "06",
+     "title": "정자기장",
+     "en": "Static Magnetic Fields",
+     "desc": "로런츠 힘과 홀 효과, 비오–사바르 법칙, 앙페르 법칙(적분형·미분형), 자기 벡터 퍼텐셜, 자기 쌍극자, 자기 선속과 인덕턴스(동축·평행선·나선) — 온칩 인덕터와 전자빔 편향.",
+     "tags": [
+      "비오–사바르",
+      "앙페르 법칙"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "magnetic-materials",
+     "num": "07",
+     "title": "자성체와 자기 회로",
+     "en": "Magnetic Materials and Circuits",
+     "desc": "자화와 속박 전류, 자기장 세기 H와 투자율, 경계 조건, 자기 회로와 릴럭턴스, 히스테리시스와 손실, 자기 에너지와 힘, 영구 자석 — 마그네트론 스퍼터링과 자기 차폐.",
+     "tags": [
+      "투자율",
+      "자기 회로"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제3부 시간에 따라 변하는 장",
+   "chapters": [
+    {
+     "slug": "induction",
+     "num": "08",
+     "title": "전자기 유도",
+     "en": "Electromagnetic Induction",
+     "desc": "패러데이 법칙과 렌츠 법칙, 운동 기전력, 자기·상호 인덕턴스, 자기 에너지, 와전류와 유도 가열, 변압기 — ICP 플라스마 코일과 와전류 막두께 측정.",
+     "tags": [
+      "패러데이 법칙",
+      "인덕턴스"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "maxwell-equations",
+     "num": "09",
+     "title": "맥스웰 방정식",
+     "en": "Maxwell's Equations",
+     "desc": "변위 전류와 맥스웰 방정식의 완성, 경계 조건, 스칼라·벡터 퍼텐셜과 게이지, 지연 퍼텐셜, 페이저 표기, 포인팅 정리와 전자기 운동량 — 준정적 근사가 깨지는 순간.",
+     "tags": [
+      "변위 전류",
+      "포인팅 벡터"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "plane-waves",
+     "num": "10",
+     "title": "평면파",
+     "en": "Uniform Plane Waves",
+     "desc": "파동 방정식과 균일 평면파, 고유 임피던스, 손실 매질과 손실 탄젠트, 양도체와 표피 깊이, 편광, 위상·군속도와 분산, 플라스마 속의 파동과 차단 — 배선 표피 효과와 플라스마 밀도.",
+     "tags": [
+      "표피 깊이",
+      "편광"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "reflection",
+     "num": "11",
+     "title": "반사와 투과",
+     "en": "Reflection and Transmission",
+     "desc": "수직 입사와 정재파, 다층 박막과 전달 행렬, 반사 방지막, 사입사의 프레넬 식, 브루스터 각, 전반사와 소산파, 엘립소메트리 — 박막 두께 측정과 BARC.",
+     "tags": [
+      "프레넬 식",
+      "박막"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제4부 전송선과 고주파",
+   "chapters": [
+    {
+     "slug": "transmission-lines",
+     "num": "12",
+     "title": "전송선",
+     "en": "Transmission Lines",
+     "desc": "분포 정수 모형과 전신 방정식, 특성 임피던스와 전파 상수, 반사 계수와 정재파비, 입력 임피던스, 스미스 차트, 임피던스 정합(L 회로·스터브·λ/4) — 플라스마 장비의 RF 정합기.",
+     "tags": [
+      "특성 임피던스",
+      "스미스 차트"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "signal-integrity",
+     "num": "13",
+     "title": "과도 응답과 신호 무결성",
+     "en": "Transients and Signal Integrity",
+     "desc": "계단파의 반사와 바운스 도표, TDR, RC 배선과 LC 선로의 경계, 엘모어 지연과 리피터, 손실 선로와 아이 패턴, 누화, 전원망 임피던스 — 칩·패키지·HBM 배선.",
+     "tags": [
+      "TDR",
+      "누화"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "waveguides",
+     "num": "14",
+     "title": "도파관과 공진기",
+     "en": "Waveguides and Resonators",
+     "desc": "평행판과 사각 도파관의 TE·TM 모드, 차단 주파수와 분산, 도파관 손실, 공동 공진기와 Q, 유전체 슬랩·광섬유 도파 — 마이크로파 플라스마와 실리콘 포토닉스.",
+     "tags": [
+      "TE·TM 모드",
+      "차단 주파수"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "radiation",
+     "num": "15",
+     "title": "복사와 안테나",
+     "en": "Radiation and Antennas",
+     "desc": "헤르츠 쌍극자의 근거리·원거리장, 복사 저항과 지향성, 반파장 다이폴, 배열 안테나와 빔 조향, 프리스 전송 식, 전자파 간섭(EMI)과 차폐 — 칩·보드의 의도치 않은 안테나.",
+     "tags": [
+      "복사 패턴",
+      "EMI"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제5부 계산",
+   "chapters": [
+    {
+     "slug": "computational-em",
+     "num": "16",
+     "title": "수치 전자기학",
+     "en": "Computational Electromagnetics",
+     "desc": "유한 차분법과 수렴, 유한 요소법의 생각, FDTD와 이 격자·쿠랑 조건·흡수 경계, 모멘트 법과 정전 용량 추출, RCWA 개요 — TCAD·기생 추출·리소그래피 시뮬레이션의 속.",
+     "tags": [
+      "FDTD",
+      "유한 요소"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "부록",
+   "appendix": true,
+   "chapters": [
+    {
+     "slug": "formulas-data",
+     "num": "A",
+     "title": "공식과 물성 자료",
+     "en": "Formulas and Material Data",
+     "desc": "좌표계별 벡터 연산 공식, 대표 구조의 정전 용량·인덕턴스·특성 임피던스, 반도체 공정 재료의 유전율·전도도·투자율·굴절률을 계산기와 함께 찾는다.",
+     "tags": [
+      "부록",
+      "데이터"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "glossary",
+     "num": "B",
+     "title": "용어집과 종합 문제",
+     "en": "Glossary and Review",
+     "desc": "핵심 용어를 검색하고 장별 종합 문제로 실력을 점검한다.",
+     "tags": [
+      "부록",
+      "정리"
+     ],
+     "status": "planned"
+    }
+   ]
+  }
+ ],
+ "stats": {},
+ "published": 0,
+ "total": 18,
+ "url": "https://science.euiyun.com/electromagnetics/"
+});
