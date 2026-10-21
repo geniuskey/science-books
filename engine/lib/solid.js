@@ -354,7 +354,7 @@
   /** 셰러 식: 결정립 크기 D = Kλ/(β cosθ). beta: 반치폭(2θ, °), tth: 2θ(°) → nm */
   Solid.scherrer = (beta, tth, lambda = Solid.const.CuKa1, K = 0.9) => (K * lambda) / (((beta * Math.PI) / 180) * Math.cos((tth * Math.PI) / 360));
   /** Si₁₋ₓGeₓ 격자 상수(nm) — 데즈뮤크스(Dismukes 1964) 2차식 */
-  Solid.aSiGe = (x) => 0.54310 + 0.01992 * x + 0.0002733 * x * x;
+  Solid.aSiGe = (x) => 0.54310 + 0.01992 * x + 0.002733 * x * x;
 
   /* ------------------------------------------------------------ 결합과 탄성 */
   /** 레너드–존스: U(r) = 4ε[(σ/r)¹² − (σ/r)⁶] */
