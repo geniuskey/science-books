@@ -49,7 +49,7 @@ SB.registerCatalog({
    "id": "general-physics",
    "code": "GP",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "general-physics/course.json",
    "title": "일반물리학",
    "en": "General Physics",
