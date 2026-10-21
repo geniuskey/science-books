@@ -1,0 +1,1603 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>유체 정역학 · 유체역학 · SciBook</title>
+<meta name="description" content="한 점의 압력과 정수압 분포, 절대·계기 압력, 기압계와 표준 대기, 마노미터, 잠긴 평면·곡면에 작용하는 정수력과 압력 중심, 부력과 메타센터 안정성, 가속·회전하는 탱크를 직접 끌고 기울이며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/fluid-statics.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="유체 정역학 · 유체역학 · SciBook">
+<meta property="og:description" content="한 점의 압력과 정수압 분포, 절대·계기 압력, 기압계와 표준 대기, 마노미터, 잠긴 평면·곡면에 작용하는 정수력과 압력 중심, 부력과 메타센터 안정성, 가속·회전하는 탱크를 직접 끌고 기울이며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/fluid-statics.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "유체 정역학 · 유체역학 · SciBook", "headline": "02 유체 정역학", "url": "https://science.euiyun.com/fluid-mechanics/chapters/fluid-statics.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "한 점의 압력과 정수압 분포, 절대·계기 압력, 기압계와 표준 대기, 마노미터, 잠긴 평면·곡면에 작용하는 정수력과 압력 중심, 부력과 메타센터 안정성, 가속·회전하는 탱크를 직접 끌고 기울이며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 2, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "02 유체 정역학", "item": "https://science.euiyun.com/fluid-mechanics/chapters/fluid-statics.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+<style>
+  .fs-water { fill: rgba(60, 140, 220, 0.24); }
+  .fs-oil { fill: rgba(225, 170, 40, 0.42); }
+  .fs-hg { fill: rgba(150, 155, 165, 0.85); }
+  .fs-solid { fill: var(--surface); stroke: var(--text-dim); stroke-width: 1.5; }
+  .fs-wall { stroke: var(--text-dim); stroke-width: 3; fill: none; }
+</style>
+</head>
+<body data-chapter="fluid-statics">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="fluid-properties">
+    <div class="eyebrow">Chapter 02</div>
+    <h1>유체 정역학</h1>
+    <p class="lead">댐의 수문은 수천 톤의 힘을 견디고, 강철 바지선은 물 위에 뜨며, 돌아가는 원심 분리기 속 액면은 포물면이 된다. 모두 <strong>흐르지 않는</strong>(또는 통째로 움직이는) 유체의 이야기다. 정지 유체에는 전단 응력이 없으므로 유체가 벽에 주는 힘은 오직 <em>압력</em>뿐이고, 그 압력은 중력 방향의 깊이만으로 정해진다. 아래 탐침을 끌어 모양이 제각각인 용기 속을 돌아다녀 보라 — 같은 깊이라면 압력계 바늘은 똑같은 값을 가리킨다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">탐침(검은 점)을 끌어 보세요</span><div class="hero-ctrl"><button class="btn" id="hero-auto" type="button">자동 탐사</button></div></div>
+    <ul class="objectives">
+      <li>한 점의 압력이 방향과 무관함(파스칼)을 보이고, 정수압 기본 방정식 \(dp/dz = -\rho g\)를 유도해 절대·계기·진공 압력을 구별한다.</li>
+      <li>기압계와 압축성 대기(등온·표준 대기)로 고도에 따른 대기압을 계산한다.</li>
+      <li>U자관·차압·경사·다중 유체 마노미터를 "내려가면 더하고 올라가면 뺀다"는 규칙으로 해석한다.</li>
+      <li>잠긴 평면에 작용하는 정수력 \(F = p_c A\)와 압력 중심 \(y_R = y_c + I_{xc}/(y_c A)\)를 구하고, 곡면 힘을 수평·수직 성분으로 분해한다.</li>
+      <li>아르키메데스 원리와 메타센터 높이 \(\overline{GM}\)로 부양체의 안정성을 판단하고, 직선 가속·회전하는 용기 속 유체의 압력장과 자유 표면을 구한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="pressure">
+    <h2>한 점의 압력과 정수압 분포</h2>
+    <p>1장에서 유체를 "아무리 작은 전단 응력에도 계속 변형하는 물질"로 정의했다. 거꾸로 말하면 <strong>정지해 있는 유체 속에는 전단 응력이 없다</strong>. 그러면 유체 요소의 어느 면에 작용하는 응력도 그 면에 수직인 성분만 남고, 이를 <span class="term">압력</span><span class="en">(pressure)</span>이라 한다: \(p = \lim_{\delta A\to 0} \delta F_n/\delta A\). 단위는 Pa(= N/m²)이며 공학에서는 kPa, MPa, bar(= 100 kPa), atm(= 101.325 kPa)도 흔히 쓴다.</p>
+
+    <h3>파스칼 원리: 한 점의 압력은 방향이 없다</h3>
+    <p>압력이 "면에 수직인 힘"이라면 면의 방향에 따라 값이 달라지지 않을까? 아래처럼 단위 폭의 아주 작은 쐐기 요소를 잘라 힘의 평형을 쓰면 답이 나온다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="쐐기 모양 유체 요소의 힘 평형으로 압력이 방향과 무관함을 보이는 그림">
+        <defs><marker id="fsA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fsB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <path d="M250,230 L550,230 L250,70 Z" class="fs-water" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t" x="390" y="252">δx</text><text class="t" x="222" y="155">δz</text><text class="t" x="410" y="128">δs</text>
+        <path d="M505,230 A45,45 0 0 0 510,209" class="s-line"/><text class="t-dim" x="470" y="222">θ</text>
+        <g class="s-axis"><line x1="60" y1="270" x2="110" y2="270"/><line x1="60" y1="270" x2="60" y2="220"/></g><text class="t-mono" x="114" y="274">x</text><text class="t-mono" x="55" y="214">z</text>
+        <g data-step="2">
+          <line x1="175" y1="150" x2="245" y2="150" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsA)"/><text class="t-acc" x="120" y="140">pₓ δz</text>
+          <line x1="400" y1="295" x2="400" y2="236" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsA)"/><text class="t-acc" x="410" y="288">p_z δx</text>
+          <line x1="437" y1="81" x2="404" y2="145" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsA)"/><text class="t-acc" x="445" y="80">pₙ δs</text>
+          <line x1="340" y1="170" x2="340" y2="212" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#fsB)"/><text class="t" x="290" y="200" style="fill:var(--accent-2)">½ρg δx δz</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="575" y="80">Σx: pₓ δz = pₙ δs sinθ</text>
+          <text class="t-dim" x="575" y="102">δs sinθ = δz → pₓ = pₙ</text>
+          <text class="t" x="575" y="140">Σz: p_z δx = pₙ δs cosθ + ½ρg δx δz</text>
+          <text class="t-dim" x="575" y="162">δs cosθ = δx → p_z = pₙ + ½ρg δz</text>
+          <text class="t-acc" x="575" y="205">δz → 0 : pₓ = p_z = pₙ</text>
+          <text class="t-dim" x="575" y="228">θ가 무엇이든 성립한다</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>정지 유체 속에서 폭(종이에 수직) δy인 쐐기 요소를 생각한다. 빗면은 수평과 각 θ를 이룬다.</li>
+        <li>각 면에는 그 면에 수직인 압력 힘만 작용한다(전단 없음). 요소의 무게는 부피 ½δx δy δz에 비례한다.</li>
+        <li>두 방향의 평형식을 쓰고 요소를 한 점으로 줄이면(δz → 0) 무게 항이 사라져 pₓ = p_z = pₙ: 압력은 방향과 무관한 <b>스칼라</b>다.</li>
+      </ol>
+      <figcaption>한 점의 압력이 등방적임을 보이는 쐐기 요소. 무게는 길이의 3제곱, 압력 힘은 2제곱으로 줄어들기 때문에 극한에서 무게가 빠진다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">파스칼 원리</span>
+      <p>정지 유체 속 한 점의 압력은 모든 방향으로 같다. 또한 밀폐된 정지 유체의 한 곳에 더한 압력 변화는 유체의 모든 점에 그대로 전달된다(유압 잭·브레이크의 원리).</p>
+    </div>
+
+    <h3>정수압 기본 방정식</h3>
+    <p>압력이 한 점에서는 방향이 없지만, 점에서 점으로는 변할 수 있다. 직육면체 요소에 작용하는 압력 힘과 무게의 평형을 쓰면 압력이 공간에서 어떻게 변하는지 알 수 있다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 320" role="img" aria-label="직육면체 유체 요소에 작용하는 압력 힘과 무게로부터 정수압 방정식을 유도하는 그림">
+        <defs><marker id="fsC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fsD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <g data-step="4"><g stroke="var(--accent)" stroke-dasharray="5 5" opacity=".45"><line x1="30" y1="60" x2="420" y2="60"/><line x1="30" y1="120" x2="420" y2="120"/><line x1="30" y1="200" x2="420" y2="200"/><line x1="30" y1="260" x2="420" y2="260"/></g><text class="t-dim" x="30" y="52">등압면은 수평면</text></g>
+        <rect x="220" y="90" width="160" height="140" class="fs-water" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <circle cx="300" cy="160" r="4" fill="var(--text)"/><text class="t" x="308" y="156">p (중심)</text>
+        <text class="t" x="292" y="250">δx</text><text class="t" x="196" y="165">δz</text>
+        <g class="s-axis"><line x1="60" y1="295" x2="110" y2="295"/><line x1="60" y1="295" x2="60" y2="245"/></g><text class="t-mono" x="114" y="299">x</text><text class="t-mono" x="55" y="239">z</text>
+        <g data-step="2">
+          <line x1="300" y1="40" x2="300" y2="86" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsC)"/><text class="t-acc" x="310" y="40">(p + ∂p/∂z·δz/2) δx δy</text>
+          <line x1="300" y1="290" x2="300" y2="234" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsC)"/><text class="t-acc" x="310" y="300">(p − ∂p/∂z·δz/2) δx δy</text>
+          <line x1="150" y1="130" x2="216" y2="130" stroke="var(--accent)" stroke-width="2" marker-end="url(#fsC)"/>
+          <line x1="450" y1="130" x2="384" y2="130" stroke="var(--accent)" stroke-width="2" marker-end="url(#fsC)"/>
+          <line x1="262" y1="165" x2="262" y2="212" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#fsD)"/><text class="t" x="232" y="226" style="fill:var(--accent-2)">ρg δx δy δz</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="470" y="110">Σz: −(∂p/∂z) δx δy δz − ρg δx δy δz = 0</text>
+          <text class="t-acc" x="470" y="140">∂p/∂z = −ρg</text>
+          <text class="t" x="470" y="175">Σx, Σy: ∂p/∂x = ∂p/∂y = 0</text>
+        </g>
+        <g data-step="4">
+          <text class="t-acc" x="470" y="220">dp/dz = −ρg = −γ</text>
+          <text class="t" x="470" y="248">ρ 일정: p = p₀ + ρg h</text>
+          <text class="t-dim" x="470" y="272">h: 기준면(p₀)에서 아래로 잰 깊이</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>정지 유체 속 크기 δx × δy × δz 직육면체 요소. 중심의 압력을 p라 한다.</li>
+        <li>압력이 위치에 따라 변하므로 윗면과 아랫면의 압력은 테일러 전개로 p ± (∂p/∂z)δz/2이다. 옆면 압력은 서로 같은 크기로 맞선다.</li>
+        <li>수직 방향 평형: 아랫면이 받는 위쪽 힘이 윗면보다 무게만큼 크다 → ∂p/∂z = −ρg. 수평 방향에는 체적력이 없으므로 압력이 변하지 않는다.</li>
+        <li>압력은 z만의 함수다. 비압축 유체라면 적분해서 p = p₀ + ρgh. 같은 유체 안에서 같은 높이의 점들(등압면)은 수평면을 이룬다.</li>
+      </ol>
+      <figcaption>정수압 기본 방정식의 유도. 벡터로 쓰면 \(\nabla p = \rho\vec g\): 압력은 중력 방향으로만 증가한다.</figcaption>
+    </figure>
+    <div class="formula">$$\frac{dp}{dz} = -\rho g \qquad\Longrightarrow\qquad p = p_0 + \rho g h \quad(\rho\ \text{일정})$$<div class="where">\(z\)는 위쪽이 +인 연직 좌표, \(h\)는 압력이 \(p_0\)인 기준면(보통 자유 표면)에서 아래로 잰 깊이. \(\gamma = \rho g\)를 <span class="term">비중량</span><span class="en">(specific weight)</span>이라 하며 물은 약 9.81 kN/m³이다. 압력을 \(p/\gamma\)로 나타낸 길이를 <span class="term">압력 수두</span><span class="en">(pressure head)</span>라 한다.</div></div>
+    <div class="tangle" id="tg-depth">
+      <p>비중 <span class="tn" data-var="sg" data-min="0.6" data-max="13.6" data-step="0.01">1.03</span>인 액체(ρ = <span class="tn-out" data-out="rho"></span>) 속 깊이 <span class="tn" data-var="h" data-min="0" data-max="200" data-step="0.5" data-unit=" m">10</span>에서 계기 압력은 \(\rho g h\) = <span class="tn-out" data-out="pg"></span>이다. 대기압이 <span class="tn" data-var="pa" data-min="80" data-max="105" data-step="0.5" data-unit=" kPa">101.5</span>이면 절대 압력은 <span class="tn-out" data-out="pabs"></span> — 이는 물기둥 <span class="tn-out" data-out="hw"></span>, 수은 기둥 <span class="tn-out" data-out="hhg"></span>의 압력과 같다. <span data-out="msg"></span></p>
+    </div>
+
+    <h3>절대 압력, 계기 압력, 진공 압력</h3>
+    <p>압력을 재는 기준이 둘 있다. 완전 진공(압력 0)을 기준으로 잰 값이 <span class="term">절대 압력</span><span class="en">(absolute pressure)</span>이고, 대부분의 압력계는 주위 대기압을 0으로 보고 그 차이를 가리키는데 이를 <span class="term">계기 압력</span><span class="en">(gage pressure)</span>이라 한다. 대기압보다 낮은 압력은 대기압과의 차이를 양수로 나타내 <span class="term">진공 압력</span><span class="en">(vacuum pressure)</span>이라 부른다.</p>
+    <div class="formula">$$p_\text{gage} = p_\text{abs} - p_\text{atm}, \qquad p_\text{vac} = p_\text{atm} - p_\text{abs}$$<div class="where">열역학 상태식(\(p = \rho RT\))과 증기압 비교에는 반드시 절대 압력을 쓴다. 정수력·마노미터 계산은 계기 압력으로 하면 대기압이 양쪽에서 상쇄되어 편하다. 단위 뒤에 abs·gage를 붙여(예: 250 kPa(gage)) 혼동을 막는다.</div></div>
+    <figure class="mini" id="mini-gauge">
+      <div class="mini-view"><canvas id="cv-gauge"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="gg-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>파란 핸들(측정 압력)과 주황 핸들(그 지역 대기압)을 끌어 보라. 같은 절대 압력 80 kPa도 해수면(101 kPa)에서는 진공 21 kPa이지만, 대기압이 70 kPa인 고산 지대에서는 계기 압력 +10 kPa이다.</figcaption>
+    </figure>
+    <div class="example" data-title="잠수부가 받는 압력">
+      <p>바닷물(ρ = 1025 kg/m³) 속 25.0 m 깊이에서 일하는 잠수부의 몸이 받는 계기 압력과 절대 압력을 구하라. 해면의 대기압은 101.325 kPa이다. 같은 계기 압력을 담수(1000 kg/m³)에서 얻으려면 몇 m 내려가야 하는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 비압축 정수압 분포 \(p = p_\text{atm} + \rho g h\). 계기 압력은 \(\rho g h\)만이다.</div>
+        <div class="step"><b>풀이</b> \(p_\text{gage} = (1025)(9.81)(25.0) = 2.514\times10^5\) Pa \(= 251.4\) kPa. \(p_\text{abs} = 101.3 + 251.4 = 352.7\) kPa — 대기압의 약 3.5배. 담수에서는 \(h = 251.4\times10^3/(1000\times9.81) = 25.6\) m.</div>
+        <div class="answer">p<sub>gage</sub> = 251 kPa, p<sub>abs</sub> = 353 kPa, 담수 25.6 m</div>
+        <div class="step"><b>검토</b> "물속 10 m마다 약 1 atm"이라는 잠수부의 어림셈과 맞는다(10.3 m의 물기둥 = 1 atm). 잠수병이 생기는 이유는 이 절대 압력에서 혈액에 녹아든 질소 때문이다.</div>
+      </details>
+    </div>
+
+    <h3>정수압 역설</h3>
+    <p>\(p = p_0 + \rho g h\)에는 용기의 모양이 들어 있지 않다. 그렇다면 바닥 넓이가 같고 물의 깊이가 같은 세 용기 — 위로 벌어진 것, 곧은 것, 위가 좁은 것 — 의 바닥은 같은 힘을 받을까? 물의 무게는 분명 다른데 말이다.</p>
+    <div class="predict" data-for="sim-paradox">
+      <p>바닥 넓이와 물의 깊이가 같은 세 용기가 있다. 물이 <b>바닥</b>에 작용하는 힘은?</p>
+      <div class="opts"><button class="opt">위로 벌어진 용기가 가장 크다(물이 가장 많다)</button><button class="opt">위가 좁은 용기가 가장 크다</button><button class="opt" data-correct>세 용기 모두 같다</button><button class="opt">물의 무게에 정비례한다</button></div>
+      <div class="quiz-exp">바닥 압력은 깊이 h만으로 정해지므로 바닥 힘 \(\rho g h A\)는 모두 같다. 물의 무게와의 차이는 비스듬한 벽이 떠맡는다 — 아래에서 벽에 작용하는 압력 화살표의 수직 성분을 보라.</div>
+    </div>
+    <div class="sim" id="sim-paradox">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>정수압 역설: 모양이 다른 세 용기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-paradox"></canvas><span class="hint">흰 핸들(수면)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>물 깊이 h <output id="pd-h-out"></output></span><input type="range" id="pd-h" min="0.2" max="2" step="0.01" value="1.2"></label>
+          <div class="ctrl"><span>액체</span><div class="seg" id="pd-fl"><button data-value="1000" class="on">물</button><button data-value="850">기름</button><button data-value="1260">글리세린</button></div></div>
+          <label class="check"><input type="checkbox" id="pd-arr" checked> 벽면 압력 화살표</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">바닥 힘 (셋 공통)</span><span class="v" id="pd-fb">—</span></div>
+        <div class="stat"><span class="k">액체 무게 A · B · C</span><span class="v" id="pd-w">—</span></div>
+        <div class="stat"><span class="k">벽의 수직력 B · C</span><span class="v" id="pd-wall">—</span></div>
+      </div>
+      <div class="sim-note">바닥 폭 1.0 m, 종이에 수직한 방향으로 1 m인 2차원 용기다. 해볼 것: ① 깊이를 2배로 하면 바닥 힘도 정확히 2배지만 B의 물 무게는 2배보다 훨씬 많이 는다. ② B(벌어진 용기)의 벽 화살표는 아래쪽 성분이 있어 벽이 물을 떠받치고, C(위가 좁은 용기)의 벽 화살표는 위쪽 성분이 있어 벽이 물에 들어 올려진다. ③ 어떤 경우에도 바닥 힘 + 벽의 수직력 = 물의 무게(용기 전체를 저울에 올리면 무게만큼만 잰다).</div>
+    </div>
+    <div class="callout warn"><strong>등압면 규칙의 조건</strong><p>"같은 높이 = 같은 압력"은 <b>같은 정지 유체로 이어져 있을 때</b>만 성립한다. 마노미터에서 수은 위쪽 한쪽에는 물, 다른 쪽에는 기름이 있다면 같은 높이라도 압력이 다르다. 또 유체가 흐르거나 가속하면(7절) 등압면이 수평이 아니다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="atmosphere">
+    <h2>대기압과 압축성 대기</h2>
+    <p>우리를 둘러싼 공기도 정지 유체이므로, 해수면의 대기압은 그 위 공기 기둥 전체의 무게다. 1643년 토리첼리는 수은을 채운 유리관을 접시에 거꾸로 세워 이 압력을 쟀다. 관 위쪽에는 수은 증기만 남고(압력 \(p_v\) ≈ 0), 관 속 수은 기둥의 무게가 대기압과 평형을 이룬다. 이것이 <span class="term">기압계</span><span class="en">(barometer)</span>다.</p>
+    <div class="formula">$$p_\text{atm} = \rho g h + p_v \;\approx\; \rho g h$$<div class="where">표준 대기압 101.325 kPa는 수은(13 595 kg/m³, 0 °C) 760 mm, 물 약 10.3 m에 해당한다. 물 기압계는 증기압(20 °C에서 2.34 kPa)을 무시할 수 없다.</div></div>
+    <figure class="mini" id="mini-baro">
+      <div class="mini-view"><canvas id="cv-baro"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>액체</span><div class="seg" id="bb-liq"><button data-value="hg" class="on">수은</button><button data-value="w">물</button><button data-value="et">에탄올</button></div></div>
+        <label class="ctrl"><span>대기압 <output id="bb-p-out"></output></span><input type="range" id="bb-p" min="60" max="105" step="0.5" value="101.5"></label>
+        <span class="readout" id="bb-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 대기압이 수은은 0.76 m, 물은 10 m가 넘게 밀어 올린다. 기둥 높이는 \(1/\rho\)에 비례하고, 관 꼭대기 공간의 압력은 그 액체의 증기압이다. 대기압을 줄여 높은 산 위의 기압계를 흉내 내 보라.</figcaption>
+    </figure>
+
+    <h3>고도에 따른 대기압</h3>
+    <p>공기의 밀도는 압력에 따라 변하므로 \(dp/dz = -\rho g\)를 적분할 때 \(\rho\)를 상수로 둘 수 없다. 이상 기체 \(\rho = p/(RT)\)를 넣으면</p>
+    <div class="formula">$$\frac{dp}{p} = -\frac{g}{R\,T(z)}\,dz$$</div>
+    <div class="compare">
+      <div><h4>등온 대기 \(T = T_0\)</h4><p>$$p = p_0\exp\!\left(-\frac{g z}{R T_0}\right)$$ \(H = RT_0/g\) ≈ 8.4 km(288 K)를 <span class="term">척도 높이</span><span class="en">(scale height)</span>라 한다. 성층권 하부(11–20 km, 216.65 K)는 실제로 거의 등온이다.</p></div>
+      <div><h4>표준 대기(대류권, 0–11 km)</h4><p>$$T = T_0 - \beta z,\quad p = p_0\left(1 - \frac{\beta z}{T_0}\right)^{g/(R\beta)}$$ \(T_0\) = 288.15 K, \(\beta\) = 0.0065 K/m, \(g/(R\beta)\) ≈ 5.26. 항공기 고도계와 성능 계산의 기준인 ISA다.</p></div>
+    </div>
+    <div class="tangle" id="tg-atm">
+      <p>고도 <span class="tn" data-var="z" data-min="0" data-max="20" data-step="0.1" data-unit=" km">3</span>에서 대기압은 비압축(밀도 1.225 kg/m³ 일정) 가정이면 <span class="tn-out" data-out="pi"></span>, 등온(288 K) 가정이면 <span class="tn-out" data-out="piso"></span>, 표준 대기로는 <span class="tn-out" data-out="pisa"></span>(기온 <span class="tn-out" data-out="T"></span>)이다. <span data-out="msg"></span></p>
+      <canvas id="cv-atm"></canvas>
+    </div>
+    <div class="example" data-title="에베레스트 정상의 기압">
+      <p>에베레스트 정상(8849 m)의 대기압을 (a) 공기 밀도가 해수면 값 1.225 kg/m³로 일정할 때, (b) 288.15 K 등온 대기일 때, (c) 표준 대기로 각각 구하라. 해수면 압력 101.325 kPa, R = 287 J/(kg·K).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 세 모형 모두 \(dp/dz = -\rho g\)에서 출발하되 \(\rho(z)\)의 가정만 다르다.</div>
+        <div class="step"><b>풀이</b> (a) \(p = 101.325 - (1.225)(9.81)(8849)/1000 = -5.0\) kPa — 음수! 밀도가 일정한 대기는 \(p_0/(\rho_0 g) = 8.43\) km에서 끝나 버린다. (b) \(gz/(RT_0) = (9.81)(8849)/[(287)(288.15)] = 1.050\), \(p = 101.325\,e^{-1.050} = 35.5\) kPa. (c) \(T = 288.15 - 0.0065(8849) = 230.6\) K, \(p = 101.325(230.6/288.15)^{5.259} = 31.4\) kPa.</div>
+        <div class="answer">(a) 불가능(−5.0 kPa) (b) 35.5 kPa (c) 31.4 kPa</div>
+        <div class="step"><b>검토</b> 실측 평균은 약 33.7 kPa(여름에 더 높다)로 (b)와 (c) 사이다. 기온이 높이 올라갈수록 내려가면 공기가 더 무거워져 압력이 더 빨리 준다. 물의 끓는점은 약 71 °C로 떨어진다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="manometer">
+    <h2>마노미터</h2>
+    <p>정수압 방정식은 압력 측정 장치를 바로 만들어 준다. 관 속 액주의 높이로 압력을 읽는 장치를 <span class="term">마노미터</span><span class="en">(manometer)</span>라 한다. 가장 단순한 <span class="term">피에조미터</span><span class="en">(piezometer)</span>는 용기에 세운 열린 관으로, 액면 높이 \(h\)가 곧 계기 압력 \(\rho g h\)다. 그러나 기체나 높은 압력에는 쓸 수 없어 무거운 액체를 담은 U자관을 쓴다.</p>
+    <div class="callout tip"><strong>마노미터를 푸는 단 하나의 규칙</strong><p>압력을 아는 점에서 출발해 관을 따라 걸어간다. 같은 유체 안에서 <b>아래로 \(h\)만큼 내려가면 \(+\rho g h\)</b>, <b>위로 올라가면 \(-\rho g h\)</b>. 수평으로 가는 것은 (같은 유체라면) 아무 변화가 없다. 압력을 알고 싶은 점에 도착할 때까지 더하고 뺀다.</p></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 320" role="img" aria-label="공기 탱크에 연결된 물·기름·수은 다중 유체 마노미터를 따라 압력을 더하고 빼는 과정">
+        <rect x="60" y="30" width="170" height="80" fill="rgba(160,160,170,.12)" stroke="var(--text-dim)" stroke-width="2"/>
+        <rect x="60" y="70" width="170" height="40" class="fs-water"/>
+        <text class="t" x="85" y="55">공기 p₁</text><text class="t-dim" x="90" y="95">물</text>
+        <rect x="190" y="110" width="16" height="20" class="fs-water"/>
+        <rect x="190" y="130" width="16" height="100" class="fs-oil"/>
+        <rect x="190" y="230" width="16" height="60" class="fs-hg"/>
+        <rect x="190" y="274" width="156" height="16" class="fs-hg"/>
+        <rect x="330" y="70" width="16" height="220" class="fs-hg"/>
+        <path d="M190,110 L190,290 L346,290 L346,30 M206,110 L206,274 L330,274 L330,30" class="fs-wall" style="stroke-width:2"/>
+        <text class="t-dim" x="152" y="185">기름</text><text class="t-dim" x="245" y="268">수은</text><text class="t-dim" x="352" y="26">대기 개방 p_atm</text>
+        <g class="s-line"><line x1="250" y1="70" x2="250" y2="130"/><line x1="244" y1="70" x2="256" y2="70"/><line x1="244" y1="130" x2="256" y2="130"/><line x1="250" y1="130" x2="250" y2="230"/><line x1="244" y1="230" x2="256" y2="230"/><line x1="380" y1="70" x2="380" y2="230"/><line x1="374" y1="70" x2="386" y2="70"/><line x1="374" y1="230" x2="386" y2="230"/></g>
+        <text class="t" x="258" y="104">h₁</text><text class="t" x="258" y="185">h₂</text><text class="t" x="388" y="155">h₃</text>
+        <g stroke="var(--text-faint)" stroke-dasharray="3 3"><line x1="206" y1="230" x2="372" y2="230"/></g>
+        <circle cx="150" cy="70" r="5" fill="var(--text)"/><text class="t" x="128" y="66">①</text>
+        <circle cx="198" cy="130" r="5" fill="var(--text)" data-step="2"/><text class="t" x="168" y="134" data-step="2">②</text>
+        <circle cx="198" cy="230" r="5" fill="var(--text)" data-step="3"/><text class="t" x="168" y="234" data-step="3">③</text>
+        <circle cx="338" cy="70" r="5" fill="var(--text)" data-step="4"/><text class="t" x="352" y="74" data-step="4">④</text>
+        <g data-only="2"><line x1="198" y1="70" x2="198" y2="126" stroke="var(--accent)" stroke-width="3"/></g>
+        <g data-only="3"><line x1="198" y1="134" x2="198" y2="226" stroke="var(--accent)" stroke-width="3"/></g>
+        <g data-only="4"><path d="M198,234 L198,282 L338,282 L338,74" stroke="var(--accent)" stroke-width="3" fill="none"/></g>
+        <text class="t" x="430" y="60">① 탱크 속 공기–물 경계: p₁</text>
+        <g data-step="2"><text class="t" x="430" y="100">② 물속 h₁ 내려감: p₂ = p₁ + ρ_w g h₁</text></g>
+        <g data-step="3"><text class="t" x="430" y="140">③ 기름 속 h₂ 내려감: p₃ = p₂ + ρ_o g h₂</text></g>
+        <g data-step="4"><text class="t" x="430" y="180">④ 수은 속 h₃ 올라감: p₄ = p₃ − ρ_Hg g h₃</text>
+          <text class="t-acc" x="430" y="220">p₁ + ρ_w g h₁ + ρ_o g h₂ − ρ_Hg g h₃ = p_atm</text>
+          <text class="t-dim" x="430" y="246">수은의 U자 바닥을 가로지르는 구간은 같은 유체라</text><text class="t-dim" x="430" y="264">높이 변화만 따지면 된다.</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>공기 탱크에 물·기름·수은이 차례로 담긴 다중 유체 마노미터. 탱크 속 공기의 압력은 높이에 따라 거의 변하지 않는다(기체의 ρ가 작다).</li>
+        <li>①에서 물을 따라 h₁ 내려가면 압력이 ρ_w g h₁ 늘어난다.</li>
+        <li>물–기름 경계 ②에서 기름을 따라 다시 h₂ 내려가 기름–수은 경계 ③에 닿는다.</li>
+        <li>수은을 따라 U자 바닥을 지나 오른쪽 액면 ④까지 h₃ 올라가면 그만큼 뺀다. ④는 대기에 열려 있다.</li>
+      </ol>
+      <figcaption>다중 유체 마노미터를 따라 걷기. 예제 2.3의 장치이며 각 경계면이 이정표다.</figcaption>
+    </figure>
+    <div class="example" data-title="다중 유체 마노미터">
+      <p>위 그림에서 \(h_1\) = 0.15 m(물, 1000 kg/m³), \(h_2\) = 0.25 m(기름, 비중 0.88), \(h_3\) = 0.40 m(수은, 비중 13.6)이고 대기압은 100 kPa이다. 탱크 속 공기의 계기 압력과 절대 압력을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 그림의 경로식 \(p_1 + \rho_w g h_1 + \rho_o g h_2 - \rho_\text{Hg} g h_3 = p_\text{atm}\)을 \(p_1\)에 대해 푼다.</div>
+        <div class="step"><b>풀이</b> \(p_{1,\text{gage}} = g(\rho_\text{Hg} h_3 - \rho_w h_1 - \rho_o h_2) = 9.81\,[13600(0.40) - 1000(0.15) - 880(0.25)] = 9.81(5440 - 150 - 220) = 4.97\times10^4\) Pa.</div>
+        <div class="answer">p₁ = 49.7 kPa(gage) = 149.7 kPa(abs)</div>
+        <div class="step"><b>검토</b> 수은 기둥 0.40 m만으로는 53.4 kPa이지만, 물과 기름 기둥이 공기 쪽에서 같은 방향으로 밀어 주므로 공기 압력은 그보다 3.6 kPa 작다. 기체 기둥(공기)의 \(\rho g h\)는 약 1 Pa 수준이라 무시했다.</div>
+      </details>
+    </div>
+
+    <h3>차압 마노미터</h3>
+    <p>관로 두 점의 압력 차(예: 벤투리관·오리피스 유량계)를 잴 때는 U자관 양 끝을 두 점에 잇는다. 관 속 유체(밀도 \(\rho\))보다 무거운 마노미터 유체(\(\rho_m\))의 액면 차가 \(h\)이고, 점 B가 점 A보다 \(\Delta z\) 높으면 걸어가기 규칙으로</p>
+    <div class="formula">$$p_A - p_B = (\rho_m - \rho)\,g\,h + \rho g\,\Delta z$$<div class="where">관 속 유체가 기체면 \(\rho \ll \rho_m\)이라 \(p_A - p_B \approx \rho_m g h\). 관 속이 물이면 \(\rho_m - \rho\)를 써야 한다 — 수은–물 조합에서 이를 잊으면 8% 오차가 난다.</div></div>
+    <div class="predict" data-for="sim-mano">
+      <p>U자관 마노미터에 일정한 압력 차를 걸었다. 관의 <b>지름을 2배</b>로 바꾸면 액면 차 h는?</p>
+      <div class="opts"><button class="opt">1/2로 준다</button><button class="opt">1/4로 준다</button><button class="opt" data-correct>변하지 않는다</button><button class="opt">2배로 는다</button></div>
+      <div class="quiz-exp">정수압은 깊이만의 함수이므로 액면 차는 \(\Delta p/[(\rho_m-\rho)g]\)로 정해지고 관 굵기와 무관하다. 관이 굵으면 같은 h를 만들려고 더 많은 액체가 움직일 뿐이다.</div>
+    </div>
+    <div class="sim" id="sim-mano">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>U자관 차압 마노미터</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-mano"></canvas><span class="hint">흰 핸들(액면)을 끌면 그에 맞는 p<sub>A</sub>가 계산된다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>p<sub>A</sub> (gage) <output id="mn-pa-out"></output></span><input type="range" id="mn-pa" min="-20" max="60" step="0.1" value="12"></label>
+          <label class="ctrl"><span>p<sub>B</sub> (gage) <output id="mn-pb-out"></output></span><input type="range" id="mn-pb" min="-20" max="60" step="0.1" value="0"></label>
+          <label class="ctrl"><span>B의 높이 − A의 높이 Δz <output id="mn-dz-out"></output></span><input type="range" id="mn-dz" min="-0.4" max="0.4" step="0.01" value="0"></label>
+          <div class="ctrl"><span>마노미터 유체</span><div class="seg" id="mn-fm"><button data-value="13550" class="on">수은</button><button data-value="1590">사염화탄소</button><button data-value="998">물</button></div></div>
+          <div class="ctrl"><span>관 속(위쪽) 유체</span><div class="seg" id="mn-f1"><button data-value="1.2" class="on">공기</button><button data-value="998">물</button><button data-value="850">기름</button></div></div>
+          <label class="ctrl"><span>관 안지름 <output id="mn-d-out"></output></span><input type="range" id="mn-d" min="4" max="20" step="1" value="8"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">p<sub>A</sub> − p<sub>B</sub></span><span class="v" id="mn-dp">—</span></div>
+        <div class="stat"><span class="k">액면 차 h</span><span class="v" id="mn-h">—</span></div>
+        <div class="stat"><span class="k">(ρ<sub>m</sub>−ρ)gh + ρgΔz</span><span class="v" id="mn-chk">—</span></div>
+      </div>
+      <div class="sim-note">액면 옆의 숫자는 그 점의 계기 압력(kPa)이다. 해볼 것: ① 압력 차 10 kPa에서 마노미터 유체를 수은 → 사염화탄소 → 물로 바꾸면 h가 얼마나 커지는가? 작은 압력 차는 가벼운 액체로 재야 정밀하다. ② 관 속 유체를 공기에서 물로 바꾸면 같은 압력 차에서 h가 약간 커진다(\(\rho_m-\rho\) 효과). ③ 압력 차가 0이어도 Δz ≠ 0이고 관 속이 액체면 액면 차가 생긴다 — 높이 차의 정수압이다.</div>
+    </div>
+
+    <h3>경사 마노미터</h3>
+    <p>아주 작은 압력 차(환기 덕트, 풍동)는 액주 높이가 작아 읽기 어렵다. 관을 수평과 각 \(\theta\)로 눕히면 같은 높이 변화 \(h\)가 관을 따라 \(L = h/\sin\theta\)만큼 늘어나 눈금을 크게 읽을 수 있다.</p>
+    <div class="formula">$$p_1 - p_2 = \rho g L\sin\theta \qquad\left(\text{저장조 액면 강하까지 넣으면 } \rho g L\left(\sin\theta + \frac{a}{A}\right)\right)$$<div class="where">\(a\): 관 단면적, \(A\): 저장조 단면적. 보통 \(a/A \lesssim 0.01\)이다.</div></div>
+    <figure class="mini" id="mini-incl">
+      <div class="mini-view"><canvas id="cv-incl"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>압력 차 Δp <output id="ic-dp-out"></output></span><input type="range" id="ic-dp" min="0" max="400" step="5" value="150"></label>
+        <label class="ctrl"><span>기울기 θ <output id="ic-th-out"></output></span><input type="range" id="ic-th" min="5" max="90" step="1" value="20"></label>
+        <div class="ctrl"><span>액체</span><div class="seg" id="ic-fl"><button data-value="827" class="on">붉은 기름(0.827)</button><button data-value="998">물</button></div></div>
+        <span class="readout" id="ic-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>θ를 90°(수직)에서 10°로 눕히면 같은 압력 차의 눈금 길이가 약 5.8배(1/sin 10°)가 된다. 대신 관이 너무 누우면 액면이 길게 퍼져 경계를 읽기 어렵다.</figcaption>
+    </figure>
+    <div class="drill" id="drill-hydro" data-title="정수압 · 마노미터 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="plane">
+    <h2>잠긴 평면에 작용하는 정수력</h2>
+    <p>댐의 수문, 수조의 벽, 선박의 수밀 격벽을 설계하려면 두 가지가 필요하다: 정수압이 만드는 <b>합력의 크기</b>와 그 <b>작용점</b>. 평면 위의 모든 점에서 압력은 면에 수직이므로 합력도 면에 수직이고, 크기와 위치는 압력 분포를 적분해 얻는다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 320" role="img" aria-label="수평과 각 θ로 기울어져 잠긴 평판의 기호: 도심 깊이 h_c, 경사 좌표 y, 압력 중심과 합력">
+        <defs><marker id="fsE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="fsF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <path d="M20,40 L430,40 L430,300 L20,300 Z" class="fs-water"/>
+        <line x1="20" y1="40" x2="430" y2="40" stroke="var(--accent)" stroke-width="2"/><text class="t-dim" x="24" y="32">자유 표면 p = p_atm</text>
+        <line x1="80" y1="40" x2="391" y2="258" class="s-line" stroke-dasharray="6 4" marker-end="url(#fsF)"/><text class="t" x="396" y="272">y</text>
+        <line x1="227" y1="143" x2="350" y2="229" stroke="var(--text)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M130,40 A50,50 0 0 1 121,69" class="s-line"/><text class="t-dim" x="134" y="64">θ</text>
+        <text class="t" x="62" y="58">O</text>
+        <line x1="289" y1="40" x2="289" y2="186" stroke="var(--text-dim)" stroke-dasharray="3 3"/><text class="t" x="262" y="110">h_c</text>
+        <circle cx="289" cy="186" r="5" fill="var(--accent)"/><text class="t-acc" x="232" y="196">C</text>
+        <circle cx="305" cy="198" r="5" fill="var(--accent-2)"/><text class="t" x="310" y="216" style="fill:var(--accent-2);font-weight:700">CP</text>
+        <line x1="356" y1="126" x2="309" y2="193" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#fsE)"/><text class="t" x="360" y="120" style="fill:var(--accent-2);font-weight:700">F_R</text>
+        <text class="t-dim" x="120" y="118">y_c, y_R은 O에서</text><text class="t-dim" x="120" y="134">경사면을 따라 잰다</text>
+        <g transform="translate(470,0)">
+          <text class="t-dim" x="0" y="30">평판을 정면에서 본 모습</text>
+          <line x1="20" y1="60" x2="300" y2="60" class="s-axis"/><text class="t-mono" x="304" y="64">x</text>
+          <line x1="160" y1="50" x2="160" y2="300" class="s-axis" stroke-dasharray="4 3"/><text class="t-mono" x="166" y="298">y</text>
+          <path d="M160,110 C250,105 280,170 250,230 C225,280 110,285 80,235 C50,185 75,115 160,110 Z" class="f-acc-soft"/>
+          <rect x="70" y="168" width="200" height="10" fill="var(--accent)" opacity=".25"/><text class="t-dim" x="276" y="178">dA</text>
+          <circle cx="160" cy="190" r="5" fill="var(--accent)"/><text class="t-acc" x="100" y="196">C (도심)</text>
+          <circle cx="168" cy="206" r="5" fill="var(--accent-2)"/><text class="t" x="176" y="222" style="fill:var(--accent-2);font-weight:700">CP (압력 중심)</text>
+          <line x1="20" y1="190" x2="150" y2="190" stroke="var(--text-faint)" stroke-dasharray="2 3"/><text class="t-mono" x="22" y="184">y_c</text>
+        </g>
+      </svg>
+      <figcaption>잠긴 경사 평판. 압력은 깊이 \(h = y\sin\theta\)에 비례하므로 아래쪽이 더 세게 눌린다 — 그래서 압력 중심 CP는 언제나 도심 C보다 아래에 있다.</figcaption>
+    </figure>
+    <p>대기압은 평판의 양면에 똑같이 작용해 상쇄되므로 계기 압력 \(p = \rho g h = \rho g y\sin\theta\)만 적분한다.</p>
+    <div class="callout deep"><strong>유도: 합력과 압력 중심</strong>
+      <p>합력: \(F_R = \int_A p\,dA = \rho g\sin\theta\int_A y\,dA = \rho g\sin\theta\,y_c A = \rho g h_c A\). 여기서 \(\int y\,dA = y_c A\)는 도심의 정의다.</p>
+      <p>작용점: \(F_R\)의 \(x\)축에 대한 모멘트가 분포 압력의 모멘트와 같아야 한다. \(y_R F_R = \int_A y\,p\,dA = \rho g\sin\theta\int_A y^2\,dA = \rho g\sin\theta\,I_x\). 평행축 정리 \(I_x = I_{xc} + A y_c^2\)를 쓰면 \(y_R = y_c + I_{xc}/(y_c A)\). 같은 방법으로 \(x_R = x_c + I_{xyc}/(y_c A)\)(대칭 평판은 \(I_{xyc} = 0\)).</p>
+    </div>
+    <div class="formula">$$F_R = \rho g h_c A = p_c A, \qquad y_R = y_c + \frac{I_{xc}}{y_c A}, \qquad x_R = x_c + \frac{I_{xyc}}{y_c A}$$<div class="where">\(h_c = y_c\sin\theta\): 도심의 깊이, \(p_c\): 도심의 압력, \(I_{xc}\): 도심을 지나는 수평축에 대한 단면 2차 모멘트. 합력은 "도심 압력 × 넓이"지만, 작용점은 도심이 아니다. \(y_R - y_c = I_{xc}/(y_c A)\)는 평판이 깊을수록 0에 가까워진다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>도형</th><th>넓이 A</th><th>도심 위치</th><th class="num">I<sub>xc</sub> (도심 수평축)</th></tr></thead>
+      <tbody>
+        <tr><td>직사각형 (폭 b, 경사 방향 길이 a)</td><td>\(ab\)</td><td>중앙</td><td class="num">\(ba^3/12\)</td></tr>
+        <tr><td>원 (반지름 R)</td><td>\(\pi R^2\)</td><td>중심</td><td class="num">\(\pi R^4/4\)</td></tr>
+        <tr><td>반원 (지름이 위쪽 수평)</td><td>\(\pi R^2/2\)</td><td>지름에서 \(4R/3\pi\)</td><td class="num">\(0.1098R^4\)</td></tr>
+        <tr><td>삼각형 (밑변 b, 높이 a)</td><td>\(ab/2\)</td><td>밑변에서 \(a/3\)</td><td class="num">\(ba^3/36\)</td></tr>
+        <tr><td>사분원 (반지름 R)</td><td>\(\pi R^2/4\)</td><td>두 직선 변에서 \(4R/3\pi\)</td><td class="num">\(0.05488R^4\)</td></tr>
+        <tr><td>타원 (경사 방향 반축 a, 폭 방향 반축 b)</td><td>\(\pi ab\)</td><td>중심</td><td class="num">\(\pi b a^3/4\)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><strong>압력 프리즘</strong><p>폭이 일정한 직사각형 평판이라면 압력 분포를 평판 위에 쌓아 올린 입체(압력 프리즘)의 부피가 곧 합력이고, 합력은 그 도심을 지난다. 윗변이 수면에 닿은 수직 직사각형은 삼각형 프리즘이 되어 \(F = \tfrac12\rho g a^2 b\), 작용점은 수면에서 \(2a/3\) 깊이다. 윗변이 잠겨 있으면 사다리꼴 = 직사각형 + 삼각형으로 나눠 모멘트를 합한다.</p></div>
+    <div class="tangle" id="tg-gate">
+      <p>폭 <span class="tn" data-var="b" data-min="0.5" data-max="10" data-step="0.1" data-unit=" m">2</span>, 경사 방향 길이 <span class="tn" data-var="L" data-min="0.5" data-max="10" data-step="0.1" data-unit=" m">3</span>인 직사각형 수문이 수평과 <span class="tn" data-var="th" data-min="10" data-max="90" data-step="1" data-unit="°">90</span> 기울어 있고, 윗변이 수면 아래 <span class="tn" data-var="s" data-min="0" data-max="20" data-step="0.1" data-unit=" m">1</span>에 있다. 도심 깊이 <span class="tn-out" data-out="hc"></span>, 정수력 <span class="tn-out" data-out="F"></span>, 압력 중심은 도심보다 경사면을 따라 <span class="tn-out" data-out="dy"></span> 아래(윗변에서 <span class="tn-out" data-out="xi"></span>)다. <span data-out="msg"></span></p>
+    </div>
+    <div class="sim" id="sim-gate">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>경사 수문: 압력 분포, 압력 중심, 힌지 모멘트</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-gate"></canvas><span class="hint">수면 핸들과 수문 끝 핸들을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>수문 길이 L <output id="gt-L-out"></output></span><input type="range" id="gt-L" min="1" max="3" step="0.1" value="2"></label>
+          <label class="ctrl"><span>수문 폭 b <output id="gt-b-out"></output></span><input type="range" id="gt-b" min="0.5" max="3" step="0.1" value="1.5"></label>
+          <label class="ctrl"><span>아래 끝 지지력 P <output id="gt-P-out"></output></span><input type="range" id="gt-P" min="0" max="250" step="0.1" value="20"></label>
+          <div class="ctrl-row"><button class="btn primary" id="gt-check" type="button">검사: 버틸까?</button><button class="btn" id="gt-chal" type="button">새 도전</button><button class="btn" id="gt-free" type="button">자유 실험</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">정수력 F<sub>R</sub></span><span class="v" id="gt-F">—</span></div>
+        <div class="stat"><span class="k">도심 깊이 h<sub>c</sub></span><span class="v" id="gt-hc">—</span></div>
+        <div class="stat"><span class="k">힌지 → 압력 중심</span><span class="v" id="gt-xi">—</span></div>
+        <div class="stat"><span class="k">힌지 모멘트</span><span class="v" id="gt-M">—</span></div>
+        <div class="stat"><span class="k">필요 지지력</span><span class="v" id="gt-Preq">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="gt-res">—</span></div>
+      </div>
+      <div class="sim-note">수문은 윗변 A의 힌지로 벽에 매달려 있고, 아래 끝 B를 수문에 수직인 힘 P로 받쳐 닫아 둔다. <b>도전</b>: ‘새 도전’을 누르면 수면 깊이·각도·크기가 정해지고 계산값이 가려진다. 힌지에 대한 모멘트 평형 \(P L = F_R\,(y_R - y_A)\)로 필요한 P를 계산해 슬라이더로 맞춘 뒤 ‘검사’ — 필요값 이상(반올림 오차 0.5% 허용)이면서 5% 이내면 성공, 모자라면 수문이 열린다. 해볼 것: ① 수면을 높이면 압력 중심이 도심 쪽으로 다가간다. ② 같은 수문을 눕히면(θ 감소) 힘은 줄지만 길이 방향 위치는 비슷하다.</div>
+    </div>
+    <div class="example" data-title="경사진 직사각형 수문">
+      <p>폭 1.5 m, 길이 2.0 m인 직사각형 수문이 수평과 60°를 이루고, 윗변 A가 수면 아래 1.0 m 깊이에서 힌지로 지지된다(위 시뮬레이터의 기본 상태). 물(1000 kg/m³)이 주는 정수력, 힌지에서 압력 중심까지 거리, 그리고 아래 끝 B에서 수문에 수직으로 가해 수문을 닫아 둘 최소 힘 P를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(F_R = \rho g h_c A\), \(y_R = y_c + I_{xc}/(y_c A)\)로 작용점을 구하고 힌지 A에 대한 모멘트 평형을 쓴다. \(y\)는 경사면이 수면과 만나는 선 O에서 잰다.</div>
+        <div class="step"><b>풀이</b> \(y_A = 1.0/\sin60^\circ = 1.155\) m, \(y_c = 1.155 + 1.0 = 2.155\) m, \(h_c = y_c\sin60^\circ = 1.866\) m. \(F_R = (1000)(9.81)(1.866)(3.0) = 54.9\) kN. \(I_{xc} = (1.5)(2.0)^3/12 = 1.0\) m⁴ → \(y_R = 2.155 + 1.0/(2.155\times3.0) = 2.309\) m, 힌지에서 \(2.309 - 1.155 = 1.155\) m. \(\sum M_A = 0\): \(P(2.0) = (54.9)(1.155)\) → \(P = 31.7\) kN.</div>
+        <div class="answer">F<sub>R</sub> = 54.9 kN, 힌지에서 1.15 m, P = 31.7 kN</div>
+        <div class="step"><b>검토</b> 압력 중심(1.155 m)이 수문 중앙(1.0 m)보다 아래이므로 \(P > F_R/2 = 27.5\) kN인 것이 맞다. 시뮬레이터에서 P = 31.7 kN을 넣고 검사해 보라.</div>
+      </details>
+    </div>
+    <div class="callout warn"><strong>자유 표면 위에 기체 압력이 있으면</strong><p>밀폐 탱크처럼 액면 위 압력이 대기압이 아니라 \(p_0\)(gage)이면 평판의 한쪽에만 추가 압력이 걸린다. 이때는 액면을 \(h_\text{eq} = p_0/(\rho g)\)만큼 높인 가상의 자유 표면을 기준으로 \(y\)를 재고 위 공식을 그대로 쓴다. 평판 양쪽에 같은 대기압이 걸려야만 계기 압력만 적분해도 된다.</p></div>
+    <div class="drill" id="drill-plane" data-title="평면 정수력 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="curved">
+    <h2>곡면에 작용하는 정수력</h2>
+    <p>곡면에서는 각 점의 압력 힘 방향이 모두 다르므로 직접 적분하기 번거롭다. 대신 곡면 바로 위(또는 옆)의 유체 덩어리를 자유 물체로 떼어 내 평형을 쓰면 두 성분을 간단히 얻는다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="곡면 위 유체 덩어리의 자유 물체도와 곡면 아래 물이 있을 때 가상의 물 무게">
+        <defs><marker id="fsG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fsH" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <pattern id="fsHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="rgba(60,140,220,.55)" stroke-width="2"/></pattern></defs>
+        <text class="t-dim" x="30" y="24">(a) 물이 곡면 위(볼록한 쪽)에 있을 때</text>
+        <rect x="80" y="40" width="300" height="220" class="fs-water"/>
+        <line x1="80" y1="40" x2="380" y2="40" stroke="var(--accent)" stroke-width="2"/>
+        <path d="M80,90 A170,170 0 0 1 250,260 L80,260 Z" class="fs-solid"/>
+        <path d="M80,90 L250,90 L250,260 A170,170 0 0 0 80,90 Z" fill="var(--accent)" opacity=".18" stroke="var(--accent)" stroke-dasharray="5 3"/>
+        <text class="t-dim" x="182" y="125">자유 물체</text>
+        <line x1="165" y1="58" x2="165" y2="86" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsG)"/><text class="t-acc" x="172" y="70">F₁ (위 물 무게)</text>
+        <line x1="215" y1="140" x2="215" y2="178" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsG)"/><text class="t-acc" x="186" y="196">W</text>
+        <line x1="320" y1="200" x2="256" y2="200" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fsG)"/><text class="t-acc" x="290" y="192">F₂</text>
+        <line x1="170" y1="232" x2="210" y2="182" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#fsH)"/><text class="t" x="96" y="240" style="fill:var(--accent-2);font-weight:700">곡면 반력</text>
+        <text class="t" x="20" y="285">F_H = F₂ (연직 투영면의 힘),  F_V = F₁ + W (곡면 위 물 전체의 무게)</text>
+        <text class="t-dim" x="430" y="24">(b) 물이 곡면 아래(오목한 쪽)에 있을 때</text>
+        <rect x="430" y="40" width="160" height="220" class="fs-water"/>
+        <path d="M590,90 A170,170 0 0 1 760,260 L590,260 Z" class="fs-water"/>
+        <line x1="430" y1="40" x2="590" y2="40" stroke="var(--accent)" stroke-width="2"/>
+        <path d="M590,40 L760,40 L760,260 A170,170 0 0 0 590,90 Z" fill="url(#fsHatch)" stroke="var(--text-faint)" stroke-dasharray="5 3"/>
+        <path d="M590,40 L590,90 A170,170 0 0 1 760,260" stroke="var(--text)" stroke-width="4" fill="none"/>
+        <text class="t-dim" x="660" y="70">가상의 물</text>
+        <line x1="690" y1="230" x2="690" y2="150" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#fsH)"/><text class="t" x="698" y="200" style="fill:var(--accent-2);font-weight:700">F_V ↑</text>
+        <text class="t" x="440" y="285">F_V는 위쪽, 크기 = 곡면 위 가상의 물 무게</text>
+      </svg>
+      <figcaption>곡면 정수력의 두 성분. (a) 곡면 위 유체 덩어리에 대한 평형: 수평 성분은 곡면의 연직 투영면이 받는 힘, 수직 성분은 곡면 위 유체의 무게. (b) 유체가 아래에 있으면 압력 분포가 (a)와 같고 방향만 반대다.</figcaption>
+    </figure>
+    <div class="formula">$$F_H = \rho g\,h_{c,\text{proj}}\,A_\text{proj}, \qquad F_V = \rho g\,V_\text{above}, \qquad F_R = \sqrt{F_H^2 + F_V^2}$$<div class="where">\(F_H\)는 곡면을 연직면에 투영한 평면에 대한 정수력이며 작용선도 그 평면의 압력 중심을 지난다. \(F_V\)는 곡면에서 자유 표면(또는 그 연장)까지 수직 기둥 속 유체(실제든 가상이든)의 무게이고 그 도심을 지난다. 원호 곡면에서는 모든 압력 힘이 원의 중심을 향하므로 합력도 <b>중심 O를 지난다</b>.</div></div>
+    <div class="tangle" id="tg-curve">
+      <p>반지름 <span class="tn" data-var="R" data-min="0.5" data-max="5" data-step="0.1" data-unit=" m">2</span>, 폭 <span class="tn" data-var="b" data-min="0.5" data-max="10" data-step="0.5" data-unit=" m">3</span>인 1/4 원통 수문의 윗끝이 수면 아래 <span class="tn" data-var="H" data-min="0" data-max="10" data-step="0.1" data-unit=" m">1</span>에 있다. \(F_H\) = <span class="tn-out" data-out="FH"></span>, \(F_V\) = <span class="tn-out" data-out="FV"></span>, 합력 <span class="tn-out" data-out="FR"></span>은 수평 아래 <span class="tn-out" data-out="ang"></span> 방향으로 원의 중심을 지난다.</p>
+    </div>
+    <div class="predict" data-for="sim-curved">
+      <p>1/4 원통 수문에서 물을 볼록한 쪽(위)에서 오목한 쪽(아래)으로 옮겼다. 수면 깊이·반지름이 같다면 수직 성분 \(F_V\)는?</p>
+      <div class="opts"><button class="opt">0이 된다(곡면 위에 물이 없으므로)</button><button class="opt" data-correct>크기는 같고 방향만 위쪽으로 바뀐다</button><button class="opt">곡면 아래 물의 무게와 같아진다</button><button class="opt">수평 성분과 같아진다</button></div>
+      <div class="quiz-exp">곡면의 각 점에서 압력은 깊이로만 정해지므로 압력 분포는 같고 방향만 반대다. 그래서 \(F_V\)는 곡면 위 "가상의 물"의 무게와 같고 위를 향한다.</div>
+    </div>
+    <div class="sim" id="sim-curved">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>1/4 원통 곡면 수문의 힘 성분</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-curved"></canvas><span class="hint">수면 핸들과 원호 끝 핸들(R)을 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>물의 위치</span><div class="seg" id="cu-side"><button data-value="over" class="on">곡면 위(볼록 쪽)</button><button data-value="under">곡면 아래(오목 쪽)</button></div></div>
+          <label class="ctrl"><span>폭 b <output id="cu-b-out"></output></span><input type="range" id="cu-b" min="1" max="5" step="0.5" value="3"></label>
+          <label class="check"><input type="checkbox" id="cu-arr" checked> 곡면 압력 화살표</label>
+          <label class="check"><input type="checkbox" id="cu-comp" checked> 성분 F<sub>H</sub>, F<sub>V</sub> 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">F<sub>H</sub></span><span class="v" id="cu-fh">—</span></div>
+        <div class="stat"><span class="k">F<sub>V</sub></span><span class="v" id="cu-fv">—</span></div>
+        <div class="stat"><span class="k">F<sub>R</sub>, 방향</span><span class="v" id="cu-fr">—</span></div>
+        <div class="stat"><span class="k">F<sub>H</sub> 작용 깊이</span><span class="v" id="cu-hp">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 곡면 압력 화살표가 모두 원의 중심 O를 향하거나(물이 위) O에서 나온다(물이 아래). 그래서 합력도 O를 지난다. ② 수면을 내려 H = 0으로 만들면 \(F_V\)는 \(\rho g b R^2(1-\pi/4)\)로 가장 작아진다. ③ R을 2배로 하면 \(F_H\)와 \(F_V\)는 각각 몇 배가 되는가(H = 0일 때)?</div>
+    </div>
+    <div class="example" data-title="1/4 원통 수문">
+      <p>반지름 2.0 m, 폭 3.0 m인 1/4 원통 수문 위에 물이 있다(시뮬레이터 기본 상태: 물이 볼록한 쪽). 수문 윗끝은 수면 아래 1.0 m다. 정수력의 수평·수직 성분, 합력의 크기와 방향, \(F_H\)의 작용 깊이를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 수평: 깊이 1.0–3.0 m인 2.0 m × 3.0 m 연직 투영면. 수직: 곡면 위 물의 무게 — 직사각형 기둥(2.0 m × 3.0 m)에서 1/4 원(곡면 아래 고체)을 뺀 넓이 × 폭.</div>
+        <div class="step"><b>풀이</b> \(F_H = \rho g h_c A = (9810)(2.0)(2.0\times3.0) = 117.7\) kN. \(F_V = \rho g b[R(H+R) - \pi R^2/4] = (9810)(3.0)(6.0 - 3.1416) = 84.1\) kN. \(F_R = \sqrt{117.7^2 + 84.1^2} = 144.7\) kN, 방향 \(\arctan(84.1/117.7) = 35.5^\circ\)(수평 아래). \(F_H\) 작용 깊이 \(= h_c + I_{xc}/(h_c A) = 2.0 + (3.0\cdot2.0^3/12)/(2.0\times6.0) = 2.17\) m.</div>
+        <div class="answer">F<sub>H</sub> = 118 kN, F<sub>V</sub> = 84.1 kN, F<sub>R</sub> = 145 kN (수평 아래 35.5°), F<sub>H</sub>는 깊이 2.17 m</div>
+        <div class="step"><b>검토</b> 합력선은 원의 중심 O를 지나야 한다. 시뮬레이터에서 같은 값을 맞추고 합력 화살표가 O를 향하는지 확인하라. 물을 아래로 옮기면 크기는 같고 방향만 반대(위·바깥)다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="buoyancy">
+    <h2>부력과 부양체의 안정성</h2>
+    <p>유체에 잠긴 물체의 표면에도 깊이에 비례하는 압력이 작용한다. 아랫면이 윗면보다 깊으므로 위로 미는 힘이 더 크고, 그 차이가 <span class="term">부력</span><span class="en">(buoyant force)</span>이다. 물체를 수직 기둥들로 잘게 나누면 각 기둥의 아랫면과 윗면 압력 차가 \(\rho g\,\delta z\)이므로, 모두 더하면 곡면 힘의 수직 성분처럼 <b>물체가 밀어낸 유체의 무게</b>가 된다.</p>
+    <div class="def"><span class="def-k">아르키메데스 원리</span>
+      <p>유체 속 물체가 받는 부력은 물체가 밀어낸 유체의 무게와 같고, 밀어낸 부피의 도심 — <span class="term">부심</span><span class="en">(center of buoyancy)</span> B — 을 지나 위로 작용한다: \(F_B = \rho_f g V_\text{sub}\). 물체 자체의 밀도와는 무관하다.</p>
+    </div>
+    <p>떠 있는 물체는 \(F_B = W\)이므로 잠긴 부피 비율은 \(V_\text{sub}/V = \rho_\text{body}/\rho_f\)이다(얼음 917 kg/m³는 바닷물 1025 kg/m³ 위에서 약 89%가 잠긴다). 줄에 매단 물체를 물에 넣으면 저울 눈금은 부력만큼 준다 — 이것이 겉보기 무게 \(W_\text{app} = W - F_B\)이고, 고대 아르키메데스가 왕관의 밀도를 잰 방법이다.</p>
+    <figure class="mini" id="mini-weigh">
+      <div class="mini-view"><canvas id="cv-weigh"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>물체(한 변 10 cm)</span><div class="seg" id="wg-mat"><button data-value="2700" class="on">알루미늄</button><button data-value="7850">강철</button><button data-value="600">나무</button></div></div>
+        <div class="ctrl"><span>액체</span><div class="seg" id="wg-fl"><button data-value="998" class="on">물</button><button data-value="1260">글리세린</button><button data-value="13550">수은</button></div></div>
+        <span class="readout" id="wg-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>물체(흰 핸들)를 끌어 액체에 넣어 보라. 오른쪽 그래프의 점은 잠긴 깊이에 따라 눈금이 직선으로 줄다가, 완전히 잠기면 더 깊이 넣어도 일정하다(부력은 깊이가 아니라 잠긴 부피로 정해진다). 나무나 수은 속 강철은 떠서 줄이 느슨해진다.</figcaption>
+    </figure>
+
+    <h3>안정성: 무게 중심, 부심, 메타센터</h3>
+    <p>떠 있는 물체가 평형이라는 것만으로는 부족하다. 살짝 기울었을 때 되돌아오는가(안정), 더 기우는가(불안정)? 무게 \(W\)는 무게 중심 G에, 부력은 부심 B에 작용한다.</p>
+    <ul>
+      <li><b>완전히 잠긴 물체</b>(잠수함, 풍선): 기울어도 잠긴 부피 모양이 그대로라 B가 물체에 고정된다. G가 B보다 <b>아래</b>에 있어야 안정하다.</li>
+      <li><b>떠 있는 물체</b>(배): 기울면 물에 잠기는 쪽이 늘어 B가 그쪽으로 옮겨 간다(B′). B′을 지나는 부력선이 원래 대칭축과 만나는 점이 <span class="term">메타센터</span><span class="en">(metacenter)</span> M이다. G가 B보다 위에 있어도 <b>M이 G보다 위에 있으면</b> 복원 모멘트가 생겨 안정하다.</li>
+    </ul>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="기울어진 선체에서 무게 중심 G, 옮겨 간 부심 B', 메타센터 M: 왼쪽은 M이 G 위(안정), 오른쪽은 M이 G 아래(불안정)">
+        <defs><marker id="fsI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fsJ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <rect x="20" y="165" width="360" height="110" class="fs-water"/><line x1="20" y1="165" x2="380" y2="165" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="90" y="120" width="220" height="100" class="fs-solid" style="fill-opacity:.75" transform="rotate(15 200 170)"/>
+        <line x1="187" y1="218" x2="226" y2="73" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <line x1="218" y1="250" x2="218" y2="96" stroke="var(--accent)" stroke-dasharray="3 3"/>
+        <line x1="218" y1="262" x2="218" y2="204" stroke="var(--accent)" stroke-width="3" marker-end="url(#fsI)"/><text class="t-acc" x="226" y="262">F_B</text>
+        <line x1="203" y1="160" x2="203" y2="236" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#fsJ)"/><text class="t" x="168" y="250" style="fill:var(--accent-2);font-weight:700">W</text>
+        <circle cx="203" cy="160" r="5" fill="var(--accent-2)"/><text class="t" x="180" y="150" style="font-weight:700">G</text>
+        <circle cx="218" cy="200" r="5" fill="var(--accent)"/><text class="t-acc" x="226" y="196">B′</text>
+        <circle cx="218" cy="102" r="5" fill="var(--text)"/><text class="t" x="226" y="98" style="font-weight:700">M</text>
+        <path d="M150,110 A70,70 0 0 0 130,150" fill="none" stroke="var(--ok)" stroke-width="2.4" marker-end="url(#fsI)"/>
+        <text class="t" x="40" y="30" style="font-weight:700;fill:var(--ok)">안정: M이 G보다 위</text><text class="t-dim" x="40" y="50">B′의 부력과 G의 무게가 되돌리는 짝힘</text>
+        <rect x="420" y="175" width="360" height="100" class="fs-water"/><line x1="420" y1="175" x2="780" y2="175" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="540" y="90" width="120" height="160" class="fs-solid" style="fill-opacity:.75" transform="rotate(15 600 170)"/>
+        <line x1="580" y1="247" x2="621" y2="93" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <line x1="605" y1="262" x2="605" y2="150" stroke="var(--accent)" stroke-width="3" marker-end="url(#fsI)"/><text class="t-acc" x="572" y="268">F_B</text>
+        <line x1="613" y1="122" x2="613" y2="200" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#fsJ)"/><text class="t" x="622" y="196" style="fill:var(--accent-2);font-weight:700">W</text>
+        <circle cx="613" cy="122" r="5" fill="var(--accent-2)"/><text class="t" x="622" y="118" style="font-weight:700">G</text>
+        <circle cx="605" cy="215" r="5" fill="var(--accent)"/><text class="t-acc" x="580" y="230">B′</text>
+        <circle cx="605" cy="151" r="5" fill="var(--text)"/><text class="t" x="578" y="150" style="font-weight:700">M</text>
+        <path d="M690,110 A70,70 0 0 1 712,150" fill="none" stroke="var(--bad)" stroke-width="2.4" marker-end="url(#fsJ)"/>
+        <text class="t" x="440" y="30" style="font-weight:700;fill:var(--bad)">불안정: M이 G보다 아래</text><text class="t-dim" x="440" y="50">짝힘이 기울기를 더 키운다 → 전복</text>
+      </svg>
+      <figcaption>폭이 넓고 무게 중심이 낮은 선체(왼쪽)는 기울면 부심이 멀리 옮겨 가 M이 높다. 좁고 높은 물체(오른쪽)는 부심이 조금밖에 옮겨 가지 않아 M이 G 아래에 머문다.</figcaption>
+    </figure>
+    <p>작은 기울기 \(\phi\)에서 부심의 이동은 수선면(물에 잘린 단면)의 2차 모멘트로 정해진다. 용골(바닥) K에서 잰 높이로 쓰면</p>
+    <div class="formula">$$\overline{GM} = \overline{KB} + \overline{BM} - \overline{KG}, \qquad \overline{BM} = \frac{I_o}{V_\text{sub}}, \qquad M_\text{복원} = W\,\overline{GM}\sin\phi$$<div class="where">\(I_o\): 수선면의 기울기 축에 대한 2차 모멘트(상자형 바지선은 \(LB^3/12\)), \(V_\text{sub}\): 배수 부피. \(\overline{GM} > 0\)이면 안정. 상자형이면 \(\overline{KB} = d/2\), \(\overline{BM} = B^2/(12d)\)(d: 흘수). \(\overline{GZ} = \overline{GM}\sin\phi\)를 <span class="term">복원 팔</span><span class="en">(righting arm)</span>이라 한다.</div></div>
+    <div class="callout deep"><strong>큰 기울기와 벽면 공식</strong><p>측면이 수직인 선체(벽면형)는 갑판 끝이 잠기거나 바닥이 드러나기 전까지 \(\overline{GZ} = \sin\phi\,(\overline{GM} + \tfrac12\overline{BM}\tan^2\phi)\)이다. \(\overline{GM} < 0\)이어도 \(\tan\phi = \sqrt{-2\overline{GM}/\overline{BM}}\)에서 다시 평형이 되어, 배가 한쪽으로 기운 채 떠 있는 <b>롤(loll)</b> 상태가 된다. 작은 기울기 진동의 주기는 \(T \approx 2\pi k/\sqrt{g\,\overline{GM}}\)(k: 회전 반지름) — \(\overline{GM}\)이 크면 복원은 확실하지만 흔들림이 빨라 승선감이 나빠진다.</p></div>
+    <div class="tangle" id="tg-gm">
+      <p>폭 <span class="tn" data-var="B" data-min="2" data-max="20" data-step="0.1" data-unit=" m">6</span>, 길이 20 m인 상자형 바지선이 바닷물(1025 kg/m³)에서 흘수 <span class="tn" data-var="d" data-min="0.3" data-max="5" data-step="0.05" data-unit=" m">2</span>로 떠 있고 무게 중심이 바닥 위 <span class="tn" data-var="kg" data-min="0.2" data-max="8" data-step="0.05" data-unit=" m">2.2</span>에 있다. 배수량 <span class="tn-out" data-out="m"></span>, \(\overline{KB}\) = <span class="tn-out" data-out="kb"></span>, \(\overline{BM}\) = <span class="tn-out" data-out="bm"></span>, \(\overline{GM}\) = <span class="tn-out" data-out="gm"></span> → <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-float">
+      <p>떠 있는 상자의 무게 중심 G가 부심 B보다 <b>위</b>에 있다. 이 상자는?</p>
+      <div class="opts"><button class="opt">반드시 전복된다</button><button class="opt" data-correct>메타센터 M이 G보다 위면 안정하다</button><button class="opt">G와 B의 거리가 상자 높이의 절반 이하면 안정하다</button><button class="opt">상자의 밀도가 물의 절반보다 작으면 안정하다</button></div>
+      <div class="quiz-exp">떠 있는 물체는 기울면 B가 옮겨 가므로 G가 B 위에 있어도 된다. 판단 기준은 \(\overline{GM} = \overline{KB} + \overline{BM} - \overline{KG} > 0\)이다. 아래에서 G를 끌어 올려 전복 경계를 찾아보라.</div>
+    </div>
+    <div class="sim" id="sim-float">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>부양체 상자의 안정성과 복원 팔 곡선</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-float"></canvas><span class="hint top">모서리 핸들로 기울이고, G를 위아래로 끈다</span></div><div><canvas id="cv-gz"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="fl-mode"><button data-value="free" class="on">자유 실험</button><button data-value="game">화물 도전</button></div></div>
+          <label class="ctrl"><span>상자 폭 B <output id="fl-B-out"></output></span><input type="range" id="fl-B" min="1.5" max="6" step="0.1" value="4"></label>
+          <label class="ctrl"><span>평균 비중 (흘수/높이) <output id="fl-sg-out"></output></span><input type="range" id="fl-sg" min="0.1" max="0.9" step="0.01" value="0.4"></label>
+          <label class="ctrl"><span>화물 질량 (1 m 길이당) <output id="fl-mc-out"></output></span><input type="range" id="fl-mc" min="0" max="5000" step="25" value="0"></label>
+          <div class="ctrl-row"><button class="btn primary" id="fl-test" type="button">파도 시험</button><button class="btn" id="fl-new" type="button">새 화물</button><button class="btn" id="fl-zero" type="button">바로 세우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">흘수 d</span><span class="v" id="fl-d">—</span></div>
+        <div class="stat"><span class="k">KB + BM</span><span class="v" id="fl-km">—</span></div>
+        <div class="stat"><span class="k">KG</span><span class="v" id="fl-kg">—</span></div>
+        <div class="stat"><span class="k">GM</span><span class="v" id="fl-gm">—</span></div>
+        <div class="stat"><span class="k">기울기 φ, GZ</span><span class="v" id="fl-gz">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="fl-msg">—</span></div>
+      </div>
+      <div class="sim-note">높이 2 m인 상자형 선체(종이에 수직으로 1 m)의 2차원 계산이다. 각 기울기에서 잠긴 다각형을 정확히 잘라 부심을 구하므로 큰 기울기도 맞다. 해볼 것: ① 자유 실험에서 G를 천천히 올리며 기울여 보라. M을 지나는 순간 복원 팔 GZ의 기울기(오른쪽 곡선의 원점 기울기 = GM)가 음수가 된다. ② 폭을 줄이면 BM = B²/12d가 급격히 작아진다. ③ GM이 약간 음수면 전복되지 않고 비스듬히 선다(롤). <b>화물 도전</b>: 높이가 정해진 화물을 갑판 위에 싣는다. 무거울수록 흘수가 깊어지고 G가 올라간다. 계산값이 가려진 상태에서 GM ≥ 0을 지키는 가장 무거운 화물을 찾아 ‘파도 시험’을 하라(이론 최대의 95% 이상이면 만점).</div>
+    </div>
+    <div class="example" data-title="바지선의 안정성">
+      <p>폭 6.0 m, 길이 15 m인 상자형 바지선의 전체 질량이 180 t이고 무게 중심이 바닥 위 2.0 m에 있다. 바닷물(1025 kg/m³)에서 흘수, 메타센터 높이 \(\overline{GM}\), 5° 기울었을 때의 복원 모멘트를 구하라. 또 G를 바닥 위 몇 m까지 올려도 안정한가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 떠 있으므로 \(\rho g LBd = mg\)로 흘수, 상자형 공식 \(\overline{KB} = d/2\), \(\overline{BM} = B^2/(12d)\).</div>
+        <div class="step"><b>풀이</b> \(d = 180\,000/(1025\times15\times6.0) = 1.951\) m. \(\overline{KB} = 0.976\) m, \(\overline{BM} = 36/(12\times1.951) = 1.538\) m. \(\overline{GM} = 0.976 + 1.538 - 2.0 = 0.513\) m. 복원 모멘트 \(= mg\,\overline{GM}\sin5^\circ = (180\,000)(9.81)(0.513)(0.0872) = 79.0\) kN·m. 안정 한계 \(\overline{KG}_\text{max} = \overline{KB} + \overline{BM} = 2.51\) m.</div>
+        <div class="answer">d = 1.95 m, GM = 0.513 m, 복원 모멘트 79.0 kN·m, KG ≤ 2.51 m</div>
+        <div class="step"><b>검토</b> G는 B보다 1.0 m나 위에 있지만 넓은 수선면 덕분에 M이 더 높다. 같은 바지선 폭이 4.0 m로 좁아지면(흘수 2.93 m) \(\overline{BM}\) = 0.46 m로 줄어 \(\overline{GM} < 0\) — 불안정해진다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="rigid">
+    <h2>강체 운동하는 유체</h2>
+    <p>용기 전체가 일정하게 가속하거나 일정한 각속도로 돌면, 충분한 시간 뒤 유체 입자들은 서로에 대해 움직이지 않는다(<span class="term">강체 운동</span><span class="en">(rigid-body motion)</span>). 상대 운동이 없으니 여전히 전단 응력이 없고, 유체 요소에 대한 뉴턴 제2법칙은 압력 기울기와 중력만으로 쓰인다.</p>
+    <div class="formula">$$-\nabla p + \rho\vec g = \rho\vec a \qquad\Longrightarrow\qquad \nabla p = \rho(\vec g - \vec a)$$<div class="where">정지 유체(\(\vec a = 0\))의 \(\nabla p = \rho\vec g\)에서 중력 대신 <b>유효 중력</b> \(\vec g - \vec a\)가 들어간 꼴이다. 등압면(자유 표면 포함)은 유효 중력에 수직이다.</div></div>
+
+    <h3>직선 가속</h3>
+    <p>수평 가속도 \(a_x\), 수직 가속도 \(a_z\)로 움직이는 용기에서 \(\partial p/\partial x = -\rho a_x\), \(\partial p/\partial z = -\rho(g + a_z)\)이다. 등압면을 따라 \(dp = 0\)이므로</p>
+    <div class="formula">$$\frac{dz_s}{dx} = -\frac{a_x}{g + a_z} = -\tan\theta, \qquad p = p_\text{atm} + \rho(g + a_z)\,(z_s - z)$$<div class="where">자유 표면은 가속 반대쪽(뒤쪽)이 올라가도록 각 θ만큼 기울고, 수직 방향 압력 기울기는 \(\rho(g+a_z)\)로 바뀐다. 위로 가속하는 엘리베이터 속 물은 더 "무겁다".</div></div>
+    <div class="predict" data-for="sim-accel">
+      <p>물을 반쯤 채운 탱크 트럭이 앞(오른쪽)으로 일정하게 가속하고 있다. 탱크 바닥의 압력은?</p>
+      <div class="opts"><button class="opt">앞쪽 바닥이 더 크다</button><button class="opt" data-correct>뒤쪽 바닥이 더 크다</button><button class="opt">어디나 같다(깊이가 평균적으로 같으므로)</button><button class="opt">가속하는 동안은 모두 0이 된다</button></div>
+      <div class="quiz-exp">물이 뒤로 몰려 뒤쪽 수면이 높아지고, 압력은 그 점 위 수면까지의 깊이에 \(\rho(g+a_z)\)를 곱한 값이다. 뒤쪽 바닥의 물이 앞쪽 물을 가속시키는 힘을 내야 하므로 당연하다.</div>
+    </div>
+    <div class="sim" id="sim-accel">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>가속하는 탱크: 기울어진 수면과 등압선</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-accel"></canvas><span class="hint">오른쪽 a 화살표 끝을 끌어 가속도를 정한다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>a<sub>x</sub> (앞쪽 +) <output id="ac-ax-out"></output></span><input type="range" id="ac-ax" min="-6" max="6" step="0.1" value="2"></label>
+          <label class="ctrl"><span>a<sub>z</sub> (위쪽 +) <output id="ac-az-out"></output></span><input type="range" id="ac-az" min="-5" max="6" step="0.1" value="0"></label>
+          <label class="check"><input type="checkbox" id="ac-iso" checked> 등압선 (2 kPa 간격)</label>
+          <div class="ctrl-row"><button class="btn" id="ac-fill" type="button">물 다시 채우기</button><button class="btn" id="ac-zero" type="button">가속 0</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">수면 기울기 θ</span><span class="v" id="ac-th">—</span></div>
+        <div class="stat"><span class="k">뒤쪽 바닥 p</span><span class="v" id="ac-pr">—</span></div>
+        <div class="stat"><span class="k">앞쪽 바닥 p</span><span class="v" id="ac-pf">—</span></div>
+        <div class="stat"><span class="k">남은 물</span><span class="v" id="ac-vol">—</span></div>
+      </div>
+      <div class="sim-note">길이 4 m, 높이 2 m, 처음 물 깊이 1.2 m인 열린 탱크. 가속도를 바꾸면 수면이 출렁이다가 새 기울기로 자리 잡는다(출렁임은 과도 현상이고, 강체 운동 해는 자리 잡은 뒤의 상태다). 해볼 것: ① 점선 화살표(유효 중력 g − a)가 언제나 수면에 수직임을 확인하라. ② a<sub>x</sub>를 키워 뒤쪽으로 물이 넘치는 한계를 찾아라 — \(\tan\theta = 0.8/2\)일 때다. ③ a<sub>z</sub> = −g에 가까우면(자유 낙하) 등압선 간격이 벌어져 압력이 거의 사라진다.</div>
+    </div>
+    <div class="example" data-title="물을 실은 트럭의 가속 한계">
+      <p>길이 6.0 m, 높이 2.0 m인 열린 직육면체 탱크에 물이 1.6 m 깊이로 실려 있다. 물이 넘치지 않는 최대 수평 가속도는? 그때 뒤쪽과 앞쪽 바닥의 계기 압력은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 수면은 중앙을 축으로 기운다(부피 보존, 바닥이 드러나지 않는 경우). 뒤쪽 수면 상승 \(= (L/2)\tan\theta\)가 여유 높이 0.4 m와 같아질 때가 한계다.</div>
+        <div class="step"><b>풀이</b> \(\tan\theta = 0.4/3.0 = 0.1333\) → \(a_x = g\tan\theta = 1.31\) m/s². 뒤쪽 바닥 위 수면 높이 2.0 m → \(p = \rho g(2.0) = 19.6\) kPa, 앞쪽은 1.2 m → 11.8 kPa.</div>
+        <div class="answer">a<sub>max</sub> = 1.31 m/s², 뒤쪽 19.6 kPa, 앞쪽 11.8 kPa</div>
+        <div class="step"><b>검토</b> 앞뒤 압력 차가 \(\rho a_x L = (1000)(1.31)(6.0) = 7.85\) kPa로, 물 전체를 가속시키는 데 필요한 힘과 맞는다. 0에서 100 km/h까지 21 s 이상 걸리는 완만한 가속이다 — 실제 탱크로리는 출렁임 방지 칸막이를 둔다.</div>
+      </details>
+    </div>
+
+    <h3>회전하는 용기</h3>
+    <p>수직축으로 각속도 \(\omega\)로 도는 용기에서 유체 입자는 중심을 향한 구심 가속도 \(-r\omega^2\hat e_r\)를 갖는다. 원통 좌표로 \(\partial p/\partial r = \rho r\omega^2\), \(\partial p/\partial z = -\rho g\)이고, 이를 적분하면</p>
+    <div class="formula">$$p = p_0 + \frac{\rho\omega^2 r^2}{2} - \rho g z, \qquad z_s(r) = h_0 - \frac{\omega^2}{4g}\left(R^2 - 2r^2\right)$$<div class="where">자유 표면은 회전 포물면이다. 포물면의 부피는 외접 원통의 절반이므로 액체 부피 보존(처음 깊이 \(h_0\))에서 중심은 \(\omega^2R^2/4g\)만큼 내려가고 벽은 같은 만큼 올라간다. 벽과 중심의 높이 차는 \(\Delta h = \omega^2R^2/2g\)로 <b>액체 밀도와 무관</b>하다.</div></div>
+    <div class="tangle" id="tg-rot">
+      <p>지름 <span class="tn" data-var="D" data-min="5" data-max="200" data-step="1" data-unit=" cm">40</span>인 원통 용기가 <span class="tn" data-var="N" data-min="0" data-max="600" data-step="1" data-unit=" rpm">100</span>으로 돌면 ω = <span class="tn-out" data-out="w"></span>, 벽과 중심의 수면 높이 차 \(\omega^2R^2/2g\) = <span class="tn-out" data-out="dh"></span>이다. 벽 쪽 수면은 처음보다 <span class="tn-out" data-out="up"></span> 올라가고 중심은 그만큼 내려간다. 벽에서 속력은 ωR = <span class="tn-out" data-out="v"></span>.</p>
+    </div>
+    <div class="sim" id="sim-rot">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>회전하는 원통: 포물면 수면 — 넘치기 직전을 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rot"></canvas></div><div><canvas id="cv-rtop"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>회전수 N <output id="rt-N-out"></output></span><input type="range" id="rt-N" min="0" max="400" step="1" value="90"></label>
+          <label class="ctrl"><span>처음 깊이 h₀ (자유 실험) <output id="rt-h-out"></output></span><input type="range" id="rt-h" min="0.05" max="0.48" step="0.01" value="0.30"></label>
+          <div class="ctrl-row"><button class="btn primary" id="rt-spin" type="button">돌려 보기</button><button class="btn" id="rt-chal" type="button">새 도전</button><button class="btn" id="rt-free" type="button">자유 실험</button><button class="btn" id="rt-fill" type="button">물 다시 채우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">용기</span><span class="v" id="rt-tank">—</span></div>
+        <div class="stat"><span class="k">ω</span><span class="v" id="rt-w">—</span></div>
+        <div class="stat"><span class="k">중심 · 벽 수면 높이</span><span class="v" id="rt-z">—</span></div>
+        <div class="stat"><span class="k">벽 바닥 압력</span><span class="v" id="rt-p">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="rt-res">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 옆에서 본 모습(점선: 등압면), 오른쪽은 위에서 본 모습(화살표: 속도 v = ωr)이다. 추적 입자는 화면에서 실제보다 8배 느리게 돈다. 자유 실험: 회전수를 올리면 벽 쪽 물이 올라가다 넘치거나, 중심의 바닥이 드러난다(이때는 부피 보존식이 달라진다). <b>도전</b>: ‘새 도전’은 용기 반지름·높이·처음 깊이를 정하고 회전을 멈춘다. \(\omega^2R^2/4g = H - h_0\)로 넘치기 직전의 회전수를 계산해 맞춘 뒤 ‘돌려 보기’ — 벽 수면이 용기 높이의 97–100%면 성공이다.</div>
+    </div>
+    <div class="example" data-title="넘치기 직전의 회전수">
+      <p>지름 0.40 m, 높이 0.60 m인 원통 용기에 물이 0.45 m 깊이로 담겨 있다. 용기를 축 둘레로 돌릴 때 물이 넘치기 시작하는 회전수(rpm)와 그때 중심의 수면 높이, 벽 쪽 바닥의 계기 압력을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 벽 쪽 상승 \(\omega^2R^2/4g\)가 여유 높이 0.15 m와 같아질 때. 중심이 바닥에 닿지 않는지도 확인한다.</div>
+        <div class="step"><b>풀이</b> \(\omega^2(0.20)^2/(4\times9.81) = 0.15\) → \(\omega = \sqrt{0.6\times9.81}/0.20 = 12.1\) rad/s → \(N = 60\omega/2\pi = 116\) rpm. 중심 높이 \(= 0.45 - 0.15 = 0.30\) m(바닥 위, 드러나지 않음). 벽 바닥: 수면까지 0.60 m이므로 \(p = \rho g(0.60) = 5.89\) kPa.</div>
+        <div class="answer">N = 116 rpm, 중심 수면 0.30 m, 벽 바닥 5.89 kPa(gage)</div>
+        <div class="step"><b>검토</b> 높이 차 \(\Delta h = 0.30\) m = \(\omega^2R^2/2g\) ✓. 같은 용기에 수은을 담아도 답이 같다. 바닥 압력은 r에 따라 \(\rho\omega^2r^2/2\)만큼 늘어 중심(2.94 kPa)보다 벽에서 2배다.</div>
+      </details>
+    </div>
+    <div class="callout tip"><strong>응용</strong><p>회전 포물면은 거대 망원경의 수은 거울(액체 거울 망원경), 원심 주조, 원심 분리기, 회전 점도계의 기초다. 강체 회전(속도 ∝ r)은 9장·6장에서 만날 자유 와류(속도 ∝ 1/r)와 정반대다.</p></div>
+    <div class="drill" id="drill-rigid" data-title="부력 · 강체 운동 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>정지 유체에는 전단 응력이 없고, 한 점의 압력은 모든 방향으로 같다(파스칼). 압력은 \(\nabla p = \rho\vec g\), 즉 \(dp/dz = -\rho g\)로 깊이에 따라서만 증가하며, 비압축 유체에서 \(p = p_0 + \rho g h\)이다. 용기 모양과 무관하다.</li>
+      <li>\(p_\text{gage} = p_\text{abs} - p_\text{atm}\), \(p_\text{vac} = p_\text{atm} - p_\text{abs}\). 대기는 압축성이라 등온 \(p = p_0e^{-gz/RT_0}\) 또는 표준 대기 \(p = p_0(1-\beta z/T_0)^{g/R\beta}\)로 계산한다.</li>
+      <li>마노미터: 아는 점에서 출발해 같은 유체 안에서 내려가면 \(+\rho g h\), 올라가면 \(-\rho g h\). 차압 마노미터 \(p_A - p_B = (\rho_m-\rho)gh + \rho g\Delta z\), 경사 마노미터는 \(1/\sin\theta\)만큼 확대한다.</li>
+      <li>잠긴 평면: \(F_R = \rho g h_c A\), 작용점 \(y_R = y_c + I_{xc}/(y_cA)\) — 압력 중심은 도심보다 아래에 있고 깊을수록 도심에 가까워진다.</li>
+      <li>곡면: \(F_H\) = 연직 투영면의 힘, \(F_V\) = 곡면 위(실제 또는 가상) 유체의 무게. 원호면의 합력은 원의 중심을 지난다.</li>
+      <li>부력 \(F_B = \rho_f g V_\text{sub}\)는 부심 B에 작용한다. 떠 있는 물체는 \(\overline{GM} = \overline{KB} + \overline{BM} - \overline{KG} > 0\)(\(\overline{BM} = I_o/V_\text{sub}\))이면 안정하고, 복원 모멘트는 \(W\overline{GM}\sin\phi\)이다.</li>
+      <li>강체 운동: \(\nabla p = \rho(\vec g - \vec a)\). 직선 가속에서 수면 기울기 \(\tan\theta = a_x/(g+a_z)\), 회전에서는 포물면 \(z_s = h_0 - \omega^2(R^2-2r^2)/4g\), 높이 차 \(\omega^2R^2/2g\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 \(g = 9.81\) m/s², 물의 밀도 1000 kg/m³, 계기 압력으로 답한다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="정수압" data-answer="25.0" data-label="p =" data-unit="kPa (gage)">
+        <div class="prob-q"><p>비중 0.85인 기름 탱크의 액면 아래 3.0 m 깊이의 계기 압력은?</p></div>
+        <div class="prob-sol"><p>\(p = \rho g h = (850)(9.81)(3.0) = 2.50\times10^4\) Pa = 25.0 kPa.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="기압계" data-answer="98.4" data-label="p_atm =" data-unit="kPa">
+        <div class="prob-q"><p>수은(13 550 kg/m³) 기압계의 기둥 높이가 740 mm다. 수은 증기압을 무시할 때 대기압은?</p></div>
+        <div class="prob-sol"><p>\(p = \rho g h = (13\,550)(9.81)(0.740) = 9.84\times10^4\) Pa = 98.4 kPa.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="등온 대기" data-answer="71.0" data-label="p =" data-unit="kPa">
+        <div class="prob-q"><p>대기를 288.15 K의 등온 이상 기체(R = 287 J/(kg·K))로 볼 때, 해수면 101.325 kPa에서 고도 3000 m의 압력은?</p></div>
+        <div class="prob-hint">\(dp/p = -g\,dz/(RT)\)를 적분한다.</div>
+        <div class="prob-sol"><p>\(p = p_0\exp[-gz/(RT)] = 101.325\exp[-(9.81)(3000)/((287)(288.15))] = 101.325e^{-0.3559} = 71.0\) kPa. (표준 대기로는 70.1 kPa.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="차압 마노미터" data-answer="22.5" data-label="p_A − p_B =" data-unit="kPa">
+        <div class="prob-q"><p>물이 흐르는 두 관 A, B를 수은(비중 13.6) U자관으로 연결했다. 관 B의 중심이 관 A보다 0.40 m 높고, 수은 액면 차는 0.15 m(A 쪽 액면이 낮다)이다. \(p_A - p_B\)는?</p></div>
+        <div class="prob-hint">A에서 출발: 물속을 내려가 A 쪽 수은 면 → 수은 속 0.15 m 올라감 → 물속을 올라가 B.</div>
+        <div class="prob-sol"><p>\(p_A - p_B = (\rho_m - \rho)gh + \rho g\Delta z = (12\,600)(9.81)(0.15) + (1000)(9.81)(0.40) = 18.54 + 3.92 = 22.5\) kPa.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="경사 마노미터" data-answer="322" data-label="Δp =" data-unit="Pa">
+        <div class="prob-q"><p>비중 0.80인 액체를 쓴 경사 마노미터의 관이 수평과 20°를 이루며, 관을 따라 읽은 액주 길이가 120 mm다. 저장조 액면 변화를 무시할 때 압력 차는?</p></div>
+        <div class="prob-sol"><p>\(\Delta p = \rho g L\sin\theta = (800)(9.81)(0.120)\sin20^\circ = 322\) Pa.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수직 평판" data-answer="147; 2.80" data-label="F =; 작용 깊이 =" data-unit="kN; m">
+        <div class="prob-q"><p>폭 2.0 m, 높이 3.0 m인 직사각형 수문이 수직으로 서 있고 윗변이 수면 아래 1.0 m에 있다. 정수력과 압력 중심의 깊이는?</p></div>
+        <div class="prob-sol"><p>\(h_c = 2.5\) m, \(F = \rho g h_c A = (9810)(2.5)(6.0) = 147\) kN. \(y_R = 2.5 + (2\cdot3^3/12)/(2.5\times6.0) = 2.5 + 0.30 = 2.80\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="원형 수문" data-answer="44.4; 22.5" data-label="F =; y_R − y_c =" data-unit="kN; mm">
+        <div class="prob-q"><p>지름 1.2 m인 원형 수문이 수직 벽에 있고 그 중심이 수면 아래 4.0 m다. 정수력과, 압력 중심이 도심보다 얼마나 아래에 있는지 구하라.</p></div>
+        <div class="prob-sol"><p>\(A = \pi(0.6)^2 = 1.131\) m², \(F = (9810)(4.0)(1.131) = 44.4\) kN. \(y_R - y_c = I_{xc}/(y_cA) = (\pi R^4/4)/(y_c\pi R^2) = R^2/(4y_c) = 0.36/16 = 0.0225\) m = 22.5 mm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="경사 수문 지지력" data-answer="180; 100" data-label="F =; P =" data-unit="kN; kN">
+        <div class="prob-q"><p>폭 2.0 m, 길이 3.0 m인 직사각형 수문이 수평과 45°로 기울어 있고, 윗변이 수면 아래 2.0 m에서 힌지로 지지된다. 물이 주는 정수력과, 아랫변에서 수문에 수직으로 가해 수문을 닫아 둘 최소 힘 P를 구하라.</p></div>
+        <div class="prob-hint">힌지에서 잰 경사 거리 \(\xi\)의 깊이는 \(2.0 + \xi\sin45^\circ\). 모멘트 \(\int_0^L p\,b\,\xi\,d\xi\)를 직접 적분해도 된다.</div>
+        <div class="prob-sol"><p>\(h_c = 2.0 + 1.5\sin45^\circ = 3.061\) m, \(F = (9810)(3.061)(6.0) = 180\) kN. 힌지 모멘트 \(M = \rho g b(sL^2/2 + L^3\sin\theta/3) = (9810)(2.0)(9.0 + 6.364) = 301.4\) kN·m, \(P = M/L = 100\) kN. (압력 중심은 힌지에서 1.67 m.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="곡면" data-answer="103; 77.8" data-label="F_H =; F_V =" data-unit="kN; kN">
+        <div class="prob-q"><p>반지름 1.5 m, 폭 4.0 m인 1/4 원통 수문의 <b>오목한 쪽(아래)</b>에 물이 있고, 수문 윗끝이 수면 아래 1.0 m다. 정수력의 수평 성분과 수직 성분(위쪽)은?</p></div>
+        <div class="prob-sol"><p>\(F_H = \rho g(H + R/2)(Rb) = (9810)(1.75)(6.0) = 103\) kN. \(F_V\) = 곡면 위 가상의 물 무게 \(= \rho g b[R(H+R) - \pi R^2/4] = (9810)(4.0)(3.75 - 1.767) = 77.8\) kN(위쪽).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="겉보기 무게" data-answer="334" data-label="T =" data-unit="N">
+        <div class="prob-q"><p>부피 0.020 m³인 알루미늄(2700 kg/m³) 덩어리를 줄에 매달아 물에 완전히 잠기게 했다. 줄의 장력은?</p></div>
+        <div class="prob-sol"><p>\(T = (\rho_\text{Al} - \rho_w)gV = (1700)(9.81)(0.020) = 334\) N (공기 중 무게 530 N).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="밀도 측정" data-answer="5.10e-3; 3000" data-label="V =; ρ =" data-unit="m³; kg/m³">
+        <div class="prob-q"><p>어떤 돌이 공기 중에서 150 N, 물속에서 100 N으로 측정된다. 돌의 부피와 밀도는?</p></div>
+        <div class="prob-sol"><p>부력 = 50 N = \(\rho_w g V\) → \(V = 50/9810 = 5.10\times10^{-3}\) m³. \(\rho = W/(gV) = 150/(9.81\times5.10\times10^{-3}) = 3000\) kg/m³.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="메타센터 높이" data-answer="0.206" data-label="GM =" data-unit="m">
+        <div class="prob-q"><p>폭 8.0 m, 길이 20 m인 상자형 바지선의 질량이 400 t, 무게 중심이 바닥 위 3.2 m다. 바닷물(1025 kg/m³)에서 메타센터 높이 \(\overline{GM}\)은?</p></div>
+        <div class="prob-hint">흘수 \(d = m/(\rho LB)\), \(\overline{KB} = d/2\), \(\overline{BM} = B^2/(12d)\).</div>
+        <div class="prob-sol"><p>\(d = 400\,000/(1025\times20\times8.0) = 2.439\) m. \(\overline{KB} = 1.220\), \(\overline{BM} = 64/(12\times2.439) = 2.187\) m. \(\overline{GM} = 1.220 + 2.187 - 3.2 = 0.206\) m (안정).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="직선 가속" data-answer="2.45" data-label="a_max =" data-unit="m/s²">
+        <div class="prob-q"><p>길이 4.0 m, 높이 2.0 m인 열린 탱크에 물이 1.5 m 깊이로 있다. 물이 넘치지 않는 최대 수평 가속도는?</p></div>
+        <div class="prob-sol"><p>뒤쪽 상승 \((L/2)\tan\theta = 0.5\) → \(\tan\theta = 0.25\), \(a = g\tan\theta = 2.45\) m/s².</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="회전 용기" data-answer="134; 0.100" data-label="N =; 중심 수면 높이 =" data-unit="rpm; m">
+        <div class="prob-q"><p>지름 0.40 m, 높이 0.50 m인 원통에 물이 0.30 m 깊이로 있다. 물이 막 넘치기 시작하는 회전수와 그때 중심의 수면 높이(바닥 기준)는?</p></div>
+        <div class="prob-hint">벽 쪽 상승 \(\omega^2R^2/4g = 0.20\) m. 중심은 같은 양만큼 내려간다.</div>
+        <div class="prob-sol"><p>\(\omega = \sqrt{4(9.81)(0.20)}/0.20 = 14.0\) rad/s → \(N = 134\) rpm. 중심 \(= 0.30 - 0.20 = 0.100\) m &gt; 0이므로 바닥은 드러나지 않는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="등압면">
+        <div class="prob-q"><p>다음 중 같은 높이의 두 점의 압력이 같다고 말할 수 <b>없는</b> 경우는?</p></div>
+        <div class="prob-choices"><button>한 탱크 속 정지한 물의 두 점</button><button>밑에서 관으로 이어진, 모양이 다른 두 물통 속 두 점</button><button data-correct>U자관의 수은 위쪽, 한쪽은 물·다른 쪽은 기름 속에 있는 두 점</button><button>수은 U자관 바닥을 지나는 같은 수평선 위 수은 속 두 점</button></div>
+        <div class="prob-sol"><p>등압면 규칙은 같은 정지 유체로 이어진 점들에만 적용된다. 물과 기름은 서로 다른 유체이므로 같은 높이라도 압력이 다르다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="정육면체의 안정성">
+        <div class="prob-q"><p>비중 0.6인 균질한 나무 정육면체(한 변 a)를 한 면이 수평이 되게 물에 띄웠다. 이 자세는?</p></div>
+        <div class="prob-choices"><button>안정하다 (\(\overline{GM} = 0.10a\))</button><button>중립이다 (\(\overline{GM} = 0\))</button><button data-correct>불안정하다 (\(\overline{GM} \approx -0.03a\))</button><button>G가 B보다 위에 있으므로 판단할 필요 없이 불안정하다</button></div>
+        <div class="prob-sol"><p>흘수 \(d = 0.6a\), \(\overline{KB} = 0.3a\), \(\overline{BM} = a^2/(12\times0.6a) = 0.139a\), \(\overline{KG} = 0.5a\) → \(\overline{GM} = -0.031a < 0\). 비중이 약 0.21–0.79인 정육면체는 똑바로 서지 못하고 모서리로 기운다. 마지막 보기는 틀린 추론이다(G가 B 위여도 안정할 수 있다).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>정지한 물속 한 점에 작은 압력 센서를 위·아래·옆으로 돌려 대면 측정값은?</p><div class="opts">
+        <button class="opt">아래를 향할 때 가장 크다</button><button class="opt" data-correct>모든 방향에서 같다</button><button class="opt">옆을 향할 때 0이다</button><button class="opt">위를 향할 때 가장 크다</button>
+      </div><div class="quiz-exp">파스칼 원리: 정지 유체 속 한 점의 압력은 방향이 없는 스칼라다(쐐기 요소 유도).</div></div>
+      <div class="quiz-q"><p>크기가 일정한 수직 수문을 물속 더 깊은 곳으로 옮기면 압력 중심과 도심 사이 거리는?</p><div class="opts">
+        <button class="opt">커진다</button><button class="opt" data-correct>작아진다</button><button class="opt">변하지 않는다</button><button class="opt">압력 중심이 도심 위로 올라간다</button>
+      </div><div class="quiz-exp">\(y_R - y_c = I_{xc}/(y_cA)\)는 \(y_c\)에 반비례한다. 깊으면 압력 분포가 상대적으로 균일해져 작용점이 도심에 가까워진다.</div></div>
+      <div class="quiz-q"><p>배의 창고에 있던 무거운 화물을 갑판 위로 옮겼다. 흘수가 변하지 않는다면 \(\overline{GM}\)은?</p><div class="opts">
+        <button class="opt">커진다</button><button class="opt" data-correct>작아진다</button><button class="opt">변하지 않는다(배수량이 같으므로)</button><button class="opt">0이 된다</button>
+      </div><div class="quiz-exp">배수 부피가 같으니 KB와 BM은 그대로이고 KG만 커진다 → GM 감소. 갑판에 짐을 높이 쌓은 배가 전복되는 이유다.</div></div>
+      <div class="quiz-q"><p>물컵에 얼음이 떠 있다. 얼음이 모두 녹으면 수면 높이는?</p><div class="opts">
+        <button class="opt">올라간다</button><button class="opt">내려간다</button><button class="opt" data-correct>변하지 않는다</button><button class="opt">얼음의 모양에 따라 다르다</button>
+      </div><div class="quiz-exp">떠 있는 얼음은 자기 무게만큼의 물을 밀어낸다. 녹으면 같은 무게의 물이 되므로 정확히 그 부피를 채운다. (바닷물 위 담수 얼음은 녹으면 아주 약간 올라간다.)</div></div>
+      <div class="quiz-q"><p>같은 원통 용기에 물 대신 수은을 같은 깊이로 담아 같은 rpm으로 돌리면 벽과 중심의 수면 높이 차는?</p><div class="opts">
+        <button class="opt">13.6배 크다</button><button class="opt">1/13.6로 작다</button><button class="opt" data-correct>같다</button><button class="opt">수은은 포물면을 만들지 않는다</button>
+      </div><div class="quiz-exp">\(\Delta h = \omega^2R^2/2g\)에는 밀도가 없다. 압력 차는 13.6배지만, 그것을 떠받칠 무게도 13.6배이기 때문이다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const g = Flow.g, RW = 1000;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const DEG = Math.PI / 180;
+  const kN = (f) => (Math.abs(f) >= 1e6 ? (f / 1e6).toFixed(2) + " MN" : (f / 1e3).toFixed(Math.abs(f) >= 1e5 ? 0 : Math.abs(f) >= 1e4 ? 1 : 2) + " kN");
+  const kPa = (p, d) => (p / 1000).toFixed(d == null ? (Math.abs(p) >= 1e5 ? 0 : Math.abs(p) >= 1e4 ? 1 : 2) : d) + " kPa";
+  const sm = (v, u) => `${v} <small>${u}</small>`;
+  const HG = "rgba(150,155,165,0.88)", OIL = "rgba(225,170,40,0.5)";
+  function knob(ctx, x, y, col, r) { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col || SB.color("accent"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r || 9, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore(); }
+  function pathPoly(ctx, pts) { ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.closePath(); }
+  function fillPoly(ctx, pts, fill, stroke, lw) { ctx.save(); pathPoly(ctx, pts); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1.5; ctx.stroke(); } ctx.restore(); }
+  function line(ctx, pts, col, lw, dash) { if (pts.length < 2) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw || 1.5; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke(); ctx.restore(); }
+  function inPoly(pts, x, y) { let c = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const [xi, yi] = pts[i], [xj, yj] = pts[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; }
+  function area(pts) { let a = 0, cx = 0, cy = 0; for (let i = 0; i < pts.length; i++) { const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % pts.length], k = x1 * y2 - x2 * y1; a += k; cx += (x1 + x2) * k; cy += (y1 + y2) * k; } a /= 2; return { A: Math.abs(a), c: a ? [cx / (6 * a), cy / (6 * a)] : [0, 0] }; }
+  const solid = () => SB.color("surface"), wallC = () => SB.color("text-dim");
+
+  /* ============================================================ 머리: 모양이 다른 연결 용기 속 탐침 */
+  {
+    const zb = 0.2, zp = 0.65, zt = 3.9, zs = 3.2;
+    const OUT = [[0.5, zt], [0.5, zb], [8.4, zb], [8.4, zp], [9.5, zt], [8.8, zt], [7.7, zp], [6.6, zp], [6.6, 2.0], [6.05, 2.6], [6.05, zt], [5.55, zt], [5.55, 2.6], [5.0, 2.0], [5.0, zp], [3.5, zp], [4.1, zt], [2.3, zt], [2.9, zp], [1.7, zp], [1.7, zt]];
+    const OPEN = new Set([4, 10, 16, 20]);
+    const WP = [[1.1, 2.9], [1.1, 0.42], [3.2, 0.42], [3.2, 2.0], [3.6, 3.0], [3.2, 0.42], [5.8, 0.42], [5.8, 3.0], [5.8, 0.42], [8.05, 0.42], [8.05, 0.66], [8.78, 2.8], [8.05, 0.66], [8.05, 0.42], [1.1, 0.42]];
+    const st = { p: [1.1, 2.9], seg: 0, u: 0, idle: true };
+    const inWater = (x, z) => z < zs - 0.03 && z > zb + 0.03 && inPoly(OUT, x, z);
+    const cols = (z) => { const c4 = z < zp ? 8.05 : 8.05 + 1.1 * (z - zp) / (zt - zp); return [1.1, 3.2, 5.8, c4]; };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal();
+      const W = Phys.world(ctx, w, h, { x: [0.2, 9.8], y: [0, 5.0], pad: [6, 6, 6, 6], equal: true });
+      self._W = W;
+      const px = OUT.map(([x, z]) => [W.X(x), W.Y(z)]);
+      ctx.save(); pathPoly(ctx, px); ctx.clip();
+      const gr = ctx.createLinearGradient(0, W.Y(zs), 0, W.Y(zb));
+      gr.addColorStop(0, Flow.ramp(0.1, 0.28)); gr.addColorStop(1, Flow.ramp(0.62, 0.42));
+      ctx.fillStyle = gr; ctx.fillRect(0, W.Y(zs), w, W.Y(zb) - W.Y(zs));
+      ctx.strokeStyle = SB.isDark() ? "rgba(120,200,255,.9)" : "rgba(30,110,200,.9)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, W.Y(zs)); ctx.lineTo(w, W.Y(zs)); ctx.stroke();
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 3; ctx.lineCap = "round";
+      for (let i = 0; i < px.length; i++) { if (OPEN.has(i)) continue; const a = px[i], b = px[(i + 1) % px.length]; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+      ctx.restore();
+      const [x, z] = st.p, hh = zs - z, p = RW * g * hh, pmax = RW * g * (zs - zb);
+      // 등압선
+      SB.dashLine(ctx, W.X(0.3), W.Y(z), W.X(9.7), W.Y(z), P.accent2, [5, 4]);
+      cols(z).forEach((cx) => { if (inWater(cx, z) && Math.abs(cx - x) > 0.25) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(W.X(cx), W.Y(z), 6, 0, 2 * Math.PI); ctx.stroke(); ctx.restore(); } });
+      // 탐침 + 등방 압력 화살표
+      const X = W.X(x), Y = W.Y(z), L = 5 + 20 * p / pmax;
+      for (let k = 0; k < 8; k++) { const a = (k * Math.PI) / 4; SB.arrow(ctx, X + Math.cos(a) * (9 + L), Y + Math.sin(a) * (9 + L), X + Math.cos(a) * 9, Y + Math.sin(a) * 9, { color: P.accent, width: 1.8, head: 6 }); }
+      ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(X, Y, 7, 0, 2 * Math.PI); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+      self._pp = [X, Y];
+      // 압력계
+      const gx = w - 36, gy = 34, R = 24, a0 = 0.75 * Math.PI, a1 = 2.25 * Math.PI, an = a0 + (a1 - a0) * SB.clamp(p / pmax, 0, 1);
+      ctx.save(); ctx.fillStyle = SB.color("bg-elev"); ctx.strokeStyle = P.border; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(gx, gy, R + 4, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = P.faint; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(gx, gy, R - 3, a0, a1); ctx.stroke();
+      ctx.strokeStyle = P.bad; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx + Math.cos(an) * (R - 4), gy + Math.sin(an) * (R - 4)); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `깊이 h = ${hh.toFixed(2)} m   p − p_atm = ρgh = ${(p / 1000).toFixed(1)} kPa`, 10, 16, { align: "left", mono: true, size: 12, color: P.text });
+      SB.label(ctx, "같은 깊이 = 같은 압력 (주황 점선)", 10, 34, { align: "left", size: 11, color: P.accent2 });
+    }, { aspect: 0.5, minHeight: 210, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._pp ? [{ id: "p", x: cv._pp[0], y: cv._pp[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "p" || !cv._W) return; const wx = cv._W.ix(x), wz = cv._W.iy(y); st.idle = false; if (inWater(wx, wz)) st.p = [wx, wz]; },
+    });
+    $("hero-auto").addEventListener("click", () => { st.idle = true; st.seg = 0; st.u = 0; st.p = WP[0].slice(); });
+    SB.loop("hero", (dt) => {
+      if (st.idle) {
+        const a = WP[st.seg], b = WP[(st.seg + 1) % WP.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1e-3;
+        st.u += (0.7 * dt) / L;
+        if (st.u >= 1) { st.u = 0; st.seg = (st.seg + 1) % WP.length; }
+        const a2 = WP[st.seg], b2 = WP[(st.seg + 1) % WP.length];
+        st.p = [a2[0] + (b2[0] - a2[0]) * st.u, a2[1] + (b2[1] - a2[1]) * st.u];
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ============================================================ 정수압 역설 */
+  {
+    const HV = 2.2, T30 = Math.tan(30 * DEG), T40 = Math.tan(40 * DEG), HN = 0.35 / T40;
+    const walls = [
+      (z) => -0.5,
+      (z) => -0.5 - z * T30,
+      (z) => (z <= HN ? -0.5 + z * T40 : -0.15),
+    ];
+    const cxs = [0.85, 3.45, 6.0], names = ["A", "B", "C"];
+    let rho = 1000;
+    const getH = SB.range("pd-h", (v) => v.toFixed(2) + " m", () => { cv.redraw(); stats(); });
+    SB.seg("pd-fl", (v) => { rho = Number(v); cv.redraw(); stats(); });
+    $("pd-arr").addEventListener("change", () => cv.redraw());
+    const zs = (h) => { const out = []; for (let i = 0; i <= 40; i++) out.push((h * i) / 40); if (h > HN) out.push(HN); return out.sort((a, b) => a - b); };
+    function shape(k, h) { const Z = zs(h); const L = Z.map((z) => [walls[k](z), z]); const R = Z.slice().reverse().map((z) => [-walls[k](z), z]); return L.concat(R); }
+    function weights(h) { return [0, 1, 2].map((k) => rho * g * area(shape(k, h)).A); }
+    function stats() {
+      const h = getH(), Fb = rho * g * h * 1.0, Ws = weights(h);
+      SB.stat("pd-fb", sm((Fb / 1000).toFixed(2), "kN/m"));
+      SB.stat("pd-w", sm(Ws.map((x) => (x / 1000).toFixed(1)).join(" · "), "kN/m"));
+      SB.stat("pd-wall", sm(`${((Ws[1] - Fb) / 1000).toFixed(1)}↓ · ${(Math.abs(Ws[2] - Fb) / 1000).toFixed(1)}↑`, "kN/m"));
+    }
+    const cv = SB.canvas("cv-paradox", (ctx, w, h, self) => {
+      const P = pal(), H = getH();
+      const W = Phys.world(ctx, w, h, { x: [-0.1, 7.0], y: [-0.45, 2.5], pad: [6, 6, 8, 24], equal: true });
+      const pmax = 1260 * g * 2.0, kL = 1.0 / pmax;
+      const Fb = rho * g * H, Ws = weights(H);
+      for (let k = 0; k < 3; k++) {
+        const cx = cxs[k], pts = shape(k, H).map(([x, z]) => [W.X(cx + x), W.Y(z)]);
+        const gr = ctx.createLinearGradient(0, W.Y(H), 0, W.Y(0));
+        gr.addColorStop(0, Flow.ramp(0.1, 0.26)); gr.addColorStop(1, Flow.ramp(0.1 + 0.55 * H / 2, 0.42));
+        fillPoly(ctx, pts, gr);
+        line(ctx, [[W.X(cx + walls[k](H)), W.Y(H)], [W.X(cx - walls[k](H)), W.Y(H)]], SB.isDark() ? "rgba(120,200,255,.9)" : "rgba(30,110,200,.9)", 2);
+        const Z = zs(HV), lw = Z.map((z) => [W.X(cx + walls[k](z)), W.Y(z)]), rw = Z.map((z) => [W.X(cx - walls[k](z)), W.Y(z)]);
+        line(ctx, lw.slice().reverse().concat([[W.X(cx + 0.5), W.Y(0)]]), P.dim, 3); line(ctx, rw, P.dim, 3);
+        line(ctx, [[W.X(cx - 0.5), W.Y(0)], [W.X(cx + 0.5), W.Y(0)]], P.dim, 3);
+        if ($("pd-arr").checked) {
+          for (let i = 0; i < 7; i++) {
+            if (w < 480 && i % 2) continue;
+            const z = H * (i + 0.5) / 7, p = rho * g * (H - z), e = 1e-3;
+            const x0 = walls[k](z), dx = (walls[k](z + e) - walls[k](z - e)) / (2 * e), n = Math.hypot(dx, 1);
+            const nl = [-1 / n, dx / n];
+            [[x0, nl], [-x0, [-nl[0], nl[1]]]].forEach(([xx, nn]) => {
+              const L = p * kL; SB.arrow(ctx, W.X(cx + xx - nn[0] * L), W.Y(z - nn[1] * L), W.X(cx + xx), W.Y(z), { color: P.accent, width: 1.4, head: 5 });
+            });
+          }
+          for (let i = 0; i < 5; i++) { const x = -0.4 + 0.2 * i, L = Fb / 1 * kL; SB.arrow(ctx, W.X(cx + x), W.Y(L), W.X(cx + x), W.Y(0), { color: P.accent2, width: 1.6, head: 5 }); }
+        }
+        SB.label(ctx, names[k], W.X(cx), W.Y(HV) - 2, { bold: true, color: P.text });
+        const nar = w < 480;
+        SB.label(ctx, nar ? `W ${(Ws[k] / 1000).toFixed(1)}` : `W = ${(Ws[k] / 1000).toFixed(1)} kN`, W.X(cx), W.Y(-0.12), { size: nar ? 10 : 11, color: P.text });
+        SB.label(ctx, nar ? `F ${(Fb / 1000).toFixed(1)}` : `F바닥 = ${(Fb / 1000).toFixed(1)} kN`, W.X(cx), W.Y(-0.32), { size: nar ? 10 : 11, color: P.accent2 });
+      }
+      const hx = W.X(cxs[1]), hy = W.Y(H); knob(ctx, hx, hy, P.accent); self._h = [hx, hy]; self._W = W;
+      SB.dashLine(ctx, W.X(-0.05), hy, W.X(6.95), hy, P.faint, [3, 4]);
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 380 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "h") return; getH.set(Math.round(SB.clamp(cv._W.iy(y), 0.2, 2) * 100) / 100); } });
+    stats();
+  }
+
+  /* ============================================================ 절대·계기·진공 */
+  {
+    const st = { p: 80, pa: 101.3 };
+    const cv = SB.canvas("cv-gauge", (ctx, w, h, self) => {
+      const P = pal(), x0 = 24, x1 = w - 20, X = (p) => x0 + (p / 250) * (x1 - x0), yA = h * 0.52;
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, yA); ctx.lineTo(x1, yA); ctx.stroke();
+      ctx.fillStyle = P.dim; ctx.font = "11px " + SB.color("mono"); ctx.textAlign = "center";
+      for (let p = 0; p <= 250; p += 50) { ctx.beginPath(); ctx.moveTo(X(p), yA - 4); ctx.lineTo(X(p), yA + 4); ctx.stroke(); ctx.fillText(p, X(p), yA + 16); }
+      ctx.restore();
+      SB.label(ctx, "절대 0 (완전 진공)", X(0) + 4, h - 10, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, "kPa (abs)", x1, yA + 30, { align: "right", size: 11, color: P.dim });
+      const yT = yA - 34, yB = yA + 44;
+      SB.arrow(ctx, X(0), yT, X(st.p), yT, { color: P.accent, width: 2 });
+      SB.label(ctx, `절대 압력 ${st.p.toFixed(1)} kPa`, (X(0) + X(st.p)) / 2, yT - 12, { color: P.accent, size: 12, bold: true });
+      const gage = st.p >= st.pa;
+      SB.arrow(ctx, X(st.pa), yB, X(st.p), yB, { color: gage ? P.ok : P.warn, width: 2 });
+      SB.label(ctx, gage ? `계기 +${(st.p - st.pa).toFixed(1)} kPa` : `진공 ${(st.pa - st.p).toFixed(1)} kPa`, (X(st.pa) + X(st.p)) / 2, yB + 14, { color: gage ? P.ok : P.warn, size: 12, bold: true });
+      SB.dashLine(ctx, X(st.pa), yA - 20, X(st.pa), yB + 4, P.accent2, [3, 3]);
+      SB.dashLine(ctx, X(st.p), yT, X(st.p), yB, P.accent, [3, 3]);
+      knob(ctx, X(st.p), yA, P.accent); knob(ctx, X(st.pa), yA - 20, P.accent2);
+      SB.label(ctx, "p_atm", X(st.pa), yA - 36 < yT + 10 ? yA - 4 - 30 : yA - 36, { size: 11, color: P.accent2 });
+      self._X = X; self._x0 = x0; self._x1 = x1; self._yA = yA;
+      $("gg-r").textContent = `p_abs = ${st.p.toFixed(1)}, p_atm = ${st.pa.toFixed(1)} → ${gage ? "p_gage = " + (st.p - st.pa).toFixed(1) : "p_vac = " + (st.pa - st.p).toFixed(1)} kPa`;
+    }, { aspect: 0.3, minHeight: 170, maxHeight: 210 });
+    SB.drag(cv, {
+      handles: () => (cv._X ? [{ id: "p", x: cv._X(st.p), y: cv._yA, r: 14 }, { id: "a", x: cv._X(st.pa), y: cv._yA - 20, r: 14 }] : []),
+      move: (id, x) => { const p = ((x - cv._x0) / (cv._x1 - cv._x0)) * 250; if (id === "p") st.p = Math.round(SB.clamp(p, 0, 250) * 2) / 2; if (id === "a") st.pa = Math.round(SB.clamp(p, 50, 110) * 2) / 2; },
+    });
+  }
+
+  /* ============================================================ 깊이 드래그 숫자 */
+  SB.tangle("tg-depth", (v) => {
+    const rho = v.sg * 1000, pg = rho * g * v.h, pabs = pg + v.pa * 1000;
+    return { rho: rho.toFixed(0) + " kg/m³", pg: kPa(pg), pabs: kPa(pabs), hw: (pabs / (1000 * g)).toFixed(2) + " m", hhg: (pabs / (13600 * g) * 1000).toFixed(0) + " mm",
+      msg: v.h > 100 && v.sg < 1.1 ? "심해 잠수정이 견뎌야 하는 압력이다." : v.sg > 13 ? "수은은 물보다 13.6배 빨리 압력이 는다." : "" };
+  });
+
+  /* ============================================================ 기압계 */
+  {
+    const LQ = { hg: { ko: "수은", rho: 13550, pv: 0.0002, c: HG }, w: { ko: "물", rho: 998, pv: 2.34, c: Flow.waterColor(0.55) }, et: { ko: "에탄올", rho: 789, pv: 5.95, c: "rgba(200,120,220,0.45)" } };
+    let liq = "hg";
+    const getP = SB.range("bb-p", (v) => v.toFixed(1) + " kPa", () => cv.redraw());
+    SB.seg("bb-liq", (v) => { liq = v; cv.redraw(); });
+    const cv = SB.canvas("cv-baro", (ctx, w, h) => {
+      const P = pal(), L = LQ[liq], pa = getP(), col = ((pa - L.pv) * 1000) / (L.rho * g);
+      const W = Phys.world(ctx, w, h, { x: [-4, 8], y: [-1.2, 14.5], pad: [40, 10, 10, 14] });
+      W.axes({ step: 2, yLabel: "m", xFmt: () => "" });
+      ctx.save(); ctx.fillStyle = L.c; ctx.fillRect(W.X(0), W.Y(0), W.X(4) - W.X(0), W.Y(-0.9) - W.Y(0)); ctx.restore();
+      line(ctx, [[W.X(0), W.Y(0.6)], [W.X(0), W.Y(-0.9)], [W.X(4), W.Y(-0.9)], [W.X(4), W.Y(0.6)]], P.dim, 2);
+      const tx0 = W.X(1.6), tx1 = W.X(2.4), ztop = 14;
+      ctx.save(); ctx.fillStyle = L.c; ctx.fillRect(tx0, W.Y(Math.min(col, ztop)), tx1 - tx0, W.Y(-0.5) - W.Y(Math.min(col, ztop))); ctx.restore();
+      ctx.save(); ctx.fillStyle = "rgba(150,150,160,.1)"; ctx.fillRect(tx0, W.Y(ztop), tx1 - tx0, W.Y(Math.min(col, ztop)) - W.Y(ztop)); ctx.restore();
+      line(ctx, [[tx0, W.Y(-0.5)], [tx0, W.Y(ztop)], [tx1, W.Y(ztop)], [tx1, W.Y(-0.5)]], P.text, 2);
+      SB.label(ctx, `증기 p_v ${L.pv < 0.01 ? "≈ 0" : "= " + L.pv.toFixed(2) + " kPa"}`, tx1 + 6, W.Y(ztop) + 12, { align: "left", size: 11, color: P.dim });
+      SB.arrow(ctx, W.X(5.5), W.Y(0), W.X(5.5), W.Y(Math.min(col, ztop)), { color: P.accent, width: 2 });
+      SB.arrow(ctx, W.X(5.5), W.Y(Math.min(col, ztop)), W.X(5.5), W.Y(0), { color: P.accent, width: 2 });
+      SB.label(ctx, `h = ${col.toFixed(col < 2 ? 3 : 2)} m`, W.X(5.7), W.Y(Math.min(col, ztop) / 2), { align: "left", bold: true, color: P.accent });
+      SB.label(ctx, "p_atm ↓", W.X(3.2), W.Y(0.9), { size: 11, color: P.accent2 });
+      $("bb-r").textContent = `${L.ko}: h = (p_atm − p_v)/ρg = ${col.toFixed(3)} m`;
+    }, { aspect: 0.62, minHeight: 230, maxHeight: 330 });
+  }
+
+  /* ============================================================ 고도와 대기압 */
+  {
+    let Z = 3, cv = null;
+    const p0 = 101.325, T0 = 288.15, R = 287;
+    const pinc = (z) => p0 - (1.225 * g * z) / 1000;
+    const piso = (z) => p0 * Math.exp((-g * z) / (R * T0));
+    const pisa = (z) => Flow.atmosphere(z).p / 1000;
+    SB.tangle("tg-atm", (v) => {
+      Z = v.z; const z = v.z * 1000, a = Flow.atmosphere(z);
+      return { pi: pinc(z) > 0 ? pinc(z).toFixed(1) + " kPa" : "음수(불가능)", piso: piso(z).toFixed(1) + " kPa", pisa: pisa(z).toFixed(1) + " kPa", T: (a.T - 273.15).toFixed(1) + " °C",
+        msg: z > 11000 ? "11 km 위 성층권은 기온이 일정해 등온 대기 공식이 들어맞는다." : z > 8432 ? "밀도 일정 가정은 8.43 km에서 압력이 0이 되어 버린다." : z < 1500 ? "낮은 고도에서는 세 모형이 거의 같다." : "고도가 높을수록 밀도 변화를 무시한 비압축 가정의 오차가 커진다." };
+    }, { onChange: () => cv && cv.redraw() });
+    cv = SB.canvas("cv-atm", (ctx, w, h) => {
+      const P = pal(), S = (f, zmax) => { const d = []; for (let i = 0; i <= 80; i++) { const z = (zmax * i) / 80; d.push([f(z * 1000), z]); } return d; };
+      const z = Z;
+      SB.chart(ctx, null, { x: [0, 105], y: [0, 20], xLabel: "압력 p (kPa)", yLabel: "고도 z (km)",
+        series: [{ data: S(pinc, 8.432), color: P.faint, dash: [5, 4] }, { data: S(piso, 20), color: P.accent2 }, { data: S(pisa, 20), color: P.accent, width: 2.5 }],
+        hlines: [{ y: z, color: P.dim }],
+        points: [pinc(z * 1000) > 0 ? { x: pinc(z * 1000), y: z, color: P.dim, r: 4 } : null, { x: piso(z * 1000), y: z, color: P.accent2, r: 5 }, { x: pisa(z * 1000), y: z, color: P.accent, r: 6 }].filter(Boolean) });
+      SB.label(ctx, "표준 대기", w - 70, 26, { color: P.accent, size: 11, bold: true });
+      SB.label(ctx, "등온", w - 70, 42, { color: P.accent2, size: 11, bold: true });
+      SB.label(ctx, "ρ 일정", w - 70, 58, { color: P.dim, size: 11 });
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ============================================================ U자관 차압 마노미터 */
+  {
+    const st = { fm: 13550, f1: 1.2 };
+    const getPa = SB.range("mn-pa", (v) => v.toFixed(1) + " kPa", () => upd());
+    const getPb = SB.range("mn-pb", (v) => v.toFixed(1) + " kPa", () => upd());
+    const getDz = SB.range("mn-dz", (v) => v.toFixed(2) + " m", () => upd());
+    const getD = SB.range("mn-d", (v) => v + " mm", () => upd());
+    SB.seg("mn-fm", (v) => { st.fm = Number(v); upd(); });
+    SB.seg("mn-f1", (v) => { st.f1 = Number(v); upd(); });
+    const HMAX = 1.6;
+    function solve() { const dp = (getPa() - getPb()) * 1000, dz = getDz(), dr = st.fm - st.f1; if (dr <= 0) return { bad: true, dp }; const hh = (dp - st.f1 * g * dz) / (dr * g); return { h: hh, dp, dz, dr, over: Math.abs(hh) > HMAX }; }
+    function upd() {
+      const s = solve();
+      SB.stat("mn-dp", sm((s.dp / 1000).toFixed(2), "kPa"));
+      if (s.bad) { SB.stat("mn-h", "—"); SB.stat("mn-chk", '<small>마노미터 유체가 더 무거워야 한다</small>'); }
+      else { SB.stat("mn-h", s.over ? '<small>관 길이 초과</small>' : sm((s.h * 1000).toFixed(0), "mm")); SB.stat("mn-chk", sm(((s.dr * g * s.h + st.f1 * g * s.dz) / 1000).toFixed(2), "kPa")); }
+      cv.redraw();
+    }
+    const fcol = (r) => (r < 10 ? "rgba(160,160,170,.14)" : r < 900 ? OIL : Flow.waterColor(0.4));
+    const mcol = (r) => (r > 10000 ? HG : r > 1200 ? "rgba(120,200,140,.55)" : "rgba(60,140,220,.55)");
+    const cv = SB.canvas("cv-mano", (ctx, w, h, self) => {
+      const P = pal(), s = solve(), dz = getDz();
+      const W = Phys.world(ctx, w, h, { x: [-0.3, 3.9], y: [-1.15, 2.15], pad: [4, 4, 6, 6], equal: true });
+      self._W = W;
+      const xA = 0.8, xB = 2.8, zA = 0.9, zB = 0.9 + dz, zbot = -0.95, hd = SB.clamp(getD() * 0.9, 4, 18) / 2;
+      const hh = s.bad ? 0 : SB.clamp(s.h, -HMAX, HMAX), zL = -hh / 2, zR = hh / 2;
+      // 탱크
+      [[0, zA, "A", getPa()], [2.6, zB, "B", getPb()]].forEach(([x0, z0, nm, pp]) => {
+        const r = [W.X(x0), W.Y(z0 + 0.7), W.X(x0 + 1.0) - W.X(x0), W.Y(z0) - W.Y(z0 + 0.7)];
+        ctx.save(); ctx.fillStyle = fcol(st.f1); ctx.fillRect(...r); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.strokeRect(...r); ctx.restore();
+        SB.label(ctx, `탱크 ${nm}: ${pp.toFixed(1)} kPa`, W.X(x0 + 0.5), W.Y(z0 + 0.45), { size: 11, bold: true, color: P.text });
+      });
+      const X = (x) => W.X(x);
+      const leg = (xc, zTop, zLo, zHi, c) => { if (zHi > zLo) { ctx.save(); ctx.fillStyle = c; ctx.fillRect(X(xc) - hd, W.Y(zHi), 2 * hd, W.Y(zLo) - W.Y(zHi)); ctx.restore(); } };
+      if (!s.bad) {
+        leg(xA, zA, zL, zA, fcol(st.f1)); leg(xB, zB, zR, zB, fcol(st.f1));
+        leg(xA, zA, zbot, zL, mcol(st.fm)); leg(xB, zB, zbot, zR, mcol(st.fm));
+        ctx.save(); ctx.fillStyle = mcol(st.fm); ctx.fillRect(X(xA) - hd, W.Y(zbot) - 2 * hd, X(xB) - X(xA) + 2 * hd, 2 * hd); ctx.restore();
+      } else { leg(xA, zA, zbot, zA, fcol(st.f1)); leg(xB, zB, zbot, zB, fcol(st.f1)); SB.label(ctx, "마노미터 유체가 위 유체보다 무거워야 한다", W.X(1.8), W.Y(0.2), { color: P.bad, bold: true }); }
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.moveTo(X(xA) - hd, W.Y(zA)); ctx.lineTo(X(xA) - hd, W.Y(zbot)); ctx.lineTo(X(xB) + hd, W.Y(zbot)); ctx.lineTo(X(xB) + hd, W.Y(zB));
+      ctx.moveTo(X(xA) + hd, W.Y(zA)); ctx.lineTo(X(xA) + hd, W.Y(zbot) - 2 * hd); ctx.lineTo(X(xB) - hd, W.Y(zbot) - 2 * hd); ctx.lineTo(X(xB) - hd, W.Y(zB)); ctx.stroke(); ctx.restore();
+      if (!s.bad) {
+        SB.dashLine(ctx, X(xA) - 30, W.Y(zL), X(xB) + 30, W.Y(zL), P.faint, [3, 3]);
+        SB.dashLine(ctx, X(xA) - 30, W.Y(zR), X(xB) + 30, W.Y(zR), P.faint, [3, 3]);
+        const xm = W.X(1.8);
+        if (Math.abs(hh) > 0.02) { SB.arrow(ctx, xm, W.Y(zL), xm, W.Y(zR), { color: P.accent2, width: 1.8 }); SB.arrow(ctx, xm, W.Y(zR), xm, W.Y(zL), { color: P.accent2, width: 1.8 }); }
+        SB.label(ctx, `h = ${(s.h * 1000).toFixed(0)} mm${s.over ? " (범위 초과)" : ""}`, xm + 8, W.Y((zL + zR) / 2), { align: "left", color: P.accent2, bold: true });
+        const pL = getPa() * 1000 + st.f1 * g * (zA - zL), pR = pL - st.fm * g * (zR - zL);
+        SB.label(ctx, (pL / 1000).toFixed(2), X(xA) - hd - 6, W.Y(zL), { align: "right", mono: true, size: 11, color: P.text });
+        SB.label(ctx, (pR / 1000).toFixed(2), X(xB) + hd + 6, W.Y(zR), { align: "left", mono: true, size: 11, color: P.text });
+        knob(ctx, X(xA), W.Y(zL), P.accent, 8); knob(ctx, X(xB), W.Y(zR), P.accent, 8);
+        self._hl = [X(xA), W.Y(zL)]; self._hr = [X(xB), W.Y(zR)];
+      } else { self._hl = self._hr = null; }
+    }, { aspect: 0.8, minHeight: 300, maxHeight: 460 });
+    SB.drag(cv, {
+      handles: () => (cv._hl ? [{ id: "L", x: cv._hl[0], y: cv._hl[1], r: 14 }, { id: "R", x: cv._hr[0], y: cv._hr[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (!id || !cv._W) return; const z = cv._W.iy(y), hh = SB.clamp(id === "R" ? 2 * z : -2 * z, -HMAX, HMAX);
+        const pa = getPb() + ((st.fm - st.f1) * g * hh + st.f1 * g * getDz()) / 1000;
+        getPa.set(Math.round(SB.clamp(pa, -20, 60) * 10) / 10);
+      },
+    });
+    upd();
+  }
+
+  /* ============================================================ 경사 마노미터 */
+  {
+    let rho = 827;
+    const getDp = SB.range("ic-dp", (v) => v + " Pa", () => cv.redraw());
+    const getTh = SB.range("ic-th", (v) => v + "°", () => cv.redraw());
+    SB.seg("ic-fl", (v) => { rho = Number(v); cv.redraw(); });
+    const cv = SB.canvas("cv-incl", (ctx, w, h) => {
+      const P = pal(), th = getTh() * DEG, dp = getDp(), hh = dp / (rho * g), L = hh / Math.sin(th), Lt = 1.0;
+      const W = Phys.world(ctx, w, h, { x: [-0.35, 1.15], y: [-0.14, Math.max(0.32, Math.sin(th) + 0.1)], pad: [6, 6, 6, 6], equal: true });
+      const c = rho > 900 ? Flow.waterColor(0.55) : "rgba(220,60,60,0.55)";
+      // 저장조
+      ctx.save(); ctx.fillStyle = c; ctx.fillRect(W.X(-0.3), W.Y(0), W.X(0) - W.X(-0.3), W.Y(-0.1) - W.Y(0)); ctx.restore();
+      line(ctx, [[W.X(-0.3), W.Y(0.12)], [W.X(-0.3), W.Y(-0.1)], [W.X(0.02), W.Y(-0.1)]], P.dim, 2);
+      SB.label(ctx, "p₁", W.X(-0.15), W.Y(0.18), { bold: true, color: P.accent2 });
+      const ex = Math.cos(th), ez = Math.sin(th), Lc = Math.min(L, Lt);
+      ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = 7; ctx.lineCap = "butt"; ctx.beginPath(); ctx.moveTo(W.X(0), W.Y(0)); ctx.lineTo(W.X(Lc * ex), W.Y(Lc * ez)); ctx.stroke(); ctx.restore();
+      line(ctx, [[W.X(0), W.Y(0)], [W.X(Lt * ex), W.Y(Lt * ez)]], P.dim, 1.2);
+      for (let k = 1; k < 10; k++) { const q = [W.X(0.1 * k * ex), W.Y(0.1 * k * ez)]; ctx.save(); ctx.strokeStyle = P.faint; ctx.beginPath(); ctx.moveTo(q[0] + ez * 5, q[1] + ex * 5); ctx.lineTo(q[0] - ez * 5, q[1] - ex * 5); ctx.stroke(); ctx.restore(); }
+      SB.label(ctx, "p₂", W.X(Lt * ex) + 12, W.Y(Lt * ez) - 8, { bold: true, color: P.accent2 });
+      SB.dashLine(ctx, W.X(0), W.Y(0), W.X(1.1), W.Y(0), P.faint);
+      if (L <= Lt) {
+        SB.dashLine(ctx, W.X(Lc * ex), W.Y(Lc * ez), W.X(Lc * ex), W.Y(0), P.accent);
+        SB.label(ctx, `h = ${(hh * 1000).toFixed(1)} mm`, W.X(Lc * ex) + 6, W.Y(Lc * ez / 2), { align: "left", size: 11, color: P.accent });
+        SB.label(ctx, `L = ${(L * 1000).toFixed(0)} mm`, W.X(Lc * ex / 2 - ez * 0.07), W.Y(Lc * ez / 2 + ex * 0.07), { bold: true, color: P.text });
+      } else SB.label(ctx, "관 끝을 넘침", W.X(0.5), W.Y(Math.sin(th) * 0.5 + 0.1), { color: P.bad, bold: true });
+      $("ic-r").textContent = `L = ${(L * 1000).toFixed(0)} mm, h = ${(hh * 1000).toFixed(1)} mm (×${(1 / Math.sin(th)).toFixed(2)})`;
+    }, { aspect: 0.55, minHeight: 190, maxHeight: 300 });
+  }
+
+  /* ============================================================ 드릴: 정수압·마노미터 */
+  SB.drill("drill-hydro", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const sgs = [0.68, 0.79, 0.85, 0.92, 1.0, 1.03, 1.26], sg = sgs[Math.floor(Math.random() * sgs.length)], h = (5 + Math.round(Math.random() * 295)) / 10, p = sg * 1000 * g * h / 1000;
+      return { q: `<p>비중 \\(${sg}\\)인 액체의 자유 표면 아래 \\(${h}\\) m 깊이의 계기 압력은?</p>`, answer: p, label: "p =", unit: "kPa", sol: `\\(p = \\rho g h = (${sg * 1000})(9.81)(${h}) = ${p.toFixed(2)}\\) kPa` };
+    }
+    if (k === 1) {
+      const hh = 50 + Math.round(Math.random() * 35) * 10, pa = 95 + Math.round(Math.random() * 14) / 2, p = pa + 13600 * g * hh / 1e6;
+      return { q: `<p>기체 탱크에 연결한 수은(비중 13.6) U자관의 대기 쪽 액면이 탱크 쪽보다 \\(${hh}\\) mm 높다. 대기압이 \\(${pa}\\) kPa일 때 탱크 기체의 <b>절대</b> 압력은? (기체 기둥 무시)</p>`, answer: p, label: "p =", unit: "kPa (abs)", sol: `\\(p = p_\\text{atm} + \\rho_\\text{Hg} g h = ${pa} + (13600)(9.81)(${hh / 1000})/1000 = ${p.toFixed(2)}\\) kPa` };
+    }
+    const hh = 20 + Math.round(Math.random() * 28) * 10, dp = 12600 * g * hh / 1e6;
+    return { q: `<p>같은 높이에 있는 두 물관을 수은(비중 13.6) 차압 마노미터로 이었더니 액면 차가 \\(${hh}\\) mm였다. 압력 차 \\(p_A - p_B\\)는?</p>`, answer: dp, label: "Δp =", unit: "kPa", sol: `\\(\\Delta p = (\\rho_m - \\rho)gh = (12600)(9.81)(${hh / 1000})/1000 = ${dp.toFixed(2)}\\) kPa — \\(\\rho_m\\)만 쓰면 8% 크게 나온다.` };
+  });
+  /* ============================================================ 수문 드래그 숫자 */
+  SB.tangle("tg-gate", (v) => {
+    const th = v.th * DEG, A = v.b * v.L, hc = v.s + (v.L / 2) * Math.sin(th), F = RW * g * hc * A;
+    const yc = hc / Math.sin(th), dy = (v.b * v.L ** 3 / 12) / (yc * A);
+    return { hc: hc.toFixed(2) + " m", F: kN(F), dy: (dy * 100).toFixed(1) + " cm", xi: (v.L / 2 + dy).toFixed(3) + " m",
+      msg: v.s === 0 && v.th === 90 ? "윗변이 수면에 닿은 수직 수문: 압력 중심은 정확히 깊이의 2/3." : dy < 0.02 * v.L ? "깊이 잠겨 압력 중심이 도심과 거의 같다." : "" };
+  });
+
+  /* ============================================================ 경사 수문 + 지지력 게임 */
+  {
+    const st = { s: 1.0, th: 60, game: false, open: 0, openV: 0, opening: false, res: "—", drops: [], checked: false };
+    const getL = SB.range("gt-L", (v) => v.toFixed(1) + " m", () => reset());
+    const getB = SB.range("gt-b", (v) => v.toFixed(1) + " m", () => reset());
+    const getP = SB.range("gt-P", (v) => v.toFixed(1) + " kN", () => { if (st.open > 0) { st.open = 0; st.opening = false; st.drops = []; } st.res = "—"; cv.redraw(); stats(); });
+    function reset() { st.open = 0; st.opening = false; st.drops = []; st.res = "—"; st.checked = false; cv.redraw(); stats(); }
+    function calc() { const th = st.th * DEG, s = st.s, L = getL(), b = getB(); const F = RW * g * b * (s * L + (L * L * Math.sin(th)) / 2), M = RW * g * b * ((s * L * L) / 2 + (L ** 3 * Math.sin(th)) / 3); return { F, M, xi: M / F, Preq: M / L, hc: s + (L / 2) * Math.sin(th), L, b, th, s }; }
+    function stats() {
+      const c = calc(), hide = st.game && !st.checked;
+      SB.stat("gt-F", hide ? "?" : sm((c.F / 1000).toFixed(1), "kN"));
+      SB.stat("gt-hc", sm(c.hc.toFixed(2), "m"));
+      SB.stat("gt-xi", hide ? "?" : sm(c.xi.toFixed(3), "m"));
+      SB.stat("gt-M", hide ? "?" : sm((c.M / 1000).toFixed(1), "kN·m"));
+      SB.stat("gt-Preq", hide ? "?" : sm((c.Preq / 1000).toFixed(1), "kN"));
+      SB.stat("gt-res", st.res);
+    }
+    const cv = SB.canvas("cv-gate", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), th = c.th, L = c.L;
+      const W = Phys.world(ctx, w, h, { x: [-2.6, 4.4], y: [-3.6, 3.6], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      const B = [L * Math.cos(th), -L * Math.sin(th)], ang = th + st.open * DEG, Bo = [L * Math.cos(ang), -L * Math.sin(ang)];
+      const n = [-Math.sin(th), -Math.cos(th)], Xr = 4.4, zB = B[1];
+      const wpoly = [[0, st.s], [Xr, st.s], [Xr, zB], B].concat(st.open > 0.1 ? [Bo] : []).concat([[0, 0]]);
+      Flow.fillWater(ctx, wpoly.map(([x, z]) => [W.X(x), W.Y(z)]), { alpha: 0.32 });
+      // 바닥(문턱)과 벽
+      ctx.save(); ctx.fillStyle = solid(); ctx.strokeStyle = wallC(); ctx.lineWidth = 1.5;
+      ctx.fillRect(W.X(B[0] - 0.15), W.Y(zB), W.X(Xr) - W.X(B[0] - 0.15), h - W.Y(zB)); ctx.strokeRect(W.X(B[0] - 0.15), W.Y(zB), W.X(Xr) - W.X(B[0] - 0.15), h);
+      ctx.fillRect(W.X(-0.35), 0, W.X(0) - W.X(-0.35), W.Y(0)); ctx.strokeRect(W.X(-0.35), -2, W.X(0) - W.X(-0.35), W.Y(0) + 2);
+      ctx.restore();
+      // 압력 분포
+      const pmaxAll = RW * g * (3 + 3), kp = (0.32 * w) / pmaxAll / W.s;
+      if (st.open < 0.5) {
+        const env = [];
+        for (let i = 0; i <= 10; i++) {
+          const xi = (L * i) / 10, pt = [xi * Math.cos(th), -xi * Math.sin(th)], p = RW * g * (st.s + xi * Math.sin(th)), Lp = p * kp;
+          const s0 = [pt[0] - n[0] * Lp, pt[1] - n[1] * Lp]; env.push(s0);
+          if (i % 2 === 0 || L > 2) SB.arrow(ctx, W.X(s0[0]), W.Y(s0[1]), W.X(pt[0]), W.Y(pt[1]), { color: P.accent, width: 1.3, head: 5 });
+        }
+        line(ctx, env.map(([x, z]) => [W.X(x), W.Y(z)]), P.accent, 1.2, [3, 3]);
+        if (!(st.game && !st.checked)) {
+          const cp = [c.xi * Math.cos(th), -c.xi * Math.sin(th)], Lf = 1.3;
+          SB.arrow(ctx, W.X(cp[0] - n[0] * Lf), W.Y(cp[1] - n[1] * Lf), W.X(cp[0]), W.Y(cp[1]), { color: P.accent2, width: 3, label: "F_R" });
+          const cc = [(L / 2) * Math.cos(th), -(L / 2) * Math.sin(th)];
+          W.dot(cc, { r: 4, color: P.text }); SB.label(ctx, "C", W.X(cc[0]) + n[0] * 16, W.Y(cc[1]) - n[1] * 16, { size: 11, bold: true, color: P.dim });
+        }
+      }
+      // 수문
+      line(ctx, [[W.X(0), W.Y(0)], [W.X(Bo[0]), W.Y(Bo[1])]], P.text, 6);
+      ctx.save(); ctx.fillStyle = P.bg; ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), 6, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "A (힌지)", W.X(0) - 10, W.Y(0) - 14, { align: "right", size: 11, color: P.text });
+      // 지지력 P
+      const Pk = getP() * 1000, okc = Pk >= c.Preq ? P.ok : P.bad, Lpp = 0.35 + 1.0 * Math.min(1, Pk / 150000);
+      if (Pk > 0 && st.open < 0.5) SB.arrow(ctx, W.X(B[0] + n[0] * Lpp), W.Y(B[1] + n[1] * Lpp), W.X(B[0]), W.Y(B[1]), { color: okc, width: 3, label: "P" });
+      // 각도
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), 36, 0, th); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `${st.th.toFixed(0)}°`, W.X(0) + 48 * Math.cos(th / 2), W.Y(0) + 48 * Math.sin(th / 2), { size: 11, color: P.dim });
+      SB.dashLine(ctx, W.X(0), W.Y(0), W.X(1.2), W.Y(0), P.faint);
+      // 깊이 표시
+      SB.arrow(ctx, W.X(-0.9), W.Y(st.s), W.X(-0.9), W.Y(0), { color: P.dim, width: 1.2, head: 5 });
+      SB.label(ctx, `s = ${st.s.toFixed(1)} m`, W.X(-1.0), W.Y(st.s / 2), { align: "right", size: 11, color: P.dim });
+      // 유출 입자
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.8); st.drops.forEach((d) => { ctx.beginPath(); ctx.arc(W.X(d.x), W.Y(d.z), 2.2, 0, 2 * Math.PI); ctx.fill(); }); ctx.restore();
+      // 핸들
+      const sh = [W.X(3.6), W.Y(st.s)], bh = [W.X(Bo[0]), W.Y(Bo[1])];
+      if (!st.game) { knob(ctx, sh[0], sh[1], P.accent); knob(ctx, bh[0], bh[1], P.accent2); }
+      self._sh = sh; self._bh = bh;
+      if (st.game) SB.label(ctx, st.checked ? "결과 공개" : "도전 중: 필요한 P를 계산하라", w / 2, 14, { bold: true, color: P.accent2 });
+    }, { aspect: 0.95, minHeight: 300, maxHeight: 480 });
+    SB.drag(cv, {
+      handles: () => (st.game || !cv._sh ? [] : [{ id: "s", x: cv._sh[0], y: cv._sh[1], r: 14 }, { id: "b", x: cv._bh[0], y: cv._bh[1], r: 14 }]),
+      move: (id, x, y) => {
+        if (!id || st.game) return; const wx = cv._W.ix(x), wz = cv._W.iy(y);
+        if (id === "s") st.s = Math.round(SB.clamp(wz, 0, 3) * 10) / 10;
+        if (id === "b") { st.th = Math.round(SB.clamp(Math.atan2(-wz, wx) / DEG, 25, 90)); getL.set(Math.round(SB.clamp(Math.hypot(wx, wz), 1, 3) * 10) / 10, true); }
+        reset();
+      },
+    });
+    $("gt-check").addEventListener("click", () => {
+      const c = calc(), Pk = getP() * 1000; st.checked = true;
+      if (Pk < 0.995 * c.Preq) { st.opening = true; st.openV = 0; st.res = `<span style="color:var(--bad)">열림! ${((c.Preq - Pk) / 1000).toFixed(1)} kN 부족</span>`; }
+      else if (Pk <= 1.05 * c.Preq) st.res = `<span style="color:var(--ok)">성공! 필요 ${(c.Preq / 1000).toFixed(1)} kN</span>`;
+      else st.res = `버팀 — 필요값보다 ${((Pk / c.Preq - 1) * 100).toFixed(0)}% 과대`;
+      stats(); cv.redraw();
+    });
+    $("gt-chal").addEventListener("click", () => {
+      st.game = true; st.checked = false;
+      st.s = Math.round((0.5 + Math.random() * 2) * 10) / 10; st.th = 35 + 5 * Math.floor(Math.random() * 12);
+      getL.set(Math.round((1.2 + Math.random() * 1.8) * 10) / 10, true); getB.set(0.5 * (2 + Math.floor(Math.random() * 5)), true); getP.set(0, true);
+      [getL, getB].forEach((f) => (f.el.disabled = true)); reset();
+    });
+    $("gt-free").addEventListener("click", () => { st.game = false; [getL, getB].forEach((f) => (f.el.disabled = false)); reset(); });
+    SB.loop("sim-gate", (dt) => {
+      if (!st.opening && !st.drops.length) return;
+      if (st.opening) { st.openV += 60 * dt; st.open = Math.min(40, st.open + st.openV * dt); }
+      if (st.open > 1) {
+        const c = calc(), th = c.th, B = [c.L * Math.cos(th), -c.L * Math.sin(th)], ang = th + st.open * DEG, Bo = [c.L * Math.cos(ang), -c.L * Math.sin(ang)];
+        const vj = Math.sqrt(2 * g * (st.s - B[1])) * 0.5;
+        for (let k = 0; k < 3 && st.drops.length < 160; k++) { const u = Math.random(); st.drops.push({ x: B[0] + (Bo[0] - B[0]) * u, z: B[1] + (Bo[1] - B[1]) * u, vx: -vj * Math.sin(th) * (0.8 + 0.4 * Math.random()), vz: -vj * Math.cos(th) * 0.6 }); }
+      }
+      st.drops.forEach((d) => { d.vz -= g * dt * 0.5; d.x += d.vx * dt; d.z += d.vz * dt; });
+      st.drops = st.drops.filter((d) => d.z > -3.7 && d.x > -2.7);
+      cv.redraw();
+    });
+    stats();
+  }
+
+  /* ============================================================ 드릴: 평면 정수력 */
+  SB.drill("drill-plane", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const a = (10 + Math.round(Math.random() * 40)) / 10, b = (10 + Math.round(Math.random() * 40)) / 10, F = 0.5 * RW * g * a * a * b / 1000;
+      return { q: `<p>폭 \\(${b}\\) m, 높이 \\(${a}\\) m인 수직 직사각형 수문의 윗변이 수면에 닿아 있다. 정수력 \\(F\\)와 압력 중심의 깊이는?</p>`, answer: [F, (2 * a) / 3], label: ["F =", "깊이 ="], unit: ["kN", "m"], sol: `\\(F = \\tfrac12\\rho g a^2 b = ${F.toFixed(2)}\\) kN, 깊이 \\(2a/3 = ${((2 * a) / 3).toFixed(3)}\\) m` };
+    }
+    if (k === 1) {
+      const a = (10 + Math.round(Math.random() * 30)) / 10, b = (10 + Math.round(Math.random() * 30)) / 10, s = (5 + Math.round(Math.random() * 45)) / 10, hc = s + a / 2, F = RW * g * hc * a * b / 1000, yr = hc + (a * a) / (12 * hc);
+      return { q: `<p>폭 \\(${b}\\) m, 높이 \\(${a}\\) m인 수직 직사각형 수문의 윗변이 수면 아래 \\(${s}\\) m에 있다. 정수력과 압력 중심의 깊이는?</p>`, answer: [F, yr], label: ["F =", "깊이 ="], unit: ["kN", "m"], sol: `\\(h_c = ${hc.toFixed(2)}\\) m, \\(F = \\rho g h_c A = ${F.toFixed(1)}\\) kN, \\(y_R = h_c + a^2/(12h_c) = ${yr.toFixed(3)}\\) m` };
+    }
+    const D = (5 + Math.round(Math.random() * 25)) / 10, hc = (10 + Math.round(Math.random() * 90)) / 10, F = RW * g * hc * Math.PI * D * D / 4 / 1000;
+    return { q: `<p>지름 \\(${D}\\) m인 원형 수문이 수직 벽에 있고 중심이 수면 아래 \\(${hc}\\) m다. 정수력은?</p>`, answer: F, label: "F =", unit: "kN", sol: `\\(F = \\rho g h_c \\pi D^2/4 = ${F.toFixed(2)}\\) kN, 압력 중심은 도심보다 \\(D^2/(16h_c) = ${((D * D) / (16 * hc) * 1000).toFixed(1)}\\) mm 아래` };
+  });
+
+  /* ============================================================ 곡면 */
+  const curveF = (R, b, H) => { const FH = RW * g * b * R * (H + R / 2), Av = R * (H + R) - (Math.PI * R * R) / 4, FV = RW * g * b * Av, hc = H + R / 2; return { FH, FV, Av, FR: Math.hypot(FH, FV), ang: Math.atan2(FV, FH) / DEG, hp: hc + (R * R) / (12 * hc), xb: ((R * R * (H + R)) / 2 - R ** 3 / 3) / Av }; };
+  SB.tangle("tg-curve", (v) => { const c = curveF(v.R, v.b, v.H); return { FH: kN(c.FH), FV: kN(c.FV), FR: kN(c.FR), ang: c.ang.toFixed(1) + "°" }; });
+  {
+    const st = { H: 1.0, R: 2.0, side: "over" };
+    const getB = SB.range("cu-b", (v) => v.toFixed(1) + " m", () => upd());
+    SB.seg("cu-side", (v) => { st.side = v; upd(); });
+    ["cu-arr", "cu-comp"].forEach((id) => $(id).addEventListener("change", () => cv.redraw()));
+    function upd() { const c = curveF(st.R, getB(), st.H), up = st.side === "under";
+      SB.stat("cu-fh", sm((c.FH / 1000).toFixed(1) + (up ? " →" : " ←"), "kN")); SB.stat("cu-fv", sm((c.FV / 1000).toFixed(1) + (up ? " ↑" : " ↓"), "kN"));
+      SB.stat("cu-fr", sm((c.FR / 1000).toFixed(1), "kN") + ` <small>${c.ang.toFixed(1)}°</small>`); SB.stat("cu-hp", sm(c.hp.toFixed(2), "m")); cv.redraw(); }
+    const cv = SB.canvas("cv-curved", (ctx, w, h, self) => {
+      const P = pal(), R = st.R, H = st.H, zs = R + H, up = st.side === "under", c = curveF(R, getB(), H);
+      const W = Phys.world(ctx, w, h, { x: [-1.9, 3.9], y: [-0.6, 5.5], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      const arc = []; for (let i = 0; i <= 40; i++) { const ps = (i / 40) * Math.PI / 2; arc.push([R * Math.sin(ps), R * Math.cos(ps)]); }
+      const T = W.X.bind(W), Z = W.Y.bind(W), pp = (a) => a.map(([x, z]) => [T(x), Z(z)]);
+      if (!up) {
+        Flow.fillWater(ctx, pp([[0, zs], [3.9, zs], [3.9, 0], [R, 0]].concat(arc.slice().reverse()).concat([[0, R]])), { alpha: 0.32 });
+        fillPoly(ctx, pp([[0, 0], [0, R]].concat(arc).concat([[R, 0]])), solid(), wallC());
+        fillPoly(ctx, pp([[-1.9, -0.6], [0, -0.6], [0, 5.5], [-1.9, 5.5]]), solid(), wallC());
+        fillPoly(ctx, pp([[0, -0.6], [3.9, -0.6], [3.9, 0], [0, 0]]), solid(), wallC());
+      } else {
+        Flow.fillWater(ctx, pp([[-1.9, zs], [0, zs], [0, R]].concat(arc).concat([[R, 0], [-1.9, 0]])), { alpha: 0.32 });
+        fillPoly(ctx, pp([[0, zs], [R, zs], [R, 0]].concat(arc.slice().reverse())), "rgba(60,140,220,0.08)", P.faint, 1);
+        SB.label(ctx, "가상의 물", T(R * 0.72), Z(R * 0.75 + H * 0.5 + 0.3), { size: 11, color: P.dim });
+        fillPoly(ctx, pp([[-1.9, -0.6], [3.9, -0.6], [3.9, 0], [-1.9, 0]]), solid(), wallC());
+        line(ctx, pp([[0, R], [0, 5.5]]), P.dim, 3);
+      }
+      line(ctx, pp(arc), P.text, 4);
+      W.dot([0, 0], { r: 4, color: P.text }); SB.label(ctx, "O", T(0) + 10, Z(0) - 10, { size: 11, bold: true });
+      const pmax = RW * g * zs, kp = 0.9 / pmax;
+      if ($("cu-arr").checked) for (let i = 1; i < 10; i++) {
+        const ps = (i / 10) * Math.PI / 2, u = [Math.sin(ps), Math.cos(ps)], pt = [R * u[0], R * u[1]], p = RW * g * (zs - pt[1]), L = p * kp * (up ? Math.min(1, (R * 0.8) / (pmax * kp)) : 1);
+        const s0 = up ? [pt[0] - u[0] * L, pt[1] - u[1] * L] : [pt[0] + u[0] * L, pt[1] + u[1] * L];
+        SB.arrow(ctx, T(s0[0]), Z(s0[1]), T(pt[0]), Z(pt[1]), { color: P.accent, width: 1.3, head: 5 });
+      }
+      // 합력(중심 O를 지남)
+      const d = up ? [c.FH / c.FR, c.FV / c.FR] : [-c.FH / c.FR, -c.FV / c.FR], us = up ? d : [-d[0], -d[1]], hit = [R * us[0], R * us[1]], Lr = Math.min(1.5, R * 0.85);
+      const tail = up ? [hit[0] - d[0] * Lr, hit[1] - d[1] * Lr] : [hit[0] - d[0] * Lr, hit[1] - d[1] * Lr];
+      SB.dashLine(ctx, T(0), Z(0), T(hit[0]), Z(hit[1]), P.accent2, [3, 3]);
+      SB.arrow(ctx, T(tail[0]), Z(tail[1]), T(hit[0]), Z(hit[1]), { color: P.accent2, width: 3.2, label: "F_R" });
+      if ($("cu-comp").checked) {
+        const kF = 1.2 / c.FR, zp = zs - c.hp, xp = up ? -0.35 : R + 0.35;
+        SB.dashLine(ctx, T(xp), Z(R), T(xp), Z(0), P.warn, [5, 3]);
+        const LH = c.FH * kF; SB.arrow(ctx, T(up ? xp - LH : xp + LH), Z(zp), T(xp), Z(zp), { color: P.warn, width: 2.4, label: "F_H" });
+        const LV = c.FV * kF, xb = c.xb, zt = R * Math.cos(Math.asin(SB.clamp(xb / R, 0, 1)));
+        if (up) SB.arrow(ctx, T(xb), Z(zt - LV), T(xb), Z(zt), { color: P.ok, width: 2.4, label: "F_V" });
+        else SB.arrow(ctx, T(xb), Z(zt + LV), T(xb), Z(zt), { color: P.ok, width: 2.4, label: "F_V" });
+        SB.label(ctx, "연직 투영면", T(xp), Z(R) - 10, { size: 10, color: P.warn });
+      }
+      SB.label(ctx, `H = ${H.toFixed(1)} m, R = ${R.toFixed(1)} m`, T(1.0), Z(5.25), { size: 11, color: P.dim });
+      const sh = [T(up ? -1.3 : 3.3), Z(zs)], rh = [T(R), Z(0)];
+      knob(ctx, sh[0], sh[1], P.accent); knob(ctx, rh[0], rh[1], P.accent2);
+      self._sh = sh; self._rh = rh;
+    }, { aspect: 1.0, minHeight: 300, maxHeight: 480 });
+    SB.drag(cv, {
+      handles: () => (cv._sh ? [{ id: "s", x: cv._sh[0], y: cv._sh[1], r: 14 }, { id: "r", x: cv._rh[0], y: cv._rh[1], r: 14 }] : []),
+      move: (id, x, y) => { if (!id) return; const W = cv._W; if (id === "s") st.H = Math.round(SB.clamp(W.iy(y) - st.R, 0, 2.5) * 10) / 10; if (id === "r") st.R = Math.round(SB.clamp(W.ix(x), 0.5, 2.5) * 10) / 10; upd(); },
+    });
+    upd();
+  }
+
+  /* ============================================================ 겉보기 무게 */
+  {
+    const st = { d: -0.03, rb: 2700, rf: 998 };
+    SB.seg("wg-mat", (v) => { st.rb = Number(v); cv.redraw(); });
+    SB.seg("wg-fl", (v) => { st.rf = Number(v); cv.redraw(); });
+    const a = 0.1, A = a * a, V = a * a * a;
+    function state() { const Wt = st.rb * g * V, df = st.rb < st.rf ? (a * st.rb) / st.rf : Infinity, s = SB.clamp(Math.min(st.d, df), 0, a), FB = st.rf * g * A * s; return { Wt, s, FB, T: Math.max(0, Wt - FB), float: st.d >= df, dpos: Math.min(st.d, df) }; }
+    const cv = SB.canvas("cv-weigh", (ctx, w, h, self) => {
+      const P = pal(), S = state(), sw = Math.min(w * 0.5, 300), k = (h * 0.45) / 0.22, ysurf = h * 0.55, cx = sw * 0.5;
+      const fc = st.rf > 5000 ? HG : st.rf > 1100 ? "rgba(225,190,80,0.4)" : Flow.waterColor(0.32);
+      ctx.save(); ctx.fillStyle = fc; ctx.fillRect(cx - sw * 0.4, ysurf, sw * 0.8, h - ysurf - 8); ctx.restore();
+      line(ctx, [[cx - sw * 0.4, ysurf - 20], [cx - sw * 0.4, h - 8], [cx + sw * 0.4, h - 8], [cx + sw * 0.4, ysurf - 20]], P.dim, 2);
+      const yb = ysurf + S.dpos * k, ytop = yb - a * k, half = (a * k) / 2;
+      // 용수철 저울
+      ctx.save(); ctx.fillStyle = SB.color("bg-elev"); ctx.strokeStyle = P.border; ctx.fillRect(cx - 24, 4, 48, 26); ctx.strokeRect(cx - 24, 4, 48, 26); ctx.restore();
+      SB.label(ctx, `${S.T.toFixed(1)} N`, cx, 17, { mono: true, size: 11, bold: true, color: P.accent2 });
+      if (S.T > 0.01) SB.spring(ctx, cx, 30, cx, ytop, { coils: 8, amp: 5 }); else line(ctx, [[cx, 30], [cx - 8, (30 + ytop) / 2], [cx, ytop]], P.faint, 1.2, [3, 3]);
+      const mc = st.rb > 5000 ? "rgba(120,125,135,0.95)" : st.rb > 1000 ? "rgba(190,195,205,0.95)" : "rgba(190,140,80,0.95)";
+      fillPoly(ctx, [[cx - half, ytop], [cx + half, ytop], [cx + half, yb], [cx - half, yb]], mc, P.text, 1.5);
+      if (S.FB > 0.05) SB.arrow(ctx, cx + half + 12, yb, cx + half + 12, yb - Math.min(60, S.FB * 2.2), { color: P.accent, width: 2, label: "F_B" });
+      knob(ctx, cx, ytop + half, P.accent); self._hd = [cx, ytop + half]; self._k = k; self._ys = ysurf;
+      // 그래프
+      const box = { x: sw + 46, y: 12, w: w - sw - 60, h: h - 52 }, Wt = S.Wt, df = st.rb < st.rf ? (a * st.rb) / st.rf : a;
+      const data = []; for (let i = 0; i <= 50; i++) { const s = (a * i) / 50; data.push([s * 100, Math.max(0, Wt - st.rf * g * A * Math.min(s, df))]); }
+      SB.chart(ctx, box, { x: [0, 12], y: [0, Wt * 1.15], xLabel: "잠긴 깊이 (cm)", yLabel: "눈금 T (N)", series: [{ data: data.concat([[12, data[50][1]]]), color: P.accent }], points: [{ x: SB.clamp(S.dpos, 0, a) * 100, y: S.T, color: P.accent2, r: 6 }] });
+      $("wg-r").textContent = `W = ${Wt.toFixed(1)} N, F_B = ${S.FB.toFixed(1)} N, T = ${S.T.toFixed(1)} N${S.float ? " (떠 있음)" : ""}`;
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 330 });
+    SB.drag(cv, { handles: () => (cv._hd ? [{ id: "b", x: cv._hd[0], y: cv._hd[1], r: 16 }] : []), move: (id, x, y) => { if (id !== "b") return; st.d = SB.clamp((y - cv._ys) / cv._k + 0.05, -0.08, 0.17); } });
+  }
+
+  /* ============================================================ GM 드래그 숫자 */
+  SB.tangle("tg-gm", (v) => {
+    const m = 1025 * 20 * v.B * v.d, kb = v.d / 2, bm = (v.B * v.B) / (12 * v.d), gm = kb + bm - v.kg;
+    return { m: (m / 1000).toFixed(0) + " t", kb: kb.toFixed(2) + " m", bm: bm.toFixed(2) + " m", gm: gm.toFixed(3) + " m",
+      msg: gm > 0 ? `<b style="color:var(--ok)">안정</b>. 5° 기울면 복원 모멘트 ${(m * g * gm * Math.sin(5 * DEG) / 1000).toFixed(0)} kN·m, G를 ${(kb + bm).toFixed(2)} m까지 올릴 수 있다.` : `<b style="color:var(--bad)">불안정</b> — G를 ${(kb + bm).toFixed(2)} m 아래로 내리거나 폭을 넓혀야 한다.` };
+  });
+  /* ============================================================ 부양체 안정성 + 화물 도전 */
+  {
+    const RHO = 1025, HH = 2.0, GH = { Bw: 4, mh: 1600, kgh: 0.7, cw: 3.0 };
+    const st = { mode: "free", KG: 1.0, phi: 0, om: 0, drag: false, hc: 2.0, testT: 0, tested: false, msg: "—", best: 0 };
+    const getB = SB.range("fl-B", (v) => v.toFixed(1) + " m", () => changed());
+    const getSG = SB.range("fl-sg", (v) => v.toFixed(2), () => changed());
+    const getMc = SB.range("fl-mc", (v) => v.toFixed(0) + " kg", () => { st.tested = false; st.msg = "—"; st.phi = 0; st.om = 0; changed(); });
+    function params() {
+      if (st.mode === "free") { const Bw = getB(); return { Bw, m: getSG() * RHO * Bw * HH, KG: st.KG, cargo: null }; }
+      const mc = getMc(), m = GH.mh + mc; return { Bw: GH.Bw, m, KG: (GH.mh * GH.kgh + mc * (HH + st.hc / 2)) / m, cargo: { w: GH.cw, h: st.hc } };
+    }
+    function small(pr) { const d = pr.m / (RHO * pr.Bw), kb = d / 2, bm = (pr.Bw * pr.Bw) / (12 * d); return { d, kb, bm, gm: kb + bm - pr.KG }; }
+    function hydro(phi, Bw, A) {
+      const c = Math.cos(phi), s = Math.sin(phi);
+      const C = [[-Bw / 2, 0], [Bw / 2, 0], [Bw / 2, HH], [-Bw / 2, HH]].map(([x, z]) => [x * c - z * s, x * s + z * c]);
+      const clip = (l) => { const out = []; for (let i = 0; i < 4; i++) { const p = C[i], q = C[(i + 1) % 4], pin = p[1] < l, qin = q[1] < l; if (pin) out.push(p); if (pin !== qin) { const t = (l - p[1]) / (q[1] - p[1]); out.push([p[0] + t * (q[0] - p[0]), l]); } } return out; };
+      let lo = Math.min(...C.map((p) => p[1])), hi = Math.max(...C.map((p) => p[1]));
+      for (let k = 0; k < 44; k++) { const mid = (lo + hi) / 2; if (area(clip(mid)).A < A) lo = mid; else hi = mid; }
+      const l = (lo + hi) / 2, poly = clip(l); return { l, B: area(poly).c, poly, C };
+    }
+    const GZ = (phi, pr) => { const H = hydro(phi, pr.Bw, pr.m / RHO); return -pr.KG * Math.sin(phi) - H.B[0]; };
+    function maxCargo() { const f = (mc) => small({ Bw: GH.Bw, m: GH.mh + mc, KG: (GH.mh * GH.kgh + mc * (HH + st.hc / 2)) / (GH.mh + mc) }).gm; let lo = 0, hi = 6600; if (f(hi) > 0) return hi; for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (f(m) > 0) lo = m; else hi = m; } return lo; }
+    let cache = { key: "", data: [] };
+    function curve(pr) { const key = [pr.Bw, pr.m, pr.KG].map((x) => x.toFixed(4)).join(); if (cache.key !== key) { const d = []; for (let a = -60; a <= 60; a += 2) d.push([a, GZ(a * DEG, pr)]); cache = { key, data: d }; } return cache.data; }
+    function changed() { cv.redraw(); cz.redraw(); stats(); }
+    function stats() {
+      const pr = params(), s = small(pr), hide = st.mode === "game" && !st.tested, gz = GZ(st.phi, pr);
+      SB.stat("fl-d", sm(s.d.toFixed(2), "m"));
+      SB.stat("fl-km", hide ? "?" : sm((s.kb + s.bm).toFixed(2), "m"));
+      SB.stat("fl-kg", hide ? "?" : sm(pr.KG.toFixed(2), "m"));
+      SB.stat("fl-gm", hide ? "?" : `<span style="color:var(--${s.gm > 0 ? "ok" : "bad"})">${s.gm.toFixed(3)}</span> <small>m</small>`);
+      SB.stat("fl-gz", `${(st.phi / DEG).toFixed(1)}°, ${hide ? "?" : gz.toFixed(3) + " <small>m</small>"}`);
+      SB.stat("fl-msg", st.mode === "game" ? st.msg + (st.best ? ` <small>최고 ${st.best.toFixed(0)} kg</small>` : "") : "—");
+    }
+    const cv = SB.canvas("cv-float", (ctx, w, h, self) => {
+      const P = pal(), pr = params(), s = small(pr), Hy = hydro(st.phi, pr.Bw, pr.m / RHO), c = Math.cos(st.phi), sn = Math.sin(st.phi);
+      const xG = -pr.KG * sn, zG = pr.KG * c, tr = ([x, z]) => [x - xG, z - Hy.l];
+      const W = Phys.world(ctx, w, h, { x: [-3.4, 3.4], y: pr.cargo ? [-2.4, 4.8] : [-2.4, 3.2], pad: [4, 4, 22, 4], equal: true });
+      self._W = W; self._tr = { xG, l: Hy.l, c, sn };
+      const pp = (a) => a.map((p) => { const q = tr(p); return [W.X(q[0]), W.Y(q[1])]; });
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.3); ctx.fillRect(0, W.Y(0), w, h - W.Y(0)); ctx.restore();
+      fillPoly(ctx, pp(Hy.C), SB.isDark() ? "rgba(120,130,150,.55)" : "rgba(200,205,215,.85)", P.text, 2);
+      fillPoly(ctx, pp(Hy.poly), "rgba(60,140,220,0.18)", null);
+      if (pr.cargo) { const cw = pr.cargo.w / 2, ch = pr.cargo.h; const cc = [[-cw, HH], [cw, HH], [cw, HH + ch], [-cw, HH + ch]].map(([x, z]) => [x * c - z * sn, x * sn + z * c]); fillPoly(ctx, pp(cc), "rgba(200,110,50,.55)", P.text, 1.5); }
+      line(ctx, [[0, W.Y(0)], [w, W.Y(0)]], SB.isDark() ? "rgba(120,200,255,.9)" : "rgba(30,110,200,.9)", 2);
+      // 중심선
+      const K = tr([0, 0]), top = tr([-6 * sn, 6 * c]);
+      SB.dashLine(ctx, W.X(K[0]), W.Y(K[1]), W.X(top[0]), W.Y(top[1]), P.faint, [5, 4]);
+      const Bw = tr(Hy.B), Gw = [0, zG - Hy.l];
+      // 메타센터
+      const t = Math.abs(sn) > 0.02 ? Hy.B[0] / -sn : s.kb + s.bm;
+      if (t > -2 && t < 9) { const M = tr([-t * sn, t * c]); W.dot(M, { r: 5, color: P.text }); SB.label(ctx, "M", W.X(M[0]) + 12, W.Y(M[1]) - 8, { bold: true, size: 12 }); if (Math.abs(sn) > 0.02) SB.dashLine(ctx, W.X(Bw[0]), W.Y(Bw[1]), W.X(M[0]), W.Y(M[1]), P.accent, [3, 3]); }
+      const L = 55;
+      SB.arrow(ctx, W.X(Bw[0]), W.Y(Bw[1]) + L * 0.2, W.X(Bw[0]), W.Y(Bw[1]) - L, { color: P.accent, width: 2.6, label: "F_B" });
+      SB.arrow(ctx, W.X(Gw[0]), W.Y(Gw[1]), W.X(Gw[0]), W.Y(Gw[1]) + L, { color: P.accent2, width: 2.6, label: "W" });
+      W.dot(Bw, { r: 5, color: P.accent }); SB.label(ctx, "B", W.X(Bw[0]) - 12, W.Y(Bw[1]) + 6, { bold: true, color: P.accent, size: 12 });
+      const gz = -pr.KG * sn - Hy.B[0];
+      if (Math.abs(sn) > 0.01) line(ctx, [[W.X(Gw[0]), W.Y(Gw[1])], [W.X(Bw[0]), W.Y(Gw[1])]], gz * Math.sign(sn) >= 0 ? P.ok : P.bad, 3);
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(W.X(Gw[0]), W.Y(Gw[1]), 7, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+      if (st.mode === "free") knob(ctx, W.X(Gw[0]), W.Y(Gw[1]), P.accent2, 8);
+      SB.label(ctx, "G", W.X(Gw[0]) + 14, W.Y(Gw[1]) + 2, { bold: true, color: P.accent2, size: 12 });
+      const cor = tr([(pr.Bw / 2) * c - HH * sn, (pr.Bw / 2) * sn + HH * c]); knob(ctx, W.X(cor[0]), W.Y(cor[1]), P.accent);
+      self._cor = [W.X(cor[0]), W.Y(cor[1])]; self._G = [W.X(Gw[0]), W.Y(Gw[1])];
+      SB.label(ctx, `φ = ${(st.phi / DEG).toFixed(1)}°`, 40, 16, { mono: true, size: 12 });
+      if (Math.abs(st.phi) > 45 * DEG) SB.label(ctx, "전복!", w / 2, 36, { bold: true, size: 16, color: P.bad });
+    }, { aspect: 0.88, minHeight: 260, maxHeight: 420 });
+    const cz = SB.canvas("cv-gz", (ctx, w, h) => {
+      const P = pal(), pr = params(), s = small(pr), hide = st.mode === "game" && !st.tested, data = curve(pr);
+      const ymax = Math.max(0.3, ...data.map((d) => Math.abs(d[1]))) * 1.1;
+      const lin = []; for (let a = -60; a <= 60; a += 5) lin.push([a, s.gm * Math.sin(a * DEG)]);
+      SB.chart(ctx, null, { x: [-60, 60], y: [-ymax, ymax], xLabel: "기울기 φ (°)", yLabel: "복원 팔 GZ (m)", hlines: [{ y: 0, color: P.dim, dash: [] }],
+        series: hide ? [] : [{ data: lin, color: P.faint, dash: [4, 4] }, { data, color: P.accent, width: 2.4 }],
+        points: hide ? [] : [{ x: SB.clamp(st.phi / DEG, -60, 60), y: GZ(st.phi, pr), color: P.accent2, r: 6 }] });
+      if (hide) SB.label(ctx, "파도 시험 후 공개", w / 2, h / 2 - 20, { color: P.dim, bold: true });
+      else SB.label(ctx, "점선: GM·sinφ", w - 60, 22, { size: 11, color: P.dim });
+    }, { aspect: 0.88, minHeight: 260, maxHeight: 420 });
+    SB.drag(cv, {
+      handles: () => (cv._cor ? [{ id: "t", x: cv._cor[0], y: cv._cor[1], r: 14 }].concat(st.mode === "free" ? [{ id: "g", x: cv._G[0], y: cv._G[1], r: 14 }] : []) : []),
+      move: (id, x, y) => {
+        if (!id) return; const W = cv._W, T = cv._tr, pr = params(), bx = W.ix(x) + T.xG, bz = W.iy(y) + T.l;
+        st.drag = true; st.om = 0;
+        if (id === "t") { const Gx = -pr.KG * T.sn, Gz = pr.KG * T.c, a = Math.atan2(bz - Gz, bx - Gx) - Math.atan2(HH - pr.KG, pr.Bw / 2); st.phi = SB.clamp(Math.atan2(Math.sin(a), Math.cos(a)), -1.2, 1.2); }
+        if (id === "g") st.KG = SB.clamp(bx * -T.sn + bz * T.c, 0.1, 3.8);
+        cz.redraw(); stats();
+      },
+      up: () => { st.drag = false; },
+    });
+    function setMode(m) {
+      st.mode = m; st.phi = 0; st.om = 0; st.tested = false; st.msg = m === "game" ? "화물 질량을 정하고 파도 시험" : "—";
+      getB.el.disabled = getSG.el.disabled = m === "game"; getMc.el.disabled = m !== "game";
+      $("fl-test").disabled = $("fl-new").disabled = m !== "game"; changed();
+    }
+    SB.seg("fl-mode", setMode);
+    $("fl-test").addEventListener("click", () => {
+      const pr = params(), s = small(pr), mc = getMc(), mx = maxCargo();
+      st.phi = 8 * DEG; st.om = 0; st.testT = 5; st.tested = true;
+      if (s.d >= HH) st.msg = '<span style="color:var(--bad)">침몰!</span>';
+      else if (s.gm > 0) { st.best = Math.max(st.best, mc); st.msg = mc >= 0.95 * mx ? `<span style="color:var(--ok)">만점! 안정 (이론 최대 ${mx.toFixed(0)} kg)</span>` : `<span style="color:var(--ok)">안정</span> — 더 실을 수 있다 (최대 ${mx.toFixed(0)} kg)`; }
+      else st.msg = `<span style="color:var(--bad)">불안정 (GM = ${s.gm.toFixed(2)} m)</span>`;
+      changed();
+    });
+    $("fl-new").addEventListener("click", () => { st.hc = 1 + 0.5 * Math.floor(Math.random() * 5); getMc.set(0, true); st.tested = false; st.phi = 0; st.om = 0; st.msg = `화물 높이 ${st.hc.toFixed(1)} m (선체: 폭 4 m, 1600 kg/m, KG 0.7 m)`; changed(); });
+    $("fl-zero").addEventListener("click", () => { st.phi = 0; st.om = 0; changed(); });
+    SB.loop("sim-float", (dt) => {
+      if (st.drag) return;
+      const pr = params(), k = 0.38 * pr.Bw;
+      if (Math.abs(st.om) < 1e-4 && Math.abs(GZ(st.phi, pr)) < 1e-4) return;
+      for (let i = 0; i < 2; i++) { const hdt = dt / 2, a = (-g * GZ(st.phi, pr)) / (k * k) - 0.6 * st.om; st.om += a * hdt; st.phi += st.om * hdt; }
+      if (Math.abs(st.phi) > Math.PI / 2) { st.phi = Math.sign(st.phi) * Math.PI / 2; st.om = 0; }
+      cv.redraw(); cz.redraw(); stats();
+    });
+    setMode("free");
+  }
+
+  /* ============================================================ 가속 탱크 */
+  {
+    const Lt = 4, Ht = 2, A0 = 4 * 1.2;
+    const st = { m: -2 / g, mv: 0, A: A0, drops: [] };
+    const getAx = SB.range("ac-ax", (v) => v.toFixed(1) + " m/s²", () => upd());
+    const getAz = SB.range("ac-az", (v) => v.toFixed(1) + " m/s²", () => upd());
+    $("ac-iso").addEventListener("change", () => cv.redraw());
+    $("ac-fill").addEventListener("click", () => { st.A = A0; upd(); });
+    $("ac-zero").addEventListener("click", () => { getAx.set(0, true); getAz.set(0, true); upd(); });
+    const geff = () => g + getAz();
+    const posArea = (c, m) => { const f0 = c - 2 * m, f1 = c + 2 * m; if (f0 >= 0 && f1 >= 0) return 4 * c; if (f0 <= 0 && f1 <= 0) return 0; const fp = Math.max(f0, f1); return (fp * fp) / (2 * Math.abs(m)); };
+    const cOf = (A, m) => { const am = Math.abs(m); if (am < 1e-9 || A / 4 >= 2 * am) return A / 4; return Math.sqrt(2 * am * A) - 2 * am; };
+    const zs = (x) => cOf(st.A, st.m) + st.m * (x - 2);
+    function upd() {
+      const th = Math.atan2(getAx(), geff()) / DEG, c = cOf(st.A, st.m), k = RW * geff();
+      SB.stat("ac-th", sm(th.toFixed(1) + "°", ""));
+      SB.stat("ac-pr", sm(kPa(k * Math.max(0, c - 2 * st.m), 2).replace(" kPa", ""), "kPa"));
+      SB.stat("ac-pf", sm(kPa(k * Math.max(0, c + 2 * st.m), 2).replace(" kPa", ""), "kPa"));
+      SB.stat("ac-vol", sm(((st.A / A0) * 100).toFixed(0), "%"));
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-accel", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-0.6, 6.6], y: [-0.95, 2.8], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      const m = st.m, c = cOf(st.A, m), f0 = c - 2 * m, f1 = c + 2 * m;
+      let poly;
+      if (f0 >= 0 && f1 >= 0) poly = [[0, f0], [4, f1], [4, 0], [0, 0]];
+      else if (f0 > 0) poly = [[0, f0], [2 - c / m, 0], [0, 0]];
+      else if (f1 > 0) poly = [[2 - c / m, 0], [4, f1], [4, 0]];
+      else poly = [[0, 0], [4, 0], [4, 0]];
+      const ppx = poly.map(([x, z]) => [W.X(x), W.Y(z)]);
+      Flow.fillWater(ctx, ppx, { alpha: 0.34 });
+      if ($("ac-iso").checked) {
+        const k = RW * geff(); ctx.save(); pathPoly(ctx, ppx); ctx.clip();
+        for (let p = 2000; p < 40000; p += 2000) { const dz = p / Math.max(k, 1); line(ctx, [[W.X(0), W.Y(zs(0) - dz)], [W.X(4), W.Y(zs(4) - dz)]], P.accent, 1, [4, 4]); }
+        ctx.restore();
+      }
+      line(ctx, [[W.X(0), W.Y(Ht)], [W.X(0), W.Y(0)], [W.X(4), W.Y(0)], [W.X(4), W.Y(Ht)]], P.text, 3);
+      ctx.save(); ctx.fillStyle = solid(); ctx.strokeStyle = wallC(); ctx.fillRect(W.X(-0.3), W.Y(0), W.X(4.6) - W.X(-0.3), W.Y(-0.4) - W.Y(0)); ctx.strokeRect(W.X(-0.3), W.Y(0), W.X(4.6) - W.X(-0.3), W.Y(-0.4) - W.Y(0)); ctx.restore();
+      [0.5, 3.6].forEach((x) => { ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(W.X(x), W.Y(-0.58), 0.22 * W.s, 0, 2 * Math.PI); ctx.fill(); ctx.restore(); });
+      SB.label(ctx, "뒤", W.X(0.2), W.Y(2.55), { size: 11, color: P.dim }); SB.label(ctx, "앞 →", W.X(3.8), W.Y(2.55), { size: 11, color: P.dim });
+      // 유효 중력
+      const ge = [-getAx(), -geff()], gl = Math.hypot(...ge) || 1, o = [2, 1.95];
+      SB.arrow(ctx, W.X(o[0]), W.Y(o[1]), W.X(o[0] + (ge[0] / gl) * 0.7), W.Y(o[1] + (ge[1] / gl) * 0.7), { color: P.accent2, width: 2, dash: [5, 3], label: "g − a" });
+      // 가속도 화살표 (드래그)
+      const ao = [5.25, 0.9], sc = 0.2, tip = [ao[0] + getAx() * sc, ao[1] + getAz() * sc];
+      SB.label(ctx, "가속도 a", W.X(ao[0]), W.Y(2.3), { size: 11, color: P.dim });
+      W.dot(ao, { r: 3, color: P.dim }); SB.arrow(ctx, W.X(ao[0]), W.Y(ao[1]), W.X(tip[0]), W.Y(tip[1]), { color: P.text, width: 2.6 });
+      knob(ctx, W.X(tip[0]), W.Y(tip[1]), P.accent); self._tip = [W.X(tip[0]), W.Y(tip[1])];
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.8); st.drops.forEach((d) => { ctx.beginPath(); ctx.arc(W.X(d.x), W.Y(d.z), 2.2, 0, 2 * Math.PI); ctx.fill(); }); ctx.restore();
+    }, { aspect: 0.56, minHeight: 230, maxHeight: 400 });
+    SB.drag(cv, { handles: () => (cv._tip ? [{ id: "a", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "a") return; const W = cv._W; getAx.set(Math.round(SB.clamp((W.ix(x) - 5.25) / 0.2, -6, 6) * 10) / 10, true); getAz.set(Math.round(SB.clamp((W.iy(y) - 0.9) / 0.2, -5, 6) * 10) / 10, true); upd(); } });
+    SB.loop("sim-accel", (dt) => {
+      const mt = -getAx() / geff(), w0 = (2 * Math.PI) / 1.3;
+      if (Math.abs(st.m - mt) < 1e-5 && Math.abs(st.mv) < 1e-5 && !st.drops.length) return;
+      st.mv += (-w0 * w0 * (st.m - mt) - 2 * 0.3 * w0 * st.mv) * dt; st.m += st.mv * dt;
+      const am = Math.abs(st.m), Amax = posArea(Ht - 2 * am, st.m);
+      if (st.A > Amax + 1e-6) { const xr = st.m < 0 ? 0 : 4; for (let i = 0; i < 3; i++) st.drops.push({ x: xr, z: Ht, vx: (st.m < 0 ? -1 : 1) * (0.4 + Math.random() * 0.6) - getAx() * 0.1, vz: 0.3 * Math.random() }); st.A = Amax; }
+      st.drops.forEach((d) => { d.vz -= g * dt * 0.6; d.x += d.vx * dt; d.z += d.vz * dt; });
+      st.drops = st.drops.filter((d) => d.z > -0.9);
+      upd();
+    });
+    upd();
+  }
+
+  /* ============================================================ 회전 드래그 숫자 */
+  SB.tangle("tg-rot", (v) => { const w = (v.N * 2 * Math.PI) / 60, R = v.D / 200, dh = (w * w * R * R) / (2 * g); return { w: w.toFixed(2) + " rad/s", dh: dh < 1 ? (dh * 100).toFixed(1) + " cm" : dh.toFixed(2) + " m", up: (dh * 50).toFixed(1) + " cm", v: (w * R).toFixed(2) + " m/s" }; });
+
+  /* ============================================================ 회전 원통 + 넘치기 직전 게임 */
+  {
+    const st = { R: 0.2, Ht: 0.5, h0: 0.3, hv: 0.3, w: 0, game: false, spun: false, judged: false, res: "—", tr: [], drops: [] };
+    const getN = SB.range("rt-N", (v) => v + " rpm", () => { if (!st.game) st.spun = true; else { st.spun = false; st.judged = false; st.res = "—"; } stats(); });
+    const getH = SB.range("rt-h", (v) => v.toFixed(2) + " m", (v) => { st.h0 = Math.min(v, st.Ht - 0.02); st.hv = st.h0; stats(); });
+    for (let i = 0; i < 90; i++) st.tr.push({ r: Math.sqrt(Math.random()), a: Math.random() * 2 * Math.PI, f: 0.1 + 0.85 * Math.random() });
+    const wT = () => (getN() * 2 * Math.PI) / 60;
+    function surf(r, w, hv, R) { const q = (w * w * R * R) / (4 * g); if (q <= hv) return hv - q + (w * w * r * r) / (2 * g); const r02 = R * R - (2 * R * Math.sqrt(g * hv)) / w; return Math.max(0, (w * w * (r * r - r02)) / (2 * g)); }
+    function stats() {
+      const zc = surf(0, st.w, st.hv, st.R), zr = surf(st.R, st.w, st.hv, st.R), hide = st.game && !st.judged;
+      SB.stat("rt-tank", sm(`R ${(st.R * 100).toFixed(0)} · H ${(st.Ht * 100).toFixed(0)} · h₀ ${(st.h0 * 100).toFixed(0)}`, "cm"));
+      SB.stat("rt-w", sm(st.w.toFixed(2), "rad/s"));
+      SB.stat("rt-z", hide ? "?" : sm(`${(zc * 100).toFixed(1)} · ${(zr * 100).toFixed(1)}`, "cm"));
+      SB.stat("rt-p", hide ? "?" : sm((RW * g * zr / 1000).toFixed(2), "kPa"));
+      SB.stat("rt-res", st.res);
+    }
+    const cs = SB.canvas("cv-rot", (ctx, w, h) => {
+      const P = pal(), R = st.R, Ht = st.Ht, W = Phys.world(ctx, w, h, { x: [-R * 1.35, R * 1.35], y: [-Ht * 0.12, Ht * 1.15], pad: [6, 6, 6, 6], equal: true });
+      const pts = []; for (let i = 0; i <= 60; i++) { const r = -R + (2 * R * i) / 60; pts.push([r, Math.min(Ht, surf(Math.abs(r), st.w, st.hv, R))]); }
+      const poly = pts.concat([[R, 0], [-R, 0]]).map(([x, z]) => [W.X(x), W.Y(z)]);
+      Flow.fillWater(ctx, poly, { alpha: 0.32, surface: false });
+      line(ctx, pts.map(([x, z]) => [W.X(x), W.Y(z)]), SB.isDark() ? "rgba(120,200,255,.95)" : "rgba(30,110,200,.95)", 2);
+      ctx.save(); pathPoly(ctx, poly); ctx.clip();
+      for (let p = 1000; p < 8000; p += 1000) line(ctx, pts.map(([x, z]) => [W.X(x), W.Y(z - p / (RW * g))]), P.accent, 1, [4, 4]);
+      st.tr.forEach((t) => { const r = t.r * R, zsr = surf(r, st.w, st.hv, R); if (zsr <= 0.002) return; const x = r * Math.cos(t.a), z = t.f * Math.min(Ht, zsr), al = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t.a)); ctx.fillStyle = `rgba(20,60,120,${al})`; if (SB.isDark()) ctx.fillStyle = `rgba(220,240,255,${al})`; ctx.beginPath(); ctx.arc(W.X(x), W.Y(z), 2.4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.restore();
+      line(ctx, [[W.X(-R), W.Y(Ht)], [W.X(-R), W.Y(0)], [W.X(R), W.Y(0)], [W.X(R), W.Y(Ht)]], P.text, 3);
+      SB.dashLine(ctx, W.X(0), W.Y(-Ht * 0.1), W.X(0), W.Y(Ht * 1.12), P.faint, [6, 4]);
+      ctx.save(); ctx.fillStyle = solid(); ctx.fillRect(W.X(-R * 0.4), W.Y(0), W.X(R * 0.4) - W.X(-R * 0.4), W.Y(-Ht * 0.1) - W.Y(0)); ctx.restore();
+      SB.dashLine(ctx, W.X(-R * 1.3), W.Y(st.h0), W.X(-R), W.Y(st.h0), P.dim, [2, 3]);
+      SB.label(ctx, "h₀", W.X(-R * 1.18), W.Y(st.h0) - 9, { size: 11, color: P.dim });
+      if (!(st.game && !st.judged) && st.w > 0.5) { const zc = surf(0, st.w, st.hv, R), zr = Math.min(Ht, surf(R, st.w, st.hv, R)); SB.arrow(ctx, W.X(R * 1.15), W.Y(zc), W.X(R * 1.15), W.Y(zr), { color: P.accent2, width: 1.6, head: 6 }); SB.dashLine(ctx, W.X(0), W.Y(zc), W.X(R * 1.2), W.Y(zc), P.accent2, [2, 3]); SB.label(ctx, "Δh", W.X(R * 1.25), W.Y((zc + zr) / 2), { size: 11, bold: true, color: P.accent2 }); }
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.85); st.drops.forEach((d) => { ctx.beginPath(); ctx.arc(W.X(d.x), W.Y(d.z), 2.2, 0, 2 * Math.PI); ctx.fill(); }); ctx.restore();
+      SB.label(ctx, `${(st.w * 60 / (2 * Math.PI)).toFixed(0)} rpm`, 40, 14, { mono: true, size: 12 });
+    }, { aspect: 1.0, minHeight: 240, maxHeight: 380 });
+    const ct = SB.canvas("cv-rtop", (ctx, w, h) => {
+      const P = pal(), R = st.R, W = Phys.world(ctx, w, h, { x: [-R * 1.2, R * 1.2], y: [-R * 1.2, R * 1.2], pad: [6, 6, 22, 6], equal: true });
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.22); ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), R * W.s, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore();
+      st.tr.forEach((t) => { const r = t.r * R; ctx.fillStyle = P.accent; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(W.X(r * Math.cos(t.a)), W.Y(r * Math.sin(t.a)), 2.2, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1; });
+      const a0 = st.tr[0].a, vmax = Math.max(st.w * R, 1e-6), ks = (0.45 * R) / vmax;
+      for (let i = 1; i <= 5; i++) { const r = (R * i) / 5, p = [r * Math.cos(a0), r * Math.sin(a0)], v = st.w * r * ks; if (st.w > 0.1) SB.arrow(ctx, W.X(p[0]), W.Y(p[1]), W.X(p[0] - v * Math.sin(a0)), W.Y(p[1] + v * Math.cos(a0)), { color: P.accent2, width: 2, head: 6 }); }
+      SB.dashLine(ctx, W.X(0), W.Y(0), W.X(R * Math.cos(a0)), W.Y(R * Math.sin(a0)), P.faint);
+      SB.label(ctx, "위에서 본 모습: v = ωr", w / 2, 12, { size: 11, color: P.dim });
+    }, { aspect: 1.0, minHeight: 240, maxHeight: 380 });
+    function judge() {
+      const zr = surf(st.R, st.w, st.hv, st.R); st.judged = true;
+      if (zr > st.Ht * 1.0005) st.res = `<span style="color:var(--bad)">넘침! 필요 ${(Math.sqrt(4 * g * (st.Ht - st.h0)) / st.R * 60 / (2 * Math.PI)).toFixed(0)} rpm</span>`;
+      else if (zr >= 0.97 * st.Ht) st.res = '<span style="color:var(--ok)">성공! 넘치기 직전</span>';
+      else st.res = `${((st.Ht - zr) * 1000).toFixed(0)} mm 모자람`;
+    }
+    $("rt-spin").addEventListener("click", () => { st.spun = true; st.judged = false; st.res = st.game ? "회전 중…" : "—"; });
+    $("rt-chal").addEventListener("click", () => {
+      let R, Ht, h0, N; do { R = [0.12, 0.15, 0.2, 0.25, 0.3][Math.floor(Math.random() * 5)]; Ht = [0.3, 0.4, 0.5][Math.floor(Math.random() * 3)]; h0 = Math.round(Ht * (0.6 + 0.25 * Math.random()) * 100) / 100; N = Math.sqrt(4 * g * (Ht - h0)) / R * 60 / (2 * Math.PI); } while (N > 380 || N < 40);
+      Object.assign(st, { R, Ht, h0, hv: h0, w: 0, game: true, spun: false, judged: false, res: "rpm을 계산해 맞추고 ‘돌려 보기’", drops: [] });
+      getN.set(0, true); getH.el.disabled = true; stats();
+    });
+    $("rt-free").addEventListener("click", () => { Object.assign(st, { R: 0.2, Ht: 0.5, game: false, spun: true, judged: false, res: "—", drops: [] }); st.h0 = Math.min(getH(), 0.48); st.hv = st.h0; getH.el.disabled = false; stats(); });
+    $("rt-fill").addEventListener("click", () => { st.hv = st.h0; st.drops = []; if (st.game) { st.judged = false; st.res = "—"; } stats(); });
+    st.spun = true;
+    SB.loop("sim-rot", (dt) => {
+      const target = st.spun ? wT() : 0;
+      st.w += (target - st.w) * Math.min(1, dt / 0.6);
+      if (Math.abs(target - st.w) < 0.002 * Math.max(1, target)) st.w = target;
+      // 넘침
+      const zr = surf(st.R, st.w, st.hv, st.R);
+      if (zr > st.Ht) {
+        const q = (st.w * st.w * st.R * st.R) / (4 * g), h1 = st.Ht - q;
+        st.hv = h1 >= q ? h1 : (g * st.Ht * st.Ht) / (st.w * st.w * st.R * st.R);
+        for (let s = -1; s <= 1; s += 2) st.drops.push({ x: s * st.R, z: st.Ht, vx: s * st.w * st.R * 0.3, vz: 0.05 });
+        if (st.game && !st.judged) judge();
+      }
+      if (st.game && st.spun && !st.judged && st.w === target && target > 0) judge();
+      st.drops.forEach((d) => { d.vz -= g * dt * 0.5; d.x += d.vx * dt; d.z += d.vz * dt; });
+      st.drops = st.drops.filter((d) => d.z > -st.Ht * 0.12 && st.drops.length < 300);
+      const wv = st.w * 0.125; st.tr.forEach((t) => (t.a += wv * dt));
+      cs.redraw(); ct.redraw(); stats();
+    });
+    stats();
+  }
+
+  /* ============================================================ 드릴: 부력 · 강체 운동 */
+  SB.drill("drill-rigid", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const mats = [["알루미늄", 2700], ["강철", 7850], ["구리", 8960], ["화강암", 2650]], [nm, rho] = mats[Math.floor(Math.random() * 4)], V = (2 + Math.round(Math.random() * 48)) / 1000, T = (rho - 1000) * g * V;
+      return { q: `<p>부피 \\(${(V * 1000).toFixed(0)}\\) L인 ${nm}(\\(\\rho = ${rho}\\) kg/m³) 덩어리를 물속에 완전히 잠기게 매달았다. 줄의 장력은?</p>`, answer: T, label: "T =", unit: "N", sol: `\\(T = (\\rho - \\rho_w)gV = (${rho - 1000})(9.81)(${V}) = ${T.toFixed(1)}\\) N` };
+    }
+    if (k === 1) {
+      const a = (5 + Math.round(Math.random() * 45)) / 10, th = Math.atan(a / g) / DEG;
+      return { q: `<p>물이 담긴 탱크가 수평으로 \\(${a}\\) m/s²로 가속한다. 자유 표면이 수평과 이루는 각은?</p>`, answer: th, label: "θ =", unit: "°", tol: "1%", sol: `\\(\\tan\\theta = a_x/g = ${(a / g).toFixed(4)}\\) → \\(\\theta = ${th.toFixed(2)}^\\circ\\)` };
+    }
+    const D = 10 + Math.round(Math.random() * 50), N = 30 + Math.round(Math.random() * 27) * 10, w = (N * 2 * Math.PI) / 60, R = D / 200, dh = (w * w * R * R) / (2 * g) * 100;
+    return { q: `<p>지름 \\(${D}\\) cm 원통 용기가 \\(${N}\\) rpm으로 돈다. 벽과 중심의 수면 높이 차는?</p>`, answer: dh, label: "Δh =", unit: "cm", sol: `\\(\\omega = ${w.toFixed(2)}\\) rad/s, \\(\\Delta h = \\omega^2R^2/2g = ${dh.toFixed(2)}\\) cm` };
+  });
+})();
+
+</script>
+</body>
+</html>

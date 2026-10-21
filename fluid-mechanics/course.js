@@ -38,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "압력",
       "부력"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "bernoulli",
@@ -221,9 +220,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "fluid-statics": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 10,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
   }
  },
- "published": 1,
+ "published": 2,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
