@@ -87,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "나비에–스토크스",
       "퍼텐셜 유동"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "dimensional-analysis",
@@ -265,9 +264,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 5,
    "hero": 1
+  },
+  "differential-analysis": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 5,
+ "published": 6,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
