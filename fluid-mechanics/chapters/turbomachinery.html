@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>터보 기계 · 유체역학 · SciBook</title>
+<meta name="description" content="펌프·팬·터빈의 분류, 오일러 터보 기계 방정식과 속도 삼각형, 성능 곡선과 작동점, 직렬·병렬 운전, NPSH와 공동 현상, 상사 법칙과 비속도, 펠턴·프랜시스·카플란 수차와 베츠 한계를 돌려 보며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/turbomachinery.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="터보 기계 · 유체역학 · SciBook">
+<meta property="og:description" content="펌프·팬·터빈의 분류, 오일러 터보 기계 방정식과 속도 삼각형, 성능 곡선과 작동점, 직렬·병렬 운전, NPSH와 공동 현상, 상사 법칙과 비속도, 펠턴·프랜시스·카플란 수차와 베츠 한계를 돌려 보며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/turbomachinery.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "터보 기계 · 유체역학 · SciBook", "headline": "12 터보 기계", "url": "https://science.euiyun.com/fluid-mechanics/chapters/turbomachinery.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "펌프·팬·터빈의 분류, 오일러 터보 기계 방정식과 속도 삼각형, 성능 곡선과 작동점, 직렬·병렬 운전, NPSH와 공동 현상, 상사 법칙과 비속도, 펠턴·프랜시스·카플란 수차와 베츠 한계를 돌려 보며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 12, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "12 터보 기계", "item": "https://science.euiyun.com/fluid-mechanics/chapters/turbomachinery.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+</head>
+<body data-chapter="turbomachinery">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="control-volume pipe-flow dimensional-analysis">
+    <div class="eyebrow">Chapter 12</div>
+    <h1>터보 기계</h1>
+    <p class="lead">아파트 옥상 물탱크로 물을 올리는 펌프, 제트 엔진의 압축기, 댐 아래의 수차, 언덕 위의 풍력 발전기 — 모두 <strong>회전하는 날개와 유체가 각운동량을 주고받는</strong> 기계다. 이 장은 5장의 각운동량 방정식 한 줄에서 출발해 펌프를 고르고, 관로에 맞추고, 공동 현상을 피하고, 크기를 바꾸고, 터빈에서 동력을 뽑아내는 공학 계산까지 간다. 아래 원심 펌프에서 물 입자가 날개를 따라 바깥으로 내던져지는 모습을 보며 시작하자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">U₂ 끝을 끌면 회전수, V₂ 끝을 끌면 유량이 바뀐다</span><div class="hero-ctrl"><button class="btn" id="hero-blade" type="button">날개: 후향 30°</button></div></div>
+    <ul class="objectives">
+      <li>터보 기계를 용적식과 구별하고 원심·사류·축류, 펌프·팬·압축기·터빈으로 분류한다. 전양정, 수동력 \(\rho gQH\), 제동 동력 \(\omega T\), 효율을 계산한다.</li>
+      <li>검사 체적의 각운동량 방정식에서 오일러 터보 기계 방정식 \(gH = U_2V_{t2} - U_1V_{t1}\)을 유도하고, 속도 삼각형으로 날개 출구각 \(\beta_2\)의 효과(후향·방사·전향)를 설명한다.</li>
+      <li>H–Q, η–Q, BHP–Q 성능 곡선을 읽고, 시스템 곡선과의 교점(작동점)을 구하며 직렬·병렬 운전을 해석한다.</li>
+      <li>유효 흡입 수두 NPSH<sub>a</sub>를 계산해 필요 흡입 수두 NPSH<sub>r</sub>과 비교하고 공동 현상을 피하는 설치 조건을 정한다.</li>
+      <li>상사 법칙 \(Q\propto ND^3\), \(H\propto N^2D^2\), \(P\propto N^3D^5\)과 비속도로 성능을 환산하고 펌프 형식을 고른다.</li>
+      <li>충동 터빈(펠턴)과 반동 터빈(프랜시스·카플란)을 구별하고, 펠턴 휠의 최적 속도비 \(U/V = 1/2\)와 풍력 터빈의 베츠 한계 \(16/27\)을 유도한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="classification">
+    <h2>터보 기계의 분류와 기본량</h2>
+    <p>유체에 에너지를 주거나 유체에서 에너지를 빼내는 기계는 두 부류로 나뉜다. <span class="term">용적식 기계</span><span class="en">(positive-displacement machine)</span>는 피스톤·기어·로브·나사가 닫힌 공간의 부피를 바꿔 유체를 한 덩어리씩 밀어낸다. 심장, 자전거 펌프, 기어 펌프가 그렇다. <span class="term">터보 기계</span><span class="en">(turbomachine)</span> 또는 동역학 기계는 닫힌 공간이 없다. 회전하는 날개 — <span class="term">임펠러</span><span class="en">(impeller)</span> 또는 <span class="term">로터</span><span class="en">(rotor)</span> — 가 지나가는 유체의 <em>각운동량</em>을 바꾸고, 그 반작용 토크가 축과 에너지를 주고받는다.</p>
+    <div class="compare">
+      <div><h4>용적식</h4><p>회전수만 정하면 유량이 거의 정해진다(H–Q 곡선이 거의 수직). 고압·소유량·고점도에 강하다. 송출 밸브를 닫으면 압력이 끝없이 올라 <strong>안전 밸브</strong>가 필수다.</p></div>
+      <div><h4>터보 기계(동역학)</h4><p>유량이 늘면 양정이 내려간다(완만한 H–Q 곡선). 대유량·연속 운전에 적합하고 구조가 단순하다. 밸브를 닫아도 양정은 <em>체절 양정</em>까지만 오른다.</p></div>
+    </div>
+    <p>에너지를 <strong>주는</strong> 터보 기계는 다루는 유체와 압력 상승으로 이름이 갈린다. 액체를 다루면 <span class="term">펌프</span><span class="en">(pump)</span>, 기체의 압력을 조금(대략 10 kPa 이하) 올리면 <span class="term">팬</span><span class="en">(fan)</span>, 그보다 크면 <span class="term">송풍기</span><span class="en">(blower)</span>, 밀도가 크게 변할 만큼 올리면 <span class="term">압축기</span><span class="en">(compressor)</span>다. 에너지를 <strong>빼내는</strong> 기계는 <span class="term">터빈</span><span class="en">(turbine)</span>이며, 물을 쓰면 수차라고도 한다. 유체가 로터를 지나는 방향으로도 나눈다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 290" role="img" aria-label="원심, 사류, 축류 임펠러의 자오면 단면과 유동 방향">
+        <defs>
+          <marker id="tm-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+        </defs>
+        <g>
+          <line x1="20" y1="230" x2="250" y2="230" class="s-axis" stroke-dasharray="10 4 2 4"/>
+          <path d="M60,170 L90,170 Q150,170 160,60 L180,60 Q185,200 250,215 L250,230 L60,230 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <path d="M60,170 L90,170 Q150,170 160,60" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <path d="M180,60 Q185,200 250,215" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <line x1="22" y1="190" x2="80" y2="190" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <line x1="170" y1="70" x2="170" y2="24" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <text class="t" x="135" y="268" text-anchor="middle" style="font-weight:700">원심(반경류)</text>
+          <text class="t-dim" x="196" y="40">반경 방향 유출</text>
+        </g>
+        <g transform="translate(270,0)">
+          <line x1="20" y1="230" x2="250" y2="230" class="s-axis" stroke-dasharray="10 4 2 4"/>
+          <path d="M50,150 L90,150 Q140,150 175,90 L210,120 Q170,180 240,200 L240,230 L50,230 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <path d="M50,150 L90,150 Q140,150 175,90" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <path d="M210,120 Q170,180 240,200" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <line x1="14" y1="175" x2="70" y2="175" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <line x1="192" y1="106" x2="226" y2="72" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <text class="t" x="135" y="268" text-anchor="middle" style="font-weight:700">사류(혼류)</text>
+          <text class="t-dim" x="196" y="62">비스듬히 유출</text>
+        </g>
+        <g transform="translate(540,0)">
+          <line x1="10" y1="230" x2="250" y2="230" class="s-axis" stroke-dasharray="10 4 2 4"/>
+          <rect x="40" y="110" width="200" height="120" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <rect x="40" y="180" width="200" height="50" fill="var(--surface)" stroke="var(--text)" stroke-width="1.5"/>
+          <path d="M110,112 L150,112 L150,178 L110,178 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <line x1="10" y1="145" x2="90" y2="145" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <line x1="170" y1="145" x2="250" y2="145" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar)"/>
+          <text class="t" x="130" y="268" text-anchor="middle" style="font-weight:700">축류</text>
+          <text class="t-dim" x="60" y="100">허브</text><text class="t-dim" x="114" y="100">날개</text>
+        </g>
+        <text class="t-dim" x="400" y="20" text-anchor="middle">높은 양정·적은 유량  ←  비속도 증가  →  낮은 양정·많은 유량</text>
+      </svg>
+      <figcaption>세 가지 로터를 축을 포함하는 평면(자오면)으로 자른 반쪽 단면. 유체는 왼쪽에서 축 방향으로 들어와 원심형에서는 반경 방향으로, 사류형에서는 비스듬히, 축류형에서는 축 방향으로 나간다. 5절의 비속도가 이 셋을 고르는 기준이다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-pd">
+      <div class="mini-view"><canvas id="cv-pd"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>송출 밸브 열림 <output id="pd-v-out"></output></span><input type="range" id="pd-v" min="5" max="100" step="1" value="100"></label>
+        <span class="readout" id="pd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 관로(정수두 10 m)에 기어 펌프(용적식)와 원심 펌프를 따로 달았다. 밸브를 조이면 원심 펌프는 유량이 줄고 양정이 체절 양정(32 m) 쪽으로 오를 뿐이지만, 용적식은 유량을 거의 유지하려고 압력이 치솟는다. 위쪽 관의 입자 속도가 각 유량이다.</figcaption>
+    </figure>
+
+    <h3>양정, 동력, 효율</h3>
+    <p>펌프가 유체에 준 단위 무게당 에너지를 <span class="term">전양정</span><span class="en">(net head)</span> \(H\)라 한다. 펌프 입구(1)와 출구(2) 사이의 에너지 방정식(5장)에서</p>
+    <div class="formula">$$H = \left(\frac{p}{\rho g} + \frac{V^2}{2g} + z\right)_2 - \left(\frac{p}{\rho g} + \frac{V^2}{2g} + z\right)_1$$<div class="where">입출구의 지름과 높이가 같으면 \(H = (p_2 - p_1)/\rho g\). 양정은 길이(m) 단위이며 유체의 종류와 무관하게 "몇 m 들어 올릴 수 있는가"를 뜻한다.</div></div>
+    <p>유체가 실제로 받은 동력이 <span class="term">수동력</span><span class="en">(water horsepower)</span>, 모터가 축에 넣은 동력이 <span class="term">제동 동력</span><span class="en">(brake horsepower, bhp)</span> 또는 축동력이다. 둘의 비가 펌프 효율이다.</p>
+    <div class="formula">$$\dot W_\text{water} = \rho g Q H, \qquad \text{bhp} = \omega T_\text{shaft}, \qquad \eta_\text{pump} = \frac{\rho g Q H}{\omega T_\text{shaft}}, \qquad \eta_\text{turbine} = \frac{\omega T_\text{shaft}}{\rho g Q H}$$<div class="where">\(\omega = 2\pi N/60\) (N: rpm). 손실(누설, 날개 마찰, 충돌, 베어링·패킹 마찰)은 모두 열이 된다. 모터까지 포함한 종합 효율은 \(\eta_\text{overall} = \eta_\text{pump}\,\eta_\text{motor}\).</div></div>
+    <div class="tangle" id="tg-power">
+      <p>물(ρ = 998 kg/m³) <span class="tn" data-var="Q" data-min="5" data-max="100" data-step="1" data-unit=" L/s">40</span>를 전양정 <span class="tn" data-var="H" data-min="5" data-max="80" data-step="0.1" data-unit=" m">22.4</span>로 보내는 펌프의 효율이 <span class="tn" data-var="eta" data-min="40" data-max="90" data-step="1" data-unit=" %">80</span>이면 수동력은 <span class="tn-out" data-out="Pw"></span>, 제동 동력은 <span class="tn-out" data-out="bhp"></span>이다. 모터 효율 92 %로 1년 내내(8760 h) 돌리면 전력 <span class="tn-out" data-out="E"></span>, 전기 요금(120 원/kWh)은 <span class="tn-out" data-out="cost"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="펌프의 양정, 동력, 효율">
+      <p>20 °C 물(ρ = 998 kg/m³)을 0.0500 m³/s로 보내는 펌프의 입구 계기 압력이 −20.0 kPa, 출구 계기 압력이 300 kPa이다. 입출구의 지름과 높이는 같다. 모터가 1750 rpm에서 축 토크 110 N·m를 낸다. 전양정, 수동력, 제동 동력, 펌프 효율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 속도·높이 항이 상쇄되므로 \(H = \Delta p/\rho g\). 제동 동력은 \(\omega T\).</div>
+        <div class="step"><b>풀이</b> \(H = \dfrac{300 - (-20.0)}{998 \times 9.81}\times10^3 = 32.7\) m. \(\dot W_\text{water} = \rho g Q H = Q\,\Delta p = (0.0500)(320\times10^3) = 16.0\) kW. \(\omega = 1750\times2\pi/60 = 183.3\) rad/s, bhp \(= (183.3)(110) = 20.2\) kW. \(\eta = 16.0/20.2 = 0.794\).</div>
+        <div class="answer">H = 32.7 m, 수동력 16.0 kW, 제동 동력 20.2 kW, η = 79.4 %</div>
+        <div class="step"><b>검토</b> 수동력은 \(Q\Delta p\)로 바로 계산해도 된다. 효율 80 % 안팎은 이 크기 원심 펌프의 전형적인 값이다. 나머지 4.2 kW는 물과 펌프를 데운다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="euler">
+    <h2>원심 펌프와 오일러 터보 기계 방정식</h2>
+    <p>원심 펌프는 가장 흔한 터보 기계다. 물은 축 방향으로 임펠러 중심의 <span class="term">눈</span><span class="en">(eye)</span>에 들어와 날개 사이 통로를 따라 바깥으로 내던져진다. 임펠러를 감싼 나선형 케이싱 <span class="term">벌류트</span><span class="en">(volute)</span>는 단면적이 점점 넓어지며 빠른 물을 감속시켜 운동 에너지를 압력으로 바꾸고 송출구로 모은다. 벌류트가 시작되는 뾰족한 부분을 <span class="term">혀</span><span class="en">(tongue, cutwater)</span>라 한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 320" role="img" aria-label="원심 펌프의 정면도와 측단면도: 임펠러, 눈, 벌류트, 혀, 송출구, 축">
+        <defs><marker id="tm-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <path d="M200,52 A112,112 0 1 1 88,170 A120,120 0 0 1 200,40 L330,40 L330,74 L200,74" fill="rgba(60,140,220,0.12)" stroke="var(--text)" stroke-width="2.4"/>
+        <circle cx="200" cy="170" r="92" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+        <g stroke="var(--text)" stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M200,138 Q250,128 268,95"/><path d="M232,170 Q246,220 285,232"/><path d="M200,202 Q150,236 140,250"/>
+          <path d="M168,170 Q150,120 112,110"/><path d="M223,147 Q285,155 292,170"/><path d="M177,193 Q120,214 110,196"/>
+        </g>
+        <circle cx="200" cy="170" r="32" fill="rgba(60,140,220,0.22)" stroke="var(--border)"/>
+        <circle cx="200" cy="170" r="9" fill="var(--text-dim)"/>
+        <line x1="250" y1="57" x2="320" y2="57" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#tm-ar2)"/>
+        <text class="t" x="340" y="62">송출구</text>
+        <text class="t" x="20" y="96">벌류트</text><line x1="62" y1="100" x2="92" y2="128" class="s-line"/>
+        <text class="t" x="214" y="104">날개</text>
+        <text class="t" x="226" y="88" style="display:none">.</text>
+        <text class="t" x="150" y="310">눈(흡입)</text><line x1="185" y1="296" x2="198" y2="182" class="s-line"/>
+        <text class="t" x="206" y="30">혀</text><line x1="210" y1="34" x2="202" y2="68" class="s-line"/>
+        <text class="t-acc" x="270" y="270">회전 ↻</text>
+        <g transform="translate(450,0)">
+          <rect x="70" y="40" width="210" height="250" rx="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <path d="M120,60 L160,60 L160,270 L120,270" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M160,60 Q170,140 190,140 L190,190 Q170,190 160,270" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <rect x="190" y="155" width="130" height="20" fill="var(--text-dim)"/>
+          <rect x="0" y="135" width="120" height="60" fill="rgba(60,140,220,0.18)" stroke="var(--text)" stroke-width="1.5"/>
+          <line x1="10" y1="165" x2="110" y2="165" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#tm-ar2)"/>
+          <line x1="170" y1="120" x2="170" y2="70" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#tm-ar2)"/>
+          <text class="t" x="8" y="125">흡입(축 방향)</text>
+          <text class="t" x="200" y="210">축</text>
+          <text class="t" x="128" y="30">슈라우드·허브</text>
+          <text class="t-dim" x="180" y="96">반경 방향</text>
+        </g>
+      </svg>
+      <figcaption>원심 펌프의 정면도(왼쪽)와 측단면도(오른쪽). 날개 끝은 회전 방향의 반대쪽으로 휘어 있다(후향 날개). 벌류트의 단면은 혀에서부터 한 바퀴 돌며 넓어진다.</figcaption>
+    </figure>
+
+    <h3>각운동량에서 오일러 방정식으로</h3>
+    <p>임펠러를 감싸는 고정된 검사 체적에 5장의 각운동량 방정식을 적용한다. 정상 상태이고, 유체가 반지름 \(r_1\)에서 들어와 \(r_2\)에서 나간다. 각운동량에 기여하는 것은 속도의 <em>접선 성분</em> \(V_t\)뿐이다(반경·축 성분은 축에 대한 모멘트 팔이 0).</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="임펠러 검사 체적에 각운동량 방정식을 적용하여 오일러 방정식을 얻는 과정">
+        <defs><marker id="tm-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="tm-ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <circle cx="180" cy="165" r="105" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.2"/>
+        <circle cx="180" cy="165" r="122" fill="none" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <circle cx="180" cy="165" r="38" fill="rgba(60,140,220,0.2)" stroke="var(--border)"/>
+        <circle cx="180" cy="165" r="5" fill="var(--text)"/>
+        <text class="t-dim" x="250" y="40">검사 체적</text>
+        <g data-step="1">
+          <line x1="180" y1="127" x2="180" y2="98" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#tm-ar3)"/>
+          <text class="t-acc" x="188" y="112">V₁ (반경 방향)</text>
+          <line x1="180" y1="60" x2="250" y2="28" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#tm-ar3)"/>
+          <text class="t-acc" x="256" y="26">V₂</text>
+          <text class="t" x="400" y="60">① 유체는 눈(r₁)으로 들어와 바깥(r₂)으로 나간다.</text>
+          <text class="t-dim" x="400" y="82">정상 상태, 질량 유량 ṁ = ρQ</text>
+        </g>
+        <g data-step="2">
+          <line x1="180" y1="60" x2="246" y2="60" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#tm-ar4)"/>
+          <text class="t" x="206" y="76" style="fill:var(--accent-2)">Vₜ₂</text>
+          <line x1="180" y1="165" x2="180" y2="62" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <text class="t" x="150" y="120">r₂</text>
+          <text class="t" x="400" y="120">② 축에 대한 각운동량 유속 = ṁ × r Vₜ</text>
+          <text class="t-dim" x="400" y="142">반경·축 방향 성분은 모멘트 팔이 0</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="400" y="186">③ T축 = ṁ (r₂Vₜ₂ − r₁Vₜ₁)</text>
+          <text class="t" x="400" y="210">   Ẇ = ωT = ṁ (U₂Vₜ₂ − U₁Vₜ₁),  U = ωr</text>
+        </g>
+        <g data-step="4">
+          <rect x="390" y="232" width="390" height="56" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text class="t" x="404" y="256" style="font-weight:700">④ H = Ẇ/(ṁg) = (U₂Vₜ₂ − U₁Vₜ₁)/g</text>
+          <text class="t-dim" x="404" y="278">반경 방향 유입(Vₜ₁ = 0)이면 H = U₂Vₜ₂/g</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>임펠러를 감싼 고정 검사 체적. 유체는 \(r_1\)에서 들어와 \(r_2\)에서 나간다.</li>
+        <li>출구 속도 \(V_2\)의 접선 성분 \(V_{t2}\)만이 축에 대한 각운동량을 나른다.</li>
+        <li>각운동량 방정식: 축 토크 = 나가는 각운동량 유속 − 들어오는 각운동량 유속. 여기에 \(\omega\)를 곱하면 동력.</li>
+        <li>동력을 \(\dot m g\)로 나누면 이상적(손실 없는) 양정 — 오일러 터보 기계 방정식.</li>
+      </ol>
+      <figcaption>오일러 방정식의 유도. 유도 어디에도 날개 모양이나 유체 종류가 들어가지 않는다 — 펌프·팬·압축기·터빈에 모두 성립한다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">오일러 터보 기계 방정식</span>
+      <p>$$T_\text{shaft} = \rho Q\,(r_2V_{t2} - r_1V_{t1}), \qquad \dot W_\text{shaft} = \rho Q\,(U_2V_{t2} - U_1V_{t1}), \qquad H_\text{th} = \frac{U_2V_{t2} - U_1V_{t1}}{g}$$
+      펌프에서는 양수, 터빈에서는 음수(유체가 축에 일을 한다)가 된다. \(H_\text{th}\)는 손실이 없을 때의 <span class="term">이론 양정</span><span class="en">(theoretical head)</span>이다.</p>
+    </div>
+    <div class="callout deep"><strong>심화: 오일러 방정식의 에너지 형태</strong><p>속도 삼각형(아래)의 코사인 법칙 \(W^2 = V^2 + U^2 - 2UV_t\)을 쓰면 \(UV_t = \tfrac12(V^2 + U^2 - W^2)\)이므로
+      $$gH_\text{th} = \frac{V_2^2 - V_1^2}{2} + \frac{U_2^2 - U_1^2}{2} + \frac{W_1^2 - W_2^2}{2}.$$
+      첫 항은 유체가 얻은 운동 에너지, 나머지 두 항(원심력 효과와 상대 속도 감속)은 임펠러 안에서 생긴 정압 상승이다. 정압 상승 부분의 비율을 <span class="term">반동도</span><span class="en">(degree of reaction)</span>라 한다. 축류 기계는 \(U_1 = U_2\)라 둘째 항이 없다.</p></div>
+
+    <h3>속도 삼각형</h3>
+    <p>날개와 함께 도는 관찰자에게 물은 날개 면을 따라 흐른다. 이 <span class="term">상대 속도</span><span class="en">(relative velocity)</span> \(\vec W\)에 날개 속도 \(\vec U = \omega r\)(접선 방향)를 더한 것이 정지한 관찰자가 보는 <span class="term">절대 속도</span><span class="en">(absolute velocity)</span> \(\vec V\)다 — 3장 상대 속도와 똑같다.</p>
+    <div class="formula">$$\vec V = \vec W + \vec U, \qquad V_{n2} = \frac{Q}{2\pi r_2 b_2}, \qquad V_{t2} = U_2 - V_{n2}\cot\beta_2$$<div class="where">\(V_n\): 반경(법선) 성분, \(b_2\): 출구 날개 폭. \(\beta_2\): <span class="term">날개 출구각</span><span class="en">(blade outlet angle)</span>, 날개(=\(\vec W_2\))가 회전 반대 방향과 이루는 각. \(\beta_2 &lt; 90^\circ\) 후향, \(=90^\circ\) 방사, \(&gt; 90^\circ\) 전향 날개.</div></div>
+    <figure class="mini" id="mini-frames">
+      <div class="mini-view"><canvas id="cv-fr"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>보는 좌표계</span><div class="seg" id="fr-frame"><button data-value="abs" class="on">정지(절대)</button><button data-value="rel">날개와 함께(상대)</button></div></div>
+        <div class="ctrl"><span>날개</span><div class="seg" id="fr-blade"><button data-value="30" class="on">후향 30°</button><button data-value="150">전향 150°</button></div></div>
+        <button class="btn" id="fr-play" type="button"></button>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>물 입자 하나의 경로. 날개와 함께 보면(상대) 입자는 날개 면을 따라 미끄러지고(\(\vec W\), 초록), 정지 좌표계에서는 날개에 끌려 회전 방향으로 크게 휘며 나간다(\(\vec V\), 파랑). 어느 순간이든 \(\vec V = \vec W + \vec U\)다.</figcaption>
+    </figure>
+    <p>반경 방향 유입(\(V_{t1} = 0\))을 가정하고 \(V_{t2}\)를 오일러 방정식에 넣으면 이론 양정이 유량의 1차 함수가 된다.</p>
+    <div class="formula">$$H_\text{th} = \frac{U_2^2}{g} - \frac{U_2\cot\beta_2}{2\pi r_2 b_2\,g}\,Q$$<div class="where">기울기의 부호는 \(\cot\beta_2\)가 정한다. 후향(\(\beta_2&lt;90^\circ\))이면 Q가 늘수록 H가 줄고, 방사면 일정, 전향이면 오히려 는다.</div></div>
+    <div class="predict" data-for="sim-tri">
+      <p>회전수와 유량을 그대로 두고 날개 출구각을 30°(후향)에서 150°(전향)로 바꾸면 이론 양정은?</p>
+      <div class="opts"><button class="opt">줄어든다</button><button class="opt">변하지 않는다</button><button class="opt" data-correct>커진다</button><button class="opt">0이 된다</button></div>
+      <div class="quiz-exp">전향 날개는 물을 회전 방향으로 더 세게 던져 \(V_{t2} &gt; U_2\)가 된다. 그런데 늘어난 양정의 대부분이 운동 에너지(\(V_2^2/2g\))라 벌류트에서 압력으로 바꾸며 많이 잃고, 유량에 따라 동력이 계속 늘어 모터가 과부하된다. 그래서 펌프에는 거의 후향 날개를 쓴다. 아래에서 '운동 에너지 비율'을 비교해 보라.</div>
+    </div>
+    <div class="sim" id="sim-tri">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>속도 삼각형: V₂ 끝을 끌어 날개 출구각과 유량을 바꿔라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-tri"></canvas><span class="hint">흰 원: U₂ 끝(회전수), V₂ 끝(β₂·유량)</span></div><div><canvas id="cv-trich"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>회전수 N <output id="tri-n-out"></output></span><input type="range" id="tri-n" min="800" max="2600" step="10" value="1750"></label>
+          <label class="ctrl"><span>유량 Q <output id="tri-q-out"></output></span><input type="range" id="tri-q" min="0.005" max="0.12" step="0.001" value="0.04"></label>
+          <label class="ctrl"><span>날개 출구각 β₂ <output id="tri-b-out"></output></span><input type="range" id="tri-b" min="15" max="165" step="1" value="30"></label>
+          <div class="ctrl"><span>날개 형식</span><div class="seg" id="tri-type"><button data-value="30" class="on">후향 30°</button><button data-value="90">방사 90°</button><button data-value="150">전향 150°</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">U₂ = ωr₂</span><span class="v" id="tri-u">—</span></div>
+        <div class="stat"><span class="k">V<sub>n2</sub></span><span class="v" id="tri-vn">—</span></div>
+        <div class="stat"><span class="k">V<sub>t2</sub></span><span class="v" id="tri-vt">—</span></div>
+        <div class="stat"><span class="k">이론 양정 H<sub>th</sub></span><span class="v" id="tri-h">—</span></div>
+        <div class="stat"><span class="k">이론 동력 ρgQH</span><span class="v" id="tri-p">—</span></div>
+        <div class="stat"><span class="k">운동 에너지 비율 V₂²/2gH</span><span class="v" id="tri-ke">—</span></div>
+      </div>
+      <div class="sim-note">임펠러: r₂ = 0.125 m, b₂ = 20 mm, 반경 방향 유입. 해볼 것: ① β₂를 90°로 두면 Q를 바꿔도 \(V_{t2} = U_2\), 오른쪽 직선이 수평이 된다. ② 후향(30°)과 전향(150°)에서 운동 에너지 비율을 비교하라. 전향은 양정의 절반 이상이 속도로 나간다. ③ 회전수를 2배로 하면 체절(Q = 0) 이론 양정 \(U_2^2/g\)는 4배가 된다.</div>
+    </div>
+    <div class="example" data-title="속도 삼각형과 이론 양정">
+      <p>원심 펌프 임펠러의 바깥 반지름 \(r_2 = 0.125\) m, 출구 날개 폭 \(b_2 = 20.0\) mm, 날개 출구각 \(\beta_2 = 30.0^\circ\)이다. 1750 rpm으로 물(ρ = 998 kg/m³) 0.0400 m³/s를 보낸다. 반경 방향 유입을 가정할 때 출구 속도 성분, 이론 양정, 이론 동력을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 연속 방정식으로 \(V_{n2}\), 속도 삼각형으로 \(V_{t2}\), 오일러 방정식으로 \(H_\text{th}\).</div>
+        <div class="step"><b>풀이</b> \(\omega = 183.3\) rad/s, \(U_2 = \omega r_2 = 22.9\) m/s. \(V_{n2} = \dfrac{0.0400}{2\pi(0.125)(0.0200)} = 2.55\) m/s. \(V_{t2} = 22.9 - 2.55\cot30^\circ = 22.9 - 4.41 = 18.5\) m/s. \(H_\text{th} = \dfrac{(22.9)(18.5)}{9.81} = 43.2\) m. \(\dot W = \rho g Q H_\text{th} = 998(9.81)(0.0400)(43.2) = 16.9\) kW.</div>
+        <div class="answer">V<sub>n2</sub> = 2.55 m/s, V<sub>t2</sub> = 18.5 m/s, H<sub>th</sub> = 43.2 m, 이론 동력 16.9 kW</div>
+        <div class="step"><b>검토</b> 위 시뮬레이터의 기본값이 바로 이 조건이다. 실제 펌프는 미끄럼·마찰 손실 때문에 이 유량에서 20 m 남짓만 낸다(다음 절). 같은 조건에서 방사 날개면 53.5 m, 전향 150°면 63.8 m.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-euler" data-title="오일러 방정식 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="performance">
+    <h2>펌프 성능 곡선과 작동점</h2>
+    <p>오일러 직선은 무한히 많은 얇은 날개와 손실 없는 유동을 가정한 상한이다. 실제 펌프의 양정은 여러 손실 때문에 그 아래에 놓인다. 제조사는 시험으로 측정한 <span class="term">성능 곡선</span><span class="en">(performance curves)</span>을 제공한다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="오일러 이론 직선에서 미끄럼, 마찰, 충돌 손실을 빼 실제 양정 곡선을 얻는 과정">
+        <line x1="70" y1="270" x2="760" y2="270" class="s-axis"/><line x1="70" y1="270" x2="70" y2="24" class="s-axis"/>
+        <text class="t-dim" x="740" y="290">Q</text><text class="t-dim" x="40" y="32">H</text>
+        <line x1="70" y1="50" x2="730" y2="182" stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="7 5"/>
+        <text class="t-dim" x="520" y="125">오일러 이론 직선(후향)</text>
+        <g data-step="2"><line x1="70" y1="90" x2="730" y2="200" stroke="var(--accent-2)" stroke-width="2"/><text class="t" x="600" y="214" style="fill:var(--accent-2)">미끄럼 반영</text></g>
+        <g data-step="3"><polyline points="70,90 103,95 136,101 169,107 202,114 235,121 268,128 301,135 334,142 367,150 400,158 433,167 466,175 499,184 532,194 565,203 598,213 631,223 664,233 697,244 730,255" fill="none" stroke="var(--warn)" stroke-width="2"/><text class="t" x="560" y="250" style="fill:var(--warn)">− 마찰 손실 ∝ Q²</text></g>
+        <g data-step="4"><polyline points="70,117 103,119 136,120 169,123 202,126 235,130 268,134 301,140 334,145 367,152 400,159 433,167 466,175 499,185 532,194 565,205 598,216 631,228 664,240 697,253 730,267" fill="none" stroke="var(--accent)" stroke-width="3.2"/>
+          <polyline points="70,270 103,245 136,222 169,201 202,182 235,166 268,151 301,139 334,129 367,122 400,116 433,113 466,112 499,113 532,116 565,122 598,129 631,139 664,151 697,165 730,182" fill="none" stroke="var(--ok)" stroke-width="2" stroke-dasharray="5 4"/>
+          <circle cx="466" cy="175" r="6" fill="var(--accent)"/><line x1="466" y1="112" x2="466" y2="270" stroke="var(--ok)" stroke-dasharray="3 3"/>
+          <text class="t-acc" x="476" y="196" style="font-weight:700">실제 H–Q</text><text class="t" x="476" y="104" style="fill:var(--ok)">η 최대 = 최고 효율점(BEP)</text>
+          <text class="t" x="78" y="110">체절 양정</text><text class="t" x="684" y="262">최대 유량</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>오일러 이론 직선: 날개 수가 무한하고 손실이 없을 때. 후향 날개라 유량에 따라 내려간다.</li>
+        <li>날개 수가 유한하면 통로 안의 상대 순환 때문에 물이 날개 각만큼 돌지 못한다(<span class="term">미끄럼</span><span class="en">(slip)</span>). \(V_{t2}\)가 줄어 직선 전체가 낮아진다.</li>
+        <li>통로·벌류트의 마찰 손실은 유량의 제곱에 비례해 큰 유량 쪽을 깎는다.</li>
+        <li>설계 유량에서 벗어나면 유입각이 날개각과 어긋나 충돌(입사) 손실이 생긴다. 남는 것이 실제 곡선이며, 효율은 설계점 근처에서 최대다.</li>
+      </ol>
+      <figcaption>이론 양정에서 실제 양정으로. 누설과 베어링 마찰은 양정이 아니라 동력 쪽 손실로 효율을 더 낮춘다.</figcaption>
+    </figure>
+    <p>성능 곡선에서 \(Q = 0\)(밸브를 완전히 닫음)일 때의 양정이 <span class="term">체절 양정</span><span class="en">(shutoff head)</span>, \(H = 0\)일 때의 유량이 <span class="term">최대 유량</span><span class="en">(free delivery)</span>이다. 효율이 가장 높은 점을 <span class="term">최고 효율점</span><span class="en">(best efficiency point, BEP)</span>이라 하고, 펌프의 정격값(명판 값)은 보통 BEP에서의 \(Q^*, H^*, \text{bhp}^*\)다.</p>
+    <figure class="mini" id="mini-curves">
+      <div class="mini-view"><canvas id="cv-cu"></canvas><span class="hint">끌어서 유량을 옮긴다</span></div>
+      <div class="mini-ctrl"><span class="readout" id="cu-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>이 장의 기준 펌프(1750 rpm)의 세 곡선. \(\text{bhp} = \rho gQH/\eta\)이므로 bhp 곡선은 H와 η로부터 계산된다. 후향 날개 펌프의 bhp는 BEP 조금 오른쪽에서 최대가 되고 다시 줄어든다 — 어느 유량에서도 모터가 과부하되지 않는 <em>비과부하 특성</em>이다.</figcaption>
+    </figure>
+
+    <h3>시스템 곡선과 작동점</h3>
+    <p>펌프가 어느 유량으로 돌지는 펌프 혼자 정하지 않는다. 관로가 유량 Q를 흘리는 데 필요한 양정 — <span class="term">시스템 곡선</span><span class="en">(system curve)</span> — 은 에너지 방정식과 8장의 손실 식으로 정해진다.</p>
+    <div class="formula">$$H_\text{required} = \underbrace{(z_2 - z_1) + \frac{p_2 - p_1}{\rho g}}_{\text{정수두 }H_s} + \left(\sum f\frac{L}{D} + \sum K\right)\frac{V^2}{2g} \;\approx\; H_s + kQ^2$$<div class="where">난류에서 f가 거의 일정하면 손실은 \(Q^2\)에 비례한다. 밸브를 조이면 \(\sum K\)가 커져 곡선이 가팔라진다.</div></div>
+    <p>펌프 곡선 \(H_\text{pump}(Q)\)과 시스템 곡선이 만나는 점이 <span class="term">작동점</span><span class="en">(operating point)</span>이다. 좋은 설계는 작동점이 BEP 근처에 오도록 펌프를 고르는 것이다. 밸브로 유량을 줄이는 것(교축)은 쉽지만 밸브에서 에너지를 버리고, 인버터로 회전수를 줄이면 펌프 곡선 자체가 내려가 버리는 에너지가 없다.</p>
+    <div class="example" data-title="작동점 구하기">
+      <p>기준 펌프(1750 rpm)의 성능은 \(H = 32.0 - 0.00600\,Q^2\) (H: m, Q: L/s), 효율은 \(\eta = 0.80\,(2x - x^2)\), \(x = Q/40\)이다. 정수두 12.0 m, \(k = 0.00400\) m/(L/s)²인 관로에 연결하면 유량, 양정, 효율, 제동 동력은? (ρ = 998 kg/m³)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(H_\text{pump} = H_\text{sys}\)를 Q에 대해 푼다.</div>
+        <div class="step"><b>풀이</b> \(32.0 - 0.00600Q^2 = 12.0 + 0.00400Q^2\) → \(Q^2 = 20.0/0.0100 = 2000\) → \(Q = 44.7\) L/s, \(H = 12.0 + 0.004(2000) = 20.0\) m. \(x = 1.118\), \(\eta = 0.80(2.236 - 1.250) = 0.789\). bhp \(= \dfrac{998(9.81)(0.0447)(20.0)}{0.789} = 11.1\) kW.</div>
+        <div class="answer">Q = 44.7 L/s, H = 20.0 m, η = 78.9 %, bhp = 11.1 kW</div>
+        <div class="step"><b>검토</b> BEP(40 L/s)보다 약간 오른쪽이라 효율이 최대(80 %)에 가깝다. 아래 시뮬레이터에서 정수두 12 m, 밸브 손실 0으로 맞추고 k를 0.004로 두면 같은 점이 나온다.</div>
+      </details>
+    </div>
+
+    <h3>직렬·병렬 운전</h3>
+    <p>펌프 두 대를 <strong>직렬</strong>로 이으면 같은 유량에서 양정이 더해지고(\(H_\text{tot}(Q) = H_1(Q) + H_2(Q)\)), <strong>병렬</strong>로 이으면 같은 양정에서 유량이 더해진다(\(Q_\text{tot}(H) = Q_1(H) + Q_2(H)\)). 그러나 실제 유량이 몇 배가 될지는 시스템 곡선이 정한다.</p>
+    <div class="predict" data-for="sim-op">
+      <p>같은 펌프 두 대를 병렬로 연결하면, 같은 관로에서 유량은 한 대일 때의 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">정확히 2배</button><button class="opt" data-correct>1배와 2배 사이</button><button class="opt">2배보다 크다</button><button class="opt">변하지 않는다</button></div>
+      <div class="quiz-exp">유량이 늘면 관 손실(\(kQ^2\))이 커져 더 높은 양정이 필요하고, 각 펌프는 곡선을 따라 왼쪽으로 밀린다. 손실이 큰(가파른) 관로일수록 병렬의 이득이 작다. 아래에서 '병렬'과 '1대'를 번갈아 눌러 보라.</div>
+    </div>
+    <div class="sim" id="sim-op">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>작동점: 시스템 곡선을 끌고, 회전수로 목표 유량을 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-op"></canvas><span class="hint top">흰 원: 정수두(왼쪽), 밸브(곡선 위)</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>회전수 N <output id="op-n-out"></output></span><input type="range" id="op-n" min="1000" max="2000" step="10" value="1750"></label>
+          <div class="ctrl"><span>운전 방식</span><div class="seg" id="op-mode"><button data-value="1" class="on">1대</button><button data-value="s">직렬 2대</button><button data-value="p">병렬 2대</button></div></div>
+          <label class="check"><input type="checkbox" id="op-single" checked> 1대 곡선도 표시</label>
+          <div class="ctrl-row"><button class="btn primary" id="op-game" type="button">도전: 새 과제</button><button class="btn" id="op-open" type="button">밸브 완전 열기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">작동점 Q</span><span class="v" id="op-q">—</span></div>
+        <div class="stat"><span class="k">양정 H</span><span class="v" id="op-h">—</span></div>
+        <div class="stat"><span class="k">펌프 효율 η</span><span class="v" id="op-eta">—</span></div>
+        <div class="stat"><span class="k">제동 동력(합)</span><span class="v" id="op-bhp">—</span></div>
+        <div class="stat"><span class="k">밸브에서 버리는 동력</span><span class="v" id="op-waste">—</span></div>
+        <div class="stat"><span class="k">과제</span><span class="v" id="op-task">—</span></div>
+      </div>
+      <div class="sim-note">기준 펌프: 1750 rpm에서 \(H = 32 - 0.006Q^2\), BEP 40 L/s. 관로 손실 \(k_0 = 0.002\) m/(L/s)²에 밸브 손실이 더해진다. 해볼 것: ① 정수두를 30 m 가까이 올리면 1대로는 물이 거의 안 나가지만 직렬이면 나간다 — 높은 곳에는 직렬. ② 정수두를 낮추고 밸브를 열면 병렬의 이득이 커진다. ③ <b>도전</b>: 목표 유량 띠(주황) 안에 작동점을 넣되 효율 75 % 이상, 밸브 손실은 수동력의 10 % 미만으로 — 밸브가 아니라 <em>회전수</em>로 맞춰야 한다.</div>
+    </div>
+    <div class="example" data-title="병렬과 직렬 운전">
+      <p>앞 예제의 펌프 두 대를 같은 관로(\(H = 12.0 + 0.00400Q^2\))에 (a) 병렬로, (b) 직렬로 연결했다. 각각의 유량과 양정은? 병렬일 때 펌프 한 대의 효율은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 병렬: 같은 H에서 각 펌프가 Q/2씩 → \(H = 32.0 - 0.00600(Q/2)^2\). 직렬: 같은 Q에서 양정 2배 → \(H = 64.0 - 0.0120Q^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(32.0 - 0.00150Q^2 = 12.0 + 0.00400Q^2\) → \(Q = \sqrt{20.0/0.00550} = 60.3\) L/s, \(H = 26.5\) m. 한 대는 30.2 L/s → \(x = 0.754\), \(\eta = 0.80(1.508 - 0.568) = 0.751\). (b) \(64.0 - 0.0120Q^2 = 12.0 + 0.00400Q^2\) → \(Q = \sqrt{52.0/0.0160} = 57.0\) L/s, \(H = 25.0\) m.</div>
+        <div class="answer">(a) 병렬 60.3 L/s, 26.5 m (한 대 효율 75.1 %) (b) 직렬 57.0 L/s, 25.0 m</div>
+        <div class="step"><b>검토</b> 한 대(44.7 L/s)보다 병렬은 35 %, 직렬은 27 %만 늘었다. 이 관로는 정수두가 작아 병렬이 약간 유리하다. 직렬 운전의 각 펌프는 57 L/s(x = 1.43)로 BEP에서 멀어 효율이 65.5 %로 떨어진다.</div>
+      </details>
+    </div>
+    <div class="callout warn"><strong>병렬 운전의 함정</strong><p>성능이 다른 펌프를 병렬로 묶으면, 양정이 낮은 펌프는 큰 펌프의 양정을 이기지 못해 체절 상태로 헛돌거나 역류한다. 병렬에는 같은 펌프를 쓰고 각 송출관에 역지 밸브를 단다. 직렬에서는 둘째 펌프의 케이싱이 높은 압력을 견뎌야 한다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="npsh">
+    <h2>공동 현상과 NPSH</h2>
+    <p>펌프 흡입구에서 임펠러 눈으로 들어가는 물은 날개 앞전을 돌며 가속되어 압력이 펌프 안에서 가장 낮아진다. 이 압력이 액체의 증기압 \(p_v\)보다 낮아지면 물이 국소적으로 끓어 기포가 생기고, 기포가 압력이 높은 하류로 쓸려 가 순식간에 붕괴한다. 이것이 <span class="term">공동 현상</span><span class="en">(cavitation)</span>이다(1장). 붕괴하는 기포는 미세한 물 제트를 만들어 날개 표면을 파먹고(침식), 자갈이 굴러가는 듯한 소음과 진동을 내며, 양정과 효율을 급격히 떨어뜨린다.</p>
+    <div class="def"><span class="def-k">유효 흡입 수두 NPSH</span>
+      <p>펌프 흡입구에서 전수두가 증기압 수두를 얼마나 넘는지를 <span class="term">유효 흡입 수두</span><span class="en">(net positive suction head, NPSH)</span>라 한다.
+      $$\text{NPSH} = \left(\frac{p}{\rho g} + \frac{V^2}{2g}\right)_\text{inlet} - \frac{p_v}{\rho g}$$
+      설치 조건이 주는 값이 <b>NPSH<sub>a</sub></b>(available), 펌프가 공동 현상 없이 돌기 위해 요구하는 값이 <b>NPSH<sub>r</sub></b>(required, 제조사가 시험으로 측정 — 보통 양정이 3 % 떨어지는 값)이다. 반드시 \(\text{NPSH}_a &gt; \text{NPSH}_r\)이어야 한다.</p>
+    </div>
+    <p>대기에 열린 수조에서 물을 빨아올리는 경우, 수면(0)과 펌프 흡입구(1) 사이 에너지 방정식에서</p>
+    <div class="formula">$$\text{NPSH}_a = \frac{p_\text{atm} - p_v}{\rho g} - z_1 - h_{L,\text{suction}}$$<div class="where">\(z_1\): 수면에서 잰 펌프 흡입구 높이(펌프가 수면 아래에 있으면 음수 — 압입 흡입). \(h_{L}\): 흡입관의 마찰·부차 손실(\(\propto Q^2\)). 수온이 오르면 \(p_v\)가 급격히 커지고, 고지대에서는 \(p_\text{atm}\)이 작아진다.</div></div>
+    <p>NPSH<sub>a</sub>는 유량이 늘면 흡입관 손실 때문에 줄고, NPSH<sub>r</sub>은 유량이 늘면 눈에서의 속도가 커져 는다. 따라서 공동 현상은 큰 유량 쪽에서 먼저 시작된다.</p>
+    <div class="predict" data-for="sim-npsh">
+      <p>같은 설치에서 물의 온도를 20 °C에서 80 °C로 올리면 NPSH<sub>a</sub>는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">거의 변하지 않는다</button><button class="opt">조금 늘어난다</button><button class="opt" data-correct>약 4.7 m 줄어든다</button><button class="opt">0이 된다</button></div>
+      <div class="quiz-exp">증기압이 2.34 kPa에서 47.4 kPa로 뛰어 증기압 수두가 0.24 m에서 4.97 m가 된다. 같은 펌프·같은 높이에서 뜨거운 물은 공동 현상을 일으키기 훨씬 쉽다 — 보일러 급수 펌프를 탱크 <em>아래</em>에 두는 이유다.</div>
+    </div>
+    <div class="sim" id="sim-npsh">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>NPSH와 공동 현상: 펌프를 끌어 올리고 내려 보라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-np"></canvas><span class="hint">펌프(흰 원)를 위아래로 끈다</span></div><div><canvas id="cv-npc"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>수온 T <output id="np-t-out"></output></span><input type="range" id="np-t" min="5" max="95" step="1" value="20"></label>
+          <label class="ctrl"><span>유량 Q <output id="np-q-out"></output></span><input type="range" id="np-q" min="5" max="70" step="1" value="40"></label>
+          <label class="ctrl"><span>흡입 높이 z₁ <output id="np-z-out"></output></span><input type="range" id="np-z" min="-4" max="8" step="0.1" value="3"></label>
+          <div class="ctrl"><span>설치 고도</span><div class="seg" id="np-alt"><button data-value="0" class="on">해수면</button><button data-value="1500">1500 m</button><button data-value="3000">3000 m</button></div></div>
+          <div class="ctrl"><span>흡입관</span><div class="seg" id="np-line"><button data-value="0.0008" class="on">짧고 굵은 관</button><button data-value="0.0025">길고 막힌 스트레이너</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">p<sub>atm</sub></span><span class="v" id="np-pa">—</span></div>
+        <div class="stat"><span class="k">p<sub>v</sub>(T)</span><span class="v" id="np-pv">—</span></div>
+        <div class="stat"><span class="k">흡입관 손실</span><span class="v" id="np-hl">—</span></div>
+        <div class="stat"><span class="k">NPSH<sub>a</sub></span><span class="v" id="np-a">—</span></div>
+        <div class="stat"><span class="k">NPSH<sub>r</sub></span><span class="v" id="np-r">—</span></div>
+        <div class="stat"><span class="k">상태</span><span class="v" id="np-st">—</span></div>
+      </div>
+      <div class="sim-note">NPSH<sub>r</sub>은 기준 펌프(1750 rpm)의 시험값 \(1.5 + 0.0016Q^2\) m. 해볼 것: ① 20 °C에서 기포가 생기기 시작하는 높이를 찾아라(약 4.6 m). ② 수온을 70 °C 이상으로 올리면 펌프를 수면 <em>아래</em>(z₁ &lt; 0)에 두어야 한다. ③ 고도 3000 m에서는 같은 펌프를 얼마나 낮춰야 하는가? ④ 오른쪽 그래프에서 공동 현상이 큰 유량 쪽에서 먼저 시작됨을 확인하라.</div>
+    </div>
+    <div class="tangle" id="tg-npsh">
+      <p>해수면에서 수온 <span class="tn" data-var="T" data-min="5" data-max="90" data-step="1" data-unit=" °C">20</span>의 물을, 수면보다 <span class="tn" data-var="z" data-min="-3" data-max="8" data-step="0.1" data-unit=" m">3.0</span> 높은 펌프로 빨아올린다. 흡입관 손실이 <span class="tn" data-var="hl" data-min="0" data-max="4" data-step="0.1" data-unit=" m">1.5</span>이면 증기압은 <span class="tn-out" data-out="pv"></span>, NPSH<sub>a</sub> = <span class="tn-out" data-out="a"></span>이다. 펌프의 NPSH<sub>r</sub>이 4.0 m라면 <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="최대 흡입 높이">
+      <p>해수면(101.325 kPa)에서 20 °C 물(ρ = 998.2 kg/m³, \(p_v\) = 2.339 kPa)을 열린 수조에서 빨아올린다. 설계 유량에서 흡입관 손실은 1.50 m, 펌프의 NPSH<sub>r</sub>은 4.00 m이다. 펌프를 수면 위 최대 몇 m에 둘 수 있는가? 수온이 60 °C(ρ = 983.2 kg/m³, \(p_v\) = 19.94 kPa)라면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> NPSH<sub>a</sub> = NPSH<sub>r</sub>로 두고 \(z_1\)을 푼다.</div>
+        <div class="step"><b>풀이</b> 20 °C: \(\dfrac{101325 - 2339}{998.2\times9.81} = 10.11\) m → \(z_\text{max} = 10.11 - 1.50 - 4.00 = 4.61\) m. 60 °C: \(\dfrac{101325 - 19940}{983.2\times9.81} = 8.44\) m → \(z_\text{max} = 8.44 - 5.50 = 2.94\) m.</div>
+        <div class="answer">20 °C: 4.61 m, 60 °C: 2.94 m (실무에서는 여기서 0.5–1 m 여유를 더 뺀다)</div>
+        <div class="step"><b>검토</b> 이론적으로 물을 빨아올릴 수 있는 한계는 대기압 수두 10.3 m지만, 증기압·손실·NPSH<sub>r</sub>을 빼면 실제 흡입 높이는 그 절반도 안 된다. "펌프는 물을 빨아올리지 못한다, 대기압이 밀어 올릴 뿐이다."</div>
+      </details>
+    </div>
+    <div class="callout tip"><strong>공동 현상을 피하는 방법</strong><p>펌프를 낮게(가능하면 수면 아래에) 설치한다 · 흡입관을 짧고 굵게 하고 엘보·밸브를 줄인다 · 스트레이너를 청소한다 · 액체 온도를 낮춘다 · 회전수를 낮춘다(NPSH<sub>r</sub> ∝ N²) · 양흡입 임펠러나 인듀서(눈 앞의 작은 축류 날개)를 쓴다.</p></div>
+    <div class="drill" id="drill-npsh" data-title="NPSH 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="similarity">
+    <h2>상사 법칙과 비속도</h2>
+    <p>7장의 차원 해석을 펌프에 적용하자. 양정(\(gH\)), 동력(bhp), 효율이 유량 \(Q\), 회전 속도 \(\omega\), 지름 \(D\), 밀도 \(\rho\), 점성 \(\mu\), 거칠기 \(\varepsilon\)에 의존한다. \(\rho, \omega, D\)를 반복 변수로 하면 다음 무차원 수가 나온다.</p>
+    <div class="formula">$$C_H = \frac{gH}{\omega^2D^2}, \qquad C_Q = \frac{Q}{\omega D^3}, \qquad C_P = \frac{\text{bhp}}{\rho\,\omega^3D^5}, \qquad \eta = \frac{C_H C_Q}{C_P}$$<div class="where">펌프에서는 레이놀즈 수가 매우 커서 그 영향이 작다. 따라서 기하학적으로 닮은 펌프는 같은 \(C_Q\)에서 같은 \(C_H, C_P, \eta\)를 갖는다 — 이것이 상사 점(homologous point)이다.</div></div>
+    <p>두 상사 점 A, B 사이에서 \(C_Q, C_H, C_P\)를 같게 놓으면 <span class="term">상사 법칙</span><span class="en">(affinity laws)</span>을 얻는다.</p>
+    <div class="formula">$$\frac{Q_B}{Q_A} = \frac{N_B}{N_A}\left(\frac{D_B}{D_A}\right)^3, \qquad \frac{H_B}{H_A} = \left(\frac{N_B}{N_A}\right)^2\left(\frac{D_B}{D_A}\right)^2, \qquad \frac{\text{bhp}_B}{\text{bhp}_A} = \frac{\rho_B}{\rho_A}\left(\frac{N_B}{N_A}\right)^3\left(\frac{D_B}{D_A}\right)^5$$<div class="where">같은 펌프의 회전수만 바꾸면 \(Q\propto N\), \(H\propto N^2\), \(P\propto N^3\). 위 작동점 시뮬레이터의 펌프 곡선이 회전수에 따라 움직인 규칙이 이것이다.</div></div>
+    <div class="tangle" id="tg-aff">
+      <p>기준 펌프(1750 rpm, D = 250 mm)는 BEP에서 40.0 L/s, 22.4 m, 11.0 kW이다. 회전수를 <span class="tn" data-var="N" data-min="500" data-max="3600" data-step="50" data-unit=" rpm">1450</span>로, 지름을 <span class="tn" data-var="d" data-min="0.7" data-max="1.3" data-step="0.01" data-unit="배">1.00</span>로 하면 상사 점에서 유량 <span class="tn-out" data-out="Q"></span>, 양정 <span class="tn-out" data-out="H"></span>, 제동 동력 <span class="tn-out" data-out="P"></span>이 된다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="회전수를 바꿀 때">
+      <p>기준 펌프가 1750 rpm에서 BEP 유량 40.0 L/s, 양정 22.4 m, 제동 동력 11.0 kW로 돈다. 인버터로 1450 rpm으로 낮추면 상사 점에서 유량, 양정, 동력은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> \(N_B/N_A = 1450/1750 = 0.8286\). \(Q = 40.0(0.8286) = 33.1\) L/s, \(H = 22.4(0.8286)^2 = 15.4\) m, \(P = 11.0(0.8286)^3 = 6.26\) kW.</div>
+        <div class="answer">33.1 L/s, 15.4 m, 6.26 kW</div>
+        <div class="step"><b>검토</b> 회전수를 17 % 낮추면 동력은 43 % 준다(세제곱). 인버터가 에너지를 아끼는 이유다. 단, 정수두가 큰 시스템에서는 작동점이 상사 점을 따라가지 않으므로 시스템 곡선과 다시 교점을 구해야 한다.</div>
+      </details>
+    </div>
+
+    <h3>비속도와 펌프 형식</h3>
+    <p>상사 법칙의 식에서 \(D\)를 소거하면 크기와 무관하게 펌프의 <em>모양</em>만 나타내는 수가 남는다. BEP에서 계산한 이 값이 <span class="term">비속도</span><span class="en">(specific speed)</span>다.</p>
+    <div class="formula">$$N_s = \frac{C_Q^{1/2}}{C_H^{3/4}} = \frac{\omega\,Q^{1/2}}{(gH)^{3/4}}$$<div class="where">\(\omega\)는 rad/s, Q는 m³/s, H는 m — 무차원. 국내 실무에서는 \(n_s = N\sqrt{Q}/H^{3/4}\)(N: rpm, Q: m³/min, H: m)도 쓰며 \(n_s \approx 410\,N_s\)이다. 미국 단위(rpm, gpm, ft)로는 \(2734\,N_s\).</div></div>
+    <p>\(N_s\)가 작으면 적은 유량을 높은 양정으로 보내는 기계 — 지름이 크고 출구 폭이 좁은 <strong>원심</strong> 임펠러가 맞는다. \(N_s\)가 크면 많은 유량을 낮은 양정으로 — <strong>축류</strong> 프로펠러가 맞는다. 그 사이가 <strong>사류</strong>다. 대략 \(N_s \lesssim 1.5\) 원심, \(1.5\)–\(3.5\) 사류, \(\gtrsim 3.5\) 축류이며, 각 형식의 최고 효율은 그 범위의 가운데에서 나온다.</p>
+    <div class="sim" id="sim-ns">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>비속도로 펌프 형식 고르기: 주문서를 받아 회전수를 정하라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-ns"></canvas></div><div><canvas id="cv-nsc"></canvas><span class="hint top">점을 좌우로 끌면 회전수가 바뀐다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>유량 Q <output id="ns-q-out"></output></span><input type="range" id="ns-q" min="-2.3" max="0.7" step="0.01" value="-1.4"></label>
+          <label class="ctrl"><span>양정 H <output id="ns-h-out"></output></span><input type="range" id="ns-h" min="0.3" max="2.5" step="0.01" value="1.35"></label>
+          <label class="ctrl"><span>회전수 N <output id="ns-n-out"></output></span><input type="range" id="ns-n" min="200" max="3600" step="10" value="1750"></label>
+          <div class="ctrl-row"><button class="btn primary" id="ns-game" type="button">도전: 새 주문서</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">비속도 N<sub>s</sub></span><span class="v" id="ns-ns">—</span></div>
+        <div class="stat"><span class="k">n<sub>s</sub> (rpm, m³/min, m)</span><span class="v" id="ns-ns2">—</span></div>
+        <div class="stat"><span class="k">알맞은 형식</span><span class="v" id="ns-type">—</span></div>
+        <div class="stat"><span class="k">기대 최고 효율</span><span class="v" id="ns-eta">—</span></div>
+        <div class="stat"><span class="k">주문서</span><span class="v" id="ns-task">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 그 비속도에 맞는 임펠러의 자오면 단면, 오른쪽은 형식별 최고 효율의 개략적인 곡선이다(대형 펌프 기준). 해볼 것: ① Q를 고정하고 H를 키우면 N<sub>s</sub>가 줄어 임펠러가 넓적한 원심형이 된다. ② 같은 Q, H에서 회전수를 올리면 N<sub>s</sub>가 커진다 — 고속 모터를 쓰면 작은 사류·축류 펌프로도 된다. ③ <b>도전</b>: 주문서의 Q, H에 대해 기대 효율 87 % 이상이 되는 회전수를 찾아라.</div>
+    </div>
+    <div class="example" data-title="비속도로 형식 고르기">
+      <p>(a) 기준 펌프의 BEP(1750 rpm, 0.0400 m³/s, 22.4 m)의 비속도를 구하고 형식을 판정하라. (b) 하천 배수장에서 2.00 m³/s를 5.00 m 올리는 펌프를 600 rpm으로 돌린다면 어떤 형식이 알맞은가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> (a) \(\omega = 183.3\) rad/s, \(N_s = \dfrac{183.3\sqrt{0.0400}}{(9.81\times22.4)^{3/4}} = \dfrac{36.65}{57.07} = 0.642\) → 원심(\(n_s \approx 263\)). (b) \(\omega = 62.83\) rad/s, \(N_s = \dfrac{62.83\sqrt{2.00}}{(9.81\times5.00)^{3/4}} = \dfrac{88.86}{18.54} = 4.79\) → 축류.</div>
+        <div class="answer">(a) N<sub>s</sub> = 0.642, 원심 (b) N<sub>s</sub> = 4.79, 축류</div>
+        <div class="step"><b>검토</b> 배수장·관개용 대유량 저양정 펌프가 프로펠러 모양인 것과 일치한다. (b)를 원심 펌프로 하려면 회전수를 크게 낮추고 지름을 아주 크게 해야 해서 비효율적이다.</div>
+      </details>
+    </div>
+
+    <h3>축류 펌프와 팬</h3>
+    <p>축류 기계에서는 유체가 같은 반지름에서 들어와 나가므로 \(U_1 = U_2 = U\)이고, 오일러 방정식은 \(gH = U(V_{t2} - V_{t1})\)이 된다. 평균 반지름의 날개 단면을 펼쳐 보면 날개열(cascade)이 속도 \(U\)로 옆으로 미끄러지는 그림이 된다. 축 방향 유입(\(V_{t1} = 0\))이면 축 방향 속도 \(V_a\)와 출구 상대각 \(\beta_2\)로</p>
+    <div class="formula">$$gH = U\left(U - V_a\cot\beta_2\right) \quad\Longrightarrow\quad \psi \equiv \frac{gH}{U^2} = 1 - \phi\cot\beta_2, \qquad \phi = \frac{V_a}{U}$$<div class="where">\(\psi\): 양정 계수, \(\phi\): 유량 계수. 로터가 만든 선회(\(V_{t2}\))는 그대로 두면 운동 에너지로 버려지므로, 뒤의 고정 <span class="term">안내 깃</span><span class="en">(stator, guide vanes)</span>이 선회를 축 방향으로 되돌리며 압력으로 회수한다. 팬은 같은 식을 \(\Delta p = \rho gH\)로 쓴다.</div></div>
+    <figure class="mini" id="mini-axial">
+      <div class="mini-view"><canvas id="cv-ax"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>유량 계수 φ = V<sub>a</sub>/U <output id="ax-phi-out"></output></span><input type="range" id="ax-phi" min="0.3" max="1.2" step="0.05" value="0.6"></label>
+        <label class="ctrl"><span>로터 출구각 β₂ <output id="ax-b-out"></output></span><input type="range" id="ax-b" min="20" max="90" step="1" value="50"></label>
+        <span class="readout" id="ax-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>평균 반지름에서 펼친 축류 펌프. 로터(위, 오른쪽으로 이동)가 물에 선회를 주고, 안내 깃(아래, 고정)이 선회를 없앤다. 오른쪽은 로터 입구·출구의 속도 삼각형. φ를 키우면(유량 증가) ψ가 직선으로 줄어든다 — 축류 펌프의 가파른 H–Q 곡선이다.</figcaption>
+    </figure>
+    <div class="drill" id="drill-aff" data-title="상사 법칙 · 비속도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="turbines">
+    <h2>터빈: 수차와 풍력</h2>
+    <p>터빈은 펌프를 거꾸로 돌린 것이다. 유체가 로터에 각운동량을 내주며 축을 돌린다(오일러 방정식에서 \(U_1V_{t1} &gt; U_2V_{t2}\)). 수력 터빈(수차)의 동력원은 저수지와 방수로의 수위차인 총낙차이며, 수압관 손실을 뺀 <span class="term">유효 낙차</span><span class="en">(net head)</span> \(H\)가 터빈에 주어진다. 이상적 출력은 \(\rho g Q H\), 실제 출력은 \(\eta_\text{turbine}\rho g QH\)이다.</p>
+    <div class="compare">
+      <div><h4>충동 터빈</h4><p>낙차 전체를 노즐에서 고속 분류의 운동 에너지로 바꾼다. 로터는 대기 중에서 돌며 로터 안에서 압력이 변하지 않는다. <b>펠턴 휠</b>: 고낙차(대략 300 m 이상)·소유량.</p></div>
+      <div><h4>반동 터빈</h4><p>물이 로터를 가득 채운 채 압력과 속도를 함께 잃는다. <b>프랜시스</b>(반경 유입·축 유출, 중낙차 약 30–600 m), <b>카플란</b>(축류 프로펠러, 날개각 조절, 저낙차·대유량). 출구의 <span class="term">흡출관</span><span class="en">(draft tube)</span>이 남은 운동 에너지를 회수한다.</p></div>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="펠턴 휠, 프랜시스 수차, 카플란 수차의 구조 비교">
+        <defs><marker id="tm-ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g>
+          <circle cx="140" cy="120" r="72" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <circle cx="140" cy="120" r="10" fill="var(--text-dim)"/>
+          <g fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5">
+            <path d="M128,192 q12,18 24,0 z"/><path d="M196,160 q22,4 14,-24 z"/><path d="M204,90 q10,-20 -14,-26 z"/><path d="M150,48 q-10,-20 -26,0 z"/><path d="M84,74 q-22,-2 -14,24 z"/><path d="M74,144 q-12,20 12,28 z"/>
+          </g>
+          <path d="M10,186 L52,192 L52,200 L10,206 Z" fill="var(--text-dim)"/>
+          <line x1="52" y1="196" x2="124" y2="196" stroke="rgba(60,140,220,0.9)" stroke-width="6"/>
+          <text class="t" x="14" y="226">노즐(니들 밸브)</text>
+          <text class="t" x="140" y="262" text-anchor="middle" style="font-weight:700">펠턴 휠 (충동)</text>
+        </g>
+        <g transform="translate(270,0)">
+          <path d="M30,60 Q130,10 230,60 L230,90 L30,90 Z" fill="rgba(60,140,220,0.14)" stroke="var(--text)" stroke-width="1.6"/>
+          <g stroke="var(--text-dim)" stroke-width="3"><line x1="70" y1="96" x2="78" y2="114"/><line x1="100" y1="96" x2="104" y2="114"/><line x1="160" y1="96" x2="156" y2="114"/><line x1="190" y1="96" x2="182" y2="114"/></g>
+          <path d="M80,118 Q130,110 180,118 L162,170 L98,170 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+          <path d="M98,170 L78,250 L182,250 L162,170" fill="rgba(60,140,220,0.12)" stroke="var(--text)" stroke-width="1.6"/>
+          <line x1="130" y1="20" x2="130" y2="120" stroke="var(--text-dim)" stroke-width="5"/>
+          <line x1="40" y1="76" x2="84" y2="128" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#tm-ar5)"/>
+          <line x1="130" y1="180" x2="130" y2="240" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#tm-ar5)"/>
+          <text class="t-dim" x="196" y="110">안내 깃</text><text class="t-dim" x="190" y="152">러너</text><text class="t-dim" x="190" y="220">흡출관</text>
+          <text class="t" x="130" y="272" text-anchor="middle" style="font-weight:700">프랜시스 (반동, 반경→축)</text>
+        </g>
+        <g transform="translate(540,0)">
+          <rect x="70" y="40" width="120" height="130" fill="rgba(60,140,220,0.14)" stroke="var(--text)" stroke-width="1.6"/>
+          <line x1="130" y1="10" x2="130" y2="120" stroke="var(--text-dim)" stroke-width="5"/>
+          <ellipse cx="130" cy="124" rx="16" ry="12" fill="var(--text-dim)"/>
+          <path d="M114,120 L76,110 L76,130 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.6"/>
+          <path d="M146,120 L184,130 L184,110 Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.6"/>
+          <path d="M70,170 L50,250 L210,250 L190,170" fill="rgba(60,140,220,0.12)" stroke="var(--text)" stroke-width="1.6"/>
+          <line x1="96" y1="56" x2="96" y2="100" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#tm-ar5)"/>
+          <line x1="164" y1="56" x2="164" y2="100" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#tm-ar5)"/>
+          <line x1="130" y1="180" x2="130" y2="240" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#tm-ar5)"/>
+          <text class="t-dim" x="196" y="122">가변 날개</text>
+          <text class="t" x="130" y="272" text-anchor="middle" style="font-weight:700">카플란 (반동, 축류)</text>
+        </g>
+      </svg>
+      <figcaption>세 가지 수차. 낙차가 낮아지고 유량이 커질수록 펠턴 → 프랜시스 → 카플란으로 간다. 수차의 비속도 \(N_{st} = \omega\,\text{bhp}^{1/2}/[\rho^{1/2}(gH)^{5/4}]\)로 보면 대략 펠턴 \(\lesssim 0.3\), 프랜시스 0.3–2.5, 카플란 \(\gtrsim 2.5\)이다.</figcaption>
+    </figure>
+
+    <h3>펠턴 휠</h3>
+    <p>노즐에서 나온 분류(속도 \(V = C_v\sqrt{2gH}\), \(C_v \approx 0.98\))가 반지름 \(r\)에서 속도 \(U = \omega r\)로 움직이는 버킷에 부딪힌다. 버킷에 대한 상대 속도는 \(V - U\)이고, 버킷은 이를 각 \(\beta\)(보통 160–165°)만큼 꺾어 돌려보낸다. 상대 속도의 크기가 \(k\)배로 줄어든다면(마찰), 출구 절대 속도의 접선 성분은 \(U + k(V-U)\cos\beta\)이다. 오일러 방정식(유입·유출 반지름이 같다)에서</p>
+    <div class="formula">$$T = \rho Q r\,(V - U)(1 - k\cos\beta), \qquad \dot W = \omega T = \rho Q\,U\,(V - U)(1 - k\cos\beta)$$<div class="where">\(U\)에 대해 미분해 0으로 두면 \(U = V/2\)에서 최대. \(\beta = 180^\circ, k = 1\)이면 \(\dot W_\text{max} = \tfrac12\rho QV^2\) — 분류의 운동 에너지 전부. 버킷 출구에서 물의 절대 속도가 0이 되어 "힘을 다 쓰고 떨어진다".</div></div>
+    <div class="predict" data-for="sim-pelton">
+      <p>분류 속도 V가 일정할 때, 버킷 속도 U가 얼마일 때 펠턴 휠의 출력이 최대일까?</p>
+      <div class="opts"><button class="opt">U = 0 (토크 최대)</button><button class="opt">U = V/4</button><button class="opt" data-correct>U = V/2</button><button class="opt">U = V</button></div>
+      <div class="quiz-exp">토크는 \((V-U)\)에 비례해 U = 0에서 가장 크지만 그때는 돌지 않으니 동력이 0이다. U = V이면 물이 버킷을 따라잡지 못해 토크가 0이다. 동력 \(\propto U(V-U)\)는 그 중간 U = V/2에서 최대다.</div>
+    </div>
+    <div class="sim" id="sim-pelton">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>펠턴 휠: 버킷 속도비와 출력, 발전기 동기 속도 맞추기</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-pt"></canvas><span class="hint">흰 원을 끌면 휠 지름이 바뀐다</span></div><div><canvas id="cv-ptc"></canvas><span class="hint top">점을 좌우로 끌면 회전수</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>유효 낙차 H <output id="pt-h-out"></output></span><input type="range" id="pt-h" min="50" max="1000" step="10" value="300"></label>
+          <label class="ctrl"><span>유량 Q <output id="pt-q-out"></output></span><input type="range" id="pt-q" min="0.05" max="2" step="0.01" value="0.5"></label>
+          <label class="ctrl"><span>휠 지름 D <output id="pt-d-out"></output></span><input type="range" id="pt-d" min="0.5" max="4" step="0.01" value="1.6"></label>
+          <label class="ctrl"><span>회전수 N <output id="pt-n-out"></output></span><input type="range" id="pt-n" min="30" max="1500" step="1" value="300"></label>
+          <label class="ctrl"><span>버킷 꺾임각 β <output id="pt-b-out"></output></span><input type="range" id="pt-b" min="120" max="180" step="1" value="165"></label>
+          <label class="ctrl"><span>상대 속도 유지율 k <output id="pt-k-out"></output></span><input type="range" id="pt-k" min="0.8" max="1" step="0.01" value="0.9"></label>
+          <div class="ctrl-row"><button class="btn" id="pt-opt" type="button">U = V/2로</button><button class="btn primary" id="pt-game" type="button">도전: 동기 속도</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">분류 속도 V</span><span class="v" id="pt-v">—</span></div>
+        <div class="stat"><span class="k">버킷 속도 U</span><span class="v" id="pt-u">—</span></div>
+        <div class="stat"><span class="k">속도비 U/V</span><span class="v" id="pt-x">—</span></div>
+        <div class="stat"><span class="k">버킷 효율</span><span class="v" id="pt-eta">—</span></div>
+        <div class="stat"><span class="k">출력</span><span class="v" id="pt-p">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="pt-task">—</span></div>
+      </div>
+      <div class="sim-note">C<sub>v</sub> = 0.98, ρ = 998 kg/m³. 해볼 것: ① 회전수를 바꾸며 출력이 U/V = 0.5에서 최대이고 토크(점선)는 U = 0에서 최대임을 보라. 떨어지는 물방울의 수평 속도도 0.5 근처에서 거의 0이 된다. ② β를 180°, k를 1로 하면 효율이 100 %에 닿는다. ③ <b>도전</b>: 발전기는 60 Hz 동기 속도(7200/극수 rpm)로만 돌 수 있다. 주어진 낙차와 회전수에서 U/V가 0.46–0.54가 되도록 휠 지름을 정하라.</div>
+    </div>
+    <div class="example" data-title="펠턴 휠의 최적 회전수와 출력">
+      <p>유효 낙차 300 m, 유량 0.500 m³/s의 물(ρ = 998 kg/m³)이 \(C_v = 0.980\)인 노즐을 지나 피치 지름 1.60 m의 펠턴 휠을 돌린다. 버킷 꺾임각은 165°, 마찰은 무시한다(\(k = 1\)). 최대 출력을 내는 회전수와 그때의 출력·효율은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>풀이</b> \(V = 0.980\sqrt{2(9.81)(300)} = 75.2\) m/s. 최적 \(U = V/2 = 37.6\) m/s → \(\omega = U/r = 37.6/0.800 = 47.0\) rad/s → \(N = 449\) rpm. \(\dot W = \rho QU(V-U)(1-\cos165^\circ) = 998(0.500)(37.6)(37.6)(1.966) = 1.37\) MW. 유효 동력 \(\rho gQH = 1.47\) MW → \(\eta = 0.944\).</div>
+        <div class="answer">N ≈ 449 rpm, 출력 1.37 MW, 효율 94.4 %</div>
+        <div class="step"><b>검토</b> 16극 동기 발전기의 450 rpm과 거의 같다 — 실제로는 이렇게 회전수부터 정하고 지름을 맞춘다. 효율 손실의 대부분은 노즐(\(C_v^2 = 0.960\))과 꺾임각이 180°가 아닌 데서 온다.</div>
+      </details>
+    </div>
+
+    <h3>풍력 터빈과 베츠 한계</h3>
+    <p>풍력 터빈은 덕트가 없는 열린 흐름에서 동력을 뽑는다. 로터를 얇은 <span class="term">작동 원판</span><span class="en">(actuator disk)</span>으로 보고, 원판을 지나는 유관에 5장의 질량·운동량 방정식과 원판 앞뒤 각각의 베르누이 식을 쓰면(랭킨–프루드 이론) 원판에서의 속도는 상류 \(V_1\)과 먼 후류 \(V_4\)의 평균임이 나온다. <span class="term">축 유도 계수</span><span class="en">(axial induction factor)</span> \(a\)를 원판에서의 속도 감소 비율로 정의하면</p>
+    <div class="formula">$$V_\text{disk} = V_1(1-a), \quad V_4 = V_1(1-2a), \quad \dot W = 2\rho A V_1^3\,a(1-a)^2, \quad C_P \equiv \frac{\dot W}{\tfrac12\rho AV_1^3} = 4a(1-a)^2$$<div class="where">\(dC_P/da = 0\) → \(a = 1/3\), \(C_{P,\max} = 16/27 = 0.593\) — <span class="term">베츠 한계</span><span class="en">(Betz limit)</span>. 바람을 완전히 멈추면(\(V_4 = 0\)) 공기가 빠져나가지 못해 오히려 동력이 줄어든다. 실제 대형 터빈은 \(C_P \approx 0.45\)–0.50.</div></div>
+    <figure class="mini" id="mini-betz">
+      <div class="mini-view"><canvas id="cv-bz"></canvas><span class="hint top">아래 그래프를 끌어 a를 바꾼다</span></div>
+      <div class="mini-ctrl"><span class="readout" id="bz-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위: 작동 원판을 지나는 유관과 공기 입자(색 = 속력). 로터가 바람을 늦출수록 유관이 굵어진다. 아래: \(C_P = 4a(1-a)^2\)(파랑)와 추력 계수 \(C_T = 4a(1-a)\)(점선). \(a = 1/3\)에서 \(C_P\)가 최대이고, 이때 후류 속도는 상류의 1/3이다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-wind">
+      <p>로터 지름 <span class="tn" data-var="D" data-min="10" data-max="200" data-step="1" data-unit=" m">80</span>인 풍력 터빈에 풍속 <span class="tn" data-var="V" data-min="3" data-max="25" data-step="0.5" data-unit=" m/s">10</span>의 바람(ρ = 1.225 kg/m³)이 불면 원판을 지나는 바람의 동력은 <span class="tn-out" data-out="Pa"></span>, 베츠 한계 출력은 <span class="tn-out" data-out="Pb"></span>, \(C_P\) = <span class="tn" data-var="cp" data-min="0.2" data-max="0.59" data-step="0.01">0.45</span>인 실제 터빈은 <span class="tn-out" data-out="P"></span>를 낸다. <span data-out="msg"></span></p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>터보 기계는 회전 날개로 유체의 각운동량을 바꾼다. 전양정 \(H\)는 출구와 입구의 전수두 차, 수동력 \(\rho gQH\), 제동 동력 \(\omega T\), 펌프 효율 \(\eta = \rho gQH/\omega T\).</li>
+      <li>오일러 방정식 \(gH_\text{th} = U_2V_{t2} - U_1V_{t1}\)은 검사 체적의 각운동량 방정식에서 나온다. 속도 삼각형 \(\vec V = \vec W + \vec U\), \(V_{t2} = U_2 - V_{n2}\cot\beta_2\). 후향 날개는 H가 Q에 따라 줄고 비과부하라서 펌프의 표준이다.</li>
+      <li>실제 H–Q 곡선은 미끄럼·마찰·충돌 손실로 오일러 직선 아래에 있다. 작동점은 펌프 곡선과 시스템 곡선 \(H_s + kQ^2\)의 교점이며, BEP 근처가 되도록 고른다. 직렬은 양정을, 병렬은 유량을 더하지만 실제 증가는 시스템 곡선이 정한다.</li>
+      <li>\(\text{NPSH}_a = (p_\text{atm} - p_v)/\rho g - z_1 - h_L\)이 펌프의 \(\text{NPSH}_r\)보다 커야 공동 현상이 없다. 고온·고지대·높은 흡입·큰 유량이 위험하다.</li>
+      <li>상사 법칙: \(Q\propto ND^3\), \(H\propto N^2D^2\), \(P\propto \rho N^3D^5\). 비속도 \(N_s = \omega Q^{1/2}/(gH)^{3/4}\)가 작으면 원심, 크면 축류(대략 1.5와 3.5가 경계).</li>
+      <li>충동 터빈(펠턴)은 분류의 운동 에너지를, 반동 터빈(프랜시스·카플란)은 압력과 운동 에너지를 함께 쓴다. 펠턴 출력 \(\rho QU(V-U)(1-k\cos\beta)\)는 \(U = V/2\)에서 최대.</li>
+      <li>작동 원판 이론에서 풍력 터빈의 \(C_P = 4a(1-a)^2\), 최대는 \(a = 1/3\)에서 베츠 한계 \(16/27 \approx 0.593\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 \(g = 9.81\) m/s², 물의 밀도는 문제에 주어진 값을 쓰고, 반경 방향(또는 축 방향) 유입을 가정한다. 답이 ±1 % 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="수동력" data-answer="11.0" data-label="Ẇ =" data-unit="kW">
+        <div class="prob-q"><p>물(ρ = 998 kg/m³) 0.0250 m³/s를 전양정 45.0 m로 보내는 펌프의 수동력은?</p></div>
+        <div class="prob-sol"><p>\(\dot W = \rho gQH = 998(9.81)(0.0250)(45.0) = 1.10\times10^4\) W = 11.0 kW.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="제동 동력과 효율" data-answer="15.6; 70.7" data-label="bhp =; η =" data-unit="kW; %">
+        <div class="prob-q"><p>앞 문제의 펌프 축 토크가 1750 rpm에서 85.0 N·m이다. 제동 동력과 펌프 효율은?</p></div>
+        <div class="prob-sol"><p>\(\omega = 183.3\) rad/s, bhp \(= 183.3\times85.0 = 15.6\) kW, \(\eta = 11.0/15.6 = 0.707\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="오일러 방정식" data-answer="72.9" data-label="H_th =" data-unit="m">
+        <div class="prob-q"><p>원심 펌프 임펠러: \(r_2 = 0.200\) m, \(b_2 = 15.0\) mm, \(\beta_2 = 25.0^\circ\), 1450 rpm, 유량 0.0600 m³/s. 반경 방향 유입일 때 이론 양정은?</p></div>
+        <div class="prob-hint">\(U_2 = \omega r_2\), \(V_{n2} = Q/(2\pi r_2b_2)\), \(V_{t2} = U_2 - V_{n2}\cot\beta_2\).</div>
+        <div class="prob-sol"><p>\(\omega = 151.8\) rad/s, \(U_2 = 30.4\) m/s, \(V_{n2} = 0.0600/(2\pi\cdot0.200\cdot0.0150) = 3.18\) m/s, \(V_{t2} = 30.37 - 3.18\cot25^\circ = 30.37 - 6.83 = 23.5\) m/s. \(H_\text{th} = (30.37)(23.54)/9.81 = 72.9\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="입구 날개각" data-answer="40.0" data-label="β₁ =" data-unit="°">
+        <div class="prob-q"><p>앞 문제 임펠러의 입구는 \(r_1 = 50.0\) mm, \(b_1 = 30.0\) mm이다. 같은 유량·회전수에서 물이 반경 방향으로 충돌 없이 들어가려면 입구 날개각 \(\beta_1\)은?</p></div>
+        <div class="prob-hint">\(V_1\)이 반경 방향이면 \(\vec W_1 = \vec V_1 - \vec U_1\)이고 \(\tan\beta_1 = V_{n1}/U_1\).</div>
+        <div class="prob-sol"><p>\(U_1 = 151.8(0.0500) = 7.59\) m/s, \(V_{n1} = 0.0600/(2\pi\cdot0.0500\cdot0.0300) = 6.37\) m/s, \(\beta_1 = \arctan(6.37/7.59) = 40.0^\circ\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="날개 형식">
+        <div class="prob-q"><p>원심 펌프에 후향 날개를 주로 쓰는 가장 중요한 이유는?</p></div>
+        <div class="prob-choices"><button>같은 크기에서 이론 양정이 가장 크다.</button><button data-correct>H–Q 곡선이 안정적으로 내려가고 동력이 유량에 따라 무한히 늘지 않으며 효율이 높다.</button><button>공동 현상이 전혀 생기지 않는다.</button><button>회전 방향을 바꿔도 같은 성능을 낸다.</button></div>
+        <div class="prob-sol"><p>이론 양정은 전향이 가장 크지만 그 대부분이 운동 에너지라 효율이 낮고, 동력이 유량과 함께 계속 늘어 과부하 위험이 있다. 후향 날개는 비과부하·고효율이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="작동점" data-answer="0.0447; 24.0" data-label="Q =; H =" data-unit="m³/s; m">
+        <div class="prob-q"><p>펌프 곡선이 \(H = 40.0 - 8000Q^2\), 시스템 곡선이 \(H = 15.0 + 4500Q^2\)이다(H: m, Q: m³/s). 작동점의 유량과 양정은?</p></div>
+        <div class="prob-sol"><p>\(25.0 = 12500Q^2\) → \(Q = 0.0447\) m³/s, \(H = 15.0 + 4500(0.002) = 24.0\) m.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="병렬 운전" data-answer="0.0620" data-label="Q =" data-unit="m³/s">
+        <div class="prob-q"><p>앞 문제의 펌프 두 대를 병렬로 연결하면 전체 유량은? 한 대일 때의 몇 배인지도 생각해 보라.</p></div>
+        <div class="prob-hint">병렬이면 각 펌프가 Q/2를 같은 H로 보낸다: \(H = 40.0 - 8000(Q/2)^2\).</div>
+        <div class="prob-sol"><p>\(40.0 - 2000Q^2 = 15.0 + 4500Q^2\) → \(Q = \sqrt{25.0/6500} = 0.0620\) m³/s (1.39배), \(H = 32.3\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="NPSHa" data-answer="5.45" data-label="NPSHa =" data-unit="m">
+        <div class="prob-q"><p>대기압 101.3 kPa에서 40 °C 물(ρ = 992.2 kg/m³, \(p_v\) = 7.384 kPa)을 열린 탱크에서 빨아올린다. 펌프 흡입구는 수면 위 3.00 m, 흡입관 손실은 1.20 m이다. NPSH<sub>a</sub>는?</p></div>
+        <div class="prob-sol"><p>\(\text{NPSH}_a = \dfrac{101300 - 7384}{992.2\times9.81} - 3.00 - 1.20 = 9.649 - 4.20 = 5.45\) m.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="고지대 흡입 높이" data-answer="1.92" data-label="z_max =" data-unit="m">
+        <div class="prob-q"><p>고도 약 1500 m(대기압 84.5 kPa)에서 30 °C 물(ρ = 995.7 kg/m³, \(p_v\) = 4.246 kPa)을 퍼 올린다. 흡입관 손실 0.80 m, NPSH<sub>r</sub> = 5.00 m이고 안전 여유 0.50 m를 둔다. 펌프 흡입구를 수면 위 최대 몇 m에 둘 수 있는가?</p></div>
+        <div class="prob-sol"><p>\(\dfrac{84500 - 4246}{995.7\times9.81} = 8.216\) m → \(z_\text{max} = 8.216 - 0.80 - 5.00 - 0.50 = 1.92\) m.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="상사 법칙(회전수)" data-answer="41.2" data-label="H =" data-unit="m">
+        <div class="prob-q"><p>3500 rpm에서 BEP 양정이 60.0 m인 펌프를 2900 rpm으로 돌리면 상사 점의 양정은?</p></div>
+        <div class="prob-sol"><p>\(H = 60.0(2900/3500)^2 = 41.2\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="상사 법칙(크기)" data-answer="19.4" data-label="bhp =" data-unit="kW">
+        <div class="prob-q"><p>제동 동력 5.00 kW인 펌프와 기하학적으로 닮은, 지름이 1.5배인 펌프를 회전수 0.8배로 같은 유체에 돌린다. 상사 점에서의 제동 동력은?</p></div>
+        <div class="prob-sol"><p>\(P_B = 5.00(0.8)^3(1.5)^5 = 5.00(0.512)(7.594) = 19.4\) kW. (유량은 \(0.8\times1.5^3 = 2.7\)배.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="비속도" data-answer="1.88" data-label="N_s =" data-unit="">
+        <div class="prob-q"><p>1170 rpm으로 돌며 BEP에서 0.300 m³/s를 12.0 m 올리는 펌프의 (무차원) 비속도는? 어떤 형식이 알맞은가?</p></div>
+        <div class="prob-sol"><p>\(\omega = 122.5\) rad/s, \(N_s = 122.5\sqrt{0.300}/(9.81\times12.0)^{3/4} = 67.10/35.73 = 1.88\) → 사류 펌프(\(n_s \approx 770\)).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="형식 선택">
+        <div class="prob-q"><p>비속도 \(N_s \approx 4.5\)인 용도(많은 유량, 낮은 양정)에 가장 알맞은 펌프는?</p></div>
+        <div class="prob-choices"><button>다단 원심 펌프</button><button>피스톤 펌프</button><button>사류 펌프</button><button data-correct>축류(프로펠러) 펌프</button></div>
+        <div class="prob-sol"><p>\(N_s \gtrsim 3.5\)는 축류 영역이다. 다단 원심은 오히려 고양정·저비속도용이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="펠턴 휠" data-answer="484" data-label="N =" data-unit="rpm">
+        <div class="prob-q"><p>유효 낙차 450 m, 노즐 속도 계수 0.970, 피치 지름 1.80 m인 펠턴 휠이 최대 출력을 내는 회전수는?</p></div>
+        <div class="prob-sol"><p>\(V = 0.970\sqrt{2(9.81)(450)} = 91.1\) m/s, \(U = 45.6\) m/s, \(\omega = 45.57/0.900 = 50.6\) rad/s → \(N = 484\) rpm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="베츠 한계" data-answer="1.82" data-label="Ẇ_max =" data-unit="MW">
+        <div class="prob-q"><p>로터 지름 80.0 m인 풍력 터빈에 10.0 m/s의 바람(ρ = 1.225 kg/m³)이 분다. 이론적으로 얻을 수 있는 최대 출력은?</p></div>
+        <div class="prob-sol"><p>\(A = \pi(40.0)^2 = 5027\) m², \(\tfrac12\rho AV^3 = 3.08\) MW, \(\dot W_\text{max} = (16/27)(3.08) = 1.82\) MW.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수차 효율" data-answer="89.4" data-label="η =" data-unit="%">
+        <div class="prob-q"><p>유효 낙차 60.0 m에서 물(ρ = 998 kg/m³) 12.0 m³/s를 받는 프랜시스 수차가 축 출력 6.30 MW를 낸다. 수차 효율은?</p></div>
+        <div class="prob-sol"><p>\(\rho gQH = 998(9.81)(12.0)(60.0) = 7.05\) MW, \(\eta = 6.30/7.05 = 0.894\).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>원심 펌프의 송출 밸브를 서서히 닫을 때 일어나는 일로 옳은 것은?</p><div class="opts">
+        <button class="opt">유량이 줄고 양정도 준다.</button><button class="opt" data-correct>유량이 줄고 양정은 체절 양정 쪽으로 오른다.</button><button class="opt">압력이 끝없이 올라 펌프가 파손된다.</button><button class="opt">유량은 일정하고 양정만 오른다.</button>
+      </div><div class="quiz-exp">시스템 곡선이 가팔라져 작동점이 펌프 곡선을 따라 왼쪽 위로 간다. 압력이 끝없이 오르는 것은 용적식 펌프다.</div></div>
+      <div class="quiz-q"><p>오일러 방정식에서 펌프의 이론 양정을 결정하는 속도 성분은?</p><div class="opts">
+        <button class="opt">절대 속도의 반경 성분</button><button class="opt">상대 속도의 크기</button><button class="opt" data-correct>절대 속도의 접선 성분과 날개 속도</button><button class="opt">축 방향 속도</button>
+      </div><div class="quiz-exp">\(gH = U_2V_{t2} - U_1V_{t1}\). 반경·축 성분은 축에 대한 모멘트가 없어 각운동량을 나르지 않는다.</div></div>
+      <div class="quiz-q"><p>다음 중 펌프 공동 현상의 위험을 <em>줄이는</em> 변화는?</p><div class="opts">
+        <button class="opt">유량을 늘린다.</button><button class="opt">수온을 올린다.</button><button class="opt" data-correct>펌프를 더 낮게 설치하고 흡입관을 굵게 한다.</button><button class="opt">회전수를 올린다.</button>
+      </div><div class="quiz-exp">\(z_1\)과 \(h_L\)이 줄어 NPSH<sub>a</sub>가 커진다. 나머지는 NPSH<sub>a</sub>를 줄이거나 NPSH<sub>r</sub>을 키운다.</div></div>
+      <div class="quiz-q"><p>같은 펌프의 회전수를 2배로 하면 상사 점에서 제동 동력은?</p><div class="opts">
+        <button class="opt">2배</button><button class="opt">4배</button><button class="opt" data-correct>8배</button><button class="opt">16배</button>
+      </div><div class="quiz-exp">\(P\propto N^3\). 유량 2배 × 양정 4배 = 8배.</div></div>
+      <div class="quiz-q"><p>베츠 한계에 도달한 이상적 풍력 터빈에서 먼 후류의 풍속은 상류의 몇 배인가?</p><div class="opts">
+        <button class="opt">0 (바람을 완전히 멈춘다)</button><button class="opt" data-correct>1/3</button><button class="opt">1/2</button><button class="opt">2/3</button>
+      </div><div class="quiz-exp">\(a = 1/3\)이면 원판에서 \(V_1(1-a) = 2V_1/3\), 후류에서 \(V_1(1-2a) = V_1/3\).</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const g = 9.81, RHO = 998, TAU = 2 * Math.PI;
+  const pal = () => SB.palette();
+  const W2R = Math.PI / 30, D2R = Math.PI / 180;
+  const mod = (a, m) => ((a % m) + m) % m;
+  const $ = (id) => document.getElementById(id);
+  function knob(ctx, x, y, col, r = 9) {
+    ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  const fmtP = (W) => (Math.abs(W) >= 1e6 ? (W / 1e6).toFixed(2) + " MW" : Math.abs(W) >= 1e3 ? (W / 1e3).toFixed(Math.abs(W) >= 1e5 ? 0 : 1) + " kW" : W.toFixed(0) + " W");
+
+  /* ---------------------------------------------------------- 기준 펌프 모형 (1750 rpm) */
+  const N0 = 1750;
+  const pumpH = (Q, r) => 32 * r * r - 0.006 * Q * Q;            // Q L/s, r = N/N0
+  const pumpEta = (Q, r) => { const x = Q / (40 * r); return Math.max(0, 0.8 * (2 * x - x * x)); };
+  const bhpOf = (Q, H, eta) => (eta > 1e-3 ? (RHO * g * (Q / 1000) * H) / eta : 0); // W
+
+  /* ---------------------------------------------------------- 임펠러 공용 */
+  const R1 = 0.38;
+  function betaAt(r, b1, b2) { const t = SB.clamp((r - R1) / (1 - R1), 0, 1); return b1 + (b2 - b1) * t; }
+  function bladePts(b1, b2, n = 28) {
+    const pts = [[R1, 0]]; let th = 0;
+    for (let i = 1; i <= n; i++) {
+      const ra = R1 + ((1 - R1) * (i - 1)) / n, rb = R1 + ((1 - R1) * i) / n, rm = 0.5 * (ra + rb);
+      th -= (rb - ra) / (rm * Math.tan(betaAt(rm, b1, b2)));
+      pts.push([rb, th]);
+    }
+    return pts;
+  }
+  function drawImpeller(ctx, cx, cy, R, o) {
+    const P = pal(), nb = o.nb || 7, rot = o.rot || 0;
+    ctx.save();
+    ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.border; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = Flow.waterColor(0.2); ctx.beginPath(); ctx.arc(cx, cy, R1 * R * 0.95, 0, TAU); ctx.fill();
+    ctx.fillStyle = P.dim; ctx.beginPath(); ctx.arc(cx, cy, R * 0.11, 0, TAU); ctx.fill();
+    ctx.strokeStyle = o.color || P.text; ctx.lineWidth = o.lw || 3; ctx.lineCap = "round";
+    for (let k = 0; k < nb; k++) {
+      const off = rot + (k * TAU) / nb;
+      ctx.beginPath();
+      o.pts.forEach(([r, th], i) => { const a = th + off, x = cx + R * r * Math.cos(a), y = cy + R * r * Math.sin(a); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  const volR = (tp) => 1.12 + (0.38 * tp) / TAU;
+  // 입자: s=0 임펠러 안(r, th 상대각), s=1 임펠러 밖(a 절대각), s=2 송출관(x,y)
+  function impStep(p, dt, M) {
+    if (p.s === 0) {
+      const vn = M.vn2 / p.r, b = betaAt(p.r, M.b1, M.b2);
+      p.r += vn * dt; p.th += (-vn / (p.r * Math.tan(b))) * dt;
+      if (p.r >= 1) { p.s = 1; p.a = p.th + M.rot; p.tp = mod(p.a + Math.PI / 2, TAU); }
+    } else if (p.s === 1) {
+      const vt = Math.max(M.vt2, 0.15 * M.w) / p.r, vr = M.vn2 / p.r;
+      p.a += (vt / p.r) * dt; p.r += vr * dt;
+      if (M.volute) {
+        p.tp += (vt / p.r) * dt; const rv = volR(Math.min(p.tp, TAU)) - 0.05; if (p.r > rv) p.r = rv;
+        if (p.tp >= TAU) { p.s = 2; p.x = 0; p.y = SB.clamp(-p.r, -1.45, -1.17); }
+      } else if (p.r > M.rmax) p.dead = true;
+    } else { p.x += M.vpipe * dt; if (p.x > M.xEnd) p.dead = true; }
+  }
+  const pPos = (p, rot) => (p.s === 0 ? [p.r * Math.cos(p.th + rot), p.r * Math.sin(p.th + rot)] : p.s === 1 ? [p.r * Math.cos(p.a), p.r * Math.sin(p.a)] : [p.x, p.y]);
+  const BLADES = [[30, "후향 30°"], [90, "방사 90°"], [150, "전향 150°"]];
+
+  /* ---------------------------------------------------------- 머리 애니메이션 */
+  {
+    const r2 = 0.125, b2w = 0.02, VIS = 1.4 / (N0 * W2R); // 실제 rad/s → 화면 rad/s
+    const st = { N: 1450, Q: 0.08, bi: 0, rot: 0 };
+    const parts = [];
+    const spawn = () => ({ s: 0, r: R1 + 0.01, th: Math.random() * TAU, age: 0 });
+    for (let i = 0; i < 150; i++) { const p = spawn(); p.r = R1 + Math.random() * (1 - R1); parts.push(p); }
+    let geo = null;
+    const vel = () => {
+      const w = st.N * W2R, U2 = w * r2, Vn2 = st.Q / (TAU * r2 * b2w), b2 = BLADES[st.bi][0] * D2R, Vt2 = U2 - Vn2 / Math.tan(b2);
+      return { w, U2, Vn2, Vt2, b2, H: (U2 * Vt2) / g };
+    };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), v = vel();
+      const R = Math.min(0.3 * h, 0.17 * w), cx = 0.27 * w, cy = 0.55 * h, xEndPx = 0.53 * w;
+      const pts = bladePts(25 * D2R, v.b2);
+      // 벌류트
+      const S = (x, y) => [cx + R * x, cy + R * y];
+      ctx.save(); ctx.beginPath();
+      for (let i = 0; i <= 80; i++) { const tp = (TAU * i) / 80, a = tp - Math.PI / 2, rr = volR(tp), [x, y] = S(rr * Math.cos(a), rr * Math.sin(a)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.lineTo(xEndPx, cy - 1.5 * R); ctx.lineTo(xEndPx, cy - 1.12 * R); ctx.closePath();
+      ctx.fillStyle = Flow.waterColor(0.13); ctx.fill(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.2; ctx.stroke(); ctx.restore();
+      drawImpeller(ctx, cx, cy, R, { pts, rot: st.rot, nb: 7 });
+      const vmax = Math.max(v.U2, Math.hypot(v.Vt2, v.Vn2)) * 1.1 || 1;
+      parts.forEach((p) => {
+        const [x, y] = pPos(p, st.rot), [X, Y] = S(x, y);
+        if (X > xEndPx) return;
+        const sp = p.s === 0 ? Math.hypot(p.r * v.U2, v.Vn2 / p.r) : Math.hypot(v.Vt2 / Math.max(p.r, 1), v.Vn2 / p.r);
+        ctx.fillStyle = Flow.ramp(0.3 + 0.7 * sp / vmax, 1); ctx.strokeStyle = SB.color("canvas-bg"); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(X, Y, 2.6, 0, TAU); ctx.fill(); ctx.stroke();
+      });
+      SB.label(ctx, `${st.N.toFixed(0)} rpm · Q = ${(st.Q * 1000).toFixed(0)} L/s`, cx, Math.min(h - 10, cy + 1.42 * R + 4), { size: 11, color: P.dim });
+      // 속도 삼각형 패널
+      const px0 = 0.6 * w, py0 = 0.66 * h, k = (w - px0 - 22) / (34 * 1.2);
+      const Ux = px0 + v.U2 * k, Vx = px0 + v.Vt2 * k, Vy = py0 - v.Vn2 * k;
+      SB.label(ctx, "임펠러 출구의 속도 삼각형", px0 + (w - px0) / 2 - 10, 18, { size: 12, color: P.dim, bold: true });
+      SB.dashLine(ctx, Vx, Vy, Vx, py0, P.faint, [3, 3]);
+      SB.arrow(ctx, px0, py0, Ux, py0, { color: P.accent2, width: 2.6, label: "U₂", labelSide: -1 });
+      SB.arrow(ctx, Ux, py0, Vx, Vy, { color: P.ok, width: 2.4 });
+      SB.label(ctx, "W₂", (Ux + Vx) / 2 + 8, (py0 + Vy) / 2 - 12, { color: P.ok, bold: true });
+      SB.arrow(ctx, px0, py0, Vx, Vy, { color: P.accent, width: 2.8 });
+      SB.label(ctx, "V₂", (px0 + Vx) / 2 - 6, (py0 + Vy) / 2 - 12, { color: P.accent, bold: true });
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(Ux, py0, 22, Math.PI, Math.PI + v.b2, false); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `β₂ = ${BLADES[st.bi][0]}°`, Ux - 30, py0 + 16, { size: 11, color: P.dim });
+      SB.label(ctx, `H = U₂Vₜ₂/g = ${v.H.toFixed(1)} m`, px0 + (w - px0) / 2 - 10, 40, { size: w < 500 ? 11 : 12, color: P.text, bold: true, mono: true });
+      knob(ctx, Ux, py0, P.accent2); knob(ctx, Vx, Vy, P.accent);
+      self._h = { Ux, Vx, Vy, px0, py0, k };
+      geo = { R, cx, cy, xEnd: (xEndPx - cx) / R };
+    }, { aspect: 0.45, minHeight: 240, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "u", x: cv._h.Ux, y: cv._h.py0, r: 14 }, { id: "v", x: cv._h.Vx, y: cv._h.Vy, r: 14 }] : []),
+      move: (id, x, y) => {
+        const H = cv._h; if (!H) return;
+        if (id === "u") st.N = Math.round(SB.clamp((x - H.px0) / H.k / r2 / W2R, 800, 2600) / 10) * 10;
+        if (id === "v") st.Q = SB.clamp(((H.py0 - y) / H.k) * TAU * r2 * b2w, 0.02, 0.12);
+      },
+    });
+    const btn = $("hero-blade");
+    btn.addEventListener("click", () => { st.bi = (st.bi + 1) % 3; btn.textContent = "날개: " + BLADES[st.bi][1]; cv.redraw(); });
+    SB.loop("hero", (dt) => {
+      const v = vel(), f = VIS / r2;
+      const M = { w: v.w * VIS, vn2: v.Vn2 * f, vt2: v.Vt2 * f, b1: 25 * D2R, b2: v.b2, rot: st.rot, volute: true, vpipe: 0.6 * Math.max(v.Vt2, 5) * f, xEnd: geo ? geo.xEnd : 3 };
+      st.rot += M.w * dt; M.rot = st.rot;
+      for (let i = 0; i < parts.length; i++) { const p = parts[i]; impStep(p, dt, M); p.age += dt; if (p.dead || p.age > 14) parts[i] = spawn(); }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 용적식 vs 원심 */
+  {
+    const dots = [Array.from({ length: 26 }, () => Math.random()), Array.from({ length: 26 }, () => Math.random())];
+    const Qd = 40, s = 0.05;
+    const getV = SB.range("pd-v", (v) => v + " %", () => upd());
+    const op = () => {
+      const K = 0.004 / Math.pow(getV() / 100, 2);
+      const Qc = Math.sqrt(22 / (0.006 + K)), Hc = 10 + K * Qc * Qc;
+      const Qp = (-1 + Math.sqrt(1 + 4 * s * K * (Qd - 10 * s))) / (2 * s * K), Hp = 10 + K * Qp * Qp;
+      return { K, Qc, Hc, Qp, Hp };
+    };
+    function upd() { const o = op(); $("pd-r").textContent = `원심 ${o.Qc.toFixed(1)} L/s · ${o.Hc.toFixed(1)} m   |   용적식 ${o.Qp.toFixed(1)} L/s · ${o.Hp.toFixed(0)} m (${(RHO * g * o.Hp / 1000).toFixed(0)} kPa)`; cv.redraw(); }
+    const cv = SB.canvas("cv-pd", (ctx, w, h) => {
+      const P = pal(), o = op(), top = 0.3 * h;
+      [["용적식(기어)", o.Qp, 0.09 * h, P.accent2], ["원심", o.Qc, 0.21 * h, P.accent]].forEach(([nm, Q, y, c], i) => {
+        ctx.save(); ctx.fillStyle = Flow.waterColor(0.18); ctx.fillRect(90, y - 8, w - 100, 16); ctx.strokeStyle = P.border; ctx.strokeRect(90, y - 8, w - 100, 16); ctx.restore();
+        dots[i].forEach((d) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(90 + d * (w - 100), y, 2.6, 0, TAU); ctx.fill(); });
+        SB.label(ctx, nm, 46, y, { size: 11, color: c, bold: true });
+      });
+      const ch = SB.chart(ctx, { x: 52, y: top + 8, w: w - 70, h: h - top - 50 }, {
+        x: [0, 60], y: [0, 100], xLabel: "Q (L/s)", yLabel: "H (m)",
+        series: [
+          { data: Array.from({ length: 61 }, (_, i) => [i, 32 - 0.006 * i * i]), color: P.accent, width: 2.4 },
+          { data: [[Qd, 0], [Qd - s * 100, 100]], color: P.accent2, width: 2.4 },
+          { data: Array.from({ length: 61 }, (_, i) => [i, 10 + o.K * i * i]), color: P.dim, width: 1.8, dash: [5, 4] },
+        ],
+        points: [{ x: o.Qc, y: o.Hc, color: P.accent, r: 5 }, { x: o.Qp, y: Math.min(o.Hp, 99), color: P.accent2, r: 5 }],
+      });
+      if (o.Hp > 100) SB.label(ctx, `↑ H = ${o.Hp.toFixed(0)} m — 안전 밸브 필요!`, SB.clamp(ch.X(o.Qp), 130, w - 110), ch.Y(92), { size: 11, color: P.bad, bold: true });
+      SB.label(ctx, "시스템 곡선", ch.X(50), ch.Y(Math.min(95, 10 + o.K * 2500)) - 10 > ch.Y(100) ? ch.Y(Math.min(95, 10 + o.K * 2500)) - 10 : ch.Y(96), { size: 10, color: P.dim });
+    }, { aspect: 0.62, minHeight: 280, maxHeight: 400 });
+    SB.loop("mini-pd", (dt) => {
+      const o = op();
+      [o.Qp, o.Qc].forEach((Q, i) => dots[i].forEach((d, j) => { dots[i][j] = (d + (Q / 40) * 0.25 * dt) % 1; }));
+      cv.redraw();
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 동력 드래그 숫자 */
+  SB.tangle("tg-power", (v) => {
+    const Pw = RHO * g * (v.Q / 1000) * v.H, bhp = Pw / (v.eta / 100), Pel = bhp / 0.92, E = (Pel / 1000) * 8760, cost = E * 120;
+    const save = v.eta < 85 ? (E - (Pw / ((v.eta + 5) / 100) / 0.92 / 1000) * 8760) * 120 : 0;
+    return { Pw: fmtP(Pw), bhp: fmtP(bhp), E: Math.round(E).toLocaleString("ko-KR") + " kWh", cost: "약 " + Math.round(cost / 1e4).toLocaleString("ko-KR") + "만 원",
+      msg: save > 0 ? `효율을 5 %p만 올려도 해마다 약 ${Math.round(save / 1e4).toLocaleString("ko-KR")}만 원을 아낀다.` : "이미 매우 높은 효율이다." };
+  });
+
+  /* ---------------------------------------------------------- 상대·절대 경로 */
+  {
+    let frame = "abs", b2deg = 30, rot = 0;
+    const p = { s: 0, r: R1 + 0.01, th: 0.3 }; let pathA = [], pathR = [];
+    const reset = () => { p.s = 0; p.r = R1 + 0.01; p.th = 0.3 + TAU / 12; pathA = []; pathR = []; };
+    SB.seg("fr-frame", (v) => { frame = v; cv.redraw(); });
+    SB.seg("fr-blade", (v) => { b2deg = Number(v); reset(); cv.redraw(); });
+    const w0 = 0.8, vn2 = 0.22;
+    const cv = SB.canvas("cv-fr", (ctx, w, h) => {
+      const P = pal(), R = 0.4 * h, cx = 0.34 * w, cy = 0.5 * h, b2 = b2deg * D2R, pts = bladePts(25 * D2R, b2);
+      const shown = frame === "abs" ? rot : 0;
+      drawImpeller(ctx, cx, cy, R, { pts, rot: shown + 0.3, nb: 6, lw: 2.6 });
+      const path = frame === "abs" ? pathA : pathR;
+      ctx.save(); ctx.strokeStyle = frame === "abs" ? P.accent : P.ok; ctx.lineWidth = 2.2; ctx.beginPath();
+      path.forEach(([x, y], i) => (i ? ctx.lineTo(cx + R * x, cy + R * y) : ctx.moveTo(cx + R * x, cy + R * y))); ctx.stroke(); ctx.restore();
+      // 현재 위치와 벡터
+      const ang = p.s === 0 ? p.th + (frame === "abs" ? rot : 0) : p.a - (frame === "abs" ? 0 : rot);
+      const X = cx + R * p.r * Math.cos(ang), Y = cy + R * p.r * Math.sin(ang);
+      if (p.s === 0) {
+        const er = [Math.cos(ang), Math.sin(ang)], et = [-Math.sin(ang), Math.cos(ang)], vn = vn2 / p.r, vtW = -vn / Math.tan(betaAt(p.r, 25 * D2R, b2)), U = w0 * p.r, sc = 0.55 * R;
+        const Wv = [vn * er[0] + vtW * et[0], vn * er[1] + vtW * et[1]], Uv = [U * et[0], U * et[1]];
+        SB.arrow(ctx, X, Y, X + Wv[0] * sc, Y + Wv[1] * sc, { color: P.ok, width: 2, head: 7, label: "W" });
+        SB.arrow(ctx, X, Y, X + Uv[0] * sc, Y + Uv[1] * sc, { color: P.accent2, width: 2, head: 7, label: "U" });
+        SB.arrow(ctx, X, Y, X + (Wv[0] + Uv[0]) * sc, Y + (Wv[1] + Uv[1]) * sc, { color: P.accent, width: 2.4, head: 8, label: "V" });
+      }
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(X, Y, 5, 0, TAU); ctx.fill();
+      const tx = Math.min(w - 10, 0.62 * w);
+      SB.label(ctx, frame === "abs" ? "정지 좌표계: 실제 물의 길(유적선)" : "회전 좌표계: 날개를 따라 미끄러진다", tx, 22, { size: 12, color: frame === "abs" ? P.accent : P.ok, bold: true, align: w < 420 ? "center" : "left" });
+      SB.label(ctx, "V = W + U", tx, 42, { size: 12, mono: true, color: P.dim, align: w < 420 ? "center" : "left" });
+    }, { aspect: 0.6, minHeight: 240, maxHeight: 360 });
+    const loop = SB.loop("mini-frames", (dt) => {
+      rot += w0 * dt;
+      const M = { w: w0, vn2, vt2: w0 - vn2 / Math.tan(b2deg * D2R), b1: 25 * D2R, b2: b2deg * D2R, rot, volute: false, rmax: 1.35 };
+      impStep(p, dt, M);
+      if (p.dead) reset();
+      const ang = p.s === 0 ? p.th + rot : p.a;
+      pathA.push([p.r * Math.cos(ang), p.r * Math.sin(ang)]); pathR.push([p.r * Math.cos(ang - rot), p.r * Math.sin(ang - rot)]);
+      if (pathA.length > 900) { pathA.shift(); pathR.shift(); }
+      cv.redraw();
+    });
+    SB.play("fr-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 속도 삼각형 시뮬레이터 */
+  {
+    const r2 = 0.125, b2w = 0.02;
+    let rot = 0, ch = null;
+    const getN = SB.range("tri-n", (v) => v + " rpm", () => draw());
+    const getQ = SB.range("tri-q", (v) => (v * 1000).toFixed(0) + " L/s", () => draw());
+    const getB = SB.range("tri-b", (v) => v + "°", () => draw());
+    const typ = SB.seg("tri-type", (v) => getB.set(Number(v)));
+    const calc = (N = getN(), Q = getQ(), bd = getB()) => {
+      const U2 = N * W2R * r2, Vn2 = Q / (TAU * r2 * b2w), Vt2 = U2 - Vn2 / Math.tan(bd * D2R), H = (U2 * Vt2) / g;
+      return { U2, Vn2, Vt2, H, V2: Math.hypot(Vt2, Vn2) };
+    };
+    function draw() { a.redraw(); if (ch) ch.redraw(); stats(); }
+    function stats() {
+      const c = calc();
+      SB.stat("tri-u", c.U2.toFixed(1) + " <small>m/s</small>");
+      SB.stat("tri-vn", c.Vn2.toFixed(2) + " <small>m/s</small>");
+      SB.stat("tri-vt", c.Vt2.toFixed(1) + " <small>m/s</small>");
+      SB.stat("tri-h", c.H.toFixed(1) + " <small>m</small>");
+      SB.stat("tri-p", fmtP(RHO * g * getQ() * c.H));
+      SB.stat("tri-ke", c.H > 0.5 ? ((c.V2 * c.V2) / (2 * g * c.H) * 100).toFixed(0) + " %" : "—");
+      const b = getB(); typ.set(b === 30 ? "30" : b === 90 ? "90" : b === 150 ? "150" : "", false);
+    }
+    const a = SB.canvas("cv-tri", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), bd = getB();
+      const Ex = 0.3 * w, Ey = 0.6 * h, R = 0.55 * h, cx = Ex, cy = Ey + R;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h); ctx.clip();
+      drawImpeller(ctx, cx, cy, R, { pts: bladePts(25 * D2R, bd * D2R), rot: rot - Math.PI / 2, nb: 9, lw: 2.4 });
+      ctx.restore();
+      const k = Math.min((w - Ex - 18) / (34 * 1.3), (Ey - 36) / 7.7);
+      const Ux = Ex + c.U2 * k, Vx = SB.clamp(Ex + c.Vt2 * k, 4, w - 4), Vy = Ey - c.Vn2 * k;
+      // 출구 날개 방향(정지 그림)
+      const bl = 60, dx = Math.cos(bd * D2R), dy = Math.sin(bd * D2R);
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(Ex, Ey); ctx.lineTo(Ex + dx * bl, Ey + dy * bl); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, Vx, Vy, Vx, Ey, P.faint, [3, 3]);
+      SB.arrow(ctx, Ex, Ey, Ux, Ey, { color: P.accent2, width: 2.6 });
+      SB.label(ctx, "U₂", (Ex + Ux) / 2, Ey + 14, { color: P.accent2, bold: true });
+      SB.arrow(ctx, Ux, Ey, Vx, Vy, { color: P.ok, width: 2.4 });
+      SB.label(ctx, "W₂", (Ux + Vx) / 2 + 10, (Ey + Vy) / 2 - 10, { color: P.ok, bold: true });
+      SB.arrow(ctx, Ex, Ey, Vx, Vy, { color: P.accent, width: 2.8 });
+      SB.label(ctx, "V₂", (Ex + Vx) / 2 - 8, (Ey + Vy) / 2 - 12, { color: P.accent, bold: true });
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(Ux, Ey, 20, Math.PI, Math.PI + Math.atan2(c.Vn2, c.U2 - c.Vt2), false); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `β₂ = ${bd}°`, Ux, Ey - 30 > Vy ? Ey - 30 : Vy - 14, { size: 11, color: P.dim });
+      SB.label(ctx, bd < 90 ? "후향 날개" : bd > 90 ? "전향 날개" : "방사 날개", 54, 18, { size: 12, bold: true, color: P.text });
+      knob(ctx, Ux, Ey, P.accent2); knob(ctx, Vx, Vy, P.accent);
+      self._g = { Ex, Ey, k, Ux, Vx, Vy };
+    }, { aspect: 0.78, minHeight: 250, maxHeight: 380 });
+    SB.drag(a, {
+      handles: () => (a._g ? [{ id: "u", x: a._g.Ux, y: a._g.Ey, r: 14 }, { id: "v", x: a._g.Vx, y: a._g.Vy, r: 14 }] : []),
+      move: (id, x, y) => {
+        const G = a._g; if (!G) return;
+        if (id === "u") getN.set(Math.round(SB.clamp((x - G.Ex) / G.k / r2 / W2R, 800, 2600) / 10) * 10);
+        if (id === "v") {
+          const Vn = SB.clamp((G.Ey - y) / G.k, 0.005 / (TAU * r2 * b2w), 0.12 / (TAU * r2 * b2w));
+          getQ.set(Math.round(Vn * TAU * r2 * b2w * 1000) / 1000, true);
+          const c = calc(); const Vt = (x - G.Ex) / G.k;
+          const b = Math.atan2(c.Vn2, c.U2 - Vt) / D2R;
+          getB.set(Math.round(SB.clamp(b, 15, 165)));
+        }
+      },
+    });
+    ch = SB.canvas("cv-trich", (ctx, w, h) => {
+      const P = pal(), c = calc(), Hmax = Math.max(40, Math.ceil((1.7 * c.U2 * c.U2) / g / 20) * 20);
+      const line = (bd) => [[0, (c.U2 * c.U2) / g], [0.12, (c.U2 * (c.U2 - 0.12 / (TAU * r2 * b2w) / Math.tan(bd * D2R))) / g]];
+      SB.chart(ctx, null, {
+        x: [0, 0.12], y: [Math.min(0, -Hmax * 0.15), Hmax], xLabel: "Q (m³/s)", yLabel: "H_th (m)",
+        series: [{ data: line(30), color: P.faint, width: 1.4, dash: [4, 4] }, { data: line(90), color: P.faint, width: 1.4, dash: [4, 4] }, { data: line(150), color: P.faint, width: 1.4, dash: [4, 4] }, { data: line(getB()), color: P.accent, width: 2.6 }],
+        points: [{ x: getQ(), y: c.H, color: P.accent2, r: 6, label: `${c.H.toFixed(1)} m` }],
+        hlines: [{ y: (c.U2 * c.U2) / g, color: P.dim, label: "U₂²/g" }],
+      });
+      SB.label(ctx, "점선: β₂ = 30°, 90°, 150°", w - 92, 26, { size: 10, color: P.dim });
+    }, { aspect: 0.78, minHeight: 250, maxHeight: 380 });
+    SB.loop("sim-tri", (dt) => { rot += 0.25 * dt; a.redraw(); });
+    stats();
+  }
+
+  SB.drill("drill-euler", () => {
+    const r2 = [0.1, 0.12, 0.15, 0.18, 0.2, 0.25][Math.floor(Math.random() * 6)], b2 = [0.01, 0.015, 0.02, 0.025][Math.floor(Math.random() * 4)];
+    const bd = [20, 25, 30, 35, 40, 90][Math.floor(Math.random() * 6)], N = [1150, 1450, 1750, 3500][Math.floor(Math.random() * 4)];
+    const Q = Math.round((0.02 + Math.random() * 0.06) * 1000) / 1000;
+    const U2 = N * W2R * r2, Vn2 = Q / (TAU * r2 * b2), Vt2 = U2 - Vn2 / Math.tan(bd * D2R), H = (U2 * Vt2) / g;
+    return { q: `<p>\\(r_2 = ${r2}\\) m, \\(b_2 = ${b2 * 1000}\\) mm, \\(\\beta_2 = ${bd}^\\circ\\), \\(N = ${N}\\) rpm, \\(Q = ${Q}\\) m³/s, 반경 방향 유입. 이론 양정 \\(H_\\text{th}\\)는?</p>`,
+      answer: H, label: "H_th =", unit: "m", tol: "1%",
+      sol: `\\(U_2 = ${U2.toFixed(2)}\\) m/s, \\(V_{n2} = ${Vn2.toFixed(3)}\\) m/s, \\(V_{t2} = U_2 - V_{n2}\\cot\\beta_2 = ${Vt2.toFixed(2)}\\) m/s, \\(H = U_2V_{t2}/g = ${H.toFixed(1)}\\) m` };
+  });
+
+  /* ---------------------------------------------------------- 성능 곡선 */
+  {
+    let Qc = 40;
+    const cv = SB.canvas("cv-cu", (ctx, w, h, self) => {
+      const P = pal(), x0 = 58, bw = w - 58 - 16, top = 10, gap = 14, bh = (h - top - 46 - 2 * gap) / 3;
+      const Qs = Array.from({ length: 74 }, (_, i) => i);
+      const H = (Q) => pumpH(Q, 1), E = (Q) => pumpEta(Q, 1), B = (Q) => (RHO * g * 0.04 * H(Q)) / (0.8 * (2 - Q / 40)) / 1000;
+      const boxes = [
+        { y: top, f: H, yr: [0, 36], lab: "H (m)", col: P.accent },
+        { y: top + bh + gap, f: (Q) => E(Q) * 100, yr: [0, 100], lab: "η (%)", col: P.ok },
+        { y: top + 2 * (bh + gap), f: B, yr: [0, 14], lab: "bhp (kW)", col: P.accent2 },
+      ];
+      let X = null;
+      boxes.forEach((b, i) => {
+        const c = SB.chart(ctx, { x: x0, y: b.y, w: bw, h: bh }, { x: [0, 73], y: b.yr, xLabel: i === 2 ? "Q (L/s)" : "", yLabel: b.lab, xFmt: i === 2 ? undefined : () => "", yTicks: i === 0 ? [0, 10, 20, 30] : i === 1 ? [0, 40, 80] : [0, 5, 10],
+          series: [{ data: Qs.map((q) => [q, b.f(q)]), color: b.col, width: 2.4 }], vlines: [{ x: 40, color: P.faint, label: i === 0 ? "BEP" : "" }],
+          points: [{ x: Qc, y: b.f(Qc), color: b.col, r: 5 }] });
+        X = c.X;
+      });
+      SB.dashLine(ctx, X(Qc), top, X(Qc), top + 3 * bh + 2 * gap, P.dim, [3, 3]);
+      knob(ctx, X(Qc), top + 3 * bh + 2 * gap, P.accent, 8);
+      self._X = X; self._x0 = x0; self._bw = bw;
+      $("cu-r").textContent = `Q = ${Qc.toFixed(0)} L/s → H = ${H(Qc).toFixed(1)} m, η = ${(E(Qc) * 100).toFixed(1)} %, bhp = ${B(Qc).toFixed(2)} kW`;
+    }, { aspect: 0.8, minHeight: 330, maxHeight: 440 });
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x) => { if (!cv._bw) return; Qc = Math.round(SB.clamp(((x - cv._x0) / cv._bw) * 73, 0, 73)); } });
+  }
+
+  /* ---------------------------------------------------------- 작동점 시뮬레이터 */
+  {
+    const k0 = 0.002, st = { Hs: 12, k: 0.004, task: null };
+    const vQ = () => Math.min(100, Math.sqrt(Math.max(1, 80 - st.Hs) / st.k));
+    const getN = SB.range("op-n", (v) => v + " rpm", () => upd());
+    const mode = SB.seg("op-mode", () => upd());
+    $("op-single").addEventListener("change", () => upd());
+    const curve = (Q, r, m) => (m === "s" ? 2 * pumpH(Q, r) : m === "p" ? pumpH(Q / 2, r) : pumpH(Q, r));
+    const etaOf = (Q, r, m) => pumpEta(m === "p" ? Q / 2 : Q, r);
+    function solve() {
+      const r = getN() / N0, m = mode(), A = m === "s" ? 64 * r * r : 32 * r * r, B = m === "s" ? 0.012 : m === "p" ? 0.0015 : 0.006;
+      const Q = A > st.Hs ? Math.sqrt((A - st.Hs) / (B + st.k)) : 0, H = st.Hs + st.k * Q * Q;
+      const eta = etaOf(Q, r, m), bhp = bhpOf(Q, H, eta), Pw = RHO * g * (Q / 1000) * H, waste = RHO * g * (Q / 1000) * (st.k - k0) * Q * Q;
+      return { r, m, Q, H, eta, bhp, Pw, waste };
+    }
+    function upd() {
+      const s = solve();
+      SB.stat("op-q", s.Q.toFixed(1) + " <small>L/s</small>");
+      SB.stat("op-h", s.H.toFixed(1) + " <small>m</small>");
+      SB.stat("op-eta", (s.eta * 100).toFixed(1) + " <small>%</small>");
+      SB.stat("op-bhp", s.Q > 0 ? fmtP(s.bhp) : "—");
+      SB.stat("op-waste", fmtP(s.waste));
+      if (st.task) {
+        const t = st.task, okQ = Math.abs(s.Q - t.Q) <= 1, okE = s.eta >= 0.75, okW = s.waste < 0.1 * s.Pw;
+        SB.stat("op-task", okQ && okE && okW ? '<span style="color:var(--ok)">성공!</span>' : `<small>목표 ${t.Q.toFixed(1)} L/s · ${okQ ? "유량✓" : "유량✗"} ${okE ? "효율✓" : "효율✗"} ${okW ? "밸브✓" : "밸브✗"}</small>`);
+      } else SB.stat("op-task", "—");
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-op", (ctx, w, h, self) => {
+      const P = pal(), s = solve(), Hb = { x: 54, y: 12, w: w - 54 - 16, h: (h - 60) * 0.7 }, Eb = { x: 54, y: Hb.y + Hb.h + 12, w: Hb.w, h: (h - 60) * 0.3 - 4 };
+      const Qs = Array.from({ length: 121 }, (_, i) => i);
+      const series = [];
+      if (s.m !== "1" && $("op-single").checked) series.push({ data: Qs.map((q) => [q, pumpH(q, s.r)]), color: P.faint, width: 1.6, dash: [5, 4] });
+      series.push({ data: Qs.map((q) => [q, curve(q, s.r, s.m)]), color: P.accent, width: 2.6 });
+      series.push({ data: Qs.map((q) => [q, st.Hs + st.k * q * q]), color: P.accent2, width: 2.4 });
+      series.push({ data: Qs.map((q) => [q, st.Hs + k0 * q * q]), color: P.accent2, width: 1, dash: [2, 4] });
+      const bands = st.task ? [{ x0: st.task.Q - 1, x1: st.task.Q + 1, color: "rgba(255,140,40,0.25)" }] : [];
+      const c = SB.chart(ctx, Hb, { x: [0, 120], y: [0, 90], yLabel: "H (m)", xFmt: () => "", series, bands, points: [{ x: s.Q, y: s.H, color: P.text, r: 6, label: "작동점" }] });
+      SB.dashLine(ctx, c.X(s.Q), c.Y(s.H), c.X(s.Q), Hb.y + Hb.h, P.dim, [3, 3]);
+      const e = SB.chart(ctx, Eb, { x: [0, 120], y: [0, 100], xLabel: "Q (L/s)", yLabel: "η (%)", yTicks: [0, 50, 100], bands,
+        series: [{ data: Qs.map((q) => [q, etaOf(q, s.r, s.m) * 100]), color: P.ok, width: 2.2 }], hlines: [{ y: 75, color: P.faint }], points: [{ x: s.Q, y: s.eta * 100, color: P.ok, r: 5 }] });
+      void e;
+      const hx = c.X(0), hy = c.Y(st.Hs), vq = vQ(), vx = c.X(vq), vy = c.Y(st.Hs + st.k * vq * vq);
+      knob(ctx, hx, hy, P.accent2, 10); knob(ctx, vx, vy, P.accent2, 10);
+      SB.label(ctx, "정수두", hx + 30, hy - 12, { size: 11, color: P.accent2 });
+      SB.label(ctx, "밸브", vx + 22, vy - 10, { size: 11, color: P.accent2 });
+      self._c = c;
+    }, { aspect: 0.82, minHeight: 330, maxHeight: 480 });
+    SB.drag(cv, {
+      handles: () => { if (!cv._c) return []; const c = cv._c, q = vQ(); return [{ id: "hs", x: c.X(0), y: c.Y(st.Hs), r: 14 }, { id: "kv", x: c.X(q), y: c.Y(st.Hs + st.k * q * q), r: 14 }]; },
+      move: (id, x, y) => {
+        const c = cv._c; if (!c) return;
+        const Hv = 90 * (c.box.y + c.box.h - y) / c.box.h;
+        if (id === "hs") st.Hs = Math.round(SB.clamp(Hv, 0, 40) * 2) / 2;
+        if (id === "kv") { const q = SB.clamp(120 * (x - c.box.x) / c.box.w, 5, 120); st.k = SB.clamp((Math.min(Hv, 89) - st.Hs) / (q * q), k0, 0.5); }
+        upd();
+      },
+    });
+    $("op-open").addEventListener("click", () => { st.k = k0; upd(); });
+    $("op-game").addEventListener("click", () => {
+      let t = null;
+      for (let i = 0; i < 50 && !t; i++) { const r = 0.65 + Math.random() * 0.47, x = 0.85 + Math.random() * 0.3, Q = 40 * x * r, Hs = 32 * r * r - (0.006 + k0) * Q * Q; if (Hs >= 2 && Hs <= 25) t = { Q, Hs }; }
+      st.task = t; st.Hs = Math.round(t.Hs * 10) / 10; st.k = 0.012; mode.set("1"); getN.set(1750, true); upd();
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- NPSH 시뮬레이터 */
+  {
+    let t = 0, ch = null;
+    const getT = SB.range("np-t", (v) => v + " °C", () => draw());
+    const getQ = SB.range("np-q", (v) => v + " L/s", () => draw());
+    const getZ = SB.range("np-z", (v) => v.toFixed(1) + " m", () => draw());
+    const alt = SB.seg("np-alt", () => draw());
+    const line = SB.seg("np-line", () => draw());
+    const NPr = (Q) => 1.5 + 0.0016 * Q * Q;
+    const calc = (Q = getQ()) => {
+      const W = Flow.water(getT()), pa = Flow.atmosphere(Number(alt())).p, Ks = Number(line()), hl = Ks * Q * Q;
+      const a = (pa - W.pv) / (W.rho * g) - getZ() - hl;
+      return { W, pa, hl, a, r: NPr(Q), Ks };
+    };
+    function draw() { cv.redraw(); if (ch) ch.redraw(); stats(); }
+    function stats() {
+      const c = calc(), m = c.a - c.r;
+      SB.stat("np-pa", (c.pa / 1000).toFixed(1) + " <small>kPa</small>");
+      SB.stat("np-pv", (c.W.pv / 1000).toFixed(2) + " <small>kPa</small>");
+      SB.stat("np-hl", c.hl.toFixed(2) + " <small>m</small>");
+      SB.stat("np-a", c.a.toFixed(2) + " <small>m</small>");
+      SB.stat("np-r", c.r.toFixed(2) + " <small>m</small>");
+      SB.stat("np-st", c.a <= 0 ? '<span style="color:var(--bad)">흡입 불가</span>' : m < 0 ? '<span style="color:var(--bad)">공동 현상!</span>' : m < 0.5 ? '<span style="color:var(--warn)">여유 부족</span>' : '<span style="color:var(--ok)">안전 (+' + m.toFixed(1) + " m)</span>");
+    }
+    const cv = SB.canvas("cv-np", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), z = getZ();
+      const W = Phys.world(ctx, w, h, { x: [0, 10], y: [-5.5, 9.5], pad: [6, 6, 10, 10] });
+      const xs0 = 0.6, xs1 = 4.4, xsp = 2.6, xp = 7.0;
+      Flow.fillWater(ctx, [[W.X(xs0), W.Y(0)], [W.X(xs1), W.Y(0)], [W.X(xs1), W.Y(-5)], [W.X(xs0), W.Y(-5)]], { wave: 1.5, t });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W.X(xs0), W.Y(1.5)); ctx.lineTo(W.X(xs0), W.Y(-5)); ctx.lineTo(W.X(xs1), W.Y(-5)); ctx.lineTo(W.X(xs1), W.Y(1.5)); ctx.stroke();
+      // 흡입관
+      ctx.strokeStyle = Flow.waterColor(0.7); ctx.lineWidth = 8; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(W.X(xsp), W.Y(-3.8)); ctx.lineTo(W.X(xsp), W.Y(z)); ctx.lineTo(W.X(xp), W.Y(z)); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.beginPath(); ctx.strokeStyle = Flow.waterColor(0.7); ctx.lineWidth = 8; ctx.moveTo(W.X(xp), W.Y(z)); ctx.lineTo(W.X(xp), W.Y(9.5)); ctx.stroke();
+      ctx.restore();
+      SB.label(ctx, "수면 z = 0", W.X(xs1) - 34, W.Y(0) - 10, { size: 11, color: P.dim });
+      SB.dashLine(ctx, W.X(xs1), W.Y(0), W.X(9.8), W.Y(0), P.faint, [4, 4]);
+      const px = W.X(xp), py = W.Y(z), pr = Math.max(14, 0.05 * h);
+      ctx.save(); ctx.fillStyle = SB.color("bg-elev"); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, pr, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2; for (let k = 0; k < 5; k++) { const a = t * 6 + (k * TAU) / 5; ctx.beginPath(); ctx.moveTo(px + 0.35 * pr * Math.cos(a), py + 0.35 * pr * Math.sin(a)); ctx.lineTo(px + 0.85 * pr * Math.cos(a - 0.6), py + 0.85 * pr * Math.sin(a - 0.6)); ctx.stroke(); }
+      ctx.restore();
+      const def = c.r - c.a;
+      if (def > 0) {
+        const n = Math.min(40, 6 + Math.floor(def * 10));
+        ctx.save(); ctx.strokeStyle = SB.isDark() ? "rgba(255,255,255,.85)" : "rgba(30,60,120,.8)"; ctx.lineWidth = 1.2;
+        for (let i = 0; i < n; i++) { const a = i * 2.39996 + t * 3, rr = pr * (0.2 + 0.75 * ((i * 0.618) % 1)), br = 1.5 + ((i * 7) % 3); ctx.beginPath(); ctx.arc(px + rr * Math.cos(a), py + rr * Math.sin(a), br, 0, TAU); ctx.stroke(); }
+        ctx.restore();
+        SB.label(ctx, c.a <= 0 ? "흡입 불가!" : "공동 현상!", px, py - pr - 14, { bold: true, color: P.bad });
+      }
+      SB.label(ctx, `z₁ = ${z.toFixed(1)} m`, px, py + pr + 14, { size: 11, color: P.text, bold: true });
+      knob(ctx, px + pr + 12, py, P.accent, 9);
+      self._W = W; self._k = [px + pr + 12, py];
+    }, { aspect: 0.85, minHeight: 270, maxHeight: 380 });
+    SB.drag(cv, { handles: () => (cv._k ? [{ id: "p", x: cv._k[0], y: cv._k[1], r: 16 }, { id: "p", x: cv._k[0] - 26, y: cv._k[1], r: 16 }] : []), move: (id, x, y) => { if (id && cv._W) getZ.set(Math.round(SB.clamp(cv._W.iy(y), -4, 8) * 10) / 10); } });
+    ch = SB.canvas("cv-npc", (ctx) => {
+      const P = pal(), Qs = Array.from({ length: 71 }, (_, i) => i), Q = getQ(), c = calc();
+      let qc = null; for (let q = 0; q <= 70; q += 0.5) if (calc(q).a < NPr(q)) { qc = q; break; }
+      SB.chart(ctx, null, { x: [0, 70], y: [-2, 14], xLabel: "Q (L/s)", yLabel: "NPSH (m)",
+        bands: qc !== null ? [{ x0: qc, x1: 70, color: "rgba(224,60,40,0.14)" }] : [],
+        series: [{ data: Qs.map((q) => [q, calc(q).a]), color: P.accent, width: 2.6 }, { data: Qs.map((q) => [q, NPr(q)]), color: P.accent2, width: 2.4 }],
+        vlines: [{ x: Q, color: P.dim }], hlines: [{ y: 0, color: P.faint }],
+        points: [{ x: Q, y: c.a, color: P.accent, r: 5, label: "NPSHa" }, { x: Q, y: c.r, color: P.accent2, r: 5, label: "NPSHr" }] });
+    }, { aspect: 0.85, minHeight: 270, maxHeight: 380 });
+    SB.loop("sim-npsh", (dt) => { t += dt; cv.redraw(); });
+    stats();
+  }
+
+  SB.tangle("tg-npsh", (v) => {
+    const W = Flow.water(v.T), a = (101325 - W.pv) / (W.rho * g) - v.z - v.hl, m = a - 4.0;
+    return { pv: (W.pv / 1000).toFixed(2) + " kPa", a: a.toFixed(2) + " m",
+      msg: m >= 0.5 ? `여유 ${m.toFixed(2)} m로 안전하다.` : m >= 0 ? `여유가 ${m.toFixed(2)} m뿐이라 불안하다.` : `<b style="color:var(--bad)">공동 현상이 생긴다</b> — 펌프를 ${(-m + 0.5).toFixed(1)} m 이상 낮춰야 한다.` };
+  });
+  SB.drill("drill-npsh", () => {
+    const i = 2 + Math.floor(Math.random() * 7), T = Flow.waterTable.T[i], rho = Flow.waterTable.rho[i], pv = Flow.waterTable.pv[i];
+    const z = Math.round((-2 + Math.random() * 6) * 10) / 10, hl = Math.round((0.5 + Math.random() * 2) * 10) / 10;
+    const a = (101.325 - pv) * 1000 / (rho * g) - z - hl;
+    return { q: `<p>해수면(101.325 kPa)에서 ${T} °C 물(ρ = ${rho} kg/m³, \\(p_v\\) = ${pv} kPa)을 빨아올린다. 펌프 흡입구 높이 \\(z_1 = ${z}\\) m(수면 기준), 흡입관 손실 ${hl} m. NPSH<sub>a</sub>는?</p>`,
+      answer: a, label: "NPSHa =", unit: "m", tol: "1%",
+      sol: `\\(\\dfrac{(101.325 - ${pv})\\times10^3}{${rho}\\times9.81} - (${z}) - ${hl} = ${a.toFixed(2)}\\) m` };
+  });
+
+  /* ---------------------------------------------------------- 상사 법칙 드래그 숫자 */
+  SB.tangle("tg-aff", (v) => {
+    const r = v.N / 1750, d = v.d, Q = 40 * r * d ** 3, H = 22.4 * r * r * d * d, P = 10.97 * r ** 3 * d ** 5;
+    return { Q: Q.toFixed(1) + " L/s", H: H.toFixed(1) + " m", P: P.toFixed(2) + " kW",
+      msg: `(회전수 ${r.toFixed(2)}배 → 동력 ${(r ** 3).toFixed(2)}배. 비속도는 지름과 무관하므로 ${(0.642 * r).toFixed(3)}.)` };
+  }, { fmt: { d: (x) => x.toFixed(2) } });
+
+  /* ---------------------------------------------------------- 비속도 */
+  const etaC = (n) => 0.89 - 0.12 * Math.log(n / 0.9) ** 2, etaM = (n) => 0.91 - 0.2 * Math.log(n / 2.3) ** 2, etaA = (n) => 0.88 - 0.25 * Math.log(n / 4.6) ** 2;
+  const etaMax = (n) => Math.max(etaC(n), etaM(n), etaA(n));
+  const typeOf = (n) => { const e = [etaC(n), etaM(n), etaA(n)], i = e.indexOf(Math.max(...e)); return ["원심", "사류", "축류"][i]; };
+  {
+    const st = { task: null }; let ch = null;
+    const getQ = SB.range("ns-q", (v) => { const q = 10 ** v; return (q < 0.1 ? q.toFixed(3) : q.toFixed(2)) + " m³/s"; }, () => draw());
+    const getH = SB.range("ns-h", (v) => (10 ** v).toFixed(1) + " m", () => draw());
+    const getN = SB.range("ns-n", (v) => v + " rpm", () => draw());
+    const Ns = (N = getN()) => (N * W2R * Math.sqrt(10 ** getQ())) / (g * 10 ** getH()) ** 0.75;
+    function draw() { cv.redraw(); if (ch) ch.redraw(); stats(); }
+    function stats() {
+      const n = Ns(), e = etaMax(n);
+      SB.stat("ns-ns", n.toFixed(3)); SB.stat("ns-ns2", (410 * n).toFixed(0)); SB.stat("ns-type", typeOf(n)); SB.stat("ns-eta", (Math.max(0, e) * 100).toFixed(0) + " %");
+      if (st.task) SB.stat("ns-task", e >= 0.87 ? `<span style="color:var(--ok)">합격: ${typeOf(n)} 펌프, ${getN()} rpm</span>` : `<small>Q = ${(10 ** getQ()).toFixed(3)} m³/s, H = ${(10 ** getH()).toFixed(1)} m — 효율 87 % 미달</small>`);
+      else SB.stat("ns-task", "—");
+    }
+    const cv = SB.canvas("cv-ns", (ctx, w, h) => {
+      const P = pal(), n = Ns(), s = SB.clamp((Math.log(n) - Math.log(0.8)) / (Math.log(4.5) - Math.log(0.8)), 0, 1);
+      const ax = 0.88 * h, e = 0.28 * h, xin = 0.16 * w;
+      const alpha = (90 * (1 - s)) * D2R, d = [Math.cos(alpha), -Math.sin(alpha)], nrm = [Math.sin(alpha), Math.cos(alpha)];
+      const rm2 = SB.lerp(2.35 * e, 0.75 * e, s), b2 = SB.lerp(0.2 * e, 0.5 * e, s), xm2 = xin + SB.lerp(0.9 * e, 1.5 * e, s);
+      const C2 = [xm2, ax - rm2], S2 = [C2[0] - (nrm[0] * b2) / 2, C2[1] - (nrm[1] * b2) / 2], H2 = [C2[0] + (nrm[0] * b2) / 2, C2[1] + (nrm[1] * b2) / 2];
+      const hubIn = SB.lerp(0.3 * e, 0.5 * e, s), S1 = [xin, ax - e], H1 = [xin, ax - hubIn];
+      const ctrl = (A, B) => (Math.abs(d[1]) < 0.05 ? [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2] : [SB.clamp(B[0] - ((B[1] - A[1]) / d[1]) * d[0], A[0], B[0] + 1), A[1]]);
+      const cS = ctrl(S1, S2), cH = ctrl(H1, H2);
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(...S1); ctx.quadraticCurveTo(...cS, ...S2); ctx.lineTo(...H2); ctx.quadraticCurveTo(...cH, ...H1); ctx.closePath();
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fill();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(...S1); ctx.quadraticCurveTo(...cS, ...S2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(...H1); ctx.quadraticCurveTo(...cH, ...H2); ctx.lineTo(H2[0], ax); ctx.stroke();
+      ctx.fillStyle = P.dim; ctx.fillRect(4, ax - 5, w - 8, 10);
+      ctx.restore();
+      SB.dashLine(ctx, 0, ax, w, ax, P.faint, [10, 4]);
+      SB.arrow(ctx, 6, (S1[1] + H1[1]) / 2, xin - 4, (S1[1] + H1[1]) / 2, { color: P.accent, width: 2.4 });
+      SB.arrow(ctx, C2[0] + d[0] * 6, C2[1] + d[1] * 6, C2[0] + d[0] * 40, C2[1] + d[1] * 40, { color: P.accent, width: 2.4 });
+      SB.label(ctx, typeOf(n) + " 임펠러", w - 60, 18, { bold: true, size: 13, color: P.text });
+      SB.label(ctx, `N_s = ${n.toFixed(2)}`, w - 60, 38, { mono: true, size: 12, color: P.dim });
+      SB.label(ctx, "축", w - 18, ax - 14, { size: 11, color: P.dim });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 360 });
+    ch = SB.canvas("cv-nsc", (ctx, w, h, self) => {
+      const P = pal(), xs = Array.from({ length: 121 }, (_, i) => 0.1 * 100 ** (i / 120)), n = Ns();
+      const c = SB.chart(ctx, null, { x: [0.1, 10], y: [0.3, 1], logX: true, xLabel: "N_s (무차원)", yLabel: "최고 효율",
+        bands: [{ x0: 0.1, x1: 1.43, color: "rgba(60,140,220,0.08)" }, { x0: 1.43, x1: 3.66, color: "rgba(40,180,120,0.08)" }, { x0: 3.66, x1: 10, color: "rgba(255,140,40,0.08)" }],
+        series: [{ data: xs.map((x) => [x, etaC(x)]), color: P.faint, width: 1.4, dash: [4, 4] }, { data: xs.map((x) => [x, etaM(x)]), color: P.faint, width: 1.4, dash: [4, 4] }, { data: xs.map((x) => [x, etaA(x)]), color: P.faint, width: 1.4, dash: [4, 4] }, { data: xs.map((x) => [x, etaMax(x)]), color: P.accent, width: 2.6 }],
+        hlines: st.task ? [{ y: 0.87, color: P.ok, label: "87 %" }] : [], yFmt: (v) => (v * 100).toFixed(0) + "%" });
+      const px = c.X(SB.clamp(n, 0.1, 10)), py = c.Y(SB.clamp(etaMax(SB.clamp(n, 0.1, 10)), 0.3, 1));
+      [["원심", 0.35], ["사류", 2.3], ["축류", 5.6]].forEach(([t, x]) => SB.label(ctx, t, c.X(x), c.box.y + c.box.h - 12, { size: 11, color: P.dim }));
+      knob(ctx, px, py, P.accent2, 10);
+      self._c = c; self._p = [px, py];
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 360 });
+    SB.drag(ch, { handles: () => (ch._p ? [{ id: "n", x: ch._p[0], y: ch._p[1], r: 14 }] : []), move: (id, x) => {
+      const c = ch._c; if (!c) return;
+      const target = 10 ** (Math.log10(0.1) + ((x - c.box.x) / c.box.w) * 2), N = getN() * (target / Ns());
+      getN.set(Math.round(SB.clamp(N, 200, 3600) / 10) * 10);
+    } });
+    $("ns-game").addEventListener("click", () => {
+      for (let i = 0; i < 100; i++) {
+        const q = -2 + Math.random() * 2.5, N = 600 + Math.random() * 2400, n = 0.6 + Math.random() * 4.9;
+        if (etaMax(n) < 0.88) continue;
+        const H = Math.pow((N * W2R * Math.sqrt(10 ** q)) / n, 4 / 3) / g;
+        if (H < 2.2 || H > 300) continue;
+        st.task = true; getQ.set(Math.round(q * 100) / 100, true); getH.set(Math.round(Math.log10(H) * 100) / 100, true);
+        let N0b = Math.round((200 + Math.random() * 3400) / 10) * 10; if (etaMax(Ns(N0b)) >= 0.87) N0b = etaMax(Ns(300)) >= 0.87 ? 3600 : 300;
+        getN.set(N0b); return;
+      }
+    });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 축류 날개열 */
+  {
+    let t = 0;
+    const getPhi = SB.range("ax-phi", (v) => v.toFixed(2), () => upd());
+    const getB = SB.range("ax-b", (v) => v + "°", () => upd());
+    const pts = Array.from({ length: 70 }, () => [Math.random(), Math.random()]);
+    const tri = () => { const phi = getPhi(), b2 = getB() * D2R, vt2 = 1 - phi / Math.tan(b2); return { phi, b2, vt2, psi: vt2 }; };
+    function upd() { const c = tri(); $("ax-r").textContent = `ψ = gH/U² = 1 − φ cot β₂ = ${c.psi.toFixed(3)} · β₁ = ${(Math.atan(c.phi) / D2R).toFixed(1)}°`; cv.redraw(); }
+    const cv = SB.canvas("cv-ax", (ctx, w, h) => {
+      const P = pal(), c = tri(), cw = 0.6 * w, Va = 0.12 * h, U = Va / c.phi;
+      const rY = [0.22 * h, 0.4 * h], sY = [0.56 * h, 0.74 * h], L = rY[1] - rY[0], sp = cw / 4;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, h); ctx.clip();
+      ctx.fillStyle = Flow.waterColor(0.1); ctx.fillRect(0, 0, cw, h);
+      const blade = (x0, y0, d1, d2, col) => {
+        const n1 = Math.hypot(...d1), n2 = Math.hypot(...d2), t1 = L / 2 / (d1[1] / n1), t2 = L / 2 / (d2[1] / n2);
+        const C = [x0 + (t1 * d1[0]) / n1, y0 + L / 2], E = [C[0] + (t2 * d2[0]) / n2, y0 + L];
+        ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(C[0], C[1], E[0], E[1]); ctx.stroke();
+      };
+      const off = (t * U) % sp;
+      for (let i = -2; i < 7; i++) blade(i * sp + off + sp * 0.6, rY[0], [-1, c.phi], [-c.phi / Math.tan(c.b2), c.phi], P.text);
+      for (let i = -2; i < 7; i++) blade(i * sp + sp * 0.3, sY[0], [Math.max(c.vt2, 0.01), c.phi], [0, 1], P.dim);
+      pts.forEach(([x, y]) => { const X = x * cw, Y = y * h, mid = Y > (rY[0] + rY[1]) / 2 && Y < (sY[0] + sY[1]) / 2; ctx.fillStyle = mid ? P.accent2 : P.accent; ctx.beginPath(); ctx.arc(X, Y, 2.3, 0, TAU); ctx.fill(); });
+      ctx.restore();
+      SB.label(ctx, "로터 → U", 44, rY[0] - 12, { size: 11, color: P.text, bold: true });
+      SB.label(ctx, "안내 깃(고정)", 48, sY[1] + 14, { size: 11, color: P.dim, bold: true });
+      // 속도 삼각형
+      const ox = cw + 0.5 * (w - cw), k = Math.min((w - cw - 20) / 2.6, 0.32 * h / Math.max(1, c.phi) / 1.1) * 0.9, oy1 = 0.12 * h, oy2 = 0.55 * h;
+      SB.label(ctx, "입구", ox, oy1 - 4, { size: 11, color: P.dim });
+      SB.arrow(ctx, ox, oy1 + 6, ox, oy1 + 6 + c.phi * k, { color: P.accent, width: 2.2, head: 7, label: "V₁" });
+      SB.arrow(ctx, ox, oy1 + 6, ox - k, oy1 + 6 + c.phi * k, { color: P.ok, width: 2.2, head: 7, label: "W₁", labelSide: -1 });
+      SB.arrow(ctx, ox - k, oy1 + 6 + c.phi * k, ox, oy1 + 6 + c.phi * k, { color: P.accent2, width: 1.6, head: 6 });
+      SB.label(ctx, "출구", ox, oy2 - 4, { size: 11, color: P.dim });
+      const v2x = ox - k / 2 + c.vt2 * k, w2x = ox - k / 2, yb = oy2 + 6 + c.phi * k;
+      SB.arrow(ctx, ox - k / 2, oy2 + 6, v2x, yb, { color: P.accent, width: 2.2, head: 7, label: "V₂" });
+      SB.arrow(ctx, ox - k / 2, oy2 + 6, w2x + (c.vt2 - 1) * k, yb, { color: P.ok, width: 2.2, head: 7, label: "W₂", labelSide: -1 });
+      SB.arrow(ctx, w2x + (c.vt2 - 1) * k, yb, v2x, yb, { color: P.accent2, width: 1.6, head: 6 });
+      SB.label(ctx, `U`, (w2x + (c.vt2 - 1) * k + v2x) / 2, yb + 12, { size: 11, color: P.accent2 });
+    }, { aspect: 0.6, minHeight: 240, maxHeight: 340 });
+    SB.loop("mini-axial", (dt) => {
+      t += dt; const c = tri(), h = cv.h, cw = 0.6 * cv.w, Va = 0.12 * h, U = Va / c.phi;
+      pts.forEach((p) => { const Y = p[1] * h, mid = Y > 0.31 * h && Y < 0.65 * h; p[1] += (Va * dt) / h; p[0] += mid ? (c.vt2 * U * dt) / cw : 0; if (p[1] > 1) { p[1] = 0; p[0] = Math.random(); } p[0] = mod(p[0], 1); });
+      cv.redraw();
+    });
+    upd();
+  }
+
+  SB.drill("drill-aff", () => {
+    const k = Math.floor(Math.random() * 4), N1 = [1150, 1450, 1750, 2900, 3500][Math.floor(Math.random() * 5)], N2 = Math.round(N1 * (0.6 + Math.random() * 0.8) / 50) * 50;
+    if (k === 0) { const H1 = 10 + Math.round(Math.random() * 60), H2 = H1 * (N2 / N1) ** 2; return { q: `<p>${N1} rpm에서 양정 ${H1} m인 펌프를 ${N2} rpm으로 돌리면 상사 점의 양정은?</p>`, answer: H2, label: "H =", unit: "m", sol: `\\(H = ${H1}(${N2}/${N1})^2 = ${H2.toFixed(1)}\\) m` }; }
+    if (k === 1) { const P1 = 2 + Math.round(Math.random() * 40), P2 = P1 * (N2 / N1) ** 3; return { q: `<p>${N1} rpm에서 제동 동력 ${P1} kW인 펌프를 ${N2} rpm으로 돌리면 상사 점의 동력은?</p>`, answer: P2, label: "P =", unit: "kW", sol: `\\(P = ${P1}(${N2}/${N1})^3 = ${P2.toFixed(2)}\\) kW` }; }
+    if (k === 2) { const Q = Math.round((0.01 + Math.random() * 1.5) * 1000) / 1000, H = 3 + Math.round(Math.random() * 80), n = (N1 * W2R * Math.sqrt(Q)) / (g * H) ** 0.75; return { q: `<p>${N1} rpm, BEP에서 \\(Q = ${Q}\\) m³/s, \\(H = ${H}\\) m인 펌프의 무차원 비속도 \\(N_s\\)는?</p>`, answer: n, label: "N_s =", unit: "", sol: `\\(\\omega = ${(N1 * W2R).toFixed(1)}\\) rad/s, \\(N_s = \\omega\\sqrt Q/(gH)^{3/4} = ${n.toFixed(3)}\\) → ${typeOf(n)}` }; }
+    const Q1 = 10 + Math.round(Math.random() * 90), d = Math.round((0.7 + Math.random() * 0.6) * 100) / 100, Q2 = Q1 * d ** 3;
+    return { q: `<p>유량 ${Q1} L/s인 펌프와 닮은꼴이고 지름이 ${d}배인 펌프를 같은 회전수로 돌리면 상사 점의 유량은?</p>`, answer: Q2, label: "Q =", unit: "L/s", sol: `\\(Q = ${Q1}(${d})^3 = ${Q2.toFixed(1)}\\) L/s` };
+  });
+
+  /* ---------------------------------------------------------- 펠턴 휠 */
+  {
+    const Cv = 0.98, st = { rot: 0, drops: [], jet: [], game: null };
+    let ch = null, wheel = null;
+    const getH = SB.range("pt-h", (v) => v + " m", () => draw());
+    const getQ = SB.range("pt-q", (v) => v.toFixed(2) + " m³/s", () => draw());
+    const getD = SB.range("pt-d", (v) => v.toFixed(2) + " m", () => draw());
+    const getN = SB.range("pt-n", (v) => v + " rpm", () => draw());
+    const getB = SB.range("pt-b", (v) => v + "°", () => draw());
+    const getK = SB.range("pt-k", (v) => v.toFixed(2), () => draw());
+    const calc = () => {
+      const V = Cv * Math.sqrt(2 * g * getH()), U = getN() * W2R * getD() / 2, x = U / V, f = 1 - getK() * Math.cos(getB() * D2R);
+      const eta = Math.max(0, 2 * x * (1 - x) * f), P = RHO * getQ() * U * (V - U) * f;
+      return { V, U, x, f, eta, P, vout: U + getK() * (V - U) * Math.cos(getB() * D2R) };
+    };
+    function draw() { if (wheel) wheel.redraw(); if (ch) ch.redraw(); stats(); }
+    function stats() {
+      const c = calc();
+      SB.stat("pt-v", c.V.toFixed(1) + " <small>m/s</small>"); SB.stat("pt-u", c.U.toFixed(1) + " <small>m/s</small>"); SB.stat("pt-x", c.x.toFixed(3));
+      SB.stat("pt-eta", (c.eta * 100).toFixed(1) + " %" + (c.x > 1 ? " <small>(U &gt; V)</small>" : ""));
+      SB.stat("pt-p", c.x < 1 ? fmtP(c.P) : "0");
+      if (st.game) SB.stat("pt-task", Math.abs(c.x - 0.5) <= 0.04 ? `<span style="color:var(--ok)">성공! D = ${getD().toFixed(2)} m</span>` : `<small>${getN()} rpm 고정 · U/V를 0.46–0.54로</small>`);
+      else SB.stat("pt-task", "—");
+    }
+    wheel = SB.canvas("cv-pt", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), cx = 0.56 * w, cy = 0.42 * h, Rp = (0.1 + (0.2 * (getD() - 0.5)) / 3.5) * Math.min(w, 1.2 * h);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, Rp * 0.8, 0, TAU); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = P.dim; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, TAU); ctx.fill();
+      for (let i = 0; i < 16; i++) {
+        const a = -st.rot + (i * TAU) / 16, bx = cx + Rp * Math.cos(a), by = cy + Rp * Math.sin(a);
+        ctx.save(); ctx.translate(bx, by); ctx.rotate(a + Math.PI / 2); ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(-9, -6); ctx.quadraticCurveTo(0, 12, 9, -6); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      }
+      const jy = cy + Rp, nx = Math.max(10, cx - Rp - 70);
+      ctx.fillStyle = P.dim; ctx.beginPath(); ctx.moveTo(nx - 30, jy - 12); ctx.lineTo(nx, jy - 5); ctx.lineTo(nx, jy + 5); ctx.lineTo(nx - 30, jy + 12); ctx.fill();
+      ctx.strokeStyle = Flow.waterColor(0.8); ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(nx, jy); ctx.lineTo(cx, jy); ctx.stroke();
+      st.drops.forEach((d) => { ctx.fillStyle = Flow.ramp(Math.abs(d.vx) / 160, 0.9); ctx.beginPath(); ctx.arc(d.x, d.y, 2.4, 0, TAU); ctx.fill(); });
+      const hx = cx + Rp * Math.cos(-Math.PI / 4), hy = cy + Rp * Math.sin(-Math.PI / 4);
+      knob(ctx, hx, hy, P.accent2, 10);
+      SB.label(ctx, `D = ${getD().toFixed(2)} m`, hx + 4, hy - 20, { size: 11, color: P.accent2, bold: true });
+      SB.arrow(ctx, cx - Rp * 0.5, jy - 18, cx - Rp * 0.5 + 60 * Math.min(c.x, 1.2), jy - 18, { color: P.accent2, width: 2, head: 6, label: "U" });
+      SB.arrow(ctx, nx + 4, jy - 18, nx + 64, jy - 18, { color: P.accent, width: 2, head: 6, label: "V" });
+      self._g = { cx, cy, Rp, hx, hy, jy };
+    }, { aspect: 0.8, minHeight: 250, maxHeight: 380 });
+    SB.drag(wheel, { handles: () => (wheel._g ? [{ id: "d", x: wheel._g.hx, y: wheel._g.hy, r: 14 }] : []), move: (id, x, y) => {
+      const G = wheel._g; if (!G) return;
+      const Rp = Math.hypot(x - G.cx, y - G.cy), D = 0.5 + ((Rp / Math.min(wheel.w, 1.2 * wheel.h) - 0.1) * 3.5) / 0.2;
+      getD.set(Math.round(SB.clamp(D, 0.5, 4) * 100) / 100);
+    } });
+    ch = SB.canvas("cv-ptc", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), xs = Array.from({ length: 101 }, (_, i) => i / 100);
+      const C = SB.chart(ctx, null, { x: [0, 1], y: [0, 1.05], xLabel: "U/V", yLabel: "효율 · 토크(상대)",
+        series: [{ data: xs.map((x) => [x, 4 * x * (1 - x)]), color: P.faint, width: 1.4, dash: [4, 4] }, { data: xs.map((x) => [x, 2 * x * (1 - x) * c.f]), color: P.accent, width: 2.6 }, { data: xs.map((x) => [x, 1 - x]), color: P.dim, width: 1.6, dash: [6, 4] }],
+        bands: st.game ? [{ x0: 0.46, x1: 0.54, color: "rgba(40,180,120,0.15)" }] : [], vlines: [{ x: 0.5, color: P.faint, label: "1/2" }] });
+      const xx = SB.clamp(c.x, 0, 1), px = C.X(xx), py = C.Y(Math.max(0, 2 * xx * (1 - xx) * c.f));
+      knob(ctx, px, py, P.accent2, 10);
+      SB.label(ctx, "토크", C.X(0.1) + 10, C.Y(0.9) - 4, { size: 11, color: P.dim });
+      self._C = C; self._p = [px, py];
+    }, { aspect: 0.8, minHeight: 250, maxHeight: 380 });
+    SB.drag(ch, { handles: () => (ch._p ? [{ id: "x", x: ch._p[0], y: ch._p[1], r: 14 }] : []), move: (id, x) => {
+      if (st.game || !ch._C) return;
+      const C = ch._C, xx = SB.clamp((x - C.box.x) / C.box.w, 0, 1), c = calc(), N = (xx * c.V) / (getD() / 2) / W2R;
+      getN.set(Math.round(SB.clamp(N, 30, 1500)));
+    } });
+    $("pt-opt").addEventListener("click", () => { if (st.game) return; const c = calc(); getN.set(Math.round(SB.clamp((c.V / 2) / (getD() / 2) / W2R, 30, 1500))); });
+    $("pt-game").addEventListener("click", () => {
+      if (st.game) { st.game = null; getN.el.disabled = false; $("pt-game").textContent = "도전: 동기 속도"; draw(); return; }
+      const poles = [8, 10, 12, 14, 16, 18, 20, 24][Math.floor(Math.random() * 8)], N = Math.round(7200 / poles);
+      let H = 200 + 50 * Math.floor(Math.random() * 13);
+      const Dopt = (Cv * Math.sqrt(2 * g * H)) / (N * W2R); if (Dopt > 3.9 || Dopt < 0.6) H = 400;
+      st.game = { N }; getH.set(H, true); getN.set(N, true); getN.el.disabled = true;
+      getD.set(Math.round((0.5 + Math.random() * 3.4) * 100) / 100);
+      $("pt-game").textContent = "도전 끝내기";
+    });
+    SB.loop("sim-pelton", (dt) => {
+      const c = calc(), G = wheel._g; if (!G) return;
+      const vis = 160 / c.V;
+      st.rot += (c.U * vis / G.Rp) * dt;
+      if (c.x < 1 && Math.random() < 0.9) st.drops.push({ x: G.cx + (Math.random() - 0.5) * 6, y: G.jy + (Math.random() - 0.5) * 4, vx: c.vout * vis, vy: (Math.random() - 0.3) * 30, life: 0 });
+      st.drops.forEach((d) => { d.x += d.vx * dt; d.y += d.vy * dt; d.vy += 260 * dt; d.life += dt; });
+      st.drops = st.drops.filter((d) => d.life < 1.6 && d.y < wheel.h + 10 && d.x > -10 && d.x < wheel.w + 10).slice(-160);
+      wheel.redraw();
+    });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 베츠 한계 */
+  {
+    let a = 0.2, t = 0;
+    const parts = Array.from({ length: 110 }, () => ({ x: -3 + Math.random() * 7, e: (Math.random() * 2 - 1) * 1.9 }));
+    const uOf = (x) => Math.max(0.05, 1 - a - (a * x) / Math.sqrt(x * x + 0.36));
+    const Rt = (x) => Math.sqrt((1 - a) / uOf(x));
+    const R8 = () => Math.sqrt(1 - a);
+    const cv = SB.canvas("cv-bz", (ctx, w, h, self) => {
+      const P = pal(), th = 0.55 * h;
+      const W = Phys.world(ctx, w, th, { x: [-3, 4], y: [-2.3, 2.3], pad: [6, 6, 6, 6] });
+      const xs = Array.from({ length: 71 }, (_, i) => -3 + i * 0.1);
+      ctx.save(); ctx.beginPath(); xs.forEach((x, i) => { const y = W.Y(Math.min(2.25, Rt(x))); i ? ctx.lineTo(W.X(x), y) : ctx.moveTo(W.X(x), y); });
+      for (let i = xs.length - 1; i >= 0; i--) ctx.lineTo(W.X(xs[i]), W.Y(-Math.min(2.25, Rt(xs[i]))));
+      ctx.closePath(); ctx.fillStyle = Flow.waterColor(0.08); ctx.fill(); ctx.restore();
+      [1, -1].forEach((sg) => W.path(xs.map((x) => [x, sg * Math.min(2.25, Rt(x))]), { color: P.accent, width: 1.6, dash: [5, 4] }));
+      parts.forEach((p) => {
+        const inside = Math.abs(p.e) <= R8(), r = inside ? (p.e / R8()) * Rt(p.x) : Math.sign(p.e) * Math.sqrt(p.e * p.e + Rt(p.x) ** 2 - R8() ** 2);
+        if (Math.abs(r) > 2.3) return;
+        ctx.fillStyle = Flow.ramp(inside ? uOf(p.x) : 1, 0.9); ctx.beginPath(); ctx.arc(W.X(p.x), W.Y(r), 2.2, 0, TAU); ctx.fill();
+      });
+      ctx.save(); ctx.fillStyle = P.text; ctx.fillRect(W.X(0) - 3, W.Y(1), 6, W.Y(-1) - W.Y(1)); ctx.restore();
+      SB.label(ctx, "V₁", W.X(-2.6), W.Y(2.05), { size: 11, color: P.dim, bold: true });
+      SB.label(ctx, `V₁(1−a) = ${(1 - a).toFixed(2)}V₁`, W.X(0), W.Y(-1.25) + 10, { size: 11, color: P.text });
+      SB.label(ctx, `후류 ${(1 - 2 * a).toFixed(2)}V₁`, W.X(3.2), W.Y(2.05), { size: 11, color: P.dim, bold: true });
+      const box = { x: 58, y: th + 8, w: w - 58 - 16, h: h - th - 8 - 44 }, as = Array.from({ length: 51 }, (_, i) => i / 100);
+      const C = SB.chart(ctx, box, { x: [0, 0.5], y: [0, 1], xLabel: "축 유도 계수 a", yLabel: "C_P, C_T",
+        series: [{ data: as.map((x) => [x, 4 * x * (1 - x) ** 2]), color: P.accent, width: 2.6 }, { data: as.map((x) => [x, 4 * x * (1 - x)]), color: P.dim, width: 1.6, dash: [5, 4] }],
+        hlines: [{ y: 16 / 27, color: P.ok, label: "16/27" }], vlines: [{ x: 1 / 3, color: P.faint, label: "1/3" }] });
+      const px = C.X(a), py = C.Y(4 * a * (1 - a) ** 2);
+      knob(ctx, px, py, P.accent2, 10);
+      self._C = C;
+      $("bz-r").textContent = `a = ${a.toFixed(3)} → C_P = ${(4 * a * (1 - a) ** 2).toFixed(3)} (베츠의 ${((4 * a * (1 - a) ** 2) / (16 / 27) * 100).toFixed(0)} %), C_T = ${(4 * a * (1 - a)).toFixed(3)}`;
+    }, { aspect: 0.78, minHeight: 330, maxHeight: 460 });
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x, y) => { const C = cv._C; if (!C || y < C.box.y - 20) return; a = Math.round(SB.clamp((x - C.box.x) / C.box.w * 0.5, 0, 0.5) * 1000) / 1000; } });
+    SB.loop("mini-betz", (dt) => {
+      t += dt;
+      parts.forEach((p) => { const inside = Math.abs(p.e) <= R8(); p.x += (inside ? uOf(p.x) : 1) * 1.2 * dt; if (p.x > 4) { p.x = -3; p.e = (Math.random() * 2 - 1) * 1.9; } });
+      cv.redraw();
+    });
+  }
+
+  SB.tangle("tg-wind", (v) => {
+    const A = Math.PI * (v.D / 2) ** 2, Pa = 0.5 * 1.225 * A * v.V ** 3;
+    return { Pa: fmtP(Pa), Pb: fmtP((Pa * 16) / 27), P: fmtP(Pa * v.cp), msg: v.cp > 16 / 27 ? "베츠 한계를 넘는 C_P는 불가능하다." : `풍속이 2배면 출력은 8배 — 같은 터빈이라도 바람 좋은 곳이 결정적이다.` };
+  });
+})();
+</script>
+</body>
+</html>

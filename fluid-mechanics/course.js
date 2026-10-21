@@ -163,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "펌프",
       "터빈"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -331,9 +330,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 4,
    "hero": 1
+  },
+  "turbomachinery": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 11,
+ "published": 12,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
