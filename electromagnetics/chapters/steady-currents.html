@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>정상 전류 · 전자기학 · SciBook</title>
+<meta name="description" content="전류 밀도와 연속 방정식, 점형 옴의 법칙, 전하 이완 시간, 면저항·4탐침·퍼짐 저항·비아 저항 계산, 줄 열과 전류 밀집, 정전기장과의 쌍대성(RC = ε/σ), 일렉트로마이그레이션과 블랙 식까지 — 배선 신뢰성을 직접 그리고 풀며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/electromagnetics/chapters/steady-currents.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="정상 전류 · 전자기학 · SciBook">
+<meta property="og:description" content="전류 밀도와 연속 방정식, 점형 옴의 법칙, 전하 이완 시간, 면저항·4탐침·퍼짐 저항·비아 저항 계산, 줄 열과 전류 밀집, 정전기장과의 쌍대성(RC = ε/σ), 일렉트로마이그레이션과 블랙 식까지 — 배선 신뢰성을 직접 그리고 풀며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/electromagnetics/chapters/steady-currents.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "정상 전류 · 전자기학 · SciBook", "headline": "05 정상 전류", "url": "https://science.euiyun.com/electromagnetics/chapters/steady-currents.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "전류 밀도와 연속 방정식, 점형 옴의 법칙, 전하 이완 시간, 면저항·4탐침·퍼짐 저항·비아 저항 계산, 줄 열과 전류 밀집, 정전기장과의 쌍대성(RC = ε/σ), 일렉트로마이그레이션과 블랙 식까지 — 배선 신뢰성을 직접 그리고 풀며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 5, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/electromagnetics/#book", "name": "전자기학", "url": "https://science.euiyun.com/electromagnetics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "전자기학", "item": "https://science.euiyun.com/electromagnetics/"}, {"@type": "ListItem", "position": 3, "name": "05 정상 전류", "item": "https://science.euiyun.com/electromagnetics/chapters/steady-currents.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/em.js"></script>
+<style>
+  .sc-legend { display:flex; gap:.4rem; align-items:center; flex-wrap:wrap; font-size:.85rem; color:var(--text-dim); }
+</style>
+</head>
+<body data-chapter="steady-currents">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="conductors-dielectrics boundary-value">
+    <div class="eyebrow">Chapter 05</div>
+    <h1>정상 전류</h1>
+    <p class="lead">3장에서 도체 속 전기장은 0이었다. 전하가 움직이다 멈춘 정전 평형이기 때문이다. 이제 전지를 이어 전하가 계속 흐르게 하자. 흐름이 시간에 따라 변하지 않는 <span class="term">정상 전류</span><span class="en">(steady current)</span>에서는 도체 속에도 전기장이 있고, 그 전기장은 4장의 라플라스 방정식을 그대로 푼다. 다만 유전율 \(\varepsilon\) 자리에 전도도 \(\sigma\)가 들어간다. 칩 하나에 깔린 수십 km의 구리 배선, 도핑 영역의 면저항, 탐침이 닿는 접점, 층과 층을 잇는 비아가 모두 이 방정식으로 설계된다. 전류가 몰리는 곳은 뜨거워지고, 그곳에서 금속 원자가 전자에 떠밀려 배선이 끊어진다. 아래 화면은 꺾인 배선을 흐르는 전류다. 홈을 내 보면 전류가 어디로 몰리는지 바로 보인다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">흰 원을 끌어 배선 아래쪽에 홈을 낸다</span></div>
+    <ul class="objectives">
+      <li>전류 밀도 \(\mathbf J = \rho_v\mathbf u = nq\mathbf v_d\)와 \(I = \int_S\mathbf J\cdot d\mathbf S\)를 쓰고, 전하 보존에서 연속 방정식 \(\nabla\cdot\mathbf J = -\partial\rho_v/\partial t\)와 키르히호프 전류 법칙을 유도한다.</li>
+      <li>점형 옴의 법칙 \(\mathbf J = \sigma\mathbf E\)와 \(\sigma = nq\mu\)로 금속과 도핑 실리콘의 전도도를 계산하고, 막대의 \(R = L/\sigma A\)를 장으로부터 다시 얻는다.</li>
+      <li>전하 이완 시간 \(\tau = \varepsilon/\sigma\)로 도체 속 여분 전하가 사라지는 시간을 재료별로 비교하고, 정상 전류의 경계 조건과 계면 전하를 구한다.</li>
+      <li>"전위 가정 → 장 → 전류 → 저항" 순서로 일반 기하의 저항을 구하고, 면저항과 정사각형 수, 4탐침 측정, 퍼짐 저항, 비아 저항을 계산한다.</li>
+      <li>줄 열 \(p = \mathbf J\cdot\mathbf E = \sigma E^2\)과 전류 밀집을 이해하고, 배선의 자기 발열과 열 폭주 조건을 어림한다.</li>
+      <li>정전기장과의 쌍대성 \(G/C = \sigma/\varepsilon\)을 써서 정전 용량 공식으로 누설 컨덕턴스를 얻고, \(RC = \varepsilon/\sigma\)의 뜻을 설명한다.</li>
+      <li>일렉트로마이그레이션의 전자 바람, 플럭스 발산, 블레흐 길이를 설명하고, 블랙 식으로 가속 시험 결과를 사용 조건 수명으로 환산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="current-density">
+    <h2>전류 밀도와 연속 방정식</h2>
+    <p>일반물리학에서 전류는 도선 단면을 단위 시간에 지나는 전하량 \(I = dQ/dt\)였다(<a href="../../general-physics/chapters/current-circuits.html">일반물리학 · 전류와 직류 회로</a>). 도선 하나만 보면 숫자 하나로 충분하지만, 굽은 배선의 모서리나 넓은 기판 속처럼 전류가 퍼져 흐르는 곳에서는 "어느 점에서, 어느 방향으로, 얼마나 촘촘히" 흐르는지를 알아야 한다. 그 양이 <span class="term">전류 밀도</span><span class="en">(current density)</span> \(\mathbf J\)다. 방향은 양전하가 움직이는 방향이고, 크기는 흐름에 수직인 단위 넓이를 단위 시간에 지나는 전하량이다(단위 A/m²).</p>
+    <p>단위 부피에 전하 \(q\)를 가진 운반자가 \(n\)개 있고 평균 속도 \(\mathbf v_d\)로 움직이면, 시간 \(dt\) 동안 넓이 \(dS\)를 지나는 전하는 밑넓이 \(dS\), 길이 \(v_d\,dt\)인 기둥 속의 전하 \(nq\,v_d\,dt\,dS\)다. 따라서</p>
+    <div class="formula">$$\mathbf J = \rho_v\,\mathbf u = nq\,\mathbf v_d, \qquad I = \int_S \mathbf J\cdot d\mathbf S$$<div class="where">\(\rho_v = nq\)는 움직이는 전하의 부피 밀도, \(\mathbf v_d\)는 <span class="term">유동 속도</span><span class="en">(drift velocity)</span>. 운반자가 여러 종류면(반도체의 전자와 정공) 각각의 \(n_iq_i\mathbf v_i\)를 더한다. 전자는 \(q = -e\)라 \(\mathbf v_d\)와 \(\mathbf J\)가 반대 방향이다. 면 위에서 흐르는 얇은 층의 전류는 면전류 밀도 \(\mathbf K\)(A/m)로 쓴다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="전류 관 속의 전류 밀도 J와 기울어진 면 요소 dS, 법선 n과 각 theta">
+        <defs>
+          <marker id="sc-ar1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="sc-ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <path d="M60 60 L400 60 M60 200 L400 200" class="s-line" fill="none"/>
+        <ellipse cx="60" cy="130" rx="20" ry="70" fill="none" class="s-line"/>
+        <ellipse cx="400" cy="130" rx="20" ry="70" class="f-acc-soft" stroke="var(--border)"/>
+        <g stroke="var(--accent)" stroke-width="2.2">
+          <line x1="95" y1="85" x2="370" y2="85" marker-end="url(#sc-ar1)"/>
+          <line x1="95" y1="130" x2="200" y2="130" marker-end="url(#sc-ar1)"/>
+          <line x1="300" y1="130" x2="370" y2="130" marker-end="url(#sc-ar1)"/>
+          <line x1="95" y1="175" x2="370" y2="175" marker-end="url(#sc-ar1)"/>
+        </g>
+        <text class="t" x="110" y="76" style="fill:var(--accent);font-weight:700">J</text>
+        <ellipse cx="250" cy="130" rx="11" ry="34" transform="rotate(-28 250 130)" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="1.6"/>
+        <line x1="250" y1="130" x2="318" y2="94" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#sc-ar2)"/>
+        <text class="t" x="322" y="88" style="fill:var(--accent-2);font-weight:700">n̂</text>
+        <path d="M285 130 A35 35 0 0 0 281 114" fill="none" stroke="var(--text-dim)" stroke-width="1.4"/>
+        <text class="t-dim" x="290" y="124" style="font-size:13px">θ</text>
+        <text class="t" x="214" y="186" style="fill:var(--accent-2);font-size:13px">dS</text>
+        <text class="t-dim" x="400" y="230" text-anchor="middle" style="font-size:12px">단면 전체: I = ∫ J·dS</text>
+        <g class="t">
+          <text x="470" y="60" style="font-weight:700">면 요소를 지나는 전류</text>
+          <text x="470" y="92">dI = J·dS = J dS cos θ</text>
+          <text x="470" y="122" class="t-dim">θ = 0: 면이 흐름을 정면으로 막을 때 최대</text>
+          <text x="470" y="148" class="t-dim">θ = 90°: 흐름과 나란한 면 → 아무것도 안 지남</text>
+          <text x="470" y="186" style="font-weight:700">미시적 그림</text>
+          <text x="470" y="214">J = n q v<tspan dy="4" style="font-size:10px">d</tspan><tspan dy="-4">  (A/m²)</tspan></text>
+          <text x="470" y="240" class="t-dim">구리 1 MA/cm² → v<tspan dy="4" style="font-size:10px">d</tspan><tspan dy="-4"> ≈ 0.7 m/s</tspan></text>
+        </g>
+      </svg>
+      <figcaption>전류 밀도는 벡터다. 넓이 \(dS\)인 작은 면을 지나는 전류는 면의 법선 \(\hat{\mathbf n}\)과 \(\mathbf J\) 사이 각에 따라 \(J\,dS\cos\theta\)로 줄어든다. 전류 \(I\)는 \(\mathbf J\)의 면 선속이다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-drift">
+      <div class="mini-view"><canvas id="cv-drift"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>유동 속도 <output id="dr-v-out"></output></span><input type="range" id="dr-v" min="10" max="80" step="1" value="40"></label>
+        <label class="check"><input type="checkbox" id="dr-th"> 열운동 켜기</label>
+        <span class="readout" id="dr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>오른쪽으로 흐르는 운반자 사이에 길이가 일정한 작은 면(파란 선)을 두고, 화살표 끝을 끌어 법선 방향을 돌린다. 면을 지난 운반자 수를 세면 \(n v_d L\cos\theta\)와 맞는다. 열운동을 켜면 운반자가 마구 움직여 양쪽으로 많이 지나가지만, 알짜 수는 여전히 유동 속도만으로 정해진다.</figcaption>
+    </figure>
+    <p>전하는 생기지도 없어지지도 않는다. 닫힌 면 \(S\)가 둘러싼 부피 \(v\) 속의 전하 \(Q = \int_v\rho_v\,dv\)가 줄었다면 그만큼이 면을 뚫고 나간 것이다. 이 문장을 식으로 쓰고 발산 정리(1장)를 적용하면 미분형이 나온다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="닫힌 면에서 전하 보존을 써서 연속 방정식을 유도하는 네 단계">
+        <defs><marker id="sc-ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <path d="M80 140 C80 60 170 40 230 60 C300 80 330 110 320 160 C310 220 220 240 160 225 C100 210 80 190 80 140Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.6"/>
+        <text class="t" x="96" y="70" style="font-size:13px">닫힌 면 S</text>
+        <g class="t" style="font-size:16px;font-weight:700;fill:var(--accent)">
+          <text x="150" y="120">+</text><text x="190" y="105">+</text><text x="230" y="125">+</text><text x="170" y="155">+</text><text x="215" y="170">+</text><text x="260" y="150">+</text><text x="140" y="185">+</text><text x="245" y="195">+</text>
+        </g>
+        <text class="t" x="200" y="262" text-anchor="middle">Q = ∫ ρ<tspan dy="4" style="font-size:10px">v</tspan><tspan dy="-4"> dv</tspan></text>
+        <g data-step="2" stroke="var(--accent)" stroke-width="2">
+          <line x1="318" y1="140" x2="372" y2="132" marker-end="url(#sc-ar3)"/>
+          <line x1="290" y1="78" x2="330" y2="44" marker-end="url(#sc-ar3)"/>
+          <line x1="285" y1="208" x2="322" y2="242" marker-end="url(#sc-ar3)"/>
+          <line x1="84" y1="150" x2="34" y2="160" marker-end="url(#sc-ar3)"/>
+          <line x1="140" y1="56" x2="118" y2="20" marker-end="url(#sc-ar3)"/>
+        </g>
+        <g data-step="2" class="t">
+          <text x="420" y="50" style="font-weight:700">① 나가는 전류</text>
+          <text x="420" y="76">I<tspan dy="4" style="font-size:10px">out</tspan><tspan dy="-4"> = ∮</tspan><tspan dy="4" style="font-size:10px">S</tspan><tspan dy="-4"> J·dS</tspan></text>
+        </g>
+        <g data-step="3" class="t">
+          <text x="420" y="116" style="font-weight:700">② 전하 보존</text>
+          <text x="420" y="142">∮ J·dS = − dQ/dt = − ∫ (∂ρ<tspan dy="4" style="font-size:10px">v</tspan><tspan dy="-4">/∂t) dv</tspan></text>
+        </g>
+        <g data-step="4" class="t">
+          <text x="420" y="182" style="font-weight:700">③ 발산 정리 → 모든 부피에서 성립</text>
+          <text x="420" y="210" style="fill:var(--accent);font-weight:700">∇·J = − ∂ρ<tspan dy="4" style="font-size:10px">v</tspan><tspan dy="-4">/∂t</tspan></text>
+          <text x="420" y="240">정상 상태: ∇·J = 0 → 마디에서 ΣI = 0</text>
+          <text x="420" y="264" class="t-dim">(키르히호프 전류 법칙)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>닫힌 면 \(S\) 속에 전하 \(Q\)가 있다.</li><li>면을 뚫고 나가는 전류는 \(\mathbf J\)의 바깥 선속 \(\oint\mathbf J\cdot d\mathbf S\)다.</li><li>전하는 사라지지 않으므로 나간 만큼 안의 전하가 준다: \(\oint\mathbf J\cdot d\mathbf S = -dQ/dt\).</li><li>왼쪽에 발산 정리를 쓰면 \(\int(\nabla\cdot\mathbf J + \partial\rho_v/\partial t)\,dv = 0\)이 임의의 부피에서 성립하므로 피적분 함수가 0이다. 정상 상태에서는 \(\nabla\cdot\mathbf J = 0\): 전류선은 끊기지 않고, 마디로 들어온 전류의 합은 나간 전류의 합과 같다.</li></ol>
+      <figcaption>전하 보존 법칙의 적분형과 미분형. 정상 전류는 발산이 없는 벡터장이라 전류선이 닫힌 고리를 이룬다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">연속 방정식</span>
+      <p><span class="term">연속 방정식</span><span class="en">(equation of continuity)</span> \(\nabla\cdot\mathbf J = -\dfrac{\partial\rho_v}{\partial t}\)은 전하 보존의 점별 표현이다. 정상 전류에서는 \(\partial\rho_v/\partial t = 0\)이므로 \(\nabla\cdot\mathbf J = 0\)이고, 적분형 \(\oint\mathbf J\cdot d\mathbf S = 0\)이 회로 마디의 <b>키르히호프 전류 법칙</b> \(\sum I = 0\)이다.</p>
+    </div>
+    <p>9장에서 맥스웰은 바로 이 식이 앙페르 법칙과 모순된다는 것을 알아채고 변위 전류를 덧붙인다. 지금은 시간에 따라 변하지 않는 흐름만 다루므로 \(\nabla\cdot\mathbf J = 0\)이 성립한다고 보면 된다.</p>
+    <div class="example" data-title="구리 배선 속 전자의 걸음">
+      <p>폭 50 nm, 두께 100 nm인 구리 배선에 0.10 mA가 흐른다. 전류 밀도(MA/cm²)와 전자의 유동 속도는? 구리의 자유 전자 밀도는 \(n = 8.49\times10^{28}\ \text{m}^{-3}\)이다. 신호는 배선을 따라 빛의 절반 정도 속도로 전해지는데, 전자는 1 mm를 가는 데 얼마나 걸리는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 균일한 흐름이면 \(J = I/A\), 그리고 \(J = nev_d\)에서 \(v_d\)를 구한다.</div>
+        <div class="step"><b>풀이</b> \(A = (50\times10^{-9})(100\times10^{-9}) = 5.0\times10^{-15}\ \text{m}^2\), \(J = 1.0\times10^{-4}/5.0\times10^{-15} = 2.0\times10^{10}\ \text{A/m}^2 = 2.0\ \text{MA/cm}^2\). \(v_d = J/ne = 2.0\times10^{10}/(8.49\times10^{28}\times1.602\times10^{-19}) = 1.47\ \text{m/s}\). 1 mm를 가는 데 \(1.0\times10^{-3}/1.47 = 6.8\times10^{-4}\ \text{s}\).</div>
+        <div class="answer">\(J = 2.0\ \text{MA/cm}^2,\ v_d \approx 1.5\ \text{m/s}\) — 1 mm에 약 0.7 ms</div>
+        <div class="step"><b>검토</b> 신호(전자기파)는 같은 거리를 약 7 ps에 간다. 전자 자체는 느리게 움직이지만, 배선 전체의 전자가 한꺼번에 밀리므로 신호는 장의 속도로 전해진다. 2 MA/cm²는 집적 회로 배선이 실제로 견디는 전류 밀도의 상한 근처다(가정 전선의 약 10⁵배).</div>
+      </details>
+    </div>
+    <div class="example" data-title="연속 방정식: 퍼져 나가는 전류">
+      <p>반지름 \(a = 1.0\) mm인 구 속에서 전류 밀도가 \(\mathbf J = k r^2\,\hat{\mathbf r}\)이다(\(k = 1.0\times10^9\ \text{A/m}^4\)). 구면 \(r = a\)를 뚫고 나가는 전류와, \(r = a\)에서 전하 밀도의 변화율 \(\partial\rho_v/\partial t\)를 구하고, 둘이 맞는지 확인하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 전류는 구면 위 선속, 변화율은 구 좌표 발산 \(\nabla\cdot\mathbf J = \frac{1}{r^2}\frac{\partial}{\partial r}(r^2J_r)\)로 구한다.</div>
+        <div class="step"><b>풀이</b> \(I = J_r(a)\cdot4\pi a^2 = 4\pi k a^4 = 4\pi(10^9)(10^{-3})^4 = 1.26\times10^{-2}\) A. \(\nabla\cdot\mathbf J = \frac{1}{r^2}\frac{d}{dr}(kr^4) = 4kr\)이므로 \(\partial\rho_v/\partial t = -4kr\), \(r = a\)에서 \(-4.0\times10^6\ \text{C/(m}^3\text{s)}\). 확인: \(\int_0^a(-4kr)4\pi r^2dr = -4\pi ka^4 = -I\).</div>
+        <div class="answer">\(I = 12.6\ \text{mA}\), \(\partial\rho_v/\partial t\,|_{r=a} = -4.0\times10^6\ \text{C}\cdot\text{m}^{-3}\text{s}^{-1}\)</div>
+        <div class="step"><b>검토</b> 발산이 양수인 곳에서는 전하가 빠져나가 \(\rho_v\)가 줄어든다. 구 전체의 감소율이 정확히 나가는 전류와 같다 — 발산 정리의 확인이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="ohms-law">
+    <h2>점형 옴의 법칙과 전도도</h2>
+    <p>도체에 전기장 \(\mathbf E\)가 걸리면 전자는 \(-e\mathbf E\)로 가속되지만, 격자 진동(포논)·불순물·결정립계에 평균 시간 \(\tau_c\)마다 부딪혀 방향을 잃는다. 그 결과 전자는 일정한 평균 속도 \(\mathbf v_d = -\mu\mathbf E\)로 흐르고, 비례 상수 \(\mu = e\tau_c/m^*\)를 <span class="term">이동도</span><span class="en">(mobility)</span>라 한다. 전류 밀도는 전기장에 비례한다.</p>
+    <div class="formula">$$\mathbf J = \sigma\mathbf E, \qquad \sigma = ne\mu = \frac{ne^2\tau_c}{m^*}, \qquad \rho = \frac1\sigma$$<div class="where">\(\sigma\): <span class="term">전도도</span><span class="en">(conductivity)</span>, 단위 S/m. \(\rho\): 비저항(Ω·m). 반도체는 \(\sigma = e(n\mu_n + p\mu_p)\). 이 식이 성립하는 물질을 옴 물질이라 한다. 구리 \(\sigma = 5.96\times10^7\) S/m(\(\rho = 1.68\ \mu\Omega\cdot\text{cm}\)), 알루미늄 \(3.77\times10^7\), 텅스텐 \(1.79\times10^7\) S/m. 이동도와 산란은 <a href="../../solid-state/chapters/carrier-transport.html">고체물리 · 캐리어 수송</a>에서 자세히 다뤘다.</div></div>
+    <p>\(\mathbf J = \sigma\mathbf E\)는 회로의 \(V = IR\)을 한 점에서 쓴 것이라 <span class="term">점형 옴의 법칙</span><span class="en">(point form of Ohm's law)</span>이라 부른다. 단면적 \(A\), 길이 \(L\)인 균일한 막대에 전압 \(V\)를 걸면 \(E = V/L\), \(I = JA = \sigma AV/L\)이므로 \(R = V/I = L/(\sigma A) = \rho L/A\)가 바로 나온다. 정상 전류에서 \(\nabla\times\mathbf E = 0\)이 여전히 성립하므로(전류가 변하지 않으면 자기장도 변하지 않는다) \(\mathbf E = -\nabla V\)이고, 균일한 도체 속에서는</p>
+    <div class="formula">$$\nabla\cdot\mathbf J = \nabla\cdot(\sigma\mathbf E) = -\sigma\nabla^2V = 0 \;\Rightarrow\; \nabla^2 V = 0$$<div class="where">정상 전류가 흐르는 균일한 도체 속 전위는 라플라스 방정식을 만족한다. 전도도가 곳에 따라 다르면 \(\nabla\cdot(\sigma\nabla V) = 0\). 4장의 풀이법(변수 분리·영상법·이완법)을 그대로 쓴다.</div></div>
+    <div class="tangle" id="tg-drift">
+      <p>폭 <span class="tn" data-var="w" data-min="20" data-max="500" data-step="10" data-unit=" nm">50</span>, 두께 <span class="tn" data-var="t" data-min="20" data-max="500" data-step="10" data-unit=" nm">100</span>인 구리선(\(\rho = 1.68\ \mu\Omega\cdot\text{cm}\))에 <span class="tn" data-var="I" data-min="0.01" data-max="2" data-step="0.01" data-unit=" mA">0.10</span>를 흘리면 전류 밀도는 <span class="tn-out" data-out="J"></span>, 전자의 유동 속도는 <span class="tn-out" data-out="v"></span>, 배선 속 전기장은 <span class="tn-out" data-out="E"></span>이다. 1 mm 길이의 전압 강하는 <span class="tn-out" data-out="dV"></span>.</p>
+    </div>
+    <p>실리콘은 도핑으로 전도도를 열 자리 넘게 바꿀 수 있다. 도핑 농도 \(N\)이 커지면 운반자 수는 \(N\)에 비례해 늘지만, 이온화된 불순물이 운반자를 산란시켜 이동도가 줄어든다. 아래 그림은 상온 실리콘의 이동도를 경험식(코기–토머스)으로 넣어 계산한 비저항이다.</p>
+    <figure class="mini" id="mini-sigma">
+      <div class="mini-view"><canvas id="cv-sigma"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>도핑 형</span><div class="seg" id="sg-type"><button data-value="n" class="on">n형(인)</button><button data-value="p">p형(붕소)</button></div></div>
+        <span class="readout" id="sg-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>그래프의 흰 원을 좌우로 끌어 도핑 농도를 바꾼다. 같은 농도에서 n형이 p형보다 비저항이 2–3배 낮은 것은 전자의 이동도가 정공보다 크기 때문이다. 농도가 10¹⁸ cm⁻³을 넘으면 이동도가 떨어져 비저항이 농도에 반비례하는 것보다 덜 줄어든다. 이동도 \(\mu = \mu_{min} + (\mu_{max}-\mu_{min})/(1+(N/N_{ref})^\alpha)\), 완전 이온화 가정.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>재료</th><th class="num">비저항 (µΩ·cm)</th><th class="num">σ (S/m)</th><th>배선에서의 쓰임</th></tr></thead>
+      <tbody>
+        <tr><td>은</td><td class="num">1.59</td><td class="num">6.30×10⁷</td><td>패키지 페이스트</td></tr>
+        <tr><td>구리(벌크)</td><td class="num">1.68</td><td class="num">5.96×10⁷</td><td>BEOL 배선의 주력(다마신)</td></tr>
+        <tr><td>구리(폭 20 nm 배선, 실효)</td><td class="num">≈ 5–8</td><td class="num">≈ 1.5×10⁷</td><td>표면·결정립계 산란(크기 효과)</td></tr>
+        <tr><td>알루미늄</td><td class="num">2.65</td><td class="num">3.77×10⁷</td><td>패드, 옛 배선</td></tr>
+        <tr><td>텅스텐</td><td class="num">5.6</td><td class="num">1.79×10⁷</td><td>콘택 플러그, 워드라인</td></tr>
+        <tr><td>코발트 / 루테늄</td><td class="num">6.2 / 7.1</td><td class="num">1.6 / 1.4×10⁷</td><td>미세 배선 대안(크기 효과가 작다)</td></tr>
+        <tr><td>TiN / TaN</td><td class="num">≈ 25 / ≈ 250</td><td class="num">4×10⁶ / 4×10⁵</td><td>확산 방지막(라이너)</td></tr>
+        <tr><td>n⁺ 실리콘 (10²⁰ cm⁻³)</td><td class="num">≈ 800</td><td class="num">≈ 1.2×10⁵</td><td>소스·드레인</td></tr>
+        <tr><td>실리콘(10¹⁵ cm⁻³, n형)</td><td class="num">≈ 4.6×10⁶</td><td class="num">≈ 22</td><td>기판</td></tr>
+        <tr><td>SiO₂</td><td class="num">≈ 10²⁰</td><td class="num">≈ 10⁻¹⁴</td><td>절연막</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout semi"><strong>가늘어질수록 비싸지는 구리</strong> 구리의 벌크 비저항은 1.68 µΩ·cm지만, 배선 폭이 전자의 평균 자유 경로(약 39 nm)에 가까워지면 표면 산란과 결정립계 산란이 더해져 실효 비저항이 3–4배로 오른다. 게다가 구리는 산화막 속으로 확산하므로 TaN/Ta 라이너(수 nm)를 둘러야 하는데, 라이너는 전류를 거의 나르지 못하면서 단면의 상당 부분을 차지한다. 그래서 최첨단 노드의 최하층 배선에서는 라이너가 얇아도 되는 코발트·루테늄·몰리브데넘이 검토된다. 배선 저항 \(R = \rho L/(wt)\)의 세 인자가 모두 공정 문제다. <a href="https://semi.euiyun.com/process/chapters/metal.html">SemiBooks ProcessBook · 금속 배선</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="relaxation">
+    <h2>전하 이완 시간과 경계 조건</h2>
+    <p>3장에서 "도체 속에는 알짜 전하가 없고 전하는 표면에만 있다"고 했다. 그 상태에 얼마나 빨리 도달하는가? 균일한 옴 물질 속에 여분 전하 \(\rho_v\)를 넣었다고 하자. 연속 방정식에 \(\mathbf J = \sigma\mathbf E\)와 가우스 법칙 \(\nabla\cdot\mathbf E = \rho_v/\varepsilon\)을 넣으면</p>
+    <div class="formula">$$\frac{\partial\rho_v}{\partial t} = -\nabla\cdot(\sigma\mathbf E) = -\frac{\sigma}{\varepsilon}\rho_v \;\Rightarrow\; \rho_v(\mathbf r, t) = \rho_0(\mathbf r)\,e^{-t/\tau}, \qquad \tau = \frac{\varepsilon}{\sigma}$$<div class="where">\(\tau\): <span class="term">전하 이완 시간</span><span class="en">(charge relaxation time)</span>. 놀랍게도 식에 공간 미분이 남지 않는다. 여분 전하는 퍼져 나가는 것이 아니라 <b>제자리에서</b> 지수적으로 줄고, 사라진 몫은 전류가 실어 날라 곧바로 표면(또는 계면)에 나타난다.</div></div>
+    <div class="predict" data-for="sim-relax">
+      <p>구리 공 한가운데에 여분 전하를 순간적으로 넣었다. 그 전하는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">잉크가 물에 퍼지듯 확산하며 천천히 표면 쪽으로 번져 나간다</button><button class="opt" data-correct>안쪽의 전하 밀도가 어디서나 같은 비율로 지수적으로 줄고, 줄어든 만큼이 곧바로 표면에 나타난다</button><button class="opt">도체 속 전기장은 0이므로 전하는 그 자리에 그대로 남는다</button><button class="opt">전하 덩어리가 빛의 속도로 표면까지 이동한 뒤 표면에서 멈춘다</button></div>
+      <div class="quiz-exp">\(\partial\rho_v/\partial t = -\rho_v/\tau\)에는 공간 미분이 없어 모든 점에서 같은 시간 상수로 줄어든다. 아래 시뮬레이터에서 시간 손잡이를 끌어 재료마다 τ가 몇 자리씩 다른지 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-relax">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>전하 이완: 안쪽 전하는 언제 표면으로 가는가</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rx-a"></canvas></div><div style="position:relative"><canvas id="cv-rx-b"></canvas><span class="hint top">흰 원을 좌우로 끌어 시간을 바꾼다</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>재료</span><div class="seg" id="rx-mat"><button data-value="Cu" class="on">Cu</button><button data-value="nSi">n-Si 10¹⁶</button><button data-value="iSi">진성 Si</button><button data-value="water">순수한 물</button><button data-value="SiO2">SiO₂</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="rx-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">이완 시간 τ = ε/σ</span><span class="v" id="rx-tau">—</span></div>
+        <div class="stat"><span class="k">시간 t</span><span class="v" id="rx-t">—</span></div>
+        <div class="stat"><span class="k">안쪽에 남은 비율 ρ/ρ₀</span><span class="v" id="rx-f">—</span></div>
+        <div class="stat"><span class="k">표면으로 간 전하</span><span class="v" id="rx-s">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 시료 단면이다. 안쪽 점(여분 전하)은 \(e^{-t/\tau}\)의 확률로 남고, 사라진 만큼 표면에 점이 생긴다. 화살표는 그동안 흐르는 이완 전류 \(\mathbf J = \sigma\mathbf E\)다. 오른쪽 그래프는 가로축이 로그 시간(10⁻²⁰–10⁴ s)이라 다섯 재료의 지수 감쇠가 서로 다른 자리의 계단으로 보인다. 해볼 것: ① 재료를 바꿔 가며 계단이 몇 자리씩 옮겨 가는지 보라. ② SiO₂는 한 시간 가까이 전하를 붙잡는다 — 웨이퍼 대전과 정전기 방전(ESD)이 절연막에서 문제 되는 이유다. ③ 도핑 실리콘(10¹⁶ cm⁻³)의 τ는 약 0.5 ps로, 반도체가 GHz 신호에서도 "도체처럼" 행동하는 근거다.</div>
+    </div>
+    <div class="callout deep"><strong>구리의 10⁻¹⁹ s는 진짜인가</strong><p>\(\tau = \varepsilon_0/\sigma\)를 구리에 넣으면 \(1.5\times10^{-19}\) s가 나오지만, 이는 전자의 충돌 시간 \(\tau_c \approx 2.5\times10^{-14}\) s보다 훨씬 짧아 옴의 법칙의 전제(전자가 이미 정상 유동 속도에 이르렀다)가 깨진다. 실제 금속에서 여분 전하는 플라스마 진동수 \(\omega_p = \sqrt{ne^2/\varepsilon_0m}\)(구리 약 \(1.6\times10^{16}\) rad/s)로 출렁이다가 \(\tau_c\) 정도의 시간에 잦아든다(10장). 어느 쪽이든 회로가 신경 쓰는 시간보다 훨씬 짧으므로 "금속 속 전하는 즉시 표면으로 간다"는 결론은 같다.</p></div>
+    <p>이제 두 물질의 경계에서 정상 전류가 따르는 조건을 보자. \(\nabla\cdot\mathbf J = 0\)에 작은 원통 상자를, \(\nabla\times\mathbf E = 0\)에 작은 직사각형 고리를 적용하면(3장의 유도와 같다)</p>
+    <div class="formula">$$J_{1n} = J_{2n}, \qquad E_{1t} = E_{2t} \;\Rightarrow\; \frac{\tan\theta_1}{\tan\theta_2} = \frac{\sigma_1}{\sigma_2}, \qquad \rho_s = D_{2n} - D_{1n} = J_n\!\left(\frac{\varepsilon_2}{\sigma_2} - \frac{\varepsilon_1}{\sigma_1}\right)$$<div class="where">\(\theta\)는 전류선이 법선과 이루는 각, \(J_n\)은 매질 1에서 2로 향하는 법선 성분. 두 매질의 \(\varepsilon/\sigma\)(이완 시간)가 다르면 경계에 면전하 \(\rho_s\)가 쌓인다. 도체와 절연체의 경계에서는 \(J_n = 0\)이므로 도체 속 전류는 표면을 따라 흐르지만, 표면 전하가 바깥 절연체 쪽에 법선 방향 전기장을 만든다. 전류가 흐르는 도선의 표면 전하가 바로 전류를 굽은 길로 안내하는 장본인이다.</div></div>
+    <figure class="mini" id="mini-mw">
+      <div class="mini-view"><canvas id="cv-mw"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>σ₂/σ₁ <output id="mw-r-out"></output></span><input type="range" id="mw-r" min="-3" max="3" step="0.1" value="1.5"></label>
+        <button class="btn" id="mw-play" type="button"></button>
+        <span class="readout" id="mw-out"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>두 층의 손실 유전체(위 ε<sub>r</sub> = 3.9, 아래 7.5, 같은 두께)에 전압을 갑자기 건다. 첫 순간에는 \(D\)가 연속이라 전압이 유전율에 반비례해 나뉘고, 시간이 지나면 \(J\)가 연속이 되어 전도도에 반비례해 나뉜다. 그 사이 시간 상수 \(\tau_{MW} = (\varepsilon_1+\varepsilon_2)/(\sigma_1+\sigma_2)\)로 계면에 전하가 쌓인다(맥스웰–바그너 효과). σ₂/σ₁ = ε₂/ε₁ ≈ 1.9로 맞추면 계면 전하가 생기지 않는다.</figcaption>
+    </figure>
+    <div class="example" data-title="반도체와 산화막의 이완 시간">
+      <p>(a) 도핑 \(n = 1.0\times10^{16}\ \text{cm}^{-3}\), 이동도 1350 cm²/(V·s)인 n형 실리콘(ε<sub>r</sub> = 11.7)과 (b) σ ≈ 1×10⁻¹⁴ S/m인 열산화막(ε<sub>r</sub> = 3.9)의 전하 이완 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\sigma = ne\mu\)로 전도도를 구한 뒤 \(\tau = \varepsilon_r\varepsilon_0/\sigma\).</div>
+        <div class="step"><b>풀이</b> (a) \(\sigma = (10^{22})(1.602\times10^{-19})(0.135) = 216\ \text{S/m}\) (\(\rho = 0.46\ \Omega\cdot\text{cm}\)). \(\tau = 11.7\times8.854\times10^{-12}/216 = 4.8\times10^{-13}\) s. (b) \(\tau = 3.9\times8.854\times10^{-12}/10^{-14} = 3.5\times10^3\) s.</div>
+        <div class="answer">(a) τ ≈ 0.48 ps, (b) τ ≈ 3.5×10³ s(약 1시간)</div>
+        <div class="step"><b>검토</b> 열여섯 자리가 차이 난다. 반도체 소자 해석에서 다수 운반자 영역을 "준중성"으로 다루는 것은 (a)의 τ가 소자 동작 시간보다 짧기 때문이다. 반대로 플라스마 공정이 산화막에 남긴 전하는 시간 단위로 남아 게이트 산화막을 손상시킬 수 있다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-tau" data-title="전하 이완 시간 τ = ε/σ 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="resistance">
+    <h2>저항 계산: 면저항, 4탐침, 퍼짐 저항, 비아</h2>
+    <p>단면이 일정하지 않은 도체의 저항은 \(R = \rho L/A\)로 바로 구할 수 없다. 일반적인 방법은 정전 용량을 구할 때(3장)와 같은 순서다: 두 전극 사이에 전압 \(V_0\)를 가정하고, 라플라스 방정식을 풀어 \(\mathbf E\)를 얻고, \(\mathbf J = \sigma\mathbf E\)를 전극 면에서 적분해 \(I\)를 구한 뒤 \(R = V_0/I\).</p>
+    <div class="formula">$$R = \frac{V_0}{I} = \frac{-\int_L\mathbf E\cdot d\mathbf l}{\oint_S\sigma\mathbf E\cdot d\mathbf S}$$<div class="where">반대로 전류 \(I\)를 가정하고 \(\mathbf J\to\mathbf E\to V\) 순서로 가도 된다(대칭이 좋아 \(\mathbf J\)를 바로 쓸 수 있을 때 편하다).</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="동축 원통 사이 손실 매질의 누설 저항을 구하는 네 단계">
+        <defs><marker id="sc-ar4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="sc-ar5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <circle cx="170" cy="140" r="115" class="f-acc-soft" stroke="var(--text-dim)" stroke-width="5"/>
+        <circle cx="170" cy="140" r="30" fill="var(--text-dim)"/>
+        <text class="t" x="170" y="145" text-anchor="middle" style="fill:var(--bg);font-size:12px;font-weight:700">a</text>
+        <text class="t-dim" x="262" y="40" style="font-size:12px">반지름 b</text>
+        <text class="t-dim" x="122" y="230" style="font-size:12px">전도도 σ</text>
+        <g data-step="1" class="t"><text x="132" y="98" style="font-size:12px;fill:var(--accent);font-weight:700">V₀</text><text x="292" y="262" style="font-size:12px">0 V</text></g>
+        <g data-only="2" stroke="var(--accent)" stroke-width="2">
+          <line x1="204" y1="140" x2="270" y2="140" marker-end="url(#sc-ar4)"/><line x1="136" y1="140" x2="70" y2="140" marker-end="url(#sc-ar4)"/>
+          <line x1="170" y1="106" x2="170" y2="40" marker-end="url(#sc-ar4)"/><line x1="170" y1="174" x2="170" y2="240" marker-end="url(#sc-ar4)"/>
+          <line x1="194" y1="116" x2="236" y2="74" marker-end="url(#sc-ar4)"/><line x1="146" y1="164" x2="104" y2="206" marker-end="url(#sc-ar4)"/>
+          <line x1="194" y1="164" x2="236" y2="206" marker-end="url(#sc-ar4)"/><line x1="146" y1="116" x2="104" y2="74" marker-end="url(#sc-ar4)"/>
+        </g>
+        <g data-step="3" stroke="var(--accent-2)" stroke-width="2.4">
+          <line x1="204" y1="140" x2="270" y2="140" marker-end="url(#sc-ar5)"/><line x1="136" y1="140" x2="70" y2="140" marker-end="url(#sc-ar5)"/>
+          <line x1="170" y1="106" x2="170" y2="40" marker-end="url(#sc-ar5)"/><line x1="170" y1="174" x2="170" y2="240" marker-end="url(#sc-ar5)"/>
+          <line x1="194" y1="116" x2="236" y2="74" marker-end="url(#sc-ar5)"/><line x1="146" y1="164" x2="104" y2="206" marker-end="url(#sc-ar5)"/>
+          <line x1="194" y1="164" x2="236" y2="206" marker-end="url(#sc-ar5)"/><line x1="146" y1="116" x2="104" y2="74" marker-end="url(#sc-ar5)"/>
+        </g>
+        <g class="t">
+          <text x="350" y="46" style="font-weight:700">① 전압 가정: 안쪽 V₀, 바깥 0</text>
+          <text x="350" y="70" class="t-dim">길이 L, 사이를 전도도 σ인 매질이 채움</text>
+        </g>
+        <g data-step="2" class="t">
+          <text x="350" y="106" style="font-weight:700;fill:var(--accent)">② 라플라스 → V = V₀ ln(b/ρ)/ln(b/a)</text>
+          <text x="350" y="130">E = V₀ /(ρ ln(b/a)) ρ̂  (1/ρ로 약해짐)</text>
+        </g>
+        <g data-step="3" class="t">
+          <text x="350" y="166" style="font-weight:700;fill:var(--accent-2)">③ J = σE, 반지름 ρ 원통면으로 적분</text>
+          <text x="350" y="190">I = J · 2πρL = 2πσL V₀ / ln(b/a)</text>
+        </g>
+        <g data-step="4" class="t">
+          <text x="350" y="228" style="font-weight:700">④ R = V₀/I = ln(b/a) / (2πσL)</text>
+          <text x="350" y="252" class="t-dim">ρ에 무관한 I: 정상 전류의 ∇·J = 0 확인</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>동축 전극 사이를 전도도 σ인 매질이 채웠다. 안쪽에 \(V_0\), 바깥에 0을 가정한다.</li><li>대칭으로 \(V = V(\rho)\)만의 함수, 라플라스 방정식의 해 \(V = V_0\ln(b/\rho)/\ln(b/a)\)에서 \(\mathbf E\)를 얻는다.</li><li>\(\mathbf J = \sigma\mathbf E\)를 반지름 \(\rho\) 원통면에서 적분하면 \(I\)는 \(\rho\)에 무관하다 — 전류는 어디서나 같다.</li><li>\(R = \ln(b/a)/(2\pi\sigma L)\). 동축 케이블 절연체의 누설 저항, TSV 라이너의 누설, 원통형 접지 전극에 모두 쓰인다.</li></ol>
+      <figcaption>저항 계산의 표준 순서. 정전 용량 계산과 단계가 똑같다는 점을 기억해 두자 — §5.6의 쌍대성이 그 이유다.</figcaption>
+    </figure>
+    <h3>면저항과 정사각형 세기</h3>
+    <p>박막 배선과 도핑 층처럼 두께 \(t\)가 일정한 층에서는 \(R = \rho L/(Wt) = (\rho/t)(L/W)\)로 쓰는 것이 편하다. \(R_s = \rho/t\)를 <span class="term">면저항</span><span class="en">(sheet resistance)</span>이라 하고 단위를 Ω/□(옴 퍼 스퀘어)로 쓴다. 정사각형(\(L = W\)) 한 칸의 저항은 크기에 상관없이 \(R_s\)이므로, 배치 도면에서 선을 따라 <b>정사각형 수</b> \(L/W\)만 세면 저항이 나온다.</p>
+    <div class="formula">$$R = R_s\frac{L}{W}, \qquad R_s = \frac{\rho}{t} = \frac{1}{\int_0^{t}\sigma(z)\,dz}$$<div class="where">둘째 식은 깊이에 따라 전도도가 변하는 도핑 층의 면저항(층들이 병렬). 직각으로 꺾이는 모서리 칸은 전류가 안쪽으로 몰려 지름길로 가므로 약 0.56칸으로 센다. 콘택이 놓인 끝 칸은 전류가 퍼져 들어가며 0.5–0.6칸 정도를 더한다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 240" role="img" aria-label="면저항: 크기가 다른 두 정사각형의 저항이 같고, 배선은 정사각형 수로 센다">
+        <rect x="40" y="40" width="120" height="120" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+        <rect x="200" y="100" width="60" height="60" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+        <rect x="32" y="40" width="8" height="120" fill="var(--text-dim)"/><rect x="160" y="40" width="8" height="120" fill="var(--text-dim)"/>
+        <rect x="192" y="100" width="8" height="60" fill="var(--text-dim)"/><rect x="260" y="100" width="8" height="60" fill="var(--text-dim)"/>
+        <text class="t" x="100" y="105" text-anchor="middle" style="font-weight:700">R = R<tspan dy="4" style="font-size:10px">s</tspan></text>
+        <text class="t" x="230" y="135" text-anchor="middle" style="font-size:12px;font-weight:700">R<tspan dy="4" style="font-size:9px">s</tspan></text>
+        <text class="t-dim" x="150" y="196" text-anchor="middle" style="font-size:12px">길이·폭이 같이 커지면 저항은 그대로</text>
+        <g>
+          <rect x="320" y="70" width="230" height="40" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <g stroke="var(--accent-2)" stroke-dasharray="4 3"><line x1="366" y1="70" x2="366" y2="110"/><line x1="412" y1="70" x2="412" y2="110"/><line x1="458" y1="70" x2="458" y2="110"/><line x1="504" y1="70" x2="504" y2="110"/></g>
+          <text class="t" x="435" y="56" text-anchor="middle" style="font-size:12px">L/W = 5 칸 → R = 5R<tspan dy="4" style="font-size:9px">s</tspan></text>
+        </g>
+        <g>
+          <path d="M600 190 L600 150 L700 150 L700 50 L740 50 L740 190 Z" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <rect x="700" y="150" width="40" height="40" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <g stroke="var(--accent-2)" stroke-dasharray="4 3"><line x1="660" y1="150" x2="660" y2="190"/><line x1="620" y1="150" x2="620" y2="190"/><line x1="700" y1="110" x2="740" y2="110"/><line x1="700" y1="70" x2="740" y2="70"/></g>
+          <text class="t" x="720" y="214" text-anchor="middle" style="font-size:12px;fill:var(--accent);font-weight:700">모서리 ≈ 0.56칸</text>
+          <text class="t-dim" x="640" y="132" text-anchor="middle" style="font-size:12px">2 + 0.56 + 2.5 칸</text>
+        </g>
+      </svg>
+      <figcaption>면저항의 뜻. 두께가 같은 막에서는 정사각형 하나의 저항이 크기와 무관하다. 저항기는 선을 따라 정사각형을 세어 설계하고, 직각 모서리는 약 0.56칸으로 센다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-sheet">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>배치 도면 위의 저항기: 정사각형을 칠해 목표 저항 만들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-sheet"></canvas><span class="hint top">칸을 누르거나 끌어 막을 칠하고 지운다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>막 재료(면저항)</span><div class="seg" id="sh-mat"><button data-value="sil">실리사이드 8</button><button data-value="tin">TiN 25</button><button data-value="np" class="on">n⁺ 폴리 100</button><button data-value="pp">p⁺ 폴리 300</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="sh-new" type="button">새 목표</button><button class="btn" id="sh-reset" type="button">직선으로 되돌리기</button></div>
+          <label class="check"><input type="checkbox" id="sh-heat" checked> 전류 밀도 색칠</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">풀이한 저항</span><span class="v" id="sh-R">—</span></div>
+        <div class="stat"><span class="k">정사각형 수(풀이)</span><span class="v" id="sh-n">—</span></div>
+        <div class="stat"><span class="k">세기 규칙(모서리 0.56)</span><span class="v" id="sh-cnt">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="sh-goal">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽(+)과 오른쪽(0 V) 콘택 사이에 저항막을 칠한다. 한 칸이 정사각형 하나다. 저항은 칸마다 5×5 격자로 나눠 \(\nabla\cdot(\sigma\nabla V) = 0\)을 직접 풀어 구한다. 해볼 것: ① 처음 직선(14칸)을 위아래로 구부려 목표 정사각형 수를 3% 이내로 맞춰라. ② 모서리를 하나 만들 때마다 풀이값이 세기 규칙보다 어떻게 달라지는지 보라(격자가 거칠어 모서리가 0.5칸 정도로 나온다). ③ 폭이 두 칸인 길을 만들면 정사각형 수가 절반 가까이 줄어드는 것을 확인하라.</div>
+    </div>
+    <h3>4탐침 측정</h3>
+    <p>막의 면저항을 재려고 두 탐침으로 저항을 재면 탐침과 막의 접촉 저항, 탐침 끝 근처의 퍼짐 저항이 함께 측정된다. <span class="term">4탐침법</span><span class="en">(four-point probe)</span>은 바깥 두 탐침(1, 4)으로 전류 \(I\)를 흘리고 안쪽 두 탐침(2, 3)으로 전압을 잰다. 전압계로는 전류가 거의 흐르지 않으므로 접촉 저항에서 전압이 떨어지지 않는다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 230" role="img" aria-label="일직선 4탐침: 바깥 두 탐침으로 전류, 안쪽 두 탐침으로 전압을 잰다">
+        <rect x="60" y="150" width="680" height="34" class="f-acc-soft" stroke="var(--border)"/>
+        <text class="t-dim" x="70" y="210" style="font-size:12px">얇은 막(두께 t ≪ s) 또는 두꺼운 시료</text>
+        <g stroke="var(--text-dim)" stroke-width="4" stroke-linecap="round"><line x1="250" y1="70" x2="250" y2="148"/><line x1="350" y1="70" x2="350" y2="148"/><line x1="450" y1="70" x2="450" y2="148"/><line x1="550" y1="70" x2="550" y2="148"/></g>
+        <g class="t" text-anchor="middle" style="font-size:13px;font-weight:700"><text x="250" y="62">1</text><text x="350" y="62">2</text><text x="450" y="62">3</text><text x="550" y="62">4</text></g>
+        <path d="M250 40 L250 22 L550 22 L550 40" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+        <circle cx="400" cy="22" r="12" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.8"/><text class="t" x="400" y="27" text-anchor="middle" style="fill:var(--accent);font-weight:700">I</text>
+        <path d="M350 52 L350 44 L380 44 M420 44 L450 44 L450 52" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/>
+        <circle cx="400" cy="44" r="12" fill="var(--bg)" stroke="var(--accent-2)" stroke-width="1.8"/><text class="t" x="400" y="49" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">V</text>
+        <g fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="4 3"><path d="M252 156 Q400 230 548 156"/><path d="M252 154 Q400 200 548 154"/><path d="M252 152 Q400 172 548 152"/></g>
+        <g class="t-dim" style="font-size:12px" text-anchor="middle"><text x="300" y="104">s</text><text x="400" y="104">s</text><text x="500" y="104">s</text></g>
+        <g class="t" style="font-size:13px"><text x="590" y="86">얇은 막: R<tspan dy="4" style="font-size:10px">s</tspan><tspan dy="-4"> = (π/ln2)·V/I</tspan></text><text x="590" y="112">두꺼운 시료: ρ = 2πs·V/I</text></g>
+      </svg>
+      <figcaption>일직선 4탐침. 전류 탐침에서 퍼져 나간 전류가 안쪽 두 탐침 사이에 만드는 전위차를 잰다. 탐침 간격이 같고 시료가 충분히 넓으면 보정 계수 π/ln2 ≈ 4.532가 정확하다.</figcaption>
+    </figure>
+    <p>얇은 막에서 점 전류원 \(I\)는 반지름 \(r\)인 원통면으로 퍼지므로 \(J = I/(2\pi rt)\), \(E = J\rho = IR_s/(2\pi r)\), 전위는 \(V(r) = -(IR_s/2\pi)\ln r + C\)다. 탐침 1(+I)과 4(−I)의 전위를 겹치면 2와 3 사이 전압이 \(V = (IR_s/2\pi)\cdot2\ln2\)이다. 두꺼운 시료(반무한)에서는 전류가 반구면으로 퍼져 \(V(r) = I\rho/(2\pi r)\)이고 \(V = I\rho/(2\pi s)\)가 된다.</p>
+    <div class="sim" id="sim-4pp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>4탐침: 탐침을 옮기면 보정 계수가 얼마나 틀리는가</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-4pp"></canvas><span class="hint top">탐침 1–4와 가장자리 손잡이를 끈다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>시료</span><div class="seg" id="pp-mode"><button data-value="thin" class="on">얇은 막</button><button data-value="bulk">두꺼운 시료</button></div></div>
+          <label class="check"><input type="checkbox" id="pp-edge"> 웨이퍼 가장자리(절연 경계)</label>
+          <div class="ctrl-row"><button class="btn" id="pp-reset" type="button">등간격 배열로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">평균 간격 s</span><span class="v" id="pp-s">—</span></div>
+        <div class="stat"><span class="k">V₂₃ / I</span><span class="v" id="pp-vi">—</span></div>
+        <div class="stat"><span class="k">표준식(4.532·V/I 또는 2πs·V/I)</span><span class="v" id="pp-est">—</span></div>
+        <div class="stat"><span class="k">참값</span><span class="v" id="pp-true">—</span></div>
+        <div class="stat"><span class="k">오차</span><span class="v" id="pp-err">—</span></div>
+      </div>
+      <div class="sim-note">색은 전위(빨강 높음, 파랑 낮음), 실선은 전류선, 점선은 등전위선이다. 가장자리를 켜면 절연 경계 바깥에 같은 부호의 영상 전류원을 두어(4장 영상법) 경계에서 \(J_n = 0\)을 만족시킨다. 해볼 것: ① 탐침 2를 1 쪽으로 옮겨 간격이 고르지 않을 때 표준식의 오차를 보라. ② 가장자리를 켜고 끌어 올려, 탐침 배열이 가장자리에서 간격의 몇 배 떨어져야 오차가 1% 아래로 내려가는지 찾아라. ③ 두꺼운 시료 모드에서는 전위가 \(1/r\)로 떨어져 바깥 탐침의 영향이 더 빨리 줄어든다.</div>
+    </div>
+    <div class="callout semi"><strong>면저항으로 도핑을 잰다</strong> 이온 주입과 열처리를 마친 웨이퍼는 4탐침 면저항으로 가장 먼저 확인한다. \(R_s = 1/(q\int\mu(N)N\,dz)\)라 면저항은 활성화된 도펀트 총량(선량)을 이동도로 가중한 값이고, 수십 지점을 찍어 만든 면저항 지도는 주입 균일도와 열처리 온도 분포를 그대로 보여 준다. 얕은 접합에서는 탐침이 접합을 뚫지 않도록 하중을 줄이고, 웨이퍼 가장자리 근처에서는 이 시뮬레이터처럼 보정 계수를 쓴다. 깊이 분포는 비스듬히 갈아낸 면을 따라 퍼짐 저항을 찍어(SRP) 얻는다. <a href="https://semi.euiyun.com/doping/chapters/metrology.html">SemiBooks DopingBook · 계측(면저항과 4점 탐침)</a></div>
+    <h3>퍼짐 저항</h3>
+    <p>작은 접점을 통해 넓은 시료로 전류가 들어갈 때, 전류는 접점 바로 아래에 몰렸다가 사방으로 퍼진다. 이때 생기는 저항을 <span class="term">퍼짐 저항</span><span class="en">(spreading resistance)</span>이라 한다. 반지름 \(a\)인 반구 접점은 동심 반구 껍질을 직렬로 쌓은 것과 같아 \(R = \int_a^\infty\rho\,dr/(2\pi r^2) = \rho/(2\pi a)\)이다. 표면에 놓인 평평한 원판 접점은 라플라스 방정식을 납작한 회전 타원체 좌표에서 풀어야 하고 결과는 \(R = \rho/(4a)\)다.</p>
+    <figure class="mini" id="mini-spread">
+      <div class="mini-view"><canvas id="cv-spread"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>비저항 ρ <output id="spr-rho-out"></output></span><input type="range" id="spr-rho" min="-3" max="2" step="0.1" value="0"></label>
+        <span class="readout" id="spr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>시료 단면. 원판 접점(위 가운데)의 오른쪽 끝 흰 원을 끌어 반지름 \(a\)를 바꾼다. 점선은 등전위면(타원), 실선은 전류선(쌍곡선)이다. 전압의 절반이 접점 아래 깊이 \(a\) 안에서 떨어진다. 그래서 퍼짐 저항은 접점 근처의 국소 비저항만 재고, 작은 탐침으로 깊이별 분포(SRP)를 찍을 수 있다.</figcaption>
+    </figure>
+    <h3>비아 저항</h3>
+    <p>층과 층을 잇는 <span class="term">비아</span><span class="en">(via)</span>는 지름이 수십 nm인 짧은 기둥이다. 구리 기둥 자체의 저항 \(\rho_{Cu}h/(\pi r^2)\)에, 바닥을 가로막은 장벽 금속(TaN/Ta)의 저항 \(\rho_b t_b/(\pi r^2)\), 그리고 아래 배선으로 전류가 퍼져 나가는 퍼짐·밀집 저항이 더해진다. 미세 비아에서는 두께 2 nm의 장벽이 구리 기둥만큼 큰 저항을 만든다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="듀얼 다마신 구리 비아 단면: 장벽 라이너, 캡층, 위아래 배선">
+        <rect x="40" y="30" width="420" height="190" class="f-surface" stroke="var(--border)"/>
+        <text class="t-dim" x="50" y="48" style="font-size:12px">low-k 절연막</text>
+        <rect x="70" y="60" width="300" height="50" fill="var(--accent)" opacity=".28" stroke="var(--text-dim)" stroke-width="3"/>
+        <text class="t" x="110" y="90" style="font-size:13px">M2 (Cu)</text>
+        <rect x="250" y="110" width="50" height="50" fill="var(--accent)" opacity=".28" stroke="var(--text-dim)" stroke-width="3"/>
+        <line x1="250" y1="160" x2="300" y2="160" stroke="var(--text)" stroke-width="5"/>
+        <rect x="180" y="160" width="270" height="44" fill="var(--accent)" opacity=".28" stroke="var(--text-dim)" stroke-width="3"/>
+        <rect x="180" y="156" width="70" height="4" fill="var(--accent-2)"/><rect x="300" y="156" width="150" height="4" fill="var(--accent-2)"/>
+        <text class="t" x="380" y="188" style="font-size:13px">M1 (Cu)</text>
+        <text class="t" x="262" y="140" style="font-size:12px">비아</text>
+        <g class="t" style="font-size:12px">
+          <line x1="300" y1="160" x2="520" y2="160" stroke="var(--text-dim)" stroke-width="1"/><text x="525" y="164">비아 바닥 장벽(TaN/Ta, 약 2 nm): 전류가 지나야 함</text>
+          <line x1="300" y1="130" x2="520" y2="120" stroke="var(--text-dim)" stroke-width="1"/><text x="525" y="124">옆벽 라이너: 단면을 차지</text>
+          <line x1="400" y1="158" x2="520" y2="88" stroke="var(--accent-2)" stroke-width="1"/><text x="525" y="92" style="fill:var(--accent-2)">캡층(SiCN): Cu 윗면, 원자 확산의 빠른 길</text>
+          <text x="525" y="200" class="t-dim">R<tspan dy="4" style="font-size:9px">via</tspan><tspan dy="-4"> = R</tspan><tspan dy="4" style="font-size:9px">Cu</tspan><tspan dy="-4"> + R</tspan><tspan dy="4" style="font-size:9px">장벽</tspan><tspan dy="-4"> + R</tspan><tspan dy="4" style="font-size:9px">퍼짐</tspan></text>
+        </g>
+      </svg>
+      <figcaption>듀얼 다마신 구리 비아. 장벽 금속은 구리 확산을 막지만 비저항이 구리의 100배를 넘는다. 비아 바닥의 장벽은 전류와 원자 흐름을 모두 가로막아, §5.7의 일렉트로마이그레이션에서 보이드가 생기는 자리가 된다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-via">
+      <p>지름 <span class="tn" data-var="d" data-min="16" data-max="200" data-step="2" data-unit=" nm">40</span>, 높이 <span class="tn" data-var="h" data-min="20" data-max="300" data-step="5" data-unit=" nm">60</span>인 비아를 장벽 두께 <span class="tn" data-var="tb" data-min="0" data-max="6" data-step="0.5" data-unit=" nm">2.0</span>로 둘러싸고(TaN, 250 µΩ·cm), 실효 비저항 <span class="tn" data-var="rc" data-min="1.7" data-max="10" data-step="0.1" data-unit=" µΩ·cm">5.0</span>인 구리로 채웠다. 구리 기둥 <span class="tn-out" data-out="rcu"></span> + 바닥 장벽 <span class="tn-out" data-out="rb"></span> = 비아 하나 <span class="tn-out" data-out="rt"></span>. 장벽의 몫은 <span class="tn-out" data-out="frac"></span>이다.</p>
+    </div>
+    <div class="example" data-title="꺾인 폴리 저항기">
+      <p>면저항 250 Ω/□인 p⁺ 폴리실리콘으로 폭이 일정한 지그재그 저항기를 그렸다. 선을 따라 세어 보니 직선 정사각형이 96개, 직각 모서리가 8개다. 콘택 칸은 무시하고 저항을 구하라. 모서리를 1칸으로 세면 몇 % 틀리는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(R = R_s\times(\text{정사각형 수})\), 모서리는 0.56칸.</div>
+        <div class="step"><b>풀이</b> 정사각형 수 \(= 96 + 8\times0.56 = 100.48\). \(R = 250\times100.48 = 2.51\times10^4\ \Omega\). 모서리를 1칸으로 세면 104칸, \(R = 26.0\) kΩ으로 3.5% 크다.</div>
+        <div class="answer">R ≈ 25.1 kΩ (모서리를 1칸으로 세면 3.5% 과대)</div>
+        <div class="step"><b>검토</b> 정밀 아날로그 회로의 저항비는 0.1% 단위로 맞춰야 하므로, 모서리·콘택 보정과 함께 같은 모양의 단위 저항을 반복 배치해 비를 만든다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="탐침 아래의 퍼짐 저항">
+      <p>반지름 2.0 µm인 탐침 끝이 비저항 1.0 Ω·cm인 실리콘 표면에 평평하게 닿았다. 퍼짐 저항은? 같은 반지름의 반구 접점이라면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 원판 \(R = \rho/4a\), 반구 \(R = \rho/2\pi a\). 단위를 m로 맞춘다: \(\rho = 0.010\ \Omega\cdot\text{m}\).</div>
+        <div class="step"><b>풀이</b> 원판: \(0.010/(4\times2.0\times10^{-6}) = 1.25\times10^3\ \Omega\). 반구: \(0.010/(2\pi\times2.0\times10^{-6}) = 796\ \Omega\).</div>
+        <div class="answer">원판 1.25 kΩ, 반구 0.80 kΩ</div>
+        <div class="step"><b>검토</b> 반구는 같은 반지름에서 시료와 닿는 넓이가 두 배라 저항이 \(2/\pi\)배로 작다. 퍼짐 저항이 \(\rho\)에 비례하고 \(a\)에 반비례하므로, 탐침 끝을 잘 다듬어 \(a\)를 일정하게 하면 국소 비저항을 잴 수 있다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="미세 비아의 저항">
+      <p>지름 40 nm, 높이 60 nm인 비아를 두께 2.0 nm인 TaN(ρ = 250 µΩ·cm) 장벽으로 감싸고 실효 비저항 5.0 µΩ·cm인 구리로 채웠다. 구리 기둥과 바닥 장벽의 저항을 각각 구하라(옆벽 라이너를 통한 전류는 무시).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 구리 기둥의 반지름은 \(20 - 2 = 18\) nm. 바닥 장벽은 두께 \(t_b\), 넓이 \(\pi(20\ \text{nm})^2\)인 원판을 전류가 수직으로 지난다.</div>
+        <div class="step"><b>풀이</b> \(R_{Cu} = (5.0\times10^{-8})(60\times10^{-9})/[\pi(18\times10^{-9})^2] = 2.95\ \Omega\). \(R_b = (2.5\times10^{-6})(2.0\times10^{-9})/[\pi(20\times10^{-9})^2] = 3.98\ \Omega\). 합 6.9 Ω.</div>
+        <div class="answer">R<sub>Cu</sub> ≈ 2.9 Ω, R<sub>장벽</sub> ≈ 4.0 Ω, 합 ≈ 6.9 Ω</div>
+        <div class="step"><b>검토</b> 두께 2 nm의 장벽이 길이 60 nm의 구리보다 큰 저항을 만든다. 비아 수백만 개가 직렬·병렬로 얽힌 전원망에서 이 값이 IR 강하를 좌우하므로, 장벽을 선택적으로 바닥에서 걷어 내거나(장벽 없는 바닥) 라이너 없는 금속을 쓰려는 연구가 이어진다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-rs" data-title="면저항 · 정사각형 수 · 4탐침 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="joule-crowding">
+    <h2>줄 열과 전류 밀집</h2>
+    <p>전기장은 운반자에 힘 \(q\mathbf E\)를 가하고, 운반자는 속도 \(\mathbf v_d\)로 움직이므로 단위 부피당 일률은 \(nq\mathbf E\cdot\mathbf v_d = \mathbf J\cdot\mathbf E\)다. 운반자는 이 에너지를 충돌로 격자에 넘겨 열이 된다. 이것이 <span class="term">줄 열</span><span class="en">(Joule heating)</span>이다.</p>
+    <div class="formula">$$p = \mathbf J\cdot\mathbf E = \sigma E^2 = \frac{J^2}{\sigma}\ \ (\text{W/m}^3), \qquad P = \int_v\mathbf J\cdot\mathbf E\,dv = I^2R$$<div class="where">적분형은 \(dv = dS\,dl\)로 나눠 \(\int\mathbf E\cdot d\mathbf l\int\mathbf J\cdot d\mathbf S = VI\)로도 얻는다. 발열 밀도가 \(J^2\)에 비례하므로 전류가 두 배로 몰린 곳은 네 배로 뜨겁다.</div></div>
+    <p>전류가 균일하게 흐르면 좋겠지만, 단면이 바뀌거나 꺾이는 곳에서는 전류선이 지름길로 몰린다. 라플라스 방정식의 해는 안쪽으로 꺾인 모서리(재진입 모서리)에서 전기장이 발산하는 특이점을 가진다(4장의 쐐기 해: 각 \(\beta\)인 모서리 근처에서 \(E\propto r^{\pi/\beta - 1}\), 직각 안쪽 모서리 \(\beta = 3\pi/2\)이면 \(E \propto r^{-1/3}\)). 이렇게 전류가 한곳에 모이는 현상을 <span class="term">전류 밀집</span><span class="en">(current crowding)</span>이라 한다.</p>
+    <div class="predict" data-for="sim-crowd">
+      <p>폭이 일정한 배선이 직각으로 꺾인다. 전류 밀도(그리고 발열)가 가장 큰 곳은?</p>
+      <div class="opts"><button class="opt">바깥쪽 모서리 — 전류가 원심력처럼 바깥으로 쏠린다</button><button class="opt" data-correct>안쪽 모서리 — 전류선이 지름길로 몰린다</button><button class="opt">꺾이기 직전 직선부의 한가운데</button><button class="opt">어디나 같다 — 폭이 같으므로</button></div>
+      <div class="quiz-exp">전위가 같은 등전위선이 안쪽 모서리 근처에서 촘촘해진다. 바깥 모서리 근처는 오히려 전류가 거의 지나가지 않는 "죽은" 영역이다. 아래 시뮬레이터의 열지도에서 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-crowd">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>전류 밀집 지도: 굽힘·홈·폭 변화·비아</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-crowd"></canvas><span class="hint top">흰 원을 끌어 모양을 바꾼다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모양</span><div class="seg" id="cr-mode"><button data-value="bend" class="on">직각 굽힘</button><button data-value="notch">홈</button><button data-value="step">폭 변화</button><button data-value="via">비아 단면</button></div></div>
+          <label class="check"><input type="checkbox" id="cr-eq" checked> 등전위선</label>
+          <label class="check"><input type="checkbox" id="cr-q" checked> 전류 방향 화살표</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">저항(정사각형 수)</span><span class="v" id="cr-R">—</span></div>
+        <div class="stat"><span class="k">직선 세기 추정</span><span class="v" id="cr-Rc">—</span></div>
+        <div class="stat"><span class="k">J<sub>max</sub>/J₀</span><span class="v" id="cr-J">—</span></div>
+        <div class="stat"><span class="k">최대 발열 p<sub>max</sub>/p₀</span><span class="v" id="cr-p">—</span></div>
+        <div class="stat"><span class="k">국소 EM 수명 비(n = 2)</span><span class="v" id="cr-life">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="cr-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(J_0\)는 기준 폭(굽힘·홈·비아: 배선 폭, 폭 변화: 좁은 쪽 폭)에 고르게 흐를 때의 전류 밀도다. "직선 세기 추정"은 굽힘에서 모서리를 0.56칸으로, 홈에서는 홈을 무시하고, 폭 변화에서는 두 구간을 단순히 더한 값이다. 발열은 \(J^2\), 블랙 식의 국소 수명은 \(J^{-2}\)로 어림했다. 격자 한 칸보다 작은 구조는 풀지 못하므로 날카로운 모서리의 \(J_{max}\)는 격자에 따라 달라진다(이론상 무한대). 도전(직각 굽힘): 안쪽 모서리를 사선으로 채워 \(J_{max}/J_0\)를 1.8 아래로 낮춰라. 해볼 것: ① 홈을 깊게 하면 저항보다 \(J_{max}\)가 훨씬 빨리 커지는 것을 보라. ② 비아 단면에서 비아 폭을 줄이면 전류가 비아 모서리로 몰리는 정도를 확인하라.</div>
+    </div>
+    <p>배선의 온도는 줄 열과 열이 빠져나가는 길의 균형으로 정해진다. 길이 방향으로 긴 배선이 두께 \(t_{ox}\)인 절연막 위에 있고 열이 막을 지나 기판으로 빠진다고 하면, 단위 넓이당 발열 \(J^2\rho t\)가 열전도 \(k\,\Delta T/t_{ox}\)와 같아야 한다: \(\Delta T_0 = J^2\rho\,t\,t_{ox}/k\). 그런데 금속의 비저항은 온도와 함께 오르므로(\(\rho = \rho_0(1+\alpha\Delta T)\)) 뜨거워질수록 더 뜨거워진다.</p>
+    <div class="formula">$$\Delta T = \frac{\Delta T_0}{1 - \alpha\Delta T_0}, \qquad J_{runaway} = \sqrt{\frac{k}{\alpha\rho_0\,t\,t_{ox}}}$$<div class="where">\(\alpha\Delta T_0 \to 1\)이면 온도가 끝없이 오르는 <b>열 폭주</b>다. 실제로는 옆으로 퍼지는 열과 녹는점이 개입한다. 이 성질을 일부러 쓰는 것이 프로그램용 전기 퓨즈(e-fuse)다.</div></div>
+    <figure class="mini" id="mini-heat">
+      <div class="mini-view"><canvas id="cv-heat"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>아래 절연막(0.5 µm)</span><div class="seg" id="ht-k"><button data-value="1.4" class="on">SiO₂ k = 1.4</button><button data-value="0.3">low-k 0.3</button><button data-value="0.026">에어갭 0.026</button></div></div>
+        <span class="readout" id="ht-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>두께 0.1 µm 구리선(ρ₀ = 2.2 µΩ·cm, α = 0.0039 K⁻¹)의 자기 발열. 곡선 위 흰 원을 끌어 전류 밀도를 바꾼다. 점선은 비저항의 온도 의존을 뺀 \(\Delta T_0\)다. 열전도가 나쁜 low-k 막 위에서는 같은 전류에서 훨씬 뜨겁고, 폭주 전류 밀도가 \(\sqrt{k}\)에 비례해 낮아진다. (옆으로 퍼지는 열을 무시한 1차원 어림이라 좁은 선에서는 실제보다 높게 나온다.)</figcaption>
+    </figure>
+    <div class="example" data-title="배선의 발열 밀도">
+      <p>단면 50 nm × 100 nm, 길이 1.0 mm인 구리 배선(실효 ρ = 2.5 µΩ·cm)에 5.0 MA/cm²가 흐른다. 발열 밀도와 배선 전체의 발열, 그리고 \(I^2R\)을 구해 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(p = J^2\rho\), \(P = pV_{ol}\); 회로 쪽으로는 \(I = JA\), \(R = \rho L/A\).</div>
+        <div class="step"><b>풀이</b> \(J = 5.0\times10^{10}\ \text{A/m}^2\). \(p = (5.0\times10^{10})^2(2.5\times10^{-8}) = 6.25\times10^{13}\ \text{W/m}^3\). 부피 \(5.0\times10^{-15}\times10^{-3} = 5.0\times10^{-18}\ \text{m}^3\), \(P = 3.1\times10^{-4}\) W. 회로: \(I = 0.25\) mA, \(R = 5.0\) kΩ, \(I^2R = 3.1\times10^{-4}\) W.</div>
+        <div class="answer">p ≈ 6.3×10¹³ W/m³, P ≈ 0.31 mW (= I²R)</div>
+        <div class="step"><b>검토</b> 6×10¹³ W/m³은 원자로 노심의 발열 밀도(약 10⁸ W/m³)보다 수십만 배 크다. 그래도 배선이 녹지 않는 것은 부피가 작고, 열이 0.5 µm 남짓 떨어진 실리콘 기판으로 금방 빠지기 때문이다. 전류가 모서리에 두 배로 몰리면 그곳의 발열은 네 배가 된다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>범프와 비아의 전류 밀집</strong> 플립칩 범프에서는 폭 수 µm의 재배선이 지름 수십 µm의 솔더로 꺾여 들어가는 입구 모서리에 전류가 몰려, 평균 전류 밀도는 10⁴ A/cm² 정도인데도 입구의 국소 전류 밀도는 그 열 배를 넘는다. 녹는점이 낮은 솔더에서는 이 정도로도 원자가 움직여, 입구 쪽 UBM이 먼저 녹아 나가고 보이드가 생긴다. 그래서 전류가 들어오는 방향, UBM 두께, 패드 모양을 바꿔 밀집을 줄인다. <a href="https://semi.euiyun.com/packaging/chapters/bump.html">SemiBooks PackagingBook · 범핑과 재배선</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="duality">
+    <h2>정전기장과의 쌍대성</h2>
+    <p>전하가 없는 균일한 유전체 속 정전기장과 균일한 도체 속 정상 전류는 같은 방정식을 푼다. 두 문제를 나란히 놓으면 \(\varepsilon\)와 \(\sigma\), \(\mathbf D\)와 \(\mathbf J\), \(Q\)와 \(I\)가 정확히 짝을 이룬다. 이 대응을 <span class="term">쌍대성</span><span class="en">(duality)</span>이라 한다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>정전기장(유전체 속)</th><th>정상 전류(도체 속)</th></tr></thead>
+      <tbody>
+        <tr><td>\(\nabla\times\mathbf E = 0,\ \mathbf E = -\nabla V\)</td><td>\(\nabla\times\mathbf E = 0,\ \mathbf E = -\nabla V\)</td></tr>
+        <tr><td>\(\mathbf D = \varepsilon\mathbf E\)</td><td>\(\mathbf J = \sigma\mathbf E\)</td></tr>
+        <tr><td>\(\nabla\cdot\mathbf D = 0\)(자유 전하 없는 곳)</td><td>\(\nabla\cdot\mathbf J = 0\)(정상 상태)</td></tr>
+        <tr><td>\(Q = \oint\mathbf D\cdot d\mathbf S\)</td><td>\(I = \oint\mathbf J\cdot d\mathbf S\)</td></tr>
+        <tr><td>\(C = Q/V\)</td><td>\(G = 1/R = I/V\)</td></tr>
+        <tr><td>경계: \(D_{1n} = D_{2n}\)(계면 전하 없음), \(E_{1t} = E_{2t}\)</td><td>경계: \(J_{1n} = J_{2n}\), \(E_{1t} = E_{2t}\)</td></tr>
+      </tbody>
+    </table></div>
+    <p>같은 모양의 두 전극 사이를 균일한 매질이 채우면, 전극에 같은 전압을 걸었을 때 전위 분포가 똑같다. 따라서 \(Q\)와 \(I\)를 구하는 적분도 \(\varepsilon\)과 \(\sigma\)만 다르고</p>
+    <div class="formula">$$\frac{G}{C} = \frac{\sigma}{\varepsilon} \qquad\Longleftrightarrow\qquad RC = \frac{\varepsilon}{\sigma} = \tau$$<div class="where">정전 용량 공식을 알면 누설 컨덕턴스가 공짜로 나온다: 동축 \(C' = 2\pi\varepsilon/\ln(b/a)\) → \(G' = 2\pi\sigma/\ln(b/a)\), 평행판 \(C = \varepsilon A/d\) → \(G = \sigma A/d\), 고립 구 \(C = 4\pi\varepsilon a\) → \(G = 4\pi\sigma a\). 손실 있는 커패시터의 \(RC\)는 모양과 무관하게 매질의 이완 시간이다. 이 대응은 매질이 균일할 때(또는 모든 곳에서 \(\varepsilon/\sigma\)가 같을 때)만 정확하다.</div></div>
+    <p>옛날에는 이 성질을 거꾸로 써서 정전기 문제를 풀었다. 전극 모형을 소금물 통(전해조)에 담그고 전류를 흘려 전위를 탐침으로 재면 같은 모양의 정전기장 지도를 얻는다. 아래 시뮬레이터는 두 전극의 2차원 문제를 정전기 방정식과 전류 방정식으로 따로 풀어 비교한다.</p>
+    <div class="sim" id="sim-dual">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>쌍대성: 같은 전극, 두 번의 풀이</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-dual"></canvas><span class="hint top">두 전극을 끌어 옮긴다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>매질</span><div class="seg" id="du-mode"><button data-value="uni" class="on">균일</button><button data-value="layer">두 층(위 절연막 / 아래 Si 기판)</button></div></div>
+          <label class="ctrl"><span>(위) 비유전율 ε<sub>r</sub> <output id="du-er-out"></output></span><input type="range" id="du-er" min="1" max="12" step="0.1" value="3.9"></label>
+          <label class="ctrl"><span>(위) 전도도 σ <output id="du-sg-out"></output></span><input type="range" id="du-sg" min="-6" max="1" step="0.1" value="-3"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">정전 용량 C′</span><span class="v" id="du-C">—</span></div>
+        <div class="stat"><span class="k">컨덕턴스 G′</span><span class="v" id="du-G">—</span></div>
+        <div class="stat"><span class="k">RC = C′/G′</span><span class="v" id="du-RC">—</span></div>
+        <div class="stat"><span class="k">ε/σ</span><span class="v" id="du-tau">—</span></div>
+      </div>
+      <div class="sim-note">길이 방향으로 균일한 두 원기둥 전극(단위 길이 값, 격자 한 칸 = 1 µm)을 절연 벽으로 둘러싼 상자 속에서 \(\nabla\cdot(\varepsilon\nabla V) = 0\)과 \(\nabla\cdot(\sigma\nabla V) = 0\)을 각각 이완법으로 푼다. 색과 점선은 전류 풀이의 전위, 화살표는 전류 밀도다. 해볼 것: ① 균일 매질에서 전극을 어디로 옮기든 \(C'\)과 \(G'\)은 함께 변하고 \(RC\)는 \(\varepsilon/\sigma\)에 고정된다. ② 두 층 모드에서 전극을 위층에 두었다가 기판 쪽으로 내려 보라 — 정전 용량은 두 층 모두를 보지만 전류는 거의 전부 기판으로 흘러, \(RC\)가 어느 층의 \(\varepsilon/\sigma\)와도 달라진다. ③ 위층 σ를 기판에 맞게 올리면 다시 하나의 값으로 모인다.</div>
+    </div>
+    <div class="tangle" id="tg-dual">
+      <p>반지름 <span class="tn" data-var="a" data-min="0.5" data-max="10" data-step="0.1" data-unit=" µm">2.5</span>인 TSV 구리 기둥을 바깥 반지름 <span class="tn" data-var="b" data-min="1" data-max="20" data-step="0.1" data-unit=" µm">3.0</span>까지 비유전율 <span class="tn" data-var="er" data-min="1" data-max="25" data-step="0.1">3.9</span>, 전도도 10<sup><span class="tn" data-var="ls" data-min="-16" data-max="0" data-step="1">-14</span></sup> S/m인 라이너가 감싼다. 길이 50 µm에서 정전 용량은 <span class="tn-out" data-out="C"></span>, 누설 저항은 <span class="tn-out" data-out="R"></span>, 둘의 곱은 <span class="tn-out" data-out="RC"></span> — 반지름을 아무리 바꿔도 \(\varepsilon/\sigma\) = <span class="tn-out" data-out="tau"></span>와 같다.</p>
+    </div>
+    <div class="example" data-title="TSV 라이너의 용량과 누설">
+      <p>반지름 2.5 µm인 구리 TSV가 두께 0.5 µm인 SiO₂ 라이너(ε<sub>r</sub> = 3.9, σ = 1×10⁻¹⁴ S/m)로 실리콘과 절연되어 있다. 길이 50 µm에서 라이너의 정전 용량과 누설 저항을 구하고, 실리콘 기판을 접지된 도체로 보라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 동축 커패시터 \(C = 2\pi\varepsilon L/\ln(b/a)\)를 구하고, 쌍대성 \(G = (\sigma/\varepsilon)C\)로 누설 저항을 얻는다.</div>
+        <div class="step"><b>풀이</b> \(\ln(3.0/2.5) = 0.1823\). \(C = 2\pi(3.9)(8.854\times10^{-12})(50\times10^{-6})/0.1823 = 5.95\times10^{-14}\ \text{F}\). \(R = \ln(b/a)/(2\pi\sigma L) = 0.1823/(2\pi\times10^{-14}\times50\times10^{-6}) = 5.8\times10^{16}\ \Omega\). 확인: \(RC = 3.45\times10^3\ \text{s} = \varepsilon/\sigma\).</div>
+        <div class="answer">C ≈ 60 fF, R ≈ 5.8×10¹⁶ Ω (RC = ε/σ ≈ 3.5×10³ s)</div>
+        <div class="step"><b>검토</b> 60 fF는 신호 지연과 누화를 좌우할 만큼 크다(13장). 실제로는 라이너와 실리콘 사이에 공핍층이 생겨 용량이 바이어스에 따라 변한다. 누설은 산화막의 체적 전도보다 결함을 통한 터널링이 지배하지만, 쌍대성으로 어림한 값은 그 하한을 준다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="electromigration">
+    <h2>일렉트로마이그레이션과 블랙 식</h2>
+    <p>전자가 흐를 때 금속 원자는 두 힘을 받는다. 하나는 이온에 대한 정전기력 \(Ze\mathbf E\)이고, 다른 하나는 흐르는 전자가 원자(특히 빈자리 옆으로 뛰려는 원자)에 부딪히며 넘겨주는 운동량, 곧 <b>전자 바람</b>이다. 금속에서는 전자 바람이 이겨 원자가 전자의 흐름 쪽(음극 → 양극)으로 밀린다. 이렇게 전류가 원자를 실어 나르는 현상이 <span class="term">일렉트로마이그레이션</span><span class="en">(electromigration, EM)</span>이다.</p>
+    <div class="formula">$$\mathbf F = Z^*e\mathbf E = Z^*e\rho\mathbf J, \qquad \mathbf J_a = \frac{C D}{k_BT}Z^*e\rho\mathbf J, \qquad D = D_0e^{-E_a/k_BT}$$<div class="where">\(Z^*\): 유효 전하수(구리·알루미늄에서 음수, 크기 수 정도), \(\mathbf J_a\): 원자 선속(네른스트–아인슈타인 관계), \(C\): 원자 농도, \(D\): 확산 계수, \(E_a\): 활성화 에너지. 원자는 주로 빠른 길(알루미늄은 결정립계, 구리는 캡층과의 윗면 계면)을 따라 움직인다.</div></div>
+    <p>원자 선속이 균일하면 들어오는 만큼 나가므로 아무 일도 없다. 문제는 선속이 바뀌는 곳, 곧 <b>플럭스 발산</b> \(\nabla\cdot\mathbf J_a \neq 0\)인 곳이다. 비아 바닥의 장벽 금속은 원자를 통과시키지 않으므로, 전자가 비아에서 배선으로 나가는 쪽(음극 끝)에서는 원자가 빠져나가기만 해 빈자리가 쌓이고 보이드가 생긴다. 반대쪽(양극 끝)에서는 원자가 쌓여 압축 응력과 돌출(힐록)이 생긴다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="구리 배선의 일렉트로마이그레이션: 전자 바람, 플럭스 발산, 음극 끝 보이드, 양극 끝 돌출">
+        <defs><marker id="sc-ar6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="sc-ar7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <rect x="60" y="120" width="40" height="110" fill="var(--text-dim)" opacity=".6"/><text class="t" x="80" y="250" text-anchor="middle" style="font-size:12px">비아(음극)</text>
+        <rect x="700" y="120" width="40" height="110" fill="var(--text-dim)" opacity=".6"/><text class="t" x="720" y="250" text-anchor="middle" style="font-size:12px">비아(양극)</text>
+        <rect x="60" y="100" width="680" height="40" fill="var(--accent)" opacity=".25" stroke="var(--text-dim)" stroke-width="2"/>
+        <rect x="60" y="94" width="680" height="6" fill="var(--accent-2)" opacity=".7"/>
+        <text class="t-dim" x="400" y="86" text-anchor="middle" style="font-size:12px">캡층(SiCN)</text>
+        <g stroke="var(--text-dim)" stroke-width="1"><line x1="170" y1="100" x2="160" y2="140"/><line x1="260" y1="100" x2="275" y2="140"/><line x1="350" y1="100" x2="340" y2="140"/><line x1="450" y1="100" x2="465" y2="140"/><line x1="540" y1="100" x2="530" y2="140"/><line x1="630" y1="100" x2="640" y2="140"/></g>
+        <line x1="150" y1="180" x2="650" y2="180" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#sc-ar6)"/>
+        <text class="t" x="400" y="200" text-anchor="middle" style="fill:var(--accent-2);font-weight:700">전자 흐름 e⁻ (전류 I는 반대 방향)</text>
+        <g data-step="2" stroke="var(--accent)" stroke-width="2">
+          <line x1="160" y1="108" x2="230" y2="108" marker-end="url(#sc-ar7)"/><line x1="320" y1="108" x2="390" y2="108" marker-end="url(#sc-ar7)"/><line x1="480" y1="108" x2="550" y2="108" marker-end="url(#sc-ar7)"/>
+        </g>
+        <g data-step="2" class="t"><text x="400" y="40" text-anchor="middle" style="fill:var(--accent);font-weight:700">전자 바람: 원자가 캡층 계면을 따라 양극 쪽으로</text></g>
+        <g data-step="3">
+          <path d="M100 100 L150 100 Q160 120 140 136 L100 136 Z" fill="var(--bg)" stroke="var(--bad)" stroke-width="2"/>
+          <text class="t" x="120" y="60" text-anchor="middle" style="fill:var(--bad);font-size:12px;font-weight:700">보이드</text>
+          <text class="t-dim" x="120" y="76" text-anchor="middle" style="font-size:11px">원자가 나가기만 함</text>
+        </g>
+        <g data-step="4">
+          <path d="M100 100 L200 100 Q215 120 200 140 L100 140 Z" fill="var(--bg)" stroke="var(--bad)" stroke-width="2"/>
+          <path d="M630 94 Q660 50 690 94 Z" fill="var(--accent)" opacity=".5" stroke="var(--text-dim)"/>
+          <text class="t" x="660" y="40" text-anchor="middle" style="font-size:12px;font-weight:700">돌출(힐록)</text>
+          <text class="t" x="250" y="160" style="fill:var(--bad);font-size:12px;font-weight:700">비아 위가 끊기면 전류는 장벽으로 우회 → R 급증</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>구리 배선은 다결정이고, 윗면은 캡층(SiCN)과, 나머지 면은 장벽 금속과 맞닿아 있다. 전자는 음극 비아에서 양극 비아로 흐른다.</li><li>전자 바람이 원자를 양극 쪽으로 민다. 구리에서는 캡층과의 계면이 가장 빠른 확산 길이다.</li><li>음극 비아의 장벽은 원자 공급을 막는다. 나가는 원자만 있으므로(플럭스 발산) 빈자리가 모여 비아 바로 옆에 보이드가 생긴다.</li><li>보이드가 비아 위를 덮으면 전류는 얇은 장벽으로 돌아가야 해 저항이 계단처럼 뛴다(개방 불량). 양극 쪽에는 원자가 쌓여 압축 응력이 커지고, 캡층을 뚫고 돌출이 생기면 이웃 배선과 단락될 수 있다.</li></ol>
+      <figcaption>일렉트로마이그레이션의 진행. 불량은 원자 선속이 바뀌는 자리 — 비아, 결정립 구조가 바뀌는 곳, 전류 밀집 모서리 — 에서 생긴다.</figcaption>
+    </figure>
+    <p>원자가 한쪽으로 쌓이면 양극 쪽은 압축, 음극 쪽은 인장 응력이 생기고, 응력 기울기는 원자를 거꾸로 되미는 힘(역응력)이 된다. 정상 상태에서 두 힘이 비기면 응력은 길이 방향으로 직선이 되고, 양 끝의 응력 차이는 \(JL\)에 비례한다. 이 차이가 보이드를 만드는 임계 응력보다 작으면 배선은 영원히 죽지 않는다. 그 경계를 <span class="term">블레흐 길이</span><span class="en">(Blech length)</span>라 한다: \((JL)_c \approx\) 수천 A/cm(구리), 곧 \(J = 1\ \text{MA/cm}^2\)이면 \(L_c\) ≈ 수십 µm.</p>
+    <figure class="mini" id="mini-em">
+      <div class="mini-view"><canvas id="cv-em"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>전류 밀도 J <output id="em-j-out"></output></span><input type="range" id="em-j" min="0.2" max="3" step="0.05" value="1.6"></label>
+        <label class="ctrl"><span>배선 길이 L <output id="em-l-out"></output></span><input type="range" id="em-l" min="0.6" max="3" step="0.05" value="2.4"></label>
+        <button class="btn" id="em-play" type="button"></button><button class="btn" id="em-reset" type="button">처음부터</button>
+        <span class="readout" id="em-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>양 끝이 장벽에 막힌 배선의 응력 변화(코르호넨 모형, 무차원). 색은 응력(빨강 인장, 파랑 압축), 노란 화살표는 원자 선속이다. 음극 끝의 인장 응력이 임계값(1)에 이르면 보이드가 생겨 자라다가, 역응력이 전자 바람과 비기면 멈춘다. 해볼 것: ① \(JL < 2\)(블레흐 조건)로 놓으면 응력이 임계값 아래에서 멈춰 보이드가 생기지 않는다. ② 같은 \(J\)에서 \(L\)만 줄여 "불멸 배선"을 만들어 보라. ③ 보이드 크기(저항 증가)가 \(JL^2\)에 비례해 포화되는 것을 보라.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-blech">
+      <p>전류 밀도 <span class="tn" data-var="j" data-min="0.1" data-max="10" data-step="0.1" data-unit=" MA/cm²">1.0</span>가 흐르는 길이 <span class="tn" data-var="L" data-min="2" data-max="500" data-step="1" data-unit=" µm">50</span>의 구리 배선에서 \(JL\) = <span class="tn-out" data-out="jl"></span>이다. 임계값 \((JL)_c\) = 3000 A/cm로 보면 이 배선은 <span class="tn-out" data-out="v"></span>. 이 전류 밀도에서 불멸이 되는 최대 길이는 <span class="tn-out" data-out="lc"></span>.</p>
+    </div>
+    <p>블레흐 길이보다 긴 배선의 수명은 실험으로 정한다. 높은 온도(250–350 °C)와 높은 전류 밀도에서 시험 구조 수십 개를 고장 낼 때까지 돌려 중앙 수명 \(t_{50}\)을 얻고, 경험식인 <span class="term">블랙 식</span><span class="en">(Black's equation)</span>으로 사용 조건까지 외삽한다.</p>
+    <div class="formula">$$\text{MTTF} = A\,J^{-n}\exp\!\left(\frac{E_a}{k_BT}\right) \;\Rightarrow\; \frac{t_{use}}{t_{stress}} = \left(\frac{J_{stress}}{J_{use}}\right)^{n}\exp\!\left[\frac{E_a}{k_B}\left(\frac{1}{T_{use}} - \frac{1}{T_{stress}}\right)\right]$$<div class="where">\(n \approx 2\)(보이드 핵생성이 수명을 정할 때), \(n \approx 1\)(보이드 성장이 정할 때). \(E_a\): 구리 캡층 계면 확산 0.8–1.0 eV, 알루미늄 결정립계 0.5–0.7 eV. 고장 시간은 대수 정규 분포를 따르므로 설계 기준은 보통 0.1% 고장 시간 \(t_{0.1\%} = t_{50}\,e^{-3.09\sigma}\)(σ: 로그 표준편차)이다. 온도는 켈빈.</div></div>
+    <div class="predict" data-for="sim-black">
+      <p>\(E_a = 0.85\) eV인 구리 배선의 사용 온도를 105 °C에서 125 °C로 올리면 EM 수명은 대략 얼마가 될까(전류 밀도는 같다)?</p>
+      <div class="opts"><button class="opt">5% 정도 줄어든다 — 20 °C는 작은 차이다</button><button class="opt">절반</button><button class="opt" data-correct>약 1/4</button><button class="opt">약 1/100</button></div>
+      <div class="quiz-exp">\(\exp[(0.85/8.617\times10^{-5})(1/398.15 - 1/378.15)] = e^{-1.31} = 0.27\). 아레니우스 의존은 20 °C마다 수명을 서너 배씩 바꾼다. 아래 그래프에서 사용 점을 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-black">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>블랙 식 수명 설계: 10년을 지키는 최대 전류 밀도</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-black"></canvas><span class="hint top">흰 원(사용 조건)을 좌우·위아래로 끈다</span></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>활성화 에너지 E<sub>a</sub> <output id="bk-ea-out"></output></span><input type="range" id="bk-ea" min="0.5" max="1.2" step="0.01" value="0.85"></label>
+          <label class="ctrl"><span>전류 지수 n <output id="bk-n-out"></output></span><input type="range" id="bk-n" min="1" max="3" step="0.1" value="2"></label>
+          <label class="ctrl"><span>로그 표준편차 σ <output id="bk-s-out"></output></span><input type="range" id="bk-s" min="0.1" max="0.8" step="0.01" value="0.4"></label>
+          <div class="ctrl-row"><button class="btn" id="bk-goal" type="button">도전: 105 °C에서 10년</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">사용 조건</span><span class="v" id="bk-use">—</span></div>
+        <div class="stat"><span class="k">가속 계수</span><span class="v" id="bk-af">—</span></div>
+        <div class="stat"><span class="k">사용 t₅₀</span><span class="v" id="bk-t50">—</span></div>
+        <div class="stat"><span class="k">사용 t₀.₁%</span><span class="v" id="bk-t01">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="bk-st">—</span></div>
+      </div>
+      <div class="sim-note">가속 시험 결과: 300 °C, 2.5 MA/cm²에서 \(t_{50}\) = 60 h(회색 점). 실선은 사용 전류 밀도에서의 \(t_{50}(T)\), 점선은 \(t_{0.1\%}(T)\), 회색 선은 시험 전류 밀도의 \(t_{50}(T)\)다. 흰 원을 좌우로 끌면 사용 온도, 위아래로 끌면 사용 전류 밀도가 바뀐다(위로 갈수록 J가 작다). 해볼 것: ① 도전 버튼을 누르고 105 °C에서 \(t_{0.1\%}\)가 정확히 10년(±3%)이 되는 J를 찾아라. ② \(E_a\)를 0.85에서 0.7로 바꾸면 같은 시험 결과로부터 허용 J가 얼마나 줄어드는지 보라 — 외삽은 \(E_a\) 추정에 매우 민감하다. ③ σ가 커지면(공정 산포) 같은 \(t_{50}\)에서도 허용 J가 낮아진다.</div>
+    </div>
+    <div class="example" data-title="가속 시험에서 사용 수명으로">
+      <p>구리 배선 시험 구조가 300 °C, 2.5 MA/cm²에서 \(t_{50}\) = 60 h, 로그 표준편차 σ = 0.40을 보였다. \(n = 2\), \(E_a = 0.85\) eV로 보고 125 °C, 1.5 MA/cm²에서의 \(t_{50}\)과 0.1% 고장 시간을 구하라. 10년 목표를 만족하는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 가속 계수 \(AF = (J_s/J_u)^n\exp[(E_a/k_B)(1/T_u - 1/T_s)]\), \(t_{0.1\%} = t_{50}e^{-3.09\sigma}\). 온도는 K: 573.15 K, 398.15 K.</div>
+        <div class="step"><b>풀이</b> 전류 항 \((2.5/1.5)^2 = 2.778\). 온도 항 \((0.85/8.617\times10^{-5})(1/398.15 - 1/573.15) = 9864\times7.669\times10^{-4} = 7.565\), \(e^{7.565} = 1.93\times10^3\). \(AF = 5.36\times10^3\). \(t_{50} = 60\times5.36\times10^3 = 3.21\times10^5\) h \(= 36.7\) 년. \(e^{-3.09\times0.40} = 0.291\)이므로 \(t_{0.1\%} = 10.7\) 년.</div>
+        <div class="answer">t₅₀ ≈ 37년, t₀.₁% ≈ 10.7년 — 10년 목표를 간신히 만족</div>
+        <div class="step"><b>검토</b> 중앙 수명은 넉넉해 보여도 산포 때문에 여유가 3.4배 줄었다. 배선 하나가 아니라 칩 속 수백만 개 배선 중 가장 약한 것이 칩의 수명을 정하므로, 실제 설계 규칙은 이보다 더 보수적이다. 국소 전류 밀집(§5.5)이 있는 곳은 \(J\)가 아니라 \(J_{max}\)로 따져야 한다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>EM은 어디서, 어떻게 찾는가</strong> 불량 분석에서 EM 보이드는 거의 언제나 음극 쪽 비아 바로 옆, 캡층과 만나는 윗면에서 시작한다. 저항이 서서히 오르다 계단처럼 뛰는 이력, 전류 방향에 따라 갈리는 위치, FIB 단면에서 보이는 비아 위 빈 공간이 증거다. 공정은 캡층 계면을 단단하게(CoWP·Co 캡, 표면 처리) 만들고, 설계는 전원망과 클럭 배선의 평균·RMS·피크 전류 밀도를 규칙으로 묶으며 블레흐 길이보다 짧은 구간을 활용한다. <a href="https://semi.euiyun.com/failure/chapters/mechanisms.html">SemiBooks FailureBook · 불량 메커니즘</a> · <a href="https://semi.euiyun.com/design/chapters/power.html">DesignBook · 전력과 신뢰성(IR 드롭과 전자 이동)</a></div>
+    <div class="drill" id="drill-black" data-title="블랙 식 가속 계수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>전류 밀도 \(\mathbf J = nq\mathbf v_d\), \(I = \int\mathbf J\cdot d\mathbf S\). 전하 보존은 연속 방정식 \(\nabla\cdot\mathbf J = -\partial\rho_v/\partial t\)이고, 정상 상태에서 \(\nabla\cdot\mathbf J = 0\)이 키르히호프 전류 법칙이다.</li>
+      <li>점형 옴의 법칙 \(\mathbf J = \sigma\mathbf E\), \(\sigma = nq\mu\)(반도체 \(e(n\mu_n + p\mu_p)\)). 균일한 도체 속 정상 전류의 전위는 \(\nabla^2V = 0\)을 만족하고, 일반적으로 \(\nabla\cdot(\sigma\nabla V) = 0\)이다.</li>
+      <li>여분 전하는 제자리에서 \(e^{-t/\tau}\)로 사라진다: \(\tau = \varepsilon/\sigma\)(Cu 10⁻¹⁹ s 규모, 도핑 Si ps, SiO₂ 시간 단위). 경계 조건 \(J_{1n} = J_{2n}\), \(E_{1t} = E_{2t}\)이고, \(\varepsilon/\sigma\)가 다른 계면에는 \(\rho_s = J_n(\varepsilon_2/\sigma_2 - \varepsilon_1/\sigma_1)\)이 쌓인다.</li>
+      <li>저항은 "전압 가정 → 라플라스 → \(\mathbf J\) → \(I\)" 순서로 구한다. 면저항 \(R_s = \rho/t\)(Ω/□)와 정사각형 수(모서리 0.56칸), 4탐침 \(R_s = (\pi/\ln2)V/I\)·\(\rho = 2\pi sV/I\), 퍼짐 저항 \(\rho/4a\)(원판)·\(\rho/2\pi a\)(반구), 비아 저항은 구리 기둥 + 장벽 + 퍼짐.</li>
+      <li>줄 열 \(p = \mathbf J\cdot\mathbf E = J^2/\sigma\), \(P = I^2R\). 안쪽 모서리·홈·단면 변화에서 전류가 몰려 발열(\(\propto J^2\))과 EM 위험(\(\propto J^n\))이 커진다. 비저항의 온도 계수가 자기 발열을 키워 열 폭주에 이를 수 있다.</li>
+      <li>쌍대성: \(\varepsilon\leftrightarrow\sigma\), \(\mathbf D\leftrightarrow\mathbf J\), \(Q\leftrightarrow I\), \(C\leftrightarrow G\). 균일 매질이면 \(G/C = \sigma/\varepsilon\), \(RC = \varepsilon/\sigma\) — 정전 용량 공식에서 누설 저항을 바로 얻는다.</li>
+      <li>일렉트로마이그레이션: 전자 바람이 원자를 양극 쪽으로 밀고, 플럭스 발산(비아 장벽)에서 보이드·돌출이 생긴다. \(JL < (JL)_c\)이면 역응력 때문에 불멸(블레흐). 수명은 블랙 식 \(\text{MTTF} \propto J^{-n}e^{E_a/k_BT}\)으로 외삽하고, 설계는 \(t_{0.1\%} = t_{50}e^{-3.09\sigma}\)로 한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(\varepsilon_0 = 8.854\times10^{-12}\) F/m, \(e = 1.602\times10^{-19}\) C, \(k_B = 8.617\times10^{-5}\) eV/K. 1 MA/cm² = 10¹⁰ A/m², 1 µΩ·cm = 10⁻⁸ Ω·m. 온도는 °C에 273.15를 더해 K로 바꾼다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="전류 밀도" data-answer="0.25" data-label="J =" data-unit="MA/cm²">
+        <div class="prob-q"><p>폭 0.50 µm, 두께 0.80 µm인 알루미늄 배선에 1.0 mA가 흐른다. 전류 밀도는 몇 MA/cm²인가?</p></div>
+        <div class="prob-sol"><p>\(A = 0.50\times10^{-6}\times0.80\times10^{-6} = 4.0\times10^{-13}\ \text{m}^2\), \(J = 10^{-3}/4.0\times10^{-13} = 2.5\times10^9\ \text{A/m}^2 = 0.25\ \text{MA/cm}^2\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="이완 시간" data-answer="64.4" data-label="τ =" data-unit="ps">
+        <div class="prob-q"><p>저마늄(ε<sub>r</sub> = 16, σ = 2.2 S/m)의 전하 이완 시간을 ps 단위로 구하라.</p></div>
+        <div class="prob-sol"><p>\(\tau = 16\times8.854\times10^{-12}/2.2 = 6.44\times10^{-11}\ \text{s} = 64.4\ \text{ps}\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="면저항" data-answer="2.0; 300" data-label="R_s =; R =" data-unit="Ω/□; Ω">
+        <div class="prob-q"><p>비저항 10 µΩ·cm, 두께 50 nm인 텅스텐 막의 면저항은? 이 막으로 폭 0.20 µm, 길이 30 µm인 직선 배선을 만들면 저항은?</p></div>
+        <div class="prob-sol"><p>\(R_s = 1.0\times10^{-7}/50\times10^{-9} = 2.0\ \Omega/\square\). 정사각형 수 \(30/0.20 = 150\), \(R = 300\ \Omega\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="4탐침" data-answer="15.4; 4.62e-4" data-label="R_s =; ρ =" data-unit="Ω/□; Ω·cm">
+        <div class="prob-q"><p>두께 0.30 µm인 도핑 층을 등간격 4탐침으로 쟀더니 1.00 mA에서 안쪽 탐침 사이 전압이 3.40 mV였다. 면저항과 (층이 균일하다고 볼 때) 평균 비저항은?</p></div>
+        <div class="prob-hint">얇은 막: \(R_s = (\pi/\ln2)V/I = 4.532\,V/I\), \(\rho = R_st\).</div>
+        <div class="prob-sol"><p>\(R_s = 4.532\times3.40 = 15.4\ \Omega/\square\). \(\rho = 15.4\times0.30\times10^{-4}\ \text{cm} = 4.62\times10^{-4}\ \Omega\cdot\text{cm}\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="연속 방정식" data-answer="-2.0e6" data-label="∂ρ/∂t =" data-unit="C/(m³·s)">
+        <div class="prob-q"><p>어떤 영역의 전류 밀도가 \(\mathbf J = 5.0\times10^8\,x^2\,\hat{\mathbf x}\) A/m²이다(\(x\)는 m). \(x = 2.0\) mm에서 전하 밀도의 시간 변화율 \(\partial\rho_v/\partial t\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\nabla\cdot\mathbf J = dJ_x/dx = 1.0\times10^9x\). \(\partial\rho_v/\partial t = -1.0\times10^9\times2.0\times10^{-3} = -2.0\times10^6\ \text{C/(m}^3\text{s)}\). 전류가 \(x\)를 따라 점점 커지므로 그만큼 전하가 빠져나간다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="정사각형 세기" data-answer="1428" data-label="R =" data-unit="Ω">
+        <div class="prob-q"><p>면저항 50 Ω/□인 막으로 폭 1.0 µm인 L자 배선을 그렸다. 가로 팔의 바깥 길이는 20 µm, 세로 팔의 바깥 길이는 10 µm이고 두 팔이 바깥 모서리에서 만난다. 콘택은 두 팔의 끝에 있다. 모서리를 0.56칸으로 세어 저항을 구하라.</p></div>
+        <div class="prob-hint">모서리 칸(1 µm × 1 µm)을 빼면 가로 직선부는 19칸, 세로 직선부는 9칸이다.</div>
+        <div class="prob-sol"><p>정사각형 수 \(= 19 + 9 + 0.56 = 28.56\), \(R = 50\times28.56 = 1428\ \Omega\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="퍼짐 저항" data-answer="0.72" data-label="ρ =" data-unit="Ω·cm">
+        <div class="prob-q"><p>반지름 1.5 µm인 평평한 탐침으로 실리콘 표면의 퍼짐 저항을 쟀더니 1.2 kΩ이었다. 국소 비저항은?</p></div>
+        <div class="prob-sol"><p>원판 접점 \(R = \rho/4a\)에서 \(\rho = 4aR = 4(1.5\times10^{-4}\ \text{cm})(1200\ \Omega) = 0.72\ \Omega\cdot\text{cm}\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="계면 전하" data-answer="-3.39e-3" data-label="ρ_s =" data-unit="C/m²">
+        <div class="prob-q"><p>두 층 절연막에 정상 누설 전류 \(J = 1.0\times10^{-4}\) A/m²가 층 1에서 층 2로 수직하게 흐른다. 층 1: ε<sub>r</sub> = 3.9, σ = 1.0×10⁻¹² S/m. 층 2: ε<sub>r</sub> = 7.5, σ = 1.0×10⁻¹⁰ S/m. 계면에 쌓인 면전하 밀도는?</p></div>
+        <div class="prob-hint">\(\rho_s = J_n(\varepsilon_2/\sigma_2 - \varepsilon_1/\sigma_1)\).</div>
+        <div class="prob-sol"><p>\(\varepsilon_2/\sigma_2 = 7.5\times8.854\times10^{-12}/10^{-10} = 0.664\) s, \(\varepsilon_1/\sigma_1 = 3.9\times8.854\times10^{-12}/10^{-12} = 34.5\) s. \(\rho_s = 10^{-4}(0.664 - 34.5) = -3.39\times10^{-3}\ \text{C/m}^2\). 층 1의 장 \(E_1 = J/\sigma_1 = 10^8\) V/m가 층 2의 \(10^6\) V/m보다 훨씬 커, 전압 대부분이 층 1에 걸린다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="저항 계산" data-answer="637" data-label="R =" data-unit="Ω">
+        <div class="prob-q"><p>반지름 1.0 cm와 5.0 cm인 동심 금속 구 껍질 사이를 전도도 0.010 S/m인 물질이 채웠다. 두 구 사이의 저항은?</p></div>
+        <div class="prob-hint">전류 \(I\)를 가정하면 \(J = I/4\pi r^2\), \(E = J/\sigma\), \(V = \int_a^bE\,dr\).</div>
+        <div class="prob-sol"><p>\(R = \dfrac{1}{4\pi\sigma}\left(\dfrac1a - \dfrac1b\right) = \dfrac{100 - 20}{4\pi(0.010)} = 637\ \Omega\). 쌍대성으로도: \(C = 4\pi\varepsilon/(1/a - 1/b)\)에서 \(R = \varepsilon/(\sigma C)\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="블랙 식" data-answer="2.93e4" data-label="AF =">
+        <div class="prob-q"><p>275 °C, 3.0 MA/cm²의 EM 시험 결과를 105 °C, 1.0 MA/cm²의 사용 조건으로 옮기는 가속 계수는? \(n = 2\), \(E_a = 0.85\) eV.</p></div>
+        <div class="prob-sol"><p>\(AF = 3.0^2\exp[(0.85/8.617\times10^{-5})(1/378.15 - 1/548.15)] = 9\times\exp(9864\times8.201\times10^{-4}) = 9\times e^{8.090} = 9\times3.26\times10^3 = 2.93\times10^4\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="활성화 에너지" data-answer="0.832" data-label="E_a =" data-unit="eV">
+        <div class="prob-q"><p>같은 전류 밀도에서 EM 시험의 중앙 수명이 250 °C에서 200 h, 300 °C에서 40 h였다. 활성화 에너지는?</p></div>
+        <div class="prob-sol"><p>\(t_1/t_2 = \exp[(E_a/k_B)(1/T_1 - 1/T_2)]\)에서 \(E_a = k_B\ln(200/40)/(1/523.15 - 1/573.15) = 8.617\times10^{-5}\times1.609/1.6676\times10^{-4} = 0.832\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="쌍대성" data-answer="6.91e3" data-label="R =" data-unit="Ω">
+        <div class="prob-q"><p>실리콘 기판(ε<sub>r</sub> = 11.7, σ = 10 S/m) 속을 지나는 길이 50 µm인 두 도체 기둥 사이의 단위 길이 정전 용량을 (기판이 완전한 절연체라고 보고) 계산했더니 30 pF/m였다. 라이너가 없다고 할 때 두 기둥 사이의 기판 누설 저항은?</p></div>
+        <div class="prob-hint">\(G' = (\sigma/\varepsilon)C'\), \(R = 1/(G'L)\).</div>
+        <div class="prob-sol"><p>\(G' = 10\times30\times10^{-12}/(11.7\times8.854\times10^{-12}) = 2.90\ \text{S/m}\). \(G = 2.90\times50\times10^{-6} = 1.45\times10^{-4}\) S, \(R = 6.91\times10^3\ \Omega\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="열 폭주" data-answer="26.4" data-label="J =" data-unit="MA/cm²">
+        <div class="prob-q"><p>두께 0.10 µm인 구리선(ρ₀ = 2.2 µΩ·cm, α = 0.0039 K⁻¹)이 열전도도 0.30 W/(m·K), 두께 0.50 µm인 low-k 막 위에 있다. 1차원 열 모형 \(\Delta T_0 = J^2\rho_0tt_{ox}/k\)와 \(\rho = \rho_0(1+\alpha\Delta T)\)로 열 폭주가 일어나는 전류 밀도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\alpha\Delta T_0 = 1\)에서 \(J = \sqrt{k/(\alpha\rho_0tt_{ox})} = \sqrt{0.30/(0.0039\times2.2\times10^{-8}\times10^{-7}\times5\times10^{-7})} = 2.64\times10^{11}\ \text{A/m}^2 = 26.4\ \text{MA/cm}^2\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="전류 밀집">
+        <div class="prob-q"><p>폭이 일정한 직각 굽힘 배선에서 EM 수명을 가장 효과적으로 늘리는 배치 변경은?</p></div>
+        <div class="prob-choices"><button>바깥 모서리를 둥글게 깎는다</button><button data-correct>안쪽 모서리를 사선(또는 둥근 살)으로 채워 재진입 모서리를 무디게 한다</button><button>꺾이는 곳 바로 앞에 홈을 낸다</button><button>배선 두께를 줄인다</button></div>
+        <div class="prob-sol"><p>전류는 안쪽 모서리로 몰리고 바깥 모서리는 전류가 거의 없는 영역이다. 안쪽을 채우면 재진입 각이 줄어 \(J_{max}\)가 낮아지고, 국소 수명 \(\propto J_{max}^{-n}\)이 늘어난다. 바깥을 깎는 것은 저항만 조금 바꿀 뿐이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="이완과 경계">
+        <div class="prob-q"><p>정상 전류가 흐르는 균일한 구리선에 대한 설명으로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>도선 속 전기장은 0이고 전하는 표면에만 있다</button><button>도선 속에 양의 알짜 전하가 고르게 퍼져 있다</button><button data-correct>도선 속 알짜 전하 밀도는 0이지만 전기장은 0이 아니며, 표면 전하가 전기장을 도선 방향으로 안내한다</button><button>전기장은 도선 밖에만 있다</button></div>
+        <div class="prob-sol"><p>\(\nabla\cdot\mathbf J = 0\)과 \(\mathbf J = \sigma\mathbf E\)(균일 σ)에서 \(\nabla\cdot\mathbf E = 0\), 곧 내부 \(\rho_v = 0\)이다. 그러나 \(\mathbf E = \mathbf J/\sigma \neq 0\)이고, 이 장을 만드는 전하는 표면(과 굽은 곳·접합부)에 있다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>두께가 같은 막에서 한 변이 1 µm인 정사각형과 1 mm인 정사각형의 마주 보는 두 변 사이 저항은?</p><div class="opts">
+        <button class="opt">큰 정사각형이 10⁶배 크다</button><button class="opt">큰 정사각형이 10³배 작다</button><button class="opt" data-correct>둘 다 \(R_s\)로 같다</button><button class="opt">작은 정사각형이 퍼짐 저항 때문에 두 배 크다</button>
+      </div><div class="quiz-exp">\(R = R_sL/W\)이고 정사각형은 \(L/W = 1\)이다. 길이가 길어지는 만큼 폭도 넓어져 효과가 상쇄된다.</div></div>
+      <div class="quiz-q"><p>4탐침법이 두 탐침 측정보다 정확한 가장 중요한 이유는?</p><div class="opts">
+        <button class="opt">탐침이 많아 평균을 내기 때문</button><button class="opt" data-correct>전압을 재는 탐침에는 전류가 거의 흐르지 않아 접촉·퍼짐 저항의 전압 강하가 측정에 들어가지 않기 때문</button><button class="opt">전류가 막 전체에 균일하게 흐르기 때문</button><button class="opt">탐침 간격과 무관하게 같은 값을 주기 때문</button>
+      </div><div class="quiz-exp">전류 경로와 전압 측정 경로를 나누는 켈빈 연결의 원리다. 저항이 작은 비아·콘택 체인을 잴 때도 같은 방법을 쓴다.</div></div>
+      <div class="quiz-q"><p>균일한 손실 유전체로 채운 커패시터의 \(RC\)에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">극판 넓이에 비례한다</button><button class="opt">극판 간격의 제곱에 비례한다</button><button class="opt" data-correct>모양과 무관하게 \(\varepsilon/\sigma\)로, 매질의 전하 이완 시간과 같다</button><button class="opt">항상 1초다</button>
+      </div><div class="quiz-exp">같은 전극에서 \(C\)와 \(G\)는 같은 기하 인자를 갖고 \(\varepsilon\)과 \(\sigma\)만 다르다. 그래서 누설로 커패시터가 방전되는 시간은 매질만으로 정해진다.</div></div>
+      <div class="quiz-q"><p>구리 배선의 EM 보이드가 주로 음극 쪽 비아 근처에서 생기는 이유는?</p><div class="opts">
+        <button class="opt">음극 쪽이 더 뜨겁기 때문</button><button class="opt">음극 쪽 전류 밀도가 항상 더 크기 때문</button><button class="opt" data-correct>비아 바닥 장벽이 원자 공급을 막아, 전자 바람이 원자를 내보내기만 하는 플럭스 발산이 생기기 때문</button><button class="opt">비아 속 텅스텐이 구리와 반응하기 때문</button>
+      </div><div class="quiz-exp">원자 선속이 일정하면 보이드가 생기지 않는다. 선속이 끊기는 장벽 바로 아래(전자가 나가는 쪽)에서 원자가 빠져나가기만 한다.</div></div>
+      <div class="quiz-q"><p>같은 전류 밀도에서 짧은 배선이 긴 배선보다 EM에 강한 이유는?</p><div class="opts">
+        <button class="opt">짧은 배선은 저항이 작아 덜 뜨겁다</button><button class="opt" data-correct>원자가 쌓이며 생긴 응력 기울기(역응력)가 전자 바람과 비기는데, 짧으면 그때의 최대 응력이 보이드 임계값에 못 미친다</button><button class="opt">짧은 배선에는 결정립계가 없다</button><button class="opt">짧은 배선은 전류가 흐르지 않는다</button>
+      </div><div class="quiz-exp">정상 응력 차이 \(\propto JL\). \(JL < (JL)_c\)이면 불멸이다(블레흐 효과). 설계 규칙에서 짧은 구간의 전류 한도를 완화하는 근거다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const eps0 = EM.const.eps0, qe = EM.const.e, kBe = 8.617333262e-5;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const ex = Math.floor(Math.log10(Math.abs(x))); const m = x / Math.pow(10, ex);
+    if (ex >= -2 && ex <= 3) return String(Number(x.toPrecision(d + 1)));
+    return m.toFixed(d) + "×10" + sup(ex);
+  };
+  const tfmt = (s) => {   // 초 → 읽기 쉬운 시간
+    if (s < 1e-12) return sci(s, 1) + " s";
+    if (s < 1e-9) return (s * 1e12).toPrecision(3) + " ps";
+    if (s < 1e-6) return (s * 1e9).toPrecision(3) + " ns";
+    if (s < 1e-3) return (s * 1e6).toPrecision(3) + " µs";
+    if (s < 1) return (s * 1e3).toPrecision(3) + " ms";
+    if (s < 120) return s.toPrecision(3) + " s";
+    if (s < 7200) return (s / 60).toPrecision(3) + " 분";
+    return (s / 3600).toPrecision(3) + " 시간";
+  };
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const invX = (ch, o, px) => { const t = (px - ch.box.x) / ch.box.w; return o.logX ? Math.pow(10, Math.log10(o.x[0]) + t * (Math.log10(o.x[1]) - Math.log10(o.x[0]))) : o.x[0] + t * (o.x[1] - o.x[0]); };
+  const invY = (ch, o, py) => { const t = (ch.box.y + ch.box.h - py) / ch.box.h; return o.logY ? Math.pow(10, Math.log10(o.y[0]) + t * (Math.log10(o.y[1]) - Math.log10(o.y[0]))) : o.y[0] + t * (o.y[1] - o.y[0]); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const p10fmt = (v) => "10" + sup(Math.round(Math.log10(v)));
+  const texSci = (x, d = 2) => { const ex = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, ex); return ex >= -2 && ex <= 3 ? String(Number(x.toPrecision(d + 1))) : m.toFixed(d) + "\\times10^{" + ex + "}"; };
+
+  /* ---------------------------------------------------------- 셀 전도 풀이기
+     전도도는 셀(cx×cy)에, 전위는 꼭짓점 노드((cx+1)×(cy+1))에 둔다. 링크 컨덕턴스 = 링크에 붙은 두 셀 σ의 평균.
+     절연 셀(σ = 0)은 정확히 전류를 막고, 모서리 0.56칸도 거친 격자에서 잘 맞는다. */
+  function Cell(cx, cy) {
+    const nx = cx + 1, ny = cy + 1, N = nx * ny;
+    const sig = new Float64Array(cx * cy), phi = new Float64Array(N).fill(0.5), fix = new Int8Array(N).fill(-1);
+    const gx = new Float64Array(N), gy = new Float64Array(N);
+    const Jx = new Float64Array(cx * cy), Jy = new Float64Array(cx * cy), Jm = new Float64Array(cx * cy);
+    const S = { cx, cy, nx, ny, sig, phi, fix, gx, gy, Jx, Jy, Jm, md: Infinity, I: 0, w: 2 / (1 + Math.sin(Math.PI / Math.max(nx, ny))) };
+    const sg = (i, j) => (i < 0 || j < 0 || i >= cx || j >= cy ? 0 : sig[j * cx + i]);
+    S.fixNode = (i, j, t, V) => { const k = j * nx + i; fix[k] = t; phi[k] = V; };
+    S.unfix = () => { for (let k = 0; k < N; k++) if (fix[k] >= 0) { fix[k] = -1; } };
+    S.links = () => {
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+        const k = j * nx + i;
+        gx[k] = i < nx - 1 ? (sg(i, j - 1) + sg(i, j)) / 2 : 0;
+        gy[k] = j < ny - 1 ? (sg(i - 1, j) + sg(i, j)) / 2 : 0;
+      }
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+        const k = j * nx + i; if (fix[k] >= 0) continue;
+        const act = gx[k] || gy[k] || (i > 0 && gx[k - 1]) || (j > 0 && gy[k - nx]);
+        if (!act) phi[k] = NaN; else if (!isFinite(phi[k])) phi[k] = 0.5;
+      }
+      S.md = Infinity;
+    };
+    S.iterate = (n) => {
+      let md = 0; const w = S.w;
+      for (let it = 0; it < n; it++) {
+        md = 0;
+        for (let c = 0; c < 2; c++) for (let j = 0; j < ny; j++) for (let i = (j + c) % 2; i < nx; i += 2) {
+          const k = j * nx + i; if (fix[k] >= 0) continue;
+          let a = 0, b = 0, g;
+          if (i > 0 && (g = gx[k - 1])) { a += g * phi[k - 1]; b += g; }
+          if ((g = gx[k])) { a += g * phi[k + 1]; b += g; }
+          if (j > 0 && (g = gy[k - nx])) { a += g * phi[k - nx]; b += g; }
+          if ((g = gy[k])) { a += g * phi[k + nx]; b += g; }
+          if (!b) continue;
+          const d = a / b - phi[k]; phi[k] += w * d; if (d > md) md = d; else if (-d > md) md = -d;
+        }
+      }
+      S.md = md; return md;
+    };
+    S.current = (t = 0) => {
+      let I = 0;
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+        const k = j * nx + i, a = fix[k];
+        if (i < nx - 1 && gx[k]) { const b = fix[k + 1]; if (a === t && b !== t) I += gx[k] * (phi[k] - phi[k + 1]); else if (b === t && a !== t) I += gx[k] * (phi[k + 1] - phi[k]); }
+        if (j < ny - 1 && gy[k]) { const b = fix[k + nx]; if (a === t && b !== t) I += gy[k] * (phi[k] - phi[k + nx]); else if (b === t && a !== t) I += gy[k] * (phi[k + nx] - phi[k]); }
+      }
+      return I;
+    };
+    S.calc = () => {
+      for (let j = 0; j < cy; j++) for (let i = 0; i < cx; i++) {
+        const c = j * cx + i, s = sig[c];
+        if (!s) { Jx[c] = Jy[c] = Jm[c] = 0; continue; }
+        const k = j * nx + i, a = phi[k], b = phi[k + 1], d = phi[k + nx], e = phi[k + nx + 1];
+        const x = (-s * (b + e - a - d)) / 2, y = (-s * (d + e - a - b)) / 2;
+        Jx[c] = x; Jy[c] = y; Jm[c] = Math.hypot(x, y);
+      }
+      S.I = S.current(0);
+      return S.I;
+    };
+    S.solve = (tol = 1e-7, maxIt = 6000) => { let it = 0; while (it < maxIt) { if (S.iterate(10) < tol) break; it += 10; } S.calc(); };
+    /* 셀 좌표(연속) (x, y)에서 J 보간 — 금속 셀만 가중 */
+    S.Jat = (x, y) => {
+      const i0 = Math.floor(x - 0.5), j0 = Math.floor(y - 0.5), fx = x - 0.5 - i0, fy = y - 0.5 - j0;
+      let sx = 0, sy = 0, sw = 0;
+      for (let dj = 0; dj < 2; dj++) for (let di = 0; di < 2; di++) {
+        const i = i0 + di, j = j0 + dj; if (i < 0 || j < 0 || i >= cx || j >= cy) continue;
+        const c = j * cx + i; if (!sig[c]) continue;
+        const wgt = (di ? fx : 1 - fx) * (dj ? fy : 1 - fy) + 1e-6; sx += wgt * Jx[c]; sy += wgt * Jy[c]; sw += wgt;
+      }
+      return sw ? [sx / sw, sy / sw] : [0, 0];
+    };
+    S.metal = (x, y) => { const i = Math.floor(x), j = Math.floor(y); return i >= 0 && j >= 0 && i < cx && j < cy && sig[j * cx + i] > 0; };
+    return S;
+  }
+  const cellBox = (w, h, cx, cy, pad = 8, top = 8) => {
+    const cs = Math.min((w - 2 * pad) / cx, (h - top - pad) / cy);
+    const bw = cs * cx, bh = cs * cy;
+    return { x: (w - bw) / 2, y: top + (h - top - pad - bh) / 2, w: bw, h: bh, cs };
+  };
+  /* 셀 열지도: 값 배열(셀) → J/J0 색칠, 절연 셀은 회색 */
+  function drawCells(ctx, S, box, J0, o = {}) {
+    const P = pal();
+    ctx.fillStyle = P.grid; ctx.fillRect(box.x, box.y, box.w, box.h);
+    const v = o.vals || (S._v || (S._v = new Float64Array(S.cx * S.cy)));
+    if (!o.vals) for (let c = 0; c < v.length; c++) v[c] = S.Jm[c] / (J0 || 1);
+    if (o.flat) { ctx.fillStyle = o.flat; for (let j = 0; j < S.cy; j++) for (let i = 0; i < S.cx; i++) if (S.sig[j * S.cx + i]) ctx.fillRect(box.x + i * box.cs, box.y + (S.cy - 1 - j) * box.cs, box.cs + 0.5, box.cs + 0.5); }
+    else EM.heatmap(ctx, v, S.cx, S.cy, box, { cmap: "seq", vmin: 0, vmax: o.vmax || 2.4, mask: (k) => !S.sig[k], smooth: false });
+  }
+  const nodePx = (box, S, i, j) => [box.x + i * box.cs, box.y + (S.cy - j) * box.cs];
+  function drawEquip(ctx, S, box, n = 10) {
+    const lv = []; for (let i = 1; i < n; i++) lv.push(i / n);
+    const cs = EM.contourGrid(S.phi, S.nx, S.ny, lv);
+    ctx.save(); ctx.strokeStyle = pal().text; ctx.globalAlpha = 0.55; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    EM.drawContours(ctx, cs, (x, y) => nodePx(box, S, x, y));
+    ctx.restore();
+  }
+  function drawQuiver(ctx, S, box, J0, step) {
+    const P = pal(); ctx.save(); ctx.strokeStyle = ctx.fillStyle = P.text; ctx.globalAlpha = 0.75; ctx.lineWidth = 1.2;
+    for (let j = Math.floor(step / 2); j < S.cy; j += step) for (let i = Math.floor(step / 2); i < S.cx; i += step) {
+      const c = j * S.cx + i; if (!S.sig[c] || S.Jm[c] < 1e-9) continue;
+      const L = Math.min(1.6, S.Jm[c] / J0) * box.cs * step * 0.5, ux = S.Jx[c] / S.Jm[c], uy = -S.Jy[c] / S.Jm[c];
+      const px = box.x + (i + 0.5) * box.cs, py = box.y + (S.cy - j - 0.5) * box.cs;
+      const x1 = px - (ux * L) / 2, y1 = py - (uy * L) / 2, x2 = px + (ux * L) / 2, y2 = py + (uy * L) / 2, hl = Math.min(5, 0.45 * L), an = Math.atan2(uy, ux);
+      if (L < 2) continue;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - hl * Math.cos(an - 0.45), y2 - hl * Math.sin(an - 0.45)); ctx.lineTo(x2 - hl * Math.cos(an + 0.45), y2 - hl * Math.sin(an + 0.45)); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function colorBar(ctx, x, y, w, h, vmax, label) {
+    const P = pal(); const n = 40;
+    for (let i = 0; i < n; i++) { ctx.fillStyle = EM.cmap("seq", i / (n - 1)); ctx.fillRect(x + (i * w) / n, y, w / n + 0.6, h); }
+    ctx.strokeStyle = P.border; ctx.strokeRect(x, y, w, h);
+    ctx.font = font(11); ctx.fillStyle = P.dim; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText("0", x, y + h + 2); ctx.textAlign = "right"; ctx.fillText(vmax.toFixed(1) + "+", x + w, y + h + 2);
+    ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.fillText(label, x, y - 2);
+  }
+
+  /* ---------------------------------------------------------- 머리: 굽은 배선과 홈 */
+  {
+    const CX = 96, CY = 48, W = 14, Y0 = 7, XC = 66;
+    const S = Cell(CX, CY);
+    const st = { nx0: 30, nw: 7, d: 6 };
+    for (let j = Y0; j <= Y0 + W; j++) S.fixNode(0, j, 0, 1);
+    for (let i = XC; i <= XC + W; i++) S.fixNode(i, CY, 1, 0);
+    function build() {
+      for (let j = 0; j < CY; j++) for (let i = 0; i < CX; i++) {
+        let m = (j >= Y0 && j < Y0 + W && i < XC + W) || (i >= XC && i < XC + W && j >= Y0);
+        if (m && j < Y0 + st.d && i >= st.nx0 && i < st.nx0 + st.nw) m = false;
+        S.sig[j * CX + i] = m ? 1 : 0;
+      }
+      S.links();
+    }
+    build(); S.solve(1e-7, 3000);
+    const NP = 150, px = new Float64Array(NP), py = new Float64Array(NP), age = new Float64Array(NP);
+    const spawn = (k, anywhere) => {
+      for (let tries = 0; tries < 30; tries++) {
+        const x = anywhere ? Math.random() * (XC + W) : 0.3 + Math.random() * 1.2, y = Y0 + 0.5 + Math.random() * (W - 1);
+        if (S.metal(x, y)) { px[k] = x; py[k] = y; age[k] = 0; return; }
+      }
+      px[k] = 0.5; py[k] = Y0 + W / 2; age[k] = 0;
+    };
+    for (let k = 0; k < NP; k++) spawn(k, true);
+    // 세로 팔에도 처음부터 흩뿌린다
+    for (let k = 0; k < NP / 3; k++) { px[k] = XC + 0.5 + Math.random() * (W - 1); py[k] = Y0 + W + Math.random() * (CY - Y0 - W - 1); }
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), box = cellBox(w, h, CX, CY, 6, 6); self._box = box;
+      const J0 = S.I / W;
+      drawCells(ctx, S, box, J0, { vmax: 2.4 });
+      // 전극
+      ctx.fillStyle = P.accent; ctx.fillRect(box.x - 4, box.y + (CY - Y0 - W) * box.cs, 6, W * box.cs);
+      ctx.fillStyle = P.accent2; ctx.fillRect(box.x + XC * box.cs, box.y - 4, W * box.cs, 6);
+      SB.label(ctx, "+V", box.x + 16, box.y + (CY - Y0 - W) * box.cs - 12, { color: P.accent, bold: true });
+      SB.label(ctx, "0 V", box.x + (XC + W) * box.cs + 20, box.y + 10, { color: P.accent2, bold: true });
+      // 운반자(관례 전류 방향)
+      ctx.fillStyle = P.accent2; ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = 1;
+      const r = Math.max(1.6, box.cs * 0.28);
+      for (let k = 0; k < NP; k++) { const X = box.x + px[k] * box.cs, Y = box.y + (CY - py[k]) * box.cs; ctx.beginPath(); ctx.arc(X, Y, r, 0, 7); ctx.fill(); ctx.stroke(); }
+      // 최대 J 위치
+      let jm = 0, cm = 0; for (let c = 0; c < S.Jm.length; c++) if (S.Jm[c] > jm) { jm = S.Jm[c]; cm = c; }
+      const ci = cm % CX, cj = Math.floor(cm / CX);
+      const hx = box.x + (ci + 0.5) * box.cs, hy = box.y + (CY - cj - 0.5) * box.cs;
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(hx, hy, 12, 0, 7); ctx.stroke(); ctx.restore();
+      const narrow = w < 560;
+      SB.label(ctx, `최대 J = ${(jm / J0).toFixed(2)} J₀ (점선 원) · 발열 ${((jm / J0) ** 2).toFixed(1)}배`, box.x + 10, box.y + (narrow ? 32 : 36), { align: "left", size: narrow ? 11 : 12 });
+      // 홈 손잡이
+      const tx = box.x + (st.nx0 + st.nw / 2) * box.cs, ty = box.y + (CY - Y0 - st.d) * box.cs;
+      handle(ctx, tx, ty, P.accent, 12); self._h = [tx, ty];
+      // 읽기
+      SB.label(ctx, `저항 ${(1 / S.I).toFixed(2)} 칸(□)`, box.x + 10, box.y + 16, { align: "left", size: narrow ? 11 : 13, bold: true });
+      if (!narrow) colorBar(ctx, box.x + 10, box.y + 72, 120, 8, 2.4, "색: 전류 밀도 |J|/J₀");
+    }, { aspect: 0.5, minHeight: 210, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        const b = cv._box; if (!b) return;
+        const ci = (x - b.x) / b.cs - st.nw / 2, d = Math.round(CY - (y - b.y) / b.cs - Y0);
+        const n0 = Math.round(SB.clamp(ci, 4, XC - st.nw - 3)), dd = SB.clamp(d, 0, W - 3);
+        if (n0 !== st.nx0 || dd !== st.d) { st.nx0 = n0; st.d = dd; build(); for (let k = 0; k < NP; k++) if (!S.metal(px[k], py[k])) spawn(k); }
+      },
+    });
+    SB.loop("hero", (dt) => {
+      if (S.md > 2e-6) { S.iterate(12); S.calc(); }
+      const J0 = S.I / W || 1, v0 = 7;
+      for (let k = 0; k < NP; k++) {
+        const J = S.Jat(px[k], py[k]);
+        px[k] += (J[0] / J0) * v0 * dt; py[k] += (J[1] / J0) * v0 * dt; age[k] += dt;
+        if (py[k] > CY - 0.3 || px[k] < 0 || px[k] > CX || !S.metal(px[k], py[k]) || age[k] > 40) spawn(k);
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 미니: 면 요소를 지나는 운반자 */
+  {
+    const NP = 240, P0 = [], st = { th: 0.5, cnt: [], t: 0 };
+    const vGet = SB.range("dr-v", (v) => v + " px/s");
+    const thEl = $("dr-th");
+    let W = 600, H = 220;
+    for (let i = 0; i < NP; i++) P0.push({ x: Math.random(), y: Math.random(), vx: 0, vy: 0 });
+    const cv = SB.canvas("cv-drift", (ctx, w, h, self) => {
+      const P = pal(); W = w; H = h;
+      ctx.fillStyle = P.surface; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = P.accent;
+      P0.forEach((p) => { ctx.beginPath(); ctx.arc(p.x * w, p.y * h, 2.6, 0, 7); ctx.fill(); });
+      const cx = w / 2, cy = h / 2, L = Math.min(110, h * 0.6), n = [Math.cos(st.th), -Math.sin(st.th)], t = [-n[1], n[0]];
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(cx - (t[0] * L) / 2, cy - (t[1] * L) / 2); ctx.lineTo(cx + (t[0] * L) / 2, cy + (t[1] * L) / 2); ctx.stroke();
+      const tip = [cx + n[0] * 60, cy + n[1] * 60];
+      SB.arrow(ctx, cx, cy, tip[0], tip[1], { color: P.accent2, width: 2.2 });
+      handle(ctx, tip[0], tip[1], P.accent2, 12); self._tip = tip;
+      SB.label(ctx, "n̂", tip[0] + 18, tip[1] - 4, { color: P.accent2, bold: true });
+      SB.arrow(ctx, 16, 18, 70, 18, { color: P.accent, width: 2 }); SB.label(ctx, "J", 80, 18, { color: P.accent, bold: true, align: "left" });
+      const deg = Math.round((st.th * 180) / Math.PI);
+      SB.label(ctx, `θ = ${Math.abs(deg)}°`, w - 12, 16, { align: "right", bold: true });
+    }, { aspect: 0.36, minHeight: 170, maxHeight: 260 });
+    SB.drag(cv, {
+      handles: () => (cv._tip ? [{ id: "t", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []),
+      move: (id, x, y) => { st.th = SB.clamp(Math.atan2(-(y - H / 2), x - W / 2), -Math.PI / 2, Math.PI / 2); st.cnt = []; },
+    });
+    SB.loop("mini-drift", (dt) => {
+      const v = vGet(), th = thEl.checked, cx = W / 2, cy = H / 2, L = Math.min(110, H * 0.6);
+      const n = [Math.cos(st.th), -Math.sin(st.th)], tt = [-n[1], n[0]];
+      let net = 0;
+      P0.forEach((p) => {
+        const x0 = p.x * W, y0 = p.y * H;
+        let ux = v, uy = 0;
+        if (th) { p.vx += SB.randn() * 900 * dt - p.vx * 4 * dt; p.vy += SB.randn() * 900 * dt - p.vy * 4 * dt; ux += p.vx; uy += p.vy; }
+        let x1 = x0 + ux * dt, y1 = y0 + uy * dt;
+        const s0 = (x0 - cx) * n[0] + (y0 - cy) * n[1], s1 = (x1 - cx) * n[0] + (y1 - cy) * n[1];
+        if (s0 * s1 < 0) { const f = s0 / (s0 - s1), xm = x0 + f * (x1 - x0), ym = y0 + f * (y1 - y0), u = (xm - cx) * tt[0] + (ym - cy) * tt[1]; if (Math.abs(u) < L / 2) net += s1 > 0 ? 1 : -1; }
+        if (x1 > W) x1 -= W; if (x1 < 0) x1 += W; if (y1 > H) y1 -= H; if (y1 < 0) y1 += H;
+        p.x = x1 / W; p.y = y1 / H;
+      });
+      st.cnt.push([dt, net]); let T = 0, N = 0; for (const c of st.cnt) { T += c[0]; N += c[1]; } while (T > 4 && st.cnt.length > 1) { const c = st.cnt.shift(); T -= c[0]; N -= c[1]; }
+      const dens = NP / (W * H), theory = dens * v * L * Math.cos(st.th);
+      $("dr-r").textContent = `측정 ${(N / Math.max(T, 0.1)).toFixed(1)} 개/s · 이론 nv L cosθ = ${theory.toFixed(1)} 개/s`;
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 탱글: 구리선 J, v_d, E */
+  SB.tangle("tg-drift", (v) => {
+    const A = v.w * 1e-9 * v.t * 1e-9, J = (v.I * 1e-3) / A, vd = J / (8.49e28 * qe), E = J * 1.68e-8;
+    return { J: (J / 1e10).toPrecision(3) + " MA/cm²", v: vd < 1 ? (vd * 1000).toPrecision(3) + " mm/s" : vd.toPrecision(3) + " m/s", E: E.toPrecision(3) + " V/m", dV: (E * 1e-3 * 1000).toPrecision(3) + " mV" };
+  });
+
+  /* ---------------------------------------------------------- 미니: 실리콘 비저항 대 도핑 */
+  {
+    const CT = { n: [68.5, 1414, 9.2e16, 0.711], p: [44.9, 470.5, 2.23e17, 0.719] };
+    const mu = (N, t) => { const c = CT[t]; return c[0] + (c[1] - c[0]) / (1 + Math.pow(N / c[2], c[3])); };
+    const rho = (N, t) => 1 / (qe * N * mu(N, t));   // Ω·cm (N cm⁻³, μ cm²/Vs)
+    const st = { lN: 16 };
+    let type = "n";
+    const O = { x: [1e13, 1e21], y: [1e-4, 1e3], logX: true, logY: true, xLabel: "도핑 농도 N (cm⁻³)", yLabel: "비저항 ρ (Ω·cm)", xFmt: p10fmt, yFmt: p10fmt };
+    const cv = SB.canvas("cv-sigma", (ctx, w, h, self) => {
+      const P = pal(), N = Math.pow(10, st.lN);
+      const mk = (t) => { const d = []; for (let l = 13; l <= 21.001; l += 0.05) d.push([Math.pow(10, l), rho(Math.pow(10, l), t)]); return d; };
+      const ch = SB.chart(ctx, null, Object.assign({}, O, { series: [{ data: mk("n"), color: P.accent, width: type === "n" ? 2.6 : 1.4 }, { data: mk("p"), color: P.accent2, width: type === "p" ? 2.6 : 1.4 }] }));
+      self._ch = ch;
+      const r = rho(N, type), X = ch.X(N), Y = ch.Y(r);
+      SB.label(ctx, "n형", ch.X(3e19), ch.Y(rho(3e19, "n")) + 16, { color: P.accent, bold: true });
+      SB.label(ctx, "p형", ch.X(3e19), ch.Y(rho(3e19, "p")) - 16, { color: P.accent2, bold: true });
+      handle(ctx, X, Y, type === "n" ? P.accent : P.accent2, 11); self._h = [X, Y];
+      const m = mu(N, type), s = 100 / r;
+      $("sg-r").innerHTML = `N = ${sci(N, 1)} cm⁻³ · μ = ${m.toFixed(0)} cm²/(V·s) · ρ = ${sci(r, 2)} Ω·cm · σ = ${sci(s, 2)} S/m · τ = ε/σ = ${tfmt((11.7 * eps0) / s)}`;
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 340 });
+    SB.seg("sg-type", (v) => { type = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (!cv._ch) return; st.lN = SB.clamp(Math.log10(invX(cv._ch, O, x)), 13, 21); } });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 전하 이완 */
+  {
+    const MAT = {
+      Cu: { name: "구리", er: 1, s: 5.96e7 }, nSi: { name: "n-Si (10¹⁶ cm⁻³)", er: 11.7, s: 216 }, iSi: { name: "진성 Si", er: 11.7, s: 4.4e-4 },
+      water: { name: "순수한 물", er: 80, s: 5.5e-6 }, SiO2: { name: "SiO₂", er: 3.9, s: 1e-14 },
+    };
+    Object.values(MAT).forEach((m) => (m.tau = (m.er * eps0) / m.s));
+    const st = { lt: -20, mat: "Cu" };
+    const N = 110, IN = [], SURF = [];
+    for (let i = 0; i < N; i++) { const r = 0.42 * Math.sqrt(Math.random()), a = Math.random() * 6.283; IN.push({ x: r * Math.cos(a), y: r * Math.sin(a), u: Math.random() }); SURF.push({ a: (6.283 * (i + 0.5)) / N, u: IN[i].u }); }
+    const frac = () => Math.exp(-Math.pow(10, st.lt) / MAT[st.mat].tau);
+    const O = { x: [-20, 4], y: [0, 1.05], xLabel: "시간 t (s, 로그)", yLabel: "ρ/ρ₀", xFmt: (v) => "10" + sup(Math.round(v)), xTicks: [-20, -16, -12, -8, -4, 0, 4] };
+    const cvA = SB.canvas("cv-rx-a", (ctx, w, h) => {
+      const P = pal(), f = frac(), R = Math.min(w, h) * 0.4, cx = w / 2, cy = h / 2;
+      ctx.fillStyle = P.surface; ctx.strokeStyle = P.border; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill(); ctx.stroke();
+      if (f > 0.02 && f < 0.999) {
+        for (let k = 0; k < 12; k++) { const a = (6.283 * k) / 12, r0 = R * 0.5, r1 = R * 0.82; ctx.globalAlpha = Math.min(1, 4 * f * (1 - f) + 0.2); SB.arrow(ctx, cx + r0 * Math.cos(a), cy + r0 * Math.sin(a), cx + r1 * Math.cos(a), cy + r1 * Math.sin(a), { color: P.accent2, width: 1.6, head: 6 }); }
+        ctx.globalAlpha = 1;
+      }
+      ctx.font = "bold 13px " + SB.color("font"); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = P.accent;
+      IN.forEach((p) => { if (p.u < f) ctx.fillText("+", cx + p.x * R, cy + p.y * R); });
+      SURF.forEach((p) => { if (p.u >= f) ctx.fillText("+", cx + (R + 8) * Math.cos(p.a), cy + (R + 8) * Math.sin(p.a)); });
+      SB.label(ctx, MAT[st.mat].name, cx, 14, { bold: true });
+    }, { aspect: 0.8, minHeight: 200, maxHeight: 320 });
+    const cvB = SB.canvas("cv-rx-b", (ctx, w, h, self) => {
+      const P = pal(), series = [];
+      Object.keys(MAT).forEach((k) => {
+        const d = []; for (let l = -20; l <= 4.001; l += 0.05) d.push([l, Math.exp(-Math.pow(10, l) / MAT[k].tau)]);
+        series.push({ data: d, color: k === st.mat ? P.accent : P.faint, width: k === st.mat ? 2.6 : 1.2 });
+      });
+      const ch = SB.chart(ctx, { x: 48, y: 30, w: w - 62, h: h - 30 - 46 }, Object.assign({}, O, { series, vlines: [{ x: Math.log10(MAT[st.mat].tau), color: P.accent, label: "τ" }] }));
+      self._ch = ch;
+      Object.keys(MAT).forEach((k, i) => { const x = SB.clamp(Math.log10(MAT[k].tau), -20, 4); if (k !== st.mat) SB.label(ctx, k === "nSi" ? "n-Si" : k === "iSi" ? "Si" : k === "water" ? "물" : k, ch.X(x), ch.Y(0.5) + (i % 2 ? 14 : -14), { size: 10, color: P.dim }); });
+      const X = ch.X(st.lt), Y = ch.Y(frac());
+      handle(ctx, X, Y, P.accent, 11); self._h = [X, Y];
+    }, { aspect: 0.8, minHeight: 200, maxHeight: 320 });
+    const upd = () => {
+      const m = MAT[st.mat], f = frac();
+      SB.stat("rx-tau", tfmt(m.tau)); SB.stat("rx-t", tfmt(Math.pow(10, st.lt)));
+      SB.stat("rx-f", f > 1e-3 ? f.toFixed(3) : sci(f, 1)); SB.stat("rx-s", ((1 - f) * 100).toFixed(1) + " %");
+      cvA.redraw(); cvB.redraw();
+    };
+    SB.seg("rx-mat", (v) => { st.mat = v; upd(); });
+    SB.drag(cvB, { handles: () => (cvB._h ? [{ id: "t", x: cvB._h[0], y: cvB._h[1], r: 14 }] : []), move: (id, x) => { if (!cvB._ch) return; st.lt = SB.clamp(invX(cvB._ch, O, x), -20, 4); loop.stop(); syncP && syncP(); upd(); } });
+    const loop = SB.loop("sim-relax", (dt) => { st.lt += dt * 3; if (st.lt > 4) { st.lt = 4; loop.stop(); syncP && syncP(); } upd(); });
+    loop.stop();
+    const syncP = SB.play("rx-play", { get running() { return loop.running; }, toggle() { if (!loop.running && st.lt >= 4) st.lt = -20; return loop.toggle(); } }, { play: "▶ 시간 흐르기", pause: "❚❚ 멈춤" });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 맥스웰–바그너 두 층 */
+  {
+    const e1 = 3.9, e2 = 7.5;
+    const st = { t: 0, run: true };
+    const rGet = SB.range("mw-r", (v) => Math.pow(10, v).toPrecision(2), () => { st.t = 0; draw(); });
+    const calc = (tt) => {
+      const s1 = 1, s2 = Math.pow(10, rGet());
+      const E10 = (2 * e2) / (e1 + e2), E1i = (2 * s2) / (s1 + s2);   // V = 1, 각 층 두께 0.5
+      const E1 = E1i + (E10 - E1i) * Math.exp(-tt), E2 = 2 - E1;
+      return { E1, E2, rs: e2 * E2 - e1 * E1, s2, E10, E1i };
+    };
+    const cv = SB.canvas("cv-mw", (ctx, w, h) => {
+      const P = pal(), c = calc(st.t), narrow = w < 520;
+      const sw = narrow ? w * 0.42 : w * 0.36, x0 = 14, y0 = 26, sh = h - 50;
+      ctx.fillStyle = P.accent; ctx.fillRect(x0, y0 - 6, sw, 6); ctx.fillStyle = P.accent2; ctx.fillRect(x0, y0 + sh, sw, 6);
+      ctx.fillStyle = P.surface; ctx.fillRect(x0, y0, sw, sh / 2); ctx.globalAlpha = 0.5; ctx.fillStyle = P.grid; ctx.fillRect(x0, y0 + sh / 2, sw, sh / 2); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.border; ctx.strokeRect(x0, y0, sw, sh);
+      SB.label(ctx, "+V", x0 + sw / 2, y0 - 14, { color: P.accent, bold: true, size: 11 });
+      // 전기장 화살표: 개수 ∝ E
+      const arrows = (Ey, yA, yB, E) => { const n = Math.max(1, Math.round(E * 3)); for (let i = 0; i < n; i++) { const x = x0 + ((i + 0.5) * sw) / n; SB.arrow(ctx, x, yA + 6, x, yB - 6, { color: P.text, width: 1.4, head: 6 }); } };
+      arrows(0, y0, y0 + sh / 2, c.E1); arrows(0, y0 + sh / 2, y0 + sh, c.E2);
+      SB.label(ctx, `ε₁ = 3.9, σ₁`, x0 + sw - 4, y0 + 12, { align: "right", size: 11, color: P.dim });
+      SB.label(ctx, `ε₂ = 7.5, σ₂`, x0 + sw - 4, y0 + sh - 10, { align: "right", size: 11, color: P.dim });
+      // 계면 전하
+      const nq = Math.min(14, Math.round(Math.abs(c.rs) * 2.2));
+      ctx.font = "bold 14px " + SB.color("font"); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = c.rs > 0 ? P.accent : P.accent2;
+      for (let i = 0; i < nq; i++) ctx.fillText(c.rs > 0 ? "+" : "−", x0 + ((i + 0.5) * sw) / nq, y0 + sh / 2);
+      // 그래프
+      const gx = x0 + sw + 54, gw = w - gx - 14;
+      const d1 = [], d2 = []; for (let t = 0; t <= 5.001; t += 0.05) { const q = calc(t); d1.push([t, q.E1]); d2.push([t, q.E2]); }
+      const ch = SB.chart(ctx, { x: gx, y: 14, w: gw, h: h - 14 - 40 }, { x: [0, 5], y: [0, 2.05], xLabel: "t / τ_MW", yLabel: "E·d/V", series: [{ data: d1, color: P.accent, width: 2.2 }, { data: d2, color: P.accent2, width: 2.2 }], points: [{ x: Math.min(st.t, 5), y: c.E1, color: P.accent, r: 5 }, { x: Math.min(st.t, 5), y: c.E2, color: P.accent2, r: 5 }] });
+      SB.label(ctx, "E₁(위)", ch.X(3.9), ch.Y(c.E1i) - 12, { color: P.accent, size: 11, bold: true });
+      SB.label(ctx, "E₂(아래)", ch.X(3.9), ch.Y(2 - c.E1i) + 12, { color: P.accent2, size: 11, bold: true });
+      $("mw-out").textContent = `계면 전하 ρ_s = ${(c.rs).toFixed(2)} ε₀V/d (${Math.abs(c.rs) < 0.05 ? "거의 0" : c.rs > 0 ? "양" : "음"}) · t = ${st.t.toFixed(2)} τ`;
+    }, { aspect: 0.42, minHeight: 210, maxHeight: 300 });
+    const draw = () => cv.redraw();
+    const loop = SB.loop("mini-mw", (dt) => { st.t += dt * 0.8; if (st.t > 5) { st.t = 5; loop.stop(); sync && sync(); } draw(); });
+    const sync = SB.play("mw-play", { get running() { return loop.running; }, toggle() { if (!loop.running && st.t >= 5) st.t = 0; return loop.toggle(); } }, { play: "▶ 전압 걸기", pause: "❚❚ 멈춤" });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 이완 시간 */
+  SB.drill("drill-tau", () => {
+    const er = pick([1, 3.9, 7.5, 11.7, 16, 80]);
+    const ex = Math.floor(Math.random() * 18) - 14, m = (1 + Math.floor(Math.random() * 90) / 10);
+    const s = m * Math.pow(10, ex), tau = (er * eps0) / s;
+    return { q: `<p>비유전율 \\(\\varepsilon_r = ${er}\\), 전도도 \\(\\sigma = ${m.toFixed(1)}\\times10^{${ex}}\\) S/m인 물질의 전하 이완 시간 τ는 몇 초인가?</p>`, answer: tau, label: "τ =", unit: "s", tol: "2%",
+      sol: `\\(\\tau = \\varepsilon_r\\varepsilon_0/\\sigma = ${er}\\times8.854\\times10^{-12}/(${m.toFixed(1)}\\times10^{${ex}}) = ${texSci(tau, 2)}\\) s` };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 배치 도면 저항기 */
+  {
+    const LX = 16, LY = 9, SS = 5, S = Cell(LX * SS, LY * SS);
+    const lay = new Uint8Array(LX * LY), PADY = 4;
+    const RS = { sil: 8, tin: 25, np: 100, pp: 300 };
+    const TG = [17, 20, 22.5, 26, 30.5, 11, 9];
+    const st = { tgt: 20, mat: "np", mode: null, done: false };
+    const isPad = (ci, cj) => cj === PADY && (ci === 0 || ci === LX - 1);
+    const setCell = (ci, cj, on) => {
+      lay[cj * LX + ci] = on ? 1 : 0;
+      for (let dj = 0; dj < SS; dj++) for (let di = 0; di < SS; di++) S.sig[(cj * SS + dj) * S.cx + ci * SS + di] = on ? 1 : 0;
+    };
+    const reset = () => { lay.fill(0); S.sig.fill(0); for (let i = 0; i < LX; i++) setCell(i, PADY, true); S.links(); };
+    for (let j = PADY * SS; j <= (PADY + 1) * SS; j++) { for (let i = 0; i <= SS; i++) S.fixNode(i, j, 0, 1); for (let i = (LX - 1) * SS; i <= LX * SS; i++) S.fixNode(i, j, 1, 0); }
+    reset(); S.solve(1e-8, 4000);
+    const count = () => {   // 세기 규칙: 1칸 폭 길에서 직각 모서리 0.56
+      let n = 0;
+      for (let cj = 0; cj < LY; cj++) for (let ci = 0; ci < LX; ci++) {
+        if (!lay[cj * LX + ci] || isPad(ci, cj)) continue;
+        const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([a, b]) => { const i = ci + a, j = cj + b; return i >= 0 && j >= 0 && i < LX && j < LY && lay[j * LX + i]; });
+        if (nb.length === 1) continue;            // 막다른 가지는 전류가 없다
+        if (nb.length !== 2) return null;
+        n += nb[0][0] * nb[1][0] + nb[0][1] * nb[1][1] === 0 ? 0.56 : 1;
+      }
+      return n;
+    };
+    const cv = SB.canvas("cv-sheet", (ctx, w, h, self) => {
+      const P = pal(), box = cellBox(w, h, S.cx, S.cy, 6, 6); self._box = box;
+      const I = S.I, J0 = I / SS;
+      if ($("sh-heat").checked && I > 1e-6) drawCells(ctx, S, box, J0, { vmax: 2.2 }); else drawCells(ctx, S, box, 1, { flat: P.accent2 });
+      // 격자선(칸 = 정사각형)
+      ctx.strokeStyle = P.border; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.6;
+      for (let i = 0; i <= LX; i++) { const x = box.x + i * SS * box.cs; ctx.beginPath(); ctx.moveTo(x, box.y); ctx.lineTo(x, box.y + box.h); ctx.stroke(); }
+      for (let j = 0; j <= LY; j++) { const y = box.y + j * SS * box.cs; ctx.beginPath(); ctx.moveTo(box.x, y); ctx.lineTo(box.x + box.w, y); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+      const pad = (ci, col, t) => { const x = box.x + ci * SS * box.cs, y = box.y + (LY - 1 - PADY) * SS * box.cs; ctx.fillStyle = col; ctx.fillRect(x, y, SS * box.cs, SS * box.cs); SB.label(ctx, t, x + (SS * box.cs) / 2, y + (SS * box.cs) / 2, { bold: true, color: "#fff", bg: col }); };
+      pad(0, P.accent, "+"); pad(LX - 1, P.accent2, "0");
+    }, { aspect: 9 / 16, minHeight: 200, maxHeight: 460 });
+    const upd = () => {
+      const I = S.I, Rs = RS[st.mat];
+      if (I < 1e-5) { SB.stat("sh-R", "끊김(개방)"); SB.stat("sh-n", "∞"); }
+      else { const n = 1 / I, R = n * Rs; SB.stat("sh-R", R >= 1000 ? (R / 1000).toPrecision(3) + " kΩ" : R.toPrecision(3) + " Ω"); SB.stat("sh-n", n.toFixed(2) + " □"); }
+      const c = count(); SB.stat("sh-cnt", c == null ? "규칙 적용 불가(가지·두꺼운 길)" : c.toFixed(2) + " □");
+      const ok = I > 1e-5 && Math.abs(1 / I - st.tgt) / st.tgt < 0.03 && S.md < 1e-5;
+      const Rt = st.tgt * Rs;
+      SB.stat("sh-goal", `${st.tgt} □ (${Rt >= 1000 ? (Rt / 1000).toPrecision(3) + " kΩ" : Rt.toPrecision(3) + " Ω"}) ${ok ? "✓ 달성!" : ""}`);
+    };
+    const hit = (x, y) => { const b = cv._box; if (!b) return null; const ci = Math.floor((x - b.x) / (SS * b.cs)), cj = LY - 1 - Math.floor((y - b.y) / (SS * b.cs)); return ci >= 0 && cj >= 0 && ci < LX && cj < LY ? [ci, cj] : null; };
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      down: (id, x, y) => { const c = hit(x, y); st.mode = !c || isPad(c[0], c[1]) ? null : !lay[c[1] * LX + c[0]]; },
+      move: (id, x, y) => { if (st.mode == null) return; const c = hit(x, y); if (!c || isPad(c[0], c[1])) return; if (!!lay[c[1] * LX + c[0]] !== st.mode) { setCell(c[0], c[1], st.mode); S.links(); } },
+      up: () => { st.mode = null; },
+    });
+    SB.seg("sh-mat", (v) => { st.mat = v; upd(); });
+    $("sh-heat").addEventListener("change", () => cv.redraw());
+    $("sh-new").addEventListener("click", () => { let t; do t = pick(TG); while (t === st.tgt); st.tgt = t; upd(); });
+    $("sh-reset").addEventListener("click", () => { reset(); });
+    let wasDirty = true;
+    SB.loop("sim-sheet", () => {
+      if (S.md > 1e-7) { S.iterate(25); S.calc(); wasDirty = true; }
+      if (wasDirty) { cv.redraw(); upd(); if (S.md <= 1e-7) wasDirty = false; }
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 4탐침 */
+  {
+    const RS_TRUE = 50, RHO_TRUE = 1.0;   // Ω/□, Ω·cm
+    const st = { p: [[-1.5, 0], [-0.5, 0], [0.5, 0], [1.5, 0]], ye: -2.2, mode: "thin" };
+    const edgeEl = $("pp-edge");
+    const srcs = () => {
+      const s = [{ x: st.p[0][0], y: st.p[0][1], q: 1 }, { x: st.p[3][0], y: st.p[3][1], q: -1 }];
+      if (edgeEl.checked) s.slice().forEach((c) => s.push({ x: c.x, y: 2 * st.ye - c.y, q: c.q }));
+      return s;
+    };
+    // 단위 전류 I = 1 A 당 전위 (얇은 막: Rs=1, 두꺼운: ρ=1, 길이 mm)
+    const phiAt = (S, x, y) => { let v = 0; for (const c of S) { const r = Math.max(1e-3, Math.hypot(x - c.x, y - c.y)); v += st.mode === "thin" ? (-c.q * Math.log(r)) / (2 * Math.PI) : c.q / (2 * Math.PI * r); } return v; };
+    const fieldAt = (S, x, y) => { let fx = 0, fy = 0; for (const c of S) { const dx = x - c.x, dy = y - c.y, r2 = Math.max(1e-6, dx * dx + dy * dy), k = st.mode === "thin" ? 1 / r2 : 1 / Math.pow(r2, 1.5); fx += c.q * dx * k; fy += c.q * dy * k; } return [fx, fy]; };
+    let vals = null, NXh = 0, NYh = 0;
+    const cv = SB.canvas("cv-4pp", (ctx, w, h, self) => {
+      const P = pal(), sc = w / 12, Yr = h / sc / 2;
+      const X = (x) => w / 2 + x * sc, Y = (y) => h / 2 - y * sc;
+      self._X = X; self._Y = Y; self._sc = sc;
+      const S = srcs();
+      NXh = 120; NYh = Math.max(20, Math.round((NXh * h) / w));
+      vals = new Float64Array(NXh * NYh);
+      const ref = Math.abs(phiAt(S, st.p[0][0] + 0.25, st.p[0][1])) || 1;
+      for (let j = 0; j < NYh; j++) for (let i = 0; i < NXh; i++) {
+        const x = -6 + (12 * (i + 0.5)) / NXh, y = -Yr + (2 * Yr * (j + 0.5)) / NYh;
+        vals[j * NXh + i] = edgeEl.checked && y < st.ye ? NaN : phiAt(S, x, y) / ref;
+      }
+      EM.heatmap(ctx, vals, NXh, NYh, { x: 0, y: 0, w, h }, { cmap: "div", vmin: -1, vmax: 1, alpha: 0.75 });
+      const cs = EM.contour((x, y) => (edgeEl.checked && y < st.ye ? NaN : phiAt(S, x, y) / ref), [-6, 6, -Yr, Yr], 90, Math.round((90 * h) / w), [-0.6, -0.4, -0.25, -0.12, -0.05, 0, 0.05, 0.12, 0.25, 0.4, 0.6]);
+      ctx.save(); ctx.strokeStyle = P.text; ctx.globalAlpha = 0.45; ctx.setLineDash([3, 3]); EM.drawContours(ctx, cs, (x, y) => [X(x), Y(y)]); ctx.restore();
+      // 전류선
+      const a = st.p[0], b = st.p[3], toPx = (x, y) => [X(x), Y(y)];
+      ctx.strokeStyle = ctx.fillStyle = P.text; ctx.lineWidth = 1.3;
+      const nL = 18;
+      for (let k = 0; k < nL; k++) {
+        const an = (2 * Math.PI * (k + 0.5)) / nL, sx = a[0] + 0.06 * Math.cos(an), sy = a[1] + 0.06 * Math.sin(an);
+        if (edgeEl.checked && sy < st.ye) continue;
+        const pts = EM.trace((x, y) => fieldAt(S, x, y), [sx, sy], { step: 0.04, maxSteps: 900, bounds: [-6.5, 6.5, -Yr - 0.5, Yr + 0.5], stop: (x, y) => Math.hypot(x - b[0], y - b[1]) < 0.06 || (edgeEl.checked && y < st.ye - 0.02) });
+        ctx.globalAlpha = 0.7; EM.polyline(ctx, pts, toPx); EM.lineArrow(ctx, pts, toPx, 0.5, 5); ctx.globalAlpha = 1;
+      }
+      if (edgeEl.checked) {
+        ctx.fillStyle = P.surface; ctx.fillRect(0, Y(st.ye), w, h - Y(st.ye));
+        ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, Y(st.ye)); ctx.lineTo(w, Y(st.ye)); ctx.stroke();
+        SB.label(ctx, "웨이퍼 밖(절연)", 70, Y(st.ye) + 14, { size: 11, color: P.dim });
+        handle(ctx, X(4.8), Y(st.ye), P.text, 11); self._he = [X(4.8), Y(st.ye)];
+      } else self._he = null;
+      // 탐침
+      const col = [P.accent, P.accent2, P.accent2, P.accent];
+      st.p.forEach((p, i) => { handle(ctx, X(p[0]), Y(p[1]), col[i], 12); SB.label(ctx, String(i + 1), X(p[0]), Y(p[1]), { bold: true, size: 12, color: col[i], bg: "#fff" }); });
+      SB.label(ctx, "+I", X(st.p[0][0]), Y(st.p[0][1]) - 22, { color: P.accent, bold: true, size: 11 });
+      SB.label(ctx, "−I", X(st.p[3][0]), Y(st.p[3][1]) - 22, { color: P.accent, bold: true, size: 11 });
+      // 눈금 1 mm
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(w - 16 - sc, h - 26); ctx.lineTo(w - 16, h - 26); ctx.stroke(); SB.label(ctx, "1 mm", w - 16 - sc / 2, h - 14, { size: 11 });
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 420 });
+    const upd = () => {
+      const S = srcs(), V = phiAt(S, st.p[1][0], st.p[1][1]) - phiAt(S, st.p[2][0], st.p[2][1]);   // I = 1, Rs = 1 또는 ρ = 1(Ω·mm)
+      const s = (Math.hypot(st.p[1][0] - st.p[0][0], st.p[1][1] - st.p[0][1]) + Math.hypot(st.p[2][0] - st.p[1][0], st.p[2][1] - st.p[1][1]) + Math.hypot(st.p[3][0] - st.p[2][0], st.p[3][1] - st.p[2][1])) / 3;
+      SB.stat("pp-s", s.toFixed(2) + " mm");
+      if (st.mode === "thin") {
+        const vi = V * RS_TRUE, est = (Math.PI / Math.LN2) * vi;
+        SB.stat("pp-vi", vi.toPrecision(4) + " Ω"); SB.stat("pp-est", est.toPrecision(4) + " Ω/□"); SB.stat("pp-true", RS_TRUE + " Ω/□");
+        SB.stat("pp-err", ((est / RS_TRUE - 1) * 100).toFixed(1) + " %");
+      } else {
+        const rhoMM = RHO_TRUE * 10, vi = V * rhoMM, est = (2 * Math.PI * s * vi) / 10;   // Ω·cm
+        SB.stat("pp-vi", vi.toPrecision(4) + " Ω"); SB.stat("pp-est", est.toPrecision(4) + " Ω·cm"); SB.stat("pp-true", RHO_TRUE + " Ω·cm");
+        SB.stat("pp-err", ((est / RHO_TRUE - 1) * 100).toFixed(1) + " %");
+      }
+    };
+    SB.drag(cv, {
+      handles: () => { const hs = st.p.map((p, i) => ({ id: i, x: cv._X(p[0]), y: cv._Y(p[1]), r: 14 })); if (cv._he) hs.push({ id: "e", x: cv._he[0], y: cv._he[1], r: 14 }); return hs; },
+      move: (id, x, y) => {
+        const wx = (x - cv._X(0)) / cv._sc, wy = -(y - cv._Y(0)) / cv._sc, Yr = cv._Y(0) / cv._sc;
+        if (id === "e") { const ymin = Math.min(...st.p.map((p) => p[1])); st.ye = SB.clamp(wy, -Yr + 0.1, ymin - 0.15); }
+        else if (id != null) {
+          let nx = SB.clamp(wx, -5.8, 5.8), ny = SB.clamp(wy, -Yr + 0.2, Yr - 0.2);
+          if (edgeEl.checked) ny = Math.max(ny, st.ye + 0.15);
+          if (st.p.every((p, i) => i === id || Math.hypot(p[0] - nx, p[1] - ny) > 0.2)) st.p[id] = [nx, ny];
+        }
+        upd();
+      },
+    });
+    SB.seg("pp-mode", (v) => { st.mode = v; upd(); cv.redraw(); });
+    edgeEl.addEventListener("change", () => { const ymin = Math.min(...st.p.map((p) => p[1])); st.ye = Math.min(st.ye, ymin - 0.3); upd(); cv.redraw(); });
+    $("pp-reset").addEventListener("click", () => { st.p = [[-1.5, 0], [-0.5, 0], [0.5, 0], [1.5, 0]]; st.ye = -2.2; upd(); cv.redraw(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 퍼짐 저항 */
+  {
+    const st = { a: 3 };   // µm
+    const rGet = SB.range("spr-rho", (v) => { const r = Math.pow(10, v); return (r < 0.01 ? r.toExponential(1) : r.toPrecision(2)) + " Ω·cm"; }, () => cv.redraw());
+    const cv = SB.canvas("cv-spread", (ctx, w, h, self) => {
+      const P = pal(), sc = w / 24, top = 34, X = (x) => w / 2 + x * sc, Z = (z) => top + z * sc, a = st.a;
+      ctx.fillStyle = P.surface; ctx.fillRect(0, top, w, h - top);
+      ctx.strokeStyle = P.border; ctx.beginPath(); ctx.moveTo(0, top); ctx.lineTo(w, top); ctx.stroke();
+      // 등전위(타원): V/V0 = (2/π) atan(1/sinh u)
+      ctx.save(); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2;
+      for (let k = 1; k <= 9; k++) {
+        const V = 1 - k / 10, u = Math.asinh(1 / Math.tan((Math.PI * V) / 2));
+        ctx.strokeStyle = EM.cmap("div", 0.5 + 0.45 * V);
+        ctx.beginPath(); for (let i = 0; i <= 60; i++) { const v = (Math.PI * i) / 60, x = a * Math.cosh(u) * Math.cos(v), z = a * Math.sinh(u) * Math.sin(v); i ? ctx.lineTo(X(x), Z(z)) : ctx.moveTo(X(x), Z(z)); } ctx.stroke();
+        if (k === 5) SB.label(ctx, "V₀/2", X(0), Z(a * Math.sinh(u)) + 10, { size: 11, color: P.dim });
+      }
+      ctx.restore();
+      // 전류선(쌍곡선)
+      ctx.strokeStyle = ctx.fillStyle = P.accent; ctx.lineWidth = 1.4;
+      for (let k = 1; k < 12; k++) {
+        const v = (Math.PI * k) / 12, pts = [];
+        for (let i = 0; i <= 80; i++) { const u = (4 * i) / 80, x = a * Math.cosh(u) * Math.cos(v), z = a * Math.sinh(u) * Math.sin(v); pts.push([x, z]); if (Math.abs(x) > 13 || z > (h - top) / sc) break; }
+        EM.polyline(ctx, pts, (x, z) => [X(x), Z(z)]); EM.lineArrow(ctx, pts, (x, z) => [X(x), Z(z)], 0.35, 5);
+      }
+      ctx.fillStyle = P.text; ctx.fillRect(X(-a), top - 8, 2 * a * sc, 8);
+      handle(ctx, X(a), top - 4, P.accent, 12); self._h = [X(a), top - 4];
+      SB.label(ctx, `2a = ${(2 * a).toFixed(1)} µm`, X(0), 12, { bold: true, size: 12 });
+      ctx.strokeStyle = P.dim; ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.moveTo(X(-a - 0.6), Z(a)); ctx.lineTo(X(-a - 3.2), Z(a)); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "깊이 a", X(-a - 4.4), Z(a), { size: 11, color: P.dim });
+      const rho = Math.pow(10, rGet()) * 1e-2, am = a * 1e-6, Rd = rho / (4 * am), Rh = rho / (2 * Math.PI * am);
+      const f = (R) => (R >= 1e6 ? (R / 1e6).toPrecision(3) + " MΩ" : R >= 1e3 ? (R / 1e3).toPrecision(3) + " kΩ" : R.toPrecision(3) + " Ω");
+      $("spr-r").textContent = `원판 R = ρ/4a = ${f(Rd)} · 같은 반지름 반구 ρ/2πa = ${f(Rh)}`;
+    }, { aspect: 0.45, minHeight: 200, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "a", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { const sc = cv.w / 24; st.a = SB.clamp((x - cv.w / 2) / sc, 0.8, 8); } });
+  }
+
+  /* ---------------------------------------------------------- 탱글: 비아 저항 */
+  SB.tangle("tg-via", (v) => {
+    const r = (v.d / 2) * 1e-9, rc = Math.max(1e-10, r - v.tb * 1e-9), Rcu = (v.rc * 1e-8 * v.h * 1e-9) / (Math.PI * rc * rc), Rb = (250e-8 * v.tb * 1e-9) / (Math.PI * r * r);
+    const f = (R) => R.toPrecision(3) + " Ω";
+    if (v.tb * 2 >= v.d) return { rcu: "—(구리 자리가 없다)", rb: "—", rt: "—", frac: "—" };
+    return { rcu: f(Rcu), rb: f(Rb), rt: f(Rcu + Rb), frac: ((100 * Rb) / (Rcu + Rb)).toFixed(0) + "%" };
+  });
+
+  /* ---------------------------------------------------------- 드릴: 면저항 */
+  SB.drill("drill-rs", () => {
+    const kind = pick(["film", "line", "4pp"]);
+    if (kind === "film") {
+      const rho = pick([1.7, 2.7, 5.6, 10, 25, 100, 250]), t = pick([20, 50, 100, 200, 300, 500]);
+      const Rs = (rho * 1e-8) / (t * 1e-9);
+      return { q: `<p>비저항 ${rho} µΩ·cm, 두께 ${t} nm인 막의 면저항은?</p>`, answer: Rs, label: "R_s =", unit: "Ω/□", tol: "1%", sol: `\\(R_s = \\rho/t = ${rho}\\times10^{-8}/(${t}\\times10^{-9}) = ${Rs.toPrecision(3)}\\ \\Omega/\\square\\)` };
+    }
+    if (kind === "line") {
+      const Rs = pick([0.1, 0.4, 2, 8, 25, 100, 300]), W = pick([0.1, 0.2, 0.5, 1, 2]), L = pick([5, 10, 20, 50, 100]), nc = pick([0, 2, 4]);
+      const n = L / W + nc * 0.56, R = Rs * n;
+      return { q: `<p>면저항 ${Rs} Ω/□인 막으로 폭 ${W} µm, 직선부 길이 합 ${L} µm(모서리 칸 제외)인 배선을 그렸다. 직각 모서리가 ${nc}개 있다. 저항은?</p>`, answer: R, label: "R =", unit: "Ω", tol: "1%", sol: `정사각형 수 \\(= ${L}/${W} + ${nc}\\times0.56 = ${n.toFixed(2)}\\), \\(R = ${Rs}\\times${n.toFixed(2)} = ${R.toPrecision(3)}\\ \\Omega\\)` };
+    }
+    const V = (1 + Math.floor(Math.random() * 90) / 10), I = pick([0.1, 0.5, 1, 2, 5]);
+    const Rs = (Math.PI / Math.LN2) * (V / I);
+    return { q: `<p>얇은 막을 등간격 4탐침으로 쟀다. 전류 ${I} mA에서 안쪽 탐침 사이 전압이 ${V.toFixed(1)} mV였다. 면저항은?</p>`, answer: Rs, label: "R_s =", unit: "Ω/□", tol: "1%", sol: `\\(R_s = (\\pi/\\ln2)V/I = 4.532\\times${V.toFixed(1)}/${I} = ${Rs.toPrecision(3)}\\ \\Omega/\\square\\)` };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 전류 밀집 */
+  {
+    const CX = 80, CY = 56, WD = 16;
+    const S = Cell(CX, CY);
+    const st = { mode: "bend", c: 0, nw: 12, d: 7, w2: 8, vw: 12 };
+    const G = {
+      bend: { Y0: 8, XC: CX - WD - 10 },
+      notch: { Y0: 20 },
+      step: { yc: 28, W1: 28 },
+      via: { XV: 30, up: [38, 50], lo: [8, 20] },
+    };
+    function geom(i, j) {
+      const m = st.mode;
+      if (m === "bend") { const { Y0, XC } = G.bend; let on = (j >= Y0 && j < Y0 + WD && i < XC + WD) || (i >= XC && i < XC + WD && j >= Y0); if (!on && i < XC && j >= Y0 + WD && XC - 1 - i + (j - Y0 - WD) < st.c) on = true; return on; }
+      if (m === "notch") { const Y0 = G.notch.Y0; return j >= Y0 && j < Y0 + WD && !(j < Y0 + st.d && Math.abs(i + 0.5 - CX / 2) < st.nw / 2); }
+      if (m === "step") { const { yc, W1 } = G.step; return i < CX / 2 ? Math.abs(j + 0.5 - yc) < W1 / 2 : Math.abs(j + 0.5 - yc) < st.w2 / 2; }
+      const { XV, up, lo } = G.via;
+      return (j >= up[0] && j < up[1] && i < XV + st.vw) || (i >= XV && i < XV + st.vw && j >= lo[0] && j < up[1]) || (j >= lo[0] && j < lo[1] && i >= XV);
+    }
+    function electrodes() {
+      S.unfix();
+      const L = (j0, j1) => { for (let j = j0; j <= j1; j++) S.fixNode(0, j, 0, 1); }, R = (j0, j1) => { for (let j = j0; j <= j1; j++) S.fixNode(CX, j, 1, 0); };
+      if (st.mode === "bend") { L(G.bend.Y0, G.bend.Y0 + WD); for (let i = G.bend.XC; i <= G.bend.XC + WD; i++) S.fixNode(i, CY, 1, 0); }
+      if (st.mode === "notch") { L(G.notch.Y0, G.notch.Y0 + WD); R(G.notch.Y0, G.notch.Y0 + WD); }
+      if (st.mode === "step") { L(G.step.yc - G.step.W1 / 2, G.step.yc + G.step.W1 / 2); R(G.step.yc - st.w2 / 2, G.step.yc + st.w2 / 2); }
+      if (st.mode === "via") { L(G.via.up[0], G.via.up[1]); R(G.via.lo[0], G.via.lo[1]); }
+    }
+    function build(fresh) {
+      if (fresh) S.phi.fill(0.5);
+      for (let j = 0; j < CY; j++) for (let i = 0; i < CX; i++) S.sig[j * CX + i] = geom(i, j) ? 1 : 0;
+      electrodes(); S.links();
+    }
+    build(true); S.solve(1e-7, 3000);
+    const J0of = () => (st.mode === "step" ? S.I / st.w2 : st.mode === "via" ? S.I / 12 : S.I / WD);
+    const handlePos = () => {
+      if (st.mode === "bend") { const { Y0, XC } = G.bend; return [XC - st.c / 2, Y0 + WD + st.c / 2]; }
+      if (st.mode === "notch") return [CX / 2 + st.nw / 2, G.notch.Y0 + st.d];
+      if (st.mode === "step") return [(CX * 3) / 4, G.step.yc + st.w2 / 2];
+      return [G.via.XV + st.vw, 29];
+    };
+    const cv = SB.canvas("cv-crowd", (ctx, w, h, self) => {
+      const P = pal(), box = cellBox(w, h, CX, CY, 6, 6); self._box = box;
+      const J0 = J0of();
+      drawCells(ctx, S, box, J0, { vmax: 2.4 });
+      if ($("cr-eq").checked) drawEquip(ctx, S, box, 10);
+      if ($("cr-q").checked) drawQuiver(ctx, S, box, J0, w < 520 ? 6 : 4);
+      let jm = 0, cm = 0; for (let c = 0; c < S.Jm.length; c++) if (S.Jm[c] > jm) { jm = S.Jm[c]; cm = c; }
+      const hx = box.x + ((cm % CX) + 0.5) * box.cs, hy = box.y + (CY - Math.floor(cm / CX) - 0.5) * box.cs;
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.6; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(hx, hy, 11, 0, 7); ctx.stroke(); ctx.restore();
+      const hp = handlePos(), [X, Y] = [box.x + hp[0] * box.cs, box.y + (CY - hp[1]) * box.cs];
+      handle(ctx, X, Y, P.accent, 12); self._h = [X, Y];
+      if (w >= 520) colorBar(ctx, box.x + 12, box.y + 20, 120, 8, 2.4, "|J|/J₀");
+    }, { aspect: 0.7, minHeight: 240, maxHeight: 520 });
+    const upd = () => {
+      const J0 = J0of(); let jm = 0; for (let c = 0; c < S.Jm.length; c++) if (S.Jm[c] > jm) jm = S.Jm[c];
+      const r = jm / J0, R = 1 / S.I;
+      SB.stat("cr-R", R.toFixed(2) + " □");
+      let Rc = "—";
+      if (st.mode === "bend") Rc = (G.bend.XC / WD + (CY - G.bend.Y0 - WD) / WD + 0.56).toFixed(2) + " □";
+      if (st.mode === "notch") Rc = (CX / WD).toFixed(2) + " □";
+      if (st.mode === "step") Rc = (CX / 2 / G.step.W1 + CX / 2 / st.w2).toFixed(2) + " □";
+      SB.stat("cr-Rc", Rc);
+      SB.stat("cr-J", r.toFixed(2)); SB.stat("cr-p", (r * r).toFixed(1) + "배"); SB.stat("cr-life", (1 / (r * r)).toFixed(2) + "배");
+      SB.stat("cr-goal", st.mode === "bend" ? (r <= 1.8 && S.md < 1e-5 ? "✓ 달성!" : "≤ 1.8 목표") : "굽힘 모드");
+    };
+    SB.seg("cr-mode", (v) => { st.mode = v; build(true); upd(); });
+    $("cr-eq").addEventListener("change", () => cv.redraw());
+    $("cr-q").addEventListener("change", () => cv.redraw());
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        const b = cv._box; if (!b) return;
+        const gx = (x - b.x) / b.cs, gy = CY - (y - b.y) / b.cs; let ch = false;
+        if (st.mode === "bend") { const c = Math.round(SB.clamp(G.bend.XC - gx + (gy - G.bend.Y0 - WD), 0, 20)); if (c !== st.c) { st.c = c; ch = true; } }
+        if (st.mode === "notch") { const nw = Math.round(SB.clamp(2 * (gx - CX / 2), 2, 40)), d = Math.round(SB.clamp(gy - G.notch.Y0, 0, WD - 3)); if (nw !== st.nw || d !== st.d) { st.nw = nw; st.d = d; ch = true; } }
+        if (st.mode === "step") { const w2 = 2 * Math.round(SB.clamp(gy - G.step.yc, 2, 14)); if (w2 !== st.w2) { st.w2 = w2; ch = true; } }
+        if (st.mode === "via") { const vw = Math.round(SB.clamp(gx - G.via.XV, 3, 30)); if (vw !== st.vw) { st.vw = vw; ch = true; } }
+        if (ch) build(false);
+      },
+    });
+    let dirty = true;
+    SB.loop("sim-crowd", () => {
+      if (S.md > 2e-7) { S.iterate(14); S.calc(); dirty = true; }
+      if (dirty) { cv.redraw(); upd(); if (S.md <= 2e-7) dirty = false; }
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 자기 발열과 열 폭주 */
+  {
+    const rho0 = 2.2e-8, al = 0.0039, t = 1e-7, tox = 5e-7;
+    const st = { J: 10, k: 1.4 };   // MA/cm²
+    const dT0 = (J) => ((J * 1e10) ** 2 * rho0 * t * tox) / st.k;
+    const dT = (J) => { const d = dT0(J); return al * d < 1 ? d / (1 - al * d) : Infinity; };
+    const Jr = () => Math.sqrt(st.k / (al * rho0 * t * tox)) / 1e10;
+    const O = { x: [0, 60], y: [0, 400], xLabel: "전류 밀도 J (MA/cm²)", yLabel: "온도 상승 ΔT (K)" };
+    const cv = SB.canvas("cv-heat", (ctx, w, h, self) => {
+      const P = pal(), d0 = [], d1 = [];
+      for (let J = 0; J <= 60.001; J += 0.25) { d0.push([J, dT0(J)]); const v = dT(J); d1.push([J, isFinite(v) ? v : NaN]); }
+      const jr = Jr();
+      const ch = SB.chart(ctx, null, Object.assign({}, O, { series: [{ data: d0, color: P.faint, width: 1.6, dash: [5, 4] }, { data: d1, color: P.accent, width: 2.6 }], vlines: jr < 60 ? [{ x: jr, color: P.bad }] : [] }));
+      self._ch = ch;
+      if (jr < 60) SB.label(ctx, "열 폭주", ch.X(jr) - 6, ch.box.y + 12, { align: "right", size: 11, color: P.bad, bold: true });
+      const v = dT(st.J), X = ch.X(st.J), Y = ch.Y(isFinite(v) ? Math.min(v, 400) : 400);
+      handle(ctx, X, Y, P.accent, 11); self._h = [X, Y];
+      $("ht-r").textContent = `J = ${st.J.toFixed(1)} MA/cm² · ΔT₀ = ${dT0(st.J).toFixed(1)} K · ΔT = ${isFinite(v) ? v.toFixed(1) + " K" : "폭주"} · 폭주 J = ${jr.toFixed(1)} MA/cm²`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 330 });
+    SB.seg("ht-k", (v) => { st.k = Number(v); cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (cv._ch) st.J = SB.clamp(invX(cv._ch, O, x), 0.5, 60); } });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 쌍대성 */
+  {
+    const NX = 72, NY = 44, RE = 4, MID = 22;
+    const ed = { edges: { left: "neumann", right: "neumann", top: "neumann", bottom: "neumann" } };
+    const Ge = EM.grid(NX, NY, ed), Gs = EM.grid(NX, NY, ed);
+    const SUB = { er: 11.7, s: 10 };
+    const st = { a: [22, 30], b: [50, 30], mode: "uni" };
+    const erGet = SB.range("du-er", (v) => v.toFixed(1), () => build());
+    const sgGet = SB.range("du-sg", (v) => sci(Math.pow(10, v), 1) + " S/m", () => build());
+    let md = Infinity;
+    function build() {
+      const er = erGet(), sg = Math.pow(10, sgGet());
+      [Ge, Gs].forEach((G, n) => {
+        G.fixed.fill(0); G.tag.fill(-1);
+        G.material(0, 0, NX - 1, NY - 1, n ? sg : er);
+        if (st.mode === "layer") G.material(0, 0, NX - 1, MID - 1, n ? SUB.s : SUB.er);
+        G.disk(st.a[0], st.a[1], RE, 1, 0); G.disk(st.b[0], st.b[1], RE, 0, 1);
+      });
+      md = Infinity;
+    }
+    build();
+    for (let i = 0; i < 40; i++) { Ge.iterate(10); Gs.iterate(10); }
+    let C = 0, Gc = 0;
+    const cv = SB.canvas("cv-dual", (ctx, w, h, self) => {
+      const P = pal(), cs = Math.min(w / NX, h / NY), bw = cs * NX, bh = cs * NY, box = { x: (w - bw) / 2, y: (h - bh) / 2, w: bw, h: bh };
+      self._box = box; self._cs = cs;
+      EM.heatmap(ctx, Gs.phi, NX, NY, box, { cmap: "div", vmin: -0.1, vmax: 1.1, alpha: 0.7 });
+      const toPx = (x, y) => [box.x + (x + 0.5) * cs, box.y + (NY - 0.5 - y) * cs];
+      const cl = EM.contourGrid(Gs.phi, NX, NY, [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]);
+      ctx.save(); ctx.strokeStyle = P.text; ctx.globalAlpha = 0.5; ctx.setLineDash([3, 3]); EM.drawContours(ctx, cl, toPx); ctx.restore();
+      const F = Gs.field();
+      EM.quiver(ctx, (x, y) => { const i = SB.clamp(Math.round(x), 0, NX - 1), j = SB.clamp(Math.round(y), 0, NY - 1), k = j * NX + i; if (Gs.fixed[k]) return [0, 0]; return [Gs.eps[k] * F.Ex[k], Gs.eps[k] * F.Ey[k]]; }, (x, y) => toPx(x, y), [0, NX - 1, 0, NY - 1], 18, 11, { len: Math.max(10, cs * 3.4), log: true, color: P.text });
+      if (st.mode === "layer") {
+        const y = box.y + (NY - MID) * cs; ctx.strokeStyle = P.text; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(box.x, y); ctx.lineTo(box.x + bw, y); ctx.stroke();
+        SB.label(ctx, "위: 절연막(슬라이더 값)", box.x + 8, y - 12, { align: "left", size: 11, color: P.dim });
+        SB.label(ctx, "아래: Si 기판 εr 11.7, σ 10 S/m", box.x + 8, y + 12, { align: "left", size: 11, color: P.dim });
+      }
+      ctx.strokeStyle = P.border; ctx.strokeRect(box.x, box.y, bw, bh);
+      const e = (p, col, t) => { const [x, y] = toPx(p[0], p[1]); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, Math.max(12, (RE + 0.5) * cs), 0, 7); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); SB.label(ctx, t, x, y, { color: "#fff", bg: col, bold: true }); return [x, y]; };
+      self._ha = e(st.a, P.accent, "1 V"); self._hb = e(st.b, P.accent2, "0");
+    }, { aspect: NY / NX, minHeight: 220, maxHeight: 460 });
+    const upd = () => {
+      C = Ge.chargeOn(0); Gc = Gs.chargeOn(0, true);
+      const RC = C / Gc;
+      SB.stat("du-C", (C * 1e12).toPrecision(3) + " pF/m"); SB.stat("du-G", sci(Gc, 2) + " S/m"); SB.stat("du-RC", tfmt(RC));
+      const t1 = (erGet() * eps0) / Math.pow(10, sgGet());
+      SB.stat("du-tau", st.mode === "uni" ? tfmt(t1) + (Math.abs(RC / t1 - 1) < 0.01 ? " ✓ 같다" : "") : "위 " + tfmt(t1) + " · 아래 " + tfmt((SUB.er * eps0) / SUB.s));
+    };
+    SB.seg("du-mode", (v) => { st.mode = v; build(); });
+    SB.drag(cv, {
+      handles: () => (cv._ha ? [{ id: "a", x: cv._ha[0], y: cv._ha[1], r: 16 }, { id: "b", x: cv._hb[0], y: cv._hb[1], r: 16 }] : []),
+      move: (id, x, y) => {
+        if (!id) return; const b = cv._box, cs = cv._cs;
+        const i = Math.round(SB.clamp((x - b.x) / cs - 0.5, RE + 2, NX - RE - 3)), j = Math.round(SB.clamp(NY - 0.5 - (y - b.y) / cs, RE + 2, NY - RE - 3));
+        const o = id === "a" ? st.b : st.a; if (Math.hypot(i - o[0], j - o[1]) < 2 * RE + 3) return;
+        const p = id === "a" ? st.a : st.b; if (p[0] !== i || p[1] !== j) { p[0] = i; p[1] = j; build(); }
+      },
+    });
+    let dirty = true;
+    SB.loop("sim-dual", () => {
+      if (md > 1e-6) { md = Math.max(Ge.iterate(12), Gs.iterate(12)); dirty = true; }
+      if (dirty) { cv.redraw(); upd(); if (md <= 1e-6) dirty = false; }
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 탱글: TSV 쌍대성 */
+  SB.tangle("tg-dual", (v) => {
+    if (v.b <= v.a) return { C: "—(b > a 이어야 함)", R: "—", RC: "—", tau: "—" };
+    const L = 50e-6, ln = Math.log(v.b / v.a), e = v.er * eps0, s = Math.pow(10, v.ls), C = (2 * Math.PI * e * L) / ln, R = ln / (2 * Math.PI * s * L);
+    return { C: (C * 1e15).toPrecision(3) + " fF", R: sci(R, 2) + " Ω", RC: tfmt(R * C), tau: tfmt(e / s) };
+  });
+
+  /* ---------------------------------------------------------- 미니: 일렉트로마이그레이션(코르호넨) */
+  {
+    const NC = 48;
+    const st = { s: new Float64Array(NC), t: 0, void: false, V: 0, tn: null };
+    const jGet = SB.range("em-j", (v) => v.toFixed(2), () => reset());
+    const lGet = SB.range("em-l", (v) => v.toFixed(2), () => reset());
+    function reset() { st.s.fill(0); st.t = 0; st.void = false; st.V = 0; st.tn = null; if (cv) cv.redraw(); }
+    function step(T) {
+      const g = jGet(), L = lGet(), dx = L / NC, dt = 0.35 * dx * dx, n = Math.ceil(T / dt), s = st.s, F = new Float64Array(NC + 1);
+      for (let it = 0; it < n; it++) {
+        F[0] = st.void ? g + s[0] / (dx / 2) : 0; F[NC] = 0;
+        for (let i = 1; i < NC; i++) F[i] = g + (s[i] - s[i - 1]) / dx;
+        for (let i = 0; i < NC; i++) s[i] += (dt * (F[i + 1] - F[i])) / dx;
+        if (st.void) st.V += F[0] * dt;
+        st.t += dt;
+        if (!st.void && s[0] >= 1) { st.void = true; st.tn = st.t; }
+      }
+      st.F = F;
+    }
+    let cv = null;
+    cv = SB.canvas("cv-em", (ctx, w, h) => {
+      const P = pal(), L = lGet(), g = jGet(), Lmax = 3, x0 = 50, xw = ((w - 100) * L) / Lmax, y0 = h * 0.42, lh = Math.min(40, h * 0.2);
+      // 비아
+      ctx.fillStyle = P.dim; ctx.globalAlpha = 0.6; ctx.fillRect(x0 - 26, y0, 26, h - y0 - 30); ctx.fillRect(x0 + xw, y0, 26, h - y0 - 30); ctx.globalAlpha = 1;
+      SB.label(ctx, "음극", x0 - 13, h - 18, { size: 11 }); SB.label(ctx, "양극", x0 + xw + 13, h - 18, { size: 11 });
+      // 응력 색
+      const dx = xw / NC;
+      for (let i = 0; i < NC; i++) { ctx.fillStyle = EM.cmap("div", 0.5 + st.s[i] / 3); ctx.fillRect(x0 + i * dx, y0, dx + 0.6, lh); }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 1.2; ctx.strokeRect(x0, y0, xw, lh);
+      // 보이드
+      const vlen = 0.12 * st.V, vl = Math.min(xw * 0.9, (vlen * (w - 100)) / Lmax);
+      if (st.void && vl > 0.5) { ctx.fillStyle = P.bg; ctx.beginPath(); ctx.ellipse(x0 + vl / 2, y0 + lh * 0.35, vl / 2 + 2, lh * 0.38, 0, 0, 7); ctx.fill(); ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.stroke(); SB.label(ctx, "보이드", x0 + vl / 2 + 6, y0 - 12, { color: P.bad, bold: true, size: 11 }); }
+      // 힐록
+      const comp = -st.s[NC - 1] - 1.2;
+      if (comp > 0) { const hh = Math.min(lh, comp * 14); ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(x0 + xw - 30, y0); ctx.quadraticCurveTo(x0 + xw - 15, y0 - 2 * hh, x0 + xw, y0); ctx.fill(); ctx.globalAlpha = 1; }
+      // 원자 선속 화살표
+      if (st.F) for (let i = 4; i < NC; i += 6) { const f = st.F[i], L2 = SB.clamp(f * 10, -22, 22); if (Math.abs(L2) > 2) SB.arrow(ctx, x0 + i * dx - L2 / 2, y0 + lh + 14, x0 + i * dx + L2 / 2, y0 + lh + 14, { color: P.warn, width: 2, head: 6 }); }
+      SB.arrow(ctx, x0 + 10, 18, x0 + 110, 18, { color: P.accent2, width: 2 }); SB.label(ctx, "e⁻ 흐름 (원자는 이쪽으로 떠밀림)", x0 + 118, 18, { align: "left", size: 11, color: P.accent2 });
+      // 응력 그래프 작게
+      const gy = y0 - 18, gh = Math.min(50, y0 - 40);
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x0, gy - gh / 3); ctx.lineTo(x0 + xw, gy - gh / 3); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i < NC; i++) { const yy = gy - (SB.clamp(st.s[i], -3, 3) * gh) / 3; i ? ctx.lineTo(x0 + (i + 0.5) * dx, yy) : ctx.moveTo(x0 + (i + 0.5) * dx, yy); } ctx.stroke();
+      SB.label(ctx, "임계 인장(1)", x0 + xw - 4, gy - gh / 3 - 9, { align: "right", size: 10, color: P.dim });
+      const gl = g * L, imm = gl < 2;
+      const dR = st.void ? (vl / xw) * 2900 : 0;
+      $("em-r").textContent = `JL = ${gl.toFixed(2)} (${imm ? "블레흐 조건 만족 → 불멸 예상" : "임계 2 초과"}) · t = ${st.t.toFixed(2)} · ${st.void ? "보이드 생성(t = " + st.tn.toFixed(2) + "), 저항 +" + dR.toFixed(0) + "%" : "보이드 없음"}`;
+    }, { aspect: 0.4, minHeight: 200, maxHeight: 290 });
+    const loop = SB.loop("mini-em", (dt) => { if (st.t < 30) step(dt * 0.25); cv.redraw(); });
+    SB.play("em-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 탱글: 블레흐 */
+  SB.tangle("tg-blech", (v) => {
+    const jl = v.j * 1e6 * v.L * 1e-4, lc = (3000 / (v.j * 1e6)) * 1e4;
+    return { jl: jl.toFixed(0) + " A/cm", v: jl < 3000 ? "<b>불멸</b>(역응력이 이긴다)" : "<b>수명이 유한</b>(블랙 식으로 따져야 한다)", lc: lc.toPrecision(3) + " µm" };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 블랙 식 */
+  {
+    const TS = 300, JS = 2.5, T50S = 60, YEAR = 8766;
+    const st = { Tu: 125, Ju: 1.5, goal: false };
+    const eaGet = SB.range("bk-ea", (v) => v.toFixed(2) + " eV", () => cv.redraw());
+    const nGet = SB.range("bk-n", (v) => v.toFixed(1), () => cv.redraw());
+    const sGet = SB.range("bk-s", (v) => v.toFixed(2), () => cv.redraw());
+    const t50 = (T, J) => T50S * EM.blackRatio(JS, TS + 273.15, J, T + 273.15, nGet(), eaGet());
+    const red = () => Math.exp(-3.09 * sGet());
+    const O = { x: [25, 350], y: [1, 1e10], logY: true, xLabel: "온도 (°C)", yLabel: "수명 (시간)", yFmt: (v) => "10" + sup(Math.round(Math.log10(v))), yTicks: [1, 1e2, 1e4, 1e6, 1e8, 1e10] };
+    const cv = SB.canvas("cv-black", (ctx, w, h, self) => {
+      const P = pal(), dU = [], dU1 = [], dS = [];
+      for (let T = 25; T <= 350.01; T += 2.5) { dU.push([T, t50(T, st.Ju)]); dU1.push([T, t50(T, st.Ju) * red()]); dS.push([T, t50(T, JS)]); }
+      const ch = SB.chart(ctx, null, Object.assign({}, O, {
+        series: [{ data: dS, color: P.faint, width: 1.6 }, { data: dU, color: P.accent, width: 2.4 }, { data: dU1, color: P.accent, width: 1.8, dash: [6, 4] }],
+        hlines: [{ y: 10 * YEAR, color: P.ok, label: "10년" }],
+        vlines: st.goal ? [{ x: 105, color: P.ok, label: "105 °C" }] : [],
+        points: [{ x: TS, y: T50S, color: P.dim, r: 6, label: "시험 60 h" }],
+      }));
+      self._ch = ch;
+      const y1 = t50(st.Tu, st.Ju) * red(), X = ch.X(st.Tu), Y = ch.Y(SB.clamp(y1, 1, 1e10));
+      handle(ctx, X, Y, P.accent, 12); self._h = [X, Y];
+      SB.label(ctx, `J = ${st.Ju.toFixed(2)} MA/cm²`, X + 14, Y - 16, { align: "left", size: 11, bold: true, color: P.accent });
+      const af = EM.blackRatio(JS, TS + 273.15, st.Ju, st.Tu + 273.15, nGet(), eaGet()), a50 = t50(st.Tu, st.Ju);
+      SB.stat("bk-use", `${st.Tu.toFixed(0)} °C, ${st.Ju.toFixed(2)} MA/cm²`); SB.stat("bk-af", sci(af, 2));
+      const yrs = (x) => (x / YEAR >= 1 ? (x / YEAR).toPrecision(3) + " 년" : x.toPrecision(3) + " h");
+      SB.stat("bk-t50", yrs(a50)); SB.stat("bk-t01", yrs(a50 * red()));
+      const ok = Math.abs(st.Tu - 105) <= 2 && Math.abs((a50 * red()) / (10 * YEAR) - 1) <= 0.03;
+      SB.stat("bk-st", st.goal ? (ok ? `✓ 달성: 허용 J ≈ ${st.Ju.toFixed(2)} MA/cm²` : "105 °C에서 t₀.₁% = 10년 ± 3%") : "버튼을 눌러 시작");
+    }, { aspect: 0.6, minHeight: 260, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "u", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (!cv._ch) return;
+        st.Tu = SB.clamp(invX(cv._ch, O, x), 25, 350);
+        const target = SB.clamp(invY(cv._ch, O, y), 1, 1e10);
+        // t0.1 = T50S·(JS/J)^n·exp(...)·red → J
+        const base = T50S * EM.blackRatio(JS, TS + 273.15, JS, st.Tu + 273.15, nGet(), eaGet()) * red();
+        st.Ju = SB.clamp(JS * Math.pow(base / target, 1 / nGet()), 0.05, 20);
+      },
+    });
+    $("bk-goal").addEventListener("click", () => { st.goal = true; st.Tu = 105; cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 블랙 식 */
+  SB.drill("drill-black", () => {
+    const Ts = pick([250, 275, 300, 325, 350]), Tu = pick([85, 105, 110, 125]), Js = pick([2, 2.5, 3, 4]), Ju = pick([0.5, 1, 1.5, 2]), n = pick([1, 2]), Ea = pick([0.7, 0.8, 0.85, 0.9, 1.0]);
+    const af = EM.blackRatio(Js, Ts + 273.15, Ju, Tu + 273.15, n, Ea);
+    return { q: `<p>EM 시험 조건 ${Ts} °C, ${Js} MA/cm²를 사용 조건 ${Tu} °C, ${Ju} MA/cm²로 옮기는 가속 계수 \\(t_{use}/t_{stress}\\)는? \\(n = ${n}\\), \\(E_a = ${Ea}\\) eV.</p>`, answer: af, label: "AF =", tol: "2%",
+      sol: `\\(AF = (${Js}/${Ju})^{${n}}\\exp\\left[\\dfrac{${Ea}}{8.617\\times10^{-5}}\\left(\\dfrac{1}{${(Tu + 273.15).toFixed(2)}} - \\dfrac{1}{${(Ts + 273.15).toFixed(2)}}\\right)\\right] = ${Math.pow(Js / Ju, n).toPrecision(3)}\\times${(af / Math.pow(Js / Ju, n)).toPrecision(3)} = ${af.toPrecision(3)}\\)` };
+  });
+})();
+</script>
+</body>
+</html>
