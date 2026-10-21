@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>반도체의 캐리어 통계 · 고체물리 · SciBook</title>
+<meta name="description" content="진성 캐리어 농도와 바르시니 띠 간격, 도너·억셉터 이온화와 축퇴 인자, 전하 중성 조건의 수치 풀이와 페르미 준위, 동결·외인성·진성 영역, 보상, 축퇴 도핑과 모트 전이·띠 간격 축소, 도핑에서 비저항·면저항까지 직접 끌며 계산한다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/carrier-statistics.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="반도체의 캐리어 통계 · 고체물리 · SciBook">
+<meta property="og:description" content="진성 캐리어 농도와 바르시니 띠 간격, 도너·억셉터 이온화와 축퇴 인자, 전하 중성 조건의 수치 풀이와 페르미 준위, 동결·외인성·진성 영역, 보상, 축퇴 도핑과 모트 전이·띠 간격 축소, 도핑에서 비저항·면저항까지 직접 끌며 계산한다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/carrier-statistics.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "반도체의 캐리어 통계 · 고체물리 · SciBook", "headline": "10 반도체의 캐리어 통계", "url": "https://science.euiyun.com/solid-state/chapters/carrier-statistics.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "진성 캐리어 농도와 바르시니 띠 간격, 도너·억셉터 이온화와 축퇴 인자, 전하 중성 조건의 수치 풀이와 페르미 준위, 동결·외인성·진성 영역, 보상, 축퇴 도핑과 모트 전이·띠 간격 축소, 도핑에서 비저항·면저항까지 직접 끌며 계산한다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 10, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "10 반도체의 캐리어 통계", "item": "https://science.euiyun.com/solid-state/chapters/carrier-statistics.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+<style>
+  .cs-hit { color: var(--ok); font-weight: 700; }
+  .cs-miss { color: var(--text-dim); }
+</style>
+</head>
+<body data-chapter="carrier-statistics">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="band-structure electron-dynamics">
+    <div class="eyebrow">Chapter 10</div>
+    <h1>반도체의 캐리어 통계</h1>
+    <p class="lead">실리콘 원자 5×10²² cm⁻³개 가운데 인 원자를 1억 개에 두 개꼴(10¹⁶ cm⁻³)로 섞으면 전도도가 백만 배 넘게 뛴다. 그 전자들이 실제로 전도대에 올라와 있는지는 온도가 정한다. 50 K에서는 인 원자의 95%가 전자를 붙잡고 있고, 300 K에서는 거의 모두 놓아주며, 700 K에서는 가전자대에서 올라온 진성 전자가 도핑을 압도한다. 이 장은 그 모든 상황을 <strong>식 하나</strong>, 곧 전하 중성 조건으로 푼다. 아래 띠 그림을 좌우로 끌어 온도를 바꾸며 주개 준위의 전자가 튀어 오르고 페르미 준위가 내려오는 모습을 먼저 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">좌우로 끌면 온도가 바뀐다</span></div>
+    <ul class="objectives">
+      <li>\(n = N_cF_{1/2}(\eta_c)\), \(p = N_vF_{1/2}(\eta_v)\)와 볼츠만 근사, 질량 작용 법칙으로 진성 농도 \(n_i(T)\)와 진성 준위 \(E_i\)를 계산한다(바르시니 \(E_g(T)\), \(N_{c,v} \propto T^{3/2}\) 포함).</li>
+      <li>얕은 도너·억셉터의 이온화 에너지를 수소 모형과 실측으로 비교하고, 축퇴 인자 \(g_D = 2\), \(g_A = 4\)로 이온화율을 구한다.</li>
+      <li>전하 중성 조건 \(p + N_D^+ = n + N_A^-\)을 그림(쇼클리 도식)과 수치로 풀어 페르미 준위를 정한다.</li>
+      <li>동결·외인성·진성 세 온도 영역을 구별하고, 아레니우스 그림의 기울기에서 \(E_d/2\), \(E_d\), \(E_g/2\)를 읽는다.</li>
+      <li>보상 도핑의 순 캐리어 농도, 축퇴 도핑에서 볼츠만 근사의 오차와 조이스–딕슨 근사, 모트 전이와 띠 간격 축소를 계산한다.</li>
+      <li>도핑 농도를 비저항·면저항으로 바꾸고, 웨이퍼 사양("p형 1–10 Ω·cm 붕소")을 농도 범위로 읽는다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="intrinsic">
+    <h2>진성 반도체: 복습과 온도 의존</h2>
+    <p>현대물리학 10장 <a href="../../modern-physics/chapters/quantum-statistics.html#carriers">양자 통계 · 반도체의 캐리어 농도</a>에서 유도한 결과를 한 줄로 모으면 이렇다. 포물선 띠의 상태 밀도에 페르미–디랙 분포를 곱해 띠 전체로 적분하면, 전자와 정공의 농도는 "유효 상태 밀도 × 순수한 수"로 나뉜다.</p>
+    <div class="formula">$$n = N_c\,F_{1/2}(\eta_c), \quad \eta_c = \frac{E_F - E_c}{kT}; \qquad p = N_v\,F_{1/2}(\eta_v), \quad \eta_v = \frac{E_v - E_F}{kT}; \qquad N_{c,v} = 2\left(\frac{2\pi m_{n,p}^*kT}{h^2}\right)^{3/2}$$<div class="where">\(F_{1/2}\): \(\eta \ll -1\)에서 \(e^\eta\)로 가도록 정규화한 페르미–디랙 적분(<code>Q.fdHalf</code>). \(m^*\)는 상태 밀도 유효 질량(8장: Si 전도대 \(6^{2/3}(m_lm_t^2)^{1/3} = 1.08\)). 이 장의 계산기는 <code>Solid.semis</code>의 300 K 값 \(N_c = 2.86\times10^{19}\), \(N_v = 3.10\times10^{19}\) cm⁻³(Si)를 쓴다.</div></div>
+    <p>페르미 준위가 두 띠 끝에서 \(3kT\) 이상 떨어져 있으면(<span class="term">비축퇴</span><span class="en">(nondegenerate)</span>) \(F_{1/2}(\eta) \approx e^\eta\)이고, 두 식을 곱하면 \(E_F\)가 사라진다.</p>
+    <div class="formula">$$n = N_ce^{-(E_c - E_F)/kT}, \qquad p = N_ve^{-(E_F - E_v)/kT}, \qquad np = N_cN_ve^{-E_g/kT} \equiv n_i^2$$<div class="where"><span class="term">질량 작용 법칙</span><span class="en">(law of mass action)</span> \(np = n_i^2\)은 평형이고 비축퇴이면 도핑과 상관없이 성립한다. 도핑은 \(n\)과 \(p\)의 <em>비율</em>만 바꾼다.</div></div>
+
+    <h3>n<sub>i</sub>(T): 세 곳에서 온도가 들어간다</h3>
+    <p>진성 농도 \(n_i = \sqrt{N_cN_v}\,e^{-E_g/2kT}\)에는 온도가 세 군데 숨어 있다. 지수의 \(1/kT\), 유효 상태 밀도의 \(T^{3/2}\)(합쳐서 \(T^3\)의 제곱근), 그리고 띠 간격 자체의 온도 의존이다. 원자 간격이 열팽창으로 벌어지고 포논이 띠 끝을 흔들어 띠 간격은 온도가 오르면 줄어드는데, 이것을 <span class="term">바르시니 식</span><span class="en">(Varshni equation)</span>으로 맞춘다.</p>
+    <div class="formula">$$E_g(T) = E_g(0) - \frac{\alpha T^2}{T + \beta}, \qquad n_i(T) = \sqrt{N_c(300)N_v(300)}\left(\frac{T}{300}\right)^{3/2}\exp\!\left[-\frac{E_g(T)}{2kT}\right]$$<div class="where">Si: \(E_g(0) = 1.170\) eV, \(\alpha = 4.73\times10^{-4}\) eV/K, \(\beta = 636\) K → \(E_g(300) = 1.1245\) eV(<code>Solid.Eg</code>). 계산값 \(n_i(300\text{ K}) = 1.07\times10^{10}\) cm⁻³(<code>Solid.ni</code>). 측정·교재값은 \(9.65\times10^{9}\)–\(1.5\times10^{10}\) cm⁻³로 흩어져 있으니, 예제와 문제는 쓰는 값을 문제에 밝힌다.</div></div>
+    <div class="tangle" id="tg-ni">
+      <p>온도 <span class="tn" data-var="T" data-min="200" data-max="700" data-step="5" data-unit=" K">400</span>에서 실리콘의 띠 간격은 <span class="tn-out" data-out="Eg"></span>, 유효 상태 밀도는 \(N_c\) = <span class="tn-out" data-out="Nc"></span>이고, 진성 농도는 \(n_i\) = <span class="tn-out" data-out="ni"></span>로 300 K의 <span class="tn-out" data-out="r"></span>배다. 띠 간격을 300 K 값에 묶어 두고 계산하면 <span class="tn-out" data-out="fix"></span> — 바르시니 보정이 <span class="tn-out" data-out="corr"></span>배를 만든다. 같은 온도에서 저마늄은 <span class="tn-out" data-out="ge"></span>, 갈륨 비소는 <span class="tn-out" data-out="gaas"></span>이다.</p>
+    </div>
+    <div class="example" data-title="400 K 실리콘의 진성 농도">
+      <p>바르시니 식(\(E_g(0) = 1.170\) eV, \(\alpha = 4.73\times10^{-4}\) eV/K, \(\beta = 636\) K)과 300 K 값 \(N_c = 2.86\times10^{19}\), \(N_v = 3.10\times10^{19}\) cm⁻³을 써서 400 K 실리콘의 \(n_i\)를 구하고, 300 K 값(\(1.07\times10^{10}\) cm⁻³)과 비교하라. 띠 간격을 1.1245 eV로 고정하면 얼마가 나오는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 세 온도 의존(\(E_g\), \(T^{3/2}\), \(1/kT\))을 차례로 계산한다.</div>
+        <div class="step"><b>풀이</b> \(E_g(400) = 1.170 - (4.73\times10^{-4})(400^2)/(1036) = 1.0969\) eV. \(N_c = 2.86\times10^{19}(4/3)^{1.5} = 4.40\times10^{19}\), \(N_v = 4.77\times10^{19}\) cm⁻³. \(kT = 0.034469\) eV이므로 \(n_i = \sqrt{4.40\times10^{19}\cdot4.77\times10^{19}}\;e^{-1.0969/0.068939} = (4.58\times10^{19})(1.230\times10^{-7}) = 5.63\times10^{12}\) cm⁻³. 고정 간격이면 지수가 \(e^{-1.1245/0.068939}\)가 되어 \(3.78\times10^{12}\) cm⁻³.</div>
+        <div class="answer">n<sub>i</sub>(400 K) ≈ 5.6×10¹² cm⁻³ (300 K의 약 530배), 고정 간격이면 3.8×10¹² cm⁻³</div>
+        <div class="step"><b>검토</b> 띠 간격이 28 meV 줄어든 효과는 \(e^{0.0276/0.0689} = 1.49\)배로, 100 K 상승이 만든 530배에 비하면 작지만 소자 누설 예측에서는 무시할 수 없다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>아레니우스 기울기가 주는 띠 간격은 E<sub>g</sub>(300 K)가 아니다</strong><p>\(\ln(n_iT^{-3/2})\)를 \(1/kT\)에 대해 그리면 기울기는 \(-\tfrac12\,d(E_g/kT)/d(1/kT) = -\tfrac12\,(E_g - T\,dE_g/dT)\)이다. 300 K 근처 실리콘은 \(dE_g/dT = -2.55\times10^{-4}\) eV/K이므로 기울기가 주는 값은 \(1.1245 + 0.0764 = 1.20\) eV — 선형 외삽한 "0 K 띠 간격"이다. 오래된 교재가 "\(n_i\) 측정으로 구한 Si 띠 간격 1.21 eV"라고 쓰는 것은 이 때문이다.</p></div>
+
+    <h3>진성 준위 E<sub>i</sub>의 위치</h3>
+    <p>\(n = p\)로 놓고 \(E_F\)에 대해 풀면 진성 반도체의 페르미 준위, 곧 <span class="term">진성 준위</span><span class="en">(intrinsic level)</span>가 나온다. 띠 간격 한가운데에서 상태 밀도가 작은 띠 쪽으로 조금 밀린다.</p>
+    <div class="formula">$$E_i - E_v = \frac{E_g}{2} + \frac{kT}{2}\ln\frac{N_v}{N_c} = \frac{E_g}{2} + \frac{3kT}{4}\ln\frac{m_p^*}{m_n^*}$$<div class="where"><code>Solid.Ei</code>. Si는 \(N_v\) 문헌값(1.0–3.1×10¹⁹)에 따라 중앙에서 −13 ~ +1 meV로, 보통 중앙으로 본다. 전도대 상태 밀도가 아주 작은 GaAs(\(N_c = 4.7\times10^{17}\))는 300 K에서 중앙보다 38 meV 위다.</div></div>
+    <figure class="mini" id="mini-ei">
+      <div class="mini-view"><canvas id="cv-ei"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="ei-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>세 반도체의 \(E_i\)가 띠 간격 중앙에서 얼마나 벗어나는지(meV)를 온도에 따라 그렸다. 흰 점이 달린 세로 커서를 끌어 온도를 고르면 오른쪽 띠 그림에 그 온도의 \(E_i\) 위치가 표시된다. 0 K에서는 셋 다 정확히 중앙이다.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="dopants">
+    <h2>도너와 억셉터: 얕은 준위와 이온화</h2>
+    <p>실리콘 자리에 5족 원자(P, As, Sb)가 들어가면 네 전자는 이웃과 공유 결합을 하고 다섯째 전자가 남는다. 이 전자는 \(+e\)인 이온 코어에 묶이지만, 결정의 유전율이 쿨롱 인력을 \(\varepsilon_r = 11.7\)배로 가리고 전자는 유효 질량 \(m^*\)로 움직이므로 결합이 아주 약하다. 현대물리학 8장의 <a href="../../modern-physics/chapters/hydrogen-atom.html#hydrogenic">수소 꼴 모형</a>을 그대로 쓰면</p>
+    <div class="formula">$$E_d^{\,\text{H}} = 13.6\ \text{eV}\times\frac{m^*/m_e}{\varepsilon_r^2} = 25.8\ \text{meV}, \qquad a_B^* = 0.0529\ \text{nm}\times\frac{\varepsilon_r}{m^*/m_e} = 2.38\ \text{nm} \qquad (m^* = 0.26,\ \varepsilon_r = 11.7)$$<div class="where">전자를 떼어 전도대로 보내는 에너지가 <span class="term">이온화 에너지</span><span class="en">(ionization energy)</span>이고, 그 전자를 내놓는 불순물이 <span class="term">도너</span><span class="en">(donor, 주개)</span>다. 3족 원자(B, Al, Ga, In)는 결합 하나가 비어 가전자대에서 전자를 받아들이는 <span class="term">억셉터</span><span class="en">(acceptor, 받개)</span>로, 같은 모형의 "정공 수소 원자"다.</div></div>
+    <p>실측값은 수소 모형보다 크고 원소마다 다르다. 불순물 바로 근처에서는 연속 유전체 가정이 깨져 핵심 전자의 퍼텐셜이 원소별로 달라지기 때문이다(<span class="term">중심 세포 보정</span><span class="en">(central-cell correction)</span>). 그래도 B·P·As·Sb는 \(kT\)(25.9 meV)의 1.5–2배 남짓으로 얕고, 인듐은 160 meV로 깊어 상온에서도 다 이온화되지 않는다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 330" role="img" aria-label="실리콘 띠 그림과 전도대 아래 도너 준위, 가전자대 위 억셉터 준위를 확대해 그린 사다리">
+        <rect x="30" y="30" width="180" height="40" class="f-acc-soft"/><rect x="30" y="260" width="180" height="40" class="f-acc2-soft"/>
+        <line x1="30" y1="70" x2="210" y2="70" class="s-line" stroke-width="2.4"/><line x1="30" y1="260" x2="210" y2="260" class="s-line" stroke-width="2.4"/>
+        <text class="t" x="120" y="54" text-anchor="middle" font-size="13">전도대</text><text class="t" x="120" y="286" text-anchor="middle" font-size="13">가전자대</text>
+        <text class="t" x="216" y="74" font-size="12">E<tspan baseline-shift="sub" font-size="75%">c</tspan></text><text class="t" x="216" y="264" font-size="12">E<tspan baseline-shift="sub" font-size="75%">v</tspan></text>
+        <line x1="40" y1="78" x2="200" y2="78" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>
+        <line x1="40" y1="252" x2="200" y2="252" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 5"/>
+        <text class="t-dim" x="120" y="165" text-anchor="middle" font-size="12">E<tspan baseline-shift="sub" font-size="75%">g</tspan> = 1.12 eV (축척대로)</text>
+        <path d="M210,70 L300,40 M210,90 L300,150" stroke="var(--text-faint)" fill="none" stroke-dasharray="3 3"/>
+        <path d="M210,240 L300,180 M210,262 L300,300" stroke="var(--text-faint)" fill="none" stroke-dasharray="3 3"/>
+        <!-- 도너 사다리: Ec(y=40) 아래 0–70 meV, 1 meV = 1.5 px -->
+        <rect x="300" y="40" width="470" height="110" rx="6" class="f-surface" stroke="var(--border)"/>
+        <line x1="300" y1="40" x2="770" y2="40" class="s-line" stroke-width="2.4"/>
+        <text class="t" x="764" y="56" text-anchor="end" font-size="12">E<tspan baseline-shift="sub" font-size="75%">c</tspan> (확대: 0–70 meV)</text>
+        <g stroke="var(--accent)" stroke-width="3">
+          <line x1="330" y1="98.5" x2="420" y2="98.5"/><line x1="460" y1="107.5" x2="550" y2="107.5"/><line x1="590" y1="121" x2="680" y2="121"/>
+        </g>
+        <g class="t-acc" font-size="12" text-anchor="middle"><text x="375" y="92">Sb 39 meV</text><text x="505" y="101">P 45 meV</text><text x="635" y="139">As 54 meV</text></g>
+        <line x1="320" y1="78.7" x2="760" y2="78.7" stroke="var(--text-dim)" stroke-dasharray="2 4"/><text class="t-dim" x="700" y="74" font-size="11" text-anchor="middle">수소 모형 25.8</text>
+        <!-- 억셉터 사다리: Ev(y=300) 위 0–170 meV, 1 meV = 0.65 px -->
+        <rect x="300" y="180" width="470" height="120" rx="6" class="f-surface" stroke="var(--border)"/>
+        <line x1="300" y1="300" x2="770" y2="300" class="s-line" stroke-width="2.4"/>
+        <text class="t" x="764" y="294" text-anchor="end" font-size="12">E<tspan baseline-shift="sub" font-size="75%">v</tspan> (확대: 0–170 meV)</text>
+        <g stroke="var(--accent-2)" stroke-width="3">
+          <line x1="320" y1="270.8" x2="400" y2="270.8"/><line x1="420" y1="262.9" x2="500" y2="262.9"/><line x1="520" y1="257.8" x2="600" y2="257.8"/><line x1="630" y1="196" x2="720" y2="196"/>
+        </g>
+        <g font-size="12" text-anchor="middle" fill="var(--accent-2)"><text x="360" y="288">B 45</text><text x="460" y="280">Al 57</text><text x="560" y="250">Ga 65</text><text x="675" y="214">In 160 meV</text></g>
+      </svg>
+      <figcaption>실리콘 속 얕은 불순물 준위(실측, <code>Solid.dopants</code>). 축척대로 그린 왼쪽 띠 그림에서는 띠 끝에 거의 붙어 있어 오른쪽에 확대했다. 수소 모형(점선 25.8 meV)은 크기의 정도만 맞힌다. 깊은 인듐은 적외선 검출기에 쓰일 뿐, 소자 도핑에는 쓰지 않는다.</figcaption>
+    </figure>
+
+    <h3>왜 이온화율의 분모에 2와 4가 붙는가</h3>
+    <p>도너 준위는 띠의 한 상태가 아니라 <em>원자 하나</em>다. 전자를 하나 받으면 스핀이 위든 아래든 되지만, 두 번째 전자는 첫 전자와의 쿨롱 반발 \(U\)(수십 meV 이상) 때문에 사실상 들어오지 못한다. 그래서 점유 통계가 보통의 페르미–디랙 \(1/(1 + e^{x})\)과 다르다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="도너 한 개의 세 가지 가능한 상태와 그 깁스 인자로 이온화율을 유도하는 단계">
+        <line x1="40" y1="60" x2="760" y2="60" class="s-line" stroke-width="2"/><text class="t" x="766" y="64" font-size="12">E<tspan baseline-shift="sub" font-size="75%">c</tspan></text>
+        <g data-step="1">
+          <rect x="60" y="90" width="190" height="150" rx="8" class="f-surface" stroke="var(--border)"/>
+          <line x1="95" y1="140" x2="215" y2="140" stroke="var(--accent)" stroke-width="3" stroke-dasharray="7 5"/>
+          <circle cx="155" cy="140" r="13" fill="none" stroke="var(--accent)" stroke-width="2"/><text class="t-acc" x="155" y="145" text-anchor="middle" font-size="15">+</text>
+          <text class="t" x="155" y="190" text-anchor="middle" font-size="14">D⁺ (이온화)</text>
+          <text class="t-dim" x="155" y="214" text-anchor="middle" font-size="12">전자 0개 · 1가지</text>
+        </g>
+        <g data-step="2">
+          <rect x="300" y="90" width="190" height="150" rx="8" class="f-surface" stroke="var(--border)"/>
+          <line x1="335" y1="140" x2="455" y2="140" stroke="var(--accent)" stroke-width="3" stroke-dasharray="7 5"/>
+          <circle cx="370" cy="140" r="8" fill="var(--accent)"/><path d="M370,128 v-14 m-5,6 l5,-6 l5,6" stroke="var(--text)" fill="none" stroke-width="1.6"/>
+          <circle cx="420" cy="140" r="8" fill="var(--accent)"/><path d="M420,114 v14 m-5,-6 l5,6 l5,-6" stroke="var(--text)" fill="none" stroke-width="1.6"/>
+          <text class="t" x="395" y="190" text-anchor="middle" font-size="14">D⁰ (중성): ↑ 또는 ↓</text>
+          <text class="t-dim" x="395" y="214" text-anchor="middle" font-size="12">전자 1개 · 2가지 · 에너지 E<tspan baseline-shift="sub" font-size="75%">d</tspan></text>
+        </g>
+        <g data-step="3">
+          <rect x="540" y="90" width="200" height="150" rx="8" class="f-surface" stroke="var(--border)" stroke-dasharray="5 4"/>
+          <line x1="575" y1="140" x2="705" y2="140" stroke="var(--accent)" stroke-width="3" stroke-dasharray="7 5"/>
+          <circle cx="625" cy="140" r="8" fill="var(--accent)"/><circle cx="655" cy="140" r="8" fill="var(--accent)"/>
+          <line x1="595" y1="110" x2="685" y2="170" stroke="var(--bad)" stroke-width="3"/><line x1="685" y1="110" x2="595" y2="170" stroke="var(--bad)" stroke-width="3"/>
+          <text class="t" x="640" y="190" text-anchor="middle" font-size="14">D⁻: 쿨롱 반발 U</text>
+          <text class="t-dim" x="640" y="214" text-anchor="middle" font-size="12">U ≫ kT → 확률 ≈ 0</text>
+        </g>
+        <g data-step="4">
+          <rect x="120" y="252" width="560" height="40" rx="6" class="f-elev"/>
+          <text class="t" x="400" y="278" text-anchor="middle" font-size="14">N<tspan baseline-shift="sub" font-size="75%">D</tspan>⁰ / N<tspan baseline-shift="sub" font-size="75%">D</tspan>⁺ = 2·e^−(E<tspan baseline-shift="sub" font-size="75%">d</tspan> − E<tspan baseline-shift="sub" font-size="75%">F</tspan>)/kT  →  N<tspan baseline-shift="sub" font-size="75%">D</tspan>⁺/N<tspan baseline-shift="sub" font-size="75%">D</tspan> = 1 / (1 + 2e^(E<tspan baseline-shift="sub" font-size="75%">F</tspan> − E<tspan baseline-shift="sub" font-size="75%">d</tspan>)/kT)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>도너가 전자를 내놓은 상태 D⁺. 에너지 0(기준), 경우의 수 1.</li>
+        <li>전자를 하나 가진 중성 상태 D⁰. 스핀 두 방향이 같은 에너지 \(E_d\)를 가지므로 경우의 수 2.</li>
+        <li>전자 두 개 상태는 쿨롱 반발 \(U\) 때문에 에너지가 훨씬 높아 볼 일이 없다 — 보통의 띠 상태(↑↓를 독립으로 채움)와 다른 점이 바로 이것이다.</li>
+        <li>입자 저장소(화학 퍼텐셜 \(E_F\))와 닿은 계의 깁스 인자 \(g\,e^{-(E - NE_F)/kT}\)를 비교하면 중성 대 이온화 비는 \(2e^{-(E_d - E_F)/kT}\)이다. 여기서 이온화율 공식이 나온다.</li>
+      </ol>
+      <figcaption>도너 하나의 통계. 축퇴 인자 \(g_D = 2\)는 "전자 하나를 붙잡는 방법이 두 가지"라는 뜻이다.</figcaption>
+    </figure>
+    <div class="formula">$$\frac{N_D^+}{N_D} = \frac{1}{1 + g_D\,e^{(E_F - E_d)/kT}}, \qquad \frac{N_A^-}{N_A} = \frac{1}{1 + g_A\,e^{(E_a - E_F)/kT}}, \qquad g_D = 2,\ g_A = 4$$<div class="where">\(g_D\), \(g_A\): <span class="term">축퇴 인자</span><span class="en">(degeneracy factor)</span>. 억셉터의 4는 스핀 2 × Γ점에서 겹친 무거운·가벼운 정공 띠 2(8장)에서 온다. \(E_F = E_d\)이면 도너는 절반이 아니라 <b>1/3</b>만 이온화되고, \(E_F = E_a\)이면 억셉터는 1/5만 이온화된다.</div></div>
+    <figure class="mini" id="mini-ion">
+      <div class="mini-view"><canvas id="cv-ion"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>준위 종류</span><div class="seg" id="ion-g"><button data-value="1">보통 상태 g = 1</button><button data-value="2" class="on">도너 g = 2</button><button data-value="4">억셉터 g = 4</button></div></div>
+        <span class="readout" id="ion-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>가로축은 페르미 준위가 불순물 준위보다 몇 \(kT\) 위에 있는가(억셉터는 \(E_a - E_F\)를 거꾸로 잰다). 곡선 위의 흰 점을 끌어 보라. 도너는 \(E_F\)가 \(E_d\)보다 \(3kT\) 아래로만 내려가도 90% 넘게 이온화되고, g가 클수록 곡선이 왼쪽으로 밀려 같은 \(E_F\)에서 덜 이온화된다.</figcaption>
+    </figure>
+    <div class="example" data-title="300 K 실리콘 속 인은 몇 %가 이온화되었나">
+      <p>300 K 실리콘에 인을 \(N_D = 1.0\times10^{16}\) cm⁻³ 넣었다(\(E_c - E_d = 45\) meV, \(N_c = 2.86\times10^{19}\) cm⁻³, \(kT = 0.02585\) eV). 우선 완전 이온화를 가정해 \(E_F\)를 구하고, 그 \(E_F\)에서 실제 이온화율을 계산하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 완전 이온화 → \(n = N_D\) → \(E_c - E_F = kT\ln(N_c/n)\). 그 값을 이온화 공식에 넣어 가정이 맞는지 검사한다.</div>
+        <div class="step"><b>풀이</b> \(E_c - E_F = 0.02585\ln(2860) = 0.2057\) eV. \(E_F - E_d = 0.045 - 0.2057 = -0.1607\) eV \(= -6.22kT\). \(N_D^+/N_D = 1/(1 + 2e^{-6.22}) = 1/(1 + 0.0040) = 0.9960\).</div>
+        <div class="answer">E<sub>c</sub> − E<sub>F</sub> ≈ 0.206 eV, 이온화율 ≈ 99.6% (중성 도너 0.4%)</div>
+        <div class="step"><b>검토</b> 중성 도너 0.4%는 \(n\)을 0.4% 줄일 뿐이라, 다시 풀어도 \(E_F\)는 0.1 meV밖에 안 바뀐다. 상온의 얕은 도너는 "완전 이온화"로 보아도 된다는 근거다. 같은 계산을 \(10^{18}\) cm⁻³에서 하면 이야기가 달라진다(다음 절).</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="neutrality">
+    <h2>전하 중성 조건과 페르미 준위</h2>
+    <p>균일하게 도핑된 결정 덩어리는 전기적으로 중성이어야 한다. 양전하는 정공과 이온화된 도너, 음전하는 전자와 이온화된 억셉터가 지니므로</p>
+    <div class="formula">$$p(E_F) + N_D^+(E_F) = n(E_F) + N_A^-(E_F)$$<div class="where">네 항이 모두 \(E_F\)만의 함수다. 왼쪽(양전하)은 \(E_F\)가 오를수록 줄고, 오른쪽(음전하)은 늘어나므로 두 곡선은 꼭 한 번 만난다. 그 점이 평형 페르미 준위다. 이 장의 계산기 <code>Solid.solveEF</code>는 이 식을 이분법으로 정확히(FD 적분 포함)푼다.</div></div>
+    <p>이 식은 \(n\), \(p\)가 \(E_F\)에 지수적으로 걸려 있어 손으로 닫힌 꼴로 풀기 어렵다. 그래서 <span class="term">쇼클리 도식</span><span class="en">(Shockley diagram)</span>을 쓴다: 네 농도를 로그 축에 \(E_F\)의 함수로 그리면 \(n\)과 \(p\)는 기울기 \(\pm1/(kT\ln10)\)인 직선, 이온화 도너는 \(E_d\) 근처에서 꺾이는 곡선이 되고, 양전하 합과 음전하 합이 교차하는 곳을 눈으로 읽을 수 있다.</p>
+    <figure class="mini" id="mini-shock">
+      <div class="mini-view"><canvas id="cv-shock"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>도너 N<sub>D</sub> <output id="sh-nd-out"></output></span><input type="range" id="sh-nd" min="13" max="19" step="0.05" value="16"></label>
+        <label class="ctrl"><span>억셉터 N<sub>A</sub> <output id="sh-na-out"></output></span><input type="range" id="sh-na" min="12" max="19" step="0.05" value="12"></label>
+        <label class="ctrl"><span>온도 T <output id="sh-t-out"></output></span><input type="range" id="sh-t" min="40" max="700" step="5" value="300"></label>
+        <span class="readout" id="sh-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>쇼클리 도식(실리콘, P와 B). 굵은 실선이 양전하 \(p + N_D^+\), 굵은 점선이 음전하 \(n + N_A^-\)이고, 둘이 만나는 ◆가 \(E_F\)다. 온도를 낮추면 \(n\) 직선이 가팔라지며 교점이 \(E_d\) 위로 올라가 도너가 전자를 다시 붙잡는다(동결). \(N_A\)를 \(N_D\)에 가깝게 올리면 교점이 띠 간격 가운데로 내려온다(보상). 맨 왼쪽(10¹²)은 "억셉터 없음"이다.</figcaption>
+    </figure>
+
+    <h3>근사가 통하는 곳: 완전 이온화와 이차방정식</h3>
+    <p>상온·비축퇴에서는 \(N_D^+ = N_D\), \(N_A^- = N_A\)로 두고 \(np = n_i^2\)과 연립하면 이차방정식이 된다(<code>Solid.nFull</code>).</p>
+    <div class="formula">$$n = \frac{N_D - N_A}{2} + \sqrt{\left(\frac{N_D - N_A}{2}\right)^2 + n_i^2}, \qquad p = \frac{n_i^2}{n}, \qquad E_F - E_i = kT\ln\frac{n}{n_i}$$</div>
+    <p>불완전 이온화가 중요하지만 \(p\)와 \(N_A\)를 무시할 수 있으면(n형, 저온 또는 고농도), \(n = N_ce^{\eta_c}\)와 이온화 공식에서 \(E_F\)를 지우면 역시 이차방정식이 나온다.</p>
+    <div class="formula">$$\frac{n^2}{N_D - n} = \frac{N_c}{g_D}\,e^{-E_d/kT} \equiv N_1 \quad\Rightarrow\quad n = \frac{N_1}{2}\left(\sqrt{1 + \frac{4N_D}{N_1}} - 1\right)$$<div class="where">여기서 \(E_d\)는 이온화 에너지 \(E_c - E_d\). \(N_D \ll N_1\)이면 \(n \to N_D\)(완전 이온화), \(N_D \gg N_1\)이면 \(n \to \sqrt{N_1N_D}\)(동결).</div></div>
+    <div class="example" data-title="10¹⁷ cm⁻³ 인 도핑의 불완전 이온화">
+      <p>300 K 실리콘에 인을 \(N_D = 1.0\times10^{17}\) cm⁻³ 넣었다(\(E_d = 45\) meV, \(N_c = 2.86\times10^{19}\) cm⁻³, \(kT = 0.025852\) eV, 정공·억셉터 무시, 볼츠만 근사). 이온화율과 \(E_c - E_F\)를 (a) 반복법과 (b) 이차방정식으로 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(n\)을 가정 → \(E_F\) → 이온화율 → 새 \(n\)을 되풀이. (b) \(N_1 = (N_c/2)e^{-E_d/kT}\)를 구해 근의 공식.</div>
+        <div class="step"><b>풀이</b> (a) \(n_0 = 10^{17}\): \(E_c - E_F = kT\ln(286) = 0.14622\) eV, \(E_F - E_d = -0.10122\) eV \(= -3.915kT\), 이온화율 \(1/(1 + 2e^{-3.915}) = 0.9617\). \(n_1 = 9.617\times10^{16}\)으로 다시: \(E_c - E_F = 0.14723\), 이온화율 0.9631. 한 번 더 하면 0.9630에서 멈춘다. (b) \(N_1 = 1.43\times10^{19}\,e^{-1.7407} = 2.508\times10^{18}\). \(n = (N_1/2)(\sqrt{1 + 4(0.03987)} - 1) = 9.630\times10^{16}\).</div>
+        <div class="answer">이온화율 ≈ 96.3%, E<sub>c</sub> − E<sub>F</sub> ≈ 0.147 eV (완전 이온화 가정 0.146 eV)</div>
+        <div class="step"><b>검토</b> 4% 가까이가 중성으로 남는다 — 10¹⁶에서 0.4%였던 것보다 10배 많다. 도핑이 늘면 \(E_F\)가 \(E_d\)에 다가가 중성 도너가 늘기 때문이다. FD 적분과 정공까지 넣은 <code>Solid.solveEF</code>도 96.3%를 준다. 실제 10¹⁸ 근처에서는 이온화 에너지 자체가 줄어 이 계산보다 더 많이 이온화된다(6절).</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-bench">
+      <p>인 도핑 \(10^{16}\) cm⁻³ 실리콘을 100 K로 식혔다. 페르미 준위는 도너 준위 \(E_d\)(전도대 45 meV 아래)와 비교해 어디에 있을까?</p>
+      <div class="opts"><button class="opt">\(E_d\)보다 위 — 도너 대부분이 중성</button><button class="opt" data-correct>\(E_d\)보다 조금 아래 — 약 2/3가 이온화</button><button class="opt">띠 간격 한가운데 — 진성처럼</button><button class="opt">전도대 안 — 축퇴</button></div>
+      <div class="quiz-exp">\(E_c - E_F = 58\) meV로 \(E_d\)보다 13 meV(1.5\(kT\)) 아래에 있고, 이온화율은 68%다. 실험대에서 T = 100 K로 놓고 \(E_F\) 선을 끌어 양전하·음전하 막대를 맞춰 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-bench">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>페르미 준위 실험대: 전하 중성의 과녁을 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-bb"></canvas></div><div><canvas id="cv-bd"></canvas></div></div><span class="hint top">왼쪽 그림의 E<sub>F</sub> 선(흰 점)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>도너 N<sub>D</sub> <output id="bb-nd-out"></output></span><input type="range" id="bb-nd" min="13" max="19" step="0.05" value="16"></label>
+          <label class="ctrl"><span>도너 원소</span><select id="bb-dn"><option value="P" selected>인 P (45 meV)</option><option value="As">비소 As (54 meV)</option><option value="Sb">안티모니 Sb (39 meV)</option></select></label>
+          <label class="ctrl"><span>억셉터 N<sub>A</sub> <output id="bb-na-out"></output></span><input type="range" id="bb-na" min="12" max="19" step="0.05" value="12"></label>
+          <label class="ctrl"><span>억셉터 원소</span><select id="bb-ac"><option value="B" selected>붕소 B (45 meV)</option><option value="Al">알루미늄 Al (57 meV)</option><option value="Ga">갈륨 Ga (65 meV)</option><option value="In">인듐 In (160 meV)</option></select></label>
+          <label class="ctrl"><span>온도 T <output id="bb-t-out"></output></span><input type="range" id="bb-t" min="40" max="700" step="5" value="300"></label>
+          <label class="check"><input type="checkbox" id="bb-show"> 정답 E<sub>F</sub> 보기</label>
+          <div class="ctrl-row"><button class="btn primary" id="bb-new" type="button">새 과녁</button></div>
+          <p class="readout" id="bb-task" style="margin:0"></p>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">E<sub>F</sub> − E<sub>v</sub></span><span class="v" id="bb-ef">—</span></div>
+        <div class="stat"><span class="k">양전하 p + N<sub>D</sub><sup>+</sup></span><span class="v" id="bb-pos">—</span></div>
+        <div class="stat"><span class="k">음전하 n + N<sub>A</sub><sup>−</sup></span><span class="v" id="bb-neg">—</span></div>
+        <div class="stat"><span class="k">이온화 N<sub>D</sub><sup>+</sup>/N<sub>D</sub>, N<sub>A</sub><sup>−</sup>/N<sub>A</sub></span><span class="v" id="bb-ion">—</span></div>
+        <div class="stat"><span class="k">명중</span><span class="v" id="bb-score">0</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 띠 그림(축척대로), 도너·억셉터 준위의 점유(채운 점 = 전자를 가진 불순물), 아래쪽 두 막대는 로그 눈금의 양전하와 음전하. 오른쪽: 같은 에너지 축의 상태 밀도 \(g(E)\)(회색), \(f(E)\)(점선, 0–1), 실제 전자·정공 분포 \(g_cf\), \(g_v(1-f)\)(색칠, 확대 배율 표시). 막대 길이가 2% 안으로 같아지면 명중이다. 해볼 것: ① \(N_D = 10^{16}\), 50 K·100 K·300 K에서 차례로 맞혀 동결이 풀리는 것을 보라. ② 억셉터를 인듐으로 바꾸고 \(N_A = 10^{16}\), 300 K에서 이온화율을 읽어라(깊은 준위). ③ "새 과녁"으로 무작위 조건에서 \(E_F\)를 찾고, 다 맞힌 뒤 "정답 보기"로 비교하라.</div>
+    </div>
+    <div class="drill" id="drill-ef" data-title="도핑 → n, p, E_F 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="regimes">
+    <h2>온도의 세 영역: 동결 · 외인성 · 진성</h2>
+    <p>도핑된 반도체의 전자 농도를 넓은 온도 범위에서 재면 세 구간이 뚜렷하다. 낮은 온도에서는 도너가 전자를 붙잡고 있어 \(n \ll N_D\)인 <span class="term">동결 영역</span><span class="en">(freeze-out region)</span>, 중간에서는 도너가 다 이온화되어 \(n \approx N_D - N_A\)로 거의 일정한 <span class="term">외인성 영역</span><span class="en">(extrinsic region, 포화 영역)</span>, 높은 온도에서는 가전자대에서 들뜬 전자가 도핑을 넘어서는 <span class="term">진성 영역</span><span class="en">(intrinsic region)</span>이다. \(\ln n\)을 \(1/T\)에 대해 그린 <span class="term">아레니우스 그림</span><span class="en">(Arrhenius plot)</span>에서 세 영역은 기울기가 다른 직선으로 나타나고, 그 기울기가 활성화 에너지다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 310" role="img" aria-label="n형 반도체의 전자 농도를 1/T에 대해 로그로 그린 아레니우스 그림의 세 영역과 기울기">
+        <line x1="90" y1="270" x2="770" y2="270" class="s-axis"/><line x1="90" y1="20" x2="90" y2="270" class="s-axis"/>
+        <text class="t" x="770" y="292" text-anchor="end" font-size="13">1/T →  (오른쪽이 저온)</text>
+        <text class="t" x="24" y="150" font-size="13" transform="rotate(-90 24 150)" text-anchor="middle">log n</text>
+        <line x1="86" y1="120" x2="94" y2="120" class="s-axis"/><text class="t" x="80" y="124" text-anchor="end" font-size="12">N<tspan baseline-shift="sub" font-size="75%">D</tspan></text>
+        <g data-step="1">
+          <path d="M104,24 C150,92 172,117 215,120 L420,121 C462,123 482,134 520,150 L752,252" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        </g>
+        <g data-step="2">
+          <rect x="215" y="30" width="235" height="230" fill="var(--ok)" opacity="0.10"/>
+          <text class="t" x="332" y="100" text-anchor="middle" font-size="14">외인성(포화)</text>
+          <text class="t-dim" x="332" y="146" text-anchor="middle" font-size="12">n ≈ N<tspan baseline-shift="sub" font-size="75%">D</tspan> − N<tspan baseline-shift="sub" font-size="75%">A,</tspan> 기울기 ≈ 0</text>
+        </g>
+        <g data-step="3">
+          <rect x="450" y="30" width="310" height="230" fill="var(--accent)" opacity="0.08"/>
+          <text class="t" x="640" y="56" text-anchor="middle" font-size="14">동결</text>
+          <path d="M600,187 L700,187 L700,230" fill="none" stroke="var(--text-dim)" stroke-width="1.4"/>
+          <text class="t-dim" x="650" y="180" text-anchor="middle" font-size="12">기울기 −E<tspan baseline-shift="sub" font-size="75%">d</tspan>/2k</text>
+          <path d="M560,166 L752,300" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>
+          <text class="t-acc" x="560" y="215" text-anchor="middle" font-size="12">보상(n ≪ N<tspan baseline-shift="sub" font-size="75%">A</tspan>): −E<tspan baseline-shift="sub" font-size="75%">d</tspan>/k</text>
+        </g>
+        <g data-step="4">
+          <rect x="92" y="30" width="123" height="230" fill="var(--accent-2)" opacity="0.12"/>
+          <text class="t" x="152" y="56" text-anchor="middle" font-size="14">진성</text>
+          <path d="M215,120 L300,250" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 5"/>
+          <text x="236" y="228" font-size="12" fill="var(--accent-2)">n<tspan baseline-shift="sub" font-size="75%">i,</tspan> 기울기 −E<tspan baseline-shift="sub" font-size="75%">g</tspan>/2k</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>n형 반도체의 \(\log n\) 대 \(1/T\). 가로축 오른쪽이 저온이다(도식).</li>
+        <li>가운데 넓은 구간에서는 도너가 다 이온화되어 \(n\)이 도핑으로 고정된다. 소자가 동작하도록 설계하는 온도 범위다.</li>
+        <li>저온에서는 \(n \approx \sqrt{N_cN_D/g_D}\,e^{-E_d/2kT}\) — 기울기가 이온화 에너지의 <b>절반</b>이다. 억셉터가 조금이라도 있어 \(n\)이 \(N_A\)보다 작아지면 기울기가 \(E_d\) 전체로 두 배가 된다.</li>
+        <li>고온에서는 \(n_i\)가 \(N_D\)를 넘으며 \(n \approx n_i\), 기울기 \(E_g/2\). 띠 간격이 클수록 이 경계가 높은 온도로 밀려난다.</li>
+      </ol>
+      <figcaption>세 온도 영역과 각 영역의 활성화 에너지. 기울기의 "절반"은 질량 작용 꼴의 제곱근에서 온다: 진성에서는 전자–정공 쌍, 동결에서는 전자–이온화 도너 쌍이 함께 생긴다.</figcaption>
+    </figure>
+    <div class="formula">$$n \approx \begin{cases} \sqrt{\dfrac{N_cN_D}{g_D}}\;e^{-E_d/2kT} & \text{동결, } N_A \ll n \ll N_D \\[2mm] \dfrac{N_c}{g_D}\,\dfrac{N_D - N_A}{N_A}\;e^{-E_d/kT} & \text{동결, } n \ll N_A < N_D \\[2mm] N_D - N_A & \text{외인성} \\[1mm] n_i \propto T^{3/2}e^{-E_g/2kT} & \text{진성} \end{cases}$$<div class="where">첫째 식은 앞 절의 이차방정식에서 \(N_D \gg N_1\)인 극한이다. \(N_c \propto T^{3/2}\) 때문에 그림의 실제 기울기는 \(E_d/2 + \tfrac34kT\)처럼 조금씩 더해진다. 페르미 준위는 \(T \to 0\)에서 보상이 없으면 \(E_c\)와 \(E_d\)의 가운데로, 보상이 있으면 \(E_d\)로 간다.</div></div>
+    <div class="example" data-title="50 K에서 얼어붙은 전자">
+      <p>인 도핑 \(N_D = 1.0\times10^{16}\) cm⁻³ 실리콘의 50 K 전자 농도를 동결 근사식으로 어림하고 이차방정식 값과 비교하라(\(N_c(300) = 2.86\times10^{19}\) cm⁻³, \(E_d = 45\) meV, \(g_D = 2\)).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(N_c(50) = N_c(300)(50/300)^{3/2}\), \(N_1 = (N_c/2)e^{-E_d/kT}\), \(n \approx \sqrt{N_1N_D}\).</div>
+        <div class="step"><b>풀이</b> \(N_c(50) = 2.86\times10^{19}\times0.06804 = 1.946\times10^{18}\). \(kT = 4.3087\) meV이므로 \(E_d/kT = 10.444\), \(N_1 = 9.73\times10^{17}\times2.913\times10^{-5} = 2.83\times10^{13}\) cm⁻³. 근사: \(n \approx \sqrt{2.83\times10^{13}\times10^{16}} = 5.32\times10^{14}\). 이차방정식: \(n = (N_1/2)(\sqrt{1 + 4N_D/N_1} - 1) = 5.18\times10^{14}\) cm⁻³.</div>
+        <div class="answer">n ≈ 5.2×10¹⁴ cm⁻³ — 도너의 약 5%만 이온화</div>
+        <div class="step"><b>검토</b> \(N_1 \ll N_D\)이므로 동결 근사가 3% 안에서 맞는다. <code>Solid.solveEF</code>(FD·정공 포함)는 \(5.19\times10^{14}\)을 준다. 77 K(액체 질소)에서는 같은 계산으로 37%, 100 K에서 68%, 300 K에서 99.6%가 이온화된다.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-arr">
+      <p>같은 실리콘(P \(10^{16}\) cm⁻³)을 액체 질소 온도 77 K에 담갔다. 도너는 몇 %가 이온화되어 있을까?</p>
+      <div class="opts"><button class="opt">거의 100% — 외인성 영역</button><button class="opt">약 70%</button><button class="opt" data-correct>약 37%</button><button class="opt">1% 미만 — 완전히 동결</button></div>
+      <div class="quiz-exp">이 도핑에서 77 K는 이미 동결 영역 안이다(37%). 도핑을 \(10^{15}\)으로 낮추면 같은 77 K에서 74%가 이온화된다 — 도핑이 낮을수록 동결이 늦게 온다. 아래 그림에서 점을 77 K로 끌고 \(N_D\)를 바꿔 보라.</div>
+    </div>
+    <div class="sim" id="sim-arr">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>n(T) 아레니우스 그림과 페르미 준위의 여행</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-ar1"></canvas></div><div><canvas id="cv-ar2"></canvas></div></div><span class="hint top">곡선 위의 흰 점을 좌우로 끌어 온도를 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>불순물</span><select id="ar-dop"><option value="P" selected>인 P (n형)</option><option value="As">비소 As (n형)</option><option value="Sb">안티모니 Sb (n형)</option><option value="B">붕소 B (p형)</option><option value="Ga">갈륨 Ga (p형)</option><option value="In">인듐 In (p형)</option></select></label>
+          <label class="ctrl"><span>농도 N <output id="ar-n-out"></output></span><input type="range" id="ar-n" min="13" max="18" step="0.05" value="16"></label>
+          <div class="ctrl"><span>가로축</span><div class="seg" id="ar-x"><button data-value="inv" class="on">1000/T</button><button data-value="lin">T (선형)</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="ar-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T</span><span class="v" id="ar-t">—</span></div>
+        <div class="stat"><span class="k">다수 캐리어</span><span class="v" id="ar-c">—</span></div>
+        <div class="stat"><span class="k">이온화율</span><span class="v" id="ar-ion">—</span></div>
+        <div class="stat"><span class="k">E<sub>F</sub> − E<sub>v</sub></span><span class="v" id="ar-ef">—</span></div>
+        <div class="stat"><span class="k">영역</span><span class="v" id="ar-reg">—</span></div>
+        <div class="stat"><span class="k">기울기 활성화 에너지</span><span class="v" id="ar-ea">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 다수 캐리어 농도(실선)와 \(n_i\)(점선), 색 띠는 영역(동결: 이온화 < 90%, 진성: 다수 캐리어가 도핑보다 10% 넘게 많음). 오른쪽: 같은 온도의 \(E_F\)(굵은 선)와 \(E_c\), \(E_v\), 불순물 준위, \(E_i\). "기울기 활성화 에너지"는 점 위치의 국소 기울기 \(-k\,d\ln n/d(1/T)\)다. 해볼 것: ① 동결 영역에서 기울기가 \(E_d/2\)(P: 약 23 meV)에 가깝고, 진성 영역에서 \(E_g/2\)를 넘어 약 0.6 eV인 것을 확인하라. ② 인듐(160 meV)은 300 K에서도 동결 영역에 걸쳐 있다. ③ \(N\)을 올리면 진성 영역이 높은 온도로, 동결 영역이 높은 온도 쪽으로 함께 밀린다.</div>
+    </div>
+    <div class="tangle" id="tg-tint">
+      <p>도핑 \(N\) = <span class="tn" data-var="e" data-min="13" data-max="18" data-step="0.1">15</span> cm⁻³인 층에서 진성 농도가 도핑과 같아지는(\(n_i = N\)) 온도는 실리콘이 <span class="tn-out" data-out="si"></span>, 4H-SiC가 <span class="tn-out" data-out="sic"></span>, GaN이 <span class="tn-out" data-out="gan"></span>이다. 소자가 도핑대로 동작하려면 \(n_i\)가 도핑의 10% 아래여야 한다고 하면, 실리콘 한계는 <span class="tn-out" data-out="si10"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>고온 동작 한계: 진성 농도가 도핑을 넘는 온도</strong><p>전력 소자의 드리프트층은 높은 전압을 버티려고 \(10^{14}\)–\(10^{15}\) cm⁻³로 아주 낮게 도핑한다. 실리콘에서 \(n_i\)가 \(10^{14}\)에 닿는 온도는 약 470 K(200 °C)여서 접합 누설이 폭증하고 도핑으로 정한 전기장 분포가 무너진다 — 실리콘 IGBT·MOSFET의 접합 온도 상한이 150–175 °C인 까닭이다. 띠 간격이 세 배인 4H-SiC와 GaN은 바르시니 외삽으로 같은 조건이 900 °C를 넘는다. 실제 SiC 소자의 한계는 반도체가 아니라 패키지·게이트 산화막이 정한다. 같은 이유로 자동차·유정 탐사용 고온 센서도 넓은 띠 간격 재료로 간다. <a href="https://semi.euiyun.com/device/chapters/carriers.html">SemiBooks 소자 · 캐리어 통계</a>, <a href="https://semi.euiyun.com/device/chapters/pn.html">SemiBooks 소자 · pn 접합</a></p></div>
+    <div class="callout semi"><strong>극저온 CMOS: 4 K에서 얼어붙는 기판</strong><p>양자 컴퓨터의 큐비트를 제어하는 회로를 냉동기 안(4 K)에 넣으려는 극저온 CMOS 연구가 활발하다. 4 K의 \(kT\)는 0.34 meV로 인·붕소 이온화 에너지(45 meV)의 1/130이어서, \(10^{15}\)–\(10^{17}\) cm⁻³로 도핑된 웰과 기판의 캐리어는 완전히 동결된다. 그래도 트랜지스터가 동작하는 것은 채널 전자가 도너가 아니라 <em>게이트 전기장</em>이 소스에서 끌어온 것이고, 소스·드레인은 모트 농도(6절)를 훨씬 넘게 도핑되어 금속처럼 얼지 않기 때문이다. 대신 동결된 기판은 바디 전위를 잡지 못해 문턱 전압 상승, 킨크 효과, 이력 현상이 생기고, 소자 모형(SPICE)을 저온용으로 새로 맞춰야 한다. <a href="https://semi.euiyun.com/device/chapters/carriers.html">SemiBooks 소자 · 캐리어 통계</a>, <a href="https://semi.euiyun.com/device/chapters/mosfet.html">SemiBooks 소자 · MOSFET</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="compensation">
+    <h2>보상 도핑</h2>
+    <p>도너와 억셉터가 함께 있으면 도너가 내놓은 전자가 먼저 억셉터의 빈 결합을 채운다. 전도대에 남는 전자는 차이 \(N_D - N_A\)뿐이고, 이것을 <span class="term">보상</span><span class="en">(compensation)</span>이라 한다. \(K = N_A/N_D\)를 <span class="term">보상비</span><span class="en">(compensation ratio)</span>라 부른다. 외인성 영역에서는 \(n \approx N_D - N_A\)로 앞 절 공식에 차이만 넣으면 되지만, 보상은 두 가지 흔적을 남긴다.</p>
+    <ul>
+      <li><b>이온화 불순물은 \(N_D + N_A\)개</b>다. 캐리어는 차이만큼이지만 전자를 산란시키는 이온은 합만큼 있어, 같은 \(n\)이라도 보상된 시료의 이동도가 낮다(11장 캐리어 수송).</li>
+      <li><b>저온 기울기가 두 배</b>가 된다. \(n < N_A\)가 되면 이온화된 억셉터가 늘 \(N_A\)개의 이온화 도너를 붙잡아 두므로, 남은 도너만 \(e^{-E_d/kT}\)로 이온화된다. 동결 기울기는 \(E_d/2\)가 아니라 \(E_d\)다. 홀 측정으로 \(n(T)\)를 재서 기울기가 어느 쪽인지 보면 보상 여부를 안다.</li>
+    </ul>
+    <figure class="mini" id="mini-comp">
+      <div class="mini-view"><canvas id="cv-comp"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>보상비 K = N<sub>A</sub>/N<sub>D</sub> <output id="cp-k-out"></output></span><input type="range" id="cp-k" min="-3" max="-0.05" step="0.01" value="-1"></label>
+        <span class="readout" id="cp-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(N_D = 10^{16}\) cm⁻³(P) 실리콘에 붕소를 보상비 \(K\)만큼 넣었다. 회색 점선은 보상 없는 곡선, 실선은 보상된 곡선이다. 아래 읽음값은 30 K(세로 점선)에서 잰 국소 기울기, 곧 활성화 에너지다. \(K\)를 키우면 외인성 높이 \(N_D(1-K)\)가 내려가고, 보상 곡선의 저온 기울기가 \(E_d\)로 가팔라지는 온도가 높아진다.</figcaption>
+    </figure>
+    <div class="example" data-title="보상된 n형 실리콘">
+      <p>300 K 실리콘에 인 \(3.0\times10^{16}\) cm⁻³와 붕소 \(1.0\times10^{16}\) cm⁻³가 들어 있다(완전 이온화, \(n_i = 1.0\times10^{10}\) cm⁻³, \(N_c = 2.86\times10^{19}\) cm⁻³, \(kT = 0.02585\) eV). \(n\), \(p\), \(E_F - E_i\), \(E_c - E_F\)와 이온화 불순물 총농도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(N_D - N_A \gg n_i\)이므로 \(n = N_D - N_A\), 나머지는 질량 작용과 볼츠만 식.</div>
+        <div class="step"><b>풀이</b> \(n = 2.0\times10^{16}\), \(p = 10^{20}/(2\times10^{16}) = 5.0\times10^{3}\) cm⁻³. \(E_F - E_i = 0.02585\ln(2\times10^{6}) = 0.375\) eV. \(E_c - E_F = 0.02585\ln(1430) = 0.188\) eV. 이온화 불순물 \(N_D + N_A = 4.0\times10^{16}\) cm⁻³.</div>
+        <div class="answer">n = 2.0×10¹⁶, p = 5.0×10³ cm⁻³, E<sub>F</sub> − E<sub>i</sub> ≈ 0.375 eV, E<sub>c</sub> − E<sub>F</sub> ≈ 0.188 eV, 산란 중심 4.0×10¹⁶ cm⁻³</div>
+        <div class="step"><b>검토</b> 캐리어 농도는 인 \(2\times10^{16}\)만 넣은 시료와 같지만 산란 이온은 두 배다 — 11장에서 보듯 전자 이동도가 약 13% 낮다. <code>Solid.solveEF</code>(불완전 이온화 포함)는 \(n = 1.98\times10^{16}\)을 준다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-comp">
+      <p>붕소 <span class="tn" data-var="na" data-min="14" data-max="17" data-step="0.1">15</span> cm⁻³인 p형 기판에 인을 <span class="tn" data-var="nd" data-min="14" data-max="18" data-step="0.1">16.7</span> cm⁻³ 넣어 웰을 만들면(300 K, 완전 이온화) <span class="tn-out" data-out="type"></span>: 다수 캐리어 <span class="tn-out" data-out="maj"></span>, \(|E_F - E_i|\) = <span class="tn-out" data-out="ef"></span>. 그러나 전자를 산란시키는 이온은 <span class="tn-out" data-out="tot"></span>로 순 도핑의 <span class="tn-out" data-out="ratio"></span>배다. <span data-out="msg"></span></p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="degenerate">
+    <h2>축퇴 도핑: 모트 전이와 띠 간격 축소</h2>
+    <p>도핑을 \(10^{18}\) cm⁻³ 넘게 올리면 세 가지가 한꺼번에 무너진다. 페르미 준위가 전도대 끝에 \(3kT\) 안으로 다가가 볼츠만 근사가 틀리고, 도너 궤도가 서로 겹쳐 고립된 "수소 원자" 그림이 사라지며, 많은 전자와 이온이 띠 끝 자체를 끌어내린다. 이렇게 \(E_F\)가 띠 끝 근처나 띠 안에 있는 반도체가 <span class="term">축퇴 반도체</span><span class="en">(degenerate semiconductor)</span>다.</p>
+    <h3>볼츠만 근사의 오차와 조이스–딕슨 근사</h3>
+    <p>정확한 식은 \(n = N_cF_{1/2}(\eta)\)다. 볼츠만 식 \(n = N_ce^\eta\)는 \(\eta = -3\)에서 \(n\)을 1.7%, \(\eta = 0\)(\(E_F = E_c\))에서 31% 과대평가한다. 거꾸로 \(n\)이 주어졌을 때 \(E_F\)를 구하려면 \(F_{1/2}\)을 뒤집어야 하는데, <span class="term">조이스–딕슨 근사</span><span class="en">(Joyce–Dixon approximation)</span>가 \(r = n/N_c\)의 급수로 이것을 준다.</p>
+    <div class="formula">$$\frac{E_F - E_c}{kT} \approx \ln r + \frac{r}{\sqrt8} - 4.950\times10^{-3}\,r^2 + 1.484\times10^{-4}\,r^3 - 4.43\times10^{-6}\,r^4, \qquad r = \frac{n}{N_c}$$<div class="where">첫 항이 볼츠만, 둘째 항 \(r/\sqrt8 = r/2^{3/2}\)이 FD 첫 보정이다. 넷째 항까지 쓰면 \(r \lesssim 8\)(\(\eta \lesssim 4.5\))에서 \(\eta\)를 0.01 안으로 맞힌다.</div></div>
+    <figure class="mini" id="mini-fd">
+      <div class="mini-view"><canvas id="cv-fd"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="fd-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>정확한 \(F_{1/2}(\eta)\)(실선)와 볼츠만 \(e^\eta\)(점선)를 로그 눈금에 겹쳐 그렸다. 곡선 위의 흰 점을 좌우로 끌어 \(\eta\)를 바꾸면 아래 막대에 볼츠만 근사의 오차(%)가 나온다. 오차가 1%를 넘는 곳이 대략 \(\eta = -3.5\), 곧 \(E_F\)가 띠 끝에서 90 meV(300 K) 안으로 들어온 곳이다.</figcaption>
+    </figure>
+    <div class="example" data-title="10¹⁹과 10²⁰ cm⁻³에서 페르미 준위">
+      <p>300 K 실리콘에서 \(n = 1.0\times10^{19}\)과 \(1.0\times10^{20}\) cm⁻³일 때 \(E_F - E_c\)를 (a) 볼츠만 식, (b) 조이스–딕슨 근사로 구하고, 정확한 값(\(-24.0\), \(+62.9\) meV)과 비교하라(\(N_c = 2.86\times10^{19}\) cm⁻³, \(kT = 25.85\) meV, 완전 이온화).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(r = n/N_c\)를 구해 급수에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(10^{19}\): \(r = 0.3497\), \(\ln r = -1.0507\). 볼츠만 \(-1.0507kT = -27.2\) meV. 조이스–딕슨: \(-1.0507 + 0.1236 - 0.0006 = -0.9277\) → \(-24.0\) meV. \(10^{20}\): \(r = 3.497\), \(\ln r = 1.2518\) → 볼츠만 \(+32.4\) meV. 조이스–딕슨: \(1.2518 + 1.2362 - 0.0605 + 0.0063 - 0.0007 = 2.4331\) → \(+62.9\) meV.</div>
+        <div class="answer">10¹⁹: 볼츠만 −27.2, 조이스–딕슨 −24.0 meV / 10²⁰: 볼츠만 +32.4, 조이스–딕슨 +62.9 meV</div>
+        <div class="step"><b>검토</b> \(10^{20}\)에서 볼츠만 식은 \(E_F\)의 띠 안 깊이를 절반으로 본다. 반대로 정확한 \(E_F\)를 볼츠만 식에 넣으면 \(n\)을 \(e^{2.432}/3.497 = 3.3\)배 과대평가한다. 축퇴 영역의 TCAD 계산에서 "Fermi statistics" 옵션을 켜는 이유다.</div>
+      </details>
+    </div>
+
+    <h3>모트 전이: 도너 준위가 띠에 녹아든다</h3>
+    <p>도너 사이 평균 거리 \(N_D^{-1/3}\)이 궤도 반지름 \(a_B^* \approx 2\) nm의 몇 배로 줄면 이웃 도너의 궤도가 겹쳐, 날카로운 도너 준위가 폭을 가진 <span class="term">불순물 띠</span><span class="en">(impurity band)</span>로 퍼진다. 이온화 에너지는 경험적으로 \(E_d(N) \approx E_{d0} - \alpha N^{1/3}\)(\(\alpha \approx 3\times10^{-8}\) eV·cm)처럼 줄어 \(10^{18}\)에서 약 14 meV가 되고, 불순물 띠가 전도대와 합쳐지는 <span class="term">모트 전이</span><span class="en">(Mott transition)</span> 농도 위에서는 절대 0도에서도 전도가 남는 금속이 된다.</p>
+    <div class="formula">$$N_c^{\text{Mott}\,1/3}\,a_B^* \approx 0.26 \qquad\Rightarrow\qquad N^{\text{Mott}} \approx 3.7\times10^{18}\ \text{cm}^{-3}\ \ (\text{Si:P, 실측})$$<div class="where">모트 판정과 궤도 겹침 그림은 현대물리학 8장 <a href="../../modern-physics/chapters/hydrogen-atom.html#hydrogenic">수소 꼴 원자</a>에 미니 실험이 있다. 이 농도 위에서는 \(E_d\)와 \(g_D\)로 쓰는 이온화 공식이 의미를 잃으므로, 계산기들은 보통 "완전 이온화 + FD 통계"로 바꾼다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="도핑 농도가 높아지며 도너 준위가 불순물 띠로 넓어지고 전도대와 합쳐지는 과정">
+        <g class="t" font-size="13" text-anchor="middle"><text x="140" y="24">10¹⁶ cm⁻³ · 고립된 도너</text><text x="400" y="24">10¹⁸ cm⁻³ · 불순물 띠</text><text x="660" y="24">10²⁰ cm⁻³ · 축퇴(금속)</text></g>
+        <!-- 위: 궤도 겹침 -->
+        <g fill="var(--accent)" opacity="0.16"><circle cx="70" cy="80" r="18"/><circle cx="170" cy="62" r="18"/><circle cx="220" cy="100" r="18"/></g>
+        <g fill="var(--accent)" opacity="0.16"><circle cx="330" cy="78" r="18"/><circle cx="360" cy="94" r="18"/><circle cx="395" cy="70" r="18"/><circle cx="430" cy="96" r="18"/><circle cx="465" cy="72" r="18"/></g>
+        <rect x="560" y="52" width="200" height="56" rx="20" fill="var(--accent)" opacity="0.22"/>
+        <g fill="var(--accent)"><circle cx="70" cy="80" r="3"/><circle cx="170" cy="62" r="3"/><circle cx="220" cy="100" r="3"/><circle cx="330" cy="78" r="3"/><circle cx="360" cy="94" r="3"/><circle cx="395" cy="70" r="3"/><circle cx="430" cy="96" r="3"/><circle cx="465" cy="72" r="3"/></g>
+        <g fill="var(--accent)"><circle cx="580" cy="70" r="3"/><circle cx="604" cy="92" r="3"/><circle cx="626" cy="64" r="3"/><circle cx="648" cy="88" r="3"/><circle cx="672" cy="70" r="3"/><circle cx="694" cy="94" r="3"/><circle cx="716" cy="66" r="3"/><circle cx="738" cy="90" r="3"/></g>
+        <!-- 아래: 띠 그림 -->
+        <g class="s-line" stroke-width="2.4"><line x1="40" y1="170" x2="240" y2="170"/><line x1="300" y1="170" x2="500" y2="170"/><line x1="560" y1="178" x2="760" y2="178"/></g>
+        <g class="t" font-size="12"><text x="246" y="174">E<tspan baseline-shift="sub" font-size="75%">c</tspan></text><text x="506" y="174">E<tspan baseline-shift="sub" font-size="75%">c</tspan></text></g>
+        <line x1="60" y1="200" x2="220" y2="200" stroke="var(--accent)" stroke-width="3" stroke-dasharray="7 5"/>
+        <text class="t-acc" x="140" y="222" text-anchor="middle" font-size="12">날카로운 E<tspan baseline-shift="sub" font-size="75%">d</tspan> (45 meV)</text>
+        <rect x="320" y="180" width="160" height="22" rx="4" fill="var(--accent)" opacity="0.35"/>
+        <text class="t-acc" x="400" y="222" text-anchor="middle" font-size="12">불순물 띠, E<tspan baseline-shift="sub" font-size="75%">d</tspan> ≈ 14 meV</text>
+        <rect x="560" y="140" width="200" height="38" fill="var(--accent)" opacity="0.30"/>
+        <line x1="560" y1="140" x2="760" y2="140" stroke="var(--accent-2)" stroke-width="2.4"/>
+        <text x="766" y="144" font-size="12" fill="var(--accent-2)">E<tspan baseline-shift="sub" font-size="75%">F</tspan></text>
+        <text class="t" x="766" y="182" font-size="12">E<tspan baseline-shift="sub" font-size="75%">c</tspan>′</text>
+        <line x1="560" y1="166" x2="760" y2="166" stroke="var(--text-faint)" stroke-dasharray="4 4"/><text class="t-dim" x="660" y="160" text-anchor="middle" font-size="11">원래 E<tspan baseline-shift="sub" font-size="75%">c</tspan></text>
+        <text class="t-dim" x="660" y="222" text-anchor="middle" font-size="12">띠 끝이 ΔE<tspan baseline-shift="sub" font-size="75%">g</tspan>만큼 내려감(BGN)</text>
+        <text class="t-dim" x="400" y="270" text-anchor="middle" font-size="12">모트 농도 3.7×10¹⁸ cm⁻³을 지나면 저온에서도 얼어붙지 않는다</text>
+      </svg>
+      <figcaption>농도에 따른 도너의 운명. 위: 도너 궤도(반지름 \(a_B^*\))의 겹침. 아래: 띠 그림. 축퇴 영역에서는 \(E_F\)가 전도대 안에 있고, 많은 전자·이온의 상호작용이 띠 끝을 끌어내린다.</figcaption>
+    </figure>
+
+    <h3>띠 간격 축소</h3>
+    <p>고농도 도핑에서는 캐리어끼리의 교환·상관 에너지와 이온과의 인력이 띠 끝을 낮추어 띠 간격이 줄어든다. 이것이 <span class="term">띠 간격 축소</span><span class="en">(bandgap narrowing, BGN)</span>다. 실리콘 소자 계산에서 가장 흔히 쓰는 것은 바이폴라 트랜지스터 측정에서 얻은 <span class="term">슬룻붐 식</span><span class="en">(Slotboom model)</span>이다.</p>
+    <div class="formula">$$\Delta E_g = 9\ \text{meV}\left[\ln\frac{N}{10^{17}} + \sqrt{\left(\ln\frac{N}{10^{17}}\right)^2 + 0.5}\right], \qquad n_{i,\text{eff}}^2 = n_i^2\,e^{\Delta E_g/kT}$$<div class="where"><code>Solid.bgn(N)</code>. \(10^{18}\)에서 42 meV, \(10^{20}\)에서 125 meV. 띠 간격이 \(kT\)의 몇 배만 줄어도 \(n_{i,\text{eff}}^2\)는 지수로 커진다: 고농도 이미터·소스에 주입된 소수 캐리어가 그만큼 많아진다.</div></div>
+    <div class="tangle" id="tg-bgn">
+      <p>도핑 \(N\) = <span class="tn" data-var="e" data-min="17" data-max="20.7" data-step="0.05">19</span> cm⁻³인 실리콘(300 K)은 슬룻붐 식으로 띠 간격이 <span class="tn-out" data-out="dE"></span> 줄어 <span class="tn-out" data-out="Eg"></span>가 되고, 유효 진성 농도 제곱은 \(n_{i,\text{eff}}^2/n_i^2\) = <span class="tn-out" data-out="r"></span>배다. 이 농도는 \(N_c\)의 <span class="tn-out" data-out="rc"></span>배, 모트 농도의 <span class="tn-out" data-out="rm"></span>배다. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-deg">
+      <p>300 K 실리콘에 비소를 \(10^{20}\) cm⁻³ 넣었다(완전 이온화). 볼츠만 식으로 구한 \(E_F - E_c\)는 정확한 값과 비교해 어떨까?</p>
+      <div class="opts"><button class="opt">거의 같다(1 meV 안)</button><button class="opt" data-correct>절반쯤으로 작다 — 띠 안 깊이를 과소평가</button><button class="opt">두 배쯤 크다</button><button class="opt">부호가 반대다</button></div>
+      <div class="quiz-exp">볼츠만 +32 meV, 정확한 FD +63 meV. 상태가 꽉 찬 띠 바닥에는 더 넣을 자리가 없어 전자가 더 위까지 차올라야 하는데, 볼츠만 꼬리는 점유가 1을 넘을 수 있다고 보기 때문이다. 아래 실험대에서 점을 10²⁰으로 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-deg">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>고농도 도핑 실험대: FD · 볼츠만 · 조이스–딕슨 · BGN</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-dg1"></canvas></div><div><canvas id="cv-dg2"></canvas></div></div><span class="hint top">왼쪽 FD 곡선 위의 흰 점을 좌우로 끌어 농도를 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="dg-t-out"></output></span><input type="range" id="dg-t" min="77" max="600" step="1" value="300"></label>
+          <label class="check"><input type="checkbox" id="dg-bgn" checked> 띠 간격 축소(슬룻붐) 그리기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">n (= N<sub>D</sub>)</span><span class="v" id="dg-n">—</span></div>
+        <div class="stat"><span class="k">E<sub>F</sub> − E<sub>c</sub> (FD)</span><span class="v" id="dg-eta">—</span></div>
+        <div class="stat"><span class="k">볼츠만 E<sub>F</sub> 오차</span><span class="v" id="dg-err">—</span></div>
+        <div class="stat"><span class="k">조이스–딕슨 오차</span><span class="v" id="dg-jd">—</span></div>
+        <div class="stat"><span class="k">ΔE<sub>g</sub></span><span class="v" id="dg-bg">—</span></div>
+        <div class="stat"><span class="k">n<sub>i,eff</sub>²/n<sub>i</sub>²</span><span class="v" id="dg-nie">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 완전 이온화를 가정한 \(E_F - E_c\)(meV) 대 농도. 실선 FD 정확값, 점선 볼츠만, 가는 선 조이스–딕슨. 세로선은 \(N_c\)와 모트 농도. 오른쪽: 그 농도의 전도대 상태 밀도(포물선)와 채워진 전자(색칠, FD 점유), \(E_F\)와 BGN만큼 내려간 띠 끝. 해볼 것: ① 볼츠만 오차가 10 meV를 넘는 농도를 찾아라. ② 77 K로 내리면 같은 농도에서 축퇴가 훨씬 일찍 시작한다(\(N_c \propto T^{3/2}\)). ③ \(10^{20}\)에서 BGN(125 meV)이 \(E_F - E_c\)(63 meV)보다 크다는 것을 보라.</div>
+    </div>
+    <div class="callout semi"><strong>소스·드레인: 축퇴 도핑과 띠 간격 축소가 만나는 곳</strong><p>MOSFET의 소스·드레인과 접촉부는 \(10^{20}\)–\(5\times10^{20}\) cm⁻³로 도핑해 저항을 낮춘다. 모트 농도의 100배 가까운 금속성 반도체라 이온화 공식 대신 FD 통계를 쓰고, BGN 100 meV 넘게 띠 끝이 내려간다. 높은 도핑이 금속–반도체 장벽을 얇게 만들어 터널링 접촉 저항을 낮추는 것이 핵심 목적이지만, 활성화 한계가 있다: 고용도를 넘는 원자는 어닐 중 클러스터로 뭉쳐 전자를 내놓지 않으므로(인·비소는 약 \(2\)–\(5\times10^{20}\)), 레이저·밀리초 어닐로 평형보다 높은 활성 농도를 잠깐 얼려 두는 기술이 쓰인다. 바이폴라와 태양 전지에서는 BGN이 고농도 이미터의 \(n_{i,\text{eff}}^2\)를 수십 배 키워 이미터 주입 효율을 깎는다. <a href="https://semi.euiyun.com/device/chapters/mosfet.html">SemiBooks 소자 · MOSFET</a>, <a href="https://semi.euiyun.com/doping/chapters/anneal.html">SemiBooks 도핑 · 어닐</a>, <a href="https://semi.euiyun.com/device/chapters/ms.html">SemiBooks 소자 · 금속–반도체 접촉</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="resistivity">
+    <h2>도핑 농도에서 비저항과 면저항으로</h2>
+    <p>공정 현장에서 도핑은 농도보다 저항으로 먼저 잰다. 4탐침 하나면 몇 초에 끝나기 때문이다. 캐리어 농도와 <span class="term">이동도</span><span class="en">(mobility)</span> \(\mu\)(11장에서 자세히)를 알면</p>
+    <div class="formula">$$\rho = \frac{1}{q(n\mu_n + p\mu_p)} \approx \frac{1}{qN\mu_\text{다수}}, \qquad R_s = \frac{\rho}{t}\ \ [\Omega/\square], \qquad R_s = \frac{1}{q\int_0^{x_j}\mu(N)\,N(x)\,dx}\ \ (\text{불균일 층})$$<div class="where">이동도는 이온화 불순물이 많을수록 줄어든다(Si 전자: \(10^{15}\)에서 1360, \(10^{19}\)에서 115 cm²/(V·s)). 이 장은 <code>Solid.mobility</code>(카우기–토머스형 맞춤식)과 <code>Solid.siResistivity(N, type)</code>(300 K, 완전 이온화)의 값만 쓴다. 이렇게 그린 \(\rho(N)\)을 어빈 곡선이라 부른다. 진성 실리콘은 약 \(3\times10^{5}\) Ω·cm(\(n_i = 1.07\times10^{10}\)으로 계산).</div></div>
+    <p><span class="term">면저항</span><span class="en">(sheet resistance)</span> \(R_s\)는 두께 \(t\)인 얇은 층의 정사각형 한 칸이 가진 저항이다. 정사각형의 크기와 무관하므로(길이 \(L\)이 두 배면 폭 \(W\)도 두 배) 단위를 Ω/□(옴 퍼 스퀘어)로 쓰고, 배선이나 확산층의 저항은 "몇 칸인가"로 센다: \(R = R_s\,L/W\).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="면저항의 정의: 크기가 다른 정사각형의 저항이 같고, 길이 대 폭 비로 저항을 세며, 4탐침으로 측정한다">
+        <g transform="translate(40,40)">
+          <path d="M0,40 L60,10 L60,70 L0,100 Z M0,40 L40,40 L100,10 L60,10" fill="var(--accent)" opacity="0.18"/>
+          <rect x="0" y="40" width="60" height="60" fill="var(--accent)" opacity="0.3" stroke="var(--accent)"/>
+          <text class="t" x="30" y="126" text-anchor="middle" font-size="12">L = W</text>
+          <rect x="100" y="10" width="120" height="120" fill="var(--accent)" opacity="0.3" stroke="var(--accent)"/>
+          <text class="t" x="160" y="150" text-anchor="middle" font-size="12">2L = 2W</text>
+          <text class="t" x="110" y="190" text-anchor="middle" font-size="13">두 정사각형의 저항은 같다 = R<tspan baseline-shift="sub" font-size="75%">s</tspan></text>
+          <text class="t-dim" x="110" y="210" text-anchor="middle" font-size="12">R = ρL/(Wt) = (ρ/t)·(L/W)</text>
+        </g>
+        <g transform="translate(300,60)">
+          <rect x="0" y="20" width="200" height="40" fill="var(--accent-2)" opacity="0.25" stroke="var(--accent-2)"/>
+          <g stroke="var(--accent-2)" stroke-dasharray="3 3"><line x1="40" y1="20" x2="40" y2="60"/><line x1="80" y1="20" x2="80" y2="60"/><line x1="120" y1="20" x2="120" y2="60"/><line x1="160" y1="20" x2="160" y2="60"/></g>
+          <text class="t" x="100" y="90" text-anchor="middle" font-size="13">5칸 → R = 5R<tspan baseline-shift="sub" font-size="75%">s</tspan></text>
+          <text class="t-dim" x="100" y="110" text-anchor="middle" font-size="12">100 Ω/□ 저항선 5칸 = 500 Ω</text>
+        </g>
+        <g transform="translate(560,40)">
+          <rect x="0" y="100" width="200" height="30" class="f-surface" stroke="var(--border)"/>
+          <rect x="0" y="100" width="200" height="8" fill="var(--accent)" opacity="0.4"/>
+          <g stroke="var(--text)" stroke-width="2"><line x1="40" y1="40" x2="40" y2="100"/><line x1="80" y1="40" x2="80" y2="100"/><line x1="120" y1="40" x2="120" y2="100"/><line x1="160" y1="40" x2="160" y2="100"/></g>
+          <text class="t" x="40" y="32" text-anchor="middle" font-size="12">I+</text><text class="t" x="80" y="32" text-anchor="middle" font-size="12">V+</text><text class="t" x="120" y="32" text-anchor="middle" font-size="12">V−</text><text class="t" x="160" y="32" text-anchor="middle" font-size="12">I−</text>
+          <text class="t" x="100" y="160" text-anchor="middle" font-size="13">R<tspan baseline-shift="sub" font-size="75%">s</tspan> = (π/ln2)·V/I = 4.532 V/I</text>
+          <text class="t-dim" x="100" y="180" text-anchor="middle" font-size="12">얇은 층, 탐침 간격 ≪ 시료 크기</text>
+        </g>
+      </svg>
+      <figcaption>면저항. 왼쪽: 정사각형은 크기와 무관하게 저항이 \(\rho/t\)이다. 가운데: 긴 선의 저항은 칸 수로 센다. 오른쪽: 같은 간격의 4탐침에서 바깥 둘로 전류를 흘리고 안쪽 둘로 전압을 재면 접촉 저항 없이 \(R_s\)를 얻는다.</figcaption>
+    </figure>
+    <div class="example" data-title="웨이퍼 사양 “p형 1–10 Ω·cm 붕소” 읽기">
+      <p>CMOS용 실리콘 웨이퍼 사양서에 "p형, 붕소, 비저항 1–10 Ω·cm"라고 적혀 있다. 300 K 어빈 곡선(<code>Solid.siResistivity</code>)으로 붕소 농도 범위를 구하라. 정공 이동도는 \(1.4\times10^{15}\)에서 460, \(1.5\times10^{16}\)에서 417 cm²/(V·s)이다.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\rho \approx 1/(qN_A\mu_p)\)에서 \(N_A = 1/(q\rho\mu_p)\). 이동도가 농도에 따라 변하므로 범위의 양 끝에서 따로 계산(또는 곡선을 거꾸로 읽음)한다.</div>
+        <div class="step"><b>풀이</b> 10 Ω·cm: \(N_A = 1/(1.602\times10^{-19}\times10\times460) = 1.36\times10^{15}\). 1 Ω·cm: \(N_A = 1/(1.602\times10^{-19}\times1\times417) = 1.50\times10^{16}\) cm⁻³. 곡선을 수치로 뒤집으면 \(1.36\times10^{15}\)–\(1.50\times10^{16}\).</div>
+        <div class="answer">N<sub>A</sub> ≈ 1.4×10¹⁵ – 1.5×10¹⁶ cm⁻³ (비저항이 클수록 도핑이 작다)</div>
+        <div class="step"><b>검토</b> 비저항 10배 범위가 도핑 11배 범위가 된다 — 고농도 쪽 이동도가 낮아서다. 이 정도 도핑은 실리콘 원자 \(5\times10^{22}\)개 가운데 0.03–0.3 ppm이다. 초크랄스키 성장의 편석 때문에 잉곳 위아래에서 비저항이 다르므로, 사양은 범위로 준다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-wafer">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>어빈 곡선: 웨이퍼 사양을 도핑으로 읽어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-wf"></canvas><span class="hint top">곡선 위의 흰 점을 끌어 도핑을 고른다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>도펀트 형</span><div class="seg" id="wf-type"><button data-value="n" class="on">n형 (P)</button><button data-value="p">p형 (B)</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="wf-check" type="button">이 농도로 판정</button><button class="btn" id="wf-new" type="button">새 사양</button></div>
+          <p class="readout" id="wf-task" style="margin:0"></p>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">도핑 N</span><span class="v" id="wf-n">—</span></div>
+        <div class="stat"><span class="k">비저항 ρ</span><span class="v" id="wf-rho">—</span></div>
+        <div class="stat"><span class="k">다수 캐리어 이동도</span><span class="v" id="wf-mu">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="wf-res">—</span></div>
+      </div>
+      <div class="sim-note">300 K 실리콘의 \(\rho(N)\)(<code>Solid.siResistivity</code>, 완전 이온화). 색 띠는 사양의 비저항 범위다. 과제: 사양서의 "형·도펀트·비저항"에 맞는 곡선을 고르고 그 범위 안의 도핑에 점을 놓은 뒤 판정하라. 해볼 것: ① 같은 \(10^{16}\)에서 p형 비저항이 n형의 약 2.8배인 것(이동도 비)을 확인하라. ② \(10^{19}\) 위에서 곡선 기울기가 −1보다 완만해지는 이유를 이동도 값으로 설명하라.</div>
+    </div>
+    <div class="tangle" id="tg-rs">
+      <p>인 농도 <span class="tn" data-var="e" data-min="15" data-max="20.5" data-step="0.05">18</span> cm⁻³로 균일하게 도핑된 두께 <span class="tn" data-var="t" data-min="0.02" data-max="5" data-step="0.02">1</span> µm 층은 비저항이 <span class="tn-out" data-out="rho"></span>이고 면저항은 <span class="tn-out" data-out="rs"></span>이다. 4탐침에 1 mA를 흘리면 안쪽 탐침 사이 전압은 <span class="tn-out" data-out="v"></span>다. 목표: <b>100 Ω/□ 만들기</b>(±3%) — <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="얇은 n⁺ 층의 면저항">
+      <p>인 \(1.0\times10^{19}\) cm⁻³로 균일하게 도핑된 두께 0.20 µm 층의 면저항을 구하고, 4탐침(간격이 층 크기보다 훨씬 작음)에 1.0 mA를 흘릴 때 전압을 구하라(이 농도의 전자 이동도 115 cm²/(V·s), 완전 이온화).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\rho = 1/(qN\mu)\), \(R_s = \rho/t\), \(V = IR_s/4.532\).</div>
+        <div class="step"><b>풀이</b> \(\rho = 1/(1.602\times10^{-19}\times10^{19}\times115) = 5.43\times10^{-3}\) Ω·cm. \(R_s = 5.43\times10^{-3}/(2.0\times10^{-5}\ \text{cm}) = 272\) Ω/□. \(V = (1.0\times10^{-3})(272)/4.532 = 60\) mV.</div>
+        <div class="answer">R<sub>s</sub> ≈ 270 Ω/□, V ≈ 60 mV</div>
+        <div class="step"><b>검토</b> 소스·드레인 확장(얕은 접합)의 면저항이 수백 Ω/□인 것과 맞는 크기다. 실제 이온 주입층은 농도가 깊이에 따라 변하므로 \(R_s = 1/(q\int\mu N\,dx)\)로 적분하고, 활성화되지 않은 원자는 빼야 한다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>사양서와 측정실: 비저항·면저항이 도핑의 언어</strong><p>웨이퍼는 "p형 ⟨100⟩, 붕소, 1–10 Ω·cm" 또는 "n⁺ 기판 0.01–0.02 Ω·cm 비소(에피용)"처럼 비저항으로 주문한다(앞의 예제와 어빈 곡선). 공정이 시작되면 이온 주입·어닐마다 모니터 웨이퍼의 면저항을 4탐침으로 웨이퍼 전면 수십 점 찍어 지도를 만든다: 평균은 도즈와 활성화, 균일도(1σ %)는 주입 균일도와 어닐 온도 분포를 말해 준다. 면저항 1% 변화가 도즈 약 1% 변화에 해당하므로, 장비 이상을 가장 먼저 잡는 지표다. 깊이별 농도가 필요하면 SIMS(원자 수)와 확산 저항 측정(캐리어 수)을 비교해 활성화율을 얻는다. <a href="https://semi.euiyun.com/process/chapters/wafer.html">SemiBooks 공정 · 웨이퍼</a>, <a href="https://semi.euiyun.com/doping/chapters/metrology.html">SemiBooks 도핑 · 계측</a>, <a href="https://semi.euiyun.com/doping/chapters/doping.html">SemiBooks 도핑 · 도핑이란</a></p></div>
+    <div class="drill" id="drill-rs" data-title="비저항 · 면저항 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>\(n = N_cF_{1/2}(\eta_c)\), \(p = N_vF_{1/2}(\eta_v)\)가 정확한 식이고, \(E_F\)가 띠 끝에서 \(3kT\) 넘게 떨어진 비축퇴에서만 볼츠만 꼴과 질량 작용 법칙 \(np = n_i^2 = N_cN_ve^{-E_g/kT}\)이 성립한다. \(n_i(T)\)에는 \(T^{3/2}\), \(1/kT\), 바르시니 \(E_g(T)\)가 함께 들어간다(Si 300 K 약 \(1\times10^{10}\) cm⁻³).</li>
+      <li>얕은 도너·억셉터의 이온화 에너지는 수소 모형(Si 25.8 meV)과 중심 세포 보정으로 정해진다(P 45, As 54, Sb 39, B 45, Al 57, Ga 65, In 160 meV). 이온화율은 \(N_D^+/N_D = 1/(1 + g_De^{(E_F - E_d)/kT})\), \(g_D = 2\), \(g_A = 4\).</li>
+      <li>페르미 준위는 전하 중성 \(p + N_D^+ = n + N_A^-\) 하나로 정해진다. 양쪽이 \(E_F\)에 대해 반대로 단조이므로 근은 하나이고, 쇼클리 도식이나 이분법으로 푼다.</li>
+      <li>온도가 오르며 동결(\(n \approx \sqrt{N_cN_D/g_D}\,e^{-E_d/2kT}\)) → 외인성(\(n \approx N_D - N_A\)) → 진성(\(n \approx n_i\)) 영역을 지난다. 아레니우스 기울기는 각각 \(E_d/2\)(보상되면 \(E_d\)), 0, \(E_g/2\)다.</li>
+      <li>보상 시료는 캐리어가 \(N_D - N_A\)지만 산란 이온은 \(N_D + N_A\)다. 저온 기울기가 \(E_d\)로 두 배가 되는 것이 보상의 지문이다.</li>
+      <li>\(N \gtrsim 10^{18}\) cm⁻³(Si)에서는 볼츠만 근사가 틀리고(조이스–딕슨 또는 FD 적분), 모트 농도 \(3.7\times10^{18}\)(Si:P) 위에서 도너 준위가 띠에 녹아 금속성이 되며, 띠 간격 축소(슬룻붐: \(10^{20}\)에서 125 meV)가 \(n_{i,\text{eff}}^2\)를 키운다.</li>
+      <li>비저항 \(\rho = 1/q(n\mu_n + p\mu_p)\)와 면저항 \(R_s = \rho/t\)(Ω/□)가 도핑을 재는 현장의 언어다. "p형 1–10 Ω·cm 붕소"는 \(N_A \approx 1.4\times10^{15}\)–\(1.5\times10^{16}\) cm⁻³이다.</li>
+    </ol>
+  </section>
+
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 300 K, \(kT = 0.02585\) eV, \(q = 1.602\times10^{-19}\) C이다. 답은 유효숫자 세 자리로 넣는다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="진성 농도" data-answer="2.26e13" data-label="n_i =" data-unit="cm⁻³">
+        <div class="prob-q"><p>저마늄의 300 K 값 \(N_c = 1.04\times10^{19}\), \(N_v = 6.0\times10^{18}\) cm⁻³, \(E_g = 0.66\) eV로 진성 농도를 구하라.</p></div>
+        <div class="prob-hint">\(n_i = \sqrt{N_cN_v}\,e^{-E_g/2kT}\).</div>
+        <div class="prob-sol"><p>\(\sqrt{N_cN_v} = \sqrt{6.24\times10^{37}} = 7.90\times10^{18}\). \(E_g/2kT = 0.66/0.0517 = 12.77\), \(e^{-12.77} = 2.86\times10^{-6}\). \(n_i = 2.26\times10^{13}\) cm⁻³(실측 약 \(2\times10^{13}\)).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="질량 작용 법칙" data-answer="2.0e4" data-label="p =" data-unit="cm⁻³">
+        <div class="prob-q"><p>인 \(5.0\times10^{15}\) cm⁻³로 도핑한 실리콘(완전 이온화, \(n_i = 1.0\times10^{10}\) cm⁻³)의 정공 농도는?</p></div>
+        <div class="prob-sol"><p>\(n = 5.0\times10^{15}\), \(p = n_i^2/n = 10^{20}/(5\times10^{15}) = 2.0\times10^{4}\) cm⁻³.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="진성 준위" data-answer="38.2" data-label="E_i − E_mid =" data-unit="meV">
+        <div class="prob-q"><p>GaAs의 \(N_c = 4.7\times10^{17}\), \(N_v = 9.0\times10^{18}\) cm⁻³이다. 300 K에서 진성 준위는 띠 간격 중앙에서 몇 meV 위에 있는가?</p></div>
+        <div class="prob-hint">\(E_i - E_\text{mid} = (kT/2)\ln(N_v/N_c)\).</div>
+        <div class="prob-sol"><p>\((0.02585/2)\ln(19.15) = 0.012925\times2.952 = 0.0382\) eV = 38.2 meV. 전도대 상태가 적어 \(E_i\)가 전도대 쪽으로 올라간다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="이온화 에너지">
+        <div class="prob-q"><p>같은 \(10^{16}\) cm⁻³로 넣었을 때 300 K 실리콘에서 이온화율이 가장 낮은 불순물은?</p></div>
+        <div class="prob-choices"><button>인 (P)</button><button>붕소 (B)</button><button>갈륨 (Ga)</button><button data-correct>인듐 (In)</button></div>
+        <div class="prob-sol"><p>이온화 에너지가 160 meV(약 \(6kT\))로 가장 깊고, 억셉터라 \(g_A = 4\)이기도 하다. <code>Solid.solveEF</code>로 계산하면 약 70%만 이온화된다. P·B(45 meV)는 99% 넘게, Ga(65 meV)는 약 98% 이온화된다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="축퇴 인자" data-answer="33.3; 20.0" data-label="도너 =; 억셉터 =" data-unit="%; %">
+        <div class="prob-q"><p>(a) 페르미 준위가 도너 준위와 정확히 같을 때(\(E_F = E_d\)) 도너는 몇 %가 이온화되어 있는가? (b) \(E_F = E_a\)일 때 억셉터는 몇 %가 이온화되어 있는가?</p></div>
+        <div class="prob-hint">지수 인자가 1이 되므로 분모에 \(1 + g\)만 남는다.</div>
+        <div class="prob-sol"><p>(a) \(1/(1 + 2) = 33.3\%\). (b) \(1/(1 + 4) = 20.0\%\). 보통의 띠 상태(g = 1)라면 50%였을 것이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="이온화율" data-answer="0.990" data-label="N_A⁻/N_A =">
+        <div class="prob-q"><p>붕소 도핑 실리콘에서 \(E_F - E_v = 0.200\) eV이다. 붕소(\(E_a - E_v = 45\) meV, \(g_A = 4\))의 이온화 비율은?</p></div>
+        <div class="prob-sol"><p>\(E_a - E_F = 0.045 - 0.200 = -0.155\) eV \(= -5.996kT\). \(N_A^-/N_A = 1/(1 + 4e^{-5.996}) = 1/(1 + 0.00995) = 0.990\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="보상" data-answer="1.5e16; 0.368" data-label="n =; E_F − E_i =" data-unit="cm⁻³; eV">
+        <div class="prob-q"><p>실리콘에 인 \(2.0\times10^{16}\)과 붕소 \(5.0\times10^{15}\) cm⁻³가 들어 있다(완전 이온화, \(n_i = 1.0\times10^{10}\) cm⁻³). 전자 농도와 \(E_F - E_i\)는?</p></div>
+        <div class="prob-sol"><p>\(n = N_D - N_A = 1.5\times10^{16}\) cm⁻³. \(E_F - E_i = 0.02585\ln(1.5\times10^{6}) = 0.02585\times14.22 = 0.368\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="동결" data-answer="1.05e13" data-label="n ≈" data-unit="cm⁻³">
+        <div class="prob-q"><p>비소 \(N_D = 1.0\times10^{15}\) cm⁻³(\(E_d = 54\) meV) 실리콘의 40 K 전자 농도를 동결 근사식 \(n \approx \sqrt{N_cN_D/2}\,e^{-E_d/2kT}\)로 어림하라. \(N_c(300) = 2.86\times10^{19}\) cm⁻³, \(N_c \propto T^{3/2}\), \(k = 8.617\times10^{-5}\) eV/K.</p></div>
+        <div class="prob-hint">\(N_c(40) = 2.86\times10^{19}(40/300)^{1.5}\), \(kT = 3.447\) meV.</div>
+        <div class="prob-sol"><p>\(N_c(40) = 1.392\times10^{18}\). \(\sqrt{N_cN_D/2} = \sqrt{6.96\times10^{32}} = 2.64\times10^{16}\). \(E_d/2kT = 0.054/0.006894 = 7.833\), \(e^{-7.833} = 3.97\times10^{-4}\). \(n \approx 1.05\times10^{13}\) cm⁻³ — 도너의 1%만 이온화. \(n \ll N_D\)이므로 근사가 정당하다(정확한 풀이 \(1.04\times10^{13}\)).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="진성 온도" data-answer="487" data-tol="2" data-label="T =" data-unit="K">
+        <div class="prob-q"><p>전력 소자 드리프트층의 도핑이 \(1.0\times10^{14}\) cm⁻³이다. 띠 간격을 1.12 eV로 고정하고 \(N_c = 2.86\times10^{19}\), \(N_v = 3.10\times10^{19}\) cm⁻³(300 K, \(\propto T^{3/2}\))를 쓸 때 \(n_i\)가 도핑과 같아지는 온도는? (\(k = 8.617\times10^{-5}\) eV/K, 수치로 풀 것)</p></div>
+        <div class="prob-hint">\(f(T) = \ln[\sqrt{N_cN_v}(T/300)^{1.5}] - 1.12/(2kT) - \ln10^{14}\)의 근을 이분법이나 반복으로 찾는다. 450 K와 500 K에서 부호를 확인하라.</div>
+        <div class="prob-sol"><p>\(\sqrt{N_cN_v} = 2.978\times10^{19}\). 반복: \(T = 1.12/(2k[\ln(2.978\times10^{5}) + 1.5\ln(T/300)])\). \(T_0 = 480\) → 괄호 \(= 12.604 + 0.705 = 13.309\) → \(T = 488.3\) → 괄호 \(13.335\) → \(T = 487.4\) K(약 214 °C). 바르시니 \(E_g(T)\)를 쓰면 띠 간격이 줄어 470 K로 내려간다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="조이스–딕슨" data-answer="30.4" data-tol="2%" data-label="E_F − E_c =" data-unit="meV">
+        <div class="prob-q"><p>300 K 실리콘에서 \(n = 5.0\times10^{19}\) cm⁻³(\(N_c = 2.86\times10^{19}\))이다. 조이스–딕슨 근사의 첫 두 항 \(\eta \approx \ln r + r/\sqrt8\)로 \(E_F - E_c\)를 meV로 구하라.</p></div>
+        <div class="prob-sol"><p>\(r = 1.748\), \(\ln r = 0.5586\), \(r/\sqrt8 = 0.6181\), \(\eta = 1.1767\) → \(E_F - E_c = 30.4\) meV(정확한 FD 값 30.0 meV, 볼츠만 14.4 meV).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="띠 간격 축소" data-answer="83.4; 25.2" data-label="ΔE_g =; n_i,eff²/n_i² =" data-unit="meV; ">
+        <div class="prob-q"><p>슬룻붐 식으로 \(N = 1.0\times10^{19}\) cm⁻³ 실리콘의 띠 간격 축소와 \(n_{i,\text{eff}}^2/n_i^2\)을 구하라.</p></div>
+        <div class="prob-sol"><p>\(L = \ln100 = 4.605\). \(\Delta E_g = 9[4.605 + \sqrt{21.21 + 0.5}] = 9(4.605 + 4.659) = 83.4\) meV. \(e^{0.0834/0.02585} = e^{3.226} = 25.2\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="면저항" data-answer="200" data-label="R_s =" data-unit="Ω/□">
+        <div class="prob-q"><p>비저항 0.010 Ω·cm, 두께 0.50 µm인 균일한 층의 면저항은? 이 층으로 길이 50 µm, 폭 5 µm 저항을 만들면 몇 Ω인가(답은 면저항)?</p></div>
+        <div class="prob-sol"><p>\(R_s = \rho/t = 0.010/(5.0\times10^{-5}) = 200\) Ω/□. 저항은 \(200\times(50/5) = 2000\) Ω(10칸).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="비저항" data-answer="9.25e14" data-label="N_D =" data-unit="cm⁻³">
+        <div class="prob-q"><p>n형 실리콘 웨이퍼의 비저항이 5.0 Ω·cm이다. 이 농도의 전자 이동도를 1350 cm²/(V·s)로 보고 도너 농도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(N_D = 1/(q\rho\mu_n) = 1/(1.602\times10^{-19}\times5.0\times1350) = 9.25\times10^{14}\) cm⁻³.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="아레니우스 기울기">
+        <div class="prob-q"><p>억셉터가 약간 섞인 n형 실리콘의 홀 측정에서 \(\ln n\) 대 \(1/T\)를 그렸더니 30–60 K 구간 기울기가 \(-E/k\), \(E = 44\) meV였다. 가장 그럴듯한 해석은?</p></div>
+        <div class="prob-choices"><button>도너 이온화 에너지가 88 meV이다</button><button data-correct>\(n \ll N_A\)인 보상 동결 영역이며, 도너 이온화 에너지가 약 44 meV(인)이다</button><button>진성 영역이며 띠 간격이 88 meV이다</button><button>외인성 영역이다</button></div>
+        <div class="prob-sol"><p>보상이 없으면 기울기는 \(E_d/2\)지만, \(n\)이 \(N_A\)보다 작아지면 \(n \propto e^{-E_d/kT}\)가 된다. 44 meV는 인(45 meV)과 맞는다. 보상 여부를 모르고 \(E_d/2\)로 해석하면 88 meV라는 엉뚱한 값을 얻는다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="모트 전이" data-answer="5.0e16" data-tol="3%" data-label="N_Mott =" data-unit="cm⁻³">
+        <div class="prob-q"><p>저마늄의 전도대 유효 질량 \(m^* = 0.12m_e\), \(\varepsilon_r = 16.0\)이다. 수소 모형의 \(a_B^* = 0.0529\ \text{nm}\times\varepsilon_r/(m^*/m_e)\)와 모트 판정 \(N^{1/3}a_B^* = 0.26\)으로 금속–절연체 전이 농도를 어림하라.</p></div>
+        <div class="prob-hint">\(a_B^*\)를 cm로 바꿔 \(N = (0.26/a_B^*)^3\).</div>
+        <div class="prob-sol"><p>\(a_B^* = 0.0529\times16/0.12 = 7.05\) nm \(= 7.05\times10^{-7}\) cm. \(N = (0.26/7.05\times10^{-7})^3 = (3.69\times10^{5})^3 = 5.0\times10^{16}\) cm⁻³. 실리콘보다 두 자릿수 낮은 농도에서 축퇴가 시작된다(실측 Ge:Sb 약 \(1.5\times10^{17}\)).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>질량 작용 법칙 \(np = n_i^2\)이 성립하지 <b>않는</b> 경우는?</p><div class="opts">
+        <button class="opt">도너와 억셉터가 함께 있는 보상 시료</button><button class="opt">불완전 이온화가 일어나는 77 K 시료</button><button class="opt" data-correct>\(10^{20}\) cm⁻³로 도핑된 축퇴 시료</button><button class="opt">진성 시료</button>
+      </div><div class="quiz-exp">유도에서 \(F_{1/2} \approx e^\eta\)(비축퇴)와 평형만 썼다. 보상이나 불완전 이온화는 \(n\), \(p\)의 값을 바꿀 뿐 곱에는 영향이 없다. 축퇴 시료에서는 FD 적분과 BGN 때문에 곱이 \(n_i^2\)에서 벗어난다.</div></div>
+      <div class="quiz-q"><p>보상이 없는 n형 실리콘을 0 K 가까이 식히면 페르미 준위는 어디로 가는가?</p><div class="opts">
+        <button class="opt">띠 간격 한가운데</button><button class="opt">도너 준위 \(E_d\)에 정확히</button><button class="opt" data-correct>\(E_d\)와 \(E_c\)의 가운데 근처</button><button class="opt">전도대 안</button>
+      </div><div class="quiz-exp">전자는 도너에 거의 다 묶이고 극소수만 전도대에 있다. \(n = N_ce^{\eta_c}\)와 \(N_D^+ \approx n\)을 맞추면 \(E_F \approx (E_c + E_d)/2 + (kT/2)\ln(N_D/g_DN_c)\). 억셉터가 조금이라도 있으면 \(E_F\)는 \(E_d\)에 붙는다.</div></div>
+      <div class="quiz-q"><p>억셉터의 축퇴 인자가 4인 이유로 가장 알맞은 것은?</p><div class="opts">
+        <button class="opt">억셉터가 전자 4개를 받을 수 있어서</button><button class="opt" data-correct>스핀 2가지 × Γ점에서 겹친 무거운·가벼운 정공 띠 2가지</button><button class="opt">다이아몬드 구조의 최근접 원자가 4개라서</button><button class="opt">3족 원자의 원자가 전자가 3개라서</button>
+      </div><div class="quiz-exp">억셉터가 정공 하나를 붙잡는 방법의 수다. 실리콘 가전자대 꼭대기는 Γ점에서 두 띠가 겹치므로 궤도 2 × 스핀 2 = 4.</div></div>
+      <div class="quiz-q"><p>같은 순 도핑 \(N_D - N_A = 10^{16}\) cm⁻³인 두 시료 중 하나는 \(N_A = 0\), 다른 하나는 \(N_A = 10^{17}\)이다. 300 K에서 같은 것은?</p><div class="opts">
+        <button class="opt">비저항</button><button class="opt">전자 이동도</button><button class="opt" data-correct>전자 농도와 페르미 준위</button><button class="opt">저온 아레니우스 기울기</button>
+      </div><div class="quiz-exp">외인성 영역에서 \(n \approx N_D - N_A\)이므로 \(n\)과 \(E_F\)는 같다. 그러나 이온화 불순물이 \(10^{16}\) 대 \(2.1\times10^{17}\)으로 달라 이동도·비저항이 다르고, 저온 기울기도 \(E_d/2\) 대 \(E_d\)로 다르다.</div></div>
+      <div class="quiz-q"><p>\(10^{15}\) cm⁻³로 도핑된 드리프트층을 쓰는 전력 소자를 300 °C에서 동작시키려 한다. 띠 간격만 고려할 때 알맞은 재료는?</p><div class="opts">
+        <button class="opt">저마늄</button><button class="opt">실리콘</button><button class="opt" data-correct>4H-SiC 또는 GaN</button><button class="opt">어느 것이든 같다</button>
+      </div><div class="quiz-exp">300 °C(573 K)에서 실리콘의 \(n_i\)는 약 \(2\times10^{15}\) cm⁻³로 도핑을 넘는다(진성 영역). 띠 간격 3.3 eV 안팎의 SiC·GaN은 같은 온도에서 \(n_i\)가 \(10^{5}\)–\(10^{6}\) cm⁻³ 수준이다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const TAU = 2 * Math.PI, KB = 8.617333262e-5, QE = 1.602176634e-19, MOTT = 3.7e18;
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (e) => String(e).split("").map((c) => SUP[c] || c).join("");
+  const sci = (x, d = 2) => { if (!isFinite(x)) return "—"; if (x === 0) return "0"; const e = Math.floor(Math.log10(Math.abs(x)) + 1e-12); if (e >= -2 && e <= 3) return Number(x.toPrecision(d + 1)).toString(); let m = x / Math.pow(10, e); if (Math.abs(m) >= 9.995) return sci(Math.sign(x) * Math.pow(10, e + 1), d); return m.toFixed(d) + "×10" + sup(e); };
+  const conc = (x) => sci(x, 2) + " <small>cm⁻³</small>";
+  const pow10Fmt = (v) => { const e = Math.round(Math.log10(v)); return Math.abs(Math.log10(v) - e) > 1e-6 ? "" : e === 0 ? "1" : e === 1 ? "10" : "10" + sup(e); };
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const dot = (ctx, x, y, r, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+  const ring = (ctx, x, y, r, col, w = 1.6) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke(); ctx.restore(); };
+  const line = (ctx, x1, y1, x2, y2, col, w = 1.5, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore(); };
+  const poly = (ctx, pts, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); };
+  /** 차트 픽셀 → 값 (log 축 지원) */
+  const inv = (ch, rng, log, px, vert) => {
+    const b = ch.box, f = vert ? (b.y + b.h - px) / b.h : (px - b.x) / b.w;
+    return log ? Math.pow(10, Math.log10(rng[0]) + f * (Math.log10(rng[1]) - Math.log10(rng[0]))) : rng[0] + f * (rng[1] - rng[0]);
+  };
+  const kT = (T) => KB * T;
+  /** 정확한 F_{1/2}(η): x = u² 치환 후 심프슨 (Q.fdHalf보다 비축퇴 극한에서 정확) */
+  const F12 = (eta) => {
+    if (eta < -30) return Math.exp(eta);
+    const umax = Math.sqrt(Math.max(0, eta) + 36), n = 240, hh = umax / n; let s = 0;
+    for (let i = 0; i <= n; i++) { const u = i * hh, a = u * u - eta; s += (i === 0 || i === n ? 1 : i % 2 ? 4 : 2) * (u * u) / (1 + Math.exp(Math.min(a, 700))); }
+    return ((4 / Math.sqrt(Math.PI)) * s * hh) / 3;
+  };
+  const etaOf = (r) => Solid.bisect((e) => Math.log(F12(e) / r), -40, 80, 1e-9);
+  const JD = (r) => Math.log(r) + r / Math.sqrt(8) - 4.95009e-3 * r * r + 1.48386e-4 * r ** 3 - 4.42563e-6 * r ** 4;
+  const solve = (o) => Solid.solveEF(Object.assign({ mat: "Si" }, o));
+  const DOP = Solid.dopants;
+
+  /* ---------------------------------------------------------- 머리 애니메이션: 도너 전자가 전도대로 */
+  {
+    const Nd = 1e16, Ed = 0.045, Tmin = 25, Tmax = 800;
+    const tab = [];
+    for (let T = Tmin; T <= Tmax + 1e-9; T += 5) { const r = solve({ T, Nd, Ed }); tab.push({ T, ion: r.NdIon / Nd, n: r.n, EF: r.EF, Eg: r.Eg, Ei: r.Ei, ni: r.ni }); }
+    const at = (T) => {
+      const i = SB.clamp(Math.floor((T - Tmin) / 5), 0, tab.length - 2), a = tab[i], b = tab[i + 1], f = SB.clamp((T - a.T) / 5, 0, 1);
+      return { ion: a.ion + f * (b.ion - a.ion), n: Math.exp(Math.log(a.n) + f * (Math.log(b.n) - Math.log(a.n))), EF: a.EF + f * (b.EF - a.EF), Eg: a.Eg + f * (b.Eg - a.Eg), Ei: a.Ei + f * (b.Ei - a.Ei), ni: Math.exp(Math.log(a.ni) + f * (Math.log(b.ni) - Math.log(a.ni))) };
+    };
+    const Tf = (tab.find((r) => r.ion >= 0.9) || tab[0]).T, Ti = (tab.find((r) => r.n > 1.1 * Nd) || tab[tab.length - 1]).T;
+    const st = { T: 300, hold: 0, u: Math.log(300 / Tmin) / Math.log(Tmax / Tmin), dir: 1, acc: 0 };
+    let NS = 14;
+    let sites = [], els = [], holes = [];
+    const initSites = (N) => { NS = N; sites = []; for (let i = 0; i < N; i++) sites.push({ x: (i + 0.5) / N, bound: true }); els = []; holes = []; };
+    initSites(14);
+    const rndE = (k) => Math.min(0.16, -k * Math.log(Math.random() + 1e-9));
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 600;
+      const want = narrow ? 10 : 14; if (want !== NS) initSites(want);
+      const s = at(st.T), Eg = s.Eg;
+      const bx0 = 14, bx1 = narrow ? w - 14 : Math.round(w * 0.56), yt = 30, yb = h - 30;
+      const Emin = -0.14, Emax = Eg + 0.2, Y = (E) => yb - ((E - Emin) / (Emax - Emin)) * (yb - yt);
+      self._b = [bx0, bx1];
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(bx0, yt, bx1 - bx0, Y(Eg) - yt);
+      ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(bx0, Y(0), bx1 - bx0, yb - Y(0));
+      line(ctx, bx0, Y(Eg), bx1, Y(Eg), P.text, 2.2); line(ctx, bx0, Y(0), bx1, Y(0), P.text, 2.2);
+      line(ctx, bx0, Y(s.Ei), bx1, Y(s.Ei), P.faint, 1.2, [2, 5]);
+      const yd = Y(Eg - Ed), X = (f) => bx0 + 8 + f * (bx1 - bx0 - 16);
+      sites.forEach((d) => { line(ctx, X(d.x) - 9, yd, X(d.x) + 9, yd, P.accent, 2); if (d.bound) dot(ctx, X(d.x), yd, 4.2, P.accent); else { ring(ctx, X(d.x), yd, 5, P.accent, 1.4); SB.label(ctx, "+", X(d.x), yd - 0.5, { size: 10, color: P.accent, bold: true }); } });
+      els.forEach((e) => {
+        const yT = Y(Eg + e.e), y0 = e.src >= 0 ? yd : Y(0) + 4, k = e.a < 1 ? 1 - Math.pow(1 - e.a, 2) : 1;
+        const xx = e.src >= 0 && e.a < 1 ? X(sites[e.src].x) + (X(e.x) - X(sites[e.src].x)) * k : X(e.x);
+        dot(ctx, xx, y0 + (yT - y0) * k, 4.2, P.accent);
+      });
+      holes.forEach((p) => ring(ctx, X(p.x), Y(-p.e), 4.2, P.accent2, 1.8));
+      line(ctx, bx0, Y(s.EF), bx1, Y(s.EF), P.accent2, 2.4, [8, 5]);
+      SB.label(ctx, "Ec", bx0 + 4, Y(Eg) - 9, { align: "left", size: 12, color: P.text, bold: true });
+      SB.label(ctx, "Ev", bx0 + 4, Y(0) + 10, { align: "left", size: 12, color: P.text, bold: true });
+      SB.label(ctx, "Ed (P)", bx1 - 4, yd + 11, { align: "right", size: 11, color: P.accent });
+      SB.label(ctx, "EF", bx1 - 4, Y(s.EF) - 10, { align: "right", size: 12, color: P.accent2, bold: true });
+      SB.label(ctx, "Ei", bx0 + 4, Y(s.Ei) - 9, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, `T = ${st.T.toFixed(0)} K`, bx0 + 4, 14, { align: "left", size: 14, color: P.text, bold: true });
+      SB.label(ctx, `이온화 ${(s.ion * 100).toFixed(s.ion > 0.995 ? 1 : 0)}%   n = ${sci(s.n, 1).replace(/<[^>]+>/g, "")} cm⁻³`, bx0 + 4, h - 12, { align: "left", size: 12, color: P.text });
+      if (!narrow) {
+        const reg = s.ion < 0.9 ? "동결" : s.n > 1.1 * Nd ? "진성" : "외인성";
+        const ch = SB.chart(ctx, { x: bx1 + 62, y: 36, w: w - bx1 - 78, h: h - 84 }, {
+          x: [1.25, 40], y: [1e10, 1e18], logY: true, xLabel: "1000/T (K⁻¹)", yLabel: "n (cm⁻³)", yFmt: pow10Fmt, xTicks: [5, 10, 20, 30, 40],
+          bands: [{ x0: 1000 / Tf, x1: 40, color: SB.color("accent-soft") }, { x0: 1.25, x1: 1000 / Ti, color: SB.color("accent-2-soft") }],
+          series: [{ data: tab.map((r) => [1000 / r.T, r.ni]), color: P.dim, width: 1.4, dash: [4, 4] }, { data: tab.map((r) => [1000 / r.T, r.n]), color: P.accent, width: 2.4 }],
+        });
+        SB.label(ctx, "동결", ch.X(30), ch.box.y + 12, { size: 11, color: P.dim });
+        SB.label(ctx, "외인성", ch.X((1000 / Tf + 1000 / Ti) / 2), ch.box.y + 12, { size: 11, color: P.dim });
+        SB.label(ctx, "진성", ch.X(1.25) + 14, ch.box.y + ch.box.h - 12, { size: 11, color: P.dim, align: "left" });
+        handle(ctx, ch.X(1000 / st.T), ch.Y(s.n), P.accent, 7);
+        SB.label(ctx, reg, ch.X(1000 / st.T) + 12, ch.Y(s.n) - 14, { align: "left", size: 12, color: P.text, bold: true });
+        self._ch = ch;
+      } else self._ch = null;
+    }, { aspect: 0.42, minHeight: 260, maxHeight: 360 });
+    const setT = (T) => { st.T = SB.clamp(T, Tmin, Tmax); st.u = Math.log(st.T / Tmin) / Math.log(Tmax / Tmin); st.hold = 3.5; };
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x) => {
+      const [b0, b1] = cv._b || [0, 1];
+      if (x <= b1) setT(Tmin * Math.pow(Tmax / Tmin, SB.clamp((x - b0) / (b1 - b0), 0, 1)));
+      else if (cv._ch) setT(1000 / SB.clamp(inv(cv._ch, [1.25, 40], false, x), 1.25, 40));
+    } });
+    SB.loop("hero", (dt) => {
+      dt = Math.min(dt, 0.05);
+      if (st.hold > 0) st.hold -= dt;
+      else { st.u += st.dir * dt * 0.055; if (st.u > 1) { st.u = 1; st.dir = -1; } if (st.u < 0) { st.u = 0; st.dir = 1; } st.T = Tmin * Math.pow(Tmax / Tmin, st.u); }
+      const s = at(st.T), k = kT(st.T);
+      // 목표 개수
+      const wantIon = Math.round(s.ion * NS), wantPair = Math.round(SB.clamp((s.n - s.ion * Nd) / Nd * NS, 0, NS + 4));
+      st.acc += dt;
+      if (st.acc > 0.07) {
+        st.acc = 0;
+        const ionNow = sites.filter((d) => !d.bound).length, pairs = els.filter((e) => e.src < 0 && !e.dying).length;
+        if (ionNow < wantIon) { const free = sites.map((d, i) => (d.bound ? i : -1)).filter((i) => i >= 0); const i = free[Math.floor(Math.random() * free.length)]; sites[i].bound = false; els.push({ src: i, x: SB.clamp(sites[i].x + (Math.random() - 0.5) * 0.15, 0, 1), e: rndE(k), vx: (Math.random() - 0.5) * 0.3, a: 0 }); }
+        else if (ionNow > wantIon) { const cand = els.filter((e) => e.src >= 0 && e.a >= 1 && !e.dying); if (cand.length) { const e = cand[Math.floor(Math.random() * cand.length)]; e.dying = true; } }
+        if (pairs < wantPair) { const x = Math.random(); els.push({ src: -1, x, e: rndE(k), vx: (Math.random() - 0.5) * 0.3, a: 0 }); holes.push({ x, e: rndE(k), vx: (Math.random() - 0.5) * 0.2 }); }
+        else if (pairs > wantPair) { const e = els.find((q) => q.src < 0 && !q.dying); if (e) e.dying = true; }
+      }
+      els.forEach((e) => {
+        if (e.dying) { e.a -= dt * 3; if (e.a <= 0) { e.gone = true; if (e.src >= 0) sites[e.src].bound = true; else holes.shift(); } return; }
+        if (e.a < 1) e.a = Math.min(1, e.a + dt * 2.2);
+        else { e.x += e.vx * dt; if (e.x < 0 || e.x > 1) { e.vx *= -1; e.x = SB.clamp(e.x, 0, 1); } if (Math.random() < dt * 1.5) e.e = rndE(k); }
+        if (e.src >= 0 && e.dying === undefined && e.a >= 1 && Math.random() < dt * 0.2) e.vx = (Math.random() - 0.5) * 0.3;
+      });
+      els = els.filter((e) => !e.gone);
+      holes.forEach((p) => { p.x += p.vx * dt; if (p.x < 0 || p.x > 1) { p.vx *= -1; p.x = SB.clamp(p.x, 0, 1); } if (Math.random() < dt * 1.5) p.e = rndE(k); });
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- tangle: n_i(T) */
+  SB.tangle("tg-ni", (v) => {
+    const T = v.T, k = kT(T), ni = Solid.ni("Si", T), ni3 = Solid.ni("Si", 300);
+    const fix = Math.sqrt(Solid.Nc("Si", T) * Solid.Nv("Si", T)) * Math.exp(-Solid.Eg("Si", 300) / (2 * k));
+    return { Eg: Solid.Eg("Si", T).toFixed(4) + " eV", Nc: sci(Solid.Nc("Si", T), 2) + " cm⁻³", ni: sci(ni, 2) + " cm⁻³", r: sci(ni / ni3, 2), fix: sci(fix, 2) + " cm⁻³", corr: (ni / fix).toFixed(2), ge: sci(Solid.ni("Ge", T), 2) + " cm⁻³", gaas: sci(Solid.ni("GaAs", T), 2) + " cm⁻³" };
+  });
+
+  /* ---------------------------------------------------------- 미니: 진성 준위 위치 */
+  {
+    let T = 300;
+    const mats = ["Si", "Ge", "GaAs"];
+    const msg = () => { $("ei-r").innerHTML = `T = ${T.toFixed(0)} K, kT = ${(kT(T) * 1000).toFixed(1)} meV → E<sub>i</sub> − 중앙: ` + mats.map((m) => `${m} ${((Solid.Ei(m, T) - Solid.Eg(m, T) / 2) * 1000).toFixed(1)} meV`).join(", "); };
+    const cv = SB.canvas("cv-ei", (ctx, w, h, self) => {
+      const P = pal(), yt = 26, yb = h - 64, Emax = 1.6, Y = (E) => yb - (E / Emax) * (yb - yt);
+      const cw = (w - 40) / 3;
+      mats.forEach((m, i) => {
+        const x0 = 20 + i * cw + 12, x1 = x0 + cw - 24, Eg = Solid.Eg(m, T), Ei = Solid.Ei(m, T), off = Ei - Eg / 2;
+        ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0, yt, x1 - x0, Y(Eg) - yt);
+        ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(x0, Y(0), x1 - x0, yb - Y(0));
+        line(ctx, x0, Y(Eg), x1, Y(Eg), P.text, 2); line(ctx, x0, Y(0), x1, Y(0), P.text, 2);
+        line(ctx, x0, Y(Eg / 2), x1, Y(Eg / 2), P.faint, 1.2, [3, 4]);
+        line(ctx, x0, Y(Ei), x1, Y(Ei), P.accent2, 2.6);
+        // 5배 확대 막대
+        const xm = x1 - 10, ya = Y(Eg / 2), yo = Y(Eg / 2 + off * 5);
+        if (Math.abs(ya - yo) > 1.5) SB.arrow(ctx, xm, ya, xm, yo, { color: P.accent2, width: 2 });
+        SB.label(ctx, m, (x0 + x1) / 2, yt - 13, { size: 13, bold: true, color: P.text });
+        SB.label(ctx, `Eg ${Eg.toFixed(3)}`, (x0 + x1) / 2, Y(0) - 12, { size: 11, color: P.dim });
+        SB.label(ctx, `${off >= 0 ? "+" : ""}${(off * 1000).toFixed(1)} meV`, x0 + 4, Y(Ei) + (off >= 0 ? -10 : 11), { align: "left", size: 11, color: P.accent2, bold: true });
+      });
+      SB.label(ctx, w < 500 ? "주황 Ei · 점선 중앙 · 화살표 ×5" : "주황 = Ei, 점선 = 중앙, 화살표 = 차이 ×5", w / 2, yb + 12, { align: "center", size: 11, color: P.dim });
+      // 온도 트랙
+      const tx0 = 40, tx1 = w - 40, ty = h - 22, tx = tx0 + (T / 800) * (tx1 - tx0);
+      line(ctx, tx0, ty, tx1, ty, P.border, 4);
+      line(ctx, tx0, ty, tx, ty, P.accent, 4);
+      SB.label(ctx, "0 K", tx0 - 6, ty, { align: "right", size: 11, color: P.dim }); SB.label(ctx, "800 K", tx1 + 6, ty, { align: "left", size: 11, color: P.dim });
+      handle(ctx, tx, ty, P.accent, 9);
+      SB.label(ctx, `${T.toFixed(0)} K`, tx, ty - 17, { size: 11, color: P.text, bold: true });
+      self._t = [tx0, tx1, ty, tx];
+    }, { aspect: 0.5, minHeight: 280, maxHeight: 360 });
+    SB.drag(cv, { free: true, handles: () => (cv._t ? [{ id: "t", x: cv._t[3], y: cv._t[2], r: 14 }] : []), move: (id, x, y) => {
+      if (!cv._t) return; if (id !== "t" && y < cv._t[2] - 30) return;
+      T = Math.round(SB.clamp((x - cv._t[0]) / (cv._t[1] - cv._t[0]), 0.001, 1) * 800); T = Math.max(T, 1); msg();
+    } });
+    msg();
+  }
+
+  /* ---------------------------------------------------------- 미니: 이온화율과 축퇴 인자 */
+  {
+    let g = 2, x = 0;
+    const seg = SB.seg("ion-g", (v) => { g = Number(v); msg(); cv.redraw(); });
+    const fr = (x, gg) => 1 / (1 + gg * Math.exp(x));
+    const msg = () => {
+      const f = fr(x, g), lab = g === 4 ? "E<sub>a</sub> − E<sub>F</sub>" : "E<sub>F</sub> − E<sub>d</sub>";
+      $("ion-r").innerHTML = `${lab} = ${x >= 0 ? "+" : ""}${x.toFixed(2)} kT → 이온화 <b>${(f * 100).toFixed(1)}%</b> (중성 ${((1 - f) * 100).toFixed(1)}%)`;
+    };
+    const opts = { x: [-6, 6], y: [0, 1] };
+    const cv = SB.canvas("cv-ion", (ctx, w, h, self) => {
+      const P = pal(), cols = { 1: P.dim, 2: P.accent, 4: P.accent2 };
+      const ser = [1, 2, 4].map((gg) => { const d = []; for (let i = 0; i <= 240; i++) { const xx = -6 + i / 20; d.push([xx, fr(xx, gg)]); } return { data: d, color: cols[gg], width: gg === g ? 3 : 1.3, dash: gg === g ? null : [4, 4] }; });
+      const ch = SB.chart(ctx, { x: 58, y: 18, w: w - 76, h: h - 66 }, { x: opts.x, y: opts.y, xLabel: g === 4 ? "(Ea − EF)/kT" : "(EF − Ed)/kT", yLabel: "이온화 비율", xTicks: [-6, -4, -2, 0, 2, 4, 6], yTicks: [0, 0.2, 0.4, 0.6, 0.8, 1], series: ser, vlines: [{ x: 0, color: P.faint }], hlines: [{ y: 1 / (1 + g), color: cols[g], label: `1/(1+${g}) = ${(1 / (1 + g)).toFixed(3)}` }] });
+      [1, 2, 4].forEach((gg) => SB.label(ctx, `g = ${gg}`, ch.X(-5.2 + (gg === 1 ? 2.1 : gg === 2 ? 1.4 : 0.7)), ch.Y(fr(-5.2 + (gg === 1 ? 2.1 : gg === 2 ? 1.4 : 0.7), gg)) - 12, { size: 11, color: cols[gg], bold: gg === g }));
+      const px = ch.X(x), py = ch.Y(fr(x, g)); handle(ctx, px, py, cols[g], 9); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 320 });
+    SB.drag(cv, { free: true, handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, px) => { if (!cv._ch) return; x = Math.round(SB.clamp(inv(cv._ch, opts.x, false, px), -6, 6) * 20) / 20; msg(); } });
+    msg();
+  }
+
+  /* ---------------------------------------------------------- 미니: 쇼클리 도식 */
+  {
+    let cv = null;
+    const getNd = SB.range("sh-nd", (v) => sci(10 ** v, 1) + " cm⁻³", () => cv && cv.redraw());
+    const getNa = SB.range("sh-na", (v) => (v <= 12.001 ? "없음" : sci(10 ** v, 1) + " cm⁻³"), () => cv && cv.redraw());
+    const getT = SB.range("sh-t", (v) => v.toFixed(0) + " K", () => cv && cv.redraw());
+    cv = SB.canvas("cv-shock", (ctx, w, h) => {
+      const P = pal(), T = getT(), k = kT(T), Nd = 10 ** getNd(), Na = getNa() <= 12.001 ? 0 : 10 ** getNa();
+      const Eg = Solid.Eg("Si", T), Nc = Solid.Nc("Si", T), Nv = Solid.Nv("Si", T), Ed = DOP.P.E, Ea = DOP.B.E;
+      const nE = (E) => Nc * Q.fdHalf((E - Eg) / k), pE = (E) => Nv * Q.fdHalf(-E / k);
+      const dE = (E) => Nd / (1 + 2 * Math.exp((E - (Eg - Ed)) / k)), aE = (E) => Na / (1 + 4 * Math.exp((Ea - E) / k));
+      const xs = []; for (let i = 0; i <= 160; i++) xs.push(-0.1 + (i / 160) * (Eg + 0.2));
+      const mk = (f) => xs.map((E) => [E, f(E)]);
+      const r = solve({ T, Nd, Na, Ed, Ea });
+      const ser = [
+        { data: mk(nE), color: P.accent, width: 1.3 }, { data: mk(pE), color: P.accent2, width: 1.3 },
+        { data: mk(dE), color: P.accent2, width: 1.3, dash: [3, 3] },
+        { data: mk((E) => pE(E) + dE(E)), color: P.accent2, width: 3 },
+        { data: mk((E) => nE(E) + aE(E)), color: P.accent, width: 3, dash: [8, 5] },
+      ];
+      if (Na > 0) ser.splice(3, 0, { data: mk(aE), color: P.accent, width: 1.3, dash: [3, 3] });
+      const ch = SB.chart(ctx, { x: 58, y: 18, w: w - 76, h: h - 66 }, { x: [-0.1, Eg + 0.1], y: [1e2, 1e20], logY: true, xLabel: "EF − Ev (eV)", yLabel: "농도 (cm⁻³)", yFmt: (v) => (Math.round(Math.log10(v)) % 4 === 0 ? pow10Fmt(v) : ""), series: ser,
+        vlines: [{ x: 0, color: P.dim, label: "Ev" }, { x: Eg, color: P.dim, label: "Ec" }, { x: Eg - Ed, color: P.faint, label: "Ed", row: 1 }, ...(Na > 0 ? [{ x: Ea, color: P.faint, label: "Ea", row: 1 }] : [])] });
+      const px = ch.X(r.EF), py = ch.Y(r.p + r.NdIon);
+      ctx.save(); ctx.fillStyle = P.text; ctx.beginPath(); ctx.moveTo(px, py - 8); ctx.lineTo(px + 7, py); ctx.lineTo(px, py + 8); ctx.lineTo(px - 7, py); ctx.closePath(); ctx.fill(); ctx.restore();
+      SB.label(ctx, "EF", px, py - 16, { size: 12, bold: true });
+      SB.label(ctx, "p + ND⁺", ch.X(0.12), ch.Y(Math.max(pE(0.12) + dE(0.12), 1e3)) + 14, { align: "left", size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, "n + NA⁻", ch.X(Eg - 0.25), ch.Y(Math.max(nE(Eg - 0.25) + aE(Eg - 0.25), 1e3)) + 14, { align: "left", size: 11, color: P.accent, bold: true });
+      $("sh-r").innerHTML = `E<sub>F</sub> − E<sub>v</sub> = ${r.EF.toFixed(3)} eV, n = ${sci(r.n, 2)}, p = ${sci(r.p, 2)} cm⁻³, N<sub>D</sub><sup>+</sup>/N<sub>D</sub> = ${(r.NdIon / Nd * 100).toFixed(1)}%`;
+    }, { aspect: 0.5, minHeight: 260, maxHeight: 380 });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 페르미 준위 실험대 */
+  {
+    let A = null, B = null, EFu = 0.56, score = 0, hitDone = false, task = "";
+    const upd = () => { hitDone = false; render(); };
+    const getNd = SB.range("bb-nd", (v) => sci(10 ** v, 1) + " cm⁻³", upd);
+    const getNa = SB.range("bb-na", (v) => (v <= 12.001 ? "없음" : sci(10 ** v, 1) + " cm⁻³"), upd);
+    const getT = SB.range("bb-t", (v) => v.toFixed(0) + " K", upd);
+    ["bb-dn", "bb-ac"].forEach((id) => $(id).addEventListener("change", upd));
+    $("bb-show").addEventListener("change", () => render());
+    const P0 = () => {
+      const T = getT(), k = kT(T), Nd = 10 ** getNd(), Na = getNa() <= 12.001 ? 0 : 10 ** getNa();
+      const Ed = DOP[$("bb-dn").value].E, Ea = DOP[$("bb-ac").value].E;
+      const Eg = Solid.Eg("Si", T), Nc = Solid.Nc("Si", T), Nv = Solid.Nv("Si", T);
+      return { T, k, Nd, Na, Ed, Ea, Eg, Nc, Nv };
+    };
+    const at = (s, EF) => {
+      const n = s.Nc * Q.fdHalf((EF - s.Eg) / s.k), p = s.Nv * Q.fdHalf(-EF / s.k);
+      const dp = s.Nd / (1 + 2 * Math.exp((EF - (s.Eg - s.Ed)) / s.k)), am = s.Na / (1 + 4 * Math.exp((s.Ea - EF) / s.k));
+      return { n, p, dp, am, pos: p + dp, neg: n + am };
+    };
+    let S = P0(), R = solve({ T: S.T, Nd: S.Nd, Na: S.Na, Ed: S.Ed, Ea: S.Ea });
+    function render() {
+      S = P0(); R = solve({ T: S.T, Nd: S.Nd, Na: S.Na, Ed: S.Ed, Ea: S.Ea });
+      EFu = SB.clamp(EFu, -0.1, S.Eg + 0.1);
+      const c = at(S, EFu), err = Math.abs(Math.log(c.pos / c.neg)), hit = err < 0.02;
+      if (hit && !hitDone) { hitDone = true; score++; }
+      SB.stat("bb-ef", EFu.toFixed(3) + " <small>eV</small>" + ($("bb-show").checked ? ` <small>(정답 ${R.EF.toFixed(3)})</small>` : ""));
+      SB.stat("bb-pos", conc(c.pos)); SB.stat("bb-neg", conc(c.neg));
+      SB.stat("bb-ion", (S.Nd > 0 ? (c.dp / S.Nd * 100).toFixed(1) + "%" : "—") + " / " + (S.Na > 0 ? (c.am / S.Na * 100).toFixed(1) + "%" : "—"));
+      SB.stat("bb-score", String(score));
+      $("bb-task").innerHTML = (task ? task + "<br>" : "") + (hit ? '<span class="cs-hit">명중! 전하 중성이 맞는 E<sub>F</sub>다.</span>' : `<span class="cs-miss">${c.pos > c.neg ? "양전하가 많다 → E<sub>F</sub>를 올려라" : "음전하가 많다 → E<sub>F</sub>를 내려라"} (양/음 = ${sci(c.pos / c.neg, 2)})</span>`);
+      if (A) A.redraw(); if (B) B.redraw();
+    }
+    const layout = (h, S) => { const yt = 36, yb = h - 96, Emin = -0.15, Emax = S.Eg + 0.15; return { yt, yb, Y: (E) => yb - ((E - Emin) / (Emax - Emin)) * (yb - yt), E: (y) => Emin + ((yb - y) / (yb - yt)) * (Emax - Emin) }; };
+    A = SB.canvas("cv-bb", (ctx, w, h, self) => {
+      const P = pal(), L = layout(h, S), Y = L.Y, x0 = 34, x1 = w - 40, c = at(S, EFu);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0, L.yt, x1 - x0, Y(S.Eg) - L.yt);
+      ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(x0, Y(0), x1 - x0, L.yb - Y(0));
+      line(ctx, x0, Y(S.Eg), x1, Y(S.Eg), P.text, 2.2); line(ctx, x0, Y(0), x1, Y(0), P.text, 2.2);
+      line(ctx, x0, Y(R.Ei), x1, Y(R.Ei), P.faint, 1.2, [2, 5]);
+      SB.label(ctx, "Ec", x0 - 4, Y(S.Eg), { align: "right", size: 11, bold: true }); SB.label(ctx, "Ev", x0 - 4, Y(0), { align: "right", size: 11, bold: true });
+      SB.label(ctx, "Ei", x0 - 4, Y(R.Ei), { align: "right", size: 11, color: P.dim });
+      const N = 10, sx = (i) => x0 + 14 + (i / (N - 1)) * (x1 - x0 - 28);
+      if (S.Nd > 0) { const yd = Y(S.Eg - S.Ed), neu = Math.round((1 - c.dp / S.Nd) * N); for (let i = 0; i < N; i++) { line(ctx, sx(i) - 7, yd, sx(i) + 7, yd, P.accent, 2); if (i < neu) dot(ctx, sx(i), yd, 3.6, P.accent); else ring(ctx, sx(i), yd, 3.8, P.accent, 1.3); } }
+      if (S.Na > 0) { const ya = Y(S.Ea), ion = Math.round((c.am / S.Na) * N); for (let i = 0; i < N; i++) { line(ctx, sx(i) - 7, ya, sx(i) + 7, ya, P.accent2, 2); if (i < ion) dot(ctx, sx(i), ya, 3.6, P.accent); else ring(ctx, sx(i), ya, 3.8, P.accent2, 1.3); } }
+      if ($("bb-show").checked) { line(ctx, x0, Y(R.EF), x1, Y(R.EF), P.ok, 2, [3, 3]); SB.label(ctx, "정답", x0 + 4, Y(R.EF) - 9, { align: "left", size: 11, color: P.ok, bold: true }); }
+      line(ctx, x0, Y(EFu), x1, Y(EFu), P.accent2, 2.6);
+      SB.label(ctx, "EF", x1 - 30, Y(EFu) - 11, { size: 12, color: P.accent2, bold: true });
+      handle(ctx, x1, Y(EFu), P.accent2, 9);
+      self._h = [x1, Y(EFu)]; self._L = L;
+      // 전하 막대 (로그 눈금 10⁰–10²⁰)
+      const bx = x0, bw = x1 - x0, len = (v) => SB.clamp(Math.log10(Math.max(v, 1)) / 20, 0, 1) * bw;
+      const by1 = h - 70, by2 = h - 40, hit = Math.abs(Math.log(c.pos / c.neg)) < 0.02;
+      ctx.fillStyle = P.grid; ctx.fillRect(bx, by1 - 8, bw, 16); ctx.fillRect(bx, by2 - 8, bw, 16);
+      ctx.fillStyle = P.accent2; ctx.fillRect(bx, by1 - 8, len(c.pos), 16);
+      ctx.fillStyle = P.accent; ctx.fillRect(bx, by2 - 8, len(c.neg), 16);
+      SB.label(ctx, `+  p + ND⁺ = ${sci(c.pos, 2).replace(/<[^>]+>/g, "")}`, bx + 4, by1 - 15, { align: "left", size: 11, color: P.text });
+      SB.label(ctx, `−  n + NA⁻ = ${sci(c.neg, 2).replace(/<[^>]+>/g, "")}`, bx + 4, by2 + 16, { align: "left", size: 11, color: P.text });
+      if (hit) SB.label(ctx, "명중!", x1, by1 + 15, { align: "right", size: 13, color: P.ok, bold: true });
+    }, { aspect: 0.95, minHeight: 340, maxHeight: 460 });
+    B = SB.canvas("cv-bd", (ctx, w, h) => {
+      const P = pal(), L = layout(h, S), Y = L.Y, x0 = 14, x1 = w - 14, W = x1 - x0;
+      line(ctx, x0, Y(S.Eg), x1, Y(S.Eg), P.border, 1); line(ctx, x0, Y(0), x1, Y(0), P.border, 1);
+      // 상태 밀도(표시 눈금: 0.15 eV에서 폭의 45%)
+      const gS = (dE) => Math.sqrt(Math.max(dE, 0) / 0.15) * 0.45 * W, rv = S.Nv / S.Nc;
+      const gc = [], gv = [], fc = [], ne = [], pe = [];
+      let nmax = 0, pmax = 0;
+      for (let i = 0; i <= 150; i++) {
+        const E = S.Eg + (i / 150) * 0.15, f = 1 / (1 + Math.exp((E - EFu) / S.k));
+        gc.push([x0 + gS(E - S.Eg), Y(E)]); const v = Math.sqrt((E - S.Eg) / 0.15) * f; ne.push([E, v]); nmax = Math.max(nmax, v);
+        const Ev = -(i / 150) * 0.15, fh = 1 - 1 / (1 + Math.exp((Ev - EFu) / S.k));
+        gv.push([x0 + gS(-Ev) * rv, Y(Ev)]); const u = Math.sqrt(-Ev / 0.15) * rv * fh; pe.push([Ev, u]); pmax = Math.max(pmax, u);
+      }
+      for (let i = 0; i <= 200; i++) { const E = -0.15 + (i / 200) * (S.Eg + 0.3); fc.push([x0 + W / (1 + Math.exp((E - EFu) / S.k)), Y(E)]); }
+      poly(ctx, gc, P.dim, 1.6); poly(ctx, gv, P.dim, 1.6);
+      const fill = (arr, mx, col, base) => { if (mx <= 0) return 1; const sc = (0.4 * W) / (mx * 0.45 * W) ; ctx.save(); ctx.fillStyle = col; ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.moveTo(x0, Y(base)); arr.forEach(([E, v]) => ctx.lineTo(x0 + v * 0.45 * W * sc, Y(E))); ctx.lineTo(x0, Y(arr[arr.length - 1][0])); ctx.closePath(); ctx.fill(); ctx.restore(); return sc; };
+      const mn = fill(ne, nmax, P.accent, S.Eg), mp = fill(pe, pmax, P.warn, 0);
+      poly(ctx, fc, P.accent2, 1.6, [5, 4]);
+      line(ctx, x0, Y(EFu), x1, Y(EFu), P.accent2, 1.2, [2, 3]);
+      SB.label(ctx, "f(E): 0 → 1", x1 - 2, L.yt - 8, { align: "right", size: 11, color: P.accent2 });
+      SB.label(ctx, `n(E) ×${sci(mn, 0).replace(/<[^>]+>/g, "")}`, x0 + 0.45 * W + 6, Y(S.Eg + 0.07), { align: "left", size: 11, color: P.accent, bold: true });
+      SB.label(ctx, `p(E) ×${sci(mp, 0).replace(/<[^>]+>/g, "")}`, x0 + 0.45 * W + 6, Y(-0.07), { align: "left", size: 11, color: P.warn, bold: true });
+      SB.label(ctx, "회색: g(E)", x0 + 2, L.yb + 16, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, `T = ${S.T.toFixed(0)} K, kT = ${(S.k * 1000).toFixed(1)} meV`, x0 + 2, L.yb + 34, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, `실제 n = ${sci(at(S, EFu).n, 2).replace(/<[^>]+>/g, "")}, p = ${sci(at(S, EFu).p, 2).replace(/<[^>]+>/g, "")} cm⁻³`, x0 + 2, L.yb + 52, { align: "left", size: 11, color: P.text });
+    }, { aspect: 0.95, minHeight: 340, maxHeight: 460 });
+    const dragTo = (y) => { if (!A._L) return; EFu = SB.clamp(A._L.E(y), -0.1, S.Eg + 0.1); render(); };
+    SB.drag(A, { free: true, handles: () => (A._h ? [{ id: "ef", x: A._h[0], y: A._h[1], r: 16 }] : []), move: (id, x, y) => { if (A._L && y > A._L.yb + 4 && id == null) return; dragTo(y); } });
+    SB.drag(B, { free: true, handles: () => [], move: (id, x, y) => { if (A._L && y > A._L.yb + 4) return; dragTo(y); } });
+    $("bb-new").addEventListener("click", () => {
+      const nd = 14 + Math.round(Math.random() * 90) / 20, mode = Math.random();
+      const na = mode < 0.45 ? 12 : mode < 0.75 ? Math.max(12.5, nd - 0.3 - Math.random() * 2) : nd + 0.3 + Math.random() * 1.2;
+      const Ts = [50, 77, 100, 150, 200, 300, 400, 500, 600];
+      getNd.set(Math.round(nd * 20) / 20, true); getNa.set(Math.round(Math.min(na, 19) * 20) / 20, true); getT.set(Ts[Math.floor(Math.random() * Ts.length)], true);
+      $("bb-dn").value = ["P", "As", "Sb"][Math.floor(Math.random() * 3)]; $("bb-ac").value = ["B", "Al", "Ga", "In"][Math.floor(Math.random() * 4)];
+      $("bb-show").checked = false; EFu = Solid.Eg("Si", getT()) / 2;
+      task = `과녁: ${$("bb-dn").value} ${sci(10 ** getNd(), 1)}, ${getNa() <= 12.001 ? "억셉터 없음" : $("bb-ac").value + " " + sci(10 ** getNa(), 1)} cm⁻³, ${getT()} K`;
+      upd();
+    });
+    render();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 도핑 → n, p, E_F */
+  SB.drill("drill-ef", () => {
+    const ni = 1.0e10, Nc = 2.86e19, Nv = 3.10e19, k = 0.02585;
+    const m = [1, 2, 3, 5, 8][Math.floor(Math.random() * 5)], e = 14 + Math.floor(Math.random() * 4), N = m * 10 ** e;
+    const isN = Math.random() < 0.5, dop = isN ? "인(도너)" : "붕소(억셉터)", typ = Math.floor(Math.random() * 3);
+    const head = `<p>300 K 실리콘에 ${dop}를 \\(${m}\\times10^{${e}}\\) cm⁻³ 넣었다(완전 이온화, \\(n_i = 1.0\\times10^{10}\\), \\(N_c = 2.86\\times10^{19}\\), \\(N_v = 3.10\\times10^{19}\\) cm⁻³, \\(kT = 0.02585\\) eV).`;
+    const minor = (ni * ni) / N;
+    if (typ === 0) return { q: head + ` 소수 캐리어(${isN ? "정공" : "전자"}) 농도는?</p>`, answer: minor, label: isN ? "p =" : "n =", unit: "cm⁻³", tol: "1%", sol: `\\(${isN ? "p" : "n"} = n_i^2/N = 10^{20}/(${m}\\times10^{${e}}) = ${sci(minor, 3)}\\) cm⁻³.` };
+    if (typ === 1) { const v = k * Math.log((isN ? Nc : Nv) / N); return { q: head + ` \\(${isN ? "E_c - E_F" : "E_F - E_v"}\\)는 몇 eV인가?</p>`, answer: v, label: isN ? "E<sub>c</sub> − E<sub>F</sub> =" : "E<sub>F</sub> − E<sub>v</sub> =", unit: "eV", tol: "0.002", sol: `\\(kT\\ln(${isN ? "N_c" : "N_v"}/N) = 0.02585\\ln(${sci((isN ? Nc : Nv) / N, 3)}) = ${v.toFixed(4)}\\) eV.` }; }
+    const v = k * Math.log(N / ni);
+    return { q: head + ` \\(|E_F - E_i|\\)는 몇 eV인가?</p>`, answer: v, label: "|E<sub>F</sub> − E<sub>i</sub>| =", unit: "eV", tol: "0.002", sol: `\\(kT\\ln(N/n_i) = 0.02585\\ln(${sci(N / ni, 3)}) = ${v.toFixed(4)}\\) eV. ${isN ? "n형이므로 E<sub>i</sub> 위" : "p형이므로 E<sub>i</sub> 아래"}.` };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: n(T) 아레니우스와 E_F(T) */
+  {
+    let A = null, B = null, T = 300, curve = [], Tf = null, Ti = null;
+    const Tmin = 25, Tmax = 1000;
+    const getN = SB.range("ar-n", (v) => sci(10 ** v, 1) + " cm⁻³", () => { build(); render(); });
+    const axis = SB.seg("ar-x", () => render());
+    $("ar-dop").addEventListener("change", () => { build(); render(); });
+    const cfg = () => { const d = $("ar-dop").value, N = 10 ** getN(), isN = DOP[d].type === "n"; return { d, N, isN, E: DOP[d].E }; };
+    const calc = (T) => { const c = cfg(), r = solve(c.isN ? { T, Nd: c.N, Ed: c.E } : { T, Na: c.N, Ea: c.E }); return { T, maj: c.isN ? r.n : r.p, ion: (c.isN ? r.NdIon : r.NaIon) / c.N, EF: r.EF, Eg: r.Eg, Ei: r.Ei, ni: r.ni }; };
+    function build() {
+      curve = []; for (let i = 0; i <= 180; i++) curve.push(calc(Tmin * Math.pow(Tmax / Tmin, i / 180)));
+      const c = cfg();
+      const f = curve.find((r) => r.ion >= 0.9), g = curve.find((r) => r.maj > 1.1 * c.N);
+      Tf = f ? f.T : Tmax; Ti = g ? g.T : Tmax;
+    }
+    const xv = (T) => (axis() === "inv" ? 1000 / T : T);
+    const xr = () => (axis() === "inv" ? [1, 40] : [0, 1000]);
+    function render() {
+      const c = cfg(), s = calc(T), reg = s.ion < 0.9 ? "동결" : s.maj > 1.1 * c.N ? "진성" : "외인성";
+      const a = calc(T * 0.98), b = calc(T * 1.02), Ea = (KB * Math.log(b.maj / a.maj)) / (1 / a.T - 1 / b.T);
+      SB.stat("ar-t", `${T.toFixed(0)} K <small>(${(T - 273.15).toFixed(0)} °C)</small>`);
+      SB.stat("ar-c", (c.isN ? "n = " : "p = ") + conc(s.maj));
+      SB.stat("ar-ion", (s.ion * 100).toFixed(1) + "%");
+      SB.stat("ar-ef", s.EF.toFixed(3) + " <small>eV</small>");
+      SB.stat("ar-reg", reg);
+      SB.stat("ar-ea", (Ea * 1000).toFixed(0) + " <small>meV</small>");
+      if (A) A.redraw(); if (B) B.redraw();
+    }
+    A = SB.canvas("cv-ar1", (ctx, w, h, self) => {
+      if (!curve.length) build();
+      const P = pal(), c = cfg(), inv1 = axis() === "inv", xrng = xr();
+      const bands = inv1 ? [{ x0: 1000 / Tf, x1: 40, color: SB.color("accent-soft") }, { x0: 1, x1: 1000 / Ti, color: SB.color("accent-2-soft") }] : [{ x0: 0, x1: Tf, color: SB.color("accent-soft") }, { x0: Ti, x1: 1000, color: SB.color("accent-2-soft") }];
+      const ch = SB.chart(ctx, { x: 58, y: 22, w: w - 72, h: h - 70 }, { x: xrng, y: [1e8, 1e19], logY: true, xLabel: inv1 ? "1000/T (K⁻¹)" : "T (K)", yLabel: (c.isN ? "n" : "p") + " (cm⁻³)", yFmt: pow10Fmt, bands,
+        series: [{ data: curve.map((r) => [xv(r.T), r.ni]), color: P.dim, width: 1.3, dash: [4, 4] }, { data: curve.map((r) => [xv(r.T), r.maj]), color: P.accent, width: 2.6 }],
+        hlines: [{ y: c.N, color: P.faint, label: "N" }] });
+      const s = calc(T), px = ch.X(xv(T)), py = ch.Y(s.maj);
+      handle(ctx, px, py, P.accent, 9); self._h = [px, py]; self._ch = ch;
+      { const Tl = Solid.bisect((t) => Math.log(Solid.ni("Si", t) / 1e10), 200, 1000); SB.label(ctx, "ni", ch.X(xv(Tl)) + 8, ch.Y(1e10), { align: "left", size: 11, color: P.dim }); }
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    B = SB.canvas("cv-ar2", (ctx, w, h, self) => {
+      if (!curve.length) build();
+      const P = pal(), c = cfg();
+      const lev = curve.map((r) => [r.T, c.isN ? r.Eg - c.E : c.E]);
+      const ch = SB.chart(ctx, { x: 52, y: 22, w: w - 66, h: h - 70 }, { x: [0, 1000], y: [-0.05, 1.25], xLabel: "T (K)", yLabel: "E − Ev (eV)",
+        series: [{ data: curve.map((r) => [r.T, r.Eg]), color: P.text, width: 2 }, { data: [[0, 0], [1000, 0]], color: P.text, width: 2 }, { data: lev, color: c.isN ? P.accent : P.accent2, width: 1.4, dash: [6, 4] }, { data: curve.map((r) => [r.T, r.Ei]), color: P.faint, width: 1.2, dash: [2, 4] }, { data: curve.map((r) => [r.T, r.EF]), color: P.accent2, width: 2.8 }] });
+      SB.label(ctx, "Ec", ch.X(980), ch.Y(curve[curve.length - 1].Eg) - 10, { align: "right", size: 11, bold: true });
+      SB.label(ctx, "Ev", ch.X(980), ch.Y(0) + 10, { align: "right", size: 11, bold: true });
+      SB.label(ctx, c.isN ? "Ed" : "Ea", ch.X(60), ch.Y(lev[0][1]) + (c.isN ? 10 : -10), { align: "left", size: 11, color: c.isN ? P.accent : P.accent2 });
+      SB.label(ctx, "Ei", ch.X(980), ch.Y(curve[curve.length - 1].Ei) + 10, { align: "right", size: 11, color: P.dim });
+      const s = calc(T), px = ch.X(T), py = ch.Y(s.EF);
+      handle(ctx, px, py, P.accent2, 9); SB.label(ctx, "EF", px + 13, py - 10, { align: "left", size: 12, color: P.accent2, bold: true });
+      self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    SB.drag(A, { free: true, handles: () => (A._h ? [{ id: "t", x: A._h[0], y: A._h[1], r: 14 }] : []), move: (id, x) => { if (!A._ch) return; const v = inv(A._ch, xr(), false, x); T = SB.clamp(axis() === "inv" ? 1000 / SB.clamp(v, 1, 40) : v, Tmin, Tmax); render(); } });
+    SB.drag(B, { free: true, handles: () => (B._h ? [{ id: "t", x: B._h[0], y: B._h[1], r: 14 }] : []), move: (id, x) => { if (!B._ch) return; T = SB.clamp(inv(B._ch, [0, 1000], false, x), Tmin, Tmax); render(); } });
+    build(); render();
+    const loop = SB.loop("sim-arr", (dt) => { T *= Math.exp(Math.min(dt, 0.05) * 0.35); if (T > Tmax) T = Tmin; render(); });
+    loop.stop(); SB.play("ar-play", loop, { play: "▶ 온도 올리기", pause: "❚❚ 멈춤" });
+  }
+
+  /* ---------------------------------------------------------- tangle: 진성 온도 */
+  SB.tangle("tg-tint", (v) => {
+    const N = 10 ** v.e, Tx = (m, n) => Solid.bisect((T) => Math.log(Solid.ni(m, T) / n), 150, 3000);
+    const f = (T) => `${T.toFixed(0)} K(${(T - 273.15).toFixed(0)} °C)`;
+    const si = Tx("Si", N), s10 = Tx("Si", 0.1 * N);
+    let msg = "";
+    if (s10 < 398) msg = "실리콘 한계가 125 °C 아래로 내려온다 — 이렇게 낮은 도핑의 실리콘 층은 고온 동작에 쓸 수 없다.";
+    else if (v.e >= 17.5) msg = "고농도 층은 실리콘도 꽤 높은 온도까지 버틴다. 문제는 늘 가장 낮게 도핑된 층이다.";
+    else msg = "SiC·GaN 값은 바르시니 식을 외삽한 어림이다.";
+    return { si: f(si), sic: f(Tx("SiC", N)), gan: f(Tx("GaN", N)), si10: f(s10), msg };
+  }, { fmt: { e: (x) => sci(10 ** x, 1) } });
+
+  /* ---------------------------------------------------------- 미니: 보상 */
+  {
+    let cv = null;
+    const Nd = 1e16, Ed = DOP.P.E, Ea = DOP.B.E;
+    const getK = SB.range("cp-k", (v) => (10 ** v).toPrecision(2), () => { build(); cv && cv.redraw(); });
+    const xs = []; for (let i = 0; i <= 120; i++) xs.push(2 + (38 * i) / 120);
+    const base = xs.map((u) => [u, solve({ T: 1000 / u, Nd, Ed }).n]);
+    let cur = [];
+    const slope = (Na, T) => { const a = solve({ T: T * 0.97, Nd, Na, Ed, Ea }).n, b = solve({ T: T * 1.03, Nd, Na, Ed, Ea }).n; return (KB * Math.log(b / a)) / (1 / (T * 0.97) - 1 / (T * 1.03)); };
+    function build() {
+      const Na = 10 ** getK() * Nd; cur = xs.map((u) => [u, solve({ T: 1000 / u, Nd, Na, Ed, Ea }).n]);
+      const s0 = slope(0, 30), s1 = slope(Na, 30), n300 = solve({ T: 300, Nd, Na, Ed, Ea }).n;
+      $("cp-r").innerHTML = `N<sub>A</sub> = ${sci(Na, 2)} cm⁻³, n(300 K) = ${sci(n300, 2)} cm⁻³. 30 K 기울기: 보상 없음 ${(s0 * 1000).toFixed(0)} meV, 보상 ${(s1 * 1000).toFixed(0)} meV (E<sub>d</sub> = 45 meV)`;
+    }
+    build();
+    cv = SB.canvas("cv-comp", (ctx, w, h) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 58, y: 18, w: w - 76, h: h - 66 }, { x: [2, 40], y: [1e8, 1e17], logY: true, xLabel: "1000/T (K⁻¹)", yLabel: "n (cm⁻³)", yFmt: pow10Fmt,
+        series: [{ data: base, color: P.dim, width: 1.6, dash: [5, 4] }, { data: cur, color: P.accent, width: 2.6 }],
+        hlines: [{ y: 10 ** getK() * Nd, color: P.accent2, label: "NA" }], vlines: [{ x: 1000 / 30, color: P.faint, label: "30 K" }] });
+      SB.label(ctx, "K = 0", ch.X(8), ch.Y(base[Math.round((8 - 2) / 38 * 120)][1]) - 12, { size: 11, color: P.dim });
+    }, { aspect: 0.45, minHeight: 240, maxHeight: 330 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 보상 웰 */
+  SB.tangle("tg-comp", (v) => {
+    const Na = 10 ** v.na, Nd = 10 ** v.nd, ni = Solid.ni("Si", 300), k = kT(300);
+    const isN = Nd > Na, maj = isN ? Solid.nFull(Nd, Na, ni) : Solid.nFull(Na, Nd, ni);
+    const net = Math.abs(Nd - Na), ratio = (Nd + Na) / Math.max(net, 1);
+    let msg = "";
+    if (!isN) msg = "인이 붕소보다 적어 여전히 p형이다 — 웰이 만들어지지 않는다.";
+    else if (ratio > 3) msg = "거의 완전 보상: 도즈가 몇 %만 틀려도 순 도핑과 비저항이 크게 바뀐다.";
+    else msg = "인이 붕소를 넉넉히 넘어 n-웰이 된다.";
+    return { type: isN ? "n형 웰" : "p형 그대로", maj: (isN ? "n = " : "p = ") + sci(maj, 2) + " cm⁻³", ef: (k * Math.log(maj / ni)).toFixed(3) + " eV", tot: sci(Nd + Na, 2) + " cm⁻³", ratio: ratio.toFixed(2), msg };
+  }, { fmt: { na: (x) => sci(10 ** x, 1), nd: (x) => sci(10 ** x, 1) } });
+
+  /* ---------------------------------------------------------- 미니: F_{1/2}와 볼츠만 */
+  {
+    let eta = -3;
+    const fd = [], bz = []; for (let i = 0; i <= 140; i++) { const e = -6 + i / 10; fd.push([e, F12(e)]); bz.push([e, Math.exp(e)]); }
+    const msg = () => { const F = F12(eta), err = (Math.exp(eta) / F - 1) * 100; $("fd-r").innerHTML = `η = ${eta.toFixed(2)} (300 K에서 E<sub>F</sub> − E<sub>c</sub> = ${(eta * 25.85).toFixed(0)} meV): F<sub>1/2</sub> = ${sci(F, 3)}, e<sup>η</sup> = ${sci(Math.exp(eta), 3)} → 볼츠만 오차 <b>${err < 100 ? err.toFixed(err < 1 ? 2 : 1) : err.toFixed(0)}%</b>`; };
+    const opts = { x: [-6, 8], y: [1e-3, 1e4] };
+    const cv = SB.canvas("cv-fd", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 58, y: 18, w: w - 76, h: h - 66 }, { x: opts.x, y: opts.y, logY: true, xLabel: "η = (EF − Ec)/kT", yLabel: "n / Nc", yFmt: pow10Fmt,
+        bands: [{ x0: -3.5, x1: 8, color: SB.color("bad-soft") }], series: [{ data: bz, color: P.dim, width: 1.8, dash: [6, 4] }, { data: fd, color: P.accent, width: 2.6 }], vlines: [{ x: 0, color: P.faint, label: "EF = Ec" }] });
+      SB.label(ctx, "오차 > 1%", ch.X(-3.3), ch.box.y + ch.box.h - 12, { align: "left", size: 11, color: P.bad });
+      SB.label(ctx, "e^η", ch.X(6.8), ch.Y(Math.exp(6.8)) + 14, { size: 11, color: P.dim });
+      SB.label(ctx, "F½(η)", ch.X(6.8), ch.Y(F12(6.8)) + 14, { size: 11, color: P.accent, bold: true });
+      const px = ch.X(eta), py = ch.Y(F12(eta));
+      line(ctx, px, py, px, ch.Y(Math.exp(eta)), P.bad, 2);
+      handle(ctx, px, py, P.accent, 9); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.45, minHeight: 240, maxHeight: 330 });
+    SB.drag(cv, { free: true, handles: () => (cv._h ? [{ id: "e", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (!cv._ch) return; eta = Math.round(SB.clamp(inv(cv._ch, opts.x, false, x), -6, 8) * 20) / 20; msg(); } });
+    msg();
+  }
+
+  /* ---------------------------------------------------------- tangle: 띠 간격 축소 */
+  SB.tangle("tg-bgn", (v) => {
+    const N = 10 ** v.e, dE = Solid.bgn(N), k = kT(300), Nc = Solid.Nc("Si", 300);
+    let msg = N < MOTT ? "모트 농도 아래: 도너 준위가 아직 따로 있어 저온에서 동결된다." : N < Nc ? "모트 농도를 넘어 금속성이지만 E<sub>F</sub>는 아직 E<sub>c</sub> 아래다." : "E<sub>F</sub>가 전도대 안으로 들어간 축퇴 영역 — FD 통계가 필수다.";
+    return { dE: (dE * 1000).toFixed(1) + " meV", Eg: (Solid.Eg("Si", 300) - dE).toFixed(3) + " eV", r: sci(Math.exp(dE / k), 2), rc: sci(N / Nc, 2), rm: sci(N / MOTT, 2), msg };
+  }, { fmt: { e: (x) => sci(10 ** x, 1) } });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 고농도 도핑 */
+  {
+    let A = null, B = null, N = 1e19, data = null;
+    const getT = SB.range("dg-t", (v) => v.toFixed(0) + " K", () => { build(); render(); });
+    $("dg-bgn").addEventListener("change", () => render());
+    const NR = [1e17, 5e20];
+    function build() {
+      const T = getT(), k = kT(T), Nc = Solid.Nc("Si", T), fd = [], bz = [], jd = [];
+      for (let i = 0; i <= 90; i++) { const n = NR[0] * Math.pow(NR[1] / NR[0], i / 90), r = n / Nc; fd.push([n, etaOf(r) * k * 1000]); bz.push([n, Math.log(r) * k * 1000]); jd.push([n, JD(r) * k * 1000]); }
+      data = { T, k, Nc, fd, bz, jd };
+    }
+    function cur() { const r = N / data.Nc, e = etaOf(r); return { r, e, eF: e * data.k, eB: Math.log(r) * data.k, eJ: JD(r) * data.k, over: Math.exp(e) / r, dE: Solid.bgn(N) }; }
+    function render() {
+      const c = cur();
+      SB.stat("dg-n", conc(N));
+      SB.stat("dg-eta", `${(c.eF * 1000).toFixed(1)} <small>meV (η = ${c.e.toFixed(2)})</small>`);
+      SB.stat("dg-err", `${((c.eB - c.eF) * 1000).toFixed(1)} <small>meV, n ×${c.over.toFixed(2)}</small>`);
+      SB.stat("dg-jd", `${((c.eJ - c.eF) * 1000).toFixed(2)} <small>meV</small>`);
+      SB.stat("dg-bg", `${(c.dE * 1000).toFixed(0)} <small>meV</small>`);
+      SB.stat("dg-nie", sci(Math.exp(c.dE / data.k), 2));
+      if (A) A.redraw(); if (B) B.redraw();
+    }
+    build();
+    A = SB.canvas("cv-dg1", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 56, y: 22, w: w - 70, h: h - 70 }, { x: NR, y: [-150, 250], logX: true, xLabel: "N (cm⁻³)", yLabel: "EF − Ec (meV)", xFmt: pow10Fmt,
+        series: [{ data: data.bz, color: P.dim, width: 1.8, dash: [6, 4] }, { data: data.jd, color: P.accent2, width: 1.3 }, { data: data.fd, color: P.accent, width: 2.6 }],
+        hlines: [{ y: 0, color: P.faint, label: "Ec" }], vlines: [{ x: data.Nc, color: P.faint, label: "Nc" }, { x: MOTT, color: P.faint, label: "모트", row: 1 }] });
+      SB.label(ctx, "FD", ch.X(3e20), ch.Y(data.fd[86][1]) - 12, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, "볼츠만", ch.X(3e20), ch.Y(data.bz[86][1]) + 12, { size: 11, color: P.dim });
+      const c = cur(), px = ch.X(N), py = ch.Y(c.eF * 1000); handle(ctx, px, py, P.accent, 9); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    B = SB.canvas("cv-dg2", (ctx, w, h) => {
+      const P = pal(), c = cur(), bg = $("dg-bgn").checked ? c.dE : 0, Eg = Solid.Eg("Si", data.T);
+      const yt = 36, yb = h - 40, Emin = Eg - 0.4, Emax = Eg + 0.32, Y = (E) => yb - ((E - Emin) / (Emax - Emin)) * (yb - yt);
+      const x0 = 30, xm = w * 0.42, x1 = w - 16, Ec = Eg - bg / 2, Ev = bg / 2, EF = Ec + c.eF;
+      line(ctx, x0, Y(Ec), xm, Y(Ec), P.text, 2.2);
+      if (bg > 0) { line(ctx, x0, Y(Eg), xm, Y(Eg), P.faint, 1.2, [4, 4]); SB.label(ctx, "원래 Ec", x0 + 2, Y(Eg) - 9, { align: "left", size: 10, color: P.dim }); }
+      SB.label(ctx, bg > 0 ? `Eg − ΔEg = ${(Eg - bg).toFixed(3)} eV` : `Eg = ${Eg.toFixed(3)} eV`, (x0 + xm) / 2, yb - 8, { size: 11, color: P.dim });
+      SB.label(ctx, "Ec", x0 - 4, Y(Ec), { align: "right", size: 11, bold: true });
+      // 전도대 상태 밀도와 채움
+      const W = x1 - xm - 10, gS = (d) => Math.sqrt(Math.max(d, 0) / 0.3) * W, pts = [], fl = [];
+      for (let i = 0; i <= 120; i++) { const E = Ec + (i / 120) * 0.3, g = gS(E - Ec), f = 1 / (1 + Math.exp((E - EF) / data.k)); pts.push([xm + 10 + g, Y(E)]); fl.push([xm + 10 + g * f, Y(E)]); }
+      ctx.save(); ctx.fillStyle = P.accent; ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(xm + 10, Y(Ec)); fl.forEach(([x, y]) => ctx.lineTo(x, y)); ctx.lineTo(xm + 10, Y(Ec + 0.3)); ctx.closePath(); ctx.fill(); ctx.restore();
+      poly(ctx, pts, P.dim, 1.6); line(ctx, xm + 10, Y(Ec), xm + 10, Y(Ec + 0.3), P.border, 1);
+      line(ctx, x0, Y(EF), x1, Y(EF), P.accent2, 2.4, [7, 4]);
+      SB.label(ctx, "EF", x1 - 4, Y(EF) - 10, { align: "right", size: 12, color: P.accent2, bold: true });
+      SB.label(ctx, "채워진 상태 g(E)f(E)", x1, Y(Ec) + 14, { align: "right", size: 11, color: P.accent });
+      SB.label(ctx, $("dg-bgn").checked ? "도식: ΔEg를 두 띠에 반씩" : "BGN 끔", x0, h - 14, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    SB.drag(A, { free: true, handles: () => (A._h ? [{ id: "n", x: A._h[0], y: A._h[1], r: 14 }] : []), move: (id, x) => { if (!A._ch) return; N = SB.clamp(inv(A._ch, NR, true, x), NR[0], NR[1]); render(); } });
+    render();
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 어빈 곡선과 웨이퍼 사양 */
+  {
+    let N = 1e15, spec = null, score = 0, cv = null;
+    const SPECS = [
+      { t: "p", d: "붕소", lo: 1, hi: 10, use: "CMOS 로직용 기판" },
+      { t: "p", d: "붕소", lo: 8, hi: 12, use: "이미지 센서용 에피층" },
+      { t: "p", d: "붕소", lo: 0.01, hi: 0.02, use: "p⁺ 기판(에피 웨이퍼 받침)" },
+      { t: "n", d: "비소", lo: 0.001, hi: 0.005, use: "전력 MOSFET용 n⁺ 기판" },
+      { t: "n", d: "인", lo: 1, hi: 5, use: "바이폴라·센서용 n형" },
+      { t: "n", d: "인", lo: 20, hi: 50, use: "전력 소자 드리프트층" },
+      { t: "p", d: "붕소", lo: 1000, hi: 5000, use: "RF·검출기용 고저항 FZ" },
+    ];
+    const type = SB.seg("wf-type", () => { $("wf-res").textContent = "—"; render(); });
+    const NR = [1e12, 1e21], RR = [1e-4, 1e4];
+    const rho = (n, t) => Solid.siResistivity(n, t);
+    const invRho = (r, t) => Math.pow(10, Solid.bisect((l) => Math.log(rho(10 ** l, t) / r), 11, 21.5, 1e-9));
+    const cn = [], cp = []; for (let i = 0; i <= 120; i++) { const n = NR[0] * Math.pow(NR[1] / NR[0], i / 120); cn.push([n, rho(n, "n")]); cp.push([n, rho(n, "p")]); }
+    function render() {
+      const t = type(); SB.stat("wf-n", conc(N)); SB.stat("wf-rho", sci(rho(N, t), 2) + " <small>Ω·cm</small>"); SB.stat("wf-mu", Solid.mobility(N, t).toFixed(0) + " <small>cm²/(V·s)</small>");
+      $("wf-task").innerHTML = spec ? `사양: <b>${spec.t}형 ${spec.d}, ${spec.lo}–${spec.hi} Ω·cm</b> (${spec.use}) · 맞힌 수 ${score}` : "“새 사양”을 눌러 과제를 받는다.";
+      cv && cv.redraw();
+    }
+    cv = SB.canvas("cv-wf", (ctx, w, h, self) => {
+      const P = pal(), t = type();
+      const ch = SB.chart(ctx, { x: 62, y: 22, w: w - 80, h: h - 70 }, { x: NR, y: RR, logX: true, logY: true, xLabel: "도핑 N (cm⁻³)", yLabel: "비저항 ρ (Ω·cm)", xFmt: (v) => (Math.round(Math.log10(v)) % 2 === 0 ? pow10Fmt(v) : ""), yFmt: pow10Fmt,
+        hbands: spec ? [{ y0: spec.lo, y1: spec.hi, color: SB.color("ok-soft") }] : [],
+        series: [{ data: cn, color: P.accent, width: t === "n" ? 2.8 : 1.4, dash: t === "n" ? null : [5, 4] }, { data: cp, color: P.accent2, width: t === "p" ? 2.8 : 1.4, dash: t === "p" ? null : [5, 4] }] });
+      SB.label(ctx, "n형 (P)", ch.X(3e13), ch.Y(rho(3e13, "n")) + 14, { size: 11, color: P.accent, bold: t === "n" });
+      SB.label(ctx, "p형 (B)", ch.X(3e13), ch.Y(rho(3e13, "p")) - 12, { size: 11, color: P.accent2, bold: t === "p" });
+      const px = ch.X(N), py = ch.Y(rho(N, t)); handle(ctx, px, py, t === "n" ? P.accent : P.accent2, 9); self._h = [px, py]; self._ch = ch;
+    }, { aspect: 0.55, minHeight: 280, maxHeight: 400 });
+    SB.drag(cv, { free: true, handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (!cv._ch) return; N = SB.clamp(inv(cv._ch, NR, true, x), NR[0], NR[1]); $("wf-res").textContent = "—"; render(); } });
+    $("wf-new").addEventListener("click", () => { let s; do { s = SPECS[Math.floor(Math.random() * SPECS.length)]; } while (s === spec); spec = s; $("wf-res").textContent = "—"; render(); });
+    $("wf-check").addEventListener("click", () => {
+      if (!spec) { $("wf-res").textContent = "먼저 새 사양"; return; }
+      const t = type(), r = rho(N, t), a = invRho(spec.hi, spec.t), b = invRho(spec.lo, spec.t), rng = `${sci(a, 1)}–${sci(b, 1)}`;
+      if (t !== spec.t) $("wf-res").innerHTML = `✗ 형이 다르다(${spec.t}형)`;
+      else if (r < spec.lo) $("wf-res").innerHTML = `✗ 비저항이 낮다 → 도핑을 줄여라 <small>(정답 ${rng})</small>`;
+      else if (r > spec.hi) $("wf-res").innerHTML = `✗ 비저항이 높다 → 도핑을 늘려라 <small>(정답 ${rng})</small>`;
+      else { score++; $("wf-res").innerHTML = `<span class="cs-hit">✓ 합격</span> <small>(범위 ${rng} cm⁻³)</small>`; }
+      render();
+    });
+    render();
+  }
+
+  /* ---------------------------------------------------------- tangle: 면저항 100 Ω/□ */
+  SB.tangle("tg-rs", (v) => {
+    const N = 10 ** v.e, r = Solid.siResistivity(N, "n"), rs = r / (v.t * 1e-4), V = (1e-3 * rs) / 4.532;
+    const d = rs / 100 - 1;
+    const msg = Math.abs(d) <= 0.03 ? '<span class="cs-hit">명중! 100 Ω/□ ±3% 안이다.</span>' : d > 0 ? `아직 ${(d * 100).toFixed(0)}% 높다 — 농도나 두께를 키워라.` : `${(-d * 100).toFixed(0)}% 낮다 — 농도나 두께를 줄여라.`;
+    return { rho: sci(r, 2) + " Ω·cm", rs: sci(rs, 3) + " Ω/□", v: V >= 1 ? V.toFixed(2) + " V" : (V * 1000).toPrecision(3) + " mV", msg };
+  }, { fmt: { e: (x) => sci(10 ** x, 1) } });
+
+  /* ---------------------------------------------------------- 드릴: 비저항 · 면저항 */
+  SB.drill("drill-rs", () => {
+    const typ = Math.floor(Math.random() * 3);
+    const m = [1, 2, 5][Math.floor(Math.random() * 3)], e = 15 + Math.floor(Math.random() * 5), N = m * 10 ** e;
+    const mu = Math.round(Solid.mobility(N, "n")), rho = 1 / (QE * N * mu);
+    if (typ === 0) return { q: `<p>인 \\(${m}\\times10^{${e}}\\) cm⁻³ 실리콘의 전자 이동도가 ${mu} cm²/(V·s)이다. 비저항은 몇 Ω·cm인가(완전 이온화, 소수 캐리어 무시)?</p>`, answer: rho, label: "ρ =", unit: "Ω·cm", tol: "1%", sol: `\\(\\rho = 1/(qN\\mu) = 1/(1.602\\times10^{-19}\\times${m}\\times10^{${e}}\\times${mu}) = ${sci(rho, 3)}\\) Ω·cm.` };
+    const t = [0.1, 0.2, 0.5, 1, 2][Math.floor(Math.random() * 5)], rs = rho / (t * 1e-4);
+    if (typ === 1) return { q: `<p>인 \\(${m}\\times10^{${e}}\\) cm⁻³(전자 이동도 ${mu} cm²/(V·s))로 균일하게 도핑된 두께 ${t} µm 층의 면저항은 몇 Ω/□인가?</p>`, answer: rs, label: "R<sub>s</sub> =", unit: "Ω/□", tol: "1%", sol: `\\(\\rho = ${sci(rho, 3)}\\) Ω·cm, \\(R_s = \\rho/t = ${sci(rho, 3)}/(${t}\\times10^{-4}) = ${sci(rs, 3)}\\) Ω/□.` };
+    const I = [0.1, 0.5, 1][Math.floor(Math.random() * 3)], rsR = Number(rs.toPrecision(3)), V = (I * rsR) / 4.532;
+    return { q: `<p>면저항 ${sci(rsR, 2)} Ω/□인 얇은 층에 4탐침으로 ${I} mA를 흘렸다. 안쪽 두 탐침 사이 전압은 몇 mV인가?</p>`, answer: V, label: "V =", unit: "mV", tol: "1%", sol: `\\(V = IR_s/4.532 = ${I}\\times${sci(rsR, 2)}/4.532 = ${sci(V, 3)}\\) mV.` };
+  });
+})();
+</script>
+</body>
+</html>
