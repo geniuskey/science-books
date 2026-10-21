@@ -819,14 +819,11 @@
    */
   Solid.meanFieldM = function (T, Tc, J = 0.5, B = 0, g = 2) {
     if (T <= 0) return 1;
-    const hB = (g * J * muB * B) / (kB * T);
-    let m = 1;
-    for (let i = 0; i < 2000; i++) {
-      const nm = Solid.brillouin(J, ((3 * J) / (J + 1)) * (Tc / T) * m + hB);
-      if (Math.abs(nm - m) < 1e-12) { m = nm; break; }
-      m = 0.5 * m + 0.5 * nm;
-    }
-    return m;
+    const hB = (g * J * muB * B) / (kB * T), c = ((3 * J) / (J + 1)) * (Tc / T);
+    if (hB === 0 && T >= Tc) return 0;
+    // m = B_J(c·m + hB)의 양의 근을 이분법으로(T_C 근처에서도 정확)
+    const f = (m) => Solid.brillouin(J, c * m + hB) - m;
+    return Solid.bisect(f, 1e-12, 1, 1e-13);
   };
   /** 퀴리 상수(SI, 무차원 χ·T): C = μ0 N g²μB² J(J+1)/(3kB). N: m⁻³ */
   Solid.curieC = (N, J = 0.5, g = 2) => (4e-7 * Math.PI * N * g * g * muB * muB * J * (J + 1)) / (3 * kB);
@@ -837,6 +834,7 @@
    * 이전 θ에서 출발해 국소 최소로 내려간다(히스테리시스 재현). 반환 θ
    */
   Solid.swRelax = function (theta, hh, psi) {
+    if (Math.abs(Math.sin(theta - psi)) < 1e-6 && Math.abs(Math.sin(theta)) < 1e-6) theta += 1e-3; // 불안정 평형(반평행)에서 벗어나게
     for (let i = 0; i < 4000; i++) {
       const dE = Math.sin(2 * theta) + 2 * hh * Math.sin(theta - psi);
       theta -= 0.05 * dE;
