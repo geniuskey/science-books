@@ -174,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "pn 접합",
       "쇼트키"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -392,6 +391,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "junctions": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
   "dielectric-optical": {
    "problems": 15,
    "examples": 8,
@@ -441,7 +452,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 16,
+ "published": 17,
  "total": 18,
  "url": "https://science.euiyun.com/solid-state/"
 });
