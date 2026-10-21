@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "점성",
       "표면 장력"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "fluid-statics",
@@ -210,8 +209,21 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "fluid-properties": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  }
+ },
+ "published": 1,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
