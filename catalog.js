@@ -74,12 +74,12 @@ SB.registerCatalog({
    "level": "대학 2학년 · 반도체 기초",
    "description": "광자와 물질파, 슈뢰딩거 방정식, 양자 우물과 터널링, 수소 원자와 스핀, 양자 통계, 분자 결합에서 에너지 띠와 LED·레이저까지 — 반도체 소자와 공정을 떠받치는 양자역학을 직접 풀고 만지며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/modern-physics/",
-   "published": 0,
+   "published": 10,
    "total": 15,
    "color": "#6d28d9",
    "colorDark": "#a78bfa",
-   "sims": 0,
-   "problems": 0
+   "sims": 51,
+   "problems": 149
   },
   {
    "id": "organic-chemistry",

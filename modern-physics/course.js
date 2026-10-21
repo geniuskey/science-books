@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "흑체 복사",
       "광전 효과"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "matter-waves",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "드브로이",
       "불확정성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "atomic-spectra",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "보어 모형",
       "선 스펙트럼"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -68,8 +65,7 @@ SB.registerCourse({
      "tags": [
       "파동함수",
       "기댓값"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "quantum-wells",
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "양자 우물",
       "양자점"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "tunneling",
@@ -104,8 +99,7 @@ SB.registerCourse({
      "tags": [
       "영점 에너지",
       "포논"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +115,7 @@ SB.registerCourse({
      "tags": [
       "오비탈",
       "양자수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "spin-atoms",
@@ -162,8 +155,7 @@ SB.registerCourse({
      "tags": [
       "LCAO",
       "혼성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "energy-bands",
@@ -174,8 +166,7 @@ SB.registerCourse({
      "tags": [
       "블로흐 정리",
       "띠 간격"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "light-matter",
@@ -186,8 +177,7 @@ SB.registerCourse({
      "tags": [
       "레이저",
       "LED"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -222,8 +212,129 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "photons": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "matter-waves": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "atomic-spectra": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 14,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "schrodinger": {
+   "problems": 14,
+   "examples": 7,
+   "sims": 4,
+   "figures": 12,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "quantum-wells": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 9,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "harmonic-oscillator": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 9,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "hydrogen-atom": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 9,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "molecular-bonding": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "energy-bands": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "light-matter": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  }
+ },
+ "published": 10,
  "total": 15,
  "url": "https://science.euiyun.com/modern-physics/"
 });
