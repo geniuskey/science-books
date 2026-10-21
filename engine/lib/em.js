@@ -776,7 +776,7 @@
     for (const x of o.x || [0.2, 0.5, 1, 2, 5]) for (const s of [1, -1]) { const cr = R / x; ctx.strokeStyle = o.colorX || o.color || P.grid; ctx.beginPath(); ctx.arc(cx0 + R, cy0 - s * cr, cr, 0, TAU); ctx.stroke(); }
     ctx.restore();
     if (o.labels !== false && window.SB) {
-      ctx.save(); ctx.fillStyle = P.dim || "#888"; ctx.font = "10px var(--mono, monospace)"; ctx.textAlign = "center";
+      ctx.save(); ctx.fillStyle = P.dim || "#888"; ctx.font = "10px " + (SB.color("mono") || "monospace"); ctx.textAlign = "center";
       for (const r of o.r || [0.2, 0.5, 1, 2, 5]) { const x = cx0 + R * ((r - 1) / (r + 1)); ctx.fillText(String(r), x + 8, cy0 - 3); }
       ctx.restore();
     }
