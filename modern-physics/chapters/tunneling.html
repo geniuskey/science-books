@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>장벽과 터널링 · 현대물리학 · SciBook</title>
+<meta name="description" content="계단 퍼텐셜의 반사와 침투, 사각 장벽 투과와 공명, 전달 행렬, WKB 근사, 게이트 산화막 직접 터널링과 파울러–노드하임 터널링, 공명 터널 다이오드, 주사 터널링 현미경을 파속 시뮬레이터와 누설 전류 계산기로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/modern-physics/chapters/tunneling.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="장벽과 터널링 · 현대물리학 · SciBook">
+<meta property="og:description" content="계단 퍼텐셜의 반사와 침투, 사각 장벽 투과와 공명, 전달 행렬, WKB 근사, 게이트 산화막 직접 터널링과 파울러–노드하임 터널링, 공명 터널 다이오드, 주사 터널링 현미경을 파속 시뮬레이터와 누설 전류 계산기로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/modern-physics/chapters/tunneling.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "장벽과 터널링 · 현대물리학 · SciBook", "headline": "06 장벽과 터널링", "url": "https://science.euiyun.com/modern-physics/chapters/tunneling.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "계단 퍼텐셜의 반사와 침투, 사각 장벽 투과와 공명, 전달 행렬, WKB 근사, 게이트 산화막 직접 터널링과 파울러–노드하임 터널링, 공명 터널 다이오드, 주사 터널링 현미경을 파속 시뮬레이터와 누설 전류 계산기로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 6, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/modern-physics/#book", "name": "현대물리학", "url": "https://science.euiyun.com/modern-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "현대물리학", "item": "https://science.euiyun.com/modern-physics/"}, {"@type": "ListItem", "position": 3, "name": "06 장벽과 터널링", "item": "https://science.euiyun.com/modern-physics/chapters/tunneling.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<style>
+  .goal-ok { color: var(--ok); font-weight: 700; }
+  .goal-no { color: var(--bad); font-weight: 700; }
+</style>
+</head>
+<body data-chapter="tunneling">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="schrodinger quantum-wells">
+    <div class="eyebrow">Chapter 06</div>
+    <h1>장벽과 터널링</h1>
+    <p class="lead">고전 역학에서 언덕보다 에너지가 작은 공은 언덕을 넘지 못한다. 하지만 전자는 파동이어서, 장벽 안에서 지수적으로 줄어들 뿐 0이 되지 않고 반대편으로 <strong>새어 나간다</strong>. 이 <span class="term">터널링</span><span class="en">(tunneling)</span>은 반도체에서 피할 수 없는 골칫거리이자 쓸모 있는 도구다. 1 nm 남짓한 게이트 산화막의 누설 전류, 플래시 메모리의 프로그램과 소거, 오믹 접촉, 원자를 보는 현미경이 모두 이 장의 공식 하나 \(T \sim e^{-2\kappa a}\)에서 나온다. 아래에서 전자 파속이 장벽에 부딪혀 갈라지는 모습을 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">장벽 모서리의 흰 점을 끌어 높이·폭을 바꿔 보세요</span></div>
+    <ul class="objectives">
+      <li>계단 퍼텐셜에서 \(E>V_0\)일 때도 반사가 일어나고 \(E \lt V_0\)일 때 파동이 침투 깊이 \(1/\kappa\)만큼 스며드는 것을 경계 조건으로 설명한다.</li>
+      <li>사각 장벽의 투과 확률 정확해와 두꺼운 장벽 근사 \(T \approx 16\frac{E}{V_0}(1-\frac{E}{V_0})e^{-2\kappa a}\)를 쓰고, \(E>V_0\)의 공명 투과 조건을 구한다.</li>
+      <li>전달 행렬로 임의의 다층 구조의 투과 확률을 계산하고, 이중 장벽의 공명 터널링과 부성 저항을 설명한다.</li>
+      <li>WKB 근사 \(T \approx \exp(-2\int\kappa\,dx)\)로 사다리꼴·삼각 장벽을 다루고, 알파 붕괴의 가모프 인자를 추정한다.</li>
+      <li>게이트 산화막의 직접 터널링과 파울러–노드하임 터널링을 구별하고, EOT와 high-k 절연막이 왜 필요한지 정량적으로 설명한다.</li>
+      <li>주사 터널링 현미경의 전류가 간격 0.1 nm마다 약 한 자릿수 바뀌는 이유를 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="step">
+    <h2>계단 퍼텐셜: 반사와 침투</h2>
+    <p>가장 단순한 장애물은 높이 \(V_0\)의 <span class="term">계단 퍼텐셜</span><span class="en">(potential step)</span>이다: \(x\lt 0\)에서 \(V=0\), \(x>0\)에서 \(V=V_0\). 반도체에서는 GaAs/AlGaAs 같은 이종 접합의 전도대 어긋남이 바로 이런 계단이다. 왼쪽에서 에너지 \(E\)의 전자가 들어온다고 하자. 고전 입자라면 답은 뻔하다: \(E>V_0\)이면 100% 넘어가고(느려질 뿐), \(E\lt V_0\)이면 100% 튕겨 나온다. 양자 역학의 답은 두 경우 모두 다르다.</p>
+    <p>각 영역에서 시간 독립 슈뢰딩거 방정식의 해는 평면파 또는 지수 함수다. 파수는</p>
+    <div class="formula">$$k = \frac{\sqrt{2mE}}{\hbar}, \qquad k' = \frac{\sqrt{2m(E-V_0)}}{\hbar}\ (E>V_0), \qquad \kappa = \frac{\sqrt{2m(V_0-E)}}{\hbar}\ (E\lt V_0)$$<div class="where">이 책의 단위에서 \(\hbar^2/2m_e = 0.0381\) eV·nm²이므로 \(k\,[\text{nm}^{-1}] = \sqrt{E\,[\text{eV}]\cdot (m/m_e)/0.0381}\).</div></div>
+    <p>왼쪽: \(\psi_\text{I} = Ae^{ikx} + Be^{-ikx}\)(입사 + 반사), 오른쪽: \(\psi_\text{II} = Ce^{ik'x}\)(투과만). \(x=0\)에서 \(\psi\)와 \(\psi'\)이 연속이어야 한다는 두 조건 \(A+B=C\), \(k(A-B)=k'C\)를 풀면</p>
+    <div class="formula">$$\frac{B}{A} = \frac{k-k'}{k+k'}, \quad \frac{C}{A} = \frac{2k}{k+k'} \quad\Longrightarrow\quad R = \left(\frac{k-k'}{k+k'}\right)^2, \quad T = \frac{k'}{k}\left|\frac{C}{A}\right|^2 = \frac{4kk'}{(k+k')^2}$$<div class="where">\(T\)에 \(k'/k\)가 붙는 것은 <span class="term">확률 흐름</span><span class="en">(probability current)</span> \(j = (\hbar k/m)|\psi|^2\)의 비로 정의하기 때문이다. 오른쪽에서 전자는 느려지므로 진폭이 커져도 흐름은 작다. 항상 \(R+T=1\).</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="계단 퍼텐셜에서 고전 입자와 양자 파동의 비교 세 가지">
+        <g>
+          <path d="M20,210 L125,210 L125,150 L250,150" class="s-line" stroke-width="2.5" fill="none"/>
+          <line x1="20" y1="110" x2="250" y2="110" stroke="var(--accent-2)" stroke-dasharray="5 4"/>
+          <text class="t-dim" x="230" y="104" text-anchor="end" font-size="12">E</text>
+          <text class="t-dim" x="240" y="168" text-anchor="end" font-size="12">V₀</text>
+          <circle cx="60" cy="110" r="8" fill="var(--accent)"/><line x1="72" y1="110" x2="100" y2="110" stroke="var(--accent)" stroke-width="2"/><path d="M100,105 L110,110 L100,115z" fill="var(--accent)"/>
+          <circle cx="190" cy="110" r="8" fill="var(--accent)" opacity=".55"/><line x1="202" y1="110" x2="218" y2="110" stroke="var(--accent)" stroke-width="2" opacity=".55"/>
+          <text class="t" x="135" y="30" text-anchor="middle" font-size="14" font-weight="700">고전: E &gt; V₀</text>
+          <text class="t-dim" x="135" y="236" text-anchor="middle" font-size="12">100% 통과, 반사 없음</text>
+        </g>
+        <g>
+          <path d="M275,210 L395,210 L395,150 L515,150" class="s-line" stroke-width="2.5" fill="none"/>
+          <line x1="275" y1="110" x2="515" y2="110" stroke="var(--accent-2)" stroke-dasharray="5 4" opacity=".6"/>
+          <path d="M275.0,101.2 L278.0,113.3 L281.0,124.3 L284.0,130.2 L287.0,129.1 L290.0,121.3 L293.0,109.6 L296.0,98.0 L299.0,90.6 L302.0,90.0 L305.0,96.4 L308.0,107.5 L311.0,119.5 L314.0,128.2 L317.0,130.5 L320.0,125.7 L323.0,115.4 L326.0,103.2 L329.0,93.4 L332.0,89.4 L335.0,92.6 L338.0,101.9 L341.0,114.0 L344.0,124.7 L347.0,130.3 L350.0,128.8 L353.0,120.7 L356.0,108.9 L359.0,97.4 L362.0,90.4 L365.0,90.2 L368.0,96.9 L371.0,108.2 L374.0,120.1 L377.0,128.5 L380.0,130.4 L383.0,125.2 L386.0,114.7 L389.0,102.5 L392.0,93.0 L395.0,89.4 L398.0,90.5 L401.0,93.7 L404.0,98.7 L407.0,104.9 L410.0,111.6 L413.0,118.2 L416.0,123.9 L419.0,128.1 L422.0,130.3 L425.0,130.4 L428.0,128.2 L431.0,124.1 L434.0,118.5 L437.0,111.9 L440.0,105.1 L443.0,98.9 L446.0,93.9 L449.0,90.6 L452.0,89.4 L455.0,90.4 L458.0,93.5 L461.0,98.4 L464.0,104.6 L467.0,111.4 L470.0,118.0 L473.0,123.7 L476.0,128.0 L479.0,130.3 L482.0,130.4 L485.0,128.4 L488.0,124.3 L491.0,118.7 L494.0,112.2 L497.0,105.4 L500.0,99.1 L503.0,94.0 L506.0,90.7 L509.0,89.4 L512.0,90.3 L515.0,93.4" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t" x="395" y="30" text-anchor="middle" font-size="14" font-weight="700">양자: E &gt; V₀</text>
+          <text class="t-dim" x="395" y="236" text-anchor="middle" font-size="12">일부 반사, 오른쪽은 파장이 길다</text>
+        </g>
+        <g>
+          <path d="M545,210 L665,210 L665,90 L785,90" class="s-line" stroke-width="2.5" fill="none"/>
+          <line x1="545" y1="150" x2="785" y2="150" stroke="var(--accent-2)" stroke-dasharray="5 4" opacity=".6"/>
+          <rect x="665" y="90" width="38" height="120" fill="var(--accent)" opacity=".10"/>
+          <path d="M545.0,145.5 L548.0,163.4 L551.0,176.6 L554.0,180.5 L557.0,173.8 L560.0,158.7 L563.0,140.6 L566.0,125.8 L569.0,119.4 L572.0,123.7 L575.0,137.2 L578.0,155.2 L581.0,171.3 L584.0,180.0 L587.0,178.2 L590.0,166.6 L593.0,149.1 L596.0,132.0 L599.0,121.1 L602.0,120.4 L605.0,130.0 L608.0,146.5 L611.0,164.3 L614.0,177.1 L617.0,180.4 L620.0,173.1 L623.0,157.7 L626.0,139.6 L629.0,125.2 L632.0,119.4 L635.0,124.3 L638.0,138.2 L641.0,156.2 L644.0,172.1 L647.0,180.2 L650.0,177.8 L653.0,165.7 L656.0,148.1 L659.0,131.2 L662.0,120.8 L665.0,120.6 L668.0,125.5 L671.0,129.5 L674.0,132.9 L677.0,135.7 L680.0,138.1 L683.0,140.0 L686.0,141.7 L689.0,143.0 L692.0,144.2 L695.0,145.1 L698.0,145.9 L701.0,146.6 L704.0,147.2 L707.0,147.6 L710.0,148.0 L713.0,148.4 L716.0,148.6 L719.0,148.9 L722.0,149.0 L725.0,149.2 L728.0,149.3 L731.0,149.4 L734.0,149.5 L737.0,149.6 L740.0,149.7 L746.0,149.8 L758.0,149.9 L785.0,150.0" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t-acc" x="684" y="80" text-anchor="middle" font-size="12">δ = 1/κ</text>
+          <text class="t" x="665" y="30" text-anchor="middle" font-size="14" font-weight="700">양자: E &lt; V₀</text>
+          <text class="t-dim" x="665" y="236" text-anchor="middle" font-size="12">전부 반사, 하지만 스며든다</text>
+        </g>
+      </svg>
+      <figcaption>계단 퍼텐셜. 가운데: \(E>V_0\)인데도 반사파가 생겨 왼쪽에 정상파 무늬(진폭의 맥놀이)가 생긴다. 오른쪽: \(E\lt V_0\)이면 반사율은 1이지만 파동함수는 벽 안으로 \(e^{-\kappa x}\)로 스며든다.</figcaption>
+    </figure>
+
+    <div class="predict" data-for="mini-step">
+      <p>에너지가 계단 높이의 1.5배(\(E = 1.5V_0\))인 전자가 계단에 들어온다. 반사되는 비율은 대략?</p>
+      <div class="opts"><button class="opt">0 (고전과 같다)</button><button class="opt" data-correct>약 7%</button><button class="opt">약 50%</button><button class="opt">100%</button></div>
+      <div class="quiz-exp">\(k'/k = \sqrt{0.5/1.5} = 0.577\)이므로 \(R = (0.423/1.577)^2 = 0.072\). 에너지가 계단보다 커도 파동은 "갑작스러운 변화"에서 반사된다. 아래에서 에너지 선을 \(V_0\) 바로 위까지 내려 보라 — \(R\)이 1에 가까워진다.</div>
+    </div>
+    <figure class="mini" id="mini-step">
+      <div class="mini-view"><canvas id="cv-step"></canvas><span class="hint top">에너지 선의 흰 점을 위아래로 끈다</span></div>
+      <div class="mini-ctrl">
+        <label class="check"><input type="checkbox" id="st-prob"> |ψ|² 보기</label>
+        <button class="btn" id="st-play" type="button"></button>
+        <span class="readout" id="st-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위: 파동함수의 실수부가 시간에 따라 진동한다(\(V_0 = 1\) eV, 자유 전자). 아래: 반사율 \(R(E/V_0)\) 곡선 위의 점. \(E\lt V_0\)에서는 오른쪽 꼬리의 길이(침투 깊이)가 \(E\to V_0\)에서 길어지는 것을 보라.</figcaption>
+    </figure>
+
+    <h3>장벽 속으로 스며드는 파동</h3>
+    <p>\(E\lt V_0\)이면 \(k'\)이 허수 \(i\kappa\)가 되어 \(\psi_\text{II} = Ce^{-\kappa x}\)이다. 위 공식에서 \(k' \to i\kappa\)로 바꾸면 \(|B/A| = |k-i\kappa|/|k+i\kappa| = 1\): 모두 반사된다. 그러나 확률 밀도 \(|\psi|^2 \propto e^{-2\kappa x}\)는 벽 안에서 0이 아니다. \(|\psi|\)가 \(1/e\)로 줄어드는 거리를 <span class="term">침투 깊이</span><span class="en">(penetration depth)</span> \(\delta = 1/\kappa\)라 한다.</p>
+    <div class="tangle" id="tg-depth">
+      <p>장벽이 전자 에너지보다 <span class="tn" data-var="dv" data-min="0.05" data-max="5" data-step="0.05" data-unit=" eV">1.00</span> 높고 유효 질량이 <span class="tn" data-var="m" data-min="0.05" data-max="1.5" data-step="0.01" data-unit=" mₑ">1.00</span>이면 \(\kappa\) = <span class="tn-out" data-out="k"></span>, 침투 깊이 \(\delta\) = <span class="tn-out" data-out="d"></span>이다. 벽 안 0.5 nm 지점의 확률 밀도는 경계의 <span class="tn-out" data-out="p"></span>배다. <span data-out="msg"></span></p>
+    </div>
+    <p>침투 깊이는 원자 크기(0.1–0.3 nm) 정도다. 그래서 장벽이 수 nm 이하로 얇아지면 꼬리가 반대편 끝에 닿고, 거기서 다시 진행파가 생긴다 — 이것이 터널링이다.</p>
+    <div class="example" data-title="이종 접합 계단에서의 반사">
+      <p>운동 에너지 0.40 eV의 전자가 높이 0.30 eV의 계단 퍼텐셜에 수직으로 들어온다(양쪽 유효 질량 같음). 반사 확률과 투과 확률은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(k \propto \sqrt{E}\), \(k'\propto\sqrt{E-V_0}\)이므로 비례 상수는 상관없다. \(R = ((k-k')/(k+k'))^2\).</div>
+        <div class="step"><b>풀이</b> \(k'/k = \sqrt{0.10/0.40} = 0.5\). \(R = \left(\dfrac{1-0.5}{1+0.5}\right)^2 = \dfrac19 = 0.111\), \(T = 1-R = 0.889\).</div>
+        <div class="answer">R = 0.111, T = 0.889</div>
+        <div class="step"><b>검토</b> \(T = 4kk'/(k+k')^2 = 4(0.5)/(1.5)^2 = 0.889\)로 일치한다. 고전적으로는 \(R=0\)이었을 것이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="barrier">
+    <h2>사각 장벽의 투과 확률</h2>
+    <p>이제 폭 \(a\), 높이 \(V_0\)의 <span class="term">사각 장벽</span><span class="en">(rectangular barrier)</span>을 생각한다. 영역 I(\(x\lt 0\))과 III(\(x>a\))은 자유 공간이고, 영역 II는 장벽이다. \(E\lt V_0\)일 때 장벽 안의 해는 늘어나는 지수와 줄어드는 지수의 합이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="사각 장벽의 세 영역과 파동함수의 실수부">
+        <rect x="340" y="80" width="120" height="150" fill="var(--accent)" opacity=".10"/>
+        <path d="M30,230 L340,230 L340,80 L460,80 L460,230 L770,230" class="s-line" stroke-width="2.5" fill="none"/>
+        <line x1="30" y1="165" x2="770" y2="165" stroke="var(--accent-2)" stroke-dasharray="5 4" opacity=".7"/>
+        <path d="M40,141.4 L45,153.0 L50,165.7 L55,178.3 L60,189.7 L65,198.9 L70,205.0 L75,207.5 L80,206.2 L85,201.2 L90,192.9 L95,182.1 L100,169.8 L105,157.0 L110,145.0 L115,134.7 L120,127.2 L125,123.1 L130,122.8 L135,126.2 L140,133.2 L145,143.0 L150,154.9 L155,167.6 L160,180.1 L165,191.2 L170,200.0 L175,205.6 L180,207.6 L185,205.7 L190,200.1 L195,191.4 L200,180.3 L205,167.8 L210,155.1 L215,143.3 L220,133.4 L225,126.3 L230,122.8 L235,123.0 L240,127.1 L245,134.5 L250,144.7 L255,156.8 L260,169.5 L265,181.9 L270,192.7 L275,201.1 L280,206.2 L285,207.5 L290,205.1 L295,199.0 L300,189.9 L305,178.5 L310,165.9 L315,153.2 L320,141.6 L325,132.1 L330,125.6 L335,122.6 L340,123.4 L345,126.1 L350,128.6 L355,131.0 L360,133.3 L365,135.5 L370,137.5 L375,139.5 L380,141.3 L385,143.1 L390,144.8 L395,146.4 L400,148.0 L405,149.5 L410,150.9 L415,152.3 L420,153.6 L425,154.9 L430,156.2 L435,157.4 L440,158.6 L445,159.8 L450,161.0 L455,162.1 L460,163.3 L465,164.4 L470,165.7 L475,166.9 L480,167.9 L485,168.6 L490,169.1 L495,169.1 L500,168.8 L505,168.2 L510,167.2 L515,166.1 L520,164.8 L525,163.6 L530,162.5 L535,161.6 L540,161.1 L545,160.9 L550,161.0 L555,161.5 L560,162.4 L565,163.4 L570,164.6 L575,165.9 L580,167.0 L585,168.0 L590,168.7 L595,169.1 L600,169.1 L605,168.7 L610,168.0 L615,167.1 L620,165.9 L625,164.7 L630,163.4 L635,162.4 L640,161.5 L645,161.0 L650,160.9 L655,161.1 L660,161.6 L665,162.5 L670,163.6 L675,164.8 L680,166.1 L685,167.2 L690,168.1 L695,168.8 L700,169.1 L705,169.1 L710,168.6 L715,167.9 L720,166.9 L725,165.7 L730,164.5 L735,163.3 L740,162.2 L745,161.4 L750,161.0 L755,160.9 L760,161.1" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <text class="t" x="185" y="40" text-anchor="middle" font-size="14" font-weight="700">I</text><text class="t-dim" x="185" y="60" text-anchor="middle" font-size="12">Ae^{ikx}+Be^{−ikx}</text>
+        <text class="t" x="400" y="40" text-anchor="middle" font-size="14" font-weight="700">II</text>
+        <text class="t-dim" x="400" y="60" text-anchor="middle" font-size="12">Ce^{κx}+De^{−κx}</text>
+        <text class="t" x="615" y="40" text-anchor="middle" font-size="14" font-weight="700">III</text><text class="t-dim" x="615" y="60" text-anchor="middle" font-size="12">Fe^{ikx}</text>
+        <text class="t-dim" x="335" y="250" text-anchor="end" font-size="12">x = 0</text>
+        <text class="t-dim" x="465" y="250" font-size="12">x = a</text>
+        <text class="t-dim" x="475" y="96" font-size="12">V₀</text>
+        <text class="t-dim" x="40" y="158" font-size="12" style="fill:var(--accent-2)">E</text>
+      </svg>
+      <figcaption>사각 장벽(\(E = 0.96V_0\), \(\kappa a = 1.44\)): 영역 I은 입사파와 반사파가 겹친 정상파, 영역 II는 지수적으로 줄어드는 꼬리, 영역 III은 진폭이 작아진 투과파다(투과 확률 3.5%). 파장은 장벽 양쪽에서 같다.</figcaption>
+    </figure>
+    <p>경계 두 곳에서 \(\psi\)와 \(\psi'\)의 연속 조건 네 개로 \(B, C, D, F\)를 \(A\)로 나타내면 투과 확률 \(T = |F/A|^2\)의 정확한 식을 얻는다.</p>
+    <div class="formula">$$T = \left[1 + \frac{V_0^2\sinh^2(\kappa a)}{4E(V_0-E)}\right]^{-1}\ (E\lt V_0), \qquad T = \left[1 + \frac{V_0^2\sin^2(k'a)}{4E(E-V_0)}\right]^{-1}\ (E>V_0)$$<div class="where">\(\kappa a \gg 1\)이면 \(\sinh\kappa a \approx \tfrac12 e^{\kappa a}\)이므로 <b>두꺼운 장벽 근사</b> \(\;T \approx 16\dfrac{E}{V_0}\left(1-\dfrac{E}{V_0}\right)e^{-2\kappa a}\).</div></div>
+    <p>모든 것은 지수 \(e^{-2\kappa a}\)가 지배한다. 앞의 인자 \(16\frac{E}{V_0}(1-\frac{E}{V_0})\)는 최대 4이다. 폭이 두 배가 되면 \(T\)는 반이 아니라 <em>제곱</em>(×\(e^{-2\kappa a}\))만큼 작아진다.</p>
+    <div class="tangle" id="tg-thick">
+      <p>높이 <span class="tn" data-var="v0" data-min="0.2" data-max="5" data-step="0.1" data-unit=" eV">3.1</span>, 폭 <span class="tn" data-var="a" data-min="0.1" data-max="4" data-step="0.05" data-unit=" nm">1.00</span>의 장벽에 에너지 <span class="tn" data-var="e" data-min="0.05" data-max="4.9" data-step="0.05" data-unit=" eV">1.00</span>, 유효 질량 <span class="tn" data-var="m" data-min="0.05" data-max="1.2" data-step="0.01" data-unit=" mₑ">0.42</span>인 전자가 오면 \(2\kappa a\) = <span class="tn-out" data-out="ka"></span>, 정확한 \(T\) = <span class="tn-out" data-out="te"></span>, 근사 \(T\) = <span class="tn-out" data-out="ta"></span>(<span class="tn-out" data-out="err"></span>). 폭을 0.1 nm 늘리면 \(T\)는 <span class="tn-out" data-out="f"></span>배가 된다.</p>
+      <canvas id="cv-thick"></canvas>
+    </div>
+    <figure class="mini" id="mini-barrier">
+      <div class="mini-view"><canvas id="cv-barrier"></canvas><span class="hint top">장벽의 흰 점: 위(높이), 오른쪽(폭)</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>전자 에너지 E <output id="bt-e-out"></output></span><input type="range" id="bt-e" min="0.05" max="3" step="0.01" value="0.8"></label>
+        <label class="check"><input type="checkbox" id="bt-re" checked> Re ψ도 그리기</label>
+        <span class="readout" id="bt-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>정상 상태의 \(|\psi|^2\)(채움)와 \(\text{Re}\,\psi\)(선). 입사 진폭을 1로 맞췄다. 장벽을 넓히면 오른쪽 진폭이 지수적으로 줄고, \(E>V_0\)에서 폭을 바꾸면 \(T=1\)이 되는 "공명 폭"이 나타난다(자유 전자).</figcaption>
+    </figure>
+
+    <h3>파속으로 보는 터널링</h3>
+    <p>정상 상태는 무한히 긴 파동이다. 실제 전자는 위치가 어느 정도 정해진 <span class="term">파속</span><span class="en">(wave packet)</span>이므로, 장벽에 부딪힌 파속은 반사 파속과 투과 파속으로 쪼개진다. 투과 파속의 넓이(확률)는 파속에 포함된 여러 \(k\)의 \(T(k)\)를 평균한 값이다.</p>
+    <div class="predict" data-for="sim-packet">
+      <p>투과 확률이 18%인 장벽의 폭을 두 배로 늘리면, 투과 확률은 대략?</p>
+      <div class="opts"><button class="opt">9% (반)</button><button class="opt">4.5% (1/4)</button><button class="opt" data-correct>1–2% (지수적으로 감소)</button><button class="opt">변하지 않는다</button></div>
+      <div class="quiz-exp">\(T\propto e^{-2\kappa a}\)이므로 폭을 2배로 하면 지수 인자가 제곱이 된다. 예: \(E = 1\) eV, \(V_0 = 1.5\) eV, \(a = 0.4 \to 0.8\) nm에서 \(T = 0.18 \to 0.011\). 아래 시뮬레이터에서 측정해 보라.</div>
+    </div>
+    <div class="sim" id="sim-packet">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>파속 터널링 실험실: 측정한 T vs 이론</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-packet"></canvas><span class="hint top">장벽 꼭대기(높이)와 오른쪽 모서리(폭)를 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>평균 에너지 E₀ <output id="pk-e-out"></output></span><input type="range" id="pk-e" min="0.3" max="3" step="0.05" value="1"></label>
+          <label class="ctrl"><span>파속 폭 σ <output id="pk-s-out"></output></span><input type="range" id="pk-s" min="1" max="3" step="0.1" value="2"></label>
+          <div class="ctrl"><span>장벽 모양</span><div class="seg" id="pk-shape"><button data-value="1" class="on">장벽 1개</button><button data-value="2">2개</button><button data-value="w">우물</button></div></div>
+          <label class="check"><input type="checkbox" id="pk-phase" checked> 위상을 색으로</label>
+          <div class="ctrl-row"><button class="btn primary" id="pk-go" type="button">▶ 발사</button><button class="btn" id="pk-reset" type="button">초기화</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">장벽 V₀, a</span><span class="v" id="pk-ba">—</span></div>
+        <div class="stat"><span class="k">측정 T (오른쪽 확률)</span><span class="v" id="pk-tm">—</span></div>
+        <div class="stat"><span class="k">이론 T(E₀)</span><span class="v" id="pk-t0">—</span></div>
+        <div class="stat"><span class="k">이론 (파속 평균)</span><span class="v" id="pk-ta">—</span></div>
+        <div class="stat"><span class="k">시간</span><span class="v" id="pk-t">—</span></div>
+      </div>
+      <div class="sim-note">크랭크–니콜슨 방법(<code>Q.propagator</code>)으로 시간 의존 슈뢰딩거 방정식을 직접 푼다(자유 전자, 길이 nm, 시간 fs). 해볼 것: ① \(E_0 = 1\) eV, \(V_0 = 1.5\) eV에서 폭을 0.4 nm와 0.8 nm로 바꿔 측정 T를 비교하라. ② \(E_0\)을 \(V_0\)보다 크게 해도 반사 파속이 남는 것을 확인하라. ③ σ를 줄이면(에너지 퍼짐 증가) 측정값이 \(T(E_0)\)보다 "파속 평균" 쪽에 가까워진다. ④ "2개"를 고르면 장벽 사이에서 파속이 여러 번 왕복하며 조금씩 새어 나온다.</div>
+    </div>
+
+    <h3>장벽 위의 공명 투과</h3>
+    <p>\(E>V_0\)이면 \(\sin^2(k'a)\) 항 때문에 \(T\)가 1과 그보다 작은 값 사이를 진동한다. \(k'a = n\pi\), 즉 장벽 폭이 장벽 안 반파장의 정수배일 때 두 경계에서 반사된 파동이 상쇄 간섭해 <b>반사가 0</b>이 된다. 박막 광학의 무반사 코팅과 같은 원리다.</p>
+    <div class="formula">$$T = 1 \iff k'a = n\pi \iff E_n = V_0 + \frac{\hbar^2}{2m}\left(\frac{n\pi}{a}\right)^2, \quad n = 1, 2, \dots$$<div class="where">공명 에너지는 장벽 높이 위에 "폭 \(a\)인 무한 우물의 준위"를 얹은 것과 같다.</div></div>
+    <div class="example" data-title="정확해와 두꺼운 장벽 근사">
+      <p>에너지 1.0 eV의 자유 전자가 높이 4.0 eV, 폭 0.50 nm의 장벽에 입사한다. 투과 확률을 정확한 식과 두꺼운 장벽 근사로 구하라. 폭이 1.0 nm이면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\kappa = \sqrt{(V_0-E)/0.0381}\) nm⁻¹을 구한 뒤 두 식에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(\kappa = \sqrt{3.0/0.0381} = 8.87\) nm⁻¹, \(\kappa a = 4.44\). \(\sinh^2(4.44) = 1.78\times10^{3}\), \(T = [1 + 16(1.78\times10^3)/(4\cdot1\cdot3)]^{-1} = 4.20\times10^{-4}\). 근사: \(16(0.25)(0.75)e^{-8.87} = 3(1.40\times10^{-4}) = 4.20\times10^{-4}\). 폭 1.0 nm: \(T = 5.88\times10^{-8}\).</div>
+        <div class="answer">T = 4.20×10⁻⁴ (근사도 같음), 폭 1.0 nm에서 5.88×10⁻⁸</div>
+        <div class="step"><b>검토</b> \(2\kappa a = 8.9\)이면 근사의 오차는 0.01%도 안 된다. 폭을 2배로 하자 \(T\)가 약 7000분의 1로 줄었다 — 위 드래그 문단에서 확인해 보라.</div>
+      </details>
+    </div>
+    <div class="example" data-title="장벽 위 공명 에너지">
+      <p>높이 1.0 eV, 폭 1.0 nm의 장벽에서 \(E>V_0\)인 자유 전자가 반사 없이 지나가는 가장 낮은 두 에너지는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E_n = V_0 + 0.0381(n\pi/a)^2\) eV.</div>
+        <div class="step"><b>풀이</b> \(n = 1\): \(0.0381\pi^2 = 0.376\) eV → \(E_1 = 1.376\) eV. \(n = 2\): \(4\times0.376 = 1.504\) eV → \(E_2 = 2.504\) eV.</div>
+        <div class="answer">E₁ = 1.38 eV, E₂ = 2.50 eV</div>
+        <div class="step"><b>검토</b> 정확한 식에 \(E = 1.376\) eV를 넣으면 \(\sin(k'a) = \sin\pi = 0\) → \(T = 1\). 위 미니 실험에서 \(V_0 = 1\) eV, \(a = 1\) nm로 맞추고 \(E\)를 1.38 eV로 옮겨 확인하라.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-barrier" data-title="침투 깊이와 투과 확률 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="transfer">
+    <h2>전달 행렬과 다층 구조</h2>
+    <p>실제 소자의 퍼텐셜은 장벽 하나가 아니다. 게이트 스택(SiO₂ 계면층 + HfO₂), 공명 터널 다이오드(장벽–우물–장벽), 초격자, 자기 터널 접합… 퍼텐셜이 여러 층의 계단으로 이루어져 있으면 <span class="term">전달 행렬법</span><span class="en">(transfer-matrix method)</span>으로 체계적으로 풀 수 있다. 층마다 \(\psi_j = A_je^{ik_jx} + B_je^{-ik_jx}\)(\(k_j\)는 허수일 수 있다)로 두고, 경계마다 두 연속 조건을 2×2 행렬로 쓰는 것이다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="전달 행렬법의 네 단계">
+        <path d="M30,230 L200,230 L200,120 L280,120 L280,230 L400,230 L400,150 L470,150 L470,230 L770,230" class="s-line" stroke-width="2.5" fill="none"/>
+        <g class="t-dim" font-size="12"><text x="110" y="250" text-anchor="middle">층 0</text><text x="240" y="250" text-anchor="middle">층 1</text><text x="340" y="250" text-anchor="middle">층 2</text><text x="435" y="250" text-anchor="middle">층 3</text><text x="620" y="250" text-anchor="middle">층 N</text></g>
+        <g data-step="2">
+          <g stroke="var(--accent)" stroke-width="2" fill="var(--accent)">
+            <line x1="70" y1="190" x2="140" y2="190"/><path d="M140,185 L150,190 L140,195z"/>
+            <line x1="555" y1="190" x2="635" y2="190"/><path d="M635,185 L645,190 L635,195z"/>
+          </g>
+          <g stroke="var(--accent-2)" stroke-width="2" fill="var(--accent-2)">
+            <line x1="150" y1="210" x2="80" y2="210"/><path d="M80,205 L70,210 L80,215z"/>
+          </g>
+          <text class="t-acc" x="60" y="178" font-size="13">A₀ = 1</text><text x="70" y="226" font-size="13" style="fill:var(--accent-2)">B₀ = r</text>
+          <text class="t-acc" x="560" y="178" font-size="13">A_N = t, B_N = 0</text>
+          <text class="t" x="240" y="105" text-anchor="middle" font-size="13">A₁, B₁</text><text class="t" x="340" y="105" text-anchor="middle" font-size="13">A₂, B₂</text><text class="t" x="435" y="135" text-anchor="middle" font-size="13">A₃, B₃</text>
+        </g>
+        <g data-step="3">
+          <g stroke="var(--warn)" stroke-width="2.5"><line x1="200" y1="60" x2="200" y2="230"/><line x1="280" y1="60" x2="280" y2="230"/><line x1="400" y1="60" x2="400" y2="230"/><line x1="470" y1="60" x2="470" y2="230"/></g>
+          <text class="t" x="335" y="40" text-anchor="middle" font-size="13" style="fill:var(--warn)">경계마다 ψ 연속, (1/m)ψ′ 연속 → 2×2 행렬 M_j</text>
+        </g>
+        <g data-step="4">
+          <rect x="520" y="60" width="250" height="80" rx="8" fill="var(--surface)" stroke="var(--border)"/>
+          <text class="t" x="645" y="88" text-anchor="middle" font-size="14">(A₀, B₀)ᵀ = M₁M₂⋯M_N (t, 0)ᵀ</text>
+          <text class="t-acc" x="645" y="118" text-anchor="middle" font-size="14" font-weight="700">T = (k_N m₀ / k₀ m_N) / |A₀/t|²</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>퍼텐셜을 일정한 층들로 나눈다. 모양이 있는 장벽도 얇은 층을 많이 쌓으면 된다.</li>
+        <li>층마다 오른쪽·왼쪽으로 가는 두 파동의 진폭 \(A_j, B_j\)를 둔다. 맨 오른쪽에는 투과파만 있다(\(B_N = 0\)).</li>
+        <li>각 경계에서 \(\psi\)와 \((1/m)\psi'\)(벤다니엘–듀크 조건: 유효 질량이 다른 층)이 연속 → 이웃 층 진폭 사이의 2×2 행렬.</li>
+        <li>오른쪽 끝에서 시작해 행렬을 차례로 곱하면 입사 진폭이 나오고, 확률 흐름의 비로 \(T\)를 얻는다.</li>
+      </ol>
+      <figcaption>전달 행렬법. 이 책의 <code>Q.transfer(E, layers)</code>가 바로 이 계산을 한다(오른쪽 끝에서 왼쪽으로 진폭을 거슬러 올라간다).</figcaption>
+    </figure>
+    <p>행렬은 층 수에 비례하는 계산만 필요하므로, 수백 층의 초격자나 연속 퍼텐셜(얇은 층으로 쪼갠 사다리꼴·삼각 장벽)도 순식간에 풀린다. 아래 편집기로 직접 구조를 만들어 보자. 재료는 GaAs(\(m^* = 0.067m_e\))와 AlGaAs 장벽을 가정했다.</p>
+    <div class="sim" id="sim-multi">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>다층 구조 편집기와 투과 스펙트럼 T(E)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-multi"></canvas><span class="hint top">위: 층 꼭대기(높이)·오른쪽 모서리(폭)를 끈다 · 아래: 눌러서 E 선택</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>미리 만든 구조</span><div class="seg" id="ml-pre"><button data-value="one">장벽 1</button><button data-value="two" class="on">이중 장벽</button><button data-value="three">삼중</button><button data-value="sl">초격자</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="ml-add" type="button">층 추가</button><button class="btn" id="ml-del" type="button">마지막 층 삭제</button></div>
+          <label class="check"><input type="checkbox" id="ml-log" checked> T를 로그 눈금으로</label>
+          <label class="check"><input type="checkbox" id="ml-wkb"> WKB 근사(장벽마다 exp(−2κa)의 곱) 겹쳐 그리기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">선택한 E</span><span class="v" id="ml-e">—</span></div>
+        <div class="stat"><span class="k">T(E)</span><span class="v" id="ml-t">—</span></div>
+        <div class="stat"><span class="k">첫 공명 (T &gt; 0.5)</span><span class="v" id="ml-r">—</span></div>
+        <div class="stat"><span class="k">목표: 0.10 eV에서 T &gt; 0.9</span><span class="v" id="ml-goal">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① "장벽 1"에서는 \(T\)가 \(E\)에 따라 매끄럽게 늘지만, "이중 장벽"에서는 \(T\)가 1에 닿는 날카로운 봉우리가 생긴다 — 우물 속 준위와 같은 에너지다. ② 이중 장벽의 우물 폭을 넓혀 공명을 0.10 eV(±5 meV)에 맞춰라(목표). ③ 장벽 하나를 높이거나 넓혀 비대칭으로 만들면 공명 봉우리의 높이가 1보다 작아진다. ④ 초격자에서는 봉우리들이 모여 "띠"(미니 밴드)를 이룬다 — 12장 에너지 띠의 예고다.</div>
+    </div>
+    <p>이중 장벽에서 일어나는 일은 광학의 <span class="term">파브리–페로 공진기</span><span class="en">(Fabry–Pérot resonator)</span>와 같다. 각 장벽의 투과 확률이 \(10^{-3}\)이라도 우물 속에서 왕복하는 파동이 보강 간섭하는 에너지에서는 반사파들이 서로 상쇄되어 \(T = 1\)이 된다(장벽이 대칭일 때). 투과 봉우리의 폭 \(\Gamma\)는 전자가 우물에 머무는 시간 \(\tau\)와 \(\Gamma\tau\sim\hbar\)로 연결된다. 장벽이 두꺼울수록 봉우리는 날카롭고 우물 속 준위는 오래 산다.</p>
+
+    <h3>공명 터널 다이오드와 부성 저항</h3>
+    <p><span class="term">공명 터널 다이오드</span><span class="en">(resonant tunneling diode, RTD)</span>는 이중 장벽 양쪽을 고농도로 도핑한 구조다. 왼쪽 이미터의 전자는 전도대 바닥부터 페르미 준위 \(E_F\)까지 채워져 있다. 전압을 걸면 구조 전체가 기울어 우물 속 공명 준위가 내려온다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="공명 터널 다이오드의 세 가지 바이어스 상태">
+        <g>
+          <rect x="20" y="150" width="70" height="22" fill="var(--accent)" opacity=".25"/>
+          <path d="M20,172 L90,172 L90,90 L104,90 L104,172 L146,172 L146,90 L160,90 L160,172 L240,172" class="s-line" stroke-width="2.2" fill="none"/>
+          <rect x="160" y="150" width="80" height="22" fill="var(--accent)" opacity=".25"/>
+          <line x1="104" y1="128" x2="146" y2="128" stroke="var(--warn)" stroke-width="2.5"/>
+          <text class="t-dim" x="55" y="145" text-anchor="middle" font-size="11">E_F</text>
+          <text class="t" x="130" y="30" text-anchor="middle" font-size="14" font-weight="700">① V = 0</text>
+          <text class="t-dim" x="130" y="205" text-anchor="middle" font-size="12">준위가 E_F 위: 전류 ≈ 0</text>
+        </g>
+        <g>
+          <rect x="280" y="150" width="70" height="22" fill="var(--accent)" opacity=".25"/>
+          <path d="M280,172 L350,172 L350,90 L364,96 L364,178 L406,192 L406,110 L420,116 L420,198 L500,198" class="s-line" stroke-width="2.2" fill="none"/>
+          <line x1="364" y1="162" x2="406" y2="162" stroke="var(--warn)" stroke-width="2.5"/>
+          <path d="M320,162 L470,162" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <path d="M466,158 L474,162 L466,166z" fill="var(--accent)"/>
+          <text class="t" x="390" y="30" text-anchor="middle" font-size="14" font-weight="700">② 봉우리 전압</text>
+          <text class="t-dim" x="390" y="225" text-anchor="middle" font-size="12">준위가 이미터 전자와 정렬: 전류 최대</text>
+        </g>
+        <g>
+          <rect x="540" y="150" width="70" height="22" fill="var(--accent)" opacity=".25"/>
+          <path d="M540,172 L610,172 L610,90 L624,100 L624,182 L666,212 L666,130 L680,140 L680,222 L770,222" class="s-line" stroke-width="2.2" fill="none"/>
+          <line x1="624" y1="190" x2="666" y2="190" stroke="var(--warn)" stroke-width="2.5"/>
+          <text class="t" x="655" y="30" text-anchor="middle" font-size="14" font-weight="700">③ 골짜기</text>
+          <text class="t-dim" x="655" y="245" text-anchor="middle" font-size="12">준위가 이미터 띠 바닥 아래: 전류 급감</text>
+        </g>
+      </svg>
+      <figcaption>공명 터널 다이오드의 띠 그림. 주황 선이 우물 속 공명 준위, 파란 채움이 이미터·컬렉터의 채워진 전자다. ①→② 전압을 올리면 전류가 늘다가, ③ 준위가 이미터 전도대 바닥보다 내려가면 전류가 오히려 줄어든다.</figcaption>
+    </figure>
+    <p>③의 구간에서는 전압을 올릴수록 전류가 줄어드는 <span class="term">부성 미분 저항</span><span class="en">(negative differential resistance, NDR)</span>이 나타난다. NDR 소자를 공진 회로에 넣으면 손실을 상쇄해 발진기가 되며, RTD는 수백 GHz–THz 발진기로 쓰인다. 공명 준위가 우물 중심에 있고 전압이 구조에 고르게 걸린다면 준위는 \(V/2\)만큼 내려오므로, 봉우리 전압은 대략 \(V_p \approx 2E_r/q\)이다.</p>
+    <div class="predict" data-for="sim-rtd">
+      <p>공명 준위가 이미터 띠 바닥 아래로 내려간 뒤에도 전압을 계속 올리면 전류는?</p>
+      <div class="opts"><button class="opt">계속 늘어난다(옴 법칙)</button><button class="opt" data-correct>일단 크게 줄었다가, 훨씬 높은 전압에서 다시 늘어난다</button><button class="opt">정확히 0이 되어 그대로 있다</button></div>
+      <div class="quiz-exp">공명 통로가 닫히면 비공명 터널링만 남아 전류가 줄고(골짜기), 전압이 더 커지면 장벽 꼭대기가 낮아지고 두 번째 준위가 들어와 다시 늘어난다. 아래 I–V 곡선에서 봉우리 대 골짜기 비(PVR)를 읽어 보라.</div>
+    </div>
+    <div class="sim" id="sim-rtd">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>공명 터널 다이오드: 띠 그림과 I–V</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rtd-band"></canvas></div><div><canvas id="cv-rtd-iv"></canvas><span class="hint top">곡선 위 흰 점을 끌어 전압을 바꾼다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>우물 폭 w <output id="rt-w-out"></output></span><input type="range" id="rt-w" min="3" max="8" step="0.5" value="5"></label>
+          <label class="ctrl"><span>장벽 폭 b <output id="rt-b-out"></output></span><input type="range" id="rt-b" min="1" max="4" step="0.5" value="2"></label>
+          <label class="ctrl"><span>장벽 높이 V₀ <output id="rt-v-out"></output></span><input type="range" id="rt-v" min="0.2" max="0.5" step="0.05" value="0.3"></label>
+          <label class="ctrl"><span>이미터 E<sub>F</sub> <output id="rt-f-out"></output></span><input type="range" id="rt-f" min="0.02" max="0.08" step="0.01" value="0.05"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">전압 V</span><span class="v" id="rt-vv">—</span></div>
+        <div class="stat"><span class="k">공명 준위 E<sub>r</sub>(0 V)</span><span class="v" id="rt-er">—</span></div>
+        <div class="stat"><span class="k">봉우리 전압</span><span class="v" id="rt-vp">—</span></div>
+        <div class="stat"><span class="k">봉우리/골짜기 비</span><span class="v" id="rt-pvr">—</span></div>
+      </div>
+      <div class="sim-note">전류는 \(J \propto \int T(E,V)\,[\max(0,E_F-E) - \max(0, E_F-E-qV)]\,dE\)(절대 영도, 3차원 이미터의 공급 함수)로 계산하고, \(T(E,V)\)는 기울어진 구조를 0.15 nm 층으로 쪼개 전달 행렬로 구했다. 전류는 상대 단위다. 해볼 것: ① 점을 끌어 봉우리와 골짜기에서 띠 그림을 비교하라. ② 우물을 넓히면 \(E_r\)이 낮아져 봉우리 전압이 줄어든다. ③ 장벽을 두껍게 하면 봉우리 전류는 줄지만 PVR은 어떻게 되는가? (실제 소자의 골짜기 전류는 포논 산란 등으로 이 모형보다 크다.)</div>
+    </div>
+    <div class="callout semi"><strong>다층 터널 구조는 어디에나</strong><p>게이트 스택(Si / 0.5 nm SiO₂ 계면층 / 2–3 nm HfO₂ / TiN)은 전달 행렬로 누설을 계산하는 대표적 다층 구조다. 9장에서 다룰 STT-MRAM의 <b>자기 터널 접합</b>(MTJ, CoFeB / 약 1 nm MgO / CoFeB)은 터널 장벽 양쪽 전극의 스핀 방향에 따라 투과 확률이 달라지는 소자로, 저항 비(TMR)가 100%를 넘는다. 이중 장벽의 공명 원리는 양자 우물 적외선 검출기(QWIP)와 양자 폭포 레이저(QCL)의 설계에도 그대로 쓰인다. 관련: <a href="https://semi.euiyun.com/memory/chapters/emerging.html">신규 메모리(MRAM)</a>, <a href="https://semi.euiyun.com/device/chapters/mos.html">MOS 구조</a>.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="wkb">
+    <h2>WKB 근사: 모양이 있는 장벽</h2>
+    <p>장벽의 높이가 위치에 따라 천천히 변하면(한 침투 깊이 안에서 \(V\)가 거의 일정하면) 장벽을 얇은 사각 장벽들의 연속으로 보고 지수를 더하면 된다. 이것이 <span class="term">WKB 근사</span><span class="en">(Wentzel–Kramers–Brillouin approximation)</span>다.</p>
+    <div class="formula">$$T \approx \exp\left(-2\int_{x_1}^{x_2}\kappa(x)\,dx\right), \qquad \kappa(x) = \frac{\sqrt{2m\,[V(x)-E]}}{\hbar}$$<div class="where">\(x_1, x_2\)는 \(V(x) = E\)인 <span class="term">고전적 전환점</span><span class="en">(classical turning points)</span>. 사각 장벽이면 \(e^{-2\kappa a}\)로 돌아간다(앞인자 16…은 빠진다). \(2\int\kappa\,dx \gg 1\)일 때 정확하다.</div></div>
+    <p>반도체에서 특히 중요한 것은 두 가지 모양이다. 전기장 \(F\)가 걸린 절연막은 <b>사다리꼴</b>, 전기장이 충분히 크면 <b>삼각형</b>이 된다. 높이 \(\phi_B\)에서 기울기 \(qF\)로 내려가는 삼각 장벽의 적분은</p>
+    <div class="formula">$$\int_0^{\phi_B/qF}\sqrt{2m(\phi_B - qFx)}\,\frac{dx}{\hbar} = \frac{2\sqrt{2m}\,\phi_B^{3/2}}{3\hbar qF} \quad\Longrightarrow\quad T_\triangle \approx \exp\left(-\frac{4\sqrt{2m}\,\phi_B^{3/2}}{3\hbar qF}\right)$$<div class="where">이 지수가 파울러–노드하임 터널링의 핵심이다. 지수 안에 \(1/F\)가 있다는 점을 기억하자.</div></div>
+    <figure class="mini" id="mini-wkb">
+      <div class="mini-view"><canvas id="cv-wkb"></canvas><span class="hint top">장벽 오른쪽 끝의 흰 점을 끌어 폭을 바꾼다</span></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>모양</span><div class="seg" id="wk-shape"><button data-value="rect" class="on">사각</button><button data-value="trap">사다리꼴</button><button data-value="tri">삼각</button><button data-value="para">포물선</button></div></div>
+        <label class="ctrl"><span>E / V₀ <output id="wk-e-out"></output></span><input type="range" id="wk-e" min="0.05" max="0.9" step="0.01" value="0.3"></label>
+        <span class="readout" id="wk-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(V_0 = 2\) eV, 자유 전자. 색칠한 부분이 \(\kappa(x)\)를 적분하는 금지 영역이다. 전달 행렬(400층)로 구한 "정확한" \(T\)와 WKB를 비교하라: 장벽이 두꺼울수록 비율이 일정해지고(앞인자 차이), 지수는 거의 정확하다.</figcaption>
+    </figure>
+    <div class="example" data-title="삼각 장벽의 WKB 투과 확률">
+      <p>Si에서 SiO₂로 전자가 터널링할 때 장벽 높이 \(\phi_B = 3.1\) eV, 산화막 속 유효 질량 \(m_\text{ox} = 0.42m_e\)이다. 산화막 전기장이 10 MV/cm(= 1 V/nm)일 때 삼각 장벽의 폭(터널 거리)과 WKB 투과 확률을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 삼각 장벽의 폭 \(d = \phi_B/qF\). 지수는 \(\frac43 \kappa_0 d\) 꼴로 쓸 수 있다: \(\kappa_0 = \sqrt{m_\text{ox}\phi_B/0.0381}\).</div>
+        <div class="step"><b>풀이</b> \(d = 3.1\text{ eV}/(1\text{ eV/nm}) = 3.1\) nm. \(\kappa_0 = \sqrt{0.42\times3.1/0.0381} = 5.846\) nm⁻¹. 지수 \(= \frac43(5.846)(3.1) = 24.16\), \(T = e^{-24.16} = 3.2\times10^{-11}\).</div>
+        <div class="answer">d = 3.1 nm, T ≈ 3.2×10⁻¹¹</div>
+        <div class="step"><b>검토</b> 지수 24.16은 FN 상수 \(B = 241.6\) MV/cm를 \(F = 10\) MV/cm로 나눈 값과 같다. 같은 높이의 3.1 nm 사각 장벽이면 지수가 \(2\kappa_0 d = 36.2\)이다. 삼각형이 훨씬 "얇다".</div>
+      </details>
+    </div>
+
+    <h3>알파 붕괴: 가모프의 설명</h3>
+    <p>터널링이 처음 성공한 곳은 핵물리였다(가모프, 거니·콘던, 1928). 알파 입자는 핵 안에서 강한 핵력의 우물에 갇혀 있고, 핵 밖은 쿨롱 장벽 \(V(r) = 2Z_de^2/(4\pi\varepsilon_0 r)\)이다. 알파 입자의 에너지(4–9 MeV)는 장벽 꼭대기(약 30 MeV)보다 훨씬 낮지만 터널링으로 빠져나온다. 쿨롱 장벽에 WKB를 적용하면 <span class="term">가모프 인자</span><span class="en">(Gamow factor)</span>를 얻는다.</p>
+    <div class="formula">$$T \approx e^{-2G}, \quad 2G = 2\sqrt{\frac{2\mu}{E}}\,\frac{2Z_d e^2}{4\pi\varepsilon_0\hbar}\left[\arccos\sqrt{x} - \sqrt{x(1-x)}\right], \quad x = \frac{R}{b},\ b = \frac{2Z_de^2}{4\pi\varepsilon_0E}$$<div class="where">\(R\): 핵 반지름(≈ 1.2(\(A_d^{1/3}+4^{1/3}\)) fm), \(b\): 바깥 전환점, \(\mu\): 환산 질량. 반감기 \(t_{1/2} = \ln2/(fT)\), \(f = v/2R\)는 알파 입자가 장벽을 두드리는 빈도(약 \(10^{21}\) s⁻¹).</div></div>
+    <div class="tangle" id="tg-alpha">
+      <p>딸핵의 원자 번호 \(Z_d\) = <span class="tn" data-var="z" data-min="78" data-max="96" data-step="1">90</span>, 알파 입자 에너지 <span class="tn" data-var="e" data-min="3.8" data-max="9.5" data-step="0.01" data-unit=" MeV">4.27</span>이면 바깥 전환점 <span class="tn-out" data-out="b"></span>, 가모프 지수 \(2G\) = <span class="tn-out" data-out="g"></span>, 반감기 추정 <span class="tn-out" data-out="t"></span>. <span data-out="msg"></span></p>
+      <canvas id="cv-alpha"></canvas>
+    </div>
+    <p>에너지가 4.27 MeV(²³⁸U)에서 8.95 MeV(²¹²Po)로 두 배 남짓 바뀔 뿐인데 반감기는 45억 년에서 0.3 µs로 \(10^{24}\)배 가까이 바뀐다. 지수 안에 \(1/\sqrt E\)가 들어 있기 때문이다(가이거–누탈 법칙). 이 단순한 모형이 24자릿수에 걸친 반감기를 한두 자릿수 안에서 맞힌다.</p>
+    <div class="callout semi"><strong>접촉 저항, GIDL, TFET</strong><p><b>오믹 접촉</b>: 금속–반도체 접합의 쇼트키 장벽(Si에서 0.5–0.8 eV)은 없앨 수 없다. 대신 반도체를 \(10^{20}\) cm⁻³ 이상 도핑하면 공핍층 폭 \(W = \sqrt{2\varepsilon_s\phi_B/qN}\)이 약 3 nm(\(N = 10^{17}\)이면 88 nm)로 얇아져 전자가 삼각형에 가까운 장벽을 <em>터널링</em>으로 통과한다. 비접촉 저항은 \(\rho_c \propto \exp\!\big(2\sqrt{\varepsilon_s m^*}\,\phi_B/\hbar\sqrt{N}\big)\)로 도핑에 지수적으로 민감하다. <b>GIDL</b>: 게이트–드레인 겹침 영역의 강한 전기장에서 가전자대 전자가 전도대로 터널링하는 <em>밴드 간 터널링</em>이 꺼진 트랜지스터의 누설(DRAM 셀 유지 시간의 적)을 만든다. <b>TFET</b>는 이 밴드 간 터널링을 게이트로 켜고 끄는 트랜지스터로, 열 방출의 한계(상온 60 mV/dec)보다 가파른 스위칭을 노린다. 관련: <a href="https://semi.euiyun.com/device/chapters/ms.html">금속–반도체 접촉</a>, <a href="https://semi.euiyun.com/memory/chapters/dram-cell.html">DRAM 셀</a>, <a href="https://semi.euiyun.com/device/chapters/scaling.html">스케일링</a>.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="oxide">
+    <h2>게이트 산화막의 직접 터널링</h2>
+    <p>MOSFET의 게이트 절연막은 채널의 전자와 게이트 전극 사이의 장벽이다. Si 전도대에서 SiO₂ 전도대까지의 높이는 \(\phi_B = 3.1\) eV로 높지만, 두께가 2 nm 아래로 내려가면 터널링 전류가 눈에 띄게 된다. 산화막에 걸린 전압 \(V_\text{ox}\)이 \(\phi_B/q\)보다 작으면 장벽은 사다리꼴이고, 전자는 산화막 전체를 가로질러 곧장 게이트로 간다 — <span class="term">직접 터널링</span><span class="en">(direct tunneling)</span>이다. \(V_\text{ox}>\phi_B/q\)이면 장벽이 삼각형이 되어 파울러–노드하임 터널링(다음 절)으로 넘어간다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="MOS 구조의 직접 터널링(사다리꼴 장벽)과 파울러–노드하임 터널링(삼각 장벽) 띠 그림">
+        <g>
+          <text class="t" x="190" y="26" text-anchor="middle" font-size="14" font-weight="700">직접 터널링 (qV_ox &lt; φ_B)</text>
+          <rect x="30" y="170" width="120" height="22" fill="var(--accent)" opacity=".22"/>
+          <path d="M30,170 L150,170 L150,60 L230,100 L230,210 L350,210" class="s-line" stroke-width="2.4" fill="none"/>
+          <rect x="230" y="210" width="120" height="20" fill="var(--accent)" opacity=".12"/>
+          <line x1="40" y1="168" x2="350" y2="168" stroke="var(--accent-2)" stroke-dasharray="4 3"/>
+          <path d="M150,60 L230,100 L230,168 L150,168z" fill="var(--warn)" opacity=".18"/>
+          <path d="M120,150 L262,150" stroke="var(--accent)" stroke-width="2"/><path d="M258,145 L268,150 L258,155z" fill="var(--accent)"/>
+          <text class="t-dim" x="90" y="210" text-anchor="middle" font-size="12">Si (반전층)</text>
+          <text class="t-dim" x="190" y="250" text-anchor="middle" font-size="12">산화막 t_ox</text>
+          <text class="t-dim" x="290" y="250" text-anchor="middle" font-size="12">게이트</text>
+          <text class="t-dim" x="140" y="110" text-anchor="end" font-size="12">φ_B</text>
+          <line x1="150" y1="240" x2="230" y2="240" class="s-axis"/>
+        </g>
+        <g>
+          <text class="t" x="600" y="26" text-anchor="middle" font-size="14" font-weight="700">FN 터널링 (qV_ox &gt; φ_B)</text>
+          <rect x="440" y="170" width="120" height="22" fill="var(--accent)" opacity=".22"/>
+          <path d="M440,170 L560,170 L560,60 L640,210 L640,250 L770,250" class="s-line" stroke-width="2.4" fill="none"/>
+          <line x1="450" y1="168" x2="770" y2="168" stroke="var(--accent-2)" stroke-dasharray="4 3"/>
+          <path d="M560,60 L617.6,168 L560,168z" fill="var(--warn)" opacity=".22"/>
+          <path d="M530,150 L622,150" stroke="var(--accent)" stroke-width="2"/><path d="M618,145 L628,150 L618,155z" fill="var(--accent)"/>
+          <path d="M630,160 C660,175 680,200 700,232" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-dasharray="4 3"/>
+          <text class="t-dim" x="588" y="190" text-anchor="middle" font-size="12">d = φ_B/qF</text>
+          <text class="t-dim" x="700" y="200" font-size="12">산화막 전도대로</text>
+        </g>
+      </svg>
+      <figcaption>Si에서 SiO₂로의 터널링. 주황 영역이 금지 영역(\(V>E\))이다. 왼쪽: 사다리꼴 장벽 전체를 통과(직접 터널링). 오른쪽: 강한 전기장에서 장벽이 삼각형이 되어, 전자는 거리 \(d = \phi_B/qF\)만 터널링한 뒤 산화막의 전도대를 타고 간다(FN 터널링).</figcaption>
+    </figure>
+    <p>사다리꼴 장벽에 WKB를 적용하고 앞인자를 FN 꼴로 맞춘 직접 터널링 전류의 근사식(슈에그라프–후)은</p>
+    <div class="formula">$$J_\text{DT} \approx \frac{AF^2}{\left[1-\sqrt{1-qV_\text{ox}/\phi_B}\right]^2}\exp\left\{-\frac{B\left[1-(1-qV_\text{ox}/\phi_B)^{3/2}\right]}{F}\right\}, \quad F = \frac{V_\text{ox}}{t_\text{ox}}$$<div class="where">\(A, B\)는 다음 절의 FN 상수(SiO₂: \(A = 1.18\times10^{-6}\) A/V², \(B = 241.6\) MV/cm). \(V_\text{ox}\to\phi_B/q\)이면 FN 식과 정확히 이어진다.</div></div>
+    <p>이 식으로 \(V_\text{ox} = 1\) V에서 계산하면 SiO₂를 0.2 nm 얇게 할 때마다 누설이 약 <b>10배</b> 늘어난다. 이 식 그대로는 절댓값이 측정보다 약 10배 크게 나오므로, 아래 시뮬레이터에서는 앞인자에 보정 계수 0.08을 곱해 발표된 측정 곡선(Lo 등, 1997)에 맞췄다: SiO₂ 2.0 nm ≈ 0.04 A/cm², 1.5 nm ≈ 15 A/cm², 1.2 nm ≈ 6×10² A/cm²(1 V). 두께를 3 nm에서 1 nm로 줄이면 \(10^{10}\)배다. 게이트 커패시턴스 \(C_\text{ox} = \varepsilon_\text{ox}/t_\text{ox}\)를 키우려면 얇게 해야 하는데, 얇게 하면 터널링이 폭증한다. 출구는 \(\varepsilon\)이 큰 절연막을 두껍게 쓰는 것이다. 이때 쓰는 잣대가 <span class="term">등가 산화막 두께</span><span class="en">(equivalent oxide thickness, EOT)</span>다.</p>
+    <div class="formula">$$\text{EOT} = t_\text{hk}\,\frac{\varepsilon_{\text{SiO}_2}}{\varepsilon_\text{hk}} = t_\text{hk}\,\frac{3.9}{\varepsilon_r}, \qquad C_\text{ox} = \frac{3.9\,\varepsilon_0}{\text{EOT}}$$<div class="where">여러 층이면 \(\text{EOT} = \sum t_i(3.9/\varepsilon_i)\) — 직렬 커패시터.</div></div>
+    <div class="tangle" id="tg-eot">
+      <p>HfO₂(\(\varepsilon_r = 25\)) <span class="tn" data-var="t" data-min="0.5" data-max="8" data-step="0.1" data-unit=" nm">3.0</span> 아래에 SiO₂ 계면층 <span class="tn" data-var="il" data-min="0" data-max="1.5" data-step="0.05" data-unit=" nm">0.50</span>이 있으면 EOT = <span class="tn-out" data-out="eot"></span>이고 \(C_\text{ox}\) = <span class="tn-out" data-out="c"></span>이다. 같은 EOT의 순수 SiO₂ 대비 물리 두께는 <span class="tn-out" data-out="r"></span>배다. <span data-out="msg"></span></p>
+    </div>
+    <p>그러나 \(\varepsilon\)만 크다고 좋은 것은 아니다. high-k 물질은 대체로 띠 간격이 작아 장벽 \(\phi_B\)가 낮고 터널링 유효 질량도 작다. 같은 EOT에서 터널링 지수 \(2\kappa t_\text{phys}\)는 \(\varepsilon_r\sqrt{m_\text{ox}\phi_B}\)에 비례하므로 이 값이 성능 지수다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>절연막</th><th class="num">ε<sub>r</sub></th><th class="num">φ<sub>B</sub> (eV)</th><th class="num">m<sub>ox</sub>/m<sub>e</sub></th><th class="num">EOT 1 nm의 물리 두께 (nm)</th><th class="num">2κt (평탄 띠)</th><th class="num">ε<sub>r</sub>√(m φ<sub>B</sub>)</th></tr></thead>
+      <tbody>
+        <tr><td>SiO₂</td><td class="num">3.9</td><td class="num">3.1</td><td class="num">0.42</td><td class="num">1.00</td><td class="num">11.7</td><td class="num">4.45</td></tr>
+        <tr><td>Si₃N₄</td><td class="num">7.5</td><td class="num">2.1</td><td class="num">0.40</td><td class="num">1.92</td><td class="num">18.1</td><td class="num">6.87</td></tr>
+        <tr><td>Al₂O₃</td><td class="num">9.0</td><td class="num">2.8</td><td class="num">0.35</td><td class="num">2.31</td><td class="num">23.4</td><td class="num">8.91</td></tr>
+        <tr><td>HfO₂</td><td class="num">25</td><td class="num">1.5</td><td class="num">0.17</td><td class="num">6.41</td><td class="num">33.2</td><td class="num">12.6</td></tr>
+      </tbody>
+    </table></div>
+    <div class="sim" id="sim-gate">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>게이트 누설 계산기: high-k는 왜 필요한가</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-gate-band"></canvas><span class="hint top">절연막 오른쪽 끝을 끌어 두께를 바꾼다</span></div><div><canvas id="cv-gate-j"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>절연막</span><div class="seg" id="gt-mat"><button data-value="SiO2" class="on">SiO₂</button><button data-value="Si3N4">Si₃N₄</button><button data-value="Al2O3">Al₂O₃</button><button data-value="HfO2">HfO₂</button></div></div>
+          <label class="ctrl"><span>물리 두께 t <output id="gt-t-out"></output></span><input type="range" id="gt-t" min="0.5" max="10" step="0.05" value="1.2"></label>
+          <label class="ctrl"><span>SiO₂ 계면층 (high-k 아래) <output id="gt-il-out"></output></span><input type="range" id="gt-il" min="0" max="1" step="0.05" value="0"></label>
+          <label class="ctrl"><span>산화막 전압 V<sub>ox</sub> <output id="gt-v-out"></output></span><input type="range" id="gt-v" min="0.3" max="1.5" step="0.05" value="1"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">EOT</span><span class="v" id="gt-eot">—</span></div>
+        <div class="stat"><span class="k">C<sub>ox</sub></span><span class="v" id="gt-c">—</span></div>
+        <div class="stat"><span class="k">누설 J</span><span class="v" id="gt-j">—</span></div>
+        <div class="stat"><span class="k">목표: EOT ≤ 1.0 nm, J ≤ 1 A/cm²</span><span class="v" id="gt-goal">—</span></div>
+      </div>
+      <div class="sim-note">모형: 층마다 \(F_i = (3.9/\varepsilon_i)V_\text{ox}/\text{EOT}\)로 전압이 나뉘고, 전자(Si 전도대 바닥)가 지나는 금지 영역에서 WKB 지수 \(2\int\kappa\,dx\)를 적분한다. 앞인자는 SiO₂의 직접 터널링 식을 같은 EOT에 적용하고 보정 계수 0.08을 곱해 측정 곡선에 맞췄다. 해볼 것: ① SiO₂로 목표를 이룰 수 있는가? 1 A/cm²가 되는 두께는? ② HfO₂로 바꿔 EOT 1 nm를 만들어라 — 물리 두께는 6.4 nm다. ③ 실제 HfO₂는 Si 위에 SiO₂ 계면층이 생긴다. 계면층 0.5 nm를 넣고도 목표를 이룰 수 있는가? 계면층을 얇게 만드는 것이 왜 공정의 핵심 과제인지 느껴 보라.</div>
+    </div>
+    <div class="example" data-title="0.3 nm가 만드는 차이">
+      <p>SiO₂ 게이트 산화막을 1.5 nm에서 1.2 nm로 줄였다. 사각 장벽 근사(\(\phi_B = 3.1\) eV, \(m_\text{ox} = 0.42m_e\), 전자 에너지는 장벽 아래 3.1 eV)에서 터널링 확률은 몇 배가 되는가? 0.1 nm마다는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 앞인자는 같으므로 비는 \(e^{2\kappa\Delta t}\)이다.</div>
+        <div class="step"><b>풀이</b> \(\kappa = \sqrt{0.42\times3.1/0.0381} = 5.85\) nm⁻¹. \(e^{2(5.85)(0.3)} = e^{3.51} = 33.4\). 0.1 nm마다 \(e^{1.17} = 3.22\)배.</div>
+        <div class="answer">약 33배 (0.1 nm마다 약 3.2배)</div>
+        <div class="step"><b>검토</b> 전압이 걸리면 장벽이 사다리꼴로 낮아져 \(\kappa\)의 평균이 줄지만, 위 시뮬레이터의 직접 터널링 모형에서도 1.5 → 1.2 nm에 약 39배(15 → 6×10² A/cm²)로 비슷하다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="같은 EOT의 SiO₂와 HfO₂">
+      <p>EOT 1.0 nm를 SiO₂와 HfO₂(\(\varepsilon_r = 25\), \(\phi_B = 1.5\) eV, \(m_\text{ox} = 0.17m_e\))로 각각 만든다. HfO₂의 물리 두께와, 평탄 띠(사각 장벽) WKB 지수 \(2\kappa t\)를 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(t_\text{hk} = \text{EOT}\times\varepsilon_r/3.9\), \(\kappa = \sqrt{m\phi_B/0.0381}\).</div>
+        <div class="step"><b>풀이</b> \(t_\text{hk} = 1.0\times25/3.9 = 6.41\) nm. SiO₂: \(2(5.85)(1.0) = 11.7\). HfO₂: \(\kappa = \sqrt{0.17\times1.5/0.0381} = 2.59\) nm⁻¹, \(2(2.59)(6.41) = 33.2\).</div>
+        <div class="answer">t = 6.41 nm; 지수 11.7 vs 33.2 → HfO₂ 쪽 투과 확률이 e^{−21.5} ≈ 5×10⁻¹⁰배</div>
+        <div class="step"><b>검토</b> HfO₂의 장벽이 낮고 질량이 가벼워 \(\kappa\)는 절반 이하지만, 6배 넘게 두꺼운 효과가 이긴다. 대가로 계면 결함, 이동도 저하, 문턱 전압 이동 같은 새 문제가 생겼다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>1.2 nm SiO₂의 벽과 high-k/금속 게이트</strong><p>90·65 nm 노드의 게이트 산화막은 질화 처리한 SiO₂ 약 1.2 nm, 원자 다섯 층 정도였다. 직접 터널링 누설은 1 V 근처에서 \(10^2\)–\(10^3\) A/cm² 규모로 커져 칩 대기 전력의 큰 몫이 되었고, 더 얇게 할 수 없었다. 2007년 45 nm 노드에서 HfO₂ 계열 high-k 절연막과 금속 게이트(HKMG)가 양산에 들어가, 비슷하거나 더 작은 EOT에서 게이트 누설을 10배 이상 줄였다. 금속 게이트는 다결정 실리콘 게이트의 공핍(EOT를 약 0.4 nm 늘림)과 high-k와의 페르미 준위 고정 문제도 함께 풀었다. 지금의 FinFET·GAA 게이트 스택은 0.5 nm 안팎의 SiO₂ 계면층 위에 HfO₂를 2 nm 정도 올려 EOT 약 0.8–1 nm를 만들며, 계면층을 얇게 하는 것(산소 스캐빈징)이 핵심 공정 과제다. 관련: <a href="https://semi.euiyun.com/device/chapters/mosfet.html">MOSFET</a>, <a href="https://semi.euiyun.com/device/chapters/scaling.html">스케일링</a>, <a href="https://semi.euiyun.com/process/">공정</a>.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fn">
+    <h2>파울러–노드하임 터널링</h2>
+    <p>산화막 전압이 장벽 높이를 넘으면(\(qV_\text{ox}>\phi_B\)) 장벽은 삼각형이 된다. 전자는 폭 \(d = \phi_B/qF\)만 터널링하면 산화막 전도대로 나와 전기장을 따라 흘러간다. 이를 <span class="term">파울러–노드하임(FN) 터널링</span><span class="en">(Fowler–Nordheim tunneling)</span>이라 한다(1928년, 금속 표면의 전계 방출을 설명하려고 유도). 전기장이 커질수록 삼각형이 얇아지므로 전류는 전기장에 대해 폭발적으로 늘어난다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 260" role="img" aria-label="전기장이 커지며 사다리꼴 장벽이 삼각 장벽으로 바뀌고 얇아지는 과정">
+        <rect x="60" y="160" width="180" height="24" fill="var(--accent)" opacity=".22"/>
+        <line x1="60" y1="158" x2="760" y2="158" stroke="var(--accent-2)" stroke-dasharray="4 3"/>
+        <text class="t-dim" x="150" y="205" text-anchor="middle" font-size="12">Si</text>
+        <text class="t-dim" x="150" y="152" text-anchor="middle" font-size="12" style="fill:var(--accent-2)">전자 에너지</text>
+        <path d="M60,160 L240,160 L240,50" class="s-line" stroke-width="2.4" fill="none"/>
+        <g data-only="1"><path d="M240,50 L560,110 L560,240" class="s-line" stroke-width="2.4" fill="none"/><path d="M240,50 L560,110 L560,158 L240,158z" fill="var(--warn)" opacity=".2"/><text class="t" x="400" y="40" text-anchor="middle" font-size="13">qV_ox &lt; φ_B: 사다리꼴, 전체 두께를 터널링</text></g>
+        <g data-only="2"><path d="M240,50 L560,158 L560,240" class="s-line" stroke-width="2.4" fill="none"/><path d="M240,50 L560,158 L240,158z" fill="var(--warn)" opacity=".2"/><text class="t" x="400" y="40" text-anchor="middle" font-size="13">qV_ox = φ_B: 삼각형이 막 생긴다</text></g>
+        <g data-only="3"><path d="M240,50 L560,240" class="s-line" stroke-width="2.4" fill="none"/><path d="M240,50 L422,158 L240,158z" fill="var(--warn)" opacity=".25"/><line x1="240" y1="172" x2="422" y2="172" stroke="var(--accent)" stroke-width="2"/><text class="t-acc" x="331" y="190" text-anchor="middle" font-size="13">d = φ_B/qF</text><path d="M430,158 C470,170 500,200 530,222" stroke="var(--accent)" stroke-width="1.8" fill="none" stroke-dasharray="4 3"/><text class="t" x="400" y="40" text-anchor="middle" font-size="13">qV_ox &gt; φ_B: 얇아진 삼각형만 지나면 된다</text></g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle" font-size="12">산화막 (두께 t_ox 고정)</text>
+      </svg>
+      <ol class="steps-cap"><li>낮은 전압: 사다리꼴 장벽 — 직접 터널링(두꺼운 막에서는 무시할 만큼 작다).</li><li>\(qV_\text{ox} = \phi_B\): 장벽 오른쪽 끝이 전자 에너지까지 내려와 삼각형이 된다.</li><li>높은 전기장: 터널 거리 \(d = \phi_B/qF\)가 산화막 두께와 무관하게 짧아진다 — FN 영역.</li></ol>
+      <figcaption>직접 터널링에서 FN 터널링으로. FN 영역의 전류는 두께가 아니라 전기장 \(F\)로만 정해진다.</figcaption>
+    </figure>
+    <p>삼각 장벽의 WKB 지수에 금속(또는 축퇴 반도체) 속 전자의 공급을 곱하면 FN 식을 얻는다.</p>
+    <div class="formula">$$J_\text{FN} = AF^2\exp\left(-\frac{B}{F}\right), \qquad A = \frac{q^3}{8\pi h\phi_B}\frac{m_e}{m_\text{ox}}, \qquad B = \frac{8\pi\sqrt{2m_\text{ox}}\,\phi_B^{3/2}}{3qh}$$<div class="where">Si/SiO₂(\(\phi_B = 3.1\) eV, \(m_\text{ox} = 0.42m_e\)): \(A = 1.18\times10^{-6}\) A/V², \(B = 2.42\times10^{10}\) V/m = 241.6 MV/cm. 양변을 \(F^2\)으로 나누고 로그를 취하면 \(\ln(J/F^2) = \ln A - B\cdot(1/F)\): <b>FN 플롯</b>은 기울기 \(-B\)인 직선이다.</div></div>
+    <p>FN 플롯의 기울기에서 \(B \propto \sqrt{m_\text{ox}}\,\phi_B^{3/2}\)를 읽으면 장벽 높이를 측정할 수 있다. 산화막 품질 검사에서 늘 하는 일이다. 전기장이 10 MV/cm에서 11 MV/cm로 10% 늘면 지수가 \(B(1/10 - 1/11)\) = 2.2만큼 바뀌어 전류는 약 11배가 된다.</p>
+    <div class="predict" data-for="sim-fn">
+      <p>SiO₂의 FN 전류에서 전기장을 10 MV/cm → 11 MV/cm로 10% 올리면 전류는?</p>
+      <div class="opts"><button class="opt">약 10% 증가</button><button class="opt">약 2배 (F²)</button><button class="opt" data-correct>약 10배</button><button class="opt">약 1000배</button></div>
+      <div class="quiz-exp">\(J_{11}/J_{10} = 1.21\,e^{241.6(1/10-1/11)} = 1.21\,e^{2.20} = 10.9\). 지수 안의 \(1/F\)가 전류를 지배한다. 아래 FN 플롯의 점을 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-fn">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>FN 플롯과 플래시 프로그램 전압</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-fn-band"></canvas><span class="hint top">게이트 쪽 흰 점을 위아래로 끌어 전기장을 바꾼다</span></div><div><canvas id="cv-fn-plot"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>장벽</span><div class="seg" id="fn-mat"><button data-value="SiO2" class="on">Si/SiO₂ 3.1 eV</button><button data-value="Si3N4">Si/Si₃N₄ 2.1 eV</button><button data-value="Al2O3">Si/Al₂O₃ 2.8 eV</button></div></div>
+          <label class="ctrl"><span>터널 산화막 두께 <output id="fn-t-out"></output></span><input type="range" id="fn-t" min="5" max="12" step="0.5" value="8"></label>
+          <label class="ctrl"><span>결합비 α<sub>G</sub> (제어 게이트 → 부유 게이트) <output id="fn-a-out"></output></span><input type="range" id="fn-a" min="0.4" max="0.8" step="0.05" value="0.6"></label>
+          <div class="ctrl-row"><button class="btn primary" id="fn-meas" type="button">이 전기장에서 측정</button><button class="btn" id="fn-clear" type="button">측정 지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">전기장 F</span><span class="v" id="fn-f">—</span></div>
+        <div class="stat"><span class="k">터널 거리 d</span><span class="v" id="fn-d">—</span></div>
+        <div class="stat"><span class="k">J<sub>FN</sub></span><span class="v" id="fn-j">—</span></div>
+        <div class="stat"><span class="k">필요한 V<sub>CG</sub></span><span class="v" id="fn-vcg">—</span></div>
+        <div class="stat"><span class="k">ΔV<sub>t</sub> = 3 V 프로그램 시간</span><span class="v" id="fn-time">—</span></div>
+        <div class="stat"><span class="k">측정점으로 구한 φ<sub>B</sub></span><span class="v" id="fn-phi">—</span></div>
+      </div>
+      <div class="sim-note"><code>Q.fowlerNordheim(F, φB, mox)</code>로 계산한다. 프로그램 시간은 전하 \(\Delta Q = \Delta V_t\,C_\text{ONO}\)(ONO EOT 12 nm 가정)를 일정한 \(J\)로 채우는 시간이다(실제로는 전하가 쌓이며 전기장이 줄어 더 길다). 해볼 것: ① 측정점을 서너 개 찍어 직선의 기울기에서 φ<sub>B</sub>를 되찾아라. ② 프로그램 시간을 1 ms 아래로 하려면 전기장이 얼마나 필요한가? ③ Si₃N₄로 바꾸면 같은 전기장에서 전류가 얼마나 커지는가?</div>
+    </div>
+    <div class="example" data-title="플래시 셀의 FN 프로그램">
+      <p>NAND 플래시 셀의 터널 산화막(SiO₂)이 8.0 nm, 프로그램 중 산화막 전기장이 10 MV/cm이다. (a) 터널 거리, (b) FN 전류 밀도, (c) 결합비 0.60일 때 필요한 제어 게이트 전압(채널 0 V, 부유 게이트 초기 전하 0), (d) 문턱 전압을 3 V 옮기는 데 필요한 전하(ONO EOT 12 nm)를 이 전류로 채우는 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(d = \phi_B/qF\), \(J = AF^2e^{-B/F}\), \(V_\text{FG} = F t_\text{ox}\), \(V_\text{CG} = V_\text{FG}/\alpha_G\), \(\Delta Q = \Delta V_t\cdot 3.9\varepsilon_0/\text{EOT}\).</div>
+        <div class="step"><b>풀이</b> (a) \(d = 3.1/1.0 = 3.1\) nm. (b) \(J = (1.18\times10^{-6})(10^9)^2 e^{-24.16} = 3.80\times10^{1}\) A/m² \(= 3.80\times10^{-3}\) A/cm². (c) \(V_\text{FG} = 8.0\) V, \(V_\text{CG} = 8.0/0.60 = 13.3\) V. (d) \(\Delta Q = 3(3.9)(8.854\times10^{-12})/(12\times10^{-9}) = 8.63\times10^{-3}\) C/m², \(t = 8.63\times10^{-3}/38.0 = 2.3\times10^{-4}\) s.</div>
+        <div class="answer">d = 3.1 nm, J = 3.8×10⁻³ A/cm², V<sub>CG</sub> ≈ 13 V, t ≈ 0.23 ms</div>
+        <div class="step"><b>검토</b> 실제 NAND의 프로그램 펄스(15–20 V, 수백 µs)와 같은 규모다. 8 nm 막은 낮은 전기장(데이터 보관 중 수 MV/cm 이하)에서 직접 터널링이 사실상 0이어서 10년 보관을 보장한다 — 높은 전기장에서만 열리는 "전기장 스위치"다.</div>
+      </details>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="부유 게이트 플래시 셀 단면과 FN 프로그램">
+        <rect x="80" y="190" width="640" height="50" fill="var(--surface)" stroke="var(--border)"/>
+        <text class="t-dim" x="400" y="225" text-anchor="middle" font-size="12">p형 Si 기판 (채널)</text>
+        <rect x="100" y="178" width="140" height="20" rx="6" fill="var(--accent-2)" opacity=".35"/><text class="t" x="170" y="192" text-anchor="middle" font-size="12">n⁺ 소스</text>
+        <rect x="560" y="178" width="140" height="20" rx="6" fill="var(--accent-2)" opacity=".35"/><text class="t" x="630" y="192" text-anchor="middle" font-size="12">n⁺ 드레인</text>
+        <rect x="270" y="170" width="260" height="18" fill="var(--warn)" opacity=".35"/><text class="t" x="545" y="166" font-size="12">터널 산화막 ≈ 8 nm</text>
+        <rect x="270" y="122" width="260" height="48" fill="var(--accent)" opacity=".30" stroke="var(--accent)"/><text class="t" x="400" y="151" text-anchor="middle" font-size="13">부유 게이트 (전하 저장)</text>
+        <rect x="270" y="102" width="260" height="20" fill="var(--warn)" opacity=".22"/><text class="t-dim" x="545" y="116" font-size="12">ONO 블로킹 막</text>
+        <rect x="270" y="50" width="260" height="52" fill="var(--surface)" stroke="var(--text-dim)"/><text class="t" x="400" y="81" text-anchor="middle" font-size="13">제어 게이트 (V_CG ≈ 15–20 V)</text>
+        <g fill="var(--accent)"><circle cx="330" cy="200" r="5"/><circle cx="400" cy="200" r="5"/><circle cx="470" cy="200" r="5"/></g>
+        <g stroke="var(--accent)" stroke-width="2"><line x1="330" y1="193" x2="330" y2="160"/><line x1="400" y1="193" x2="400" y2="160"/><line x1="470" y1="193" x2="470" y2="160"/></g>
+        <g fill="var(--accent)"><path d="M325,162 L330,152 L335,162z"/><path d="M395,162 L400,152 L405,162z"/><path d="M465,162 L470,152 L475,162z"/></g>
+        <text class="t-acc" x="250" y="150" text-anchor="end" font-size="12">FN 주입 (프로그램)</text>
+      </svg>
+      <figcaption>부유 게이트 NAND 셀. 제어 게이트에 높은 전압을 걸면 터널 산화막의 전기장이 약 10 MV/cm가 되어 채널 전자가 FN 터널링으로 부유 게이트에 들어간다(프로그램). 소거는 기판에 높은 전압을 걸어 반대 방향으로 FN 터널링시킨다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>플래시 메모리의 프로그램·소거와 V-NAND</strong><p>평면 NAND는 약 8 nm 터널 산화막을 통한 FN 터널링으로 부유 게이트에 전자를 넣고(프로그램, 제어 게이트 15–20 V) 빼낸다(소거, 기판 약 20 V). 문턱 전압을 정밀하게 맞추려고 전압을 계단식으로 조금씩 올리는 ISPP 펄스를 쓴다. 3차원 V-NAND는 부유 게이트 대신 질화막의 트랩에 전하를 가두는 <b>전하 트랩(CTF)</b> 셀을 쓰지만, 채널에서 SiO₂ 계열 터널막을 지나는 터널링으로 프로그램한다는 원리는 같다. 높은 전기장의 FN 주입을 수천 번 반복하면 산화막에 결함이 생겨 낮은 전기장에서도 트랩을 거쳐 새는 <b>SILC</b>(stress-induced leakage current)가 늘고, 이것이 쓰기 내구성(P/E 사이클)과 데이터 보존을 제한한다. 관련: <a href="https://semi.euiyun.com/memory/chapters/nand.html">NAND 플래시</a>, <a href="https://semi.euiyun.com/memory/chapters/vnand.html">V-NAND</a>, <a href="https://semi.euiyun.com/memory/chapters/reliability.html">메모리 신뢰성</a>.</p></div>
+    <div class="drill" id="drill-ox" data-title="EOT · FN · STM 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="stm">
+    <h2>주사 터널링 현미경</h2>
+    <p>날카로운 금속 바늘을 시료 표면에서 1 nm 이내로 가져가고 0.01–1 V를 걸면, 진공 틈을 지나는 터널링 전류(pA–nA)가 흐른다. 장벽 높이는 대략 두 일함수의 평균 \(\phi\)(4–5 eV)이고, 전류는 간격 \(d\)에 지수적으로 민감하다.</p>
+    <div class="formula">$$I \propto V\,e^{-2\kappa d}, \qquad \kappa = \frac{\sqrt{2m_e\phi}}{\hbar} = \sqrt{\frac{\phi\,[\text{eV}]}{0.0381}}\ \text{nm}^{-1}$$<div class="where">\(\phi = 4.5\) eV이면 \(\kappa = 10.9\) nm⁻¹, \(2\kappa = 21.7\) nm⁻¹: 간격이 0.1 nm 바뀔 때 전류는 \(e^{2.17} = 8.8\)배 — 약 한 자릿수.</div></div>
+    <p>이 극단적 민감도 덕분에 바늘 끝의 맨 앞 원자 하나가 전류 대부분을 나른다. 비니히와 로러는 1981년 이 <span class="term">주사 터널링 현미경</span><span class="en">(scanning tunneling microscope, STM)</span>을 만들어 1983년 Si(111) 7×7 재구성 표면의 원자 배열을 실공간에서 처음 보였고, 1986년 노벨 물리학상을 받았다. 보통은 전류를 일정하게 유지하도록 압전 소자가 바늘 높이를 되먹임 제어하고(정전류 모드), 그 높이 신호가 곧 표면 지형이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="STM의 구성: 바늘, 압전 스캐너, 되먹임 회로, 시료 원자">
+        <rect x="320" y="20" width="160" height="40" rx="6" fill="var(--surface)" stroke="var(--border)"/><text class="t" x="400" y="45" text-anchor="middle" font-size="13">압전 스캐너 (x, y, z)</text>
+        <path d="M380,60 L420,60 L405,170 L400,182 L395,170z" fill="var(--text-dim)" opacity=".75"/>
+        <circle cx="400" cy="186" r="6" fill="var(--warn)"/>
+        <g fill="var(--accent)" opacity=".85"><circle cx="250" cy="222" r="16"/><circle cx="290" cy="222" r="16"/><circle cx="330" cy="222" r="16"/><circle cx="370" cy="222" r="16"/><circle cx="410" cy="222" r="16"/><circle cx="450" cy="222" r="16"/><circle cx="490" cy="222" r="16"/><circle cx="530" cy="222" r="16"/></g>
+        <line x1="400" y1="192" x2="400" y2="206" stroke="var(--accent-2)" stroke-width="2.5" stroke-dasharray="2 2"/>
+        <text class="t-acc" x="412" y="203" font-size="12">d ≈ 0.5–1 nm</text>
+        <rect x="600" y="90" width="170" height="70" rx="8" fill="var(--surface)" stroke="var(--border)"/><text class="t" x="685" y="118" text-anchor="middle" font-size="13">전류 증폭 · 되먹임</text><text class="t-dim" x="685" y="140" text-anchor="middle" font-size="12">I를 일정하게 → z 조절</text>
+        <path d="M600,125 L470,125 L470,40 L480,40" stroke="var(--text-dim)" fill="none" stroke-width="1.5"/>
+        <path d="M685,160 L685,230 L560,230" stroke="var(--text-dim)" fill="none" stroke-width="1.5"/>
+        <text class="t-dim" x="120" y="150" font-size="12">바이어스 V</text>
+        <path d="M150,160 L150,222 L230,222" stroke="var(--text-dim)" fill="none" stroke-width="1.5"/>
+        <path d="M150,140 L150,40 L320,40" stroke="var(--text-dim)" fill="none" stroke-width="1.5"/>
+      </svg>
+      <figcaption>STM의 구성. 바늘과 시료 사이 진공 틈이 터널 장벽이다. 되먹임 회로가 전류를 일정하게 유지하도록 바늘 높이 z를 조절하며, z(x, y)를 기록하면 원자 지형이 된다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-stm">
+      <p>장벽 높이(평균 일함수) <span class="tn" data-var="phi" data-min="2" data-max="6" data-step="0.1" data-unit=" eV">4.5</span>에서 간격을 <span class="tn" data-var="dd" data-min="0.01" data-max="0.5" data-step="0.01" data-unit=" nm">0.10</span> 줄이면 전류는 <span class="tn-out" data-out="r"></span>배가 된다. 전류를 1% 정밀도로 일정하게 유지하면 높이 분해능은 <span class="tn-out" data-out="z"></span>이다.</p>
+    </div>
+    <div class="sim" id="sim-stm">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>STM 바늘 조종: 정높이 vs 정전류</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-stm"></canvas><span class="hint top">바늘 끝의 흰 점을 끌어 높이·위치를 바꾼다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="sm-mode"><button data-value="h" class="on">정높이(손으로)</button><button data-value="c">정전류(되먹임 주사)</button></div></div>
+          <label class="ctrl"><span>설정 전류 <output id="sm-i-out"></output></span><input type="range" id="sm-i" min="0.1" max="5" step="0.1" value="1"></label>
+          <label class="ctrl"><span>장벽 높이 φ <output id="sm-p-out"></output></span><input type="range" id="sm-p" min="2" max="6" step="0.1" value="4.5"></label>
+          <label class="check"><input type="checkbox" id="sm-defect" checked> 원자 빈자리 하나 숨기기</label>
+          <button class="btn" id="sm-reset" type="button">흔적 지우기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">간격 d</span><span class="v" id="sm-d">—</span></div>
+        <div class="stat"><span class="k">터널 전류 I</span><span class="v" id="sm-cur">—</span></div>
+        <div class="stat"><span class="k">목표: I = 설정 전류 ±10%</span><span class="v" id="sm-goal">—</span></div>
+      </div>
+      <div class="sim-note">모형: \(I = 1\,\text{nA}\times e^{-2\kappa(d-0.6\,\text{nm})}\), \(d\)는 바늘 끝에서 가장 가까운 원자 표면까지의 거리. 해볼 것: ① 정높이 모드에서 바늘을 0.1 nm 내려 전류가 약 9배 되는 것을 확인하라. ② 손으로 바늘을 움직여 설정 전류를 맞춰 보라(목표). ③ 정전류 모드를 켜면 바늘이 원자 줄을 따라 오르내리며 지형을 그린다. 숨은 빈자리를 찾아라.</div>
+    </div>
+    <div class="example" data-title="STM 전류의 민감도">
+      <p>STM에서 장벽 높이 4.5 eV, 터널 전류 1.0 nA로 주사하고 있다. 바늘이 원자 높이 단차(0.05 nm 돌출)를 만나 간격이 그만큼 줄면 전류는 얼마가 되는가? 간격 0.1 nm 변화에는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(I_2/I_1 = e^{2\kappa\Delta d}\), \(\kappa = \sqrt{4.5/0.0381}\) nm⁻¹.</div>
+        <div class="step"><b>풀이</b> \(\kappa = 10.87\) nm⁻¹, \(2\kappa = 21.7\) nm⁻¹. 0.05 nm: \(e^{1.087} = 2.96\) → 2.96 nA. 0.1 nm: \(e^{2.17} = 8.79\)배.</div>
+        <div class="answer">약 3.0 nA (0.1 nm에는 8.8배)</div>
+        <div class="step"><b>검토</b> 전류를 몇 % 정밀도로만 재도 높이를 pm(0.001 nm) 수준으로 구별할 수 있다. 원자가 보이는 이유다.</div>
+      </details>
+    </div>
+    <p>STM의 원리는 반도체 계측에도 쓰인다. 전도성 AFM(C-AFM)은 바늘로 얇은 산화막을 국소적으로 눌러 터널링 전류 지도를 그려 산화막의 약한 점(누설 경로)을 찾고, 주사 터널링 분광(STS)은 \(dI/dV\)로 표면의 국소 상태 밀도와 띠 간격을 잰다. 원자 단위 소자 연구(실리콘 속 인 원자 하나를 STM 리소그래피로 놓는 양자 소자)도 이 바늘로 이루어진다.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>계단 퍼텐셜에서 \(E>V_0\)이어도 \(R = ((k-k')/(k+k'))^2\)만큼 반사되고, \(E\lt V_0\)이면 전부 반사되지만 파동함수가 침투 깊이 \(\delta = 1/\kappa = \hbar/\sqrt{2m(V_0-E)}\)만큼 스며든다.</li>
+      <li>사각 장벽의 투과 확률은 \(T = [1 + V_0^2\sinh^2\kappa a/4E(V_0-E)]^{-1}\), 두꺼우면 \(T\approx16\frac{E}{V_0}(1-\frac{E}{V_0})e^{-2\kappa a}\). 폭·장벽 높이·질량에 지수적으로 민감하다. \(E>V_0\)에서는 \(k'a = n\pi\)일 때 \(T = 1\)(공명).</li>
+      <li>전달 행렬법은 층마다 진폭 쌍을 두고 경계에서 \(\psi\), \((1/m)\psi'\) 연속을 2×2 행렬로 이어 임의 다층 구조의 \(T(E)\)를 준다. 이중 장벽은 우물 준위에서 \(T = 1\)인 공명을 보이며, RTD의 부성 저항이 여기서 나온다.</li>
+      <li>WKB 근사: \(T\approx\exp(-2\int\kappa\,dx)\). 삼각 장벽은 \(\exp(-4\sqrt{2m}\phi_B^{3/2}/3\hbar qF)\)이고, 쿨롱 장벽은 알파 붕괴 반감기의 엄청난 범위를 설명한다(가모프).</li>
+      <li>게이트 산화막의 직접 터널링(사다리꼴)은 SiO₂ 0.2 nm마다 약 10배씩 늘어난다. 같은 EOT \(= t\cdot3.9/\varepsilon_r\)에서 물리적으로 두꺼운 high-k(HfO₂)를 쓰는 것이 해법이며, 성능 지수는 \(\varepsilon_r\sqrt{m_\text{ox}\phi_B}\)다.</li>
+      <li>FN 터널링(삼각 장벽): \(J = AF^2e^{-B/F}\), SiO₂에서 \(B = 241.6\) MV/cm. \(\ln(J/F^2)\)–\(1/F\) 직선의 기울기에서 장벽 높이를 얻는다. 플래시 메모리는 약 10 MV/cm의 FN 터널링으로 프로그램·소거한다.</li>
+      <li>STM 전류 \(I\propto e^{-2\kappa d}\)는 일함수 4–5 eV에서 간격 0.1 nm마다 약 한 자릿수 바뀌어 원자 분해능을 준다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 \(\hbar^2/2m_e = 0.0381\) eV·nm², \(q = 1.602\times10^{-19}\) C, \(\varepsilon_0 = 8.854\times10^{-12}\) F/m를 쓴다. SiO₂: \(\varepsilon_r = 3.9\), \(\phi_B = 3.1\) eV, \(m_\text{ox} = 0.42m_e\), FN 상수 \(A = 1.18\times10^{-6}\) A/V², \(B = 2.416\times10^{10}\) V/m. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="침투 깊이" data-answer="0.276" data-label="δ =" data-unit="nm">
+        <div class="prob-q"><p>자유 전자가 에너지보다 0.50 eV 높은 계단 퍼텐셜에 들어간다. 침투 깊이 \(\delta = 1/\kappa\)는?</p></div>
+        <div class="prob-sol"><p>\(\kappa = \sqrt{0.50/0.0381} = 3.62\) nm⁻¹, \(\delta = 0.276\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="계단 반사" data-answer="0.0294" data-label="R =">
+        <div class="prob-q"><p>에너지가 계단 높이의 두 배(\(E = 2V_0\))인 전자의 반사 확률은?</p></div>
+        <div class="prob-hint">\(k'/k = \sqrt{(E-V_0)/E} = 1/\sqrt2\).</div>
+        <div class="prob-sol"><p>\(R = \left(\dfrac{1-0.7071}{1+0.7071}\right)^2 = (0.1716)^2 = 0.0294\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="EOT" data-answer="0.468" data-label="EOT =" data-unit="nm">
+        <div class="prob-q"><p>두께 3.0 nm의 HfO₂(\(\varepsilon_r = 25\)) 게이트 절연막의 EOT는?</p></div>
+        <div class="prob-sol"><p>\(\text{EOT} = 3.0\times3.9/25 = 0.468\) nm. 실제로는 계면층 때문에 이보다 크다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="사각 장벽 정확해" data-answer="0.605" data-label="T =">
+        <div class="prob-q"><p>GaAs 속 전자(\(m^* = 0.067m_e\), \(E = 0.20\) eV)가 높이 0.50 eV, 폭 1.0 nm의 AlGaAs 장벽을 만난다(질량 차이는 무시). 정확한 식으로 투과 확률을 구하라. 두꺼운 장벽 근사는 왜 여기서 맞지 않는가?</p></div>
+        <div class="prob-hint">\(\kappa = \sqrt{0.067\times0.30/0.0381}\) nm⁻¹. \(\kappa a\)가 1보다 작은지 보라.</div>
+        <div class="prob-sol"><p>\(\kappa = 0.726\) nm⁻¹, \(\kappa a = 0.726\), \(\sinh^2(0.726) = 0.630\). \(T = [1 + 0.25(0.630)/(4\times0.20\times0.30)]^{-1} = [1+0.656]^{-1} = 0.605\). 근사식은 \(16(0.4)(0.6)e^{-1.45} = 0.898\)로 크게 틀린다 — \(\kappa a \gg 1\)이 아니기 때문이다. 가벼운 유효 질량은 같은 폭의 장벽을 훨씬 "얇게" 만든다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="두께와 누설" data-answer="0.0965" data-label="T(1.2)/T(1.0) =">
+        <div class="prob-q"><p>SiO₂ 장벽(평탄 띠, 사각 근사, \(V_0-E = 3.1\) eV)의 두께를 1.0 nm에서 1.2 nm로 늘리면 투과 확률은 몇 배가 되는가?</p></div>
+        <div class="prob-sol"><p>\(\kappa = 5.846\) nm⁻¹, 비 \(= e^{-2(5.846)(0.2)} = e^{-2.338} = 0.0965\). 약 10분의 1.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="공명 투과" data-answer="0.356" data-label="E₁ =" data-unit="eV">
+        <div class="prob-q"><p>GaAs 전자(\(m^* = 0.067m_e\))가 높이 0.30 eV, 폭 10 nm의 장벽 위를 지난다. 반사가 0이 되는 가장 낮은 에너지는?</p></div>
+        <div class="prob-sol"><p>\(E_1 = V_0 + (0.0381/0.067)(\pi/10)^2 = 0.30 + 0.0561 = 0.356\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="FN 터널 거리" data-answer="3.88" data-label="d =" data-unit="nm">
+        <div class="prob-q"><p>SiO₂ 산화막에 8.0 MV/cm의 전기장이 걸렸다. Si 전자가 지나야 하는 삼각 장벽의 폭은?</p></div>
+        <div class="prob-sol"><p>8.0 MV/cm = 0.80 V/nm. \(d = 3.1/0.80 = 3.875\) nm ≈ 3.88 nm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="FN 전류" data-answer="0.0413" data-label="J =" data-unit="A/cm²">
+        <div class="prob-q"><p>SiO₂에 11 MV/cm의 전기장이 걸렸을 때 FN 전류 밀도를 A/cm² 단위로 구하라.</p></div>
+        <div class="prob-sol"><p>\(F = 1.1\times10^9\) V/m. \(J = (1.18\times10^{-6})(1.21\times10^{18})e^{-24.16/1.1} = 1.43\times10^{12}\times e^{-21.97} = 4.13\times10^{2}\) A/m² \(= 0.0413\) A/cm².</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="FN 플롯" data-answer="3.26" data-label="φB =" data-unit="eV">
+        <div class="prob-q"><p>어떤 산화막의 FN 플롯 \(\ln(J/F^2)\)–\(1/F\)의 기울기가 \(-2.60\times10^{10}\) V/m였다. \(m_\text{ox} = 0.42m_e\)로 가정할 때 장벽 높이는? (3.1 eV에서 \(B = 2.416\times10^{10}\) V/m)</p></div>
+        <div class="prob-hint">\(B\propto\phi_B^{3/2}\).</div>
+        <div class="prob-sol"><p>\(\phi_B = 3.1\times(2.60/2.416)^{2/3} = 3.1\times1.050 = 3.26\) eV. 질량 가정이 틀리면 \(\phi_B\)도 틀린다(\(B\propto\sqrt{m}\phi_B^{3/2}\)) — 그래서 FN 분석은 보통 \(m_\text{ox}\)와 \(\phi_B\)를 함께 맞춘다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="STM" data-answer="7.76" data-label="I₂/I₁ =">
+        <div class="prob-q"><p>장벽 높이 4.0 eV인 STM에서 바늘이 0.10 nm 가까워지면 전류는 몇 배가 되는가?</p></div>
+        <div class="prob-sol"><p>\(\kappa = \sqrt{4.0/0.0381} = 10.25\) nm⁻¹, \(e^{2(10.25)(0.10)} = e^{2.049} = 7.76\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="RTD 봉우리 전압" data-answer="0.449" data-label="Vp ≈" data-unit="V">
+        <div class="prob-q"><p>GaAs 우물(폭 5.0 nm, \(m^* = 0.067m_e\))의 첫 준위를 무한 우물로 근사하고, 전압이 구조에 고르게 걸려 준위가 \(V/2\)만큼 내려온다고 할 때 RTD의 봉우리 전압(준위가 이미터 띠 바닥에 닿는 전압)을 추정하라.</p></div>
+        <div class="prob-sol"><p>\(E_1 = (0.0381/0.067)(\pi/5.0)^2 = 0.2245\) eV, \(V_p \approx 2E_1/q = 0.449\) V. 유한한 장벽(0.3 eV)에서는 준위가 0.09 eV 근처로 훨씬 낮아 봉우리가 약 0.15–0.2 V에 온다(시뮬레이터). 무한 우물 근사는 얕은 우물에서 크게 과대평가한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="오믹 접촉" data-answer="2.79" data-label="W =" data-unit="nm">
+        <div class="prob-q"><p>금속–Si 접촉의 장벽 0.60 V, 도핑 \(N_D = 1.0\times10^{20}\) cm⁻³일 때 공핍층 폭 \(W = \sqrt{2\varepsilon_s\phi_B/qN_D}\)는? (\(\varepsilon_s = 11.7\varepsilon_0\))</p></div>
+        <div class="prob-sol"><p>\(W = \sqrt{2(11.7)(8.854\times10^{-12})(0.60)/(1.602\times10^{-19}\times10^{26})} = 2.79\times10^{-9}\) m = 2.79 nm. 이 정도면 전자가 장벽을 터널링해 저항이 작은 오믹 접촉이 된다. \(10^{17}\) cm⁻³이면 88 nm로 터널링이 불가능하다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="알파 붕괴" data-answer="56" data-tol="2%" data-label="Δ(2G) =">
+        <div class="prob-q"><p>가모프 모형으로 ²³⁸U(\(E = 4.27\) MeV)와 ²¹²Po(\(E = 8.95\) MeV)의 지수 \(2G\)를 구했더니 각각 88.0과 32.3이었다. 두 지수의 차이는? 두드림 빈도가 비슷하다면 반감기 비는 대략 \(e^{\Delta(2G)}\)이다. 실제 반감기 비(\(1.41\times10^{17}\) s / \(2.94\times10^{-7}\) s)와 비교하라.</p></div>
+        <div class="prob-sol"><p>\(\Delta(2G) = 88.0 - 32.3 = 55.7 \approx 56\). \(e^{55.7} = 1.6\times10^{24}\). 실제 비는 \(4.8\times10^{23}\)으로, 24자릿수에 걸친 비를 3배 이내로 맞혔다(두드림 빈도 차이 약 1.5배도 같은 방향으로 작용한다).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="고전 vs 양자">
+        <div class="prob-q"><p>에너지가 장벽 높이보다 <em>큰</em> 전자가 사각 장벽을 만났다. 양자 역학의 예측으로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>항상 100% 통과한다.</button><button data-correct>대개 일부가 반사되며, 특정 에너지에서만 반사가 0이 된다.</button><button>항상 절반이 반사된다.</button><button>장벽 안에서 파동함수가 지수적으로 감소한다.</button></div>
+        <div class="prob-sol"><p>\(E>V_0\)에서 \(T = [1 + V_0^2\sin^2(k'a)/4E(E-V_0)]^{-1}\le1\)이고, \(k'a = n\pi\)일 때만 1이다. 장벽 안의 파동은 진동한다(지수 감소는 \(E\lt V_0\)일 때).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="high-k 선택">
+        <div class="prob-q"><p>같은 EOT에서 직접 터널링 누설을 가장 많이 줄이는 절연막의 조건은? (\(t_\text{phys} = \text{EOT}\cdot\varepsilon_r/3.9\))</p></div>
+        <div class="prob-choices"><button>장벽 높이 \(\phi_B\)만 큰 것</button><button>유전율만 큰 것</button><button data-correct>\(\varepsilon_r\sqrt{m_\text{ox}\phi_B}\)가 큰 것</button><button>띠 간격이 작은 것</button></div>
+        <div class="prob-sol"><p>WKB 지수 \(2\kappa t_\text{phys} \propto \sqrt{m_\text{ox}\phi_B}\cdot\text{EOT}\,\varepsilon_r\). 유전율이 커도 장벽이 너무 낮으면(예: TiO₂, \(\varepsilon_r\approx80\)이지만 \(\phi_B\)가 거의 0) 쓸 수 없다. HfO₂는 균형이 좋다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>장벽의 폭을 두 배로 하면 (두꺼운 장벽에서) 투과 확률은?</p><div class="opts">
+        <button class="opt">반으로 준다</button><button class="opt">1/4로 준다</button><button class="opt" data-correct>원래 값의 대략 제곱(×e<sup>−2κa</sup>)으로 준다</button><button class="opt">변하지 않는다</button>
+      </div><div class="quiz-exp">\(T\propto e^{-2\kappa a}\) → \(e^{-2\kappa(2a)} = (e^{-2\kappa a})^2\). \(T = 10^{-4}\)이던 장벽은 약 \(10^{-8}\)이 된다.</div></div>
+      <div class="quiz-q"><p>전자 대신 같은 에너지의 양성자(질량 1836배)가 같은 장벽을 만나면 \(\kappa\)는?</p><div class="opts">
+        <button class="opt">1836배</button><button class="opt" data-correct>약 43배 (√1836)</button><button class="opt">같다</button><button class="opt">1/43배</button>
+      </div><div class="quiz-exp">\(\kappa\propto\sqrt m\)이므로 \(\sqrt{1836} = 42.8\)배. 지수 안에 들어가므로 무거운 입자의 터널링은 사실상 불가능해진다 — 원자 전체가 산화막을 터널링하지 않는 이유다.</div></div>
+      <div class="quiz-q"><p>FN 플롯에서 직선이 되도록 그리는 두 축은?</p><div class="opts">
+        <button class="opt">\(\ln J\)–\(F\)</button><button class="opt" data-correct>\(\ln(J/F^2)\)–\(1/F\)</button><button class="opt">\(J\)–\(F^2\)</button><button class="opt">\(\ln J\)–\(\ln F\)</button>
+      </div><div class="quiz-exp">\(J = AF^2e^{-B/F}\)이므로 \(\ln(J/F^2) = \ln A - B/F\). 기울기가 \(-B\)다.</div></div>
+      <div class="quiz-q"><p>대칭 이중 장벽의 각 장벽 투과 확률이 \(10^{-3}\)이다. 공명 에너지에서 전체 투과 확률은?</p><div class="opts">
+        <button class="opt">\(10^{-6}\)</button><button class="opt">\(10^{-3}\)</button><button class="opt">\(2\times10^{-3}\)</button><button class="opt" data-correct>1</button>
+      </div><div class="quiz-exp">우물 속 왕복 파동의 간섭으로 반사파가 상쇄된다(파브리–페로). 공명에서 벗어나면 약 \(10^{-6}\)이다.</div></div>
+      <div class="quiz-q"><p>45 nm 노드에서 SiO₂를 HfO₂로 바꾼 가장 직접적인 이유는?</p><div class="opts">
+        <button class="opt">HfO₂의 장벽이 더 높아서</button><button class="opt" data-correct>같은 커패시턴스(EOT)를 물리적으로 훨씬 두꺼운 막으로 만들어 직접 터널링을 줄이려고</button><button class="opt">HfO₂의 띠 간격이 더 커서</button><button class="opt">HfO₂가 Si와 계면 특성이 더 좋아서</button>
+      </div><div class="quiz-exp">HfO₂는 장벽(1.5 eV)과 띠 간격(5.8 eV)이 SiO₂보다 작고 계면도 나쁘다. 그래도 유전율이 6배 넘게 커서 같은 EOT에서 6배 두껍게 만들 수 있고, 터널링 지수의 이득이 손해보다 크다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const C0 = Q.const.C, cx = Q.cx;
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  function sci(x, d = 2) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    const e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e < 3) return Number(x.toPrecision(d + 1)).toString();
+    let m = x / Math.pow(10, e);
+    if (Math.abs(m) >= 9.995) { m /= 10; return m.toFixed(d) + "×10" + sup(e + 1); }
+    return m.toFixed(d) + "×10" + sup(e);
+  }
+  function handle(ctx, x, y, col) {
+    ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col || SB.color("accent"); ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  const font = (px) => px + "px " + SB.color("font");
+  const kap = (dV, m = 1) => Math.sqrt(Math.max(0, dV) * m / C0);
+
+  /* ---------------------------------------------------------- 머리 애니메이션: 파속과 장벽 */
+  {
+    const N = 500, g = Q.grid(-15, 15, N), dt = 0.04;
+    const st = { V0: 1.2, a: 0.5, E0: 1.0, t: 0 };
+    const V = new Float64Array(N);
+    const buildV = () => { for (let i = 0; i < N; i++) V[i] = g.x[i] >= 0 && g.x[i] < st.a ? st.V0 : 0; };
+    buildV();
+    const P = Q.propagator(V, g.dx, dt, {});
+    let psi = null;
+    const launch = () => { psi = Q.gaussian(g.x, -7, 1.4, Q.kOfE(st.E0)); st.t = 0; };
+    launch();
+    let map = null;
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const Pl = pal(), pad = 10;
+      const X = (x) => pad + ((x + 15) / 30) * (w - 2 * pad), Y = (E) => h - 16 - (E / 3) * (h - 34);
+      map = { X, Y, ix: (px) => -15 + ((px - pad) / (w - 2 * pad)) * 30, iy: (py) => ((h - 16 - py) / (h - 34)) * 3 };
+      ctx.fillStyle = SB.color("accent-soft") || Pl.surface;
+      ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = Pl.accent2; ctx.fillRect(X(0), Y(st.V0), X(st.a) - X(0), Y(0) - Y(st.V0)); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-15), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.lineTo(X(0), Y(st.V0)); ctx.lineTo(X(st.a), Y(st.V0)); ctx.lineTo(X(st.a), Y(0)); ctx.lineTo(X(15), Y(0)); ctx.stroke();
+      SB.dashLine(ctx, X(-15), Y(st.E0), X(15), Y(st.E0), Pl.faint, [5, 5]);
+      SB.label(ctx, "E = " + st.E0.toFixed(1) + " eV", X(-13), Y(st.E0) - 10, { size: 11, color: Pl.dim, align: "left" });
+      const sc = (0.62 * (h - 34)) / 0.285;
+      ctx.beginPath(); ctx.moveTo(X(g.x[0]), Y(0));
+      let right = 0;
+      for (let i = 0; i < N; i++) { const p = psi.re[i] * psi.re[i] + psi.im[i] * psi.im[i]; if (g.x[i] >= st.a) right += p * g.dx; ctx.lineTo(X(g.x[i]), Y(0) - p * sc); }
+      ctx.lineTo(X(g.x[N - 1]), Y(0)); ctx.closePath();
+      ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = Pl.accent; ctx.fill(); ctx.restore();
+      ctx.strokeStyle = Pl.accent; ctx.lineWidth = 1.8; ctx.stroke();
+      SB.label(ctx, `V₀ = ${st.V0.toFixed(2)} eV, a = ${st.a.toFixed(2)} nm`, X(st.a) + 8, Y(st.V0) - 14, { size: 11, align: "left", color: Pl.dim });
+      SB.label(ctx, `오른쪽으로 새어 나간 확률 ${(right * 100).toFixed(1)}%   (이론 T = ${(Q.barrierT(st.E0, st.V0, st.a) * 100).toFixed(1)}%)`, w / 2, 14, { size: 12, color: Pl.text });
+      handle(ctx, X(st.a), Y(st.V0));
+      self._h = [X(st.a), Y(st.V0)];
+    }, { aspect: 0.32, minHeight: 190, maxHeight: 290 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "b", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "b" || !map) return; st.a = SB.clamp(Math.round(map.ix(x) * 20) / 20, 0.1, 2); st.V0 = SB.clamp(Math.round(map.iy(y) * 20) / 20, 0.2, 2.8); buildV(); P.setV(V); },
+    });
+    SB.loop("hero", () => { P.step(psi.re, psi.im, 5); st.t += 5 * dt; if (st.t > 31) launch(); cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 계단 퍼텐셜 미니 */
+  {
+    const V0 = 1;
+    const st = { E: 1.5, ph: 0 };
+    let map = null;
+    function wave(x) {
+      const k = Math.sqrt(st.E / C0);
+      if (st.E > V0) {
+        const k2 = Math.sqrt((st.E - V0) / C0), r = (k - k2) / (k + k2), t = (2 * k) / (k + k2);
+        return x < 0 ? cx.add(cx.exp(cx.cx(0, k * x)), cx.mul(cx.cx(r), cx.exp(cx.cx(0, -k * x)))) : cx.mul(cx.cx(t), cx.exp(cx.cx(0, k2 * x)));
+      }
+      const q = Math.sqrt((V0 - st.E) / C0), r = cx.div(cx.cx(k, -q), cx.cx(k, q)), t = cx.div(cx.cx(2 * k), cx.cx(k, q));
+      return x < 0 ? cx.add(cx.exp(cx.cx(0, k * x)), cx.mul(r, cx.exp(cx.cx(0, -k * x)))) : cx.mul(t, cx.cx(Math.exp(-q * x)));
+    }
+    const R = (e) => (e <= V0 ? 1 : Q.stepR(e, V0));
+    const out = () => {
+      const r = R(st.E), dd = st.E < V0 ? (1 / kap(V0 - st.E)).toFixed(3) + " nm" : "—";
+      document.getElementById("st-r").textContent = `E = ${st.E.toFixed(2)} eV · R = ${r.toFixed(3)} · T = ${(1 - r).toFixed(3)} · δ = ${dd}`;
+    };
+    const cv = SB.canvas("cv-step", (ctx, w, h, self) => {
+      const Pl = pal(), prob = document.getElementById("st-prob").checked;
+      const th = h * 0.58, pad = 12;
+      const X = (x) => pad + ((x + 3) / 6) * (w - 2 * pad), Y = (E) => th - 10 - (E / 2.6) * (th - 24);
+      map = { iy: (py) => ((th - 10 - py) / (th - 24)) * 2.6 };
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = Pl.accent2; ctx.fillRect(X(0), Y(V0), X(3) - X(0), Y(0) - Y(V0)); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-3), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.lineTo(X(0), Y(V0)); ctx.lineTo(X(3), Y(V0)); ctx.stroke();
+      SB.label(ctx, "V₀ = 1 eV", X(2.4), Y(V0) - 10, { size: 11, color: Pl.dim });
+      SB.dashLine(ctx, X(-3), Y(st.E), X(3), Y(st.E), Pl.faint);
+      const amp = 0.28, ph = cx.exp(cx.cx(0, -st.ph));
+      ctx.strokeStyle = Pl.accent; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i <= 400; i++) {
+        const x = -3 + (6 * i) / 400, v = wave(x), y = prob ? cx.abs2(v) * amp * 0.5 : cx.mul(v, ph).re * amp;
+        const py = Y(st.E + y); i ? ctx.lineTo(X(x), py) : ctx.moveTo(X(x), py);
+      }
+      ctx.stroke();
+      handle(ctx, X(-2.6), Y(st.E));
+      self._h = [X(-2.6), Y(st.E)];
+      const ch = SB.chart(ctx, { x: 58, y: th + 14, w: w - 76, h: h - th - 52 }, { x: [0, 3], y: [0, 1.05], xLabel: "E / V₀", yLabel: "R",
+        series: [{ data: Array.from({ length: 301 }, (_, i) => [i / 100, R(i / 100 + 1e-9)]), color: Pl.accent2 }],
+        points: [{ x: st.E / V0, y: R(st.E), color: Pl.accent, r: 6 }], vlines: [{ x: 1, color: Pl.faint }] });
+      void ch;
+    }, { aspect: 0.8, minHeight: 360, maxHeight: 520 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "e", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "e" || !map) return; st.E = SB.clamp(Math.round(map.iy(y) * 100) / 100, 0.05, 2.5); out(); } });
+    document.getElementById("st-prob").addEventListener("change", () => cv.redraw());
+    const loop = SB.loop("mini-step", (dt) => { st.ph += dt * 3; cv.redraw(); });
+    SB.play("st-play", loop);
+    out();
+  }
+
+  /* ---------------------------------------------------------- 침투 깊이 드래그 숫자 */
+  SB.tangle("tg-depth", (v) => {
+    const k = kap(v.dv, v.m), d = 1 / k, p = Math.exp(-2 * k * 0.5);
+    return { k: k.toFixed(2) + " nm⁻¹", d: d.toFixed(3) + " nm", p: sci(p, 2),
+      msg: d > 0.543 ? "침투 깊이가 Si 격자 상수(0.543 nm)보다 길다 — 얇은 장벽은 쉽게 뚫린다." : `Si 격자 상수(0.543 nm)의 ${(d / 0.543 * 100).toFixed(0)}% 정도다.` };
+  });
+
+  /* ---------------------------------------------------------- 두꺼운 장벽 근사 드래그 숫자 */
+  {
+    let vals = null, cv = null;
+    const approx = (e, v0, a, m) => 16 * (e / v0) * (1 - e / v0) * Math.exp(-2 * kap(v0 - e, m) * a);
+    SB.tangle("tg-thick", (v) => {
+      vals = v;
+      if (v.e >= v0Guard(v)) return { ka: "—", te: Q.barrierT(v.e, v.v0, v.a, v.m).toFixed(3), ta: "해당 없음", err: "E ≥ V₀: 장벽 위", f: (Q.barrierT(v.e, v.v0, v.a + 0.1, v.m) / Q.barrierT(v.e, v.v0, v.a, v.m)).toFixed(2) };
+      const k = kap(v.v0 - v.e, v.m), te = Q.barrierT(v.e, v.v0, v.a, v.m), ta = approx(v.e, v.v0, v.a, v.m);
+      return { ka: (2 * k * v.a).toFixed(2), te: sci(te, 2), ta: sci(ta, 2), err: "오차 " + (((ta - te) / te) * 100).toFixed(1) + "%", f: sci(Q.barrierT(v.e, v.v0, v.a + 0.1, v.m) / te, 2) };
+    }, { onChange: () => cv && cv.redraw() });
+    function v0Guard(v) { return v.v0; }
+    cv = SB.canvas("cv-thick", (ctx) => {
+      if (!vals) return;
+      const Pl = pal(), v = vals, ex = [], ap = [];
+      for (let i = 1; i <= 160; i++) { const a = (i / 160) * 4; ex.push([a, Q.barrierT(v.e, v.v0, a, v.m)]); if (v.e < v.v0) ap.push([a, Math.min(4, approx(v.e, v.v0, a, v.m))]); }
+      SB.chart(ctx, null, { x: [0, 4], y: [1e-12, 1], logY: true, xLabel: "장벽 폭 a (nm)", yLabel: "T", series: [{ data: ex, color: Pl.accent }, { data: ap, color: Pl.accent2, dash: [5, 4] }], points: [{ x: v.a, y: Math.max(1e-12, Q.barrierT(v.e, v.v0, v.a, v.m)), r: 6, color: Pl.accent, label: "정확(실선) · 근사(점선)" }] });
+    }, { aspect: 0.34, minHeight: 170, maxHeight: 240 });
+  }
+
+  /* ---------------------------------------------------------- 사각 장벽 미니: 정상 상태 */
+  {
+    const st = { V0: 1.0, a: 0.8 };
+    let map = null;
+    const getE = SB.range("bt-e", (v) => v.toFixed(2) + " eV", () => { cv.redraw(); out(); });
+    function out() {
+      const E = getE(), T = Q.transfer(E, [{ V: st.V0, w: st.a }]).T;
+      let s = `T = ${sci(T, 3)}`;
+      if (E < st.V0) { const k = kap(st.V0 - E); s += ` · 근사 ${sci(16 * (E / st.V0) * (1 - E / st.V0) * Math.exp(-2 * k * st.a), 3)} · 2κa = ${(2 * k * st.a).toFixed(2)}`; }
+      else s += ` · k′a/π = ${(Math.sqrt((E - st.V0) / C0) * st.a / Math.PI).toFixed(2)}`;
+      document.getElementById("bt-r").textContent = s;
+    }
+    const cv = SB.canvas("cv-barrier", (ctx, w, h, self) => {
+      const Pl = pal(), E = getE(), pad = 12;
+      const X = (x) => pad + ((x + 2.5) / 6.5) * (w - 2 * pad), Y = (e) => h - 14 - (e / 3.4) * (h - 28);
+      map = { ix: (px) => -2.5 + ((px - pad) / (w - 2 * pad)) * 6.5, iy: (py) => ((h - 14 - py) / (h - 28)) * 3.4 };
+      const r = Q.transfer(E, [{ V: st.V0, w: st.a }]);
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = Pl.accent2; ctx.fillRect(X(0), Y(st.V0), X(st.a) - X(0), Y(0) - Y(st.V0)); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-2.5), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.lineTo(X(0), Y(st.V0)); ctx.lineTo(X(st.a), Y(st.V0)); ctx.lineTo(X(st.a), Y(0)); ctx.lineTo(X(4), Y(0)); ctx.stroke();
+      SB.dashLine(ctx, X(-2.5), Y(E), X(4), Y(E), Pl.faint);
+      const sc = 0.16, pts = [];
+      for (let i = 0; i <= 500; i++) { const x = -2.5 + (6.5 * i) / 500; pts.push([x, r.psi(x)]); }
+      ctx.beginPath(); ctx.moveTo(X(-2.5), Y(E));
+      pts.forEach(([x, v]) => ctx.lineTo(X(x), Y(E + cx.abs2(v) * sc)));
+      ctx.lineTo(X(4), Y(E)); ctx.closePath(); ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = Pl.accent; ctx.fill(); ctx.restore();
+      if (document.getElementById("bt-re").checked) { ctx.strokeStyle = Pl.accent; ctx.lineWidth = 1.6; ctx.beginPath(); pts.forEach(([x, v], i) => { const py = Y(E + v.re * sc * 1.6); i ? ctx.lineTo(X(x), py) : ctx.moveTo(X(x), py); }); ctx.stroke(); }
+      SB.label(ctx, `V₀ = ${st.V0.toFixed(2)} eV · a = ${st.a.toFixed(2)} nm`, X(st.a) + 8, Y(st.V0) - 12, { size: 11, align: "left", color: Pl.dim });
+      handle(ctx, X(st.a / 2), Y(st.V0)); handle(ctx, X(st.a), Y(st.V0 / 2), Pl.accent2);
+      self._hv = [X(st.a / 2), Y(st.V0)]; self._hw = [X(st.a), Y(st.V0 / 2)];
+    }, { aspect: 0.48, minHeight: 230, maxHeight: 330 });
+    SB.drag(cv, {
+      handles: () => (cv._hv ? [{ id: "v", x: cv._hv[0], y: cv._hv[1], r: 13 }, { id: "w", x: cv._hw[0], y: cv._hw[1], r: 13 }] : []),
+      move: (id, x, y) => { if (!map) return; if (id === "v") st.V0 = SB.clamp(Math.round(map.iy(y) * 50) / 50, 0.1, 3.2); if (id === "w") st.a = SB.clamp(Math.round(map.ix(x) * 50) / 50, 0.1, 2.5); out(); },
+    });
+    document.getElementById("bt-re").addEventListener("change", () => cv.redraw());
+    out();
+  }
+
+  /* ---------------------------------------------------------- 파속 터널링 시뮬레이터 */
+  {
+    const N = 1000, g = Q.grid(-20, 20, N), dx = g.dx, dt = 0.05;
+    const st = { V0: 1.5, a: 0.4, shape: "1", t: 0, run: false };
+    const V = new Float64Array(N);
+    let psi = null, map = null;
+    const snap = (v) => Math.max(1, Math.round(v / dx)) * dx;
+    function layers() {
+      const a = snap(st.a);
+      if (st.shape === "2") return [{ V: st.V0, w: a }, { V: 0, w: snap(1.5) }, { V: st.V0, w: a }];
+      if (st.shape === "w") return [{ V: -st.V0, w: a }];
+      return [{ V: st.V0, w: a }];
+    }
+    const span = () => layers().reduce((s, l) => s + l.w, 0);
+    function buildV() {
+      const ls = layers(); V.fill(0);
+      let x0 = 0; ls.forEach((l) => { for (let i = 0; i < N; i++) if (g.x[i] >= x0 - 1e-9 && g.x[i] < x0 + l.w - 1e-9) V[i] = l.V; x0 += l.w; });
+    }
+    buildV();
+    const P = Q.propagator(V, dx, dt, {});
+    const getE = SB.range("pk-e", (v) => v.toFixed(2) + " eV", () => { reset(); theory(); });
+    const getS = SB.range("pk-s", (v) => v.toFixed(1) + " nm", () => { reset(); theory(); });
+    SB.seg("pk-shape", (v) => { st.shape = v; buildV(); P.setV(V); reset(); theory(); });
+    document.getElementById("pk-phase").addEventListener("change", () => cv.redraw());
+    function reset() { psi = Q.gaussian(g.x, -8, getS(), Q.kOfE(getE())); st.t = 0; st.run = false; cv && cv.redraw(); SB.stat("pk-tm", "—"); SB.stat("pk-t", "0 <small>fs</small>"); }
+    function theory() {
+      const ls = layers(), E0 = getE(), k0 = Q.kOfE(E0), sk = 1 / (2 * getS());
+      SB.stat("pk-ba", `${st.shape === "w" ? "−" : ""}${st.V0.toFixed(2)} <small>eV</small>, ${snap(st.a).toFixed(2)} <small>nm</small>`);
+      SB.stat("pk-t0", Q.transfer(E0, ls).T.toFixed(4));
+      let num = 0, den = 0;
+      for (let j = -120; j <= 120; j++) { const k = k0 + (j / 120) * 4 * sk; if (k <= 0.05) continue; const wgt = Math.exp(-((k - k0) ** 2) / (2 * sk * sk)); num += wgt * Q.transfer(Q.EofK(k), ls).T; den += wgt; }
+      SB.stat("pk-ta", (num / den).toFixed(4));
+    }
+    psi = Q.gaussian(g.x, -8, 2, Q.kOfE(1));
+    const cv = SB.canvas("cv-packet", (ctx, w, h, self) => {
+      const Pl = pal(), padL = 12, padR = 40, E0 = getE(), well = st.shape === "w";
+      const e0 = well ? -2.6 : -0.15, e1 = 3.3;
+      const X = (x) => padL + ((x + 20) / 40) * (w - padL - padR), Y = (E) => h - 16 - ((E - e0) / (e1 - e0)) * (h - 34);
+      map = { ix: (px) => -20 + ((px - padL) / (w - padL - padR)) * 40, iy: (py) => e0 + ((h - 16 - py) / (h - 34)) * (e1 - e0) };
+      // 에너지 눈금
+      ctx.fillStyle = Pl.dim; ctx.font = font(10); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      for (let e = Math.ceil(e0); e <= 3; e++) { ctx.fillText(e + " eV", w - padR + 4, Y(e)); ctx.strokeStyle = Pl.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, Y(e)); ctx.lineTo(w - padR, Y(e)); ctx.stroke(); }
+      // 퍼텐셜
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = Pl.accent2;
+      let x0 = 0; layers().forEach((l) => { if (l.V !== 0) ctx.fillRect(X(x0), Y(Math.max(0, l.V)), X(x0 + l.w) - X(x0), Math.abs(Y(l.V) - Y(0))); x0 += l.w; });
+      ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i < N; i++) { const px = X(g.x[i]), py = Y(V[i]); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+      ctx.stroke();
+      SB.dashLine(ctx, X(-20), Y(E0), X(20), Y(E0), Pl.faint, [5, 5]);
+      SB.label(ctx, "E₀", X(-19), Y(E0) - 9, { size: 11, color: Pl.dim });
+      // 파속
+      const base = Y(0), sc = (0.55 * (h - 34)) / (1 / (getS() * Math.sqrt(2 * Math.PI)));
+      const phase = document.getElementById("pk-phase").checked;
+      const bw = Math.max(1, (w - padL - padR) / N + 0.6);
+      if (phase) {
+        for (let i = 0; i < N; i++) { const p = psi.re[i] ** 2 + psi.im[i] ** 2; if (p * sc < 0.4) continue; ctx.fillStyle = Q.phaseColor(psi.re[i], psi.im[i], 0.85); ctx.fillRect(X(g.x[i]), base - p * sc, bw, p * sc); }
+      } else {
+        ctx.beginPath(); ctx.moveTo(X(-20), base);
+        for (let i = 0; i < N; i++) ctx.lineTo(X(g.x[i]), base - (psi.re[i] ** 2 + psi.im[i] ** 2) * sc);
+        ctx.lineTo(X(20), base); ctx.closePath(); ctx.save(); ctx.globalAlpha = 0.4; ctx.fillStyle = Pl.accent; ctx.fill(); ctx.restore();
+      }
+      ctx.strokeStyle = Pl.accent; ctx.lineWidth = 1.4; ctx.beginPath();
+      for (let i = 0; i < N; i++) { const py = base - (psi.re[i] ** 2 + psi.im[i] ** 2) * sc; i ? ctx.lineTo(X(g.x[i]), py) : ctx.moveTo(X(g.x[i]), py); }
+      ctx.stroke();
+      const a = snap(st.a), top = well ? -st.V0 : st.V0;
+      handle(ctx, X(a / 2), Y(top)); handle(ctx, X(a), Y(top / 2), Pl.accent2);
+      self._hv = [X(a / 2), Y(top)]; self._hw = [X(a), Y(top / 2)];
+    }, { aspect: 0.55, minHeight: 280, maxHeight: 420 });
+    SB.drag(cv, {
+      handles: () => (cv._hv ? [{ id: "v", x: cv._hv[0], y: cv._hv[1], r: 13 }, { id: "w", x: cv._hw[0], y: cv._hw[1], r: 13 }] : []),
+      move: (id, x, y) => {
+        if (!map) return;
+        if (id === "v") { const e = map.iy(y); st.V0 = SB.clamp(Math.round(Math.abs(e) * 20) / 20, 0.1, st.shape === "w" ? 2.5 : 3); }
+        if (id === "w") st.a = SB.clamp(Math.round(map.ix(x) * 100) / 100, 0.1, st.shape === "2" ? 1.5 : 2.5);
+        buildV(); P.setV(V); theory();
+      },
+    });
+    SB.loop("sim-packet", () => {
+      if (!st.run) return;
+      P.step(psi.re, psi.im, 6); st.t += 6 * dt;
+      const L = span(); let s = 0;
+      for (let i = 0; i < N; i++) if (g.x[i] >= L) s += (psi.re[i] ** 2 + psi.im[i] ** 2) * dx;
+      SB.stat("pk-tm", s.toFixed(4)); SB.stat("pk-t", st.t.toFixed(1) + " <small>fs</small>");
+      const vg = (2 * C0 * Q.kOfE(getE())) / Q.const.hbarEv;
+      if (st.t > (8 + L + 10) / vg || st.t > 400) st.run = false;
+      cv.redraw();
+    });
+    document.getElementById("pk-go").addEventListener("click", () => { reset(); st.run = true; });
+    document.getElementById("pk-reset").addEventListener("click", reset);
+    theory(); reset();
+  }
+
+  /* ---------------------------------------------------------- 다층 구조 편집기 */
+  {
+    const m = 0.067, Emax = 0.5, Vmax = 0.5;
+    const PRE = {
+      one: [[0.3, 3]],
+      two: [[0.3, 2], [0, 5], [0.3, 2]],
+      three: [[0.3, 2], [0, 5], [0.3, 2], [0, 5], [0.3, 2]],
+      sl: [[0.3, 1.5], [0, 4], [0.3, 1.5], [0, 4], [0.3, 1.5], [0, 4], [0.3, 1.5], [0, 4], [0.3, 1.5]],
+    };
+    const st = { L: [], E: 0.08, xr: 30, curve: [], wkb: [] };
+    let geo = null;
+    const total = () => st.L.reduce((s, l) => s + l.w, 0);
+    function setPre(k) { st.L = PRE[k].map(([V, w]) => ({ V, w })); st.xr = Math.max(26, total() + 6); recompute(); }
+    function recompute() {
+      st.curve = []; st.wkb = [];
+      for (let i = 0; i <= 600; i++) {
+        const E = 0.001 + (Emax - 0.001) * (i / 600);
+        st.curve.push([E, Q.transfer(E, st.L, { m }).T]);
+        let s = 0; st.L.forEach((l) => { if (l.V > E) s += 2 * kap(l.V - E, m) * l.w; });
+        st.wkb.push([E, Math.exp(-s)]);
+      }
+      stats(); cv && cv.redraw();
+    }
+    function stats() {
+      SB.stat("ml-e", (st.E * 1000).toFixed(1) + " <small>meV</small>");
+      SB.stat("ml-t", sci(Q.transfer(st.E, st.L, { m }).T, 3));
+      const c = st.curve; let first = null;
+      for (let i = 1; i < c.length - 1; i++) if (c[i][1] > 0.5 && c[i][1] >= c[i - 1][1] && c[i][1] >= c[i + 1][1]) { first = c[i][0]; break; }
+      SB.stat("ml-r", first ? (first * 1000).toFixed(0) + " <small>meV</small>" : "없음");
+      let best = 0; for (let E = 0.095; E <= 0.105; E += 0.0002) best = Math.max(best, Q.transfer(E, st.L, { m }).T);
+      SB.stat("ml-goal", best > 0.9 ? '<span class="goal-ok">달성! T = ' + best.toFixed(3) + "</span>" : "최대 T = " + sci(best, 2));
+    }
+    const cv = SB.canvas("cv-multi", (ctx, w, h, self) => {
+      const Pl = pal(), th = Math.round(h * 0.5), pad = 14;
+      const X = (x) => pad + ((x + 4) / (st.xr + 4)) * (w - 2 * pad), Y = (E) => th - 8 - (E / 0.55) * (th - 26);
+      // 위 패널: 퍼텐셜
+      ctx.strokeStyle = Pl.grid; ctx.lineWidth = 1; ctx.fillStyle = Pl.dim; ctx.font = font(10); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      [0.1, 0.2, 0.3, 0.4].forEach((e) => { ctx.beginPath(); ctx.moveTo(pad, Y(e)); ctx.lineTo(w - pad, Y(e)); ctx.stroke(); ctx.fillText(e.toFixed(1) + " eV", pad + 2, Y(e) - 7); });
+      let x0 = 0;
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = Pl.accent2; st.L.forEach((l) => { if (l.V > 0) ctx.fillRect(X(x0), Y(l.V), X(x0 + l.w) - X(x0), Y(0) - Y(l.V)); x0 += l.w; }); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-4), Y(0)); x0 = 0; let pv = 0;
+      st.L.forEach((l) => { ctx.lineTo(X(x0), Y(pv)); ctx.lineTo(X(x0), Y(l.V)); ctx.lineTo(X(x0 + l.w), Y(l.V)); x0 += l.w; pv = l.V; });
+      ctx.lineTo(X(x0), Y(pv)); ctx.lineTo(X(x0), Y(0)); ctx.lineTo(X(st.xr), Y(0)); ctx.stroke();
+      // |psi|^2 at E
+      const r = Q.transfer(st.E, st.L, { m }), pts = []; let mx = 0;
+      for (let i = 0; i <= 500; i++) { const x = -4 + ((st.xr + 4) * i) / 500, p = cx.abs2(r.psi(x)); pts.push([x, p]); mx = Math.max(mx, p); }
+      const sc = 0.12 / (mx || 1);
+      SB.dashLine(ctx, X(-4), Y(st.E), X(st.xr), Y(st.E), Pl.accent, [3, 3]);
+      ctx.strokeStyle = Pl.accent; ctx.lineWidth = 1.6; ctx.beginPath(); pts.forEach(([x, p], i) => { const py = Y(st.E + p * sc); i ? ctx.lineTo(X(x), py) : ctx.moveTo(X(x), py); }); ctx.stroke();
+      SB.label(ctx, "|ψ|² (선택한 E에서)", w - pad - 4, th - 14, { size: 11, color: Pl.accent, align: "right" });
+      // handles
+      const hs = []; x0 = 0;
+      st.L.forEach((l, i) => { const xc = X(x0 + l.w / 2), xe = X(x0 + l.w); hs.push({ id: "v" + i, x: xc, y: Y(l.V) }, { id: "w" + i, x: xe, y: Y(0.04) }); x0 += l.w; });
+      hs.forEach((hh) => handle(ctx, hh.x, hh.y, hh.id[0] === "w" ? Pl.accent2 : Pl.accent));
+      // 아래 패널: T(E)
+      const log = document.getElementById("ml-log").checked;
+      const box = { x: 58, y: th + 12, w: w - 76, h: h - th - 58 };
+      const series = [{ data: st.curve.map(([E, T]) => [E, log ? Math.max(T, 1e-7) : T]), color: Pl.accent }];
+      if (document.getElementById("ml-wkb").checked) series.push({ data: st.wkb.map(([E, T]) => [E, log ? Math.max(T, 1e-7) : T]), color: Pl.warn, dash: [5, 4] });
+      const ch = SB.chart(ctx, box, { x: [0, Emax], y: log ? [1e-6, 1.5] : [0, 1.05], logY: log, xLabel: "E (eV)", yLabel: "T(E)", series,
+        vlines: [{ x: st.E, color: Pl.accent2, dash: [3, 3] }], bands: [{ x0: 0.095, x1: 0.105, color: "rgba(46,160,90,0.12)" }],
+        points: [{ x: st.E, y: Math.max(log ? 1e-6 : 0, Q.transfer(st.E, st.L, { m }).T), r: 5, color: Pl.accent2 }] });
+      geo = { X, Y, box, ix: (px) => -4 + ((px - pad) / (w - 2 * pad)) * (st.xr + 4), iy: (py) => ((th - 8 - py) / (th - 26)) * 0.55, hs, ch };
+      self._hs = hs;
+    }, { aspect: 0.95, minHeight: 440, maxHeight: 600 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => cv._hs || [],
+      move: (id, x, y) => {
+        if (!geo) return;
+        if (id == null) {
+          const b = geo.box; if (y < b.y - 4 || x < b.x || x > b.x + b.w) return;
+          st.E = SB.clamp(((x - b.x) / b.w) * Emax, 0.001, Emax); stats(); return;
+        }
+        const i = Number(id.slice(1)), l = st.L[i]; if (!l) return;
+        if (id[0] === "v") { l.V = SB.clamp(Math.round(geo.iy(y) * 100) / 100, 0, Vmax); }
+        else { let left = 0; for (let j = 0; j < i; j++) left += st.L[j].w; l.w = SB.clamp(Math.round((geo.ix(x) - left) * 10) / 10, 0.5, 12); }
+        recompute();
+      },
+      up: () => { const t = total(); if (t + 6 > st.xr || t + 14 < st.xr) { st.xr = Math.max(26, t + 6); cv.redraw(); } },
+    });
+    SB.seg("ml-pre", setPre);
+    document.getElementById("ml-add").addEventListener("click", () => { if (st.L.length >= 9) return; const last = st.L[st.L.length - 1]; st.L.push(last && last.V > 0 ? { V: 0, w: 5 } : { V: 0.3, w: 2 }); st.xr = Math.max(26, total() + 6); recompute(); });
+    document.getElementById("ml-del").addEventListener("click", () => { if (st.L.length <= 1) return; st.L.pop(); st.xr = Math.max(26, total() + 6); recompute(); });
+    ["ml-log", "ml-wkb"].forEach((id) => document.getElementById(id).addEventListener("change", () => cv.redraw()));
+    setPre("two");
+  }
+
+  /* ---------------------------------------------------------- 공명 터널 다이오드 */
+  {
+    const m = 0.067, Vs = [], nV = 61, dVv = 0.01;
+    const st = { V: 0.1, iv: [], Er0: 0.08, Vp: 0, pvr: 0 };
+    let tmr = null, mapIV = null;
+    const getW = SB.range("rt-w", (v) => v.toFixed(1) + " nm", sched);
+    const getB = SB.range("rt-b", (v) => v.toFixed(1) + " nm", sched);
+    const getV0 = SB.range("rt-v", (v) => v.toFixed(2) + " eV", sched);
+    const getF = SB.range("rt-f", (v) => (v * 1000).toFixed(0) + " meV", sched);
+    for (let i = 0; i < nV; i++) Vs.push(i * dVv);
+    function sched() { clearTimeout(tmr); tmr = setTimeout(compute, 90); }
+    function lay(V) {
+      const b = getB(), w = getW(), V0 = getV0(), L = 2 * b + w, ns = Math.round(L / 0.15), d = L / ns, out = [];
+      for (let i = 0; i < ns; i++) { const x = (i + 0.5) * d, base = x < b || x > b + w ? V0 : 0; out.push({ V: base - (V * x) / L, w: d }); }
+      return out;
+    }
+    function findEr0() {
+      const b = getB(), w = getW(), V0 = getV0(), ls = [{ V: V0, w: b }, { V: 0, w }, { V: V0, w: b }];
+      const guess = (Q.finiteWellE(V0, w, m)[0]) || 0.05;
+      let best = 0, bE = guess;
+      for (let i = 0; i <= 600; i++) { const E = guess - 0.015 + (0.02 * i) / 600; if (E <= 0) continue; const T = Q.transfer(E, ls, { m }).T; if (T > best) { best = T; bE = E; } }
+      return bE;
+    }
+    function compute() {
+      const EF = getF(), b = getB(), w = getW(), L = 2 * b + w;
+      st.Er0 = findEr0();
+      st.iv = [];
+      for (const V of Vs) {
+        const ls = lay(V), Er = st.Er0 - (V * (b + w / 2)) / L;
+        const Es = [];
+        for (let k = 0; k < 160; k++) Es.push(((k + 0.5) * EF) / 160);
+        if (Er > 0 && Er < EF) for (let k = 0; k < 160; k++) { const E = Er - 0.004 + (0.008 * k) / 159; if (E > 0 && E < EF) Es.push(E); }
+        Es.sort((p, q) => p - q);
+        let J = 0, prev = null;
+        for (const E of Es) {
+          const T = Q.transfer(E, ls, { m, VR: -V }).T, s = Math.max(0, EF - E) - Math.max(0, EF - E - V), f = T * s;
+          if (prev) J += 0.5 * (f + prev[1]) * (E - prev[0]);
+          prev = [E, f];
+        }
+        st.iv.push([V, J]);
+      }
+      const mx = Math.max(...st.iv.map((p) => p[1])) || 1;
+      st.iv = st.iv.map(([V, J]) => [V, J / mx]);
+      let ip = 0; for (let i = 1; i < nV; i++) if (st.iv[i][1] > st.iv[ip][1] && i < nV - 1 && st.iv[i][1] >= st.iv[i + 1][1]) { ip = i; break; }
+      if (!ip) ip = st.iv.reduce((bi, p, i, arr) => (p[1] > arr[bi][1] ? i : bi), 0);
+      let iv = ip; for (let i = ip; i < nV; i++) if (st.iv[i][1] < st.iv[iv][1]) iv = i; else if (st.iv[i][1] > st.iv[iv][1] * 1.02 && i > iv + 2) break;
+      st.Vp = st.iv[ip][0]; st.pvr = st.iv[ip][1] / Math.max(1e-9, st.iv[iv][1]);
+      SB.stat("rt-er", (st.Er0 * 1000).toFixed(0) + " <small>meV</small>");
+      SB.stat("rt-vp", st.Vp.toFixed(2) + " <small>V</small>");
+      SB.stat("rt-pvr", st.pvr > 1.05 ? st.pvr.toFixed(1) : "—");
+      draw();
+    }
+    function draw() { band.redraw(); ivc.redraw(); SB.stat("rt-vv", st.V.toFixed(2) + " <small>V</small>"); }
+    const band = SB.canvas("cv-rtd-band", (ctx, w, h) => {
+      const Pl = pal(), b = getB(), ww = getW(), V0 = getV0(), EF = getF(), L = 2 * b + ww, V = st.V;
+      const xa = -7, xb = L + 7, pad = 10;
+      const X = (x) => pad + ((x - xa) / (xb - xa)) * (w - 2 * pad), Y = (E) => 22 + ((0.56 - E) / 1.24) * (h - 44);
+      const prof = (x) => (x < 0 ? 0 : x > L ? -V : (x < b || x > b + ww ? V0 : 0) - (V * x) / L);
+      ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = Pl.accent;
+      ctx.fillRect(X(xa), Y(EF), X(0) - X(xa), Y(0) - Y(EF)); ctx.fillRect(X(L), Y(-V + EF), X(xb) - X(L), Y(-V) - Y(-V + EF)); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i <= 600; i++) { const x = xa + ((xb - xa) * i) / 600, py = Y(prof(x)); i ? ctx.lineTo(X(x), py) : ctx.moveTo(X(x), py); }
+      ctx.stroke();
+      const Er = st.Er0 - (V * (b + ww / 2)) / L, on = Er > 0 && Er < EF;
+      ctx.strokeStyle = on ? Pl.ok : Pl.warn; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(b), Y(Er)); ctx.lineTo(X(b + ww), Y(Er)); ctx.stroke();
+      SB.label(ctx, on ? "공명: 이미터 전자와 정렬" : Er >= EF ? "준위가 E_F 위" : "준위가 띠 바닥 아래", w / 2, 12, { size: 12, bold: true, color: on ? Pl.ok : Pl.dim });
+      SB.label(ctx, "E_F", X(xa) + 16, Y(EF) - 8, { size: 11, color: Pl.dim });
+      SB.label(ctx, "이미터", X(xa / 2), h - 10, { size: 11, color: Pl.dim }); SB.label(ctx, "컬렉터", X(L - xa / 2), h - 10, { size: 11, color: Pl.dim });
+      if (on) SB.arrow(ctx, X(-5), Y(Er), X(L + 5), Y(Er), { color: Pl.ok, width: 1.6, dash: [4, 3] });
+    }, { aspect: 0.75, minHeight: 240, maxHeight: 340 });
+    const ivc = SB.canvas("cv-rtd-iv", (ctx, w, h, self) => {
+      const Pl = pal();
+      const ch = SB.chart(ctx, null, { x: [0, 0.6], y: [0, 1.1], xLabel: "전압 V (V)", yLabel: "전류 (상대)", series: [{ data: st.iv, color: Pl.accent }],
+        vlines: st.Vp ? [{ x: st.Vp, color: Pl.faint, label: "봉우리" }] : [] });
+      const J = interp(st.V), px = ch.X(st.V), py = ch.Y(J);
+      handle(ctx, px, py); self._h = [px, py];
+      mapIV = { ix: (x) => 0 + ((x - ch.box.x) / ch.box.w) * 0.6 };
+    }, { aspect: 0.75, minHeight: 240, maxHeight: 340 });
+    function interp(V) { const a = st.iv; if (!a.length) return 0; const i = Math.min(a.length - 2, Math.max(0, Math.floor(V / dVv))); const f = (V - a[i][0]) / dVv; return a[i][1] + (a[i + 1][1] - a[i][1]) * f; }
+    SB.drag(ivc, { free: true, handles: () => (ivc._h ? [{ id: "p", x: ivc._h[0], y: ivc._h[1], r: 14 }] : []), move: (id, x) => { if (!mapIV) return; st.V = SB.clamp(Math.round(mapIV.ix(x) * 200) / 200, 0, 0.6); draw(); } });
+    compute();
+    void getW; void getB; void getV0; void getF;
+  }
+
+  /* ---------------------------------------------------------- WKB 미니 */
+  {
+    const V0 = 2, st = { shape: "rect", a: 0.8 };
+    let map = null;
+    const shapes = { rect: () => V0, trap: (x, a) => V0 - 0.6 * V0 * (x / a), tri: (x, a) => V0 * (1 - x / a), para: (x, a) => (4 * V0 * x * (a - x)) / (a * a) };
+    const Vf = (x) => shapes[st.shape](x, st.a);
+    const getE = SB.range("wk-e", (v) => v.toFixed(2), () => { cv.redraw(); out(); });
+    SB.seg("wk-shape", (v) => { st.shape = v; cv.redraw(); out(); });
+    function out() {
+      const E = getE() * V0, ex = Q.transferFn(E, Vf, st.a, { n: 400 }).T, wk = Q.wkbT(E, Vf, st.a, { n: 800 });
+      document.getElementById("wk-r").textContent = `정확 T = ${sci(ex, 2)} · WKB = ${sci(wk, 2)} · 비(정확/WKB) = ${(ex / wk).toFixed(2)} · 2∫κdx = ${(-Math.log(wk)).toFixed(2)}`;
+    }
+    const cv = SB.canvas("cv-wkb", (ctx, w, h, self) => {
+      const Pl = pal(), E = getE() * V0, pad = 12;
+      const X = (x) => pad + ((x + 0.6) / 3.8) * (w - 2 * pad), Y = (e) => h - 14 - (e / 2.4) * (h - 28);
+      map = { ix: (px) => -0.6 + ((px - pad) / (w - 2 * pad)) * 3.8 };
+      ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = Pl.warn; ctx.beginPath();
+      const n = 300; let started = false;
+      for (let i = 0; i <= n; i++) { const x = (st.a * i) / n, v = Vf(x); if (v > E) { if (!started) { ctx.moveTo(X(x), Y(E)); started = true; } ctx.lineTo(X(x), Y(v)); } }
+      for (let i = n; i >= 0; i--) { const x = (st.a * i) / n; if (Vf(x) > E) ctx.lineTo(X(x), Y(E)); }
+      ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(-0.6), Y(0)); ctx.lineTo(X(0), Y(0));
+      for (let i = 0; i <= n; i++) { const x = (st.a * i) / n; ctx.lineTo(X(x), Y(Vf(x))); }
+      ctx.lineTo(X(st.a), Y(0)); ctx.lineTo(X(3.2), Y(0)); ctx.stroke();
+      SB.dashLine(ctx, X(-0.6), Y(E), X(3.2), Y(E), Pl.accent, [5, 4]);
+      SB.label(ctx, "E", X(-0.45), Y(E) - 9, { size: 11, color: Pl.accent });
+      SB.label(ctx, `a = ${st.a.toFixed(2)} nm`, X(st.a) + 38, Y(0.75), { size: 11, color: Pl.dim });
+      handle(ctx, X(st.a), Y(0.3), Pl.accent2); self._h = [X(st.a), Y(0.3)];
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 290 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "a", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "a" || !map) return; st.a = SB.clamp(Math.round(map.ix(x) * 50) / 50, 0.2, 2.8); out(); } });
+    out();
+  }
+
+  /* ---------------------------------------------------------- 알파 붕괴 드래그 숫자 */
+  {
+    const hbarc = 197.3269804, ke2 = 1.43996448, ma = 3727.379, u = 931.494;
+    let vals = null, cv = null;
+    function gamow(z, E) {
+      const Ad = Math.round(2.6 * z), mu = (ma * Ad * u) / (ma + Ad * u), R = 1.2 * (Math.cbrt(Ad) + Math.cbrt(4)), b = (2 * z * ke2) / E, x = R / b;
+      const G2 = 2 * Math.sqrt((2 * mu) / E) * ((2 * z * ke2) / hbarc) * (Math.acos(Math.sqrt(x)) - Math.sqrt(x * (1 - x)));
+      const v = Math.sqrt((2 * E) / mu) * 2.998e23, f = v / (2 * R);
+      return { R, b, G2, t: Math.log(2) / (f * Math.exp(-G2)), Ad };
+    }
+    function tfmt(s) {
+      const y = s / 3.156e7;
+      if (y >= 1) return sci(y, 1) + " 년";
+      if (s >= 1) return sci(s, 1) + " s";
+      return sci(s, 1) + " s";
+    }
+    SB.tangle("tg-alpha", (v) => {
+      vals = v; const r = gamow(v.z, v.e);
+      let msg = "";
+      if (v.z === 90 && Math.abs(v.e - 4.27) < 0.02) msg = "실제 ²³⁸U의 반감기는 4.47×10⁹ 년이다.";
+      else if (v.z === 82 && Math.abs(v.e - 8.95) < 0.03) msg = "실제 ²¹²Po의 반감기는 0.29 µs다.";
+      else msg = "Z = 82, E = 8.95 MeV(²¹²Po)로 바꿔 보라.";
+      return { b: r.b.toFixed(1) + " fm", g: r.G2.toFixed(1), t: tfmt(r.t), msg };
+    }, { onChange: () => cv && cv.redraw() });
+    cv = SB.canvas("cv-alpha", (ctx) => {
+      if (!vals) return;
+      const Pl = pal(), r = gamow(vals.z, vals.e), Vc = (rr) => (2 * vals.z * ke2) / rr;
+      const data = []; for (let i = 0; i <= 200; i++) { const rr = r.R + ((90 - r.R) * i) / 200; data.push([rr, Vc(rr)]); }
+      SB.chart(ctx, null, { x: [0, 90], y: [-12, 32], xLabel: "r (fm)", yLabel: "V (MeV)",
+        series: [{ data: [[0, -10], [r.R, -10], [r.R, Vc(r.R)]], color: Pl.text }, { data, color: Pl.text }, { data: [[0, vals.e], [90, vals.e]], color: Pl.accent, dash: [5, 4] }],
+        bands: [{ x0: r.R, x1: Math.min(90, r.b), color: "rgba(230,140,40,0.18)" }], points: [{ x: Math.min(89, r.b), y: vals.e, r: 5, color: Pl.accent, label: "b" }] });
+    }, { aspect: 0.32, minHeight: 170, maxHeight: 230 });
+  }
+
+  /* ---------------------------------------------------------- EOT 드래그 숫자 */
+  SB.tangle("tg-eot", (v) => {
+    const eot = v.il + (v.t * 3.9) / 25, c = ((3.9 * 8.8541878128e-12) / (eot * 1e-9)) * 100;
+    return { eot: eot.toFixed(3) + " nm", c: c.toFixed(2) + " µF/cm²", r: ((v.t + v.il) / eot).toFixed(2),
+      msg: eot <= 1.0 ? "EOT 1 nm 이하를 달성했다." : v.il >= 0.5 ? "계면층이 EOT를 많이 잡아먹는다 — 계면층을 줄여 보라." : "HfO₂를 더 얇게 해야 EOT 1 nm에 닿는다." };
+  });
+
+  /* ---------------------------------------------------------- 게이트 누설 계산기 */
+  {
+    const D = Q.dielectrics, A0 = (Math.pow(Q.const.e, 3) / (8 * Math.PI * Q.const.h * 3.1 * Q.const.e)) / 0.42;
+    const st = { mat: "SiO2" };
+    let mapB = null;
+    const getT = SB.range("gt-t", (v) => v.toFixed(2) + " nm", () => upd());
+    const getIL = SB.range("gt-il", (v) => v.toFixed(2) + " nm", () => upd());
+    const getV = SB.range("gt-v", (v) => v.toFixed(2) + " V", () => upd());
+    SB.seg("gt-mat", (v) => { st.mat = v; upd(); });
+    function stack(mat, t, il) { return mat === "SiO2" ? [["SiO2", t]] : il > 0 ? [["SiO2", il], [mat, t]] : [[mat, t]]; }
+    const eotOf = (s) => s.reduce((q, [n, t]) => q + (t * 3.9) / D[n].er, 0);
+    function leak(s, V) {
+      const eot = eotOf(s), Fe = V / eot; let pot = 0, sum = 0;
+      s.forEach(([n, t]) => { const d = D[n], F = (Fe * 3.9) / d.er, M = 120, dx = t / M; for (let i = 0; i < M; i++) { const uu = d.dEc - (pot + F * (i + 0.5) * dx); if (uu > 0) sum += Math.sqrt((uu * d.mox) / C0) * dx; } pot += F * t; });
+      const Vr = Math.min(V, 3.1), pre = (A0 * Math.pow(Fe * 1e9, 2)) / Math.pow(1 - Math.sqrt(1 - Vr / 3.1), 2);
+      return (0.08 * pre * Math.exp(-2 * sum)) / 1e4; // A/cm², 보정 계수 0.08 (Lo et al. 1997 측정 곡선)
+    }
+    function cur() { return stack(st.mat, getT(), getIL()); }
+    function upd() {
+      const s = cur(), eot = eotOf(s), J = leak(s, getV());
+      SB.stat("gt-eot", eot.toFixed(3) + " <small>nm</small>");
+      SB.stat("gt-c", (((3.9 * 8.8541878128e-12) / (eot * 1e-9)) * 100).toFixed(2) + " <small>µF/cm²</small>");
+      SB.stat("gt-j", sci(J, 2) + " <small>A/cm²</small>");
+      const ok = eot <= 1.0005 && J <= 1;
+      SB.stat("gt-goal", ok ? '<span class="goal-ok">달성!</span>' : `<span class="goal-no">${eot > 1.0005 ? "EOT 초과" : "누설 초과"}</span>`);
+      band.redraw(); jc.redraw();
+    }
+    const band = SB.canvas("cv-gate-band", (ctx, w, h, self) => {
+      const Pl = pal(), s = cur(), V = getV(), eot = eotOf(s), Fe = V / eot, tot = s.reduce((q, l) => q + l[1], 0);
+      const xa = -1.5, xb = Math.max(tot, 2) + 1.5, pad = 10;
+      const X = (x) => pad + ((x - xa) / (xb - xa)) * (w - 2 * pad), Y = (E) => 24 + ((3.6 - E) / 5.4) * (h - 48);
+      mapB = { ix: (px) => xa + ((px - pad) / (w - 2 * pad)) * (xb - xa) };
+      ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = Pl.accent; ctx.fillRect(X(xa), Y(0), X(0) - X(xa), 10); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(xa), Y(0)); ctx.lineTo(X(0), Y(0));
+      let x0 = 0, pot = 0; const forb = [];
+      s.forEach(([n, t]) => { const d = D[n], F = (Fe * 3.9) / d.er; ctx.lineTo(X(x0), Y(d.dEc - pot)); for (let i = 0; i <= 20; i++) { const x = x0 + (t * i) / 20, e = d.dEc - pot - F * (t * i) / 20; ctx.lineTo(X(x), Y(e)); forb.push([x, e]); } pot += F * t; x0 += t; ctx.lineTo(X(x0), Y(-V)); });
+      ctx.lineTo(X(xb), Y(-V)); ctx.stroke();
+      ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = Pl.warn; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); forb.forEach(([x, e]) => ctx.lineTo(X(x), Y(Math.max(0, e)))); ctx.lineTo(X(tot), Y(0)); ctx.closePath(); ctx.fill(); ctx.restore();
+      // 층 이름
+      x0 = 0; s.forEach(([n, t]) => { SB.label(ctx, n.replace("2", "₂").replace("3", "₃").replace("4", "₄"), X(x0 + t / 2), h - 12, { size: 11, color: Pl.dim }); x0 += t; });
+      SB.label(ctx, "Si", X(xa / 2), Y(0) + 22, { size: 11, color: Pl.dim }); SB.label(ctx, "게이트", X(tot + 0.75), Y(-V) + 18, { size: 11, color: Pl.dim });
+      SB.arrow(ctx, X(-1.2), Y(0) - 6, X(tot + 1.2), Y(0) - 6, { color: Pl.accent, width: 1.5, dash: [4, 3] });
+      SB.label(ctx, `물리 두께 ${tot.toFixed(2)} nm`, 12, h - 30, { size: 12, bold: true, align: "left" });
+      const hy = Y(-V / 2 + 0.6);
+      handle(ctx, X(tot), hy, Pl.accent2); self._h = [X(tot), hy];
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 340 });
+    const jc = SB.canvas("cv-gate-j", (ctx) => {
+      const Pl = pal(), V = getV(), il = getIL(), cols = { SiO2: Pl.text, Si3N4: Pl.ok, Al2O3: Pl.warn, HfO2: Pl.accent };
+      const series = Object.keys(D).map((n) => {
+        const data = [];
+        for (let i = 0; i <= 80; i++) { const eot = 0.4 + (2.6 * i) / 80, t = n === "SiO2" ? eot : (eot - (il || 0)) * D[n].er / 3.9; if (t <= 0.05) continue; data.push([eot, leak(stack(n, t, il), V)]); }
+        return { data, color: cols[n], width: n === st.mat ? 2.6 : 1.2, dash: n === st.mat ? null : [4, 3] };
+      });
+      const s = cur(), eot = eotOf(s), J = leak(s, V);
+      const ch = SB.chart(ctx, null, { x: [0.4, 3], y: [1e-8, 1e7], logY: true, xLabel: "EOT (nm)", yLabel: "J (A/cm²)", series,
+        points: [{ x: eot, y: SB.clamp(J, 1e-8, 1e7), r: 6, color: Pl.accent2 }], yFmt: (v) => "1e" + Math.round(Math.log10(v)) });
+      ctx.save(); ctx.strokeStyle = Pl.ok; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); ctx.strokeRect(ch.X(0.4), ch.Y(1), ch.X(1) - ch.X(0.4), ch.Y(1e-8) - ch.Y(1)); ctx.restore();
+      SB.label(ctx, "목표 영역", ch.X(0.7), ch.Y(1e-6), { size: 11, color: Pl.ok });
+      let ly = ch.box.y + 10; Object.keys(D).forEach((n) => { SB.label(ctx, n.replace("2", "₂").replace("3", "₃").replace("4", "₄"), ch.box.x + ch.box.w - 30, ly, { size: 11, color: cols[n], bold: n === st.mat }); ly += 15; });
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 340 });
+    SB.drag(band, { handles: () => (band._h ? [{ id: "t", x: band._h[0], y: band._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "t" || !mapB) return; const il = st.mat === "SiO2" ? 0 : getIL(); getT.set(SB.clamp(Math.round((mapB.ix(x) - il) * 20) / 20, 0.5, 10)); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- FN 시뮬레이터 */
+  {
+    const D = Q.dielectrics, st = { mat: "SiO2", F: 10, pts: [] };
+    let mapB = null, mapP = null;
+    const getT = SB.range("fn-t", (v) => v.toFixed(1) + " nm", () => upd());
+    const getA = SB.range("fn-a", (v) => v.toFixed(2), () => upd());
+    SB.seg("fn-mat", (v) => { st.mat = v; st.pts = []; upd(); });
+    const par = () => ({ phi: D[st.mat].dEc, m: D[st.mat].mox });
+    const Jcm = (Fmv) => Q.fowlerNordheim(Fmv * 1e8, par().phi, par().m) / 1e4;
+    function upd() {
+      const p = par(), J = Jcm(st.F), tox = getT();
+      SB.stat("fn-f", st.F.toFixed(2) + " <small>MV/cm</small>");
+      SB.stat("fn-d", (p.phi / (st.F / 10)).toFixed(2) + " <small>nm</small>");
+      SB.stat("fn-j", sci(J, 2) + " <small>A/cm²</small>");
+      SB.stat("fn-vcg", ((st.F / 10) * tox / getA()).toFixed(1) + " <small>V</small>");
+      const dQ = (3 * 3.9 * 8.8541878128e-12) / 12e-9, t = dQ / (J * 1e4);
+      SB.stat("fn-time", t >= 1 ? sci(t, 2) + " <small>s</small>" : t >= 1e-3 ? (t * 1e3).toFixed(2) + " <small>ms</small>" : (t * 1e6).toFixed(1) + " <small>µs</small>");
+      if (st.pts.length >= 2) {
+        const n = st.pts.length; let sx = 0, sy = 0, sxx = 0, sxy = 0;
+        st.pts.forEach(([x, y]) => { sx += x; sy += y; sxx += x * x; sxy += x * y; });
+        const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx); // per (1/(V/m))
+        const Bc = (8 * Math.PI * Math.sqrt(2 * p.m * Q.const.me) * Math.pow(Q.const.e, 1.5)) / (3 * Q.const.e * Q.const.h);
+        SB.stat("fn-phi", isFinite(slope) && slope < 0 ? Math.pow(-slope / Bc, 2 / 3).toFixed(2) + " <small>eV</small>" : "—");
+      } else SB.stat("fn-phi", "<small>측정점 2개 이상</small>");
+      bandC.redraw(); plotC.redraw();
+    }
+    const bandC = SB.canvas("cv-fn-band", (ctx, w, h, self) => {
+      const Pl = pal(), p = par(), tox = getT(), Fv = st.F / 10, pad = 10;
+      const xa = -2.5, xb = tox + 2, eMin = -1.6 * tox - 0.5, eMax = p.phi + 0.8;
+      const X = (x) => pad + ((x - xa) / (xb - xa)) * (w - 2 * pad), Y = (E) => 20 + ((eMax - E) / (eMax - eMin)) * (h - 40);
+      mapB = { iy: (py) => eMax - ((py - 20) / (h - 40)) * (eMax - eMin) };
+      ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = Pl.accent; ctx.fillRect(X(xa), Y(0), X(0) - X(xa), 10); ctx.restore();
+      const d = Math.min(tox, p.phi / Fv);
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = Pl.warn; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(0), Y(p.phi)); ctx.lineTo(X(d), Y(p.phi - Fv * d)); ctx.lineTo(X(d), Y(0)); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = Pl.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(xa), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.lineTo(X(0), Y(p.phi)); ctx.lineTo(X(tox), Y(p.phi - Fv * tox)); ctx.lineTo(X(tox), Y(-Fv * tox)); ctx.lineTo(X(xb), Y(-Fv * tox)); ctx.stroke();
+      SB.dashLine(ctx, X(xa), Y(0), X(xb), Y(0), Pl.faint);
+      SB.arrow(ctx, X(0), Y(0) + 14, X(d), Y(0) + 14, { color: Pl.accent, width: 1.8, label: `d = ${(p.phi / Fv).toFixed(2)} nm`, labelPos: "mid" });
+      SB.label(ctx, "Si", X(xa / 2), Y(0) - 12, { size: 11, color: Pl.dim }); SB.label(ctx, "부유 게이트 쪽", X(tox) - 4, Y(-Fv * tox) + 16, { size: 11, color: Pl.dim, align: "right" });
+      const hx = X(tox), hy = Y(p.phi - Fv * tox);
+      handle(ctx, hx, hy, Pl.accent2); self._h = [hx, hy];
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 340 });
+    const plotC = SB.canvas("cv-fn-plot", (ctx, w, h, self) => {
+      const Pl = pal(), p = par(), line = [];
+      const yv = (Fmv) => Math.log(Q.fowlerNordheim(Fmv * 1e8, p.phi, p.m) / Math.pow(Fmv * 1e8, 2));
+      for (let i = 0; i <= 60; i++) { const inv = 1 / 16 + ((0.2 - 1 / 16) * i) / 60; line.push([inv, yv(1 / inv)]); }
+      const ch = SB.chart(ctx, null, { x: [1 / 16, 0.2], y: [-75, -25], xLabel: "1/F (cm/MV)", yLabel: "ln(J/F²) [A/V²]", series: [{ data: line, color: Pl.accent }],
+        points: st.pts.map(([x, y]) => ({ x: x * 1e8, y, r: 4, color: Pl.warn })) });
+      const px = ch.X(1 / st.F), py = ch.Y(yv(st.F));
+      handle(ctx, px, py); self._h = [px, py];
+      mapP = { ix: (x) => 1 / 16 + ((x - ch.box.x) / ch.box.w) * (0.2 - 1 / 16) };
+      SB.label(ctx, "기울기 = −B", ch.box.x + ch.box.w * 0.7, ch.box.y + ch.box.h * 0.6, { size: 11, color: Pl.dim });
+    }, { aspect: 0.75, minHeight: 250, maxHeight: 340 });
+    SB.drag(bandC, { handles: () => (bandC._h ? [{ id: "f", x: bandC._h[0], y: bandC._h[1], r: 14 }] : []), move: (id, x, y) => { if (id !== "f" || !mapB) return; const p = par(), e = mapB.iy(y); st.F = SB.clamp(Math.round(((p.phi - e) / getT()) * 10 * 20) / 20, 5, 16); upd(); } });
+    SB.drag(plotC, { handles: () => (plotC._h ? [{ id: "f", x: plotC._h[0], y: plotC._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "f" || !mapP) return; st.F = SB.clamp(Math.round((1 / mapP.ix(x)) * 20) / 20, 5, 16); upd(); } });
+    document.getElementById("fn-meas").addEventListener("click", () => {
+      const F = st.F * 1e8, J = Q.fowlerNordheim(F, par().phi, par().m) * (1 + 0.04 * SB.randn());
+      st.pts.push([1 / F, Math.log(J / (F * F))]); upd();
+    });
+    document.getElementById("fn-clear").addEventListener("click", () => { st.pts = []; upd(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- STM 드래그 숫자 */
+  SB.tangle("tg-stm", (v) => {
+    const k = kap(v.phi), r = Math.exp(2 * k * v.dd), z = Math.log(1.01) / (2 * k);
+    return { r: r.toFixed(2), z: (z * 1000).toFixed(2) + " pm" };
+  });
+
+  /* ---------------------------------------------------------- STM 시뮬레이터 */
+  {
+    const st = { mode: "h", tx: 2.0, tz: 0.75, trace: [], defect: 9 };
+    const atoms = []; for (let i = 0; i <= 15; i++) atoms.push(i * 0.4);
+    const getI = SB.range("sm-i", (v) => v.toFixed(1) + " nA", () => out());
+    const getP = SB.range("sm-p", (v) => v.toFixed(1) + " eV", () => out());
+    SB.seg("sm-mode", (v) => { st.mode = v; st.trace = []; });
+    const defEl = document.getElementById("sm-defect");
+    defEl.addEventListener("change", () => { st.defect = 3 + Math.floor(Math.random() * 10); st.trace = []; cv.redraw(); });
+    document.getElementById("sm-reset").addEventListener("click", () => { st.trace = []; cv.redraw(); });
+    const surf = (x) => { let z = 0; atoms.forEach((a, i) => { if (defEl.checked && i === st.defect) return; z = Math.max(z, 0.06 * Math.exp(-((x - a) ** 2) / (2 * 0.11 * 0.11))); }); return z; };
+    const current = () => Math.exp(-2 * kap(getP()) * (st.tz - surf(st.tx) - 0.6));
+    function out() {
+      const I = current(), d = st.tz - surf(st.tx);
+      SB.stat("sm-d", d.toFixed(3) + " <small>nm</small>");
+      SB.stat("sm-cur", (I >= 0.01 ? I.toFixed(I < 10 ? 3 : 1) : sci(I, 2)) + " <small>nA</small>");
+      SB.stat("sm-goal", Math.abs(I / getI() - 1) <= 0.1 ? '<span class="goal-ok">맞췄다!</span>' : I > getI() ? "너무 가깝다" : "너무 멀다");
+    }
+    let map = null;
+    const cv = SB.canvas("cv-stm", (ctx, w, h, self) => {
+      const Pl = pal(), pad = 14, xr = [-0.3, 6.3];
+      const s = (w - 2 * pad) / (xr[1] - xr[0]), z0 = h - 40;
+      const X = (x) => pad + (x - xr[0]) * s, Z = (z) => z0 - z * s;
+      map = { ix: (px) => xr[0] + (px - pad) / s, iz: (py) => (z0 - py) / s };
+      atoms.forEach((a, i) => { if (defEl.checked && i === st.defect) return; ctx.fillStyle = Pl.accent; ctx.globalAlpha = 0.75; ctx.beginPath(); ctx.arc(X(a), Z(-0.12), 0.17 * s, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; });
+      ctx.strokeStyle = Pl.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); for (let i = 0; i <= 300; i++) { const x = xr[0] + ((xr[1] - xr[0]) * i) / 300; const py = Z(surf(x) + 0.0); i ? ctx.lineTo(X(x), py) : ctx.moveTo(X(x), py); } ctx.stroke(); ctx.setLineDash([]);
+      if (st.trace.length > 1) { ctx.strokeStyle = Pl.ok; ctx.lineWidth = 2; ctx.beginPath(); st.trace.forEach(([x, z], i) => (i ? ctx.lineTo(X(x), Z(z)) : ctx.moveTo(X(x), Z(z)))); ctx.stroke(); }
+      // 바늘
+      const tx = X(st.tx), tz = Z(st.tz);
+      ctx.fillStyle = Pl.dim; ctx.beginPath(); ctx.moveTo(tx, tz); ctx.lineTo(tx - 22, tz - 70); ctx.lineTo(tx + 22, tz - 70); ctx.closePath(); ctx.fill();
+      const I = current(), glow = SB.clamp(Math.log10(I) / 2 + 0.5, 0, 1);
+      ctx.strokeStyle = Pl.warn; ctx.globalAlpha = 0.3 + 0.7 * glow; ctx.lineWidth = 2 + 3 * glow; ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(tx, tz); ctx.lineTo(tx, Z(surf(st.tx))); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+      handle(ctx, tx, tz, Pl.accent2); self._h = [tx, tz];
+      // 전류계(로그)
+      const mx = 14, my = 14, mw = 130;
+      ctx.strokeStyle = Pl.border; ctx.strokeRect(mx, my, mw, 10);
+      const f = SB.clamp((Math.log10(I) + 3) / 5, 0, 1); ctx.fillStyle = Pl.warn; ctx.fillRect(mx, my, mw * f, 10);
+      const fs = SB.clamp((Math.log10(getI()) + 3) / 5, 0, 1); ctx.fillStyle = Pl.ok; ctx.fillRect(mx + mw * fs - 1, my - 3, 3, 16);
+      SB.label(ctx, "I: 1 pA … 100 nA (로그)", mx + mw / 2, my + 22, { size: 10, color: Pl.dim });
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 360 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "tip", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "tip" || !map) return; st.tx = SB.clamp(map.ix(x), 0, 6); st.tz = SB.clamp(map.iz(y), surf(st.tx) + 0.25, 1.6); if (st.mode === "c") st.trace = []; out(); } });
+    SB.loop("sim-stm", (dt) => {
+      if (st.mode === "c") {
+        st.tx += dt * 0.6; if (st.tx > 6) { st.tx = 0; st.trace = []; }
+        const dset = 0.6 - Math.log(getI()) / (2 * kap(getP())), target = surf(st.tx) + dset;
+        st.tz += (target - st.tz) * Math.min(1, dt * 20);
+        st.trace.push([st.tx, st.tz - dset]); if (st.trace.length > 2000) st.trace.shift();
+        out();
+      }
+      cv.redraw();
+    });
+    out();
+  }
+
+  /* ---------------------------------------------------------- 드릴 */
+  const rnd = (a, b, d = 2) => Number((a + Math.random() * (b - a)).toFixed(d));
+  SB.drill("drill-barrier", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const dv = rnd(0.2, 4, 2), m = [1, 0.42, 0.067][Math.floor(Math.random() * 3)], kk = kap(dv, m);
+      return { q: `<p>유효 질량 \\(${m}m_e\\)인 전자가 에너지보다 \\(${dv}\\) eV 높은 장벽에 들어간다. 침투 깊이 \\(\\delta = 1/\\kappa\\)는?</p>`, answer: 1 / kk, label: "δ =", unit: "nm", sol: `\\(\\kappa = \\sqrt{${m}\\times${dv}/0.0381} = ${kk.toFixed(3)}\\) nm⁻¹, \\(\\delta = ${(1 / kk).toFixed(3)}\\) nm` };
+    }
+    if (k === 1) {
+      const V0 = rnd(2, 5, 1), E = rnd(0.3, V0 - 0.8, 1), a = rnd(0.3, 1.0, 2), kk = kap(V0 - E), T = Q.barrierT(E, V0, a);
+      return { q: `<p>에너지 \\(${E}\\) eV의 자유 전자가 높이 \\(${V0}\\) eV, 폭 \\(${a}\\) nm의 사각 장벽을 만난다. 정확한 식으로 투과 확률을 구하라.</p>`, answer: T, label: "T =", tol: "2%", sol: `\\(\\kappa = ${kk.toFixed(3)}\\) nm⁻¹, \\(\\kappa a = ${(kk * a).toFixed(3)}\\), \\(T = [1 + V_0^2\\sinh^2\\kappa a/4E(V_0-E)]^{-1} = ${T.toExponential(3)}\\) (근사 \\(${(16 * (E / V0) * (1 - E / V0) * Math.exp(-2 * kk * a)).toExponential(3)}\\))` };
+    }
+    const r = rnd(1.1, 4, 2), R = Q.stepR(r, 1);
+    return { q: `<p>에너지가 계단 높이의 \\(${r}\\)배인 전자의 반사 확률은?</p>`, answer: R, label: "R =", sol: `\\(k'/k = \\sqrt{1 - 1/${r}} = ${Math.sqrt(1 - 1 / r).toFixed(4)}\\), \\(R = ((1-k'/k)/(1+k'/k))^2 = ${R.toFixed(4)}\\)` };
+  });
+  SB.drill("drill-ox", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const mats = [["HfO₂", 25], ["Al₂O₃", 9], ["Si₃N₄", 7.5], ["ZrO₂", 25]], [nm, er] = mats[Math.floor(Math.random() * 4)], t = rnd(1, 6, 1);
+      return { q: `<p>두께 \\(${t}\\) nm의 ${nm}(\\(\\varepsilon_r = ${er}\\)) 절연막의 EOT는?</p>`, answer: (t * 3.9) / er, label: "EOT =", unit: "nm", sol: `\\(\\text{EOT} = ${t}\\times3.9/${er} = ${((t * 3.9) / er).toFixed(3)}\\) nm` };
+    }
+    if (k === 1) {
+      const F = rnd(8, 14, 1), J = Q.fowlerNordheim(F * 1e8, 3.1, 0.42) / 1e4;
+      return { q: `<p>SiO₂(\\(A = 1.18\\times10^{-6}\\) A/V², \\(B = 241.6\\) MV/cm)에 \\(${F}\\) MV/cm가 걸렸다. FN 전류 밀도(A/cm²)는?</p>`, answer: J, label: "J =", unit: "A/cm²", tol: "2%", sol: `\\(J = AF^2e^{-B/F} = (1.18\\times10^{-6})(${F}\\times10^8)^2e^{-241.6/${F}}\\) A/m² \\(= ${J.toExponential(3)}\\) A/cm²` };
+    }
+    const phi = rnd(3.5, 5.5, 1), dd = rnd(0.05, 0.3, 2), kk = kap(phi), r = Math.exp(2 * kk * dd);
+    return { q: `<p>STM의 장벽 높이가 \\(${phi}\\) eV이다. 바늘이 \\(${dd}\\) nm 가까워지면 전류는 몇 배가 되는가?</p>`, answer: r, label: "I₂/I₁ =", sol: `\\(\\kappa = \\sqrt{${phi}/0.0381} = ${kk.toFixed(2)}\\) nm⁻¹, \\(e^{2\\kappa\\Delta d} = ${r.toFixed(3)}\\)` };
+  });
+})();
+</script>
+</body>
+</html>
