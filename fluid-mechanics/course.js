@@ -65,8 +65,7 @@ SB.registerCourse({
      "tags": [
       "유선",
       "와도"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "control-volume",
@@ -243,9 +242,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "fluid-kinematics": {
+   "problems": 17,
+   "examples": 7,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 3,
+ "published": 4,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });

@@ -1,0 +1,1557 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>유체 운동학 · 유체역학 · SciBook</title>
+<meta name="description" content="라그랑주·오일러 기술, 속도장과 물질 도함수(국소·대류 가속도), 유선·유적선·유맥선·시간선, 유체 요소의 변형률과 와도, 순환, 레이놀즈 수송 정리를 흐름을 직접 흘려 보는 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/fluid-kinematics.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="유체 운동학 · 유체역학 · SciBook">
+<meta property="og:description" content="라그랑주·오일러 기술, 속도장과 물질 도함수(국소·대류 가속도), 유선·유적선·유맥선·시간선, 유체 요소의 변형률과 와도, 순환, 레이놀즈 수송 정리를 흐름을 직접 흘려 보는 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/fluid-kinematics.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "유체 운동학 · 유체역학 · SciBook", "headline": "04 유체 운동학", "url": "https://science.euiyun.com/fluid-mechanics/chapters/fluid-kinematics.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "라그랑주·오일러 기술, 속도장과 물질 도함수(국소·대류 가속도), 유선·유적선·유맥선·시간선, 유체 요소의 변형률과 와도, 순환, 레이놀즈 수송 정리를 흐름을 직접 흘려 보는 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 4, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "04 유체 운동학", "item": "https://science.euiyun.com/fluid-mechanics/chapters/fluid-kinematics.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+<style>
+  .fk-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--text-dim); margin: 0; padding: 6px 16px 2px; }
+  .fk-legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+  .fk-game { font-weight: 600; }
+</style>
+</head>
+<body data-chapter="fluid-kinematics">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="bernoulli">
+    <div class="eyebrow">Chapter 04</div>
+    <h1>유체 운동학</h1>
+    <p class="lead">굴뚝 연기는 왜 바람이 조금만 흔들려도 구불구불한 띠가 될까? 같은 순간에 그린 유선은 모두 곧은데 말이다. 유체가 <em>어떻게 움직이는가</em> — 속도와 가속도, 변형과 회전 — 를 힘과 무관하게 기술하는 것이 <strong>유체 운동학</strong>이다. 이 장의 언어(속도장, 물질 도함수, 와도, 레이놀즈 수송 정리)는 다음 장부터 질량·운동량·에너지 보존을 유동에 적용하는 모든 해석의 바탕이 된다. 아래는 방향이 주기적으로 흔들리는 바람이 원기둥을 지나는 비정상 유동이다. 점선(순간 유선)과 색 띠(염료 유맥선)가 어긋나는 것을 지켜보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">색 점(염료 주입구)을 끌거나, 빈 곳을 눌러 새 주입구를 놓아 보세요</span></div>
+    <ul class="objectives">
+      <li>라그랑주 기술과 오일러 기술을 구별하고, 속도장 \(\vec V(x,y,z,t)\)로 정상·비정상, 1·2·3차원 유동을 판정한다.</li>
+      <li>물질 도함수 \(D/Dt = \partial/\partial t + \vec V\cdot\nabla\)를 유도하고, 가속도를 국소 가속도와 대류 가속도로 나누어 계산한다.</li>
+      <li>유선·유적선·유맥선·시간선을 정의·계산하고, 비정상 유동에서 셋이 왜 달라지는지 설명한다.</li>
+      <li>유체 요소의 운동을 병진·회전·선형 변형·전단 변형으로 분해하고, 변형률 텐서와 와도 \(\vec\zeta = \nabla\times\vec V = 2\vec\omega\)를 구한다.</li>
+      <li>강제 와류와 자유 와류(랭킨 와류)를 비교하고, 순환 \(\Gamma = \oint \vec V\cdot d\vec s = \iint \zeta\,dA\)를 계산한다.</li>
+      <li>계와 검사 체적을 잇는 레이놀즈 수송 정리를 유도하고, 질량·운동량에 적용해 5장의 검사 체적 해석을 준비한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="descriptions">
+    <h2>라그랑주 기술과 오일러 기술</h2>
+    <p>고체 역학에서는 물체 하나하나를 따라가며 위치 \(\vec x(t)\)와 속도 \(\vec v(t)\)를 쓴다. 유체에도 이 방법을 쓸 수 있다. 유체를 셀 수 없이 많은 작은 <span class="term">유체 입자</span><span class="en">(fluid particle)</span> — 연속체 가정(1장)에서 분자보다는 훨씬 크고 관심 길이보다는 훨씬 작은 덩어리 — 로 보고, 각 입자에 이름표(예: 처음 위치 \(\vec x_0\))를 붙여 \(\vec x_p(\vec x_0, t)\)를 추적하는 방식을 <span class="term">라그랑주 기술</span><span class="en">(Lagrangian description)</span>이라 한다.</p>
+    <p>그러나 강물 속 물 분자 하나하나를 따라가는 것은 거의 불가능하고, 대개 필요하지도 않다. 공학자가 알고 싶은 것은 "이 지점의 압력과 속도"다. 그래서 유체역학은 주로 공간에 고정된 점마다 그 순간 그곳을 지나는 유체의 상태량을 주는 <span class="term">오일러 기술</span><span class="en">(Eulerian description)</span>을 쓴다. 상태량은 위치와 시간의 함수, 곧 <span class="term">장</span><span class="en">(field)</span>이 된다.</p>
+    <div class="formula">$$\vec V = \vec V(x,y,z,t) = u(x,y,z,t)\,\hat\imath + v(x,y,z,t)\,\hat\jmath + w(x,y,z,t)\,\hat k, \qquad p = p(x,y,z,t)$$<div class="where">\(\vec V\)는 <span class="term">속도장</span><span class="en">(velocity field)</span>, \(p\)는 압력장이다. \(u, v, w\)는 \(x, y, z\) 방향 속도 성분. 같은 방식으로 온도장 \(T(x,y,z,t)\), 밀도장 \(\rho(x,y,z,t)\)도 쓴다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="라그랑주 기술은 입자 하나를 따라가고 오일러 기술은 고정된 격자점에서 속도를 잰다">
+        <defs>
+          <marker id="fk-ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fk-mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <rect x="10" y="10" width="380" height="250" rx="10" class="f-surface" stroke="var(--border)"/>
+        <rect x="410" y="10" width="380" height="250" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="30" y="38" style="font-weight:700">라그랑주: 입자를 따라간다</text>
+        <text class="t" x="430" y="38" style="font-weight:700">오일러: 고정된 점에서 잰다</text>
+        <path d="M40,210 C110,200 150,120 220,110 S330,140 370,70" class="s-line" stroke-dasharray="5 4" stroke-width="1.6"/>
+        <circle cx="60" cy="207" r="8" fill="var(--accent)"/><text class="t-acc" x="48" y="236">t₀</text>
+        <circle cx="160" cy="140" r="8" fill="var(--accent)"/><text class="t-acc" x="148" y="168">t₁</text>
+        <circle cx="270" cy="116" r="8" fill="var(--accent)"/><text class="t-acc" x="262" y="146">t₂</text>
+        <line x1="270" y1="116" x2="335" y2="104" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fk-ma)"/>
+        <text class="t-acc" x="300" y="92">V_p(t)</text>
+        <text class="t-dim" x="30" y="62">x_p(x₀, t): 이름표 x₀인 입자의 위치</text>
+        <g stroke="var(--accent-2)" stroke-width="1.8">
+          <line x1="450" y1="100" x2="490" y2="92" marker-end="url(#fk-mb)"/><line x1="540" y1="100" x2="584" y2="96" marker-end="url(#fk-mb)"/><line x1="630" y1="100" x2="678" y2="104" marker-end="url(#fk-mb)"/><line x1="720" y1="100" x2="762" y2="114" marker-end="url(#fk-mb)"/>
+          <line x1="450" y1="160" x2="486" y2="156" marker-end="url(#fk-mb)"/><line x1="630" y1="160" x2="674" y2="162" marker-end="url(#fk-mb)"/><line x1="720" y1="160" x2="760" y2="170" marker-end="url(#fk-mb)"/>
+          <line x1="450" y1="220" x2="480" y2="220" marker-end="url(#fk-mb)"/><line x1="540" y1="220" x2="576" y2="222" marker-end="url(#fk-mb)"/><line x1="630" y1="220" x2="670" y2="226" marker-end="url(#fk-mb)"/><line x1="720" y1="220" x2="756" y2="232" marker-end="url(#fk-mb)"/>
+        </g>
+        <g fill="var(--text-dim)"><circle cx="450" cy="100" r="3"/><circle cx="540" cy="100" r="3"/><circle cx="630" cy="100" r="3"/><circle cx="720" cy="100" r="3"/><circle cx="450" cy="160" r="3"/><circle cx="630" cy="160" r="3"/><circle cx="720" cy="160" r="3"/><circle cx="450" cy="220" r="3"/><circle cx="540" cy="220" r="3"/><circle cx="630" cy="220" r="3"/><circle cx="720" cy="220" r="3"/></g>
+        <rect x="528" y="148" width="24" height="24" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+        <line x1="540" y1="160" x2="582" y2="158" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#fk-mb)"/>
+        <text class="t" x="500" y="194" style="fill:var(--accent-2)">탐침: V(x, y, t)</text>
+        <text class="t-dim" x="430" y="62">입자들은 지나가고, 탐침은 그 자리에 있다</text>
+      </svg>
+      <figcaption>두 가지 기술 방식. 라그랑주 기술은 같은 입자의 이력을, 오일러 기술은 같은 위치의 이력을 기록한다. 기상 관측 기구는 라그랑주식, 기상대의 풍속계는 오일러식 측정이다.</figcaption>
+    </figure>
+    <p>두 기술은 서로 바꿀 수 있다. 오일러 속도장을 알면 입자의 궤적은 \(d\vec x_p/dt = \vec V(\vec x_p, t)\)를 적분해 얻는다(유적선, 4.3절). 거꾸로 모든 입자의 궤적을 알면 각 점을 그 순간 지나는 입자의 속도로 속도장을 만들 수 있다. 실험에서도 두 방식을 모두 쓴다: <span class="term">입자 영상 유속계</span><span class="en">(PIV)</span>는 한 순간 수많은 입자의 변위를 찍어 오일러 속도장을 만들고, 입자 추적 유속계(PTV)는 개별 입자를 라그랑주식으로 쫓는다.</p>
+
+    <div class="predict" data-for="sim-le">
+      <p>원기둥을 지나는 <strong>정상</strong> 유동(어느 점의 속도도 시간에 따라 변하지 않음)에서, 원기둥 앞의 정체점 쪽으로 다가가는 유체 입자의 가속도는?</p>
+      <div class="opts"><button class="opt">0이다 — 정상 유동이므로 아무것도 시간에 따라 변하지 않는다.</button><button class="opt" data-correct>0이 아니다 — 입자는 감속했다가 원기둥 옆을 돌며 다시 가속한다.</button><button class="opt">정체점에 닿을 때만 0이 아니다.</button></div>
+      <div class="quiz-exp">"정상"은 고정된 점에서 본 속도가 시간에 무관하다는 뜻이다(오일러). 입자는 속도가 다른 곳으로 <em>이동하므로</em> 속도가 바뀐다. 아래 시뮬레이터에서 탐침 그래프(평평)와 입자 그래프(골과 봉우리)를 비교해 보라.</div>
+    </div>
+    <div class="sim" id="sim-le">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>입자 따라가기(라그랑주) vs 고정 탐침(오일러)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div><canvas id="cv-le"></canvas></div><div><canvas id="cv-le-chart"></canvas></div><span class="hint top">주황 사각형(탐침)과 청록 점(입자 출발점)을 끌어 보세요</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>자유류 속력 U₀ <output id="le-u-out"></output></span><input type="range" id="le-u" min="0.5" max="2" step="0.1" value="1"></label>
+          <label class="ctrl"><span>비정상 진폭 (0 = 정상) <output id="le-amp-out"></output></span><input type="range" id="le-amp" min="0" max="0.6" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="le-sl" checked> 유선 보기</label>
+          <div class="ctrl-row"><button class="btn primary" id="le-go" type="button">입자 다시 출발</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">탐침 |V|</span><span class="v" id="le-pv">—</span></div>
+        <div class="stat"><span class="k">탐침 |∂V/∂t|</span><span class="v" id="le-pa">—</span></div>
+        <div class="stat"><span class="k">입자 |V|</span><span class="v" id="le-qv">—</span></div>
+        <div class="stat"><span class="k">입자 |DV/Dt|</span><span class="v" id="le-qa">—</span></div>
+      </div>
+      <div class="sim-note">자유류 \(U(t) = U_0[1 + A\sin(2\pi\cdot0.4\,t)]\)가 반지름 0.7 m 원기둥을 지난다. 아래 그래프에서 주황 선은 탐침이 잰 속력, 청록 선은 입자가 느끼는 속력이다. 해볼 것: ① 진폭 0(정상)에서 탐침 그래프는 평평하지만 입자는 정체점 근처에서 느려졌다가 원기둥 옆(어깨)에서 \(2U_0\) 가까이 빨라진다 — 정상 유동에도 가속도가 있다. ② 진폭을 키우면 탐침에도 \(\partial\vec V/\partial t \ne 0\)이 나타난다. ③ 비정상 유동인데도 유선의 모양은 변하지 않는다. 속도장 전체가 \(U(t)\)에 비례해 커졌다 작아질 뿐이기 때문이다.</div>
+    </div>
+
+    <h3>정상 유동과 비정상 유동</h3>
+    <p>어느 점에서도 상태량이 시간에 따라 변하지 않으면 <span class="term">정상 유동</span><span class="en">(steady flow)</span>, 즉 \(\partial(\;)/\partial t = 0\)이다. 그렇지 않으면 <span class="term">비정상 유동</span><span class="en">(unsteady flow)</span>이다. 주기적으로 변하면 <span class="term">주기 유동</span><span class="en">(periodic flow)</span>이라 한다(원기둥 뒤의 카르만 와열, 왕복 펌프). 난류는 순간적으로는 늘 비정상이지만, 시간 평균한 양이 일정하면 "평균적으로 정상"으로 다룬다.</p>
+    <div class="callout warn"><strong>정상 ≠ 등속</strong><p>정상 유동은 <em>고정된 점에서</em> 시간 변화가 없다는 뜻이다. 공간적으로는 얼마든지 속도가 달라질 수 있고(노즐, 원기둥 주위), 그래서 입자는 가속된다. 반대로 공간적으로 균일한 유동(\(\vec V = \vec V(t)\))도 비정상일 수 있다.</p></div>
+    <p>또 같은 유동도 관찰자의 기준틀에 따라 정상이 되기도 한다. 정지한 공기 속을 일정한 속력으로 나는 비행기 주위의 유동은 지면에서 보면 비정상(비행기가 지나가는 순간만 바람이 분다)이지만, 비행기에 고정된 좌표에서 보면 정상이다. 그래서 풍동 실험은 물체를 고정하고 공기를 흘린다.</p>
+
+    <h3>1·2·3차원 유동</h3>
+    <p>속도장이 공간 좌표 몇 개에 의존하는지로 유동의 <span class="term">차원</span><span class="en">(dimensionality)</span>을 말한다. 실제 유동은 거의 모두 3차원이지만, 한두 방향의 변화가 작으면 무시해 문제를 크게 단순화한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="관 입구 영역의 2차원 유동이 하류에서 완전 발달한 1차원 유동이 되는 모습">
+        <defs><marker id="fk-mc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <line x1="40" y1="60" x2="770" y2="60" stroke="var(--text-dim)" stroke-width="3"/><line x1="40" y1="180" x2="770" y2="180" stroke="var(--text-dim)" stroke-width="3"/>
+        <line x1="120" y1="120" x2="770" y2="120" class="s-axis" stroke-dasharray="6 5"/><text class="t-dim" x="730" y="112">r = 0</text>
+        <g stroke="var(--accent)" stroke-width="1.6">
+          <line x1="90" y1="72" x2="140" y2="72" marker-end="url(#fk-mc)"/><line x1="90" y1="96" x2="140" y2="96" marker-end="url(#fk-mc)"/><line x1="90" y1="120" x2="140" y2="120" marker-end="url(#fk-mc)"/><line x1="90" y1="144" x2="140" y2="144" marker-end="url(#fk-mc)"/><line x1="90" y1="168" x2="140" y2="168" marker-end="url(#fk-mc)"/>
+          <line x1="300" y1="66" x2="318" y2="66" marker-end="url(#fk-mc)"/><line x1="300" y1="84" x2="350" y2="84" marker-end="url(#fk-mc)"/><line x1="300" y1="120" x2="362" y2="120" marker-end="url(#fk-mc)"/><line x1="300" y1="156" x2="350" y2="156" marker-end="url(#fk-mc)"/><line x1="300" y1="174" x2="318" y2="174" marker-end="url(#fk-mc)"/>
+          <line x1="560" y1="66" x2="574" y2="66" marker-end="url(#fk-mc)"/><line x1="560" y1="84" x2="616" y2="84" marker-end="url(#fk-mc)"/><line x1="560" y1="102" x2="646" y2="102" marker-end="url(#fk-mc)"/><line x1="560" y1="120" x2="656" y2="120" marker-end="url(#fk-mc)"/><line x1="560" y1="138" x2="646" y2="138" marker-end="url(#fk-mc)"/><line x1="560" y1="156" x2="616" y2="156" marker-end="url(#fk-mc)"/><line x1="560" y1="174" x2="574" y2="174" marker-end="url(#fk-mc)"/>
+        </g>
+        <path d="M150,62 Q330,90 470,118" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 4" stroke-width="1.6"/><path d="M150,178 Q330,150 470,122" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 4" stroke-width="1.6"/>
+        <line x1="480" y1="40" x2="480" y2="200" stroke="var(--text-faint)" stroke-dasharray="3 4"/>
+        <text class="t" x="170" y="34" style="font-weight:700">입구 영역: u = u(r, x) → 2차원</text>
+        <text class="t" x="500" y="34" style="font-weight:700">완전 발달: u = u(r) → 1차원</text>
+        <text class="t-dim" x="60" y="214">균일한 입구 속도</text>
+        <text class="t-dim" x="290" y="214" style="fill:var(--accent-2)">벽에서 자라는 경계층(점선)</text>
+        <text class="t-dim" x="520" y="214">포물선 분포가 더 이상 변하지 않는다</text>
+        <text class="t-dim" x="60" y="240">(원주 방향 θ 의존성이 없는 축대칭 유동이라 3차원 문제가 1·2차원이 된다)</text>
+      </svg>
+      <figcaption>원관 입구 근처에서는 속도 분포가 \(r\)과 \(x\) 모두에 따라 변하는 2차원 유동이고, 경계층이 관 중심에서 만난 뒤(완전 발달 영역, 8장)에는 \(r\)만의 함수인 1차원 유동이 된다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-field">
+      <p>정상 2차원 속도장 \(\vec V = (0.5 + 0.8x)\,\hat\imath + (1.5 - 0.8y)\,\hat\jmath\) m/s에서 점 \(x =\) <span class="tn" data-var="x" data-min="-3" data-max="3" data-step="0.1" data-unit=" m">2.0</span>, \(y =\) <span class="tn" data-var="y" data-min="-1" data-max="5" data-step="0.1" data-unit=" m">3.0</span>의 속도는 \(u =\) <span class="tn-out" data-out="u"></span>, \(v =\) <span class="tn-out" data-out="v"></span>, 속력 <span class="tn-out" data-out="s"></span>, 방향은 +x축에서 <span class="tn-out" data-out="a"></span>이다. <span data-out="msg"></span></p>
+      <canvas id="cv-tg-field"></canvas>
+    </div>
+    <div class="example" data-title="속도장과 정체점">
+      <p>정상 2차원 속도장 \(\vec V = (0.5 + 0.8x)\,\hat\imath + (1.5 - 0.8y)\,\hat\jmath\) m/s (x, y는 m)가 있다. (a) 점 (2.0 m, 3.0 m)에서 속도의 크기와 방향을 구하라. (b) 정체점(\(\vec V = 0\))의 위치를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 오일러 속도장에 좌표를 대입하면 그 점을 그 순간 지나는 유체 입자의 속도가 나온다. 정체점은 두 성분이 동시에 0인 점.</div>
+        <div class="step"><b>풀이</b> (a) \(u = 0.5 + 0.8(2.0) = 2.10\) m/s, \(v = 1.5 - 0.8(3.0) = -0.90\) m/s. \(|\vec V| = \sqrt{2.10^2 + 0.90^2} = 2.28\) m/s, \(\theta = \arctan(-0.90/2.10) = -23.2^\circ\). (b) \(0.5 + 0.8x = 0 \Rightarrow x = -0.625\) m, \(1.5 - 0.8y = 0 \Rightarrow y = 1.875\) m.</div>
+        <div class="answer">(a) 2.28 m/s, +x축에서 아래로 23.2° (b) 정체점 (−0.625 m, 1.875 m)</div>
+        <div class="step"><b>검토</b> 이 장은 정체점을 중심으로 한 "모서리 유동"(\(u \propto x'\), \(v \propto -y'\))을 평행 이동한 것이다. 위의 드래그 숫자 문단에서 정체점으로 점을 옮겨 보면 속력이 0이 된다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="material-derivative">
+    <h2>가속도장과 물질 도함수</h2>
+    <p>뉴턴 제2법칙 \(\vec F = m\vec a\)는 <em>입자</em>에 대한 법칙이다. 그런데 우리가 가진 것은 오일러 속도장이다. 그렇다면 속도장에서 입자의 가속도를 어떻게 얻을까? 단순히 \(\partial\vec V/\partial t\)를 쓰면 안 된다는 것은 위 시뮬레이터에서 이미 보았다 — 정상 유동에서는 \(\partial\vec V/\partial t = 0\)인데도 입자는 가속된다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="입자가 시간 dt 동안 이동하며 속도장의 다른 점으로 옮겨 가는 과정과 연쇄 법칙">
+        <defs>
+          <marker id="fk-md" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="fk-me" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <g stroke="var(--text-faint)" stroke-width="1.2" opacity=".8">
+          <line x1="60" y1="210" x2="92" y2="204"/><line x1="160" y1="210" x2="196" y2="200"/><line x1="260" y1="200" x2="302" y2="184"/><line x1="360" y1="182" x2="408" y2="160"/>
+          <line x1="60" y1="120" x2="94" y2="112"/><line x1="160" y1="112" x2="200" y2="98"/><line x1="260" y1="100" x2="308" y2="80"/><line x1="360" y1="84" x2="414" y2="62"/>
+        </g>
+        <circle cx="140" cy="170" r="9" fill="var(--accent)"/><text class="t-acc" x="110" y="200">P (x, y), 시각 t</text>
+        <line x1="140" y1="170" x2="200" y2="152" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#fk-md)"/><text class="t-acc" x="190" y="140">V(x, y, t)</text>
+        <g data-step="2">
+          <path d="M140,170 Q220,150 300,118" fill="none" stroke="var(--accent-2)" stroke-dasharray="5 4" stroke-width="1.8"/>
+          <circle cx="300" cy="118" r="9" fill="var(--accent-2)"/><text class="t" x="314" y="144" style="fill:var(--accent-2)">P′ (x + u dt, y + v dt)</text><text class="t" x="314" y="164" style="fill:var(--accent-2)">시각 t + dt</text>
+          <line x1="300" y1="118" x2="380" y2="86" stroke="var(--accent-2)" stroke-width="2.6" marker-end="url(#fk-me)"/><text class="t" x="384" y="78" style="fill:var(--accent-2)">V + dV</text>
+        </g>
+        <g data-step="3">
+          <rect x="460" y="40" width="320" height="200" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="476" y="70">dV = (∂V/∂t) dt</text>
+          <text class="t" x="520" y="96">+ (∂V/∂x) u dt + (∂V/∂y) v dt</text>
+          <text class="t" x="476" y="138" style="font-weight:700">a = dV/dt =</text>
+          <text class="t" x="476" y="166" style="fill:var(--accent-2);font-weight:700">∂V/∂t</text><text class="t-dim" x="560" y="166">국소: 그 자리의 시간 변화</text>
+          <text class="t" x="476" y="196" style="fill:var(--accent);font-weight:700">+ u ∂V/∂x + v ∂V/∂y</text>
+          <text class="t-dim" x="490" y="222">대류: 다른 곳으로 옮겨 가서 생기는 변화</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>시각 \(t\)에 점 P에 있는 입자의 속도는 그 자리의 속도장 값 \(\vec V(x,y,t)\)이다.</li>
+        <li>\(dt\) 뒤 입자는 \((u\,dt, v\,dt)\)만큼 이동해 P′에 있고, 그곳의 <em>새 시각</em> 속도장 값을 갖는다. 속도는 시간이 흘러서도, 자리가 바뀌어서도 변한다.</li>
+        <li>연쇄 법칙으로 두 변화를 더하고 \(dt\)로 나누면 입자의 가속도 = 국소 가속도 + 대류 가속도.</li>
+      </ol>
+      <figcaption>물질 도함수의 유도. 입자 위치가 \(x_p(t)\)이므로 \(\vec V(x_p(t), y_p(t), t)\)를 \(t\)로 미분하면 \(dx_p/dt = u\), \(dy_p/dt = v\)가 곱해져 나온다.</figcaption>
+    </figure>
+    <p>3차원으로 쓰면 입자의 가속도는</p>
+    <div class="formula">$$\vec a(x,y,z,t) = \frac{D\vec V}{Dt} = \underbrace{\frac{\partial\vec V}{\partial t}}_{\text{국소 가속도}} + \underbrace{u\frac{\partial\vec V}{\partial x} + v\frac{\partial\vec V}{\partial y} + w\frac{\partial\vec V}{\partial z}}_{\text{대류 가속도 }(\vec V\cdot\nabla)\vec V}$$<div class="where">\(\partial\vec V/\partial t\)는 <span class="term">국소 가속도</span><span class="en">(local acceleration)</span>, \((\vec V\cdot\nabla)\vec V\)는 <span class="term">대류 가속도</span><span class="en">(convective/advective acceleration)</span>. 결과 \(\vec a(x,y,z,t)\)는 그 자체로 하나의 장 — <span class="term">가속도장</span><span class="en">(acceleration field)</span> — 이다.</div></div>
+    <p>성분으로 풀면(시험에서 가장 자주 쓰는 꼴):</p>
+    <div class="formula">$$a_x = \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} + w\frac{\partial u}{\partial z}, \quad a_y = \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} + w\frac{\partial v}{\partial z}, \quad a_z = \cdots$$</div>
+    <p>여기서 연산자 \(D/Dt = \partial/\partial t + \vec V\cdot\nabla\)를 <span class="term">물질 도함수</span><span class="en">(material derivative)</span>라 한다(실질 도함수, substantial derivative라고도 한다). 속도뿐 아니라 어떤 상태량에도 쓸 수 있다. 예컨대 \(DT/Dt\)는 <em>흘러가는 유체 입자</em>가 느끼는 온도 변화율이고, \(D\rho/Dt\)는 입자의 밀도 변화율이다. 대류 항은 비선형(\(\vec V\)가 두 번 곱해짐)이며, 이것이 나비에–스토크스 방정식(6장)을 어렵게 만드는 근원이다.</p>
+    <figure class="mini" id="mini-ddt">
+      <div class="mini-view"><canvas id="cv-ddt"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>물살 u <output id="dd-u-out"></output></span><input type="range" id="dd-u" min="0" max="2" step="0.1" value="1"></label>
+        <label class="ctrl"><span>가열률 ∂T/∂t <output id="dd-r-out"></output></span><input type="range" id="dd-r" min="-0.5" max="0.5" step="0.05" value="0"></label>
+        <span class="readout" id="dd-out"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>수로의 수온은 하류로 갈수록 \(\partial T/\partial x = 0.30\) °C/m만큼 높고, 전체가 \(\partial T/\partial t\)로 데워진다. 고정 탐침(■)은 \(\partial T/\partial t\)만, 물과 함께 떠가는 부표(●)는 \(DT/Dt = \partial T/\partial t + u\,\partial T/\partial x\)를 잰다. 가열률을 −0.30 °C/s, 물살을 1.0 m/s로 맞추면 부표의 온도가 변하지 않는다 — 고정점은 식어 가는데도!</figcaption>
+    </figure>
+
+    <h3>수축 노즐 속의 가속도</h3>
+    <p>폭이 일정하고 높이가 \(h(x) = h_0/(1 + x/L)\)로 줄어드는 2차원 노즐을 생각하자. 연속 방정식(유량 \(uh\) = 일정)에 따라 중심선 속도는 \(u = U(t)(1 + x/L)\)로 선형 증가하고, 벽을 따라 흐르도록 \(v = -U(t)\,y/L\)이다. 입구 속도 \(U(t)\)가 시간에 따라 변하면</p>
+    <div class="formula">$$a_x = \underbrace{\frac{dU}{dt}\Big(1+\frac{x}{L}\Big)}_{\partial u/\partial t} + \underbrace{U\Big(1+\frac{x}{L}\Big)\cdot\frac{U}{L}}_{u\,\partial u/\partial x}, \qquad a_y = -\frac{dU}{dt}\frac{y}{L} + \frac{U^2}{L^2}\,y$$<div class="where">정상(\(dU/dt = 0\))이어도 대류 가속도가 남는다. 출구에서 대류 가속도는 입구의 2배.</div></div>
+    <div class="tangle" id="tg-accel">
+      <p>입구 속도 \(U =\) <span class="tn" data-var="U" data-min="0.5" data-max="6" data-step="0.1" data-unit=" m/s">3.0</span>가 \(dU/dt =\) <span class="tn" data-var="dU" data-min="-5" data-max="5" data-step="0.1" data-unit=" m/s²">0.5</span>로 변하고 있다. 길이 \(L =\) <span class="tn" data-var="L" data-min="0.1" data-max="2" data-step="0.05" data-unit=" m">0.50</span>인 노즐의 중심선 \(x =\) <span class="tn" data-var="x" data-min="0" data-max="2" data-step="0.05" data-unit=" m">0.25</span>에서 유속은 <span class="tn-out" data-out="u"></span>, 국소 가속도 <span class="tn-out" data-out="loc"></span>, 대류 가속도 <span class="tn-out" data-out="conv"></span>, 입자의 가속도 \(Du/Dt =\) <span class="tn-out" data-out="tot"></span>(<span class="tn-out" data-out="g"></span>)이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="sim" id="sim-noz">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>수축 노즐: 국소 가속도와 대류 가속도의 분해</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div><canvas id="cv-noz"></canvas></div><div><canvas id="cv-noz-chart"></canvas></div><span class="hint top">흰 원(탐침)을 노즐 안에서 끌어 보세요</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>평균 입구 속도 U₀ <output id="nz-u-out"></output></span><input type="range" id="nz-u" min="1" max="3" step="0.1" value="2"></label>
+          <div class="ctrl"><span>입구 유속</span><div class="seg" id="nz-mode"><button data-value="steady" class="on">정상</button><button data-value="osc">진동 (주기 2 s)</button></div></div>
+          <label class="check"><input type="checkbox" id="nz-vec" checked> 가속도 벡터</label>
+          <div class="ctrl-row"><button class="btn" id="nz-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">u (탐침)</span><span class="v" id="nz-uu">—</span></div>
+        <div class="stat"><span class="k">국소 a<sub>x</sub></span><span class="v" id="nz-loc">—</span></div>
+        <div class="stat"><span class="k">대류 a<sub>x</sub></span><span class="v" id="nz-conv">—</span></div>
+        <div class="stat"><span class="k">전체 a<sub>x</sub> = Du/Dt</span><span class="v" id="nz-tot">—</span></div>
+      </div>
+      <div class="sim-note">노즐 길이 \(L = 0.50\) m, 입구 반높이 0.20 m, 출구 반높이 0.10 m. 아래 그래프는 중심선의 \(a_x(x)\): 주황 = 국소, 청록 = 대류, 굵은 선 = 합. 해볼 것: ① 정상 모드에서 국소 가속도는 0이지만 대류 가속도는 노즐 안에서 \(x\)에 따라 선형 증가한다(입구 \(U^2/L\), 출구 \(2U^2/L\)). ② 진동 모드로 바꾸고 입구 유속이 줄어드는 순간(국소 가속도 음수) 합이 0에 가까워지는 곳을 찾아라. ③ \(U_0\)를 2배로 하면 대류 가속도는 4배, 국소 가속도는 2배 — 고속 유동일수록 대류 항이 지배한다.</div>
+    </div>
+    <div class="example" data-title="가속도장 계산">
+      <p>예제 4.1의 정상 속도장 \(\vec V = (0.5 + 0.8x)\,\hat\imath + (1.5 - 0.8y)\,\hat\jmath\) m/s에서 가속도장을 구하고, 점 (2.0 m, 3.0 m)에서 가속도의 크기와 방향을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 정상 2차원이므로 \(\partial/\partial t = 0\), \(w = 0\). 대류 항만 계산한다. \(\partial u/\partial x = 0.8\), \(\partial u/\partial y = 0\), \(\partial v/\partial x = 0\), \(\partial v/\partial y = -0.8\) (단위 s⁻¹).</div>
+        <div class="step"><b>풀이</b> \(a_x = u\,\partial u/\partial x + v\,\partial u/\partial y = 0.8(0.5 + 0.8x) = 0.4 + 0.64x\), \(a_y = u\,\partial v/\partial x + v\,\partial v/\partial y = -0.8(1.5 - 0.8y) = -1.2 + 0.64y\). (2, 3)에서 \(a_x = 1.68\) m/s², \(a_y = 0.72\) m/s², \(|\vec a| = 1.83\) m/s², \(\arctan(0.72/1.68) = 23.2^\circ\).</div>
+        <div class="answer">\(\vec a = (0.4 + 0.64x)\,\hat\imath + (-1.2 + 0.64y)\,\hat\jmath\) m/s²; (2, 3)에서 1.83 m/s², +x축에서 위로 23.2°</div>
+        <div class="step"><b>검토</b> 정상 유동인데도 가속도가 0이 아니다. 이 점에서 속도는 아래로 23.2°, 가속도는 위로 23.2° — 입자는 정체점에서 멀어지며 x 방향으로 빨라지고 y 방향으로는 느려진다(\(|v|\) 감소).</div>
+      </details>
+    </div>
+    <div class="example" data-title="비정상 노즐 유동">
+      <p>위 노즐 유동 \(u = U(t)(1 + x/L)\)에서 \(L = 0.50\) m이고 입구 속도가 \(U(t) = 2.0 + 0.5t\) m/s로 증가한다. \(t = 2.0\) s, \(x = 0.25\) m의 중심선에서 국소·대류·전체 가속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 중심선(\(y = 0\))에서는 \(v = 0\)이므로 \(a_x = \partial u/\partial t + u\,\partial u/\partial x\).</div>
+        <div class="step"><b>풀이</b> \(U = 2.0 + 0.5(2.0) = 3.0\) m/s, \(1 + x/L = 1.5\), \(u = 4.5\) m/s. 국소: \(\partial u/\partial t = (dU/dt)(1 + x/L) = 0.5(1.5) = 0.75\) m/s². 대류: \(\partial u/\partial x = U/L = 6.0\) s⁻¹, \(u\,\partial u/\partial x = 4.5(6.0) = 27.0\) m/s². 합 \(a_x = 27.75 \approx 27.8\) m/s².</div>
+        <div class="answer">국소 0.75 m/s², 대류 27.0 m/s², 전체 27.8 m/s² (약 2.8g)</div>
+        <div class="step"><b>검토</b> 입구 유속이 천천히 늘어나는 정도의 비정상성은 대류 가속도에 비해 3%도 안 된다. 위의 드래그 숫자 문단 기본값이 이 예제다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-accel" data-title="물질 도함수로 가속도 구하기"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="flow-lines">
+    <h2>유선, 유적선, 유맥선, 시간선</h2>
+    <p>속도장은 눈에 보이지 않는다. 그것을 그림으로 나타내는 방법이 네 가지 있다. 정상 유동에서는 앞의 셋이 같은 곡선이 되어 굳이 구별할 필요가 없지만, 비정상 유동에서는 모두 다르다 — 이것이 연기나 염료 사진을 읽을 때 가장 흔히 저지르는 실수의 원인이다.</p>
+    <div class="def"><span class="def-k">네 가지 유동 패턴</span>
+      <p><span class="term">유선</span><span class="en">(streamline)</span>: 한 <em>순간</em> 모든 점에서 국소 속도 벡터에 접하는 곡선. 유선을 가로질러 흐르는 유량은 없다.<br>
+      <span class="term">유적선</span><span class="en">(pathline)</span>: 유체 입자 <em>하나</em>가 실제로 지나간 궤적(라그랑주 개념). 장시간 노출 사진에 찍힌 한 입자의 줄.<br>
+      <span class="term">유맥선</span><span class="en">(streakline)</span>: 공간의 한 <em>고정점</em>을 차례로 지나간 모든 입자를 이은 선. 굴뚝 연기, 염료 주입구에서 나온 색 띠.<br>
+      <span class="term">시간선</span><span class="en">(timeline)</span>: 어느 순간 나란히 표시한 이웃 입자들을 나중에 다시 이은 선. 수소 기포선이 대표적이다.</p>
+    </div>
+    <p>유선의 정의에서 곡선의 접선 \(d\vec r = (dx, dy, dz)\)가 \(\vec V\)와 평행해야 하므로, 유선의 방정식은</p>
+    <div class="formula">$$\frac{dx}{u} = \frac{dy}{v} = \frac{dz}{w} \qquad (\text{시각 } t \text{ 고정}), \qquad \text{2차원: } \left(\frac{dy}{dx}\right)_\text{유선} = \frac{v}{u}$$<div class="where">유적선은 \(d\vec x_p/dt = \vec V(\vec x_p, t)\), \(\vec x_p(t_0) = \vec x_0\)을 시간에 대해 적분해 얻는다. 유맥선은 같은 점 \(\vec x_s\)에서 서로 다른 시각 \(\tau\)에 출발한 입자들의 현재 위치 \(\vec x_p(t;\,\vec x_s, \tau)\)를 \(\tau\)에 대해 이은 곡선이다.</div></div>
+
+    <div class="predict" data-for="sim-lines">
+      <p>공간적으로 균일한 바람 \(u = U_0\), \(v = V_0\sin\omega t\)가 분다(방향만 좌우로 흔들린다). 어느 순간이든 유선은 곧은 평행선이다. 한 점의 굴뚝에서 나온 연기(유맥선)의 모양은?</p>
+      <div class="opts"><button class="opt">그 순간의 유선과 같은 곧은 직선</button><button class="opt" data-correct>물결 모양 곡선</button><button class="opt">굴뚝을 중심으로 한 원호</button></div>
+      <div class="quiz-exp">연기의 각 부분은 서로 다른 시각에 굴뚝을 떠나 서로 다른 바람의 역사를 겪었다. 그래서 유맥선은 바람의 시간 변화를 공간에 "기록"한 물결이 된다. 아래에서 정상 ↔ 비정상을 바꿔 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-lines">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>유선·유적선·유맥선 동시에 그리기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-lines"></canvas><span class="hint">흰 원(주입구 S)을 끌어 옮길 수 있다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>유동</span><div class="seg" id="ln2-mode"><button data-value="steady">정상 (기울어진 균일류)</button><button data-value="osc" class="on">비정상 (방향 진동)</button></div></div>
+          <label class="ctrl"><span>횡방향 진폭 V₀ <output id="ln2-v-out"></output></span><input type="range" id="ln2-v" min="0" max="1.2" step="0.05" value="0.6"></label>
+          <label class="ctrl"><span>진동 주기 T <output id="ln2-T-out"></output></span><input type="range" id="ln2-T" min="1" max="8" step="0.5" value="4"></label>
+          <label class="check"><input type="checkbox" id="ln2-s" checked> <span style="color:var(--text-dim)">유선(S를 지나는, 현재 순간)</span></label>
+          <label class="check"><input type="checkbox" id="ln2-k" checked> 유맥선(S에서 나온 염료)</label>
+          <label class="check"><input type="checkbox" id="ln2-p" checked> 유적선(표시 입자 하나)</label>
+          <div class="ctrl-row"><button class="btn primary" id="ln2-tag" type="button">입자 하나 표시</button><button class="btn" id="ln2-clear" type="button">지우기</button><button class="btn" id="ln2-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시각 t</span><span class="v" id="ln2-t">—</span></div>
+        <div class="stat"><span class="k">현재 유선 기울기</span><span class="v" id="ln2-ang">—</span></div>
+        <div class="stat"><span class="k">세 선</span><span class="v" id="ln2-same">—</span></div>
+      </div>
+      <div class="fk-legend"><span><i style="background:var(--text-dim)"></i>유선(점선)</span><span><i style="background:var(--accent)"></i>유맥선</span><span><i style="background:var(--accent-2)"></i>유적선</span></div>
+      <div class="sim-note">\(u = U_0 = 1\) m/s, 비정상 모드에서 \(v = V_0\sin(2\pi t/T)\), 정상 모드에서 \(v = 0.6V_0\)(일정). 해볼 것: ① 정상 모드에서 세 선이 완전히 겹친다. ② 비정상 모드에서 유선은 곧은 선으로 좌우로 흔들릴 뿐이고, 유맥선은 파장 \(U_0T\)인 물결, 유적선은 그와 다른 물결이다(표시한 입자는 늘 유맥선 위에 있지만, 그 입자가 걸어온 길은 유맥선이 아니다). ③ 주기 \(T\)를 늘리면(느린 변화) 주입구 근처에서는 세 선이 가까워진다 — 준정상 근사가 성립하는 조건이다.</div>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="세 입자가 서로 다른 시각에 같은 점에서 출발해 유맥선을 이루는 과정">
+        <rect x="70" y="140" width="20" height="20" rx="3" fill="var(--text-dim)"/><text class="t" x="40" y="130">S</text>
+        <g data-only="1"><circle cx="80" cy="150" r="7" fill="var(--accent)"/><text class="t-acc" x="96" y="176">A 출발 (t₁ = 0)</text></g>
+        <g data-only="2">
+          <polyline points="80,150 96,149 113,146 129,140 145,133 162,124 178,114 194,103 211,91 227,79 243,67" fill="none" stroke="var(--accent-2)" stroke-width="1.8" stroke-dasharray="5 4"/>
+          <circle cx="243" cy="67" r="7" fill="var(--accent)"/><text class="t-acc" x="252" y="60">A</text>
+          <circle cx="80" cy="150" r="7" fill="var(--accent)"/><text class="t-acc" x="96" y="176">B 출발 (t₂ = 1.2 s)</text>
+        </g>
+        <g data-step="3">
+          <polyline points="80,150 96,149 113,146 129,140 145,133 162,124 178,114 194,103 211,91 227,79 243,67 260,57 276,47 292,38 308,32 325,27 341,24 357,24 374,26 390,30 406,36 423,44 439,53 455,64 472,75 488,87 504,99 521,110 537,121 553,130 570,138" fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".75"/>
+          <polyline points="80,150 91,143 102,136 113,129 124,124 134,118 145,114 156,111 167,108 178,107 189,106 200,107 211,108 221,111 232,114 243,118 254,124 265,129 276,136 287,143 298,150 308,158 319,166 330,173 341,181 352,189 363,196 374,203 385,210 396,215 406,220" fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".75"/>
+          <polyline points="80,150 85,152 91,155 96,158 102,161 107,164 113,167 118,171 124,174 129,178 134,182 140,185 145,189 151,193 156,197 162,201 167,205 172,209 178,213 183,217 189,220 194,224 200,228 205,231 211,235 216,238 221,241 227,244 232,247 238,250 243,252" fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".75"/>
+        </g>
+        <g data-only="3"><circle cx="406" cy="36" r="7" fill="var(--accent)"/><circle cx="243" cy="118" r="7" fill="var(--accent)"/><text class="t-acc" x="414" y="28">A</text><text class="t-acc" x="252" y="112">B</text><circle cx="80" cy="150" r="7" fill="var(--accent)"/><text class="t-acc" x="96" y="176">C 출발 (t₃ = 2.4 s)</text></g>
+        <g data-step="4">
+          <polyline points="80,150 92,156 104,162 117,170 129,178 141,186 153,195 166,204 178,213 190,221 202,230 215,237 227,244 239,250 251,255 264,259 276,262 288,264 300,264 313,263 325,261 337,258 349,253 362,248 374,241 386,234 398,226 410,218 423,209 435,200 447,191 459,182 472,174 484,166 496,159 508,153 521,148 533,144 545,140 557,139 570,138" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+          <circle cx="570" cy="138" r="7" fill="var(--accent)"/><circle cx="406" cy="220" r="7" fill="var(--accent)"/><circle cx="243" cy="252" r="7" fill="var(--accent)"/>
+          <text class="t-acc" x="580" y="128">A</text><text class="t-acc" x="414" y="240">B</text><text class="t-acc" x="226" y="282">C</text>
+          <line x1="80" y1="150" x2="407" y2="290" stroke="var(--text-dim)" stroke-width="1.6" stroke-dasharray="7 5"/>
+          <text class="t-dim" x="430" y="290">현재(t = 3.6 s) 유선: 곧은 선</text>
+          <text class="t-acc" x="600" y="170">유맥선 = S–C–B–A</text>
+          <text class="t" x="560" y="60" style="fill:var(--accent-2)">점선: 각 입자의 유적선</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>바람 \(u = 1\) m/s, \(v = 0.9\sin(2\pi t/4)\) m/s 속에서 입자 A가 주입구 S를 떠난다.</li>
+        <li>1.2 s 뒤 A는 위로 휜 유적선을 따라 올라갔다. 이때 B가 S를 떠난다.</li>
+        <li>2.4 s: A와 B는 서로 다른 바람의 역사를 겪어 서로 다른 모양의 유적선을 그린다. C가 출발한다.</li>
+        <li>3.6 s: S에서 나온 모든 입자(…C, B, A)의 <em>현재</em> 위치를 이은 것이 유맥선(굵은 선)이다. 같은 순간의 유선(회색 점선)과도, 어느 입자의 유적선과도 다르다.</li>
+      </ol>
+      <figcaption>유맥선이 만들어지는 과정. 정확한 해 \(x = U_0(t - \tau)\), \(y = (V_0/\omega)(\cos\omega\tau - \cos\omega t)\)로 그렸다(\(\tau\): 출발 시각).</figcaption>
+    </figure>
+    <div class="example" data-title="비정상 유동에서 세 선의 차이">
+      <p>속도장 \(u = U_0\), \(v = V_0\sin\omega t\)에서 \(U_0 = 1.0\) m/s, \(V_0 = 0.50\) m/s, \(\omega = \pi\) rad/s이다. 원점에 주입구가 있다. 시각 \(t = 0.50\) s에 \(x = 0.25\) m인 곳에서 (a) 원점을 지나는 유선, (b) 원점에서 나온 유맥선의 y 좌표를 구하라. (c) \(t = 0\)에 원점을 출발한 입자가 \(x = 0.25\) m를 지날 때의 y 좌표는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 유선: 시각을 고정하고 \(dy/dx = v/u\)를 적분. 유적선: \(dx/dt = U_0\), \(dy/dt = V_0\sin\omega t\)를 적분. 유맥선: 출발 시각 \(\tau\)를 매개변수로 한 유적선의 현재 위치.</div>
+        <div class="step"><b>풀이</b> (a) \(t = 0.5\) s에서 \(v/u = 0.5\sin(\pi/2)/1.0 = 0.50\) → \(y = 0.50x = 0.125\) m. (b) 시각 \(\tau\)에 출발한 입자: \(x = U_0(t - \tau)\), \(y = (V_0/\omega)(\cos\omega\tau - \cos\omega t)\). \(x = 0.25\)이면 \(\tau = 0.25\) s → \(y = (0.5/\pi)(\cos(\pi/4) - \cos(\pi/2)) = 0.1592(0.7071) = 0.113\) m. (c) \(\tau = 0\)인 입자는 \(t = 0.25\) s에 \(x = 0.25\) m를 지난다: \(y = 0.1592(1 - \cos(\pi/4)) = 0.0466\) m.</div>
+        <div class="answer">(a) 0.125 m (b) 0.113 m (c) 0.0466 m — 세 값이 모두 다르다</div>
+        <div class="step"><b>검토</b> \(V_0 = 0\)이면 셋 다 \(y = 0\)이고, 정상 유동(\(v\) 일정)에서도 셋이 일치한다. 위 시뮬레이터에서 정상 ↔ 비정상을 바꿔 확인하라.</div>
+      </details>
+    </div>
+
+    <h3>시간선과 유동 가시화</h3>
+    <p>물속에 가는 백금선을 가로로 걸고 짧은 전압 펄스를 주면 전기 분해로 생긴 수소 기포 줄이 떠내려가며 <em>시간선</em>을 만든다. 시간선의 모양은 곧 속도 분포다 — 벽 근처의 줄은 늦게, 중심의 줄은 빨리 간다.</p>
+    <figure class="mini" id="mini-tl">
+      <div class="mini-view"><canvas id="cv-tl"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>유동</span><div class="seg" id="tl-flow"><button data-value="poi" class="on">푸아죄유(두 벽 정지)</button><button data-value="cou">쿠에트(윗벽 이동)</button></div></div>
+        <button class="btn" id="tl-play" type="button"></button>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽 세로선(백금선)에서 1.2 s마다 수소 기포선이 나온다. 기포선(시간선)이 휘는 모양이 왼쪽 화살표로 그린 속도 분포와 똑같다. 이 유동은 정상이므로 유선·유적선·유맥선은 모두 수평선이지만, 시간선은 시간이 갈수록 늘어나며 휜다.</figcaption>
+    </figure>
+    <p><span class="term">유동 가시화</span><span class="en">(flow visualization)</span> 방법은 위 네 가지 선 중 무엇을 보여 주는지로 구별해야 한다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>방법</th><th>보이는 것</th><th>쓰임</th></tr></thead>
+      <tbody>
+        <tr><td>염료·연기 주입(연속)</td><td>유맥선</td><td>풍동·수조의 박리, 와류 흘림</td></tr>
+        <tr><td>수소 기포(펄스)</td><td>시간선(펄스) / 유맥선(연속)</td><td>수조의 속도 분포</td></tr>
+        <tr><td>장노출 입자 사진</td><td>유적선(짧은 노출이면 유선)</td><td>순간 유선 패턴</td></tr>
+        <tr><td>PIV(입자 영상 유속계)</td><td>순간 속도장 → 유선·와도</td><td>정량 측정, CFD 검증</td></tr>
+        <tr><td>터프트(실), 오일막</td><td>표면 근처 유동 방향</td><td>자동차·날개 표면, 박리선</td></tr>
+        <tr><td>슐리렌·그림자 사진</td><td>밀도 기울기(굴절률)</td><td>충격파, 열 대류(11장)</td></tr>
+      </tbody>
+    </table></div>
+    <p>컴퓨터 계산(CFD) 결과는 오일러 속도장이므로 유선을 그리기 가장 쉽다. 반면 실험 사진은 대개 유맥선이다. 비정상 유동에서 둘을 직접 비교하면 틀린 결론을 내리게 된다 — 이 장 첫머리의 그림처럼.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="kinematics-element">
+    <h2>유체 요소의 운동과 변형률</h2>
+    <p>고체의 작은 조각은 움직이고 돌 뿐 모양은 (거의) 그대로다. 유체 요소는 다르다. 흐르는 동안 끊임없이 늘어나고 찌그러진다. 3장까지는 유체 입자를 점처럼 다뤘지만, 점성 응력(6장)은 바로 이 <em>변형되는 빠르기</em>에 비례하므로 이를 정확히 기술해야 한다. 작은 정사각형 유체 요소의 운동은 네 가지 기본 운동의 합이다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 240" role="img" aria-label="유체 요소의 병진, 회전, 선형 변형, 전단 변형">
+        <g transform="translate(0,0)">
+          <text class="t" x="100" y="28" text-anchor="middle" style="font-weight:700">① 병진</text>
+          <rect x="30" y="90" width="60" height="60" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <rect x="110" y="70" width="60" height="60" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <line x1="60" y1="120" x2="134" y2="102" stroke="var(--accent-2)" stroke-width="2"/><text class="t-dim" x="100" y="190" text-anchor="middle">u dt, v dt 만큼 이동</text>
+        </g>
+        <g data-step="2">
+          <text class="t" x="300" y="28" text-anchor="middle" style="font-weight:700">② 회전</text>
+          <rect x="270" y="90" width="60" height="60" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <polygon points="276,100 335,90 345,149 286,159" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t-dim" x="300" y="190" text-anchor="middle">모양 그대로 돈다</text><text class="t-dim" x="300" y="210" text-anchor="middle">ω = ½(∂v/∂x − ∂u/∂y)</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="500" y="28" text-anchor="middle" style="font-weight:700">③ 선형 변형</text>
+          <rect x="470" y="90" width="60" height="60" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <rect x="455" y="100" width="90" height="40" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t-dim" x="500" y="190" text-anchor="middle">늘고 줄 뿐, 각은 직각</text><text class="t-dim" x="500" y="210" text-anchor="middle">ε_xx = ∂u/∂x</text>
+        </g>
+        <g data-step="4">
+          <text class="t" x="700" y="28" text-anchor="middle" style="font-weight:700">④ 전단 변형</text>
+          <rect x="670" y="90" width="60" height="60" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <polygon points="670,150 730,150 744,90 684,90" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t-dim" x="700" y="190" text-anchor="middle">직각이 찌그러진다</text><text class="t-dim" x="700" y="210" text-anchor="middle">ε_xy = ½(∂u/∂y + ∂v/∂x)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>병진: 요소 전체가 국소 속도로 이동한다. 크기는 \(\vec V\) 자체로 정해진다.</li>
+        <li>회전: 두 변이 같은 각속도로 돈다. 두 변의 평균 회전 각속도를 회전율이라 한다.</li>
+        <li>선형 변형: 변의 길이가 변하는 빠르기(단위 길이당). 세 방향의 합이 부피 변형률이다.</li>
+        <li>전단 변형: 처음에 직각이던 두 변 사이 각이 줄어드는 빠르기의 절반.</li>
+      </ol>
+      <figcaption>유체 요소의 네 가지 기본 운동. 실제 요소는 이 넷이 동시에 일어나며, 속도 기울기(\(\partial u/\partial x\) 등 9개 성분)가 회전과 변형의 빠르기를 모두 정한다.</figcaption>
+    </figure>
+    <p>각각을 식으로 구해 보자. 시각 \(t\)에 변 길이 \(dx, dy\)인 요소 ABCD가 \(dt\) 뒤에 어떻게 되는지 본다. 점 A의 속도가 \((u, v)\)이면 \(dx\) 떨어진 점 B의 속도는 \((u + \tfrac{\partial u}{\partial x}dx,\; v + \tfrac{\partial v}{\partial x}dx)\)이다. 그래서 변 AB는 \(dt\) 동안 반시계로 \(d\alpha = (\partial v/\partial x)\,dt\)만큼 기울고, 변 AD는 시계 방향으로 \(d\beta = (\partial u/\partial y)\,dt\)만큼 기운다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="유체 요소의 두 변이 각 dα와 dβ만큼 기우는 기하">
+        <rect x="80" y="110" width="160" height="120" fill="none" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <text class="t-dim" x="70" y="248">A</text><text class="t-dim" x="244" y="248">B</text><text class="t-dim" x="244" y="104">C</text><text class="t-dim" x="66" y="104">D</text>
+        <text class="t-dim" x="150" y="252">dx</text><text class="t-dim" x="54" y="174">dy</text>
+        <text class="t" x="160" y="60" text-anchor="middle">시각 t</text>
+        <line x1="270" y1="170" x2="360" y2="170" stroke="var(--text-faint)" stroke-width="1.6"/><path d="M360,170 l-10,-6 v12z" fill="var(--text-faint)"/>
+        <polygon points="420,230 590,200 640,80 470,110" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+        <line x1="420" y1="230" x2="600" y2="230" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+        <line x1="420" y1="230" x2="420" y2="100" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+        <path d="M520,230 A100,100 0 0 0 518,213" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+        <text class="t" x="528" y="222" style="fill:var(--accent-2)">dα</text>
+        <path d="M420,160 A70,70 0 0 1 435,161" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+        <text class="t" x="430" y="150" style="fill:var(--accent-2)">dβ</text>
+        <text class="t-dim" x="404" y="250">A′</text><text class="t-dim" x="592" y="220">B′</text><text class="t-dim" x="646" y="76">C′</text><text class="t-dim" x="458" y="100">D′</text>
+        <text class="t" x="530" y="60" text-anchor="middle">시각 t + dt</text>
+        <text class="t" x="660" y="160">dα = (∂v/∂x) dt</text>
+        <text class="t" x="660" y="186">dβ = (∂u/∂y) dt</text>
+        <text class="t-dim" x="660" y="216">AB′: 반시계로 dα</text><text class="t-dim" x="660" y="238">AD′: 시계로 dβ</text>
+      </svg>
+      <figcaption>변 AB(처음 x 방향)는 \(dα\)만큼 반시계로, 변 AD(처음 y 방향)는 \(dβ\)만큼 시계로 기운다. 두 변의 평균 회전이 회전율, 사이각의 감소가 전단 변형이다.</figcaption>
+    </figure>
+    <p>반시계를 양으로 잡으면 두 변의 회전 각속도는 \(+\partial v/\partial x\)와 \(-\partial u/\partial y\)이다. 그 평균이 <span class="term">회전율</span><span class="en">(rate of rotation)</span>, 사이각 감소율 \((d\alpha + d\beta)/dt\)의 절반이 <span class="term">전단 변형률</span><span class="en">(shear strain rate)</span>이다.</p>
+    <div class="formula">$$\omega_z = \frac12\left(\frac{\partial v}{\partial x} - \frac{\partial u}{\partial y}\right), \qquad \varepsilon_{xx} = \frac{\partial u}{\partial x},\quad \varepsilon_{yy} = \frac{\partial v}{\partial y}, \qquad \varepsilon_{xy} = \frac12\left(\frac{\partial u}{\partial y} + \frac{\partial v}{\partial x}\right)$$<div class="where">\(\varepsilon_{xx}, \varepsilon_{yy}\): <span class="term">선형 변형률</span><span class="en">(linear strain rate)</span>(s⁻¹). 3차원에서 \(\omega_x = \tfrac12(\partial w/\partial y - \partial v/\partial z)\), \(\omega_y = \tfrac12(\partial u/\partial z - \partial w/\partial x)\)이 더해진다. 공학 전단 변형률 \(\dot\gamma_{xy} = 2\varepsilon_{xy}\)를 쓰는 책도 있다(1장의 뉴턴 점성 법칙 \(\tau = \mu\,du/dy\)의 \(du/dy\)가 \(\dot\gamma\)이다).</div></div>
+    <p>요소의 부피(넓이) 변화율은 세 선형 변형률의 합으로, 이것을 <span class="term">부피 변형률</span><span class="en">(volumetric strain rate)</span>이라 한다.</p>
+    <div class="formula">$$\frac{1}{\delta V}\frac{D(\delta V)}{Dt} = \varepsilon_{xx} + \varepsilon_{yy} + \varepsilon_{zz} = \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} + \frac{\partial w}{\partial z} = \nabla\cdot\vec V$$<div class="where">비압축성 유체는 요소의 부피가 변하지 않으므로 \(\nabla\cdot\vec V = 0\) — 6장의 비압축성 연속 방정식이다. 한 방향으로 늘어나면 다른 방향으로 반드시 줄어든다.</div></div>
+
+    <h3>변형률 텐서</h3>
+    <p>9개의 변형률 성분을 모으면 대칭 2계 텐서가 된다. 속도 기울기 텐서 \(\partial u_i/\partial x_j\)는 언제나 대칭 부분(변형률)과 반대칭 부분(회전)으로 나뉜다.</p>
+    <div class="formula">$$\varepsilon_{ij} = \begin{pmatrix} \dfrac{\partial u}{\partial x} & \tfrac12\!\left(\dfrac{\partial u}{\partial y}+\dfrac{\partial v}{\partial x}\right) & \tfrac12\!\left(\dfrac{\partial u}{\partial z}+\dfrac{\partial w}{\partial x}\right)\\[2mm] \cdot & \dfrac{\partial v}{\partial y} & \tfrac12\!\left(\dfrac{\partial v}{\partial z}+\dfrac{\partial w}{\partial y}\right)\\[2mm] \text{대칭} & \cdot & \dfrac{\partial w}{\partial z}\end{pmatrix}, \qquad \frac{\partial u_i}{\partial x_j} = \varepsilon_{ij} + \tfrac12\!\left(\frac{\partial u_i}{\partial x_j} - \frac{\partial u_j}{\partial x_i}\right)$$<div class="where">대칭 텐서이므로 언제나 좌표축을 돌려 비대각 성분(전단)을 모두 0으로 만드는 <span class="term">주축</span><span class="en">(principal axes)</span>이 있다. 그 방향으로는 순수한 늘어남·줄어듦만 있다. 6장에서 뉴턴 유체의 점성 응력은 \(\tau_{ij} = 2\mu\,\varepsilon_{ij}\)(비압축성)로 이 텐서에 비례한다.</div></div>
+    <figure class="mini" id="mini-strain">
+      <div class="mini-view"><canvas id="cv-strain"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>선형 변형률 ε<sub>xx</sub> = −ε<sub>yy</sub> <output id="sr-e-out"></output></span><input type="range" id="sr-e" min="-0.5" max="0.5" step="0.05" value="0.3"></label>
+        <label class="ctrl"><span>전단 변형률 ε<sub>xy</sub> <output id="sr-g-out"></output></span><input type="range" id="sr-g" min="-0.5" max="0.5" step="0.05" value="0"></label>
+        <label class="ctrl"><span>회전율 ω<sub>z</sub> <output id="sr-w-out"></output></span><input type="range" id="sr-w" min="-0.5" max="0.5" step="0.05" value="0"></label>
+        <button class="btn" id="sr-play" type="button"></button>
+        <span class="readout" id="sr-out"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>선형 속도장 \(u = \varepsilon_{xx}x + (\varepsilon_{xy} - \omega_z)y\), \(v = (\varepsilon_{xy} + \omega_z)x - \varepsilon_{xx}y\) 속의 원형 유체 요소. 변형률만 있으면 원은 주축(점선) 방향으로 늘어나는 타원이 되고, 회전율만 있으면 모양 그대로 돈다. 비압축성이므로 넓이는 늘 그대로다. 전단 변형률만 넣으면 주축이 45° 방향임을 확인하라.</figcaption>
+    </figure>
+
+    <div class="predict" data-for="sim-elem">
+      <p>욕조 배수구 둘레처럼 속력이 \(u_\theta \propto 1/r\)인 <strong>자유 와류</strong> 속에 작은 정사각형 유체 요소를 놓았다. 요소는 중심 둘레를 돈다. 요소 자체는(요소 위에 그린 십자는) 회전하는가?</p>
+      <div class="opts"><button class="opt">예, 중심 둘레를 도는 만큼 같은 방향으로 돈다.</button><button class="opt" data-correct>아니요, 찌그러지기는 하지만 십자의 평균 방향은 그대로다.</button><button class="opt">반대 방향으로 공전 속도의 2배로 돈다.</button></div>
+      <div class="quiz-exp">자유 와류에서는 바깥쪽이 느리므로 반지름 방향 변은 뒤로 처지고(시계), 원주 방향 변은 궤도를 따라 반시계로 돈다. 두 회전이 정확히 상쇄되어 \(\omega_z = 0\) — <em>비회전</em> 유동이다. 아래에서 강제 와류와 비교하라.</div>
+    </div>
+    <div class="sim" id="sim-elem">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>유체 요소 띄우기: 회전하는가, 변형하는가?</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-elem"></canvas><span class="hint">흰 원을 끌어 요소를 놓고 ▶를 누르세요</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>유동</span><select id="el-flow">
+            <option value="shear">쿠에트 전단 u = ky</option>
+            <option value="forced">강제 와류 (강체 회전)</option>
+            <option value="free" selected>자유 와류 u<sub>θ</sub> = K/r</option>
+            <option value="strain">정체점 유동 u = kx, v = −ky</option>
+            <option value="diag">순수 변형 u = ky, v = kx</option>
+            <option value="poi">채널 포물선 분포</option>
+          </select></label>
+          <label class="check"><input type="checkbox" id="el-quiver" checked> 속도 화살표</label>
+          <div class="ctrl-row"><button class="btn primary" id="el-go" type="button">▶ 흘려 보내기</button><button class="btn" id="el-reset" type="button">되돌리기</button></div>
+          <div class="ctrl"><span class="fk-game">도전: 수수께끼 유동 맞히기</span>
+            <div class="ctrl-row"><button class="btn" id="el-mystery" type="button">수수께끼 유동</button><button class="btn" id="el-ans-r" type="button">회전 유동</button><button class="btn" id="el-ans-i" type="button">비회전 유동</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">요소 중심의 와도 ζ</span><span class="v" id="el-z">—</span></div>
+        <div class="stat"><span class="k">십자의 평균 회전각</span><span class="v" id="el-rot">—</span></div>
+        <div class="stat"><span class="k">사이각 변화</span><span class="v" id="el-shear">—</span></div>
+        <div class="stat"><span class="k">넓이 비</span><span class="v" id="el-area">—</span></div>
+        <div class="stat"><span class="k">도전 점수</span><span class="v" id="el-score">—</span></div>
+      </div>
+      <div class="sim-note">십자(주황)는 요소와 함께 움직이는 두 물질선이다. 두 선의 평균 회전각이 회전, 사이각 변화가 전단 변형이다. 해볼 것: ① 쿠에트 전단은 "곧게 흐르는데도" 회전 유동이다(\(\zeta = -k\)). ② 강제 와류는 회전만 있고 변형이 없으며, 자유 와류는 거꾸로 변형만 있고 회전이 없다. ③ 순수 변형 \(u = ky,\ v = kx\)는 쿠에트 전단과 \(\partial u/\partial y\)가 같지만 비회전이다. ④ 도전: "수수께끼 유동"을 누르면 이름을 숨긴 유동(회전된 좌표)이 나온다. 요소를 띄워 십자를 관찰하고 회전/비회전을 판정하라.</div>
+    </div>
+    <div class="example" data-title="변형률과 와도">
+      <p>2차원 속도장 \(\vec V = (x^2 - y^2)\,\hat\imath - 2xy\,\hat\jmath\) (단위 m/s, x·y는 m)에 대해 (a) 비압축성인지, (b) 점 (1, 2)에서 선형·전단 변형률과 와도, (c) 그 점의 가속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 속도 기울기 네 개를 먼저 구한다: \(\partial u/\partial x = 2x\), \(\partial u/\partial y = -2y\), \(\partial v/\partial x = -2y\), \(\partial v/\partial y = -2x\).</div>
+        <div class="step"><b>풀이</b> (a) \(\nabla\cdot\vec V = 2x - 2x = 0\) → 비압축성. (b) (1, 2)에서 \(\varepsilon_{xx} = 2\) s⁻¹, \(\varepsilon_{yy} = -2\) s⁻¹, \(\varepsilon_{xy} = \tfrac12(-4 - 4) = -4\) s⁻¹, \(\zeta_z = \partial v/\partial x - \partial u/\partial y = -4 - (-4) = 0\). (c) \(u = -3\), \(v = -4\) m/s. \(a_x = u(2x) + v(-2y) = -6 + 16 = 10\) m/s², \(a_y = u(-2y) + v(-2x) = 12 + 8 = 20\) m/s².</div>
+        <div class="answer">(a) 비압축성 (b) ε<sub>xx</sub> = 2, ε<sub>yy</sub> = −2, ε<sub>xy</sub> = −4 s⁻¹, ζ = 0 (c) a = (10, 20) m/s²</div>
+        <div class="step"><b>검토</b> 이 유동은 어디서나 \(\zeta = 0\)인 비회전 유동이다(6장에서 다룰 모서리 유동의 일종). 비회전 유동에서는 \(\vec a = \nabla(V^2/2)\)가 성립한다: \(V^2/2 = (x^2+y^2)^2/2\)의 기울기 \(2x(x^2+y^2) = 10\), \(2y(x^2+y^2) = 20\)으로 일치한다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="vorticity">
+    <h2>와도, 와류, 순환</h2>
+    <p>회전율 벡터 \(\vec\omega\)의 2배를 <span class="term">와도</span><span class="en">(vorticity)</span>라 한다. 계수 ½이 사라져 식이 깔끔해지고, 속도의 회전(curl)과 정확히 같다.</p>
+    <div class="formula">$$\vec\zeta = \nabla\times\vec V = \left(\frac{\partial w}{\partial y} - \frac{\partial v}{\partial z}\right)\hat\imath + \left(\frac{\partial u}{\partial z} - \frac{\partial w}{\partial x}\right)\hat\jmath + \left(\frac{\partial v}{\partial x} - \frac{\partial u}{\partial y}\right)\hat k = 2\vec\omega$$<div class="where">2차원 유동(xy 평면)에서는 \(\zeta_z = \partial v/\partial x - \partial u/\partial y\)만 남는다. 원통 좌표에서는 \(\zeta_z = \dfrac1r\dfrac{\partial(ru_\theta)}{\partial r} - \dfrac1r\dfrac{\partial u_r}{\partial\theta}\). 양(+)이면 반시계 회전.</div></div>
+    <p>어디서나 \(\vec\zeta = 0\)인 유동을 <span class="term">비회전 유동</span><span class="en">(irrotational flow)</span>, 그렇지 않으면 <span class="term">회전 유동</span><span class="en">(rotational flow)</span>이라 한다. 와도는 점성에 의해 벽에서 만들어지므로, 벽 근처의 경계층과 물체 뒤의 후류는 회전 유동이다. 반면 정지한 유체나 균일류에서 출발해 벽에서 멀리 떨어진 영역은 비회전으로 남는다(켈빈 정리). 비회전 유동은 속도 퍼텐셜 \(\vec V = \nabla\phi\)로 쓸 수 있어 해석이 매우 쉬워진다 — 6장의 퍼텐셜 유동이다.</p>
+
+    <h3>강제 와류와 자유 와류</h3>
+    <div class="compare">
+      <div><h4>강제 와류 (강체 회전)</h4><p>\(u_\theta = \omega r\). 회전하는 통 속의 물(2장), 원심 분리기. \(\zeta_z = \frac1r\frac{d}{dr}(\omega r^2) = 2\omega\) — 어디서나 일정한 와도, 변형은 0. 유체 전체가 굳은 고체처럼 돈다.</p></div>
+      <div><h4>자유 와류 (비회전 와류)</h4><p>\(u_\theta = K/r = \Gamma/(2\pi r)\). 배수구 소용돌이, 태풍의 바깥, 날개 끝 와류의 바깥. \(\zeta_z = \frac1r\frac{d}{dr}(K) = 0\) (\(r > 0\)) — 비회전. 중심 \(r = 0\)에서 속도가 무한대가 되는 특이점이 있다.</p></div>
+    </div>
+    <p>실제 소용돌이는 둘을 이어 붙인 <span class="term">랭킨 와류</span><span class="en">(Rankine vortex)</span>로 잘 근사된다: 핵 반지름 \(R\) 안쪽은 강제 와류 \(u_\theta = V_\text{max}\,r/R\), 바깥은 자유 와류 \(u_\theta = V_\text{max}\,R/r\). 속력은 \(r = R\)에서 최대다. 토네이도·태풍의 "눈"이 이 핵이다.</p>
+    <figure class="mini" id="mini-rk">
+      <div class="mini-view"><canvas id="cv-rk"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>핵 반지름 R <output id="rk-R-out"></output></span><input type="range" id="rk-R" min="0.3" max="1.5" step="0.05" value="0.8"></label>
+        <button class="btn" id="rk-play" type="button"></button>
+        <span class="readout" id="rk-out"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위에서 내려다본 랭킨 와류(왼쪽)와 속도·와도 분포(오른쪽). 그래프 아래 흰 원을 끌어 부표의 반지름을 바꿀 수 있다. 물 위에 띄운 작은 십자 부표는 국소 회전율 \(\zeta/2\)로 돈다. 핵 안쪽에서는 공전 한 바퀴에 부표도 한 바퀴 돌고(강제 와류), 핵 바깥에서는 공전하면서도 십자가 늘 같은 방향을 가리킨다(자유 와류, 비회전).</figcaption>
+    </figure>
+
+    <h3>순환</h3>
+    <p>폐곡선 \(C\)를 따라 속도의 접선 성분을 적분한 값을 <span class="term">순환</span><span class="en">(circulation)</span>이라 한다. 스토크스 정리에 따라 순환은 곡선이 둘러싼 면을 지나는 와도의 "다발"과 같다.</p>
+    <div class="formula">$$\Gamma = \oint_C \vec V\cdot d\vec s = \iint_A (\nabla\times\vec V)\cdot\vec n\,dA = \iint_A \zeta_z\,dA$$<div class="where">반시계 방향 적분이 양. 단위 m²/s. 강제 와류의 반지름 \(r\) 원: \(\Gamma = (\omega r)(2\pi r) = 2\pi\omega r^2 = \zeta\cdot\pi r^2\). 자유 와류의 원: \(\Gamma = (K/r)(2\pi r) = 2\pi K\) — 반지름과 무관하다. 그래서 자유 와류의 세기를 \(\Gamma\)로 나타내 \(u_\theta = \Gamma/2\pi r\)로 쓴다.</div></div>
+    <div class="tangle" id="tg-vortex">
+      <p>반지름 0.30 m 원통 탱크가 <span class="tn" data-var="n" data-min="5" data-max="300" data-step="5" data-unit=" rpm">60</span>으로 돌아 물이 강체 회전한다. 각속도 \(\omega =\) <span class="tn-out" data-out="w"></span>, 와도 \(\zeta = 2\omega =\) <span class="tn-out" data-out="z"></span>이고, 반지름 <span class="tn" data-var="r" data-min="0.02" data-max="0.3" data-step="0.01" data-unit=" m">0.20</span>인 원을 따라 잰 순환은 \(\Gamma = 2\pi\omega r^2 =\) <span class="tn-out" data-out="G"></span>, 그 원 위의 속력은 <span class="tn-out" data-out="v"></span>이다. 같은 순환의 <em>자유</em> 와류라면 반지름 2배인 곳의 속력은 <span class="tn-out" data-out="vf"></span>.</p>
+    </div>
+    <div class="predict" data-for="sim-circ">
+      <p>자유 와류 영역(랭킨 와류의 핵 바깥)에 <em>핵을 둘러싸지 않는</em> 원을 그렸다. 원의 한쪽에서는 유체가 원을 따라 돌고 있는데, 이 원을 따라 잰 순환은?</p>
+      <div class="opts"><button class="opt">양(+): 반시계로 도는 유동이므로</button><button class="opt" data-correct>0: 둘러싼 면 안에 와도가 없으므로</button><button class="opt">원의 크기에 비례한다</button></div>
+      <div class="quiz-exp">스토크스 정리 \(\Gamma = \iint\zeta\,dA\)에서 핵 바깥은 \(\zeta = 0\)이다. 중심 쪽 호의 빠른 기여와 바깥 호의 느린 역방향 기여가 정확히 상쇄된다. 아래에서 원을 끌어 확인하고, 원이 핵을 걸치면 어떻게 되는지 보라.</div>
+    </div>
+    <div class="sim" id="sim-circ">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>순환 재기: 폐곡선을 끌어 Γ = ∮V·ds 구하기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-circ"></canvas><span class="hint">가운데 원(이동)과 테두리 원(크기)을 끌어 보세요</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>유동</span><select id="ci-flow">
+            <option value="rankine" selected>랭킨 와류 (Γ₀ = 6.0 m²/s, R = 0.8 m)</option>
+            <option value="forced">강제 와류 (ω = 1.0 rad/s)</option>
+            <option value="shear">전단 유동 u = 1.0·y</option>
+          </select></label>
+          <div class="ctrl"><span>폐곡선</span><div class="seg" id="ci-shape"><button data-value="circle" class="on">원</button><button data-value="square">정사각형</button></div></div>
+          <label class="check"><input type="checkbox" id="ci-col" checked> V·ds 부호로 곡선 색칠</label>
+          <div class="ctrl"><span class="fk-game">도전: 목표 순환 만들기</span><div class="ctrl-row"><button class="btn" id="ci-new" type="button">새 목표</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Γ = ∮V·ds</span><span class="v" id="ci-g">—</span></div>
+        <div class="stat"><span class="k">∬ζ dA</span><span class="v" id="ci-z">—</span></div>
+        <div class="stat"><span class="k">둘러싼 넓이</span><span class="v" id="ci-a">—</span></div>
+        <div class="stat"><span class="k">목표 Γ</span><span class="v" id="ci-t">—</span></div>
+      </div>
+      <div class="sim-note">곡선의 색은 \(\vec V\cdot d\vec s\)의 부호다(빨강 +, 파랑 −). 해볼 것: ① 랭킨 와류에서 핵을 완전히 감싸는 원은 크기와 위치에 상관없이 \(\Gamma = \Gamma_0\)이다. ② 핵에서 떨어진 원은 \(\Gamma = 0\) — 빨강과 파랑 부분이 상쇄된다. ③ 전단 유동은 유선이 모두 곧은데도 어느 곡선이든 \(\Gamma = -k\times\)넓이 — 회전 유동이다. ④ 도전: "새 목표"로 주어진 Γ를 ±3% 안으로 만들어라. 랭킨 와류에서 \(\Gamma_0\)보다 작은 목표는 핵을 일부만 걸쳐야 한다.</div>
+    </div>
+    <div class="example" data-title="토네이도의 랭킨 와류 모형">
+      <p>토네이도를 핵 반지름 \(R = 50\) m, 최대 풍속 \(V_\text{max} = 60\) m/s인 랭킨 와류로 근사한다. (a) 핵 안의 와도와 회전 주기, (b) 핵을 감싸는 모든 폐곡선의 순환, (c) 중심에서 200 m 떨어진 곳의 풍속을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 핵 안은 강제 와류(\(\omega = V_\text{max}/R\), \(\zeta = 2\omega\)), 바깥은 자유 와류(\(u_\theta r\) = 일정). 순환은 핵 경계 원에서 구하면 된다.</div>
+        <div class="step"><b>풀이</b> (a) \(\omega = 60/50 = 1.20\) rad/s, \(\zeta = 2.40\) s⁻¹, 주기 \(2\pi/\omega = 5.24\) s. (b) \(\Gamma = 2\pi R V_\text{max} = 2\pi(50)(60) = 1.88\times10^4\) m²/s. 확인: \(\zeta\cdot\pi R^2 = 2.40\times\pi(2500) = 1.88\times10^4\) m²/s. (c) \(u_\theta = V_\text{max}R/r = 60(50/200) = 15.0\) m/s.</div>
+        <div class="answer">(a) ζ = 2.40 s⁻¹, 주기 5.24 s (b) Γ = 1.88 × 10⁴ m²/s (c) 15.0 m/s</div>
+        <div class="step"><b>검토</b> 바깥의 바람은 \(1/r\)로 약해지지만 회전(와도)은 없다. 실제 토네이도의 압력 강하는 이 속도 분포와 베르누이·반지름 방향 힘 평형(2장 강체 운동)으로 구한다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-vort" data-title="와도·순환 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="rtt">
+    <h2>레이놀즈 수송 정리</h2>
+    <p>물리 법칙(질량 보존, 뉴턴 제2법칙, 열역학 제1법칙)은 모두 <span class="term">계</span><span class="en">(system)</span> — 정해진 물질 덩어리 — 에 대해 쓰여 있다: \(dm_\text{sys}/dt = 0\), \(d(m\vec V)_\text{sys}/dt = \sum\vec F\). 그러나 유동에서는 물질이 끊임없이 드나드는 공간의 영역, 곧 <span class="term">검사 체적</span><span class="en">(control volume, CV)</span>에 대해 말하고 싶다(펌프 하나, 노즐 하나). 둘을 잇는 다리가 <span class="term">레이놀즈 수송 정리</span><span class="en">(Reynolds transport theorem, RTT)</span>다. 물질 도함수가 "입자 ↔ 점"의 다리였다면, RTT는 "계 ↔ 검사 체적"의 다리다.</p>
+    <p>계의 임의의 <span class="term">종량 상태량</span><span class="en">(extensive property)</span> \(B\)(질량, 운동량, 에너지처럼 양에 비례하는 것)와 단위 질량당 값인 <span class="term">강도 상태량</span><span class="en">(intensive property)</span> \(b = dB/dm\)을 생각한다. 그러면 \(B = \int\rho b\,dV\)이다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>법칙</th><th>B</th><th>b = B/m</th><th>계에 대한 식</th></tr></thead>
+      <tbody>
+        <tr><td>질량 보존</td><td>m</td><td>1</td><td>dm/dt = 0</td></tr>
+        <tr><td>선운동량</td><td>mV</td><td>V</td><td>d(mV)/dt = ΣF</td></tr>
+        <tr><td>각운동량</td><td>H = r × mV</td><td>r × V</td><td>dH/dt = ΣM</td></tr>
+        <tr><td>에너지</td><td>E</td><td>e = u + V²/2 + gz</td><td>dE/dt = Q̇ − Ẇ</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="고정된 검사 체적과 그것을 지나가는 계로부터 레이놀즈 수송 정리를 유도하는 과정">
+        <path d="M30,70 L250,70 L470,110 L770,110" fill="none" stroke="var(--text-dim)" stroke-width="3"/>
+        <path d="M30,230 L250,230 L470,190 L770,190" fill="none" stroke="var(--text-dim)" stroke-width="3"/>
+        <g data-only="1"><polygon points="150,70 250,70 470,110 560,110 560,190 470,190 250,230 150,230" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/><text class="t-acc" x="300" y="158">계 = CV (시각 t)</text></g>
+        <g data-step="2">
+          <polygon points="210,70 250,70 470,110 640,110 640,190 470,190 250,230 210,230" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <rect x="150" y="70" width="60" height="160" fill="var(--accent-2)" opacity=".22"/><text class="t" x="162" y="158" style="fill:var(--accent-2);font-weight:700">I</text>
+          <rect x="560" y="110" width="80" height="80" fill="var(--accent)" opacity=".38"/><text class="t" x="590" y="158" style="font-weight:700">II</text>
+          <text class="t-acc" x="300" y="158">계 (t + Δt)</text>
+          <line x1="150" y1="244" x2="210" y2="244" stroke="var(--accent-2)" stroke-width="2"/><text class="t-dim" x="216" y="249">V₁Δt</text>
+          <line x1="560" y1="210" x2="640" y2="210" stroke="var(--accent)" stroke-width="2"/><text class="t-dim" x="576" y="232">V₂Δt</text>
+        </g>
+        <rect x="150" y="60" width="410" height="180" fill="none" stroke="var(--text)" stroke-width="1.8" stroke-dasharray="8 5"/>
+        <text class="t" x="420" y="56">고정된 검사 체적 CV (점선)</text>
+        <g data-step="3"><rect x="40" y="258" width="720" height="38" rx="8" class="f-elev" stroke="var(--border)"/><text class="t" x="400" y="282" text-anchor="middle">B_sys(t+Δt) = B_CV(t+Δt) − B_I + B_II,   B_sys(t) = B_CV(t)</text></g>
+        <g data-step="4"><rect x="40" y="8" width="720" height="36" rx="8" class="f-elev" stroke="var(--border)"/><text class="t" x="400" y="31" text-anchor="middle" style="font-weight:700">dB_sys/dt = dB_CV/dt − ρ₁b₁V₁A₁ + ρ₂b₂V₂A₂</text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>시각 \(t\)에 검사 체적(점선) 안에 있는 유체를 계로 정한다. 이 순간 \(B_\text{sys}(t) = B_\text{CV}(t)\).</li>
+        <li>\(\Delta t\) 뒤 계는 하류로 밀려 났다. 영역 I(입구 쪽, CV 안이지만 계 아님)에는 새 유체가 들어왔고, 영역 II(출구 쪽, CV 밖)로 계의 일부가 빠져나갔다.</li>
+        <li>계의 상태량 = CV의 상태량 − 영역 I + 영역 II. 영역 I의 양은 \(\rho_1 b_1 (A_1V_1\Delta t)\), 영역 II는 \(\rho_2 b_2 (A_2V_2\Delta t)\).</li>
+        <li>빼고 \(\Delta t\)로 나눠 \(\Delta t \to 0\): 계의 변화율 = CV 안의 변화율 + (나가는 유량) − (들어오는 유량).</li>
+      </ol>
+      <figcaption>입구 1개, 출구 1개인 관에 대한 RTT 유도. 입출구 단면에서 상태량이 균일하다고 보았다. 일반적인 검사면에서는 유량 항이 면적분이 된다.</figcaption>
+    </figure>
+    <p>검사면 위의 넓이 요소 \(dA\)를 통해 바깥 법선 \(\vec n\) 방향으로 나가는 체적 유량은 \(\vec V\cdot\vec n\,dA\)이다(들어오면 음수). 이를 이용해 일반적인 꼴로 쓰면, 고정된 검사 체적에 대해</p>
+    <div class="formula">$$\frac{dB_\text{sys}}{dt} = \frac{d}{dt}\int_\text{CV}\rho b\,dV + \int_\text{CS}\rho b\,(\vec V\cdot\vec n)\,dA$$<div class="where">첫째 항: CV 안에 들어 있는 \(B\)의 시간 변화율(정상 유동이면 0). 둘째 항: 검사면(CS)을 통해 순수하게 <em>나가는</em> \(B\)의 유량. 입출구가 여럿이고 각 단면에서 균일하면 \(\int_\text{CS} \to \sum_\text{out}\dot m b - \sum_\text{in}\dot m b\).</div></div>
+    <p>검사 체적이 일정한 속도 \(\vec V_\text{CS}\)로 움직이면(예: 분류를 받는 움직이는 날개), 검사면을 지나는 유량은 <em>상대</em> 속도 \(\vec V_r = \vec V - \vec V_\text{CS}\)로 정해진다. 변형하는 검사 체적에서도 각 점의 검사면 속도를 쓰면 같은 식이 된다.</p>
+    <div class="formula">$$\frac{dB_\text{sys}}{dt} = \frac{d}{dt}\int_\text{CV}\rho b\,dV + \int_\text{CS}\rho b\,(\vec V_r\cdot\vec n)\,dA, \qquad \vec V_r = \vec V - \vec V_\text{CS}$$<div class="where">\(\vec b\)가 속도(운동량)일 때 \(b\) 자리의 \(\vec V\)는 관성 좌표에 대한 속도이고, 유량을 정하는 것만 상대 속도 \(\vec V_r\)이다(5장).</div></div>
+    <div class="callout deep"><strong>심화: 라이프니츠 정리와 물질 도함수</strong><p>RTT는 경계가 움직이는 적분의 미분 규칙(3차원 라이프니츠 정리)이다. 계가 차지하는 영역 \(V_\text{sys}(t)\)의 경계는 유속으로 움직이므로 \(\dfrac{d}{dt}\int_{V_\text{sys}(t)}\rho b\,dV = \int\dfrac{\partial(\rho b)}{\partial t}dV + \oint\rho b\,\vec V\cdot\vec n\,dA\). 발산 정리로 면적분을 부피 적분으로 바꾸면 \(\int[\partial(\rho b)/\partial t + \nabla\cdot(\rho b\vec V)]\,dV\)이고, 연속 방정식 \(\partial\rho/\partial t + \nabla\cdot(\rho\vec V) = 0\)을 쓰면 피적분 함수는 \(\rho\,Db/Dt\)가 된다. 즉 \(\dfrac{dB_\text{sys}}{dt} = \int_\text{sys}\rho\dfrac{Db}{Dt}dV\) — 무한히 작은 계에 대한 RTT가 바로 물질 도함수다. \(b = \vec V\)로 두면 단위 부피당 뉴턴 법칙 \(\rho\,D\vec V/Dt = \sum\vec f\), 곧 6장의 운동 방정식이 나온다.</p></div>
+    <div class="sim" id="sim-rtt">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>움직이는 계 vs 고정된 검사 체적</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-rtt"></canvas><span class="hint">검사 체적의 두 면(흰 원)을 끌어 옮길 수 있다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>경과 시간 Δt <output id="rt-t-out"></output></span><input type="range" id="rt-t" min="0" max="0.3" step="0.005" value="0.1"></label>
+          <label class="ctrl"><span>출구 높이 H₂ <output id="rt-h-out"></output></span><input type="range" id="rt-h" min="0.35" max="1" step="0.05" value="0.5"></label>
+          <div class="ctrl"><span>B</span><div class="seg" id="rt-b"><button data-value="m" class="on">질량 (b = 1)</button><button data-value="p">x-운동량 (b = u)</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="rt-play" type="button">▶ 0부터 흘려 보내기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">B<sub>I</sub> (들어온 몫)</span><span class="v" id="rt-bi">—</span></div>
+        <div class="stat"><span class="k">B<sub>II</sub> (나간 몫)</span><span class="v" id="rt-bii">—</span></div>
+        <div class="stat"><span class="k">ΔB<sub>sys</sub>/Δt</span><span class="v" id="rt-rate">—</span></div>
+        <div class="stat"><span class="k">RTT: Σṁb<sub>out</sub> − Σṁb<sub>in</sub></span><span class="v" id="rt-rtt">—</span></div>
+      </div>
+      <div class="sim-note">물(ρ = 1000 kg/m³)이 높이 1.0 m에서 \(H_2\)로 줄어드는 2차원 덕트(깊이 1 m)를 \(V_1 = 2.0\) m/s로 정상 유동한다. 청록 입자가 시각 0에 CV(점선) 안에 있던 계다. 해볼 것: ① 질량: 영역 I과 II의 질량이 항상 같다 → 정상 유동의 계는 질량을 잃지 않는다. ② x-운동량: 정상 유동(\(dB_\text{CV}/dt = 0\))인데도 계의 운동량은 \(\dot m(V_\text{out} - V_\text{in})\)의 비율로 늘어난다 — 유체를 가속하려면 노즐 벽이 그만큼 힘을 줘야 한다(5장). ③ Δt를 줄일수록 ΔB/Δt가 RTT 값에 수렴한다. 출구면을 노즐 안으로 옮기면 \(V_\text{out}\)이 그 단면의 유속이 된다.</div>
+    </div>
+    <div class="tangle" id="tg-rtt">
+      <p>넓이 <span class="tn" data-var="A" data-min="0.5" data-max="5" data-step="0.1" data-unit=" m²">2.0</span>인 물탱크에 \(Q_\text{in} =\) <span class="tn" data-var="Q" data-min="0" data-max="0.15" data-step="0.005" data-unit=" m³/s">0.050</span>이 들어오고, 지름 <span class="tn" data-var="D" data-min="2" data-max="20" data-step="0.5" data-unit=" cm">10.0</span> 출구관으로 <span class="tn" data-var="V" data-min="0" data-max="8" data-step="0.1" data-unit=" m/s">3.0</span>로 나간다. 탱크를 검사 체적으로 잡으면 RTT(\(b = 1\))에서 \(0 = dm_\text{CV}/dt + \dot m_\text{out} - \dot m_\text{in}\) → \(dm_\text{CV}/dt =\) <span class="tn-out" data-out="dm"></span>, 수위 변화율 \(dh/dt =\) <span class="tn-out" data-out="dh"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="노즐 속 계의 운동량 변화율 (5장 예고)">
+      <p>물(ρ = 998 kg/m³)이 0.0200 m³/s로 지름 10.0 cm 관에서 지름 4.00 cm 노즐로 정상 유동한다. 노즐을 검사 체적으로 잡을 때, RTT로 노즐 속을 지나가는 계의 x 방향 운동량 변화율 \(d(mu)_\text{sys}/dt\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(b = u\), 정상이므로 \(d/dt\int_\text{CV} = 0\). 입출구 단면에서 속도가 균일하다고 보면 \(dB_\text{sys}/dt = \dot m u_2 - \dot m u_1\).</div>
+        <div class="step"><b>풀이</b> \(\dot m = \rho Q = 998(0.0200) = 19.96\) kg/s. \(V_1 = Q/A_1 = 0.0200/(\pi(0.100)^2/4) = 2.55\) m/s, \(V_2 = 0.0200/(\pi(0.0400)^2/4) = 15.9\) m/s. \(d(mu)_\text{sys}/dt = 19.96(15.92 - 2.55) = 267\) N.</div>
+        <div class="answer">267 N (= 계에 작용하는 x 방향 알짜힘)</div>
+        <div class="step"><b>검토</b> 단위 kg·m/s² = N. 뉴턴 제2법칙에 따라 이것이 노즐 벽과 압력이 유체에 가하는 알짜힘이다. 5장에서는 여기에 압력 힘을 더해 노즐을 붙잡는 볼트 힘을 구한다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>라그랑주 기술은 입자를 따라가고(\(\vec x_p(t)\)), 오일러 기술은 고정점의 장(\(\vec V(x,y,z,t)\))을 쓴다. 정상 유동은 \(\partial/\partial t = 0\)일 뿐, 입자의 가속도가 0이라는 뜻이 아니다.</li>
+      <li>입자의 가속도 = 물질 도함수: \(\vec a = D\vec V/Dt = \partial\vec V/\partial t + (\vec V\cdot\nabla)\vec V\) (국소 + 대류). 어떤 상태량에도 \(D/Dt = \partial/\partial t + \vec V\cdot\nabla\)를 쓴다.</li>
+      <li>유선(한 순간 속도에 접함, \(dy/dx = v/u\)), 유적선(한 입자의 궤적), 유맥선(한 점을 지난 입자들), 시간선(같은 순간 표시한 입자들). 정상 유동에서는 앞의 셋이 일치하고, 비정상 유동에서는 다르다.</li>
+      <li>유체 요소의 운동 = 병진 + 회전(\(\omega_z = \tfrac12(\partial v/\partial x - \partial u/\partial y)\)) + 선형 변형(\(\varepsilon_{xx} = \partial u/\partial x\)) + 전단 변형(\(\varepsilon_{xy} = \tfrac12(\partial u/\partial y + \partial v/\partial x)\)). 부피 변형률은 \(\nabla\cdot\vec V\), 비압축성이면 0.</li>
+      <li>와도 \(\vec\zeta = \nabla\times\vec V = 2\vec\omega\). \(\vec\zeta = 0\)이면 비회전 유동. 강제 와류(\(u_\theta = \omega r\))는 \(\zeta = 2\omega\), 자유 와류(\(u_\theta = \Gamma/2\pi r\))는 \(\zeta = 0\). 곧은 전단 유동도 회전 유동이다.</li>
+      <li>순환 \(\Gamma = \oint\vec V\cdot d\vec s = \iint\zeta\,dA\)(스토크스). 자유 와류의 핵을 감싸는 곡선은 모두 같은 \(\Gamma\)를 갖는다.</li>
+      <li>RTT: \(\dfrac{dB_\text{sys}}{dt} = \dfrac{d}{dt}\int_\text{CV}\rho b\,dV + \int_\text{CS}\rho b\,(\vec V_r\cdot\vec n)\,dA\). 계에 대한 보존 법칙을 검사 체적 식으로 바꾸는 도구이며, 무한히 작은 계에 대해서는 물질 도함수와 같다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 좌표는 m, 속도는 m/s, 시간은 s 단위이고 g = 9.81 m/s²이다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="속도장" data-answer="3.16" data-label="|V| =" data-unit="m/s">
+        <div class="prob-q"><p>정상 속도장 \(\vec V = (1 + 2x)\,\hat\imath + (3 - 2y)\,\hat\jmath\)에서 점 (1, 1)의 속력은?</p></div>
+        <div class="prob-sol"><p>\(u = 3\), \(v = 1\) → \(|\vec V| = \sqrt{10} = 3.16\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="가속도장" data-answer="12; 4" data-label="a_x =; a_y =" data-unit="m/s²; m/s²">
+        <div class="prob-q"><p>정상 2차원 속도장 \(u = 4 + 2x\), \(v = -2y\)에서 점 (1, 1)을 지나는 유체 입자의 가속도 성분은?</p></div>
+        <div class="prob-hint">\(a_x = u\,\partial u/\partial x + v\,\partial u/\partial y\), \(a_y = u\,\partial v/\partial x + v\,\partial v/\partial y\).</div>
+        <div class="prob-sol"><p>\(a_x = (4 + 2x)(2) = 12\) m/s², \(a_y = (-2y)(-2) = 4y = 4\) m/s².</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="국소·대류 가속도" data-answer="1.20; 21.0" data-label="국소 =; 전체 =" data-unit="m/s²; m/s²">
+        <div class="prob-q"><p>노즐 중심선의 속도가 \(u(x,t) = (1.5 + 0.8t)(1 + x/0.40)\)이다. \(x = 0.20\) m, \(t = 1.0\) s에서 국소 가속도와 전체 가속도 \(Du/Dt\)는?</p></div>
+        <div class="prob-sol"><p>\(U = 2.3\), \(1 + x/L = 1.5\), \(u = 3.45\) m/s. 국소 \(0.8(1.5) = 1.20\) m/s². 대류 \(u\,\partial u/\partial x = 3.45(2.3/0.40) = 19.8\) m/s². 합 21.0 m/s².</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="물질 도함수" data-answer="-0.6" data-label="∂T/∂t =" data-unit="°C/h">
+        <div class="prob-q"><p>기온이 동쪽으로 100 km당 3.0 °C씩 높아진다. 서풍(동쪽으로 부는 바람)이 20 km/h로 분다. 공기 덩어리가 가열되거나 냉각되지 않는다면(\(DT/Dt = 0\)) 한 기상대에서 측정하는 기온 변화율은?</p></div>
+        <div class="prob-sol"><p>\(0 = \partial T/\partial t + u\,\partial T/\partial x\) → \(\partial T/\partial t = -(20)(0.030) = -0.60\) °C/h. 서쪽의 찬 공기가 실려 온다(한기 이류).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="유선의 방정식" data-answer="1" data-label="y =" data-unit="m">
+        <div class="prob-q"><p>속도장 \(u = x\), \(v = -2y\)에서 점 (1, 4)를 지나는 유선은 \(x = 2\)에서 y가 얼마인가?</p></div>
+        <div class="prob-hint">\(dy/dx = v/u = -2y/x\) → 변수 분리.</div>
+        <div class="prob-sol"><p>\(\ln y = -2\ln x + C\) → \(yx^2 = C = 4\). \(x = 2\)에서 \(y = 1.00\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="유적선" data-answer="0.637" data-label="y =" data-unit="m">
+        <div class="prob-q"><p>속도장 \(u = 2.0\), \(v = 1.0\sin(\pi t)\)에서 \(t = 0\)에 원점을 떠난 입자의 \(t = 1.0\) s일 때 y 좌표는?</p></div>
+        <div class="prob-sol"><p>\(y = \int_0^t \sin(\pi t')\,dt' = (1/\pi)(1 - \cos\pi t) = 2/\pi = 0.637\) m (이때 x = 2.0 m).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="유맥선" data-answer="0.318" data-label="y =" data-unit="m">
+        <div class="prob-q"><p>앞 문제의 유동에서 원점에 염료를 계속 주입한다. \(t = 1.0\) s에 \(x = 1.0\) m에 있는 염료의 y 좌표는?</p></div>
+        <div class="prob-hint">이 염료는 언제 원점을 떠났는가? \(x = U_0(t - \tau)\).</div>
+        <div class="prob-sol"><p>\(\tau = 1.0 - 1.0/2.0 = 0.5\) s. \(y = (1/\pi)(\cos\pi\tau - \cos\pi t) = (1/\pi)(0 + 1) = 0.318\) m. 같은 x에서 \(t = 1\) s의 유선(\(v = 0\)이므로 \(y = 0\))과 다르다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="회전율" data-answer="10" data-label="|ω| =" data-unit="rad/s">
+        <div class="prob-q"><p>두 평판 사이의 쿠에트 유동 \(u = 20y\) (s⁻¹), \(v = 0\)에서 유체 요소의 회전 각속도 크기는?</p></div>
+        <div class="prob-sol"><p>\(\omega_z = \tfrac12(0 - 20) = -10\) rad/s(시계 방향), 크기 10 rad/s. 와도는 \(-20\) s⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="변형률 텐서" data-answer="1; -2" data-label="ε_xy =; ζ_z =" data-unit="s⁻¹; s⁻¹">
+        <div class="prob-q"><p>속도장 \(u = 2xy\), \(v = -y^2\)의 점 (1, 2)에서 전단 변형률 \(\varepsilon_{xy}\)와 와도 \(\zeta_z\)는? (이 유동이 비압축성임도 확인해 보라.)</p></div>
+        <div class="prob-sol"><p>\(\partial u/\partial y = 2x\), \(\partial v/\partial x = 0\) → \(\varepsilon_{xy} = \tfrac12(2x) = 1\) s⁻¹, \(\zeta_z = 0 - 2x = -2\) s⁻¹. \(\nabla\cdot\vec V = 2y - 2y = 0\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="비회전 판정">
+        <div class="prob-q"><p>다음 2차원 유동 중 <strong>비회전</strong> 유동은? (k는 상수)</p></div>
+        <div class="prob-choices"><button>\(u = ky,\ v = 0\)</button><button>\(u = -ky,\ v = kx\)</button><button data-correct>\(u = ky,\ v = kx\)</button><button>\(u = k(1 - y^2),\ v = 0\)</button></div>
+        <div class="prob-sol"><p>\(\zeta_z = \partial v/\partial x - \partial u/\partial y\): 순서대로 \(-k\), \(2k\), \(k - k = 0\), \(2ky\). 셋째만 비회전이다(요소 시뮬레이터의 "순수 변형").</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="강제 와류" data-answer="12.6" data-label="ζ =" data-unit="s⁻¹">
+        <div class="prob-q"><p>60 rpm으로 회전하는 원통 속의 물이 강체 회전한다. 와도는?</p></div>
+        <div class="prob-sol"><p>\(\omega = 60(2\pi)/60 = 6.283\) rad/s, \(\zeta = 2\omega = 12.6\) s⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="순환(강제 와류)" data-answer="4.71" data-label="Γ =" data-unit="m²/s">
+        <div class="prob-q"><p>각속도 3.0 rad/s의 강제 와류에서 중심이 같은 반지름 0.50 m 원을 반시계로 따라 잰 순환은?</p></div>
+        <div class="prob-sol"><p>\(\Gamma = (\omega r)(2\pi r) = 2\pi(3.0)(0.25) = 4.71\) m²/s. 또는 \(\zeta\cdot\pi r^2 = 6.0(0.785) = 4.71\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="순환(전단 유동)" data-answer="-0.8" data-label="Γ =" data-unit="m²/s">
+        <div class="prob-q"><p>전단 유동 \(u = 5.0y\), \(v = 0\) 속에 한 변 0.40 m인 정사각형 경로를 놓았다(변이 좌표축에 평행). 반시계로 잰 순환은?</p></div>
+        <div class="prob-hint">수평인 두 변만 기여한다. 아랫변은 +x, 윗변은 −x 방향으로 적분.</div>
+        <div class="prob-sol"><p>\(\Gamma = 5.0y_0(0.40) - 5.0(y_0 + 0.40)(0.40) = -5.0(0.40)^2 = -0.80\) m²/s. 스토크스: \(\zeta A = (-5.0)(0.16) = -0.80\). 위치 \(y_0\)와 무관하다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="랭킨 와류" data-answer="1.59; 15.9" data-label="V_max =; ζ_core =" data-unit="m/s; s⁻¹">
+        <div class="prob-q"><p>배수구 소용돌이를 핵 반지름 0.20 m의 랭킨 와류로 본다. 핵 바깥에서 잰 순환이 2.0 m²/s일 때, 최대 속력과 핵 안의 와도는?</p></div>
+        <div class="prob-sol"><p>\(V_\text{max} = \Gamma/(2\pi R) = 2.0/(2\pi\times0.20) = 1.59\) m/s. 핵 안의 와도는 균일하므로 \(\zeta = \Gamma/(\pi R^2) = 2.0/0.1257 = 15.9\) s⁻¹(= \(2V_\text{max}/R\)).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="RTT: 질량" data-answer="0.0133" data-label="dh/dt =" data-unit="m/s">
+        <div class="prob-q"><p>바닥 넓이 1.5 m²인 탱크에 물이 0.040 m³/s로 들어오고, 지름 8.0 cm 관으로 평균 4.0 m/s로 나간다. 수위 변화율은?</p></div>
+        <div class="prob-sol"><p>\(Q_\text{out} = \pi(0.080)^2/4\times4.0 = 0.02011\) m³/s. RTT(b = 1, ρ 일정): \(A\,dh/dt = Q_\text{in} - Q_\text{out}\) → \(dh/dt = (0.040 - 0.02011)/1.5 = 0.0133\) m/s (상승).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="움직이는 검사 체적" data-answer="23.5" data-label="ṁ_r =" data-unit="kg/s">
+        <div class="prob-q"><p>지름 5.0 cm, 속력 20 m/s의 물 분류(ρ = 998 kg/m³)가 같은 방향으로 8.0 m/s로 움직이는 날개에 부딪힌다. 날개와 함께 움직이는 검사 체적으로 들어가는 질량 유량은?</p></div>
+        <div class="prob-hint">검사면을 지나는 유량은 상대 속도 \(V_r = V - V_\text{CS}\)로 정한다.</div>
+        <div class="prob-sol"><p>\(V_r = 20 - 8.0 = 12\) m/s, \(A = \pi(0.050)^2/4 = 1.963\times10^{-3}\) m². \(\dot m_r = \rho AV_r = 998(1.963\times10^{-3})(12) = 23.5\) kg/s. 노즐을 떠나는 유량 39.2 kg/s보다 작다 — 날개가 멀어지며 분류가 점점 길어지기 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="유동 패턴">
+        <div class="prob-q"><p>풍동 속 날개 앞에서 연기 막대로 연기를 계속 흘려 사진을 찍었다. 사진에 찍힌 연기 줄은 무엇이며, 언제 유선과 같은가?</p></div>
+        <div class="prob-choices"><button>유적선, 항상 유선과 같다</button><button data-correct>유맥선, 유동이 정상일 때 유선과 같다</button><button>시간선, 유동이 비회전일 때 유선과 같다</button><button>유선, 항상 그 자체로 유선이다</button></div>
+        <div class="prob-sol"><p>한 점(연기 막대 구멍)을 차례로 지난 입자들을 이은 선이므로 유맥선이다. 정상 유동에서만 유선·유적선과 일치한다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>정상 유동에서 0인 것은?</p><div class="opts">
+        <button class="opt">대류 가속도</button><button class="opt" data-correct>국소 가속도</button><button class="opt">물질 도함수</button><button class="opt">와도</button>
+      </div><div class="quiz-exp">정상 유동의 정의가 \(\partial/\partial t = 0\)이므로 국소 가속도만 반드시 0이다. 대류 가속도는 속도가 공간적으로 변하면 0이 아니다.</div></div>
+      <div class="quiz-q"><p>바다에 띄운 부표가 GPS로 위치를 보내며 흘러간다. 이 자료는 어떤 기술 방식인가?</p><div class="opts">
+        <button class="opt" data-correct>라그랑주 기술</button><button class="opt">오일러 기술</button><button class="opt">둘 다 아님</button>
+      </div><div class="quiz-exp">같은 물 덩어리를 따라가며 기록하므로 라그랑주식이다. 해안의 고정 유속계는 오일러식.</div></div>
+      <div class="quiz-q"><p>평행한 두 판 사이의 층류(속도가 y에 따라 다른 곧은 흐름)에 대해 옳은 것은?</p><div class="opts">
+        <button class="opt">유선이 곧으므로 비회전 유동이다.</button><button class="opt" data-correct>속도 기울기 ∂u/∂y가 있으므로 회전 유동이다.</button><button class="opt">비정상 유동이다.</button><button class="opt">부피 변형률이 0이 아니다.</button>
+      </div><div class="quiz-exp">\(\zeta_z = -\partial u/\partial y \ne 0\). 유선의 모양으로는 회전 여부를 알 수 없다. 자유 와류는 유선이 원인데도 비회전이다.</div></div>
+      <div class="quiz-q"><p>자유 와류 \(u_\theta = \Gamma/2\pi r\)에서 중심을 감싸는 반지름 \(r\)인 원의 순환은 \(r\)이 2배가 되면?</p><div class="opts">
+        <button class="opt">2배</button><button class="opt">1/2배</button><button class="opt" data-correct>그대로</button><button class="opt">4배</button>
+      </div><div class="quiz-exp">속력은 1/2, 둘레는 2배 → 곱은 일정. 와도가 중심의 특이점(또는 핵)에만 몰려 있기 때문이다.</div></div>
+      <div class="quiz-q"><p>정상 유동 노즐에 RTT를 질량에 대해 적용하면 \(dm_\text{CV}/dt = 0\)이다. x-운동량에 대해서는?</p><div class="opts">
+        <button class="opt">계의 운동량도 변하지 않는다.</button><button class="opt" data-correct>CV 안의 운동량은 일정하지만, 계의 운동량은 ṁ(V_out − V_in)의 비율로 변한다.</button><button class="opt">CV 안의 운동량이 증가한다.</button>
+      </div><div class="quiz-exp">정상이므로 CV 항은 0이지만 유량 항이 남는다. 그 변화율이 유체에 작용하는 알짜힘이다(5장).</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const TAU = 2 * Math.PI;
+  const $ = (id) => document.getElementById(id);
+  /** 드래그 핸들: 흰 원 + 색 테두리 */
+  function knob(ctx, x, y, col, r = 9) {
+    ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  /** 방향 α인 균일류 U가 반지름 a 원주를 지나는 퍼텐셜 유동 */
+  function cyl(x, y, U, al, a) {
+    const c = Math.cos(al), s = Math.sin(al), xr = c * x + s * y, yr = -s * x + c * y, r2 = xr * xr + yr * yr;
+    if (r2 < a * a) return [0, 0];
+    const r4 = r2 * r2, ur = U * (1 - (a * a * (xr * xr - yr * yr)) / r4), vr = (-2 * U * a * a * xr * yr) / r4;
+    return [ur * c - vr * s, ur * s + vr * c];
+  }
+  /** 수치 와도 ζ = ∂v/∂x − ∂u/∂y */
+  function curl(f, x, y, h = 1e-4) {
+    const a = f(x + h, y), b = f(x - h, y), c = f(x, y + h), d = f(x, y - h);
+    return (a[1] - b[1]) / (2 * h) - (c[0] - d[0]) / (2 * h);
+  }
+  /** 물질 가속도 분해: velT(x,y,t) → {V, loc, conv} */
+  function accel(velT, x, y, t) {
+    const e = 1e-4, d = 1e-3, V = velT(x, y, t);
+    const t1 = velT(x, y, t + d), t0 = velT(x, y, t - d);
+    const x1 = velT(x + e, y, t), x0 = velT(x - e, y, t), y1 = velT(x, y + e, t), y0 = velT(x, y - e, t);
+    const ux = (x1[0] - x0[0]) / (2 * e), vx = (x1[1] - x0[1]) / (2 * e), uy = (y1[0] - y0[0]) / (2 * e), vy = (y1[1] - y0[1]) / (2 * e);
+    return { V, loc: [(t1[0] - t0[0]) / (2 * d), (t1[1] - t0[1]) / (2 * d)], conv: [V[0] * ux + V[1] * uy, V[0] * vx + V[1] * vy] };
+  }
+  function quiver(ctx, W, f, nx, ny, scale, col) {
+    const dx = (W.x1 - W.x0) / nx, dy = (W.y1 - W.y0) / ny;
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+      const x = W.x0 + (i + 0.5) * dx, y = W.y0 + (j + 0.5) * dy, [u, v] = f(x, y), L = Math.hypot(u, v);
+      if (L < 1e-6) continue;
+      const k = Math.min(scale, (0.45 * dx * W.s) / L);
+      SB.arrow(ctx, W.X(x) - (u * k) / 2, W.Y(y) + (v * k) / 2, W.X(x) + (u * k) / 2, W.Y(y) - (v * k) / 2, { color: col, width: 1.1, head: 5 });
+    }
+  }
+  const fx = (v, d = 2) => (Math.abs(v) < 0.5 * Math.pow(10, -d) ? (0).toFixed(d) : v.toFixed(d));
+
+  /* ---------------------------------------------------------- 머리: 흔들리는 바람 속 원주와 염료 */
+  {
+    const A = 0.6;
+    let t = 0, emit = 0;
+    const cols = () => { const P = pal(); return [P.accent, P.accent2, P.ok, P.warn, P.bad, P.blue, P.accent]; };
+    const srcs = [-1.0, -0.5, 0, 0.5, 1.0].map((y) => ({ x: -3.4, y, d: [] }));
+    const alpha = () => 0.4 * Math.sin(0.8 * t);
+    const vel = (x, y) => cyl(x, y, 1, alpha(), A);
+    const tr = Flow.particles(110, [-4.2, 6.2, -3.2, 3.2], { life: 7, kill: (x, y) => x * x + y * y < A * A * 1.02 });
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), ys = (5 * h) / w;
+      const W = Phys.world(ctx, w, h, { x: [-4, 6], y: [-ys, ys], pad: [0, 0, 0, 0] });
+      self._W = W;
+      ctx.save(); ctx.globalAlpha = 0.6;
+      for (let y0 = -ys + 0.2; y0 < ys; y0 += 0.42) W.path(Flow.trace(vel, [-4.1, y0], { step: 0.07, maxSteps: 220, bounds: [-4.2, 6.2, -ys - 0.3, ys + 0.3] }), { color: P.faint, width: 1, dash: [4, 4] });
+      ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; ctx.globalAlpha = 0.7;
+      tr.pts.forEach((p) => ctx.fillRect(W.X(p.x) - 1, W.Y(p.y) - 1, 2.2, 2.2)); ctx.restore();
+      const cs = cols();
+      srcs.forEach((s, i) => {
+        if (s.d.length > 1) {
+          ctx.save(); ctx.strokeStyle = cs[i % cs.length]; ctx.globalAlpha = 0.8; ctx.lineWidth = 3.4; ctx.lineJoin = "round"; ctx.lineCap = "round";
+          ctx.beginPath(); s.d.forEach((p, k) => (k ? ctx.lineTo(W.X(p.x), W.Y(p.y)) : ctx.moveTo(W.X(p.x), W.Y(p.y)))); ctx.lineTo(W.X(s.x), W.Y(s.y)); ctx.stroke(); ctx.restore();
+        }
+      });
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.dim; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), A * W.s, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore();
+      srcs.forEach((s, i) => knob(ctx, W.X(s.x), W.Y(s.y), cs[i % cs.length], 7));
+      const al = alpha();
+      SB.arrow(ctx, 22, 26, 22 + 42 * Math.cos(al), 26 - 42 * Math.sin(al), { color: P.text, width: 2.2, head: 8 });
+      SB.label(ctx, "바람 방향", 92, 26, { size: 11, color: P.dim });
+      SB.label(ctx, "점선: 순간 유선 · 색 띠: 유맥선(염료)", w / 2, h - 12, { size: 11, color: P.dim });
+    }, { aspect: 0.42, minHeight: 210, maxHeight: 320 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._W ? srcs.map((s, i) => ({ id: i, x: cv._W.X(s.x), y: cv._W.Y(s.y), r: 13 })) : []),
+      down: (id, x, y) => {
+        if (id != null || !cv._W) return;
+        const wx = cv._W.ix(x), wy = cv._W.iy(y);
+        if (wx * wx + wy * wy < (A + 0.1) ** 2 || wx > 5.5) return;
+        srcs.push({ x: wx, y: wy, d: [] }); if (srcs.length > 7) srcs.shift();
+      },
+      move: (id, x, y) => {
+        if (id == null || !srcs[id] || !cv._W) return;
+        let wx = SB.clamp(cv._W.ix(x), -4, 5.5), wy = cv._W.iy(y);
+        const r = Math.hypot(wx, wy);
+        if (r < A + 0.1) { wx *= (A + 0.1) / (r || 1); wy *= (A + 0.1) / (r || 1); }
+        srcs[id].x = wx; srcs[id].y = wy;
+      },
+    });
+    SB.loop("hero", (dt) => {
+      t += dt;
+      const h = dt / 2;
+      for (let k = 0; k < 2; k++) srcs.forEach((s) => s.d.forEach((p) => {
+        const [u, v] = vel(p.x, p.y), [u2, v2] = vel(p.x + 0.5 * h * u, p.y + 0.5 * h * v);
+        p.x += h * u2; p.y += h * v2;
+      }));
+      emit += dt;
+      if (emit > 0.06) { emit = 0; srcs.forEach((s) => s.d.push({ x: s.x, y: s.y })); }
+      srcs.forEach((s) => { while (s.d.length && (s.d[0].x > 6.3 || s.d.length > 200)) s.d.shift(); });
+      tr.step(vel, dt);
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 라그랑주 vs 오일러 */
+  {
+    const A = 0.7, st = { t: 0, probe: [-1.5, 0.35], seed: [-3.6, 0.22], p: null, trail: [], hp: [], hq: [], age: 0, wait: 0 };
+    const getU = SB.range("le-u", (v) => v.toFixed(1) + " m/s");
+    const getA = SB.range("le-amp", (v) => Math.round(v * 100) + " %");
+    const slEl = $("le-sl");
+    const Uof = (t) => getU() * (1 + getA() * Math.sin(TAU * 0.4 * t));
+    const velT = (x, y, t) => cyl(x, y, Uof(t), 0, A);
+    const psi = (x, y) => { const r2 = x * x + y * y; return r2 < A * A ? NaN : y * (1 - (A * A) / r2); };
+    const SL = Flow.contour(psi, [-4, 4, -1.8, 1.8], 160, 72, Array.from({ length: 18 }, (_, i) => -1.7 + 0.2 * i));
+    function restart() { st.p = st.seed.slice(); st.trail = []; st.age = 0; st.hq.push([st.t, NaN]); }
+    const cv = SB.canvas("cv-le", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-4, 4], y: [-1.8, 1.8], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.08); ctx.fillRect(W.X(-4), W.Y(1.8), 8 * W.s, 3.6 * W.s); ctx.restore();
+      if (slEl.checked) {
+        ctx.save(); ctx.strokeStyle = P.faint; ctx.lineWidth = 1; ctx.beginPath();
+        SL.forEach((L) => L.segs.forEach((s) => { ctx.moveTo(W.X(s[0]), W.Y(s[1])); ctx.lineTo(W.X(s[2]), W.Y(s[3])); }));
+        ctx.stroke(); ctx.restore();
+      }
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.dim; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), A * W.s, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore();
+      // 입자
+      W.path(st.trail, { color: P.accent, width: 2 });
+      if (st.p) {
+        const V = velT(st.p[0], st.p[1], st.t);
+        W.arrow(st.p, V, { color: P.accent, scale: 0.35, width: 2 });
+        W.dot(st.p, { r: 6, color: P.accent });
+      }
+      knob(ctx, W.X(st.seed[0]), W.Y(st.seed[1]), P.accent, 9);
+      SB.label(ctx, "출발", W.X(st.seed[0]), W.Y(st.seed[1]) - 18, { size: 11, color: P.accent });
+      // 탐침
+      const pv = velT(st.probe[0], st.probe[1], st.t), px = W.X(st.probe[0]), py = W.Y(st.probe[1]);
+      W.arrow(st.probe, pv, { color: P.accent2, scale: 0.35, width: 2.2 });
+      ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.6; ctx.fillRect(px - 9, py - 9, 18, 18); ctx.strokeRect(px - 9, py - 9, 18, 18); ctx.restore();
+      SB.label(ctx, "탐침", px, py + 20, { size: 11, color: P.accent2 });
+    }, { aspect: 0.46, minHeight: 190, maxHeight: 380 });
+    const ch = SB.canvas("cv-le-chart", (ctx, w, h) => {
+      const P = pal(), t1 = Math.max(10, st.t), ymax = Math.max(1, 2.3 * getU() * (1 + getA()));
+      const last = (a) => { for (let i = a.length - 1; i >= 0; i--) if (isFinite(a[i][1])) return a[i]; return null; };
+      const pts = [], lp = last(st.hp), lq = st.p ? last(st.hq) : null;
+      if (lp) pts.push({ x: lp[0], y: lp[1], color: P.accent2, r: 5 });
+      if (lq) pts.push({ x: lq[0], y: lq[1], color: P.accent, r: 5 });
+      SB.chart(ctx, { x: 52, y: 12, w: w - 66, h: h - 58 }, { x: [t1 - 10, t1], y: [0, ymax], xLabel: "시간 t (s)", yLabel: "속력 (m/s)", series: [{ data: st.hp, color: P.accent2, width: 2.2 }, { data: st.hq, color: P.accent, width: 2.2 }], points: pts });
+    }, { aspect: 0.3, minHeight: 150, maxHeight: 220 });
+    SB.drag(cv, {
+      handles: () => (cv._W ? [{ id: "probe", x: cv._W.X(st.probe[0]), y: cv._W.Y(st.probe[1]), r: 14 }, { id: "seed", x: cv._W.X(st.seed[0]), y: cv._W.Y(st.seed[1]), r: 13 }] : []),
+      move: (id, x, y) => {
+        if (!id) return;
+        let p = [SB.clamp(cv._W.ix(x), -3.9, 3.9), SB.clamp(cv._W.iy(y), -1.7, 1.7)];
+        const r = Math.hypot(p[0], p[1]);
+        if (r < A + 0.08) p = [(p[0] * (A + 0.08)) / (r || 1), (p[1] * (A + 0.08)) / (r || 1)];
+        if (id === "probe") st.probe = p; else { st.seed = p; restart(); }
+      },
+    });
+    slEl.addEventListener("change", () => cv.redraw());
+    $("le-go").addEventListener("click", restart);
+    SB.loop("sim-le", (dt) => {
+      st.t += dt;
+      if (st.p) {
+        for (let k = 0; k < 3; k++) {
+          const hh = dt / 3, tt = st.t - dt + k * hh, [u, v] = velT(st.p[0], st.p[1], tt), [u2, v2] = velT(st.p[0] + 0.5 * hh * u, st.p[1] + 0.5 * hh * v, tt + 0.5 * hh);
+          st.p[0] += hh * u2; st.p[1] += hh * v2;
+        }
+        st.age += dt; st.trail.push(st.p.slice()); if (st.trail.length > 700) st.trail.shift();
+        if (st.p[0] > 4.1 || Math.abs(st.p[1]) > 1.9 || st.age > 16) { st.p = null; st.wait = 0.8; st.hq.push([st.t, NaN]); }
+      } else { st.wait -= dt; if (st.wait <= 0) restart(); }
+      const ap = accel(velT, st.probe[0], st.probe[1], st.t);
+      st.hp.push([st.t, Math.hypot(ap.V[0], ap.V[1])]);
+      SB.stat("le-pv", Math.hypot(ap.V[0], ap.V[1]).toFixed(2) + " <small>m/s</small>");
+      SB.stat("le-pa", Math.hypot(ap.loc[0], ap.loc[1]).toFixed(2) + " <small>m/s²</small>");
+      if (st.p) {
+        const aq = accel(velT, st.p[0], st.p[1], st.t), s = Math.hypot(aq.V[0], aq.V[1]);
+        st.hq.push([st.t, s]);
+        SB.stat("le-qv", s.toFixed(2) + " <small>m/s</small>");
+        SB.stat("le-qa", Math.hypot(aq.loc[0] + aq.conv[0], aq.loc[1] + aq.conv[1]).toFixed(2) + " <small>m/s²</small>");
+      }
+      const t0 = Math.max(10, st.t) - 10.5;
+      while (st.hp.length && st.hp[0][0] < t0) st.hp.shift();
+      while (st.hq.length && st.hq[0][0] < t0) st.hq.shift();
+      cv.redraw(); ch.redraw();
+    });
+    restart();
+  }
+
+  /* ---------------------------------------------------------- 속도장 드래그 숫자 */
+  {
+    let vals = { x: 2, y: 3 }, cvf = null;
+    SB.tangle("tg-field", (v) => {
+      vals = v;
+      const u = 0.5 + 0.8 * v.x, w = 1.5 - 0.8 * v.y, s = Math.hypot(u, w);
+      return { u: fx(u) + " m/s", v: fx(w) + " m/s", s: s.toFixed(2) + " m/s", a: s < 1e-9 ? "—" : Phys.rad2deg(Math.atan2(w, u)).toFixed(1) + "°",
+        msg: s < 0.1 ? "<b>여기가 정체점(−0.625, 1.875) 근처다 — 속도가 0에 가깝다.</b>" : "정체점 (−0.625 m, 1.875 m)으로 점을 옮겨 보라." };
+    }, { onChange: () => cvf && cvf.redraw() });
+    cvf = SB.canvas("cv-tg-field", (ctx, w, h) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-3.2, 3.2], y: [-1.2, 5.2], pad: [6, 6, 6, 6], equal: true });
+      const f = (x, y) => [0.5 + 0.8 * x, 1.5 - 0.8 * y];
+      quiver(ctx, W, f, 16, 16, 9, P.faint);
+      W.dot([-0.625, 1.875], { r: 4, color: P.dim, label: "정체점", dy: -12 });
+      const V = f(vals.x, vals.y);
+      W.arrow([vals.x, vals.y], V, { color: P.accent2, scale: 0.35, width: 2.6 });
+      W.dot([vals.x, vals.y], { r: 6, color: P.accent2 });
+    }, { aspect: 0.5, minHeight: 180, maxHeight: 280 });
+  }
+
+  /* ---------------------------------------------------------- 고정 탐침 vs 부표 (DT/Dt) */
+  {
+    const G = 0.3, XL = 20, xp = 8, st = { t: 0, xf: 1, hp: [], hf: [] };
+    const getU = SB.range("dd-u", (v) => v.toFixed(1) + " m/s", reset);
+    const getR = SB.range("dd-r", (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " °C/s", reset);
+    const T = (x, t) => 15 + G * x + getR() * t;
+    function reset() {
+      st.t = 0; st.xf = 1; st.hp = []; st.hf = [];
+      const r = getR(), D = r + getU() * G;
+      $("dd-out").innerHTML = `탐침 ∂T/∂t = ${fx(r)} °C/s · 부표 DT/Dt = ${fx(D)} °C/s` + (Math.abs(D) < 0.001 ? " <b style=\"color:var(--ok)\">(부표 온도 일정!)</b>" : "");
+      cv && cv.redraw();
+    }
+    let cv = null;
+    cv = SB.canvas("cv-ddt", (ctx, w, h) => {
+      const P = pal(), top = 12, bh = 44, x0 = 12, x1 = w - 12, X = (x) => x0 + ((x1 - x0) * x) / XL;
+      for (let i = 0; i < 80; i++) { const x = (i + 0.5) * (XL / 80); ctx.fillStyle = Flow.ramp((T(x, st.t) - 8) / 22, 0.75); ctx.fillRect(X(i * XL / 80), top, (x1 - x0) / 80 + 1, bh); }
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.strokeRect(x0, top, x1 - x0, bh); ctx.restore();
+      SB.arrow(ctx, x0 + 6, top + bh + 12, x0 + 46, top + bh + 12, { color: P.dim, width: 1.6, head: 6 }); SB.label(ctx, `u = ${getU().toFixed(1)} m/s`, x0 + 90, top + bh + 12, { size: 11, color: P.dim });
+      const pxp = X(xp), pxf = X(st.xf);
+      ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.4; ctx.fillRect(pxp - 7, top + bh / 2 - 7, 14, 14); ctx.strokeRect(pxp - 7, top + bh / 2 - 7, 14, 14); ctx.restore();
+      knob(ctx, pxf, top + bh / 2, P.accent, 7);
+      SB.label(ctx, `${T(xp, st.t).toFixed(1)} °C`, pxp, top - 2 + bh + 26, { size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, `${T(st.xf, st.t).toFixed(1)} °C`, pxf, top + 6, { size: 11, color: P.accent, bold: true });
+      SB.chart(ctx, { x: 50, y: top + bh + 40, w: w - 64, h: h - (top + bh + 40) - 46 }, { x: [0, 14], y: [5, 35], xLabel: "t (s)", yLabel: "T (°C)", series: [{ data: st.hp, color: P.accent2 }, { data: st.hf, color: P.accent }] });
+    }, { aspect: 0.55, minHeight: 250, maxHeight: 340 });
+    SB.loop("mini-ddt", (dt) => {
+      st.t += dt; st.xf += getU() * dt;
+      st.hp.push([st.t, T(xp, st.t)]); st.hf.push([st.t, T(st.xf, st.t)]);
+      if (st.xf > XL - 0.4 || st.t > 14) reset();
+      cv.redraw();
+    });
+    reset();
+  }
+
+  /* ---------------------------------------------------------- 노즐 드래그 숫자 */
+  SB.tangle("tg-accel", (v) => {
+    const inN = v.x <= v.L, f = inN ? 1 + v.x / v.L : 2, u = v.U * f, loc = v.dU * f, conv = inN ? u * v.U / v.L : 0, tot = loc + conv;
+    const share = Math.abs(loc) + Math.abs(conv) > 0 ? (100 * Math.abs(conv)) / (Math.abs(loc) + Math.abs(conv)) : 0;
+    return { u: u.toFixed(2) + " m/s", loc: fx(loc) + " m/s²", conv: fx(conv) + " m/s²", tot: fx(tot) + " m/s²", g: (tot / 9.81).toFixed(2) + "g",
+      msg: inN ? `대류 항이 가속도 크기의 ${share.toFixed(0)}%를 차지한다.` : "x > L: 노즐 출구 뒤의 곧은 관이라 대류 가속도가 0이다(u = 2U)." };
+  });
+
+  /* ---------------------------------------------------------- 수축 노즐 시뮬레이터 */
+  {
+    const L = 0.5, h0 = 0.2, X0 = -0.25, X1 = 0.85, st = { t: 0, probe: [0.25, 0.06] };
+    const getU = SB.range("nz-u", (v) => v.toFixed(1) + " m/s", () => redraw());
+    const mode = SB.seg("nz-mode", () => redraw());
+    const vecEl = $("nz-vec");
+    const Uof = (t) => (mode() === "osc" ? getU() * (1 + 0.5 * Math.sin(Math.PI * t)) : getU());
+    const dUof = (t) => (mode() === "osc" ? getU() * 0.5 * Math.PI * Math.cos(Math.PI * t) : 0);
+    const hh = (x) => (x < 0 ? h0 : x > L ? h0 / 2 : h0 / (1 + x / L));
+    const fac = (x) => (x < 0 ? 1 : x > L ? 2 : 1 + x / L);
+    function acc(x, y, t) {
+      const U = Uof(t), dU = dUof(t);
+      if (x < 0) return { loc: [dU, 0], conv: [0, 0] };
+      if (x > L) return { loc: [2 * dU, 0], conv: [0, 0] };
+      const f = 1 + x / L;
+      return { loc: [dU * f, (-dU * y) / L], conv: [(U * U * f) / L, (U * U * y) / (L * L)] };
+    }
+    // 이동 시간(U = 1 기준) T(x) 의 역함수로 입자를 질량 균일하게 배치
+    const Ttot = -X0 + L * Math.log(2) + (X1 - L) / 2;
+    const invT = (tau) => (tau < -X0 ? X0 + tau : tau < -X0 + L * Math.log(2) ? L * (Math.exp((tau + X0) / L) - 1) : L + 2 * (tau + X0 - L * Math.log(2)));
+    const parts = Array.from({ length: 170 }, () => ({ x: invT(Math.random() * Ttot), s: -0.94 + 1.88 * Math.random() }));
+    const cv = SB.canvas("cv-noz", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [X0, X1], y: [-0.25, 0.25], pad: [6, 6, 6, 6], equal: true });
+      self._W = W;
+      const xs = []; for (let i = 0; i <= 60; i++) xs.push(X0 + ((X1 - X0) * i) / 60);
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.14); ctx.beginPath();
+      xs.forEach((x, i) => (i ? ctx.lineTo(W.X(x), W.Y(hh(x))) : ctx.moveTo(W.X(x), W.Y(hh(x)))));
+      xs.slice().reverse().forEach((x) => ctx.lineTo(W.X(x), W.Y(-hh(x)))); ctx.closePath(); ctx.fill(); ctx.restore();
+      [1, -1].forEach((sg) => W.path(xs.map((x) => [x, sg * hh(x)]), { color: P.dim, width: 3 }));
+      SB.dashLine(ctx, W.X(0), W.Y(0.22), W.X(0), W.Y(-0.22), P.faint); SB.dashLine(ctx, W.X(L), W.Y(0.22), W.X(L), W.Y(-0.22), P.faint);
+      SB.label(ctx, "x = 0", W.X(0), W.Y(0.235), { size: 11, color: P.dim }); SB.label(ctx, "x = L", W.X(L), W.Y(0.235), { size: 11, color: P.dim });
+      ctx.save(); ctx.fillStyle = P.dim;
+      parts.forEach((p) => { ctx.beginPath(); ctx.arc(W.X(p.x), W.Y(p.s * hh(p.x)), 2, 0, TAU); ctx.fill(); }); ctx.restore();
+      const [qx, qy] = st.probe, a = acc(qx, qy, st.t), px = W.X(qx), py = W.Y(qy);
+      if (vecEl.checked) {
+        const U0 = getU(), k = 60 / ((2 * U0 * U0) / L);
+        const tot = [a.loc[0] + a.conv[0], a.loc[1] + a.conv[1]];
+        SB.arrow(ctx, px, py, px + a.loc[0] * k, py - a.loc[1] * k, { color: P.accent2, width: 2.4, label: Math.hypot(...a.loc) * k > 12 ? "국소" : "" });
+        SB.arrow(ctx, px, py, px + a.conv[0] * k, py - a.conv[1] * k, { color: P.accent, width: 2.4, label: Math.hypot(...a.conv) * k > 12 ? "대류" : "", labelSide: -1 });
+        SB.arrow(ctx, px, py, px + tot[0] * k, py - tot[1] * k, { color: P.text, width: 3, label: Math.hypot(...a.loc) * k > 12 ? "a" : "" });
+      }
+      knob(ctx, px, py, P.accent2, 9);
+      SB.label(ctx, `U(t) = ${Uof(st.t).toFixed(2)} m/s`, W.X(X0) + 58, W.Y(-0.235), { size: 11, color: P.text, mono: true });
+    }, { aspect: 0.48, minHeight: 190, maxHeight: 400 });
+    const ch = SB.canvas("cv-noz-chart", (ctx, w, h) => {
+      const P = pal(), U0 = getU(), osc = mode() === "osc", locMax = osc ? 2 * U0 * 0.5 * Math.PI : 0, convMax = (2 * (U0 * (osc ? 1.5 : 1)) ** 2) / L;
+      const lo = [], co = [], to = [];
+      for (let i = 0; i <= 120; i++) { const x = X0 + ((X1 - X0) * i) / 120, a = acc(x, 0, st.t); lo.push([x, a.loc[0]]); co.push([x, a.conv[0]]); to.push([x, a.loc[0] + a.conv[0]]); }
+      const a = acc(st.probe[0], st.probe[1], st.t);
+      SB.chart(ctx, { x: 52, y: 12, w: w - 66, h: h - 58 }, { x: [X0, X1], y: [-locMax * 1.1 - 1, (convMax + locMax) * 1.08 + 1], xLabel: "중심선 x (m)", yLabel: "a_x (m/s²)",
+        series: [{ data: lo, color: P.accent2, width: 1.8 }, { data: co, color: P.accent, width: 1.8 }, { data: to, color: P.text, width: 2.8 }],
+        vlines: [{ x: 0, color: P.faint }, { x: L, color: P.faint }], hlines: [{ y: 0, color: P.faint, dash: [2, 3] }],
+        points: [{ x: st.probe[0], y: a.loc[0] + a.conv[0], color: P.text, r: 5 }] });
+    }, { aspect: 0.32, minHeight: 160, maxHeight: 230 });
+    function stats() {
+      const [qx, qy] = st.probe, a = acc(qx, qy, st.t), u = Uof(st.t) * fac(qx);
+      SB.stat("nz-uu", u.toFixed(2) + " <small>m/s</small>");
+      SB.stat("nz-loc", fx(a.loc[0]) + " <small>m/s²</small>");
+      SB.stat("nz-conv", fx(a.conv[0]) + " <small>m/s²</small>");
+      SB.stat("nz-tot", fx(a.loc[0] + a.conv[0]) + " <small>m/s²</small>");
+    }
+    function redraw() { cv.redraw(); ch.redraw(); stats(); }
+    vecEl.addEventListener("change", redraw);
+    SB.drag(cv, {
+      handles: () => (cv._W ? [{ id: "p", x: cv._W.X(st.probe[0]), y: cv._W.Y(st.probe[1]), r: 14 }] : []),
+      move: (id, x, y) => { if (!id) return; const qx = SB.clamp(cv._W.ix(x), X0 + 0.02, X1 - 0.02), lim = 0.9 * hh(qx); st.probe = [qx, SB.clamp(cv._W.iy(y), -lim, lim)]; ch.redraw(); stats(); },
+    });
+    const loop = SB.loop("sim-noz", (dt) => {
+      st.t += dt;
+      const U = Uof(st.t);
+      parts.forEach((p) => { p.x += U * fac(p.x) * dt; if (p.x > X1) { p.x -= X1 - X0; } });
+      redraw();
+    });
+    SB.play("nz-play", loop);
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 유선·유적선·유맥선 */
+  {
+    const U0 = 1, st = { t: 0, S: [0.6, 0], streak: [], path: null, emit: 0 };
+    const mode = SB.seg("ln2-mode", clear);
+    const getV = SB.range("ln2-v", (v) => v.toFixed(2) + " m/s", clear);
+    const getT = SB.range("ln2-T", (v) => v.toFixed(1) + " s", clear);
+    const vOf = (t) => (mode() === "steady" ? 0.6 * getV() : getV() * Math.sin((TAU * t) / getT()));
+    function clear() { st.streak = []; st.path = null; st.t = 0; tag(); cv && cv.redraw(); }
+    function tag() { st.path = [st.S.slice()]; }
+    ["ln2-s", "ln2-k", "ln2-p"].forEach((id) => $(id).addEventListener("change", () => cv.redraw()));
+    let cv = null;
+    cv = SB.canvas("cv-lines", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [0, 6], y: [-1.6, 1.6], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      W.grid({ step: 1 });
+      const v = vOf(st.t), [sx, sy] = st.S;
+      if ($("ln2-s").checked) {
+        const k = v / U0;
+        W.path([[0, sy - k * sx], [6, sy + k * (6 - sx)]], { color: P.dim, width: 1.8, dash: [7, 5] });
+        for (let yy = -1.5; yy <= 1.5; yy += 0.75) if (Math.abs(yy - sy) > 0.2) W.path([[0, yy - k * sx], [6, yy + k * (6 - sx)]], { color: P.faint, width: 1, dash: [3, 5] });
+      }
+      if ($("ln2-k").checked && st.streak.length) {
+        ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 3.5; ctx.lineJoin = "round"; ctx.globalAlpha = 0.85; ctx.beginPath();
+        ctx.moveTo(W.X(sx), W.Y(sy)); for (let i = st.streak.length - 1; i >= 0; i--) ctx.lineTo(W.X(st.streak[i][0]), W.Y(st.streak[i][1])); ctx.stroke(); ctx.restore();
+      }
+      if ($("ln2-p").checked && st.path && st.path.length) {
+        W.path(st.path, { color: P.accent2, width: 2.4 });
+        W.dot(st.path[st.path.length - 1], { r: 6, color: P.accent2 });
+      }
+      knob(ctx, W.X(sx), W.Y(sy), P.text, 10);
+      SB.label(ctx, "S", W.X(sx), W.Y(sy) - 20, { bold: true });
+      SB.arrow(ctx, w - 70, 30, w - 70 + 34 * U0, 30 - 34 * v, { color: P.text, width: 2.2, label: "V" });
+    }, { aspect: 0.55, minHeight: 220, maxHeight: 420 });
+    SB.drag(cv, {
+      handles: () => (cv._W ? [{ id: "S", x: cv._W.X(st.S[0]), y: cv._W.Y(st.S[1]), r: 14 }] : []),
+      move: (id, x, y) => { if (!id) return; st.S = [SB.clamp(cv._W.ix(x), 0.2, 2.5), SB.clamp(cv._W.iy(y), -1.3, 1.3)]; st.streak = []; tag(); },
+    });
+    $("ln2-tag").addEventListener("click", tag);
+    $("ln2-clear").addEventListener("click", clear);
+    const loop = SB.loop("sim-lines", (dt) => {
+      const n = 3, h = dt / n;
+      for (let k = 0; k < n; k++) {
+        const v = vOf(st.t + 0.5 * h);
+        st.streak.forEach((p) => { p[0] += U0 * h; p[1] += v * h; });
+        if (st.path) { const q = st.path[st.path.length - 1]; if (q[0] < 6.2) st.path.push([q[0] + U0 * h, q[1] + v * h]); }
+        st.t += h; st.emit += h;
+        if (st.emit > 0.03) { st.emit = 0; st.streak.push(st.S.slice()); }
+      }
+      while (st.streak.length && st.streak[0][0] > 6.3) st.streak.shift();
+      if (st.path && st.path.length > 900) st.path.splice(0, st.path.length - 900);
+      if (st.path && st.path[st.path.length - 1][0] >= 6.2 && $("ln2-p").checked) tag();
+      const v = vOf(st.t);
+      SB.stat("ln2-t", st.t.toFixed(1) + " <small>s</small>");
+      SB.stat("ln2-ang", Phys.rad2deg(Math.atan2(v, U0)).toFixed(1) + "°");
+      SB.stat("ln2-same", mode() === "steady" || getV() === 0 ? '<span style="color:var(--ok)">일치</span>' : '<span style="color:var(--bad)">서로 다름</span>');
+      cv.redraw();
+    });
+    SB.play("ln2-play", loop);
+    tag();
+  }
+
+  /* ---------------------------------------------------------- 시간선 (수소 기포) */
+  {
+    const st = { lines: [], tp: 1.2 };
+    let flow = "poi";
+    SB.seg("tl-flow", (v) => { flow = v; st.lines = []; st.tp = 1.2; cv.redraw(); });
+    const u = (y) => (flow === "poi" ? 1.2 * (1 - y * y) : 0.6 * (y + 1));
+    const XW = 1.1, ys = Array.from({ length: 31 }, (_, i) => -1 + (2 * i) / 30);
+    const cv = SB.canvas("cv-tl", (ctx, w, h) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [0, 6], y: [-1.2, 1.2], pad: [4, 4, 4, 4], equal: true });
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.1); ctx.fillRect(W.X(0), W.Y(1), 6 * W.s, 2 * W.s); ctx.restore();
+      W.path([[0, 1], [6, 1]], { color: P.dim, width: 3 }); W.path([[0, -1], [6, -1]], { color: P.dim, width: 3 });
+      if (flow === "cou") SB.arrow(ctx, W.X(4.6), W.Y(1.1), W.X(5.6), W.Y(1.1), { color: P.text, width: 2, label: "윗벽 이동" });
+      for (let k = -0.5; k <= 0.5; k += 0.5) SB.dashLine(ctx, W.X(XW), W.Y(k), W.X(6), W.Y(k), P.faint, [2, 5]);
+      Flow.profile(ctx, W.X(0.12), ys.map((y) => W.Y(y)), ys.map((y) => u(y)), 0.72 * W.s, { color: P.accent2, every: 3 });
+      SB.dashLine(ctx, W.X(XW), W.Y(1), W.X(XW), W.Y(-1), P.text, [1, 0]);
+      st.lines.forEach((l) => W.path(l, { color: P.accent, width: 2.4 }));
+    }, { aspect: 0.42, minHeight: 170, maxHeight: 300 });
+    const loop = SB.loop("mini-tl", (dt) => {
+      st.tp += dt;
+      if (st.tp > 1.2) { st.tp = 0; st.lines.push(ys.map((y) => [XW, y])); }
+      st.lines.forEach((l) => l.forEach((p) => { p[0] = Math.min(p[0] + u(p[1]) * dt, 6.4); }));
+      while (st.lines.length && Math.min(...st.lines[0].map((p) => p[0])) > 6) st.lines.shift();
+      cv.redraw();
+    });
+    SB.play("tl-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 변형률 미니 실험 */
+  {
+    const st = { pts: [], arms: [], t: 0, A0: 1 };
+    const fmtR = (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " s⁻¹";
+    const getE = SB.range("sr-e", fmtR, reset), getG = SB.range("sr-g", fmtR, reset), getW = SB.range("sr-w", (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " rad/s", reset);
+    const f = (x, y) => { const e = getE(), g = getG(), w = getW(); return [e * x + (g - w) * y, (g + w) * x - e * y]; };
+    const area = (p) => { let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
+    function reset() {
+      st.t = 0;
+      st.pts = Array.from({ length: 72 }, (_, i) => [0.6 * Math.cos((TAU * i) / 72), 0.6 * Math.sin((TAU * i) / 72)]);
+      st.arms = [[[-0.6, 0], [0.6, 0]], [[0, -0.6], [0, 0.6]]];
+      st.A0 = area(st.pts);
+      cv && cv.redraw();
+    }
+    const rk = (p, h) => { const k1 = f(p[0], p[1]), k2 = f(p[0] + (h / 2) * k1[0], p[1] + (h / 2) * k1[1]), k3 = f(p[0] + (h / 2) * k2[0], p[1] + (h / 2) * k2[1]), k4 = f(p[0] + h * k3[0], p[1] + h * k3[1]); p[0] += (h / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); p[1] += (h / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]); };
+    let cv = null;
+    cv = SB.canvas("cv-strain", (ctx, w, h) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-2.6, 2.6], y: [-1.5, 1.5], pad: [4, 4, 4, 4], equal: true });
+      quiver(ctx, W, f, 18, 10, 14, P.faint);
+      const e = getE(), g = getG();
+      if (Math.abs(e) + Math.abs(g) > 1e-6) {
+        const th = 0.5 * Math.atan2(g, e);
+        [th, th + Math.PI / 2].forEach((a, i) => SB.dashLine(ctx, W.X(-3 * Math.cos(a)), W.Y(-3 * Math.sin(a)), W.X(3 * Math.cos(a)), W.Y(3 * Math.sin(a)), i ? P.accent2 : P.accent, [6, 5]));
+      }
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), 0.6 * W.s, 0, TAU); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath();
+      st.pts.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      st.arms.forEach((a) => W.path(a, { color: P.accent2, width: 2.6 }));
+    }, { aspect: 0.55, minHeight: 200, maxHeight: 320 });
+    const loop = SB.loop("mini-strain", (dt) => {
+      for (let k = 0; k < 3; k++) { st.pts.forEach((p) => rk(p, dt / 3)); st.arms.forEach((a) => a.forEach((p) => rk(p, dt / 3))); }
+      st.t += dt;
+      const R = Math.max(...st.pts.map((p) => Math.hypot(p[0], p[1])));
+      if (R > 2.5 || st.t > 10) reset();
+      const e = getE(), g = getG();
+      $("sr-out").textContent = `넓이 비 ${(area(st.pts) / st.A0).toFixed(3)} · 주축 ${(Math.abs(e) + Math.abs(g) > 1e-6 ? Phys.rad2deg(0.5 * Math.atan2(g, e)) : 0).toFixed(0)}° · t = ${st.t.toFixed(1)} s`;
+      cv.redraw();
+    });
+    SB.play("sr-play", loop);
+    reset();
+  }
+
+  /* ---------------------------------------------------------- 유체 요소 띄우기 + 게임 */
+  {
+    const KF = 0.6, RC = 0.35;
+    const FL = {
+      shear: { name: "쿠에트 전단", f: (x, y) => [0.6 * y, 0], rot: true },
+      forced: { name: "강제 와류", f: (x, y) => [-0.5 * y, 0.5 * x], rot: true },
+      free: { name: "자유 와류", f: (x, y) => { const r2 = x * x + y * y, s = r2 < RC * RC ? KF / (RC * RC) : KF / r2; return [-s * y, s * x]; }, rot: false },
+      strain: { name: "정체점 유동(늘림)", f: (x, y) => [0.5 * x, -0.5 * y], rot: false },
+      diag: { name: "순수 변형 u = ky, v = kx", f: (x, y) => [0.5 * y, 0.5 * x], rot: false },
+      poi: { name: "채널 포물선 분포", f: (x, y) => [0.9 * (1 - (y / 2.1) ** 2), 0], rot: true },
+      uniform: { name: "균일류", f: () => [0.45, 0.2], rot: false },
+    };
+    const make = (key, th, sg) => { const f = FL[key].f, c = Math.cos(th), s = Math.sin(th); return (x, y) => { const [a, b] = f(c * x + s * y, -s * x + c * y); return [sg * (c * a - s * b), sg * (s * a + c * b)]; }; };
+    const st = { field: FL.free.f, c: [1.2, 0], run: false, t: 0, pts: [], arms: [], a0: [0, 0], acc: [0, 0], A0: 1 };
+    const game = { on: false, key: null, n: 0, ok: 0, answered: false, msg: "" };
+    const sel = $("el-flow");
+    sel.addEventListener("change", () => { game.on = false; st.field = FL[sel.value].f; st.c = sel.value === "free" || sel.value === "forced" ? [1.2, 0] : [-1.5, 0.6]; place(); upd(); });
+    const area = (p) => { let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
+    const ang = (a) => Math.atan2(a[a.length - 1][1] - a[0][1], a[a.length - 1][0] - a[0][0]);
+    function place() {
+      const [cx, cy] = st.c, H = 0.3, n = 16, pts = [];
+      for (let i = 0; i < n; i++) pts.push([cx - H + (2 * H * i) / n, cy - H]);
+      for (let i = 0; i < n; i++) pts.push([cx + H, cy - H + (2 * H * i) / n]);
+      for (let i = 0; i < n; i++) pts.push([cx + H - (2 * H * i) / n, cy + H]);
+      for (let i = 0; i < n; i++) pts.push([cx - H, cy + H - (2 * H * i) / n]);
+      st.pts = pts; st.A0 = area(pts);
+      st.arms = [Array.from({ length: 11 }, (_, i) => [cx - 0.25 + 0.05 * i, cy]), Array.from({ length: 11 }, (_, i) => [cx, cy - 0.25 + 0.05 * i])];
+      st.a0 = [ang(st.arms[0]), ang(st.arms[1])]; st.acc = [0, 0]; st.prev = st.a0.slice(); st.t = 0; st.run = false;
+    }
+    const rk = (p, h) => { const f = st.field, k1 = f(p[0], p[1]), k2 = f(p[0] + (h / 2) * k1[0], p[1] + (h / 2) * k1[1]), k3 = f(p[0] + (h / 2) * k2[0], p[1] + (h / 2) * k2[1]), k4 = f(p[0] + h * k3[0], p[1] + h * k3[1]); p[0] += (h / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); p[1] += (h / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]); };
+    const center = () => { let x = 0, y = 0; st.pts.forEach((p) => { x += p[0]; y += p[1]; }); return [x / st.pts.length, y / st.pts.length]; };
+    const cv = SB.canvas("cv-elem", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-3, 3], y: [-2, 2], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      if ($("el-quiver").checked) quiver(ctx, W, st.field, 15, 10, 26, P.faint);
+      // 처음 자리
+      const [cx, cy] = st.c;
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.strokeRect(W.X(cx - 0.3), W.Y(cy + 0.3), 0.6 * W.s, 0.6 * W.s); ctx.restore();
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath();
+      st.pts.forEach((p, i) => (i ? ctx.lineTo(W.X(p[0]), W.Y(p[1])) : ctx.moveTo(W.X(p[0]), W.Y(p[1])))); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      st.arms.forEach((a) => W.path(a, { color: P.accent2, width: 3 }));
+      if (!st.run) knob(ctx, W.X(cx), W.Y(cy), P.accent, 10);
+      if (game.on) SB.label(ctx, game.answered ? game.msg : "수수께끼 유동 — 회전일까, 비회전일까?", w / 2, 16, { bold: true, color: game.answered ? (game.msg.startsWith("정답") ? P.ok : P.bad) : P.text });
+    }, { aspect: 0.62, minHeight: 240, maxHeight: 430 });
+    function upd() {
+      const c = st.run || st.t > 0 ? center() : st.c, z = curl(st.field, c[0], c[1]);
+      SB.stat("el-z", game.on && !game.answered ? "?" : fx(z) + " <small>s⁻¹</small>");
+      const rot = (st.acc[0] + st.acc[1]) / 2, sh = st.acc[1] - st.acc[0];
+      SB.stat("el-rot", Phys.rad2deg(rot).toFixed(0) + "°");
+      SB.stat("el-shear", "90° → " + (90 + Phys.rad2deg(sh)).toFixed(0) + "°");
+      SB.stat("el-area", (area(st.pts) / st.A0).toFixed(3));
+      SB.stat("el-score", game.n ? `${game.ok}/${game.n}` : "—");
+      cv.redraw();
+    }
+    SB.drag(cv, {
+      handles: () => (cv._W && !st.run ? [{ id: "e", x: cv._W.X(st.c[0]), y: cv._W.Y(st.c[1]), r: 14 }] : []),
+      move: (id, x, y) => { if (!id) return; st.c = [SB.clamp(cv._W.ix(x), -2.6, 2.6), SB.clamp(cv._W.iy(y), -1.6, 1.6)]; place(); upd(); },
+    });
+    $("el-quiver").addEventListener("change", () => cv.redraw());
+    $("el-go").addEventListener("click", () => { if (st.t > 0) place(); st.run = true; });
+    $("el-reset").addEventListener("click", () => { place(); upd(); });
+    $("el-mystery").addEventListener("click", () => {
+      const keys = ["shear", "forced", "free", "strain", "diag", "uniform", "shear", "diag"];
+      const key = keys[Math.floor(Math.random() * keys.length)];
+      game.on = true; game.key = key; game.answered = false;
+      st.field = make(key, Math.random() * TAU, Math.random() < 0.5 ? -1 : 1);
+      st.c = key === "free" || key === "forced" ? [1.2 * (Math.random() < 0.5 ? 1 : -1), 0.3] : [0, 0];
+      place(); upd();
+    });
+    const answer = (saysRot) => {
+      if (!game.on) { SB.stat("el-score", "먼저 ‘수수께끼 유동’"); return; }
+      if (game.answered) return;
+      const ok = FL[game.key].rot === saysRot;
+      game.n++; if (ok) game.ok++; game.answered = true;
+      game.msg = (ok ? "정답! " : "아쉽다 — ") + FL[game.key].name + (FL[game.key].rot ? " (회전 유동)" : " (비회전 유동)");
+      upd();
+    };
+    $("el-ans-r").addEventListener("click", () => answer(true));
+    $("el-ans-i").addEventListener("click", () => answer(false));
+    SB.loop("sim-elem", (dt) => {
+      if (!st.run) return;
+      for (let k = 0; k < 4; k++) { const h = dt / 4; st.pts.forEach((p) => rk(p, h)); st.arms.forEach((a) => a.forEach((p) => rk(p, h))); }
+      const now = [ang(st.arms[0]), ang(st.arms[1])];
+      for (let i = 0; i < 2; i++) { let d = now[i] - st.prev[i]; d = ((d + Math.PI) % TAU + TAU) % TAU - Math.PI; st.acc[i] += d; st.prev[i] = now[i]; }
+      st.t += dt;
+      const c = center();
+      if (Math.abs(c[0]) > 3.3 || Math.abs(c[1]) > 2.3 || st.t > 14) st.run = false;
+      upd();
+    });
+    place(); upd();
+  }
+
+  /* ---------------------------------------------------------- 랭킨 와류 미니 */
+  {
+    const st = { r: 1.2, phi: 0, psi: 0, t: 0 };
+    const getR = SB.range("rk-R", (v) => v.toFixed(2) + " m", () => { st.psi = 0; draw(); });
+    const V0 = 1.0; // 핵 경계 최대 속력
+    const ut = (r, R) => (r < R ? (V0 * r) / R : (V0 * R) / r);
+    const zeta = (r, R) => (r < R ? (2 * V0) / R : 0);
+    const vel = (x, y) => { const R = getR(), r = Math.hypot(x, y) || 1e-9, u = ut(r, R); return [(-u * y) / r, (u * x) / r]; };
+    const tr = Flow.particles(90, [-2, 2, -2, 2], { life: 6 });
+    let left = null;
+    function draw() { left && left.redraw(); }
+    left = SB.canvas("cv-rk", (ctx, w, h, self) => {
+      const P = pal(), R = getR(), half = w / 2;
+      const W = Phys.world(ctx, half, h, { x: [-2, 2], y: [-2, 2], pad: [6, 6, 6, 6], equal: true });
+      self._W = W;
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.18); ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), R * W.s, 0, TAU); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; tr.pts.forEach((p) => ctx.fillRect(W.X(p.x) - 1, W.Y(p.y) - 1, 2, 2)); ctx.restore();
+      const px = st.r * Math.cos(st.phi), py = st.r * Math.sin(st.phi);
+      SB.dashLine(ctx, W.X(0), W.Y(0), W.X(px), W.Y(py), P.faint);
+      const L = 16;
+      [st.psi, st.psi + Math.PI / 2].forEach((a) => { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(W.X(px) - L * Math.cos(a), W.Y(py) + L * Math.sin(a)); ctx.lineTo(W.X(px) + L * Math.cos(a), W.Y(py) - L * Math.sin(a)); ctx.stroke(); ctx.restore(); });
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(W.X(px) + L * Math.cos(st.psi), W.Y(py) - L * Math.sin(st.psi), 3.5, 0, TAU); ctx.fill(); ctx.restore();
+      SB.label(ctx, "핵", W.X(0), W.Y(0), { size: 11, color: P.dim });
+      // 오른쪽 그래프
+      const box = { x: half + 42, y: 14, w: half - 54, h: h - 62 };
+      const sv = [];
+      for (let i = 0; i <= 120; i++) { const r = (2 * i) / 120; sv.push([r, ut(r, R)]); }
+      const res = SB.chart(ctx, box, { x: [0, 2], y: [0, 1.4], xLabel: "r (m)", yLabel: "u_θ (m/s)", series: [{ data: sv, color: P.accent, width: 2.4 }], vlines: [{ x: R, color: P.faint, label: "R" }], points: [{ x: st.r, y: ut(st.r, R), color: P.accent2, r: 5 }] });
+      const hx = res.X(st.r), hy = box.y + box.h;
+      knob(ctx, hx, hy, P.accent2, 9);
+      self._h = [hx, hy]; self._box = box; self._res = res;
+      SB.label(ctx, st.r < R ? "핵 안: ζ = 2V/R ≠ 0" : "핵 밖: ζ = 0", box.x + box.w * 0.72, box.y + 26, { size: 11, color: st.r < R ? P.accent2 : P.ok, bold: true });
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 340 });
+    SB.drag(left, {
+      handles: () => (left._h ? [{ id: "r", x: left._h[0], y: left._h[1], r: 14 }] : []),
+      move: (id, x) => { if (!id) return; const b = left._box; st.r = SB.clamp(((x - b.x) / b.w) * 2, 0.15, 1.9); st.psi = 0; },
+    });
+    const loop = SB.loop("mini-rk", (dt) => {
+      const R = getR();
+      st.phi += (ut(st.r, R) / st.r) * dt;
+      st.psi += (zeta(st.r, R) / 2) * dt;
+      tr.step(vel, dt);
+      $("rk-out").textContent = `r = ${st.r.toFixed(2)} m · u_θ = ${ut(st.r, R).toFixed(2)} m/s · 부표 자전 ω = ζ/2 = ${(zeta(st.r, R) / 2).toFixed(2)} rad/s`;
+      draw();
+    });
+    SB.play("rk-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 강제 와류 드래그 숫자 */
+  SB.tangle("tg-vortex", (v) => {
+    const w = (v.n * TAU) / 60, G = TAU * w * v.r * v.r;
+    return { w: w.toFixed(2) + " rad/s", z: (2 * w).toFixed(2) + " s⁻¹", G: G.toFixed(3) + " m²/s", v: (w * v.r).toFixed(2) + " m/s", vf: ((w * v.r) / 2).toFixed(2) + " m/s" };
+  });
+
+  /* ---------------------------------------------------------- 순환 시뮬레이터 + 목표 게임 */
+  {
+    const G0 = 6.0, RC = 0.8, KR = G0 / TAU, OM = 1.0, KS = 1.0;
+    const FLD = {
+      rankine: { v: (x, y) => { const r2 = x * x + y * y, s = r2 < RC * RC ? KR / (RC * RC) : KR / Math.max(r2, 1e-9); return [-s * y, s * x]; }, z: (x, y) => (x * x + y * y < RC * RC ? (2 * KR) / (RC * RC) : 0) },
+      forced: { v: (x, y) => [-OM * y, OM * x], z: () => 2 * OM },
+      shear: { v: (x, y) => [KS * y, 0], z: () => -KS },
+    };
+    const st = { c: [1.6, 0.4], r: 0.7, shape: "circle", G: 0, Z: 0, A: 0, seg: [], target: null, hits: 0 };
+    const sel = $("ci-flow");
+    const shape = SB.seg("ci-shape", (v) => { st.shape = v; calc(); });
+    const F = () => FLD[sel.value];
+    const tr = Flow.particles(150, [-3.3, 3.3, -2.4, 2.4], { life: 6 });
+    sel.addEventListener("change", () => { st.target = null; tr.reset(); calc(); });
+    $("ci-col").addEventListener("change", () => cv.redraw());
+    function loopPts() {
+      const [cx, cy] = st.c, r = st.r, pts = [];
+      if (st.shape === "circle") for (let i = 0; i <= 360; i++) { const a = (TAU * i) / 360; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+      else { const C = [[-r, -r], [r, -r], [r, r], [-r, r], [-r, -r]]; for (let k = 0; k < 4; k++) for (let i = 0; i < 90; i++) { const s = i / 90; pts.push([cx + C[k][0] + s * (C[k + 1][0] - C[k][0]), cy + C[k][1] + s * (C[k + 1][1] - C[k][1])]); } pts.push([cx - r, cy - r]); }
+      return pts;
+    }
+    const inside = (x, y) => (st.shape === "circle" ? Math.hypot(x - st.c[0], y - st.c[1]) < st.r : Math.abs(x - st.c[0]) < st.r && Math.abs(y - st.c[1]) < st.r);
+    function calc() {
+      const f = F().v, pts = loopPts(); let G = 0; const seg = [];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i], b = pts[i + 1], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], V = f(m[0], m[1]), d = [b[0] - a[0], b[1] - a[1]], dl = Math.hypot(d[0], d[1]) || 1e-9;
+        const dot = V[0] * d[0] + V[1] * d[1]; G += dot; seg.push([a, b, dot / dl]);
+      }
+      st.G = G; st.seg = seg;
+      st.A = st.shape === "circle" ? Math.PI * st.r * st.r : 4 * st.r * st.r;
+      if (sel.value === "rankine") {
+        let Z = 0; const nr = 60, nt = 120, zc = (2 * KR) / (RC * RC);
+        for (let i = 0; i < nr; i++) for (let j = 0; j < nt; j++) { const rr = ((i + 0.5) * RC) / nr, th = ((j + 0.5) * TAU) / nt; if (inside(rr * Math.cos(th), rr * Math.sin(th))) Z += zc * rr * (RC / nr) * (TAU / nt); }
+        st.Z = Z;
+      } else st.Z = F().z(0, 0) * st.A;
+      SB.stat("ci-g", fx(st.G) + " <small>m²/s</small>");
+      SB.stat("ci-z", fx(st.Z) + " <small>m²/s</small>");
+      SB.stat("ci-a", st.A.toFixed(2) + " <small>m²</small>");
+      if (st.target == null) SB.stat("ci-t", "<small>‘새 목표’를 누르세요</small>");
+      else {
+        const hit = Math.abs(st.G - st.target) <= Math.max(0.03 * Math.abs(st.target), 0.05);
+        if (hit && !st.done) { st.done = true; st.hits++; }
+        SB.stat("ci-t", `${st.target.toFixed(2)} <small>m²/s</small> ` + (st.done ? `<span style="color:var(--ok)">✓ 달성 (${st.hits})</span>` : ""));
+      }
+      cv && cv.redraw();
+    }
+    $("ci-new").addEventListener("click", () => {
+      const k = sel.value; let T;
+      if (k === "rankine") { const u = Math.random(); T = u < 0.2 ? 0 : u < 0.35 ? G0 : Math.round(G0 * (0.2 + 0.65 * Math.random()) * 10) / 10; }
+      else if (k === "forced") T = Math.round(TAU * OM * (0.4 + 1.2 * Math.random()) ** 2 * 10) / 10;
+      else T = -Math.round((0.5 + 5.5 * Math.random()) * 10) / 10;
+      st.target = T; st.done = false; calc();
+    });
+    let cv = null;
+    cv = SB.canvas("cv-circ", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-3, 3], y: [-2.2, 2.2], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      quiver(ctx, W, F().v, 15, 11, 22, P.faint);
+      if (sel.value === "rankine") { ctx.save(); ctx.fillStyle = Flow.waterColor(0.16); ctx.strokeStyle = P.faint; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(W.X(0), W.Y(0), RC * W.s, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); SB.label(ctx, "핵 (ζ ≠ 0)", W.X(0), W.Y(0), { size: 11, color: P.dim }); }
+      ctx.save(); ctx.fillStyle = P.dim; tr.pts.forEach((p) => ctx.fillRect(W.X(p.x) - 1, W.Y(p.y) - 1, 2, 2)); ctx.restore();
+      const vref = Math.max(1e-6, ...st.seg.map((s) => Math.abs(s[2])));
+      ctx.save(); ctx.lineWidth = 4; ctx.lineCap = "round";
+      st.seg.forEach(([a, b, d]) => { ctx.strokeStyle = $("ci-col").checked ? Phys.diverge(d / vref) : P.accent; ctx.beginPath(); ctx.moveTo(W.X(a[0]), W.Y(a[1])); ctx.lineTo(W.X(b[0]), W.Y(b[1])); ctx.stroke(); });
+      ctx.restore();
+      // 방향 표시 화살
+      const q = st.seg[Math.floor(st.seg.length * 0.12)];
+      if (q) SB.arrow(ctx, W.X(q[0][0]), W.Y(q[0][1]), W.X(q[0][0]) + (W.X(q[1][0]) - W.X(q[0][0])) * 8, W.Y(q[0][1]) + (W.Y(q[1][1]) - W.Y(q[0][1])) * 8, { color: P.text, width: 2, head: 9 });
+      knob(ctx, W.X(st.c[0]), W.Y(st.c[1]), P.accent, 10);
+      knob(ctx, W.X(st.c[0] + st.r), W.Y(st.c[1]), P.accent2, 9);
+      SB.label(ctx, `Γ = ${fx(st.G)} m²/s`, W.X(st.c[0]), W.Y(st.c[1]) - 20, { bold: true, mono: true });
+    }, { aspect: 0.62, minHeight: 250, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._W ? [{ id: "r", x: cv._W.X(st.c[0] + st.r), y: cv._W.Y(st.c[1]), r: 13 }, { id: "c", x: cv._W.X(st.c[0]), y: cv._W.Y(st.c[1]), r: 14 }] : []),
+      move: (id, x, y) => {
+        if (!id) return;
+        const wx = cv._W.ix(x), wy = cv._W.iy(y);
+        if (id === "c") st.c = [SB.clamp(wx, -2.8, 2.8), SB.clamp(wy, -2, 2)];
+        else st.r = SB.clamp(Math.hypot(wx - st.c[0], wy - st.c[1]), 0.15, 2.0);
+        calc();
+      },
+    });
+    SB.loop("sim-circ", (dt) => { tr.step(F().v, dt); cv.redraw(); });
+    calc();
+  }
+
+  /* ---------------------------------------------------------- RTT: 움직이는 계 vs 고정 CV */
+  {
+    const rho = 1000, H1 = 1.0, V1 = 2.0, xc0 = 1.3, xc1 = 2.5, XS = -1.6, md = rho * V1 * H1;
+    const st = { xa: 0.6, xb: 3.0, tab: null, anim: false };
+    const getT = SB.range("rt-t", (v) => v.toFixed(3) + " s", () => draw());
+    const getH = SB.range("rt-h", (v) => v.toFixed(2) + " m", () => { build(); draw(); });
+    const prop = SB.seg("rt-b", () => draw());
+    const H = (x) => { const H2 = getH(); return x < xc0 ? H1 : x > xc1 ? H2 : H1 + ((H2 - H1) * (x - xc0)) / (xc1 - xc0); };
+    const u = (x) => (V1 * H1) / H(x);
+    function build() {
+      const TT = [0], XX = [XS]; let x = XS, t = 0;
+      while (x < 8) { const dt = 0.002, k1 = u(x), k2 = u(x + 0.5 * dt * k1); x += dt * k2; t += dt; TT.push(t); XX.push(x); }
+      st.tab = { TT, XX };
+    }
+    const Xat = (T) => (T < 0 ? XS + V1 * T : Flow.interp(st.tab.TT, st.tab.XX, T));
+    const Tat = (x) => (x < XS ? (x - XS) / V1 : Flow.interp(st.tab.XX, st.tab.TT, x));
+    const massBetween = (p, q) => { let s = 0; const n = 60; for (let i = 0; i < n; i++) s += H(p + ((i + 0.5) * (q - p)) / n); return (rho * s * (q - p)) / n; };
+    const cols = []; for (let k = 0; k < 400; k++) cols.push(k * 0.05);
+    const rows = 8;
+    build();
+    let cv = null;
+    function draw() { cv && cv.redraw(); stats(); }
+    function stats() {
+      const tau = getT(), xI = Xat(Tat(st.xa) + tau), xII = Xat(Tat(st.xb) + tau), isM = prop() === "m";
+      const BI = isM ? massBetween(st.xa, xI) : md * (xI - st.xa), BII = isM ? massBetween(st.xb, xII) : md * (xII - st.xb);
+      const un = isM ? "kg" : "kg·m/s", ur = isM ? "kg/s" : "N";
+      SB.stat("rt-bi", BI.toFixed(0) + ` <small>${un}</small>`);
+      SB.stat("rt-bii", BII.toFixed(0) + ` <small>${un}</small>`);
+      SB.stat("rt-rate", tau > 0 ? fx((BII - BI) / tau, 0) + ` <small>${ur}</small>` : "—");
+      SB.stat("rt-rtt", (isM ? "0" : fx(md * (u(st.xb) - u(st.xa)), 0)) + ` <small>${ur}</small>`);
+    }
+    cv = SB.canvas("cv-rtt", (ctx, w, h, self) => {
+      const P = pal(), W = Phys.world(ctx, w, h, { x: [-0.1, 4.6], y: [-0.8, 0.8], pad: [4, 4, 4, 4], equal: true });
+      self._W = W;
+      const tau = getT(), xs = []; for (let i = 0; i <= 80; i++) xs.push(-0.1 + (4.7 * i) / 80);
+      const poly = (p, q, col) => { const n = 30; ctx.save(); ctx.fillStyle = col; ctx.beginPath(); for (let i = 0; i <= n; i++) { const x = p + ((q - p) * i) / n; i ? ctx.lineTo(W.X(x), W.Y(H(x) / 2)) : ctx.moveTo(W.X(x), W.Y(H(x) / 2)); } for (let i = n; i >= 0; i--) { const x = p + ((q - p) * i) / n; ctx.lineTo(W.X(x), W.Y(-H(x) / 2)); } ctx.closePath(); ctx.fill(); ctx.restore(); };
+      poly(-0.1, 4.6, Flow.waterColor(0.1));
+      const xI = Xat(Tat(st.xa) + tau), xII = Xat(Tat(st.xb) + tau);
+      poly(st.xa, xI, SB.isDark() ? "rgba(255,138,76,.28)" : "rgba(194,65,12,.18)");
+      poly(st.xb, Math.min(xII, 4.6), SB.isDark() ? "rgba(59,201,219,.3)" : "rgba(11,114,133,.2)");
+      [1, -1].forEach((sg) => W.path(xs.map((x) => [x, (sg * H(x)) / 2]), { color: P.dim, width: 3 }));
+      const ta = Tat(st.xa), tb = Tat(st.xb);
+      ctx.save();
+      cols.forEach((T0) => {
+        const x = Xat(T0 + tau); if (x < -0.1 || x > 4.6) return;
+        const tagged = T0 >= ta && T0 <= tb, hh = H(x);
+        ctx.fillStyle = tagged ? P.accent : P.faint;
+        for (let j = 0; j < rows; j++) { const y = (-1 + ((j + 0.5) * 2) / rows) * hh / 2; ctx.beginPath(); ctx.arc(W.X(x), W.Y(y), tagged ? 2.6 : 1.8, 0, TAU); ctx.fill(); }
+      });
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.8; ctx.setLineDash([7, 5]); ctx.strokeRect(W.X(st.xa), W.Y(0.58), (st.xb - st.xa) * W.s, 1.16 * W.s); ctx.restore();
+      SB.label(ctx, "CV", W.X((st.xa + st.xb) / 2), W.Y(0.66), { bold: true, size: 12 });
+      if (xI - st.xa > 0.06) SB.label(ctx, "I", W.X((st.xa + xI) / 2), W.Y(0), { bold: true, color: P.accent2 });
+      if (xII - st.xb > 0.06 && xII < 4.7) SB.label(ctx, "II", W.X((st.xb + Math.min(xII, 4.6)) / 2), W.Y(0), { bold: true });
+      knob(ctx, W.X(st.xa), W.Y(0.66), P.text, 9); knob(ctx, W.X(st.xb), W.Y(0.66), P.text, 9);
+      SB.label(ctx, `V = ${u(st.xa).toFixed(2)} m/s`, W.X(st.xa), W.Y(-0.68), { size: 11, color: P.accent2 });
+      SB.label(ctx, `V = ${u(st.xb).toFixed(2)} m/s`, W.X(st.xb), W.Y(-0.68), { size: 11, color: P.accent });
+    }, { aspect: 0.4, minHeight: 190, maxHeight: 340 });
+    SB.drag(cv, {
+      handles: () => (cv._W ? [{ id: "a", x: cv._W.X(st.xa), y: cv._W.Y(0.66), r: 14 }, { id: "b", x: cv._W.X(st.xb), y: cv._W.Y(0.66), r: 14 }] : []),
+      move: (id, x) => {
+        if (!id) return;
+        const wx = cv._W.ix(x);
+        if (id === "a") st.xa = SB.clamp(wx, 0.1, st.xb - 0.4); else st.xb = SB.clamp(wx, st.xa + 0.4, 3.0);
+        stats();
+      },
+    });
+    let playT = 0;
+    $("rt-play").addEventListener("click", () => { st.anim = true; playT = 0; getT.set(0); });
+    SB.loop("sim-rtt", (dt) => {
+      if (!st.anim) return;
+      playT += dt * 0.08;
+      if (playT >= 0.3) { playT = 0.3; st.anim = false; }
+      getT.set(Math.round(playT / 0.005) * 0.005);
+    });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 탱크 드래그 숫자 */
+  SB.tangle("tg-rtt", (v) => {
+    const Qo = (Math.PI * (v.D / 100) ** 2 * v.V) / 4, dQ = v.Q - Qo, dh = dQ / v.A;
+    return { dm: fx(1000 * dQ, 1) + " kg/s", dh: fx(dh, 4) + " m/s",
+      msg: Math.abs(dh) < 5e-5 ? "들어오는 양과 나가는 양이 같아 수위가 일정하다(정상 상태)." : dh > 0 ? `수위가 올라간다 — 1 m 오르는 데 ${(1 / dh / 60).toFixed(1)}분.` : `수위가 내려간다 — 1 m 내려가는 데 ${(-1 / dh / 60).toFixed(1)}분.` };
+  });
+
+  /* ---------------------------------------------------------- 드릴 */
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const term = (k, s) => (k === 0 ? "" : k > 0 ? ` + ${k}${s}` : ` - ${-k}${s}`);
+  SB.drill("drill-accel", () => {
+    let a, b, c, d, e, x, y, u, v, ax, ay;
+    do {
+      a = pick([0.5, 1, 1.5, 2, 3]); b = pick([-1.5, -1, -0.5, 0.5, 1, 1.5, 2]); c = pick([0, 0, 0.5, -0.5, 1]); d = pick([0.5, 1, 2, -1]); e = pick([0, 0.5, -0.5, 1]);
+      x = pick([-2, -1, 1, 2, 3]); y = pick([-2, -1, 1, 2, 3]);
+      u = a + b * x + c * y; v = d + e * x - b * y; ax = u * b + v * c; ay = u * e - v * b;
+    } while (Math.abs(ax) < 0.1 || Math.abs(ay) < 0.1);
+    return {
+      q: `<p>정상 2차원 속도장 \\(u = ${a}${term(b, "x")}${term(c, "y")}\\), \\(v = ${d}${term(e, "x")}${term(-b, "y")}\\) (m/s, 좌표는 m)에서 점 \\((${x},\\ ${y})\\)을 지나는 유체 입자의 가속도 성분은?</p>`,
+      answer: [ax, ay], label: ["a_x =", "a_y ="], unit: ["m/s²", "m/s²"], tol: "1%",
+      sol: `<p>\\(u = ${u.toFixed(2)}\\), \\(v = ${v.toFixed(2)}\\) m/s. \\(\\partial u/\\partial x = ${b}\\), \\(\\partial u/\\partial y = ${c}\\), \\(\\partial v/\\partial x = ${e}\\), \\(\\partial v/\\partial y = ${-b}\\). \\(a_x = u\\,\\partial u/\\partial x + v\\,\\partial u/\\partial y = ${ax.toFixed(2)}\\), \\(a_y = u\\,\\partial v/\\partial x + v\\,\\partial v/\\partial y = ${ay.toFixed(2)}\\) m/s².</p>`,
+    };
+  });
+  SB.drill("drill-vort", () => {
+    const k = Math.floor(Math.random() * 4);
+    if (k === 0) { const s = pick([2, 5, 8, 10, 15, 20, 25, 40]); return { q: `<p>평판 사이의 층류 \\(u = ${s}y\\) (s⁻¹), \\(v = 0\\)의 와도 \\(\\zeta_z\\)는? (부호 포함)</p>`, answer: -s, label: "ζ_z =", unit: "s⁻¹", sol: `<p>\\(\\zeta_z = \\partial v/\\partial x - \\partial u/\\partial y = 0 - ${s} = ${-s}\\) s⁻¹ (시계 방향 회전, 회전율 \\(${s / 2}\\) rad/s).</p>` }; }
+    if (k === 1) { const n = pick([30, 45, 60, 90, 100, 120, 150, 200, 300]), z = (2 * n * TAU) / 60; return { q: `<p>${n} rpm으로 강체 회전하는 물의 와도는?</p>`, answer: z, label: "ζ =", unit: "s⁻¹", sol: `<p>\\(\\omega = ${n}\\times2\\pi/60 = ${(z / 2).toFixed(3)}\\) rad/s, \\(\\zeta = 2\\omega = ${z.toFixed(2)}\\) s⁻¹.</p>` }; }
+    if (k === 2) { const w = pick([0.5, 1, 1.5, 2, 3, 4]), r = pick([0.1, 0.2, 0.25, 0.4, 0.5, 0.8, 1]), G = TAU * w * r * r; return { q: `<p>각속도 \\(${w}\\) rad/s의 강제 와류에서 중심이 같은 반지름 \\(${r}\\) m 원의 순환은?</p>`, answer: G, label: "Γ =", unit: "m²/s", sol: `<p>\\(\\Gamma = 2\\pi\\omega r^2 = 2\\pi(${w})(${r})^2 = ${G.toFixed(3)}\\) m²/s.</p>` }; }
+    const R = pick([0.1, 0.2, 0.5, 1, 20, 50]), Vm = pick([1, 2, 5, 10, 30, 60]), r = R * pick([1.5, 2, 2.5, 3, 4, 5]), V = (Vm * R) / r;
+    return { q: `<p>핵 반지름 \\(${R}\\) m, 최대 속력 \\(${Vm}\\) m/s인 랭킨 와류에서 중심으로부터 \\(${+r.toFixed(3)}\\) m 떨어진 곳의 속력은?</p>`, answer: V, label: "u_θ =", unit: "m/s", sol: `<p>핵 바깥은 자유 와류: \\(u_\\theta = V_\\text{max}R/r = ${Vm}(${R})/${+r.toFixed(3)} = ${V.toFixed(3)}\\) m/s.</p>` };
+  });
+})();
+</script>
+</body>
+</html>
