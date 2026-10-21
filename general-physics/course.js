@@ -1373,7 +1373,7 @@ SB.registerCourse({
     "ko": "뉴턴",
     "en": "newton",
     "abbr": "",
-    "def": "힘은 언제나 \"누가 누구에게\" 가하는 것이다 — 손이 상자에, 지구가 사과에, 줄이 양동이에. 힘의 SI 단위는 뉴턴(newton), \\(1\\ \\text{N} = 1\\ \\text{kg·m/s}^2\\)이다.",
+    "def": "힘은 언제나 \"누가 누구에게\" 가하는 것이다 — 손이 상자에, 지구가 사과에, 줄이 양동이에. 힘의 SI 단위는 뉴턴(newton), \\(1\\ \\text{N} = 1\\ \\text{kg}\\cdot\\text{m/s}^2\\)이다.",
     "chapters": [
      "newtons-laws#forces"
     ]
@@ -3128,7 +3128,7 @@ SB.registerCourse({
     "ko": "일함수",
     "en": "work function",
     "abbr": "",
-    "def": "$$E = hf = \\frac{hc}\\lambda, \\qquad K_\\text{max} = hf - W = eV_\\text{정지}, \\qquad hc = 1240\\ \\text{eV·nm}$$\\(h = 6.626\\times10^{-34}\\) J·s(플랑크 상수). \\(W\\): 금속의 일함수(work function), 전자 하나를 떼어 내는 최소 에너지. \\(V_\\text{정지}\\): 가장 빠른 전자도 되돌려 보내는…",
+    "def": "$$E = hf = \\frac{hc}\\lambda, \\qquad K_\\text{max} = hf - W = eV_\\text{정지}, \\qquad hc = 1240\\ \\text{eV}\\cdot\\text{nm}$$\\(h = 6.626\\times10^{-34}\\) J·s(플랑크 상수). \\(W\\): 금속의 일함수(work function), 전자 하나를 떼어 내는 최소 에너지. \\(V_\\text{정지}\\): 가장 빠른 전자도…",
     "chapters": [
      "relativity-quantum#photons"
     ]
@@ -3794,7 +3794,7 @@ SB.registerCourse({
     "ko": "중력 상수",
     "en": "gravitational constant",
     "abbr": "",
-    "def": "$$F_g = \\frac{G m_1 m_2}{r^2}, \\qquad \\vec F_{2\\,\\text{on}\\,1} = \\frac{G m_1 m_2}{r^2}\\,\\hat r_{1\\to2}$$\\(G = 6.674\\times10^{-11}\\ \\text{N·m}^2/\\text{kg}^2\\): 중력 상수(gravitational constant). 두 힘은 작용–반작용 쌍이다(4장). 크기가 있는 구형 물체는 중심 사이 거리…",
+    "def": "$$F_g = \\frac{G m_1 m_2}{r^2}, \\qquad \\vec F_{2\\,\\text{on}\\,1} = \\frac{G m_1 m_2}{r^2}\\,\\hat r_{1\\to2}$$\\(G = 6.674\\times10^{-11}\\ \\text{N}\\cdot\\text{m}^2/\\text{kg}^2\\): 중력 상수(gravitational constant). 두 힘은 작용–반작용 쌍이다(4장). 크기가 있는 구형 물체는…",
     "chapters": [
      "gravitation#law"
     ]
@@ -3857,7 +3857,7 @@ SB.registerCourse({
     "ko": "진공의 유전율",
     "en": "permittivity of free space",
     "abbr": "",
-    "def": "두 힘은 크기가 같고 방향이 반대다(작용–반작용) — 쿨롱 법칙(Coulomb's law). $$F = k\\frac{|q_1q_2|}{r^2}, \\qquad k = \\frac{1}{4\\pi\\epsilon_0} = 8.988\\times10^9\\ \\text{N·m}^2/\\text{C}^2$$\\(\\epsilon_0 = 8.854\\times10^{-12}\\) C²/(N·m²): 진공의 유전율(permittivity of…",
+    "def": "두 힘은 크기가 같고 방향이 반대다(작용–반작용) — 쿨롱 법칙(Coulomb's law). $$F = k\\frac{|q_1q_2|}{r^2}, \\qquad k = \\frac{1}{4\\pi\\epsilon_0} = 8.988\\times10^9\\ \\text{N}\\cdot\\text{m}^2/\\text{C}^2$$\\(\\epsilon_0 = 8.854\\times10^{-12}\\) C²/(N·m²): 진공의…",
     "chapters": [
      "electric-field#coulomb"
     ]
