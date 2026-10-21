@@ -1,0 +1,1338 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>자유 전자 모형 · 고체물리 · SciBook</title>
+<meta name="description" content="드루드 모형과 옴의 법칙, 조머펠트 모형의 페르미 구와 상태 밀도, 전자 비열, 평균 자유 행로와 비데만–프란츠 법칙, 일함수와 열전자 방출, 얇은 금속선의 크기 효과까지 — 구리 배선 저항이 커지는 이유를 직접 끌고 계산하며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/free-electron.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="자유 전자 모형 · 고체물리 · SciBook">
+<meta property="og:description" content="드루드 모형과 옴의 법칙, 조머펠트 모형의 페르미 구와 상태 밀도, 전자 비열, 평균 자유 행로와 비데만–프란츠 법칙, 일함수와 열전자 방출, 얇은 금속선의 크기 효과까지 — 구리 배선 저항이 커지는 이유를 직접 끌고 계산하며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/free-electron.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "자유 전자 모형 · 고체물리 · SciBook", "headline": "07 자유 전자 모형", "url": "https://science.euiyun.com/solid-state/chapters/free-electron.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "드루드 모형과 옴의 법칙, 조머펠트 모형의 페르미 구와 상태 밀도, 전자 비열, 평균 자유 행로와 비데만–프란츠 법칙, 일함수와 열전자 방출, 얇은 금속선의 크기 효과까지 — 구리 배선 저항이 커지는 이유를 직접 끌고 계산하며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 7, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "07 자유 전자 모형", "item": "https://science.euiyun.com/solid-state/chapters/free-electron.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+</head>
+<body data-chapter="free-electron">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="phonons thermal-properties">
+    <div class="eyebrow">Chapter 07</div>
+    <h1>자유 전자 모형</h1>
+    <p class="lead">구리 1 cm³에는 원자마다 하나씩 내놓은 전도 전자가 8.5×10²²개 있다. 이 전자들은 이온 사이를 초속 1500 km로 날아다니지만, 전선에 전류가 흐를 때 전체가 한쪽으로 밀려가는 속도는 1초에 1 mm도 안 된다. 1900년 드루드는 이 전자들을 기체 분자처럼 다루어 옴의 법칙을 설명했고, 1928년 조머펠트는 같은 기체에 파울리 배타 원리를 넣어 드루드가 풀지 못한 수수께끼를 풀었다. 이 장은 그 두 모형으로 금속의 전기·열 전도, 비열, 일함수를 계산하고, 마지막에 20 nm보다 가는 구리 배선의 저항이 왜 급격히 커지는지까지 간다. 아래 화면에서 전기장 화살표를 끌어 전자 기체가 어떻게 반응하는지 먼저 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">화살표 끝(흰 원)을 끌어 전기장 E를 바꾼다</span></div>
+    <ul class="objectives">
+      <li>드루드 모형의 완화 시간 \(\tau\)로 표류 속도 \(v_d = -e\tau E/m\), 전도도 \(\sigma = ne^2\tau/m\), 이동도 \(\mu = e\tau/m\)를 유도하고, 구리의 \(\tau \approx 2.5\times10^{-14}\) s를 계산한다.</li>
+      <li>드루드 모형이 성공한 것(옴의 법칙, 비데만–프란츠 법칙)과 실패한 것(전자 비열, 평균 자유 행로)을 구분한다.</li>
+      <li>상자 속 자유 전자의 k 공간 격자점을 채워 페르미 구를 만들고, \(k_F, E_F, v_F, T_F\)를 전자 밀도로부터 계산한다(Cu: 7.0 eV, 1.57×10⁶ m/s, 8.2×10⁴ K).</li>
+      <li>3차원 상태 밀도 \(g(E) \propto \sqrt E\)와 페르미–디랙 분포로 전자 비열 \(C = \gamma T\)를 구하고, 포논 비열과 같아지는 온도를 찾는다.</li>
+      <li>진짜 평균 자유 행로 \(\ell = v_F\tau\)(Cu ≈ 40 nm), 로렌츠 수 \(L = 2.44\times10^{-8}\) W·Ω/K², 마티센 규칙과 잔류 저항으로 금속 저항의 온도 의존을 설명한다.</li>
+      <li>일함수와 리처드슨–더시먼 열전자 방출 \(J = AT^2e^{-W/k_BT}\)을 계산한다.</li>
+      <li>푹스–존트하이머(표면)·마야다스–샤츠케스(결정립계) 산란으로 얇은 배선의 비저항 증가를 계산하고, \(\rho_0\lambda\) 곱으로 Cu·Ru·Co·W를 비교한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="drude">
+    <h2>드루드 모형: 전자 기체와 옴의 법칙</h2>
+    <p>톰슨이 전자를 발견한 지 3년 뒤인 1900년, 드루드는 대담한 그림을 내놓았다. 금속 원자는 바깥 껍질 전자(구리는 4s 전자 하나)를 내놓고 양이온 \(\text{Cu}^+\)으로 남는다. 풀려난 전자들은 이온 사이를 기체 분자처럼 자유롭게 날아다니다 가끔 부딪힌다. 이것이 <span class="term">드루드 모형</span><span class="en">(Drude model)</span>이고, 이렇게 움직이는 전자를 <em>전도 전자</em>라 한다. 드루드는 여기에 기체 분자 운동론을 그대로 썼다.</p>
+    <ul>
+      <li><b>자유·독립 전자</b>: 충돌과 충돌 사이에 전자는 이온이나 다른 전자의 힘을 받지 않고, 외부 전기장만 받아 직선(또는 포물선)으로 움직인다.</li>
+      <li><b>순간 충돌</b>: 충돌은 순간적이고, 충돌 직후의 속도는 그 자리의 온도에 맞는 무작위 방향·크기를 가진다(전기장에서 얻은 속도를 "잊는다").</li>
+      <li><b>완화 시간</b>: 짧은 시간 \(dt\) 동안 충돌할 확률은 \(dt/\tau\)다. 충돌 사이 평균 시간 \(\tau\)를 <span class="term">완화 시간</span><span class="en">(relaxation time)</span>이라 한다.</li>
+    </ul>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 285" role="img" aria-label="드루드 모형: 양이온 격자 사이를 날아다니며 충돌하는 전도 전자 기체">
+        <defs><marker id="fe-ar0" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <rect x="20" y="20" width="440" height="220" rx="10" class="f-surface" stroke="var(--border)"/>
+        <g fill="var(--text-faint)" opacity=".7">
+          <circle cx="70" cy="60" r="13"/><circle cx="160" cy="60" r="13"/><circle cx="250" cy="60" r="13"/><circle cx="340" cy="60" r="13"/><circle cx="430" cy="60" r="13"/>
+          <circle cx="70" cy="130" r="13"/><circle cx="160" cy="130" r="13"/><circle cx="250" cy="130" r="13"/><circle cx="340" cy="130" r="13"/><circle cx="430" cy="130" r="13"/>
+          <circle cx="70" cy="200" r="13"/><circle cx="160" cy="200" r="13"/><circle cx="250" cy="200" r="13"/><circle cx="340" cy="200" r="13"/><circle cx="430" cy="200" r="13"/>
+        </g>
+        <g class="t" text-anchor="middle" style="font-size:13px;font-weight:700"><text x="70" y="65">+</text><text x="160" y="65">+</text><text x="250" y="65">+</text><text x="340" y="65">+</text><text x="430" y="65">+</text><text x="70" y="135">+</text><text x="160" y="135">+</text><text x="250" y="135">+</text><text x="340" y="135">+</text><text x="430" y="135">+</text><text x="70" y="205">+</text><text x="160" y="205">+</text><text x="250" y="205">+</text><text x="340" y="205">+</text><text x="430" y="205">+</text></g>
+        <path d="M44,170 L112,98 L150,166 L204,92 L224,170 L296,104 L318,176 L384,96 L410,168" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <g fill="var(--accent)"><circle cx="44" cy="170" r="5"/><circle cx="112" cy="98" r="3.5"/><circle cx="150" cy="166" r="3.5"/><circle cx="204" cy="92" r="3.5"/><circle cx="224" cy="170" r="3.5"/><circle cx="296" cy="104" r="3.5"/><circle cx="318" cy="176" r="3.5"/><circle cx="384" cy="96" r="3.5"/><circle cx="410" cy="168" r="5"/></g>
+        <line x1="440" y1="250" x2="40" y2="250" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#fe-ar0)"/>
+        <text class="t" x="240" y="276" text-anchor="middle" style="fill:var(--accent-2);font-size:12px">전기장 E (왼쪽) → 전자는 오른쪽으로 조금씩 밀린다</text>
+        <g class="t">
+          <text x="490" y="50" style="font-weight:700">드루드의 가정</text>
+          <text x="490" y="80"><tspan fill="var(--text-faint)">●</tspan> 양이온 코어: 무겁고 움직이지 않는다</text>
+          <text x="490" y="106"><tspan fill="var(--accent)">●</tspan> 전도 전자: 이상 기체, 밀도 n</text>
+          <text x="490" y="132">— 충돌 사이 직선 운동(자유)</text>
+          <text x="490" y="158">— 충돌 확률 dt/τ, 충돌 뒤 무작위 속도</text>
+          <text x="490" y="184">— 운동 에너지 ½mv² = (3/2)k<tspan dy="4" style="font-size:10px">B</tspan><tspan dy="-4">T (고전 통계)</tspan></text>
+          <text x="490" y="218" class="t-dim">마지막 가정만 틀렸다 → 조머펠트(§7.3)</text>
+        </g>
+      </svg>
+      <figcaption>드루드가 그린 금속. 전자는 이온에 부딪힐 때마다 방향을 잃는 지그재그 운동을 한다. 전기장이 있으면 지그재그 전체가 전기장 반대 방향으로 아주 조금씩 쏠린다.</figcaption>
+    </figure>
+    <h3>표류 속도와 전도도</h3>
+    <p>전기장 \(\vec E\) 속 전자(전하 \(-e\))는 충돌 사이에 가속도 \(-e\vec E/m\)을 받는다. 충돌 직후 속도는 무작위라서 많은 전자에 대해 평균하면 0이다. 마지막 충돌 뒤 흐른 시간이 평균 \(\tau\)이므로 전자들의 평균 속도, 곧 <span class="term">표류 속도</span><span class="en">(drift velocity)</span>는</p>
+    <div class="formula">$$\vec v_d = -\frac{e\tau}{m}\vec E \equiv -\mu\vec E, \qquad \mu = \frac{e\tau}{m}$$<div class="where">\(\mu\)는 <span class="term">이동도</span><span class="en">(mobility)</span>. 운동 방정식으로 쓰면 \(m\,d\vec v/dt = -e\vec E - m\vec v/\tau\): 충돌이 속도에 비례하는 마찰처럼 작용하고, 정상 상태(\(d\vec v/dt = 0\))에서 위 결과가 나온다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="충돌 사이 전자 속도의 시간 변화: 무작위 운동, 전기장 가속, 평균 표류 속도">
+        <defs><marker id="fe-ar1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <line x1="60" y1="165" x2="772" y2="165" class="s-axis" marker-end="url(#fe-ar1)"/><line x1="60" y1="280" x2="60" y2="30" class="s-axis" marker-end="url(#fe-ar1)"/>
+        <text class="t" x="776" y="185" text-anchor="end">시간 t</text><text class="t" x="68" y="34">v<tspan dy="4" style="font-size:10px">x</tspan></text>
+        <g><circle cx="130" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="240" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="280" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="430" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="520" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="580" cy="165" r="3.5" fill="var(--text-dim)"/><circle cx="710" cy="165" r="3.5" fill="var(--text-dim)"/></g>
+        <g data-only="1"><path d="M60,245.0 L130,245.0 M130,115.0 L240,115.0 M240,195.0 L280,195.0 M280,75.0 L430,75.0 M430,225.0 L520,225.0 M520,145.0 L580,145.0 M580,95.0 L710,95.0 M710,255.0 L760,255.0 " fill="none" stroke="var(--accent)" stroke-width="2.6"/><path d="M130,245.0 L130,115.0 M240,115.0 L240,195.0 M280,195.0 L280,75.0 M430,75.0 L430,225.0 M520,225.0 L520,145.0 M580,145.0 L580,95.0 M710,95.0 L710,255.0 " fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text class="t-dim" x="430" y="290" text-anchor="middle" style="font-size:13px">E = 0: 충돌(●)마다 속도가 무작위로 바뀐다 → 평균 0</text></g>
+        <g data-step="2"><path d="M60,245.0 L130,245.0 M130,115.0 L240,115.0 M240,195.0 L280,195.0 M280,75.0 L430,75.0 M430,225.0 L520,225.0 M520,145.0 L580,145.0 M580,95.0 L710,95.0 M710,255.0 L760,255.0 " fill="none" stroke="var(--text-faint)" stroke-width="1.4" opacity=".6"/></g>
+        <g data-only="2"><path d="M60,245.0 L130,210.0 M130,115.0 L240,60.0 M240,195.0 L280,175.0 M280,75.0 L430,0.0 M430,225.0 L520,180.0 M520,145.0 L580,115.0 M580,95.0 L710,30.0 M710,255.0 L760,230.0 " fill="none" stroke="var(--accent)" stroke-width="2.6"/><path d="M130,210.0 L130,115.0 M240,60.0 L240,195.0 M280,175.0 L280,75.0 M430,0.0 L430,225.0 M520,180.0 L520,145.0 M580,115.0 L580,95.0 M710,30.0 L710,255.0 " fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text class="t-dim" x="430" y="290" text-anchor="middle" style="font-size:13px">E ≠ 0: 충돌 사이마다 a = eE/m로 같은 쪽(−E 방향)으로 가속</text></g>
+        <g data-step="3"><path d="M60,165.0 L130,130.0 M130,165.0 L240,110.0 M240,165.0 L280,145.0 M280,165.0 L430,90.0 M430,165.0 L520,120.0 M520,165.0 L580,135.0 M580,165.0 L710,100.0 M710,165.0 L760,140.0 " fill="none" stroke="var(--accent-2)" stroke-width="2.8"/><path d="M130,130.0 L130,165.0 M240,110.0 L240,165.0 M280,145.0 L280,165.0 M430,90.0 L430,165.0 M520,120.0 L520,165.0 M580,135.0 L580,165.0 M710,100.0 L710,165.0 " fill="none" stroke="var(--accent-2)" stroke-width="1.2" stroke-dasharray="3 3"/></g>
+        <g data-only="3"><text class="t-dim" x="430" y="290" text-anchor="middle" style="font-size:13px">무작위 부분을 평균하면 사라지고, 충돌마다 0으로 돌아가는 톱니만 남는다</text></g>
+        <g data-step="4"><line x1="60" y1="121.2" x2="760" y2="121.2" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="8 5"/>
+          <text class="t" x="600" y="111.2" style="fill:var(--accent-2);font-weight:600">⟨v⟩ = aτ = eEτ/m</text>
+          <line x1="280" y1="183" x2="430" y2="183" class="s-axis" marker-start="url(#fe-ar1)" marker-end="url(#fe-ar1)"/><text class="t-dim" x="355.0" y="201" text-anchor="middle" style="font-size:12px">자유 시간(평균 τ)</text>
+          <text class="t-dim" x="430" y="290" text-anchor="middle" style="font-size:13px">자유 시간이 지수 분포(평균 τ)를 따르면 시간 평균 속도는 정확히 aτ</text></g>
+      </svg>
+      <ol class="steps-cap"><li>전기장이 없을 때 한 전자의 \(v_x\). 충돌(점)마다 무작위 값으로 바뀌므로 오래 평균하면 0이다.</li><li>전기장을 걸면 충돌 사이마다 같은 기울기 \(a = eE/m\)로 가속된다. 충돌 직후 속도는 여전히 무작위다.</li><li>많은 전자(또는 긴 시간)에 대해 평균하면 무작위 부분이 지워지고, 충돌마다 0으로 돌아가는 톱니 모양 "전기장이 준 속도"만 남는다.</li><li>톱니의 시간 평균이 표류 속도 \(v_d = a\tau\)다. 충돌이 잦을수록(τ가 작을수록) 톱니가 낮아져 전류가 작다 — 이것이 저항이다.</li></ol>
+      <figcaption>충돌 사이 가속과 충돌에 의한 "잊음"이 표류 속도를 만든다. 실제로는 무작위 부분이 표류 부분보다 10⁶배 이상 크다(아래 실험대).</figcaption>
+    </figure>
+    <p>밀도 \(n\)인 전자가 \(\vec v_d\)로 움직이면 전류 밀도는 \(\vec J = -ne\vec v_d\)이다. 여기에 표류 속도를 넣으면 전류가 전기장에 비례한다 — 옴의 법칙이다.</p>
+    <div class="formula">$$\vec J = \sigma\vec E, \qquad \sigma = \frac{ne^2\tau}{m} = ne\mu, \qquad \rho = \frac1\sigma = \frac{m}{ne^2\tau}$$<div class="where">\(\sigma\)는 <span class="term">전기 전도도</span><span class="en">(electrical conductivity)</span>, \(\rho\)는 비저항. 측정한 \(\rho\)와 \(n\)을 넣으면 거꾸로 \(\tau = m/(ne^2\rho)\)를 얻는다(<code>Solid.drudeTau</code>).</div></div>
+    <div class="tangle" id="tg-tau">
+      <p>비저항이 <span class="tn" data-var="rho" data-min="1" data-max="12" data-step="0.01" data-unit=" μΩ·cm">1.68</span>이고 전도 전자 밀도가 <span class="tn" data-var="n" data-min="1" data-max="20" data-step="0.01" data-unit="×10²⁸ m⁻³">8.47</span>인 금속에서 완화 시간은 \(\tau =\) <span class="tn-out" data-out="tau"></span>, 이동도는 \(\mu =\) <span class="tn-out" data-out="mu"></span>다. 단면 <span class="tn" data-var="A" data-min="0.1" data-max="4" data-step="0.1" data-unit=" mm²">1.0</span>인 전선에 <span class="tn" data-var="I" data-min="0.1" data-max="30" data-step="0.1" data-unit=" A">1.0</span>를 흘리면 전자의 표류 속도는 <span class="tn-out" data-out="vd"></span>로, 1 m를 가는 데 <span class="tn-out" data-out="time"></span>이 걸린다.</p>
+    </div>
+    <div class="predict" data-for="sim-drude">
+      <p>가정용 구리 전선(단면 1 mm²)에 1 A가 흐른다. 전도 전자가 전선을 따라 밀려가는 평균 속도(표류 속도)는 대략 얼마일까?</p>
+      <div class="opts"><button class="opt">빛의 속도에 가깝다(스위치를 켜면 바로 불이 켜지므로)</button><button class="opt">약 10⁶ m/s(전자의 실제 속력 정도)</button><button class="opt">약 1 m/s</button><button class="opt" data-correct>약 0.1 mm/s 이하</button></div>
+      <div class="quiz-exp">\(v_d = J/(ne) = 10^6/(8.47\times10^{28}\times1.60\times10^{-19}) = 7.4\times10^{-5}\) m/s. 달팽이보다 느리다. 불이 바로 켜지는 것은 전기장(신호)이 거의 빛의 속도로 전선을 따라 퍼지기 때문이고, 전자 하나하나는 거의 제자리에서 떨고 있다. 아래 실험대에서 무작위 속력과 비교해 보라.</div>
+    </div>
+    <div class="sim" id="sim-drude">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>드루드 실험대: τ와 E를 끌어 목표 전류를 만들어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-dr"></canvas><span class="hint top">흰 원을 끌면 τ(좌우)와 E(위아래)가 바뀐다</span></div><div style="position:relative"><canvas id="cv-drv"></canvas></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>금속(전자 밀도 n)</span><div class="seg" id="dr-m"><button data-value="Cu" class="on">Cu</button><button data-value="Ag">Ag</button><button data-value="Al">Al</button><button data-value="Na">Na</button></div></div>
+          <label class="ctrl"><span>완화 시간 τ <output id="dr-tau-out"></output></span><input type="range" id="dr-tau" min="2" max="60" step="0.1" value="24.9"></label>
+          <label class="ctrl"><span>전기장 E <output id="dr-E-out"></output></span><input type="range" id="dr-E" min="0" max="2000" step="5" value="400"></label>
+          <div class="ctrl-row"><button class="btn" id="dr-real" type="button">이 금속의 실제 τ</button><button class="btn primary" id="dr-new" type="button">새 목표</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">표류 속도 v<sub>d</sub></span><span class="v" id="dr-vd">—</span></div>
+        <div class="stat"><span class="k">전류 밀도 J</span><span class="v" id="dr-J">—</span></div>
+        <div class="stat"><span class="k">비저항 ρ</span><span class="v" id="dr-rho">—</span></div>
+        <div class="stat"><span class="k">이동도 μ</span><span class="v" id="dr-mu">—</span></div>
+        <div class="stat"><span class="k">v<sub>d</sub> / v<sub>F</sub></span><span class="v" id="dr-ratio">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="dr-goal">—</span></div>
+      </div>
+      <div class="sim-note">위 그래프는 전자 한 개의 "전기장이 준 속도" 성분(무작위 열운동 제외)이다. 자유 시간은 평균 τ인 지수 분포에서 뽑았고, 점선이 시간 평균 \(v_d = e\tau E/m\)이다. 흰 원은 \((t, v) = (\tau, v_d)\)에 놓여 있다. 아래 막대는 로그 눈금의 속력 비교다. 해볼 것: ① 점선 가로줄(목표 표류 속도)에 흰 원을 올려 목표 전류 밀도를 만들어라 — τ를 줄이면 E를 키워야 하는 쌍곡선 관계를 느껴 보라. ② 구리의 실제 τ에서 J = 10 MA/cm²(배선의 전자 이동 한계 근처)에 필요한 E와 \(v_d\)는? \(v_d\)가 \(v_F\)의 몇 분의 일인지 보라. ③ 금속을 Al로 바꾸면 같은 τ·E에서도 J가 커진다(n이 2배 이상).</div>
+    </div>
+    <div class="example" data-title="구리의 완화 시간과 이동도">
+      <p>300 K 구리의 비저항은 \(\rho = 1.68\ \mu\Omega\cdot\text{cm}\), 전도 전자 밀도는 \(n = 8.47\times10^{28}\) m⁻³(원자당 1개)이다. 드루드 모형으로 (a) 완화 시간 \(\tau\), (b) 이동도 \(\mu\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\rho = m/(ne^2\tau)\)를 \(\tau\)에 대해 푼다. 단위: \(1\ \mu\Omega\cdot\text{cm} = 10^{-8}\ \Omega\cdot\text{m}\).</div>
+        <div class="step"><b>풀이</b> (a) \(\tau = \dfrac{m}{ne^2\rho} = \dfrac{9.109\times10^{-31}}{(8.47\times10^{28})(1.602\times10^{-19})^2(1.68\times10^{-8})} = 2.49\times10^{-14}\) s. (b) \(\mu = e\tau/m = (1.602\times10^{-19})(2.49\times10^{-14})/(9.109\times10^{-31}) = 4.39\times10^{-3}\) m²/(V·s) = 43.9 cm²/(V·s).</div>
+        <div class="answer">τ = 2.49 × 10⁻¹⁴ s = 24.9 fs, μ = 43.9 cm²/(V·s)</div>
+        <div class="step"><b>검토</b> 금속의 이동도는 실리콘 전자(약 1400 cm²/(V·s))보다 30배나 작다. 금속이 전기를 잘 통하는 것은 이동도가 아니라 전자 수 \(n\)이 반도체보다 10⁶배 이상 많기 때문이다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="전선과 배선 속 표류 속도">
+      <p>(a) 단면 1.00 mm² 구리 전선에 1.00 A가 흐를 때 표류 속도는? (b) 폭 20 nm, 높이 40 nm인 구리 배선에 50 μA가 흐를 때 전류 밀도(MA/cm²)와 표류 속도는? \(n = 8.47\times10^{28}\) m⁻³.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(J = I/A\), \(v_d = J/(ne)\). \(ne = 1.357\times10^{10}\) C/m³.</div>
+        <div class="step"><b>풀이</b> (a) \(J = 1.00/10^{-6} = 1.00\times10^6\) A/m², \(v_d = 10^6/1.357\times10^{10} = 7.37\times10^{-5}\) m/s. (b) \(A = 20\times40 = 800\ \text{nm}^2 = 8.0\times10^{-16}\) m², \(J = 5.0\times10^{-5}/8.0\times10^{-16} = 6.25\times10^{10}\) A/m² = 6.25 MA/cm², \(v_d = 6.25\times10^{10}/1.357\times10^{10} = 4.61\) m/s.</div>
+        <div class="answer">(a) 7.37 × 10⁻⁵ m/s (b) J = 6.25 MA/cm², v<sub>d</sub> = 4.61 m/s</div>
+        <div class="step"><b>검토</b> 칩 배선의 전류 밀도는 가정용 전선의 6만 배다. 그래도 표류 속도는 페르미 속도(1.57×10⁶ m/s)의 백만 분의 3에 불과하다 — 옴의 법칙(선형 응답)이 잘 맞는 이유다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>배선의 전류 밀도와 전자 이동</strong><p>로직 칩의 가는 배선에는 1–10 MA/cm²가 흐른다. 표류 속도는 m/s 수준이지만 전자들이 한 방향으로 운동량을 계속 넘겨주는 "전자 바람"이 구리 원자를 결정립계를 따라 밀어내, 보이드와 힐록이 생기는 <span class="term">전자 이동</span><span class="en">(electromigration, EM)</span>이 배선 수명을 정한다. 수명은 블랙 식 \(\text{MTTF} \propto J^{-n}e^{E_a/k_BT}\)로 평가한다. → <a href="https://semi.euiyun.com/failure/chapters/mechanisms.html">FailureBook · 불량 메커니즘</a> · <a href="https://semi.euiyun.com/process/chapters/metal.html">ProcessBook · 금속 배선</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="drude-limits">
+    <h2>드루드 모형의 성공과 실패</h2>
+    <p>드루드 모형은 옴의 법칙만 설명한 것이 아니다. 같은 전자 기체가 열도 나른다고 보면 열전도도는 기체 운동론의 \(\kappa = \tfrac13 c_v \bar v\,\ell\)(\(c_v\)는 단위 부피당 비열, \(\ell = \bar v\tau\)는 평균 자유 행로)이다. 고전 기체의 \(c_v = \tfrac32 nk_B\), \(\tfrac12 m\bar v^2 = \tfrac32 k_BT\)를 넣고 \(\sigma\)로 나누면 \(\tau\)와 \(n\)이 사라진다.</p>
+    <div class="formula">$$\frac{\kappa}{\sigma T} = \frac{\tfrac13\cdot\tfrac32 nk_B\cdot\bar v^2\tau}{(ne^2\tau/m)\,T} = \frac32\left(\frac{k_B}{e}\right)^2 = 1.11\times10^{-8}\ \text{W}\cdot\Omega/\text{K}^2$$<div class="where">잘 도는 금속이 열도 잘 나른다는 1853년의 실험 규칙(비데만–프란츠)이 "모든 금속에 같은 상수"라는 꼴로 나왔다. 드루드는 계산 실수(인수 2)로 \(2.2\times10^{-8}\)을 얻어 실측(약 \(2.3\times10^{-8}\))과 놀랍게 맞았다.</div></div>
+    <p>그러나 같은 고전 기체 가정이 다른 곳에서는 크게 틀린다. 가장 유명한 실패가 비열이다. 전자 기체가 \(\tfrac32 k_B\)씩 열을 품는다면 구리의 몰 비열은 격자 몫 \(3R\)(6장의 뒬롱–프티)에 전자 몫 \(\tfrac32R\)을 더한 \(4.5R\)이어야 한다. 실측은 상온에서 거의 정확히 \(3R\)이다 — 전자는 열을 거의 품지 않는다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>현상</th><th>드루드(고전 기체)</th><th>실측</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>옴의 법칙 \(J = \sigma E\)</td><td>\(\sigma = ne^2\tau/m\)</td><td>성립</td><td>성공</td></tr>
+        <tr><td>비데만–프란츠 \(\kappa/\sigma T\)</td><td>\(1.11\times10^{-8}\)(실수로 2.2)</td><td>약 \(2.3\times10^{-8}\) W·Ω/K²</td><td>운 좋은 성공</td></tr>
+        <tr><td>전자 비열(몰당)</td><td>\(\tfrac32R = 12.5\) J/(mol·K)</td><td>상온 약 0.15 J/(mol·K)</td><td>100배 과대</td></tr>
+        <tr><td>전자 속력</td><td>\(\sqrt{3k_BT/m} = 1.2\times10^5\) m/s</td><td>\(v_F = 1.6\times10^6\) m/s, 온도 무관</td><td>13배 과소</td></tr>
+        <tr><td>평균 자유 행로(Cu, 300 K)</td><td>\(\approx 3\) nm(이온 간격 10개)</td><td>\(\approx 40\) nm, 순수 결정 저온에서 mm</td><td>실패</td></tr>
+        <tr><td>홀 계수 \(R_H = -1/ne\)</td><td>항상 음수</td><td>Be·Zn·Cd 등은 양수</td><td>실패(9장)</td></tr>
+      </tbody>
+    </table></div>
+    <p>열전도 비가 맞은 것은 우연이었다. 진짜 전자 비열은 고전값의 약 1/100이지만 진짜 속력의 제곱 \(v_F^2\)은 고전값 \(\bar v^2\)의 약 100배여서, 두 오류가 곱에서 서로 지워졌다. 평균 자유 행로의 문제는 더 근본적이다. 드루드는 전자가 이온과 부딪힌다고 보았으므로 \(\ell\)은 이온 간격(0.26 nm) 정도여야 하는데, 측정에서 얻은 \(\tau\)와 고전 속력으로 계산해도 이미 그 10배이고, 진짜 속력으로는 150배다. 더구나 순수한 구리를 4 K로 식히면 \(\ell\)은 mm까지 길어진다. 전자는 완전한 결정의 이온에는 <em>부딪히지 않는다</em> — 그 답은 8장(블로흐 파)에서 나온다. 아래 미니 실험에서 길이를 비교해 보자.</p>
+    <figure class="mini" id="mini-ell">
+      <div class="mini-view"><canvas id="cv-ell"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>온도 T <output id="ell-T-out"></output></span><input type="range" id="ell-T" min="20" max="600" step="1" value="300"></label>
+        <div class="ctrl"><span>금속</span><div class="seg" id="ell-m"><button data-value="Cu" class="on">Cu</button><button data-value="Al">Al</button><button data-value="Na">Na</button></div></div>
+        <span class="readout" id="ell-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>로그 눈금 위의 길이 비교. \(\tau(T)\)는 실측 비저항(포논 산란, §7.5의 블로흐–그뤼나이젠 곡선)에서 얻고, 평균 자유 행로를 고전 속력 \(\sqrt{3k_BT/m}\)과 페르미 속력 \(v_F\)로 각각 계산했다. 온도를 낮추면 진짜 \(\ell\)이 이온 간격의 수천 배로 길어진다.</figcaption>
+    </figure>
+    <div class="quiz-q"><p>드루드 모형의 비데만–프란츠 비 \(\kappa/\sigma T\)가 실측과 비슷하게 나온 진짜 이유는?</p><div class="opts">
+      <button class="opt">전자가 실제로 고전 이상 기체처럼 움직이기 때문</button><button class="opt" data-correct>비열을 약 100배 크게, 속력 제곱을 약 100배 작게 잡은 두 오류가 서로 지워졌기 때문</button><button class="opt">완화 시간 τ를 정확히 측정했기 때문</button><button class="opt">비데만–프란츠 비는 어떤 모형으로 계산해도 같기 때문</button>
+    </div><div class="quiz-exp">\(\kappa \propto c_v v^2\tau\)이므로 \(c_v\)와 \(v^2\)의 오류가 곱으로 상쇄된다. 조머펠트 모형은 둘 다 고쳐 \(L = (\pi^2/3)(k_B/e)^2\)를 정확히 준다(§7.5).</div></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="sommerfeld">
+    <h2>조머펠트 모형: 상자 속 전자와 페르미 구</h2>
+    <p>1926년 페르미와 디랙이 배타 원리를 따르는 입자의 통계를 만들자, 1928년 조머펠트는 드루드의 전자 기체에서 단 하나만 바꾸었다. 전자는 고전 입자가 아니라 <b>파동</b>이고, 한 양자 상태에는 <b>전자가 하나만</b> 들어간다. 이온의 퍼텐셜은 여전히 무시하고(자유 전자), 전자끼리의 힘도 평균으로 지운다(독립 전자). 이것이 <span class="term">조머펠트 모형</span><span class="en">(Sommerfeld model)</span>, 흔히 말하는 자유 전자 모형이다.</p>
+    <h3>1차원 상자에서 시작하기</h3>
+    <p>길이 \(L\)인 1차원 금속 속 자유 전자의 상태는 현대물리 5장의 무한 우물과 같다. 에너지 \(E_n = \hbar^2(n\pi/L)^2/2m\)인 준위마다 스핀 위·아래 두 전자가 들어간다. \(N\)개의 전자를 넣으면 바닥 상태에서 아래부터 \(N/2\)개 준위가 차고, 가장 높은 찬 준위가 \(E_F\)가 된다. 절대 0도에서도 전자들은 eV 크기의 운동 에너지를 가진다 — 고전 기체라면 모두 멈췄을 것이다.</p>
+    <figure class="mini" id="mini-box">
+      <div class="mini-view"><canvas id="cv-box"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>전자 수 N <output id="box-N-out"></output></span><input type="range" id="box-N" min="1" max="24" step="1" value="9"></label>
+        <label class="check"><input type="checkbox" id="box-cl"> 고전 입자라면(배타 원리 없음)</label>
+        <span class="readout" id="box-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>길이 \(L = 1\) nm 상자의 에너지 준위(\(E_1 = 0.376\) eV)를 전자로 채운다. 화살표 하나가 전자 하나(↑↓ 스핀)다. 배타 원리 때문에 전자를 더할수록 가장 높은 찬 준위 \(E_F\)가 \(N^2\)에 비례해 올라간다. 고전 입자는 모두 바닥에 눕는다.</figcaption>
+    </figure>
+    <h3>3차원: 주기 경계 조건과 k 공간</h3>
+    <p>3차원 금속에서는 정상파 대신 진행파가 편하다. 한 변 \(L\)인 정육면체의 마주 보는 면을 이어 붙이는 <span class="term">주기 경계 조건</span><span class="en">(periodic boundary condition)</span> \(\psi(x+L, y, z) = \psi(x, y, z)\)를 쓰면 해는 평면파이고, 파수 벡터 \(\vec k\)는 띄엄띄엄한 값만 허용된다.</p>
+    <div class="formula">$$\psi_{\vec k}(\vec r) = \frac{1}{\sqrt V}e^{i\vec k\cdot\vec r}, \qquad \vec k = \frac{2\pi}{L}(n_x, n_y, n_z),\ n_i = 0, \pm1, \pm2, \ldots, \qquad E = \frac{\hbar^2k^2}{2m}$$<div class="where">\(V = L^3\). 허용된 \(\vec k\)는 <span class="term">k 공간</span><span class="en">(k-space)</span>에서 간격 \(2\pi/L\)인 입방 격자점을 이루고, 점 하나가 부피 \((2\pi/L)^3\)를 차지한다. 상태는 운동량 \(\hbar\vec k\), 속도 \(\hbar\vec k/m\)인 전자다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 330" role="img" aria-label="2차원 k 공간 격자점과 페르미 원을 만드는 단계">
+        <defs><marker id="fe-ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <line x1="60" y1="165" x2="368" y2="165" class="s-axis" marker-end="url(#fe-ar2)"/><line x1="210" y1="315" x2="210" y2="7" class="s-axis" marker-end="url(#fe-ar2)"/>
+        <text class="t" x="360" y="185">k<tspan dy="4" style="font-size:10px">x</tspan></text><text class="t" x="220" y="19">k<tspan dy="4" style="font-size:10px">y</tspan></text>
+        <g fill="var(--text-dim)"><circle cx="78" cy="297" r="2.6"/><circle cx="78" cy="275" r="2.6"/><circle cx="78" cy="253" r="2.6"/><circle cx="78" cy="231" r="2.6"/><circle cx="78" cy="209" r="2.6"/><circle cx="78" cy="187" r="2.6"/><circle cx="78" cy="165" r="2.6"/><circle cx="78" cy="143" r="2.6"/><circle cx="78" cy="121" r="2.6"/><circle cx="78" cy="99" r="2.6"/><circle cx="78" cy="77" r="2.6"/><circle cx="78" cy="55" r="2.6"/><circle cx="78" cy="33" r="2.6"/><circle cx="100" cy="297" r="2.6"/><circle cx="100" cy="275" r="2.6"/><circle cx="100" cy="253" r="2.6"/><circle cx="100" cy="231" r="2.6"/><circle cx="100" cy="209" r="2.6"/><circle cx="100" cy="187" r="2.6"/><circle cx="100" cy="165" r="2.6"/><circle cx="100" cy="143" r="2.6"/><circle cx="100" cy="121" r="2.6"/><circle cx="100" cy="99" r="2.6"/><circle cx="100" cy="77" r="2.6"/><circle cx="100" cy="55" r="2.6"/><circle cx="100" cy="33" r="2.6"/><circle cx="122" cy="297" r="2.6"/><circle cx="122" cy="275" r="2.6"/><circle cx="122" cy="253" r="2.6"/><circle cx="122" cy="231" r="2.6"/><circle cx="122" cy="209" r="2.6"/><circle cx="122" cy="187" r="2.6"/><circle cx="122" cy="165" r="2.6"/><circle cx="122" cy="143" r="2.6"/><circle cx="122" cy="121" r="2.6"/><circle cx="122" cy="99" r="2.6"/><circle cx="122" cy="77" r="2.6"/><circle cx="122" cy="55" r="2.6"/><circle cx="122" cy="33" r="2.6"/><circle cx="144" cy="297" r="2.6"/><circle cx="144" cy="275" r="2.6"/><circle cx="144" cy="253" r="2.6"/><circle cx="144" cy="231" r="2.6"/><circle cx="144" cy="209" r="2.6"/><circle cx="144" cy="187" r="2.6"/><circle cx="144" cy="165" r="2.6"/><circle cx="144" cy="143" r="2.6"/><circle cx="144" cy="121" r="2.6"/><circle cx="144" cy="99" r="2.6"/><circle cx="144" cy="77" r="2.6"/><circle cx="144" cy="55" r="2.6"/><circle cx="144" cy="33" r="2.6"/><circle cx="166" cy="297" r="2.6"/><circle cx="166" cy="275" r="2.6"/><circle cx="166" cy="253" r="2.6"/><circle cx="166" cy="231" r="2.6"/><circle cx="166" cy="209" r="2.6"/><circle cx="166" cy="187" r="2.6"/><circle cx="166" cy="165" r="2.6"/><circle cx="166" cy="143" r="2.6"/><circle cx="166" cy="121" r="2.6"/><circle cx="166" cy="99" r="2.6"/><circle cx="166" cy="77" r="2.6"/><circle cx="166" cy="55" r="2.6"/><circle cx="166" cy="33" r="2.6"/><circle cx="188" cy="297" r="2.6"/><circle cx="188" cy="275" r="2.6"/><circle cx="188" cy="253" r="2.6"/><circle cx="188" cy="231" r="2.6"/><circle cx="188" cy="209" r="2.6"/><circle cx="188" cy="187" r="2.6"/><circle cx="188" cy="165" r="2.6"/><circle cx="188" cy="143" r="2.6"/><circle cx="188" cy="121" r="2.6"/><circle cx="188" cy="99" r="2.6"/><circle cx="188" cy="77" r="2.6"/><circle cx="188" cy="55" r="2.6"/><circle cx="188" cy="33" r="2.6"/><circle cx="210" cy="297" r="2.6"/><circle cx="210" cy="275" r="2.6"/><circle cx="210" cy="253" r="2.6"/><circle cx="210" cy="231" r="2.6"/><circle cx="210" cy="209" r="2.6"/><circle cx="210" cy="187" r="2.6"/><circle cx="210" cy="165" r="2.6"/><circle cx="210" cy="143" r="2.6"/><circle cx="210" cy="121" r="2.6"/><circle cx="210" cy="99" r="2.6"/><circle cx="210" cy="77" r="2.6"/><circle cx="210" cy="55" r="2.6"/><circle cx="210" cy="33" r="2.6"/><circle cx="232" cy="297" r="2.6"/><circle cx="232" cy="275" r="2.6"/><circle cx="232" cy="253" r="2.6"/><circle cx="232" cy="231" r="2.6"/><circle cx="232" cy="209" r="2.6"/><circle cx="232" cy="187" r="2.6"/><circle cx="232" cy="165" r="2.6"/><circle cx="232" cy="143" r="2.6"/><circle cx="232" cy="121" r="2.6"/><circle cx="232" cy="99" r="2.6"/><circle cx="232" cy="77" r="2.6"/><circle cx="232" cy="55" r="2.6"/><circle cx="232" cy="33" r="2.6"/><circle cx="254" cy="297" r="2.6"/><circle cx="254" cy="275" r="2.6"/><circle cx="254" cy="253" r="2.6"/><circle cx="254" cy="231" r="2.6"/><circle cx="254" cy="209" r="2.6"/><circle cx="254" cy="187" r="2.6"/><circle cx="254" cy="165" r="2.6"/><circle cx="254" cy="143" r="2.6"/><circle cx="254" cy="121" r="2.6"/><circle cx="254" cy="99" r="2.6"/><circle cx="254" cy="77" r="2.6"/><circle cx="254" cy="55" r="2.6"/><circle cx="254" cy="33" r="2.6"/><circle cx="276" cy="297" r="2.6"/><circle cx="276" cy="275" r="2.6"/><circle cx="276" cy="253" r="2.6"/><circle cx="276" cy="231" r="2.6"/><circle cx="276" cy="209" r="2.6"/><circle cx="276" cy="187" r="2.6"/><circle cx="276" cy="165" r="2.6"/><circle cx="276" cy="143" r="2.6"/><circle cx="276" cy="121" r="2.6"/><circle cx="276" cy="99" r="2.6"/><circle cx="276" cy="77" r="2.6"/><circle cx="276" cy="55" r="2.6"/><circle cx="276" cy="33" r="2.6"/><circle cx="298" cy="297" r="2.6"/><circle cx="298" cy="275" r="2.6"/><circle cx="298" cy="253" r="2.6"/><circle cx="298" cy="231" r="2.6"/><circle cx="298" cy="209" r="2.6"/><circle cx="298" cy="187" r="2.6"/><circle cx="298" cy="165" r="2.6"/><circle cx="298" cy="143" r="2.6"/><circle cx="298" cy="121" r="2.6"/><circle cx="298" cy="99" r="2.6"/><circle cx="298" cy="77" r="2.6"/><circle cx="298" cy="55" r="2.6"/><circle cx="298" cy="33" r="2.6"/><circle cx="320" cy="297" r="2.6"/><circle cx="320" cy="275" r="2.6"/><circle cx="320" cy="253" r="2.6"/><circle cx="320" cy="231" r="2.6"/><circle cx="320" cy="209" r="2.6"/><circle cx="320" cy="187" r="2.6"/><circle cx="320" cy="165" r="2.6"/><circle cx="320" cy="143" r="2.6"/><circle cx="320" cy="121" r="2.6"/><circle cx="320" cy="99" r="2.6"/><circle cx="320" cy="77" r="2.6"/><circle cx="320" cy="55" r="2.6"/><circle cx="320" cy="33" r="2.6"/><circle cx="342" cy="297" r="2.6"/><circle cx="342" cy="275" r="2.6"/><circle cx="342" cy="253" r="2.6"/><circle cx="342" cy="231" r="2.6"/><circle cx="342" cy="209" r="2.6"/><circle cx="342" cy="187" r="2.6"/><circle cx="342" cy="165" r="2.6"/><circle cx="342" cy="143" r="2.6"/><circle cx="342" cy="121" r="2.6"/><circle cx="342" cy="99" r="2.6"/><circle cx="342" cy="77" r="2.6"/><circle cx="342" cy="55" r="2.6"/><circle cx="342" cy="33" r="2.6"/></g>
+        <line x1="254" y1="309" x2="276" y2="309" class="s-axis" marker-start="url(#fe-ar2)" marker-end="url(#fe-ar2)"/><text class="t-dim" x="284" y="313" style="font-size:12px">2π/L</text>
+        <text class="t" x="420" y="50" style="font-weight:700">한 변 L인 상자(주기 경계 조건)</text>
+        <text class="t" x="420" y="78">허용 파수 k = (2π/L)(n<tspan dy="4" style="font-size:10px">x</tspan><tspan dy="-4">, n</tspan><tspan dy="4" style="font-size:10px">y</tspan><tspan dy="-4">) → 바둑판 격자점</tspan></text>
+        <g data-step="2"><rect x="243.0" y="132.0" width="22" height="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text class="t" x="420" y="112">점 하나가 차지하는 넓이 (2π/L)²</text><text class="t" x="420" y="136">점 하나 = 궤도 1개 = 전자 2개(스핀 ↑↓)</text></g>
+        <g data-step="3"><g fill="var(--accent)"><circle cx="122" cy="187" r="5"/><circle cx="122" cy="165" r="5"/><circle cx="122" cy="143" r="5"/><circle cx="144" cy="231" r="5"/><circle cx="144" cy="209" r="5"/><circle cx="144" cy="187" r="5"/><circle cx="144" cy="165" r="5"/><circle cx="144" cy="143" r="5"/><circle cx="144" cy="121" r="5"/><circle cx="144" cy="99" r="5"/><circle cx="166" cy="231" r="5"/><circle cx="166" cy="209" r="5"/><circle cx="166" cy="187" r="5"/><circle cx="166" cy="165" r="5"/><circle cx="166" cy="143" r="5"/><circle cx="166" cy="121" r="5"/><circle cx="166" cy="99" r="5"/><circle cx="188" cy="253" r="5"/><circle cx="188" cy="231" r="5"/><circle cx="188" cy="209" r="5"/><circle cx="188" cy="187" r="5"/><circle cx="188" cy="165" r="5"/><circle cx="188" cy="143" r="5"/><circle cx="188" cy="121" r="5"/><circle cx="188" cy="99" r="5"/><circle cx="188" cy="77" r="5"/><circle cx="210" cy="253" r="5"/><circle cx="210" cy="231" r="5"/><circle cx="210" cy="209" r="5"/><circle cx="210" cy="187" r="5"/><circle cx="210" cy="165" r="5"/><circle cx="210" cy="143" r="5"/><circle cx="210" cy="121" r="5"/><circle cx="210" cy="99" r="5"/><circle cx="210" cy="77" r="5"/><circle cx="232" cy="253" r="5"/><circle cx="232" cy="231" r="5"/><circle cx="232" cy="209" r="5"/><circle cx="232" cy="187" r="5"/><circle cx="232" cy="165" r="5"/><circle cx="232" cy="143" r="5"/><circle cx="232" cy="121" r="5"/><circle cx="232" cy="99" r="5"/><circle cx="232" cy="77" r="5"/><circle cx="254" cy="231" r="5"/><circle cx="254" cy="209" r="5"/><circle cx="254" cy="187" r="5"/><circle cx="254" cy="165" r="5"/><circle cx="254" cy="143" r="5"/><circle cx="254" cy="121" r="5"/><circle cx="254" cy="99" r="5"/><circle cx="276" cy="231" r="5"/><circle cx="276" cy="209" r="5"/><circle cx="276" cy="187" r="5"/><circle cx="276" cy="165" r="5"/><circle cx="276" cy="143" r="5"/><circle cx="276" cy="121" r="5"/><circle cx="276" cy="99" r="5"/><circle cx="298" cy="187" r="5"/><circle cx="298" cy="165" r="5"/><circle cx="298" cy="143" r="5"/></g>
+          <text class="t" x="420" y="170">에너지 ħ²k²/2m이 낮은 점부터 채운다</text><text class="t" x="420" y="194">채운 점 61개 → 전자 122개</text></g>
+        <g data-step="4">
+          <circle cx="210" cy="165" r="96.8" fill="none" stroke="var(--accent-2)" stroke-width="2.6"/>
+          <line x1="210" y1="165" x2="278.4" y2="96.6" stroke="var(--accent-2)" stroke-width="2"/><text class="t" x="285" y="92" style="fill:var(--accent-2);font-weight:700;paint-order:stroke;stroke:var(--canvas-bg);stroke-width:4px">k<tspan dy="4" style="font-size:10px">F</tspan></text>
+          <text class="t" x="420" y="228" style="fill:var(--accent-2);font-weight:700">경계 = 페르미 원 (3차원: 페르미 구)</text>
+          <text class="t" x="420" y="254">N = 2 · πk<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4">²/(2π/L)² → 원의 넓이로 센다</tspan></text>
+          <text class="t" x="420" y="278">3차원: N = 2 · (4π/3)k<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4">³/(2π/L)³</tspan></text>
+          <text class="t" x="420" y="302">⇒ k<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4"> = (3π²n)</tspan><tspan dy="-6" style="font-size:10px">1/3</tspan></text></g>
+      </svg>
+      <ol class="steps-cap"><li>주기 경계 조건이 허용하는 \(\vec k\)는 간격 \(2\pi/L\)인 격자점이다(2차원 단면).</li><li>격자점 하나가 차지하는 넓이(3차원은 부피 \((2\pi/L)^3\))가 상태 하나이고, 스핀 때문에 전자 두 개가 들어간다.</li><li>바닥 상태: 에너지가 \(|\vec k|^2\)에 비례하므로 원점에서 가까운 점부터 채운다. 채운 영역은 원(구)이 된다.</li><li>경계가 페르미 원(구)이다. 실제 금속에는 \(10^{22}\)개가 넘는 점이 있어 원의 넓이(구의 부피)로 세면 정확하다.</li></ol>
+      <figcaption>k 공간에서 페르미 구 만들기. \(L\)이 커질수록 점이 촘촘해지지만, 전자 밀도 \(n = N/V\)가 같으면 \(k_F\)는 그대로다.</figcaption>
+    </figure>
+    <p>\(N\)개 전자를 채운 구의 반지름을 \(k_F\)라 하면, 구 부피를 점 하나의 부피로 나누고 스핀 2를 곱한 것이 \(N\)이다.</p>
+    <div class="formula">$$N = 2\cdot\frac{\tfrac43\pi k_F^3}{(2\pi/L)^3} = \frac{Vk_F^3}{3\pi^2} \quad\Longrightarrow\quad k_F = (3\pi^2 n)^{1/3}$$<div class="where">이 구가 <span class="term">페르미 구</span><span class="en">(Fermi sphere)</span>, 그 표면이 <span class="term">페르미 면</span><span class="en">(Fermi surface)</span>이다. \(k_F\)를 <span class="term">페르미 파수</span><span class="en">(Fermi wave number)</span>라 한다. 실제 금속의 페르미 면은 이온 퍼텐셜 때문에 구에서 조금(구리) 또는 크게(전이 금속) 일그러진다.</div></div>
+    <p>\(k_F\)에서 나머지 페르미 양이 모두 나온다. 페르미 면 위 전자의 에너지·속도와, 그 에너지에 해당하는 온도다.</p>
+    <div class="formula">$$E_F = \frac{\hbar^2k_F^2}{2m}, \qquad v_F = \frac{\hbar k_F}{m}, \qquad T_F = \frac{E_F}{k_B}, \qquad \lambda_F = \frac{2\pi}{k_F}$$<div class="where"><span class="term">페르미 에너지</span><span class="en">(Fermi energy)</span> \(E_F\)는 절대 0도에서 가장 높은 찬 상태의 에너지, <span class="term">페르미 속도</span><span class="en">(Fermi velocity)</span> \(v_F\)는 그 전자의 속력, <span class="term">페르미 온도</span><span class="en">(Fermi temperature)</span> \(T_F\)는 \(E_F\)를 온도로 바꾼 값이다. 전자 한 개의 평균 에너지는 \(\tfrac35E_F\)다(<code>Solid.fermi</code>, <code>Q.fermiEnergy</code>).</div></div>
+    <div class="tangle" id="tg-fermi">
+      <p>전도 전자 밀도가 <span class="tn" data-var="n" data-min="0.5" data-max="25" data-step="0.01" data-unit="×10²⁸ m⁻³">8.47</span>인 금속(이 값은 구리)에서 페르미 파수는 \(k_F =\) <span class="tn-out" data-out="kF"></span>(페르미 파장 <span class="tn-out" data-out="lam"></span>), 페르미 에너지는 \(E_F =\) <span class="tn-out" data-out="EF"></span>, 페르미 속도는 \(v_F =\) <span class="tn-out" data-out="vF"></span>, 페르미 온도는 \(T_F =\) <span class="tn-out" data-out="TF"></span>다. 상온 300 K는 \(T_F\)의 <span class="tn-out" data-out="frac"></span>에 불과하다.</p>
+    </div>
+    <div class="sim" id="sim-fermi">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>페르미 구 만들기: 전자를 채우고 온도를 올려라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-fs"></canvas><span class="hint top" id="fs-hint">페르미 원의 흰 원을 끌어 전자 수를 바꾼다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>k 공간</span><div class="seg" id="fs-dim"><button data-value="2" class="on">2차원 단면</button><button data-value="3">3차원</button></div></div>
+          <label class="ctrl"><span>전자 수 N <output id="fs-N-out"></output></span><input type="range" id="fs-N" min="2" max="760" step="2" value="240"></label>
+          <label class="ctrl"><span>온도 T/T<sub>F</sub> <output id="fs-T-out"></output></span><input type="range" id="fs-T" min="0" max="0.3" step="0.005" value="0"></label>
+          <label class="check"><input type="checkbox" id="fs-circ" checked> 연속 근사 페르미 원(구)</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">찬 궤도 수</span><span class="v" id="fs-occ">—</span></div>
+        <div class="stat"><span class="k">k<sub>F</sub> (셈)</span><span class="v" id="fs-kc">—</span></div>
+        <div class="stat"><span class="k">k<sub>F</sub> (공식)</span><span class="v" id="fs-kf">—</span></div>
+        <div class="stat"><span class="k">E<sub>F</sub> / E₁</span><span class="v" id="fs-EF">—</span></div>
+        <div class="stat"><span class="k">μ 위로 들뜬 전자 비율</span><span class="v" id="fs-shell">—</span></div>
+      </div>
+      <div class="sim-note">점은 허용된 \(\vec k\)(단위 \(2\pi/L\)), 색이 진할수록 그 궤도의 점유 확률 \(f(E)\)가 크다. \(E_1 = \hbar^2(2\pi/L)^2/2m\). 2차원 단면에서는 \(N = 2\pi k_F^2\), 3차원에서는 \(N = (8\pi/3)k_F^3\)(단위 \(2\pi/L\))로 센다. 3차원 화면은 끌어서 돌린다. 해볼 것: ① 전자 수를 늘려 셈과 공식의 \(k_F\)가 점점 가까워짐을 보라(점이 많을수록 연속 근사가 정확). ② 온도를 \(0.1T_F\)로 올려도 페르미 면 근처 얇은 껍질만 흐려진다 — 상온 구리는 \(T/T_F = 0.004\)이다. ③ 3차원에서 같은 \(N\)이면 \(k_F\)가 2차원보다 훨씬 작다(구 부피가 \(k^3\)로 커지므로).</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>금속</th><th class="num">n (10²⁸ m⁻³)</th><th class="num">k<sub>F</sub> (nm⁻¹)</th><th class="num">E<sub>F</sub> (eV)</th><th class="num">v<sub>F</sub> (10⁶ m/s)</th><th class="num">T<sub>F</sub> (10⁴ K)</th></tr></thead>
+      <tbody>
+        <tr><td>Na (소듐)</td><td class="num">2.65</td><td class="num">9.22</td><td class="num">3.24</td><td class="num">1.07</td><td class="num">3.76</td></tr>
+        <tr><td>Cu (구리)</td><td class="num">8.47</td><td class="num">13.6</td><td class="num">7.03</td><td class="num">1.57</td><td class="num">8.16</td></tr>
+        <tr><td>Ag (은)</td><td class="num">5.86</td><td class="num">12.0</td><td class="num">5.50</td><td class="num">1.39</td><td class="num">6.38</td></tr>
+        <tr><td>Au (금)</td><td class="num">5.90</td><td class="num">12.0</td><td class="num">5.53</td><td class="num">1.39</td><td class="num">6.41</td></tr>
+        <tr><td>Al (알루미늄, 원자가 3)</td><td class="num">18.1</td><td class="num">17.5</td><td class="num">11.7</td><td class="num">2.03</td><td class="num">13.5</td></tr>
+      </tbody>
+    </table></div>
+    <div class="example" data-title="구리의 페르미 양">
+      <p>구리(\(n = 8.47\times10^{28}\) m⁻³)의 \(k_F\), \(\lambda_F\), \(E_F\), \(v_F\), \(T_F\)를 구하라. \(\hbar = 1.0546\times10^{-34}\) J·s, \(m = 9.109\times10^{-31}\) kg.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(k_F = (3\pi^2n)^{1/3}\)을 먼저 구하고 나머지는 \(k_F\)로 계산한다.</div>
+        <div class="step"><b>풀이</b> \(3\pi^2n = 2.508\times10^{30}\) m⁻³ → \(k_F = 1.359\times10^{10}\) m⁻¹ = 13.6 nm⁻¹, \(\lambda_F = 2\pi/k_F = 0.462\) nm. \(E_F = \hbar^2k_F^2/2m = 1.127\times10^{-18}\) J = 7.03 eV. \(v_F = \hbar k_F/m = 1.57\times10^6\) m/s. \(T_F = E_F/k_B = 8.16\times10^4\) K.</div>
+        <div class="answer">k<sub>F</sub> = 13.6 nm⁻¹, λ<sub>F</sub> = 0.462 nm, E<sub>F</sub> = 7.03 eV, v<sub>F</sub> = 1.57 × 10⁶ m/s, T<sub>F</sub> = 8.16 × 10⁴ K</div>
+        <div class="step"><b>검토</b> \(\lambda_F\)는 원자 간격(0.256 nm)의 두 배 정도다 — 전도 전자는 원자 한두 개 크기의 파동이다. \(T_F\)는 구리의 녹는점(1358 K)의 60배이므로, 고체 상태의 어떤 온도에서도 전자 기체는 "차가운" 축퇴 기체다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-fermi" data-title="페르미 파수 · 에너지 · 속도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="dos-heat">
+    <h2>상태 밀도, 페르미–디랙 분포와 전자 비열</h2>
+    <p>에너지 \(E\) 아래의 상태 수는 반지름 \(k = \sqrt{2mE}/\hbar\)인 구 안의 상태 수 \(N(E) = Vk^3/3\pi^2\)이다. 이것을 \(E\)로 미분하면 단위 에너지·단위 부피당 상태 수, 곧 <span class="term">상태 밀도</span><span class="en">(density of states)</span>가 나온다.</p>
+    <div class="formula">$$g(E) = \frac{1}{V}\frac{dN}{dE} = \frac{1}{2\pi^2}\left(\frac{2m}{\hbar^2}\right)^{3/2}\sqrt E, \qquad g(E_F) = \frac{3n}{2E_F}$$<div class="where">스핀 2 포함. 구리: \(g(E_F) = 1.81\times10^{28}\) eV⁻¹m⁻³(<code>Q.dos3D</code>). 2차원은 상수, 1차원은 \(1/\sqrt E\)로 차원에 따라 모양이 다르다(16장).</div></div>
+    <p>온도가 0이 아니면 전자는 <span class="term">페르미–디랙 분포</span><span class="en">(Fermi–Dirac distribution)</span>를 따라 상태를 채운다. 현대물리 10장(<a href="../../modern-physics/chapters/quantum-statistics.html">양자 통계</a>)에서 유도한 식이다.</p>
+    <div class="formula">$$f(E) = \frac{1}{e^{(E-\mu)/k_BT} + 1}, \qquad n = \int_0^\infty g(E)f(E)\,dE, \qquad \mu(T) \approx E_F\left[1 - \frac{\pi^2}{12}\left(\frac{T}{T_F}\right)^2\right]$$<div class="where">\(\mu\)는 화학 퍼텐셜(고체물리에서는 흔히 페르미 준위라 부른다). \(f\)는 \(\mu\)에서 1/2이고, 폭 약 \(4k_BT\)의 띠에서만 1에서 0으로 내려간다. 구리 300 K: \(k_BT = 0.026\) eV ≪ \(E_F = 7.0\) eV이므로 \(\mu\)는 \(E_F\)와 10⁻⁵ 이내로 같다.</div></div>
+    <figure class="mini" id="mini-fd">
+      <div class="mini-view"><canvas id="cv-fd"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>온도 T <output id="fd-T-out"></output></span><input type="range" id="fd-T" min="0" max="20000" step="50" value="3000"></label>
+        <span class="readout" id="fd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>구리 전자 기체의 \(g(E)\)(점선), 찬 상태 \(g(E)f(E)\)(칠한 면), \(f(E)\)(오른쪽 눈금). 온도를 올려도 바뀌는 것은 \(E_F\) 근처 \(\sim k_BT\) 폭의 띠뿐이다 — 깊은 곳의 전자는 위가 꽉 차 있어 열에너지를 받아도 갈 곳이 없다. 상온(300 K)에서는 이 띠가 그래프 선 두께보다 얇다.</figcaption>
+    </figure>
+    <h3>전자 비열: 왜 1/100인가</h3>
+    <p>온도 \(T\)에서 들뜰 수 있는 전자는 \(E_F\) 아래 \(k_BT\) 안쪽의 전자, 즉 전체의 약 \(T/T_F\)뿐이고, 그 전자들이 각각 \(\sim k_BT\)를 얻는다. 따라서 열에너지는 \(U \sim N(T/T_F)k_BT\), 비열은 \(C \sim Nk_B(T/T_F)\)로 고전값 \(\tfrac32Nk_B\)보다 \(T/T_F\)배 작다. 조머펠트 전개로 정확히 계산하면</p>
+    <div class="formula">$$C_{el} = \frac{\pi^2}{3}g(E_F)k_B^2T = \frac{\pi^2}{2}nk_B\frac{T}{T_F} \equiv \gamma T, \qquad \gamma_{\text{mol}} = \frac{\pi^2}{2}\frac{ZR}{T_F}$$<div class="where">\(\gamma\)는 <span class="term">조머펠트 계수</span><span class="en">(Sommerfeld coefficient)</span>(<code>Solid.gammaSommerfeld</code>, 단위 부피당), \(Z\)는 원자가. 구리의 자유 전자 값은 \(\gamma = 0.503\) mJ/(mol·K²), 실측은 0.695 — 비 1.38을 <em>열적 유효 질량</em> \(m_{th}/m\)이라 부르며 띠 구조와 전자–포논 상호작용의 효과다.</div></div>
+    <p>이것이 <span class="term">전자 비열</span><span class="en">(electronic heat capacity)</span>이다. 상온에서는 격자 비열 \(3R\)에 묻히지만, 격자 비열은 저온에서 디바이 \(T^3\) 법칙(6장)으로 훨씬 빨리 줄어들므로 몇 K 아래에서는 전자 비열이 이긴다.</p>
+    <div class="formula">$$C = \gamma T + AT^3, \quad A = \frac{12\pi^4}{5}\frac{R}{\theta_D^3} \qquad\Longrightarrow\qquad \frac{C}{T} = \gamma + AT^2$$<div class="where">\(C/T\)를 \(T^2\)에 대해 그리면 직선이 되고, 절편이 \(\gamma\), 기울기가 \(A\)(곧 \(\theta_D\))다. 두 항이 같아지는 온도는 \(T^* = \sqrt{\gamma/A}\).</div></div>
+    <div class="predict" data-for="sim-heat">
+      <p>상온(300 K) 구리의 비열에서 전도 전자가 차지하는 몫은 대략 얼마일까?</p>
+      <div class="opts"><button class="opt">약 33% (\(\tfrac32R\) 대 \(3R\))</button><button class="opt">약 10%</button><button class="opt" data-correct>1% 미만</button><button class="opt">정확히 0</button></div>
+      <div class="quiz-exp">\(\gamma T = 0.503\times10^{-3}\times300 = 0.151\) J/(mol·K)로 \(3R = 24.9\)의 0.6%다. 전자 비열이 격자 비열을 이기려면 몇 K까지 식혀야 한다. 아래 시뮬레이터의 왼쪽 그래프에서 두 곡선이 만나는 곳을 찾아라.</div>
+    </div>
+    <div class="sim" id="sim-heat">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>전자 비열 대 포논 비열: 측정점에 직선을 맞춰 γ와 θ<sub>D</sub>를 읽어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-ht"></canvas><span class="hint top">흰 원을 끌어 온도 선택</span></div><div><canvas id="cv-hf"></canvas><span class="hint top">두 흰 원을 끌어 직선 맞추기</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>금속</span><div class="seg" id="ht-m"><button data-value="Cu" class="on">Cu</button><button data-value="Ag">Ag</button><button data-value="Au">Au</button><button data-value="Al">Al</button><button data-value="Na">Na</button></div></div>
+          <label class="check"><input type="checkbox" id="ht-free"> 왼쪽 그래프에 자유 전자 γ 사용(실측 대신)</label>
+          <div class="ctrl-row"><button class="btn" id="ht-ans" type="button">정답 직선 보기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">온도</span><span class="v" id="ht-T">—</span></div>
+        <div class="stat"><span class="k">C<sub>el</sub> / C<sub>ph</sub></span><span class="v" id="ht-ratio">—</span></div>
+        <div class="stat"><span class="k">교차 온도 T*</span><span class="v" id="ht-Ts">—</span></div>
+        <div class="stat"><span class="k">맞춘 γ</span><span class="v" id="ht-g">—</span></div>
+        <div class="stat"><span class="k">맞춘 θ<sub>D</sub></span><span class="v" id="ht-th">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="ht-ok">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 몰 비열의 로그–로그 그래프. 전자 \(\gamma T\)(기울기 1), 포논(디바이 함수, 저온 기울기 3), 합. 오른쪽: 저온 측정점(잡음 ±1.5%)을 \(C/T\) 대 \(T^2\)로 그린 것. 해볼 것: ① 오른쪽에서 절편 원과 끝 원을 끌어 직선을 맞추면 γ와 θ<sub>D</sub>가 나온다. 둘 다 실측값의 5% 안이면 성공. ② 맞춘 γ를 자유 전자 값과 비교해 열적 유효 질량 \(m_{th}/m\)을 구하라(Cu 1.38, Al 1.49). ③ 왼쪽에서 교차 온도 \(T^*\)는 θ<sub>D</sub>가 작은 Au·Na에서 더 낮다 — 포논이 일찍 깨어나기 때문이다.</div>
+    </div>
+    <div class="example" data-title="구리에서 전자 비열이 이기는 온도">
+      <p>구리의 전자 비열 계수(자유 전자)를 \(T_F = 8.16\times10^4\) K로 계산하고, 300 K에서 전자 몫을 \(3R\)과 비교하라. 디바이 온도 \(\theta_D = 343\) K일 때 전자 비열과 포논 비열(\(T^3\) 법칙)이 같아지는 온도는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\gamma = \pi^2R/(2T_F)\)(\(Z = 1\)), \(A = 12\pi^4R/(5\theta_D^3)\), \(T^* = \sqrt{\gamma/A}\).</div>
+        <div class="step"><b>풀이</b> \(\gamma = 9.870\times8.314/(2\times8.16\times10^4) = 5.03\times10^{-4}\) J/(mol·K²). 300 K: \(\gamma T = 0.151\) J/(mol·K), \(3R = 24.9\) → 0.61%. \(A = (12\pi^4/5)R/\theta_D^3 = 1943.7/(4.035\times10^7) = 4.82\times10^{-5}\) J/(mol·K⁴). \(T^* = \sqrt{5.03\times10^{-4}/4.82\times10^{-5}} = 3.23\) K.</div>
+        <div class="answer">γ = 0.503 mJ/(mol·K²), 300 K에서 전자 몫 0.61%, T* ≈ 3.2 K</div>
+        <div class="step"><b>검토</b> 실측 γ(0.695)를 쓰면 \(T^* = 3.8\) K. 어느 쪽이든 전자 비열은 액체 헬륨 온도에서나 보인다. 이 측정이 페르미–디랙 통계의 가장 직접적인 증거였다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="transport">
+    <h2>전기·열 전도의 양자 그림과 저항의 온도 의존</h2>
+    <p>조머펠트 모형에서 전류는 어떻게 생길까? 전기장은 모든 전자의 \(\vec k\)를 같은 비율로 바꾼다(\(\hbar\,d\vec k/dt = -e\vec E\)). 충돌이 없으면 페르미 구 전체가 끝없이 밀려가겠지만, 충돌이 평균 \(\tau\)마다 전자를 되돌리므로 구는 \(\delta\vec k = -e\vec E\tau/\hbar\)만큼 옮겨 간 채로 멈춘다. 구 안쪽 깊은 전자들은 옮겨 가도 짝이 맞는 반대쪽 전자가 있어 전류에 기여가 지워지고, 남는 것은 페르미 면의 앞쪽에 생긴 얇은 초과분과 뒤쪽의 부족분이다. 전도도는 드루드와 같은 \(\sigma = ne^2\tau/m\)이지만, <b>전류를 나르는 것은 페르미 면 위에서 \(v_F\)로 달리는 전자</b>다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="전기장 속에서 페르미 구가 δk만큼 옮겨 간 모습: 앞쪽 초과, 뒤쪽 부족">
+        <defs><marker id="fe-ar6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker><marker id="fe-ar7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+          <clipPath id="fe-cp1"><rect x="251" y="0" width="200" height="280"/></clipPath><clipPath id="fe-cp2"><rect x="0" y="0" width="251" height="280"/></clipPath></defs>
+        <line x1="70" y1="140" x2="440" y2="140" class="s-axis" marker-end="url(#fe-ar7)"/><line x1="240" y1="270" x2="240" y2="12" class="s-axis" marker-end="url(#fe-ar7)"/>
+        <text class="t" x="444" y="160">k<tspan dy="4" style="font-size:10px">x</tspan></text><text class="t" x="248" y="20">k<tspan dy="4" style="font-size:10px">y</tspan></text>
+        <circle cx="262" cy="140" r="110" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.4"/>
+        <circle cx="240" cy="140" r="110" fill="none" stroke="var(--text-dim)" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <path d="M372,140 A110,110 0 1,0 152,140 A110,110 0 1,0 372,140 Z M350,140 A110,110 0 1,0 130,140 A110,110 0 1,0 350,140 Z" fill-rule="evenodd" fill="var(--accent)" opacity=".6" clip-path="url(#fe-cp1)"/>
+        <path d="M372,140 A110,110 0 1,0 152,140 A110,110 0 1,0 372,140 Z M350,140 A110,110 0 1,0 130,140 A110,110 0 1,0 350,140 Z" fill-rule="evenodd" fill="var(--accent-2)" opacity=".45" clip-path="url(#fe-cp2)"/>
+        <line x1="240" y1="140" x2="262" y2="140" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t" x="251" y="128" text-anchor="middle" style="fill:var(--accent);font-weight:700;font-size:12px">δk</text>
+        <line x1="420" y1="250" x2="320" y2="250" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#fe-ar6)"/><text class="t" x="430" y="254" style="fill:var(--accent-2)">E</text>
+        <g class="t">
+          <text x="480" y="56" style="font-weight:700">전류가 흐르는 페르미 구</text>
+          <text x="480" y="84"><tspan fill="var(--text-dim)">- - -</tspan> 평형(E = 0) 페르미 구</text>
+          <text x="480" y="110"><tspan fill="var(--accent)">━</tspan> 옮겨 간 구: δk = −eEτ/ħ</text>
+          <text x="480" y="136"><tspan fill="var(--accent)">■</tspan> 앞쪽 초과 전자(+v<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4"> 방향)</tspan></text>
+          <text x="480" y="162"><tspan fill="var(--accent-2)">■</tspan> 뒤쪽 빈자리</text>
+          <text x="480" y="196" class="t-dim">구 안쪽은 ±k 짝이 맞아 전류 0</text>
+          <text x="480" y="220" class="t-dim">실제 δk/k<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4"> ≈ 10⁻⁶ (그림은 과장)</tspan></text>
+        </g>
+      </svg>
+      <figcaption>조머펠트 그림의 전기 전도. 전기장이 모든 전자의 \(\vec k\)를 같은 만큼 밀고, 충돌이 이를 \(\delta k = e E\tau/\hbar\)에서 멈춰 세운다. 전류를 나르는 것은 페르미 면의 얇은 초승달 두 개, 즉 \(v_F\)로 달리는 소수의 전자다.</figcaption>
+    </figure>
+    <div class="formula">$$\ell = v_F\tau, \qquad \rho\,\ell = \frac{mv_F}{ne^2} = \frac{\hbar k_F}{ne^2}$$<div class="where">\(\ell\)이 진짜 <span class="term">평균 자유 행로</span><span class="en">(mean free path)</span>다. 구리 300 K: \(\ell = 1.57\times10^6\times2.49\times10^{-14} = 39\) nm(제일원리 계산 39.9 nm, Gall 2016). \(\rho\ell\)은 \(\tau\)와 무관한 <b>물질 상수</b>(Cu \(6.6\times10^{-16}\ \Omega\cdot\text{m}^2\))여서, 불순물이 늘어 \(\rho\)가 두 배가 되면 \(\ell\)은 정확히 절반이 된다. §7.7의 배선 크기 효과에서 이 곱이 핵심 지표가 된다.</div></div>
+    <p>구리에서 \(E = 1\) kV/m이면 \(\delta k/k_F = v_d/v_F = 2.8\times10^{-6}\)이다. 페르미 구는 거의 움직이지 않는다. 이 작은 어긋남이 수 MA/cm²의 전류를 만든다.</p>
+    <h3>비데만–프란츠 법칙의 바른 유도</h3>
+    <p>열전도도 \(\kappa = \tfrac13c_vv^2\tau\)에 조머펠트의 비열 \(c_v = (\pi^2/2)nk_B(T/T_F)\)와 속력 \(v_F\)를 넣으면 \(\tfrac12mv_F^2 = k_BT_F\)를 써서</p>
+    <div class="formula">$$\kappa = \frac{\pi^2nk_B^2T\tau}{3m} \quad\Longrightarrow\quad \frac{\kappa}{\sigma T} = L = \frac{\pi^2}{3}\left(\frac{k_B}{e}\right)^2 = 2.44\times10^{-8}\ \text{W}\cdot\Omega/\text{K}^2$$<div class="where">이것이 <span class="term">비데만–프란츠 법칙</span><span class="en">(Wiedemann–Franz law)</span>이고, \(L\)을 <span class="term">로렌츠 수</span><span class="en">(Lorenz number)</span>라 한다(<code>Solid.lorenz</code>). 0 °C 실측(10⁻⁸ W·Ω/K²): Cu 2.23, Ag 2.31, Au 2.35, Pt 2.51, W 3.04. 전기와 열을 같은 전자가 같은 \(\tau\)로 나르면 성립한다. 중간 온도에서는 작은 각도의 포논 산란이 열 흐름을 더 잘 막아 \(L\)이 작아지고, W처럼 포논도 열을 나르는 금속은 조금 커진다.</div></div>
+    <div class="tangle" id="tg-wf">
+      <p>비저항이 <span class="tn" data-var="rho" data-min="1" data-max="20" data-step="0.01" data-unit=" μΩ·cm">1.68</span>인 금속은 <span class="tn" data-var="T" data-min="50" data-max="1000" data-step="5" data-unit=" K">300</span>에서 비데만–프란츠 법칙으로 열전도도 \(\kappa = LT/\rho =\) <span class="tn-out" data-out="k"></span>를 가진다(실측 구리 401 W/(m·K)). 이 금속으로 만든 폭 20 nm 배선이 비저항이 <span class="tn" data-var="f" data-min="1" data-max="6" data-step="0.1" data-unit="배">3.0</span>로 늘었다면 배선을 따라 흐르는 열전도도도 <span class="tn-out" data-out="k2"></span>로 줄어든다 — 가는 배선은 열도 잘 못 나른다.</p>
+    </div>
+    <h3>저항은 왜 온도에 비례하는가: 마티센 규칙</h3>
+    <p>완전한 결정에서 블로흐 파는 산란되지 않는다(8장). 전자를 흩뜨리는 것은 주기성을 깨는 것들이다. 하나는 열로 떠는 격자, 즉 포논이고 다른 하나는 불순물·공공·전위 같은 정적 결함이다. 두 산란이 독립이면 충돌률이 더해진다(\(1/\tau = 1/\tau_{ph} + 1/\tau_{imp}\)). 이것이 <span class="term">마티센 규칙</span><span class="en">(Matthiessen's rule)</span>이다.</p>
+    <div class="formula">$$\rho(T) = \rho_0 + \rho_{ph}(T), \qquad \rho_{ph}(T) = C\left(\frac{T}{\theta_R}\right)^5\int_0^{\theta_R/T}\frac{x^5\,dx}{(e^x-1)(1-e^{-x})}$$<div class="where">\(\rho_0\)은 0 K까지 남는 <span class="term">잔류 저항</span><span class="en">(residual resistivity)</span>, 둘째 식은 <span class="term">블로흐–그뤼나이젠 공식</span><span class="en">(Bloch–Grüneisen formula)</span>(\(\theta_R \approx \theta_D\)). \(T \gtrsim \theta_D/3\)에서 포논 수가 \(T\)에 비례하므로 \(\rho_{ph} \propto T\), 저온에서는 포논 수와 산란각이 함께 줄어 \(\rho_{ph} \propto T^5\)이다. <span class="term">잔류 저항비</span><span class="en">(residual resistance ratio, RRR)</span> \(\rho(300\ \text{K})/\rho(4.2\ \text{K})\)는 금속의 순도·결정성을 재는 간편한 지표다.</div></div>
+    <div class="sim" id="sim-rho">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>ρ(T) 실험대: 불순물을 끌어 목표 RRR을 만들어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-rho"></canvas><span class="hint top">흰 원: 왼쪽 = 잔류 저항 ρ₀, 곡선 위 = 온도</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>금속</span><div class="seg" id="rho-m"><button data-value="Cu" class="on">Cu</button><button data-value="Al">Al</button><button data-value="Na">Na</button><button data-value="W">W</button></div></div>
+          <label class="ctrl"><span>잔류 저항 ρ₀ <output id="rho-r0-out"></output></span><input type="range" id="rho-r0" min="-3" max="0.7" step="0.01" value="-1.5"></label>
+          <label class="check"><input type="checkbox" id="rho-log" checked> 세로축 로그 눈금</label>
+          <label class="check"><input type="checkbox" id="rho-parts" checked> 성분(ρ₀, ρₚₕ) 표시</label>
+          <div class="ctrl-row"><button class="btn primary" id="rho-new" type="button">새 목표 RRR</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ρ(T)</span><span class="v" id="rho-v">—</span></div>
+        <div class="stat"><span class="k">RRR</span><span class="v" id="rho-rrr">—</span></div>
+        <div class="stat"><span class="k">평균 자유 행로 ℓ(T)</span><span class="v" id="rho-ell">—</span></div>
+        <div class="stat"><span class="k">dρ/dT (300 K)</span><span class="v" id="rho-sl">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="rho-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(\rho_{ph}\)은 300 K에서 표의 비저항과 맞도록 맞춘 블로흐–그뤼나이젠 곡선(\(\theta_R = \theta_D\)), \(\ell = (\rho\ell)/\rho\)는 Gall(2016)의 300 K 값으로 정한 \(\rho\ell\)을 쓴다(Na는 자유 전자 값). 해볼 것: ① 목표 RRR을 만들어라. 순수한 벌크 구리는 RRR 100–1000, 전기 도금한 배선 막은 3–10 정도다. ② 잔류 저항을 바꿔도 상온 기울기 \(d\rho/dT\)는 그대로다 — 마티센 규칙. ③ 로그 눈금을 끄고 저온 확대: \(\theta_D\)가 낮은 Na은 \(T^5\) 구간이 더 낮은 온도로 밀려 있다.</div>
+    </div>
+    <div class="example" data-title="구리의 진짜 평균 자유 행로와 열전도도">
+      <p>300 K 구리(\(\tau = 2.49\times10^{-14}\) s, \(v_F = 1.57\times10^6\) m/s, \(\rho = 1.68\ \mu\Omega\cdot\text{cm}\))의 (a) 평균 자유 행로, (b) 비데만–프란츠 법칙으로 예측한 열전도도를 구하고 실측 401 W/(m·K)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\ell = v_F\tau\), \(\kappa = LT/\rho\), \(L = 2.443\times10^{-8}\) W·Ω/K².</div>
+        <div class="step"><b>풀이</b> (a) \(\ell = 1.57\times10^6\times2.49\times10^{-14} = 3.92\times10^{-8}\) m = 39.2 nm. (b) \(\kappa = 2.443\times10^{-8}\times300/(1.68\times10^{-8}) = 436\) W/(m·K).</div>
+        <div class="answer">(a) ℓ ≈ 39 nm (b) κ ≈ 436 W/(m·K), 실측보다 9% 크다</div>
+        <div class="step"><b>검토</b> \(\ell\)은 원자 간격의 150배다. 드루드의 고전 속력으로는 2.9 nm밖에 안 나온다. 열전도 예측이 9% 큰 것은 실측 \(L(300\ \text{K}) \approx 2.2\times10^{-8}\)이 이론값보다 조금 작기 때문이다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-drude" data-title="완화 시간 · 평균 자유 행로 · 비데만–프란츠 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="work-function">
+    <h2>일함수와 열전자 방출</h2>
+    <p>자유 전자 모형에서 금속은 깊이가 유한한 3차원 우물이다. 전자는 금속 안에서 자유롭지만, 밖으로 나가려면 표면의 퍼텐셜 계단을 넘어야 한다. 가장 높이 찬 전자(\(E_F\))를 진공 준위 \(E_{vac}\)(금속 바로 밖에 정지한 전자의 에너지)까지 올리는 데 드는 최소 에너지가 <span class="term">일함수</span><span class="en">(work function)</span>다.</p>
+    <div class="formula">$$W = E_{vac} - E_F$$<div class="where">대표값(eV): Cs 2.14, Na 2.75, Al 4.28, Ag 4.26, W 4.55, Cu 4.65, Au 5.1, Pt 5.65. 같은 금속도 결정면에 따라 수백 meV 다르다(표면 쌍극자 층). 광전 효과의 문턱(현대물리 1장)과 같은 양이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="금속의 에너지 준위 그림: 페르미 준위, 진공 준위, 일함수, 열전자 방출">
+        <defs><marker id="fe-ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker><marker id="fe-ar4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <rect x="60" y="150" width="300" height="110" fill="var(--accent-soft)"/>
+        <path d="M60,150 L360,150" stroke="var(--accent)" stroke-width="2.4"/>
+        <rect x="60" y="138" width="300" height="12" fill="var(--accent-soft)" opacity=".5"/>
+        <path d="M40,260 L360,260 L360,60 L760,60" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+        <line x1="40" y1="60" x2="360" y2="60" stroke="var(--text-dim)" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <line x1="300" y1="148" x2="300" y2="64" stroke="var(--accent-2)" stroke-width="2.2" marker-start="url(#fe-ar4)" marker-end="url(#fe-ar4)"/>
+        <text class="t" x="310" y="108" style="fill:var(--accent-2);font-weight:700">W</text>
+        <line x1="110" y1="256" x2="110" y2="154" class="s-axis" marker-start="url(#fe-ar3)" marker-end="url(#fe-ar3)"/>
+        <text class="t" x="118" y="210">E<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4"> (Cu 7.0 eV)</tspan></text>
+        <text class="t" x="200" y="144" style="font-size:12px">E<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4">: 페르미–디랙 꼬리(흐린 띠)</tspan></text>
+        <text class="t" x="70" y="52">E<tspan dy="4" style="font-size:10px">vac</tspan><tspan dy="-4"> (진공 준위)</tspan></text>
+        <text class="t" x="180" y="240" text-anchor="middle">금속 속 전자 기체</text>
+        <path d="M250,140 C300,40 380,40 450,40 L720,40" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#fe-ar4)"/>
+        <circle cx="250" cy="140" r="5" fill="var(--accent-2)"/>
+        <g class="t"><text x="420" y="100" style="font-weight:700">열전자 방출</text>
+          <text x="420" y="126">E &gt; E<tspan dy="4" style="font-size:10px">F</tspan><tspan dy="-4"> + W 인 꼬리의 전자만 탈출</tspan></text>
+          <text x="420" y="152">f(E) ≈ e<tspan dy="-6" style="font-size:10px">−(E−E_F)/kT</tspan><tspan dy="6"> → J ∝ e</tspan><tspan dy="-6" style="font-size:10px">−W/kT</tspan></text>
+          <text x="420" y="196" class="t-dim">진공(금속 밖)</text>
+          <text x="420" y="222" class="t-dim">W ≈ 4–5 eV ≫ k<tspan dy="4" style="font-size:10px">B</tspan><tspan dy="-4">T(0.026 eV, 300 K)</tspan></text></g>
+      </svg>
+      <figcaption>금속의 에너지 준위. 찬 상태(칠한 면)의 꼭대기가 \(E_F\), 금속 밖 정지 전자의 에너지가 \(E_{vac}\)이다. 온도가 오르면 페르미–디랙 분포의 꼬리가 \(E_{vac}\)를 넘는 전자가 생겨 밖으로 나간다.</figcaption>
+    </figure>
+    <p>금속을 가열하면 페르미–디랙 꼬리의 전자 중 표면 방향 운동 에너지가 \(W\)보다 큰 것들이 빠져나간다. 표면에 수직한 속도 성분에 대해 꼬리를 적분하면(\(f \approx e^{-(E-E_F)/k_BT}\)) <span class="term">열전자 방출</span><span class="en">(thermionic emission)</span> 전류 밀도가 나온다.</p>
+    <div class="formula">$$J = AT^2e^{-W/k_BT}, \qquad A = \frac{4\pi mek_B^2}{h^3} = 120.17\ \text{A}/(\text{cm}^2\cdot\text{K}^2)$$<div class="where"><span class="term">리처드슨–더시먼 식</span><span class="en">(Richardson–Dushman equation)</span>(<code>Solid.richardson</code>). \(\ln(J/T^2)\)를 \(1/T\)에 대해 그리면 기울기 \(-W/k_B\)인 직선이다(리처드슨 그림). 실제 금속의 \(A\)는 표면 반사와 \(W\)의 온도 의존 때문에 이론값의 절반 정도다(W: 약 60).</div></div>
+    <div class="tangle" id="tg-rich">
+      <p>일함수 <span class="tn" data-var="W" data-min="1.5" data-max="5.5" data-step="0.01" data-unit=" eV">4.55</span>인 금속을 <span class="tn" data-var="T" data-min="800" data-max="3000" data-step="10" data-unit=" K">2500</span>로 가열하면 \(A = 120\) A/(cm²·K²)의 리처드슨–더시먼 식으로 \(J =\) <span class="tn-out" data-out="J"></span>가 나온다. 온도를 100 K 더 올리면 전류는 <span class="tn-out" data-out="r"></span>배가 된다. 같은 온도에서 상온(300 K)의 방출은 <span class="tn-out" data-out="J300"></span> — 사실상 0이다.</p>
+    </div>
+    <figure class="mini" id="mini-th">
+      <div class="mini-view"><canvas id="cv-th"></canvas><span class="hint top">곡선 위 흰 원을 끌어 온도를 바꾼다</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>일함수 W <output id="th-W-out"></output></span><input type="range" id="th-W" min="1.5" max="5.5" step="0.01" value="4.55"></label>
+        <div class="ctrl"><span>음극 재료</span><div class="seg" id="th-pre"><button data-value="4.55" class="on">W</button><button data-value="2.63">Th 입힌 W</button><button data-value="1.9">BaO 계</button></div></div>
+        <span class="readout" id="th-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>리처드슨 그림: \(\ln(J/T^2)\) 대 \(1000/T\). 직선의 기울기가 \(-W/k_B\)이고, 오른쪽 아래(저온)로 갈수록 전류가 지수적으로 사라진다. 진공관·전자 현미경 음극에 텅스텐 대신 일함수 낮은 산화물을 쓰는 이유를 보라 — 같은 전류를 수백 도 낮은 온도에서 얻는다.</figcaption>
+    </figure>
+    <p>일함수가 다른 두 금속을 맞붙이면 전자가 일함수가 작은 쪽에서 큰 쪽으로 흘러 페르미 준위가 같아질 때 멈춘다. 그때 두 금속 사이에 생기는 전위차 \((W_1 - W_2)/e\)를 <span class="term">접촉 전위차</span><span class="en">(contact potential difference)</span>라 한다. 금속과 반도체를 맞붙여도 같은 일이 일어나 쇼트키 장벽이 생기고, 반도체 계면에서 장벽을 넘는 전류가 바로 이 절의 열전자 방출이다(13장).</p>
+    <div class="example" data-title="텅스텐 필라멘트의 열전자 방출">
+      <p>일함수 4.55 eV인 텅스텐을 2500 K로 가열했다. \(A = 120.17\) A/(cm²·K²)로 (a) 방출 전류 밀도, (b) 2600 K로 올렸을 때의 증가 배율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(J = AT^2e^{-W/k_BT}\), \(k_B = 8.617\times10^{-5}\) eV/K.</div>
+        <div class="step"><b>풀이</b> (a) \(k_BT = 0.2154\) eV, \(W/k_BT = 21.12\), \(e^{-21.12} = 6.72\times10^{-10}\). \(J = 120.17\times6.25\times10^6\times6.72\times10^{-10} = 0.505\) A/cm². (b) 2600 K: \(W/k_BT = 20.31\), \(J = 1.23\) A/cm² → 2.44배.</div>
+        <div class="answer">(a) J ≈ 0.50 A/cm² (b) 약 2.4배</div>
+        <div class="step"><b>검토</b> 온도 4% 상승에 전류가 2.4배 — 지수 함수의 민감도다. \(T^2\) 인자의 기여(1.08배)는 작고 대부분 \(e^{-W/k_BT}\)에서 온다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>게이트 금속의 일함수가 문턱 전압을 정한다</strong><p>MOSFET의 문턱 전압에는 게이트 금속과 실리콘 채널의 일함수 차이 \(\phi_{ms}\)가 그대로 들어간다. n형 소자에는 실리콘 전도대 근처(약 4.1 eV), p형에는 가전자대 근처(약 5.2 eV)의 일함수가 필요해, high-k/금속 게이트 공정은 TiN(약 4.5–4.7 eV)에 Al·La 같은 원소를 얇게 섞거나 쌓아 일함수를 수백 meV씩 조절한다. 금속–반도체 접촉의 장벽 높이도 이상적으로는 \(W - \chi\)이지만 실제로는 계면 상태 때문에 고정된다 — 13장에서 다룬다. → <a href="https://semi.euiyun.com/device/chapters/ms.html">DeviceBook · 금속–반도체 접합</a> · <a href="https://semi.euiyun.com/device/chapters/mos.html">DeviceBook · MOS 커패시터</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="size-effect">
+    <h2>얇은 금속선의 크기 효과</h2>
+    <p>평균 자유 행로가 40 nm인 구리로 폭 20 nm 배선을 만들면 무슨 일이 생길까? 전자는 산란되기 전에 배선 벽이나 결정립계에 먼저 부딪힌다. 벌크에서는 없던 산란이 더해지므로 비저항이 커진다. 금속의 크기가 \(\ell\)과 비슷해질 때 비저항이 커지는 이 현상을 <span class="term">크기 효과</span><span class="en">(size effect)</span>라 하고, 두 가지 고전 모형이 쓰인다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="얇은 배선 속 전자의 산란: 벌크, 표면 확산 반사, 결정립계 반사, 장벽층">
+        <defs><marker id="fe-ar5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <rect x="40" y="70" width="720" height="140" class="f-surface" stroke="var(--border)" stroke-width="1.5"/>
+        <g data-only="1"><path d="M60,140 L300,120 L330,180 L700,160" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fe-ar5)"/><text class="t-dim" x="400" y="250" text-anchor="middle" style="font-size:13px">벌크: 포논·불순물 산란 사이 평균 ℓ ≈ 40 nm(Cu) — 선 굵기가 ℓ보다 훨씬 크면 벽은 거의 안 만난다</text></g>
+        <g data-step="2"><line x1="40" y1="70" x2="760" y2="70" stroke="var(--accent-2)" stroke-width="3"/><line x1="40" y1="210" x2="760" y2="210" stroke="var(--accent-2)" stroke-width="3"/></g>
+        <g data-only="2"><path d="M60,150 L170,70 L230,210 L300,70" fill="none" stroke="var(--accent)" stroke-width="2.4"/><path d="M300,70 L380,210" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fe-ar5)"/><path d="M300,70 L360,140" fill="none" stroke="var(--text-faint)" stroke-width="1.6" stroke-dasharray="4 3"/><path d="M300,70 L250,150" fill="none" stroke="var(--text-faint)" stroke-width="1.6" stroke-dasharray="4 3"/><path d="M300,70 L330,190" fill="none" stroke="var(--text-faint)" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <text class="t" x="470" y="120">표면: 확률 p로 거울 반사(정보 보존),</text><text class="t" x="470" y="144">1 − p로 무작위 방향(확산 반사) → 저항</text>
+          <text class="t-dim" x="400" y="250" text-anchor="middle" style="font-size:13px">푹스–존트하이머: 두께 t ≲ ℓ이면 벽에 맞는 전자가 늘어 ρ 증가</text></g>
+        <g data-step="3"><g stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="7 4"><line x1="190" y1="70" x2="210" y2="210"/><line x1="350" y1="70" x2="330" y2="210"/><line x1="500" y1="70" x2="520" y2="210"/><line x1="650" y1="70" x2="640" y2="210"/></g></g>
+        <g data-only="3"><path d="M70,120 L195,140" fill="none" stroke="var(--accent)" stroke-width="2.4"/><path d="M195,140 L120,180" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#fe-ar5)"/><path d="M195,140 L330,150" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#fe-ar5)"/>
+          <text class="t" x="140" y="104" style="font-size:12px">반사 R</text><text class="t" x="250" y="170" style="font-size:12px">투과 1 − R</text>
+          <text class="t-dim" x="400" y="250" text-anchor="middle" style="font-size:13px">마야다스–샤츠케스: 결정립 크기 D ≈ 선폭이면 결정립계가 ℓ보다 자주 나타난다</text></g>
+        <g data-step="4"><rect x="40" y="70" width="720" height="12" fill="var(--accent-2-soft)"/><rect x="40" y="198" width="720" height="12" fill="var(--accent-2-soft)"/></g>
+        <g data-only="4"><text class="t" x="400" y="150" text-anchor="middle" style="font-weight:700">구리가 흐를 수 있는 단면이 줄어든다</text><text class="t" x="400" y="100" text-anchor="middle" style="font-size:12px">장벽(TaN) + 라이너(Co·Ru)</text>
+          <text class="t-dim" x="400" y="250" text-anchor="middle" style="font-size:13px">장벽·라이너는 고저항이고 두께 2–3 nm에서 더 줄이기 어렵다 → 선폭 20 nm면 단면의 25% 이상</text></g>
+      </svg>
+      <ol class="steps-cap"><li>벌크 금속: 전자는 포논과 불순물에만 산란된다.</li><li>표면 산란: 벽에서 확산 반사되는 전자는 전류 방향의 운동량을 잃는다. 반사가 거울 같을수록(\(p \to 1\)) 피해가 작다.</li><li>결정립계 산란: 얇은 막의 결정립은 막 두께·선폭 정도로 작고, 각 결정립계가 전자를 확률 \(R\)로 되튕긴다.</li><li>장벽층: 구리는 절연막으로 확산하므로 고저항 장벽과 라이너로 감싸야 하고, 그만큼 구리 단면이 줄어든다.</li></ol>
+      <figcaption>가는 배선의 저항을 키우는 세 가지 원인. 앞의 둘은 비저항 자체를, 셋째는 도체 단면을 바꾼다.</figcaption>
+    </figure>
+    <h3>푹스–존트하이머 표면 산란</h3>
+    <p>두께 \(t\)인 막에서 표면에 닿은 전자가 확률 \(p\)로 거울 반사(<span class="term">경면 반사율</span><span class="en">(specularity)</span>), \(1-p\)로 확산 반사된다고 보고 볼츠만 방정식을 풀면 <span class="term">푹스–존트하이머 모형</span><span class="en">(Fuchs–Sondheimer model)</span>을 얻는다. \(\kappa = t/\lambda\)(λ는 벌크 평균 자유 행로)일 때</p>
+    <div class="formula">$$\frac{\rho_0}{\rho_{FS}} = 1 - \frac{3(1-p)}{2\kappa}\int_1^\infty\left(\frac{1}{u^3} - \frac{1}{u^5}\right)\frac{1 - e^{-\kappa u}}{1 - pe^{-\kappa u}}\,du \qquad\approx\qquad \frac{\rho_{FS}}{\rho_0} \approx 1 + \frac{3}{8}\frac{(1-p)\lambda}{t}$$<div class="where">근사식은 \(\kappa \gtrsim 1\)에서 몇 % 안으로 맞고, 더 얇으면 정확한 적분보다 작게 나온다(<code>Solid.fsRatio</code>, 아래 미니 실험). 폭 \(w\)·높이 \(h\)인 선은 근사적으로 \(1 + \tfrac38(1-p)\lambda(1/w + 1/h)\).</div></div>
+    <figure class="mini" id="mini-fs">
+      <div class="mini-view"><canvas id="cv-fsm"></canvas><span class="hint top">흰 원을 끌어 두께를 바꾼다</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>경면 반사율 p <output id="fsm-p-out"></output></span><input type="range" id="fsm-p" min="0" max="0.95" step="0.05" value="0"></label>
+        <span class="readout" id="fsm-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>막의 비저항 비 \(\rho/\rho_0\)를 \(t/\lambda\)(로그 눈금)에 대해 그렸다. 실선이 정확한 푹스–존트하이머 적분, 점선이 근사식이다. 두께를 λ의 1/4로 줄이면 \(p = 0\)일 때 비저항이 2.7배가 된다. \(p\)를 올리면 곡선이 내려간다 — 원자 수준으로 매끈한 계면이 귀한 이유다.</figcaption>
+    </figure>
+    <h3>마야다스–샤츠케스 결정립계 산란</h3>
+    <p>다결정 막에서는 평균 간격 \(D\)로 늘어선 결정립계가 전자를 반사 확률 \(R\)로 튕긴다. <span class="term">마야다스–샤츠케스 모형</span><span class="en">(Mayadas–Shatzkes model)</span>의 결과는</p>
+    <div class="formula">$$\frac{\rho_0}{\rho_{MS}} = 3\left[\frac13 - \frac\alpha2 + \alpha^2 - \alpha^3\ln\!\left(1 + \frac1\alpha\right)\right], \qquad \alpha = \frac{\lambda}{D}\frac{R}{1-R}$$<div class="where">(<code>Solid.msRatio</code>) 구리 배선의 \(R\)은 0.2–0.4, 결정립 크기는 대략 선폭 정도다. \(\alpha\)가 작으면 \(\rho_{MS}/\rho_0 \approx 1 + \tfrac32\alpha\).</div></div>
+    <p>두 효과를 함께 넣는 정확한 방법은 볼츠만 방정식을 표면과 결정립계를 동시에 넣어 푸는 것이다. 실무에서는 흔히 두 비를 곱하거나(\(\rho \approx \rho_0\cdot\tfrac{\rho_{FS}}{\rho_0}\cdot\tfrac{\rho_{MS}}{\rho_0}\)) 증가분을 더하는(마티센식) <b>근사</b>를 쓴다. 둘 다 엄밀하지 않고, 측정에 맞춰 \(p\)와 \(R\)을 정하는 맞춤 모형이라는 점을 기억하자. 아래 실험대는 곱 근사를 쓴다.</p>
+    <h3>ρ₀λ: 가는 선에 좋은 금속의 기준</h3>
+    <p>근사식 \(\rho \approx \rho_0 + \tfrac38(1-p)\rho_0\lambda(1/w + 1/h)\)를 보면, 아주 가는 선에서는 벌크 비저항 \(\rho_0\)이 아니라 <b>곱 \(\rho_0\lambda\)</b>가 저항을 정한다. 그리고 \(\rho_0\lambda = \hbar k_F/(ne^2)\)는 §7.5에서 본 물질 상수다. 구리는 \(\rho_0\)이 작지만 \(\lambda\)가 길어 곱이 작지 않다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>금속</th><th class="num">ρ₀ (μΩ·cm)</th><th class="num">λ (nm)</th><th class="num">ρ₀λ (10⁻¹⁶ Ω·m²)</th><th>배선 쓰임</th></tr></thead>
+      <tbody>
+        <tr><td>Ag</td><td class="num">1.59</td><td class="num">53.3</td><td class="num">8.47</td><td>쓰이지 않음(확산·부식)</td></tr>
+        <tr><td>Cu</td><td class="num">1.68</td><td class="num">39.9</td><td class="num">6.70</td><td>BEOL 주력(1997–), 장벽 필요</td></tr>
+        <tr><td>Al</td><td class="num">2.65</td><td class="num">18.9</td><td class="num">5.01</td><td>옛 배선, 패드</td></tr>
+        <tr><td>W</td><td class="num">5.28</td><td class="num">19.1</td><td class="num">10.1</td><td>콘택 플러그</td></tr>
+        <tr><td>Mo</td><td class="num">5.34</td><td class="num">14.4</td><td class="num">7.69</td><td>W 대체(3D NAND 워드 라인)</td></tr>
+        <tr><td>Co</td><td class="num">6.2</td><td class="num">11.8</td><td class="num">7.32</td><td>콘택·M0, 라이너</td></tr>
+        <tr><td>Ru</td><td class="num">7.1</td><td class="num">6.6</td><td class="num">4.69</td><td>차세대 배선·비아 후보, 무장벽</td></tr>
+      </tbody>
+    </table></div>
+    <p>λ는 Gall(2016)의 제일원리 계산 값이다(<code>Solid.metals</code>). Ru는 벌크 비저항이 구리의 4배지만 \(\lambda\)가 6.6 nm로 짧아 크기 효과를 덜 받고, 녹는점이 높아 절연막으로 덜 확산하므로 장벽 없이(또는 아주 얇은 접착층만으로) 쓸 수 있다. 그러면 어느 폭부터 Ru가 구리를 이길까?</p>
+    <div class="predict" data-for="sim-size">
+      <p>폭 10 nm, 높이 20 nm 배선을 만든다. 구리는 장벽+라이너 2 nm가 필요하고 Ru는 장벽이 없다. 단위 길이당 선 저항이 작은 쪽은?</p>
+      <div class="opts"><button class="opt">구리 — 벌크 비저항이 4배 작으므로 언제나 구리</button><button class="opt" data-correct>Ru — 크기 효과와 장벽 면적 때문에 구리가 몇 배 더 크다</button><button class="opt">둘이 거의 같다</button></div>
+      <div class="quiz-exp">이 모형(\(p = 0\), \(R = 0.25\))에서 10 nm 선의 구리 비저항은 표면·결정립계 때문에 30 μΩ·cm를 넘고, 도체 폭도 10 nm에서 6 nm로 줄어 선 저항이 Ru의 약 4배다. 실험대에서 두 곡선이 엇갈리는 폭을 찾아라.</div>
+    </div>
+    <div class="sim" id="sim-size">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>배선 크기 효과 실험대: Ru가 구리를 이기는 선폭을 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-sx"></canvas><span class="hint">모서리 흰 원: 폭·높이</span></div><div><canvas id="cv-sr"></canvas><span class="hint top">그래프를 눌러 폭 선택</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>단면에 그릴 금속</span><div class="seg" id="sz-m"><button data-value="Cu" class="on">Cu</button><button data-value="Co">Co</button><button data-value="Ru">Ru</button><button data-value="W">W</button></div></div>
+          <label class="ctrl"><span>선폭 w <output id="sz-w-out"></output></span><input type="range" id="sz-w" min="6" max="100" step="0.5" value="40"></label>
+          <label class="ctrl"><span>종횡비 h/w <output id="sz-ar-out"></output></span><input type="range" id="sz-ar" min="1" max="3" step="0.1" value="2"></label>
+          <label class="ctrl"><span>경면 반사율 p <output id="sz-p-out"></output></span><input type="range" id="sz-p" min="0" max="0.8" step="0.05" value="0"></label>
+          <label class="ctrl"><span>결정립계 반사 R <output id="sz-R-out"></output></span><input type="range" id="sz-R" min="0" max="0.6" step="0.01" value="0.25"></label>
+          <label class="ctrl"><span>Cu 장벽+라이너 <output id="sz-tb-out"></output></span><input type="range" id="sz-tb" min="0" max="4" step="0.1" value="2"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ρ (도체 부분)</span><span class="v" id="sz-rho">—</span></div>
+        <div class="stat"><span class="k">FS · MS 배율</span><span class="v" id="sz-fac">—</span></div>
+        <div class="stat"><span class="k">선 저항 R′</span><span class="v" id="sz-Rl">—</span></div>
+        <div class="stat"><span class="k">R′(Ru) / R′(Cu)</span><span class="v" id="sz-cmp">—</span></div>
+        <div class="stat"><span class="k">도전: 교차 폭</span><span class="v" id="sz-goal">—</span></div>
+      </div>
+      <div class="sim-note">모형: \(\rho = \rho_0\,[1 + (F_w - 1) + (F_h - 1)]\cdot M\). \(F\)는 도체 폭·높이에 대한 정확한 FS 비, \(M\)은 결정립 크기 \(D\) = 도체 폭인 MS 비(곱 근사). 장벽은 옆면과 바닥에 두께 \(t_b\)로 깔리고 전류를 나르지 않는다고 본다. Cu는 슬라이더 값, Co·W는 1 nm, Ru는 0 nm. 오른쪽은 선 저항 \(R' = \rho/A_{도체}\)(Ω/μm, 로그–로그). 해볼 것: ① 폭을 바꿔 Ru 곡선이 Cu 곡선 아래로 내려가는 교차 폭을 ±1 nm 안으로 찾아라(성공하면 표시된다). ② 장벽을 1 nm로 얇게 하면 교차 폭이 얼마나 줄어드는가? ③ \(p\)를 0.5로 올리면 구리가 얼마나 살아나는가 — 표면 처리·캡 공정이 중요한 이유다.</div>
+    </div>
+    <div class="example" data-title="폭 20 nm 구리 배선 대 Ru 배선">
+      <p>폭 20 nm, 높이 40 nm인 배선을 생각하자. 구리는 옆면과 바닥에 장벽+라이너 2 nm가 있어 도체 단면이 16 nm × 38 nm이고, Ru는 장벽 없이 20 nm × 40 nm 전체가 도체다. \(p = 0\), \(R = 0.25\), 결정립 크기 = 도체 폭으로 두고, FS는 선 근사식 \(1 + \tfrac38\lambda(1/w + 1/h)\), 두 효과는 곱으로 합친다. 두 배선의 비저항과 선 저항(Ω/μm)을 비교하라. (Cu: \(\rho_0 = 1.68\ \mu\Omega\cdot\text{cm}\), λ = 39.9 nm; Ru: 7.1 μΩ·cm, 6.6 nm)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> FS 배율 → MS의 \(\alpha = (\lambda/D)R/(1-R)\)과 배율 → \(\rho\) → \(R' = \rho/A\).</div>
+        <div class="step"><b>풀이</b> Cu: FS \(= 1 + 0.375\times39.9\times(1/16 + 1/38) = 2.33\). \(\alpha = (39.9/16)(0.25/0.75) = 0.831\), MS 배율 \(= 1/\{3[1/3 - 0.416 + 0.691 - 0.574\ln(2.203)]\} = 2.15\). \(\rho = 1.68\times2.33\times2.15 = 8.41\ \mu\Omega\cdot\text{cm}\), \(R' = 8.41\times10^{-8}/(608\times10^{-18}) = 1.38\times10^8\) Ω/m = 138 Ω/μm.<br>Ru: FS \(= 1 + 0.375\times6.6\times(1/20 + 1/40) = 1.19\), \(\alpha = 0.110\), MS 배율 1.16. \(\rho = 7.1\times1.19\times1.16 = 9.76\ \mu\Omega\cdot\text{cm}\), \(R' = 9.76\times10^{-8}/(800\times10^{-18}) = 122\) Ω/μm.</div>
+        <div class="answer">Cu: ρ ≈ 8.4 μΩ·cm, R′ ≈ 138 Ω/μm · Ru: ρ ≈ 9.8 μΩ·cm, R′ ≈ 122 Ω/μm → Ru가 약 12% 낮다</div>
+        <div class="step"><b>검토</b> 구리의 비저항은 벌크의 5배로 커졌고, 그래도 Ru보다 약간 작다. 승부를 가른 것은 장벽이 먹은 단면(24%)이다. 실험대는 근사식 대신 정확한 FS 적분을 써서 조금 다른 값(Cu 9.4 μΩ·cm)을 준다. 측정값은 결정립 크기와 \(p\), \(R\)에 따라 이보다 작게 나오기도 한다 — 모형의 교차 폭은 정성적 길잡이다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>BEOL 구리 배선의 비저항 벽</strong><p>최신 로직의 가장 아래 배선(M0·M1)은 선폭이 20 nm 아래로 내려왔고, 이 영역에서 구리의 실효 비저항은 벌크의 3–5배로 뛴다. 원인은 이 절의 세 가지다. 표면 산란은 Co·Ru 라이너와 SiCN 캡 계면 상태(\(p\))에, 결정립계 산란은 도금 뒤 어닐링으로 결정립을 얼마나 키우느냐(\(D, R\))에, 단면 손실은 ALD TaN 장벽을 2 nm 아래로 얼마나 줄이느냐에 달려 있다. 장벽·라이너 두께는 선폭처럼 줄지 않으므로 선폭이 줄수록 몫이 커진다. → <a href="https://semi.euiyun.com/process/chapters/metal.html">ProcessBook · 금속 배선</a> · <a href="https://semi.euiyun.com/cmp/chapters/copper.html">CMPBook · 구리 다마신 CMP</a></p></div>
+    <div class="callout semi"><strong>Ru·Co·Mo 대체 금속 논쟁</strong><p>"벌크 비저항이 낮은 금속"이 아니라 "\(\rho_0\lambda\)가 작고 장벽이 필요 없는 금속"을 찾는 것이 배선 금속 선택의 기준이 되었다. Co는 콘택과 M0에 먼저 들어갔고, Ru는 미세 비아와 차세대 배선(감산 식각 공정 포함)의 유력 후보이며, Mo는 3D NAND 워드 라인과 콘택에서 W를 대체하고 있다. 녹는점이 높은 금속은 전자 이동 내성도 좋다. 다만 Ru는 값비싸고 CMP·식각 화학이 새로 필요하다. → <a href="https://semi.euiyun.com/cmp/chapters/metals.html">CMPBook · 텅스텐·게이트·신소재 CMP</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>드루드 모형: 전도 전자는 평균 \(\tau\)마다 충돌하는 기체다. 표류 속도 \(v_d = e\tau E/m\), 전도도 \(\sigma = ne^2\tau/m = ne\mu\). 구리 \(\tau = 2.5\times10^{-14}\) s, 표류 속도는 mm/s–m/s로 열운동보다 10⁶배 이상 느리다.</li>
+      <li>고전 기체 가정은 옴의 법칙과 비데만–프란츠 비(운 좋게)를 맞히지만, 전자 비열을 100배 크게, 평균 자유 행로를 10배 이상 작게 예측한다.</li>
+      <li>조머펠트 모형: 주기 경계 조건의 \(\vec k = (2\pi/L)(n_x, n_y, n_z)\)를 배타 원리로 채우면 페르미 구 \(k_F = (3\pi^2n)^{1/3}\)이 된다. 구리 \(E_F = 7.0\) eV, \(v_F = 1.57\times10^6\) m/s, \(T_F = 8.2\times10^4\) K.</li>
+      <li>상태 밀도 \(g(E) \propto \sqrt E\), \(g(E_F) = 3n/2E_F\). 페르미–디랙 분포 때문에 \(E_F\) 근처 \(k_BT\) 안의 전자만 들뜨고, 전자 비열은 \(C = \gamma T = (\pi^2/2)nk_B(T/T_F)\)이다. 몇 K 아래에서만 포논 \(AT^3\)을 이긴다.</li>
+      <li>전류는 페르미 면 위의 전자가 나르고, 진짜 평균 자유 행로는 \(\ell = v_F\tau\)(Cu ≈ 40 nm)다. \(\rho\ell\)은 물질 상수다. 비데만–프란츠: \(\kappa/\sigma T = (\pi^2/3)(k_B/e)^2 = 2.44\times10^{-8}\) W·Ω/K².</li>
+      <li>마티센 규칙 \(\rho = \rho_0 + \rho_{ph}(T)\): 포논 산란은 고온에서 \(\propto T\), 저온에서 \(\propto T^5\)이고, 잔류 저항 \(\rho_0\)은 결함이 정한다. RRR은 순도 지표다.</li>
+      <li>일함수 \(W = E_{vac} - E_F\), 열전자 방출 \(J = AT^2e^{-W/k_BT}\)(\(A = 120\) A/(cm²·K²)). 크기가 \(\ell\)에 가까운 배선은 표면(FS, \(p\))·결정립계(MS, \(R\)) 산란과 장벽 면적 때문에 저항이 커지며, 가는 선의 금속은 \(\rho_0\lambda\)로 고른다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(e = 1.602\times10^{-19}\) C, \(m = 9.109\times10^{-31}\) kg, \(\hbar = 1.0546\times10^{-34}\) J·s, \(k_B = 1.381\times10^{-23}\) J/K \(= 8.617\times10^{-5}\) eV/K, \(R = 8.314\) J/(mol·K), \(N_A = 6.022\times10^{23}\) mol⁻¹. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="완화 시간" data-answer="7.40e-15" data-label="τ =" data-unit="s">
+        <div class="prob-q"><p>알루미늄의 비저항은 2.65 μΩ·cm, 전도 전자 밀도는 \(1.81\times10^{29}\) m⁻³이다. 드루드 완화 시간은?</p></div>
+        <div class="prob-hint">\(\tau = m/(ne^2\rho)\), \(\rho\)는 Ω·m로.</div>
+        <div class="prob-sol"><p>\(\tau = 9.109\times10^{-31}/(1.81\times10^{29}\times2.566\times10^{-38}\times2.65\times10^{-8}) = 7.40\times10^{-15}\) s. 구리보다 3배 짧다 — 전자가 많아 비저항이 비슷해도 충돌은 잦다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="표류 속도" data-answer="0.737" data-label="v_d =" data-unit="m/s">
+        <div class="prob-q"><p>구리 배선(\(n = 8.47\times10^{28}\) m⁻³)에 전류 밀도 1.00 MA/cm²가 흐른다. 표류 속도는?</p></div>
+        <div class="prob-sol"><p>\(J = 10^6\) A/cm² \(= 10^{10}\) A/m². \(v_d = J/(ne) = 10^{10}/(8.47\times10^{28}\times1.602\times10^{-19}) = 0.737\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="페르미 에너지" data-answer="3.24" data-label="E_F =" data-unit="eV">
+        <div class="prob-q"><p>소듐의 전도 전자 밀도는 \(2.65\times10^{28}\) m⁻³이다. 페르미 에너지는?</p></div>
+        <div class="prob-hint">\(k_F = (3\pi^2n)^{1/3}\), \(E_F = \hbar^2k_F^2/2m\).</div>
+        <div class="prob-sol"><p>\(k_F = (3\pi^2\times2.65\times10^{28})^{1/3} = 9.22\times10^9\) m⁻¹. \(E_F = (1.0546\times10^{-34})^2(9.22\times10^9)^2/(2\times9.109\times10^{-31}) = 5.19\times10^{-19}\) J = 3.24 eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="고전 속력과 자유 행로" data-answer="1.17e5; 2.91" data-label="v_th =; ℓ_cl =" data-unit="m/s; nm">
+        <div class="prob-q"><p>드루드처럼 전자를 고전 기체로 보자. 300 K에서 \(v_{th} = \sqrt{3k_BT/m}\)과, 구리의 \(\tau = 2.49\times10^{-14}\) s로 계산한 평균 자유 행로 \(\ell_{cl} = v_{th}\tau\)는?</p></div>
+        <div class="prob-sol"><p>\(v_{th} = \sqrt{3\times1.381\times10^{-23}\times300/9.109\times10^{-31}} = 1.17\times10^5\) m/s. \(\ell_{cl} = 1.17\times10^5\times2.49\times10^{-14} = 2.91\times10^{-9}\) m = 2.91 nm. 진짜 값(39 nm)의 1/13이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="전자 밀도와 페르미 에너지" data-answer="1.81e29; 11.7" data-label="n =; E_F =" data-unit="m⁻³; eV">
+        <div class="prob-q"><p>알루미늄(밀도 2.70 g/cm³, 몰질량 26.98 g/mol, 원자가 3)의 전도 전자 밀도와 자유 전자 페르미 에너지는?</p></div>
+        <div class="prob-sol"><p>\(n = 3\times2.70\times6.022\times10^{23}/26.98 = 1.808\times10^{23}\) cm⁻³ = \(1.81\times10^{29}\) m⁻³. \(k_F = (3\pi^2n)^{1/3} = 1.749\times10^{10}\) m⁻¹, \(E_F = 11.7\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="전자 비열" data-answer="0.0121" data-label="C_el/C_cl =">
+        <div class="prob-q"><p>300 K 구리(\(T_F = 8.16\times10^4\) K)의 전자 비열은 고전 기체 값 \(\tfrac32Nk_B\)의 몇 배인가?</p></div>
+        <div class="prob-sol"><p>\(C_{el}/C_{cl} = \dfrac{(\pi^2/2)Nk_B(T/T_F)}{(3/2)Nk_B} = \dfrac{\pi^2}{3}\dfrac{T}{T_F} = 3.290\times300/81600 = 0.0121\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="조머펠트 계수" data-answer="1.09" data-label="γ =" data-unit="mJ/(mol·K²)">
+        <div class="prob-q"><p>소듐(\(E_F = 3.24\) eV, 원자가 1)의 자유 전자 조머펠트 계수 \(\gamma\)를 mJ/(mol·K²)로 구하라.</p></div>
+        <div class="prob-sol"><p>\(\gamma = \dfrac{\pi^2}{2}\dfrac{R}{T_F} = \dfrac{\pi^2}{2}\dfrac{Rk_B}{E_F} = 4.935\times8.314\times8.617\times10^{-5}/3.24 = 1.09\times10^{-3}\) J/(mol·K²) = 1.09 mJ/(mol·K²). 실측은 1.38로 \(m_{th}/m = 1.26\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="로렌츠 수" data-answer="2.27e-8" data-label="L =" data-unit="W·Ω/K²">
+        <div class="prob-q"><p>300 K 은의 열전도도는 429 W/(m·K), 비저항은 1.59 μΩ·cm이다. 실측 로렌츠 수 \(\kappa\rho/T\)는?</p></div>
+        <div class="prob-sol"><p>\(L = 429\times1.59\times10^{-8}/300 = 2.27\times10^{-8}\) W·Ω/K². 이론값 2.44의 93%다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="열전자 방출" data-answer="1.65e-3" data-label="J =" data-unit="A/cm²">
+        <div class="prob-q"><p>텅스텐(\(W = 4.55\) eV)을 2000 K로 가열했다. \(A = 120.17\) A/(cm²·K²)로 열전자 방출 전류 밀도는?</p></div>
+        <div class="prob-sol"><p>\(k_BT = 0.1723\) eV, \(W/k_BT = 26.40\), \(e^{-26.40} = 3.42\times10^{-12}\). \(J = 120.17\times4.00\times10^6\times3.42\times10^{-12} = 1.65\times10^{-3}\) A/cm². 2500 K(0.50 A/cm²)보다 300배 작다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="마티센 규칙" data-answer="6.25; 209" data-label="RRR =; ℓ(4 K) =" data-unit="; nm">
+        <div class="prob-q"><p>전기 도금한 구리 막의 비저항이 300 K에서 2.00 μΩ·cm다. 벌크 구리의 포논 비저항(300 K)은 1.68 μΩ·cm이고 4 K에서는 무시할 수 있다. 마티센 규칙으로 이 막의 RRR과, \(\rho\ell = 6.70\times10^{-16}\ \Omega\cdot\text{m}^2\)을 써서 4 K에서의 평균 자유 행로를 구하라(크기 효과는 무시).</p></div>
+        <div class="prob-hint">잔류 저항 \(\rho_0 = 2.00 - 1.68\). 4 K의 비저항은 \(\rho_0\)뿐이다.</div>
+        <div class="prob-sol"><p>\(\rho_0 = 0.32\ \mu\Omega\cdot\text{cm}\) → RRR = 2.00/0.32 = 6.25. \(\ell = 6.70\times10^{-16}/(0.32\times10^{-8}) = 2.09\times10^{-7}\) m = 209 nm. 실제 얇은 막에서는 이만큼 긴 \(\ell\)이 막 두께에 먼저 막힌다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="푹스–존트하이머" data-answer="4.19" data-label="ρ =" data-unit="μΩ·cm">
+        <div class="prob-q"><p>두께 10 nm 구리 막(\(\rho_0 = 1.68\ \mu\Omega\cdot\text{cm}\), λ = 39.9 nm)의 표면이 완전히 확산 반사(\(p = 0\))한다. 푹스–존트하이머 근사식 \(\rho/\rho_0 \approx 1 + \tfrac38(1-p)\lambda/t\)로 비저항을 구하라.</p></div>
+        <div class="prob-sol"><p>\(\rho/\rho_0 = 1 + 0.375\times39.9/10 = 2.496\) → \(\rho = 4.19\ \mu\Omega\cdot\text{cm}\). \(\kappa = 0.25\)로 근사식이 맞는 범위를 벗어나, 정확한 적분은 \(\rho/\rho_0 = 2.72\)(4.57 μΩ·cm)를 준다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="마야다스–샤츠케스" data-answer="3.67" data-label="ρ =" data-unit="μΩ·cm">
+        <div class="prob-q"><p>결정립 크기 \(D = 20\) nm, 결정립계 반사 확률 \(R = 0.30\)인 두꺼운 구리 막(표면 효과 무시)의 비저항을 마야다스–샤츠케스 식으로 구하라. \(\rho_0 = 1.68\ \mu\Omega\cdot\text{cm}\), λ = 39.9 nm.</p></div>
+        <div class="prob-hint">\(\alpha = (\lambda/D)R/(1-R)\)을 먼저 구한다.</div>
+        <div class="prob-sol"><p>\(\alpha = (39.9/20)(0.3/0.7) = 0.855\). 괄호 \(= 1/3 - 0.4275 + 0.7310 - 0.6250\times\ln(2.170) = 0.3333 - 0.4275 + 0.7310 - 0.4841 = 0.1527\), \(\rho_0/\rho = 3\times0.1527 = 0.458\) → \(\rho/\rho_0 = 2.18\), \(\rho = 3.67\ \mu\Omega\cdot\text{cm}\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="ρ₀λ와 금속 선택" data-answer="1.40" data-label="t =" data-unit="nm">
+        <div class="prob-q"><p>표면 산란만 있는(\(p = 0\)) 막에서 근사식 \(\rho = \rho_0 + \tfrac38\rho_0\lambda/t\)를 쓰면, 구리(1.68 μΩ·cm, 39.9 nm)와 Ru(7.1 μΩ·cm, 6.6 nm)의 비저항이 같아지는 두께는? (근사식이 맞지 않는 영역이지만 경향을 보자.)</p></div>
+        <div class="prob-sol"><p>\(\rho_0\lambda\): Cu 67.0, Ru 46.9 μΩ·cm·nm. \(1.68 + 0.375\times67.0/t = 7.1 + 0.375\times46.9/t\) → \(t = 0.375\times(67.0 - 46.9)/(7.1 - 1.68) = 1.40\) nm. 표면 산란만으로는 1–2 nm까지 구리가 유리하다. 실제 교차가 20 nm 근처에서 일어나는 것은 결정립계 산란과 장벽 면적 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="드루드의 실패">
+        <div class="prob-q"><p>전자가 고전 기체가 아니라 페르미–디랙 통계를 따른다는 것을 가장 직접 보여 준 금속의 측정은?</p></div>
+        <div class="prob-choices"><button>옴의 법칙의 선형성</button><button data-correct>저온 비열의 \(\gamma T\) 항이 고전값보다 100배 작은 것</button><button>비데만–프란츠 비가 금속마다 거의 같은 것</button><button>비저항이 고온에서 \(T\)에 비례하는 것</button></div>
+        <div class="prob-sol"><p>\(\gamma T\)는 \(E_F\) 근처 \(k_BT\) 안의 전자만 들뜬다는 배타 원리의 직접 결과다. 비데만–프란츠 비는 드루드에서도 (우연히) 맞았다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="배선 금속 선택">
+        <div class="prob-q"><p>장벽 두께를 무시하고 표면 산란만 생각할 때, 아주 가는(폭 ≪ λ) 선에서 비저항이 가장 작을 것으로 기대되는 금속은? (ρ₀λ, 10⁻¹⁶ Ω·m²: Cu 6.70, Co 7.32, W 10.1, Ru 4.69)</p></div>
+        <div class="prob-choices"><button>Cu — 벌크 비저항이 가장 낮다</button><button>W — 녹는점이 가장 높다</button><button data-correct>Ru — ρ₀λ가 가장 작다</button><button>Co — λ가 중간이다</button></div>
+        <div class="prob-sol"><p>폭이 작아지면 \(\rho \approx \tfrac38\rho_0\lambda(1-p)(1/w + 1/h)\) 항이 지배하므로 곱 \(\rho_0\lambda\)가 작은 금속이 유리하다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>구리의 이동도(약 44 cm²/(V·s))는 실리콘 전자(약 1400)보다 훨씬 작다. 그런데도 구리의 전도도가 10⁶배 이상 큰 이유는?</p><div class="opts">
+        <button class="opt">구리 전자의 완화 시간이 더 길어서</button><button class="opt" data-correct>전도 전자 밀도 \(n\)이 압도적으로 커서</button><button class="opt">구리 전자의 유효 질량이 음수라서</button><button class="opt">구리에서는 옴의 법칙이 성립하지 않아서</button>
+      </div><div class="quiz-exp">\(\sigma = ne\mu\). 구리의 \(n \approx 8.5\times10^{22}\) cm⁻³은 보통 도핑 반도체(\(10^{15}\)–\(10^{18}\))보다 10⁴–10⁸배 크다.</div></div>
+      <div class="quiz-q"><p>절대 0도의 구리 속에서 가장 빠른 전도 전자의 속력은?</p><div class="opts">
+        <button class="opt">0 — 절대 0도에서는 모든 운동이 멈춘다</button><button class="opt">\(\sqrt{3k_BT/m}\)로 정해지는 작은 값</button><button class="opt" data-correct>약 \(1.6\times10^6\) m/s(페르미 속도)</button><button class="opt">빛의 속도</button>
+      </div><div class="quiz-exp">배타 원리 때문에 전자는 \(E_F = 7\) eV까지 상태를 채운다. 페르미 면의 전자는 온도와 거의 무관하게 \(v_F\)로 달린다.</div></div>
+      <div class="quiz-q"><p>금속의 전자 비열이 \(T\)에 비례하는 근본 이유는?</p><div class="opts">
+        <button class="opt">전자 수가 온도에 비례해 늘어서</button><button class="opt" data-correct>\(E_F\) 근처 \(k_BT\) 폭 안의 전자만 들뜰 수 있어서, 들뜨는 전자 수가 \(T\)에 비례하므로</button><button class="opt">전자–포논 상호작용 때문에</button><button class="opt">디바이 모형의 결과라서</button>
+      </div><div class="quiz-exp">들뜨는 전자 \(\sim N(T/T_F)\), 각각 \(\sim k_BT\)를 얻으므로 \(U \propto T^2\), \(C \propto T\).</div></div>
+      <div class="quiz-q"><p>순수한 구리 시료에 불순물을 조금 넣었다. ρ(T) 곡선은 어떻게 변할까(마티센 규칙)?</p><div class="opts">
+        <button class="opt">상온 기울기 \(d\rho/dT\)가 커진다</button><button class="opt" data-correct>곡선 전체가 거의 일정한 값(잔류 저항 증가분)만큼 위로 평행 이동한다</button><button class="opt">저온 비저항만 줄어든다</button><button class="opt">아무 변화가 없다</button>
+      </div><div class="quiz-exp">\(\rho = \rho_0 + \rho_{ph}(T)\)에서 불순물은 \(\rho_0\)만 바꾼다. 그래서 RRR은 크게 떨어지지만 상온 기울기는 그대로다.</div></div>
+      <div class="quiz-q"><p>선폭 10 nm 근처에서 Ru 배선이 구리 배선보다 선 저항이 작아질 수 있는 이유로 옳은 것을 모두 담은 것은?</p><div class="opts">
+        <button class="opt">Ru의 벌크 비저항이 구리보다 작아서</button><button class="opt">Ru의 페르미 에너지가 더 커서</button><button class="opt" data-correct>Ru는 λ가 짧아(ρ₀λ가 작아) 크기 효과를 덜 받고, 장벽 없이 단면 전체를 쓸 수 있어서</button><button class="opt">Ru 표면은 항상 완전 거울 반사(p = 1)를 해서</button>
+      </div><div class="quiz-exp">Ru의 벌크 비저항은 구리의 4배다. 승부는 \(\rho_0\lambda\)와 장벽이 먹는 면적에서 갈린다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const K = Solid.const, qe = K.q, me = K.me, hbar = K.hbar, kB = K.kB, kBev = K.kBev, Rgas = 8.314462618;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const ex = Math.floor(Math.log10(Math.abs(x))); const m = x / Math.pow(10, ex);
+    if (ex >= -2 && ex <= 3) return x.toPrecision(d + 1);
+    return m.toFixed(d) + "×10" + String(ex).split("").map((c) => SUP[c]).join("");
+  };
+  const pow10 = (lg) => { const ex = Math.floor(lg); const m = Math.pow(10, lg - ex); return m.toFixed(1) + "×10" + String(ex).split("").map((c) => SUP[c]).join(""); };
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const invX = (ch, o, px) => { const t = (px - ch.box.x) / ch.box.w; return o.logX ? Math.pow(10, Math.log10(o.x[0]) + t * (Math.log10(o.x[1]) - Math.log10(o.x[0]))) : o.x[0] + t * (o.x[1] - o.x[0]); };
+  const invY = (ch, o, py) => { const t = (ch.box.y + ch.box.h - py) / ch.box.h; return o.logY ? Math.pow(10, Math.log10(o.y[0]) + t * (Math.log10(o.y[1]) - Math.log10(o.y[0]))) : o.y[0] + t * (o.y[1] - o.y[0]); };
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const M = Solid.metals;
+  const tauOf = (m) => Solid.drudeTau(M[m].n, M[m].rho * 1e-8);   // s
+
+  /* ---------------------------------------------------------- 머리: 드루드 전자 기체 */
+  {
+    const N = 70, TAU = 0.45, VTH = 95, GAIN = 2.2;
+    const st = { E: [-70, 0], els: [], flashes: [], drift: [0, 0], w: 0, h: 0 };
+    const rnd = () => { const a = Math.random() * 2 * Math.PI, s = VTH * (0.6 + 0.8 * Math.random()); return [s * Math.cos(a), s * Math.sin(a)]; };
+    const init = (w, h) => { st.els = []; for (let i = 0; i < N; i++) st.els.push({ x: Math.random() * w, y: Math.random() * h, v: rnd() }); st.w = w; st.h = h; };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal();
+      if (st.w !== w || st.h !== h) init(w, h);
+      const sp = 52;
+      ctx.save(); ctx.font = "600 11px " + SB.color("font"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      for (let y = sp / 2; y < h; y += sp) for (let x = sp / 2; x < w; x += sp) {
+        ctx.globalAlpha = 0.45; ctx.fillStyle = P.faint; ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 0.8; ctx.fillStyle = P.dim; ctx.fillText("+", x, y + 0.5);
+      }
+      ctx.globalAlpha = 1; ctx.restore();
+      st.flashes.forEach((f) => { ctx.save(); ctx.globalAlpha = Math.max(0, f.life / 0.25) * 0.6; ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(f.x, f.y, 4 + (0.25 - f.life) * 40, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); });
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.fillStyle = P.accent; ctx.lineWidth = 1.4;
+      st.els.forEach((el) => {
+        ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(el.x, el.y); ctx.lineTo(el.x - el.v[0] * 0.09, el.y - el.v[1] * 0.09); ctx.stroke();
+        ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(el.x, el.y, 3.6, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.restore();
+      const cx = w / 2, cy = h / 2;
+      const El = Math.hypot(st.E[0], st.E[1]);
+      if (El > 4) SB.arrow(ctx, cx, cy, cx + st.E[0], cy + st.E[1], { color: P.accent2, width: 3.2, head: 12, label: "E" });
+      const dl = Math.hypot(st.drift[0], st.drift[1]);
+      if (dl > 4) SB.arrow(ctx, cx, cy, cx + st.drift[0], cy + st.drift[1], { color: P.text, width: 2.6, head: 10, label: "평균 속도", dash: [6, 4] });
+      handle(ctx, cx + st.E[0], cy + st.E[1], P.accent2, 12);
+      self._tip = [cx + st.E[0], cy + st.E[1]];
+      const ratio = dl / VTH;
+      SB.label(ctx, w < 560 ? `|⟨v⟩| / 열속력 = ${ratio.toFixed(2)}` : `전자 ${N}개 · 평균 자유 시간 τ = ${TAU} s(느리게 보임) · |⟨v⟩| / 열속력 = ${ratio.toFixed(2)}`, 12, 14, { align: "left", size: 12, color: P.dim });
+    }, { aspect: 0.38, minHeight: 230, maxHeight: 330 });
+    SB.drag(cv, {
+      handles: () => (cv._tip ? [{ id: "tip", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id !== "tip") return;
+        let dx = x - cv.w / 2, dy = y - cv.h / 2; const L = Math.hypot(dx, dy), Lm = Math.min(cv.h * 0.42, 150);
+        if (L > Lm) { dx *= Lm / L; dy *= Lm / L; }
+        st.E = [dx, dy];
+      },
+    });
+    SB.loop("hero", (dt) => {
+      const w = st.w, h = st.h; if (!w) return;
+      let sx = 0, sy = 0;
+      st.els.forEach((el) => {
+        el.v[0] += -GAIN * st.E[0] * dt; el.v[1] += -GAIN * st.E[1] * dt;
+        if (Math.random() < dt / TAU) { el.v = rnd(); if (st.flashes.length < 30) st.flashes.push({ x: el.x, y: el.y, life: 0.25 }); }
+        el.x += el.v[0] * dt; el.y += el.v[1] * dt;
+        if (el.x < 0) el.x += w; if (el.x > w) el.x -= w; if (el.y < 0) el.y += h; if (el.y > h) el.y -= h;
+        sx += el.v[0]; sy += el.v[1];
+      });
+      sx /= st.els.length; sy /= st.els.length;
+      const a = Math.min(1, dt * 1.5);
+      st.drift = [st.drift[0] + (sx - st.drift[0]) * a, st.drift[1] + (sy - st.drift[1]) * a];
+      st.flashes.forEach((f) => (f.life -= dt)); st.flashes = st.flashes.filter((f) => f.life > 0);
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: τ와 표류 속도 */
+  SB.tangle("tg-tau", (v) => {
+    const n = v.n * 1e28, rho = v.rho * 1e-8, tau = me / (n * qe * qe * rho), mu = (qe * tau) / me;
+    const vd = v.I / (v.A * 1e-6) / (n * qe), t = 1 / vd;
+    const tm = t < 60 ? t.toFixed(0) + " 초" : t < 3600 ? (t / 60).toFixed(1) + " 분" : (t / 3600).toFixed(1) + " 시간";
+    return { tau: (tau * 1e15).toFixed(1) + " fs", mu: (mu * 1e4).toFixed(1) + " cm²/(V·s)", vd: (vd * 1e3).toPrecision(3) + " mm/s", time: tm };
+  });
+
+  /* ---------------------------------------------------------- 드루드 실험대 */
+  {
+    const gTau = SB.range("dr-tau", (v) => v.toFixed(1) + " fs", () => { draw(); });
+    const gE = SB.range("dr-E", (v) => v.toFixed(0) + " V/m", () => { draw(); });
+    const gM = SB.seg("dr-m", () => { newGoal(); draw(); });
+    const U = []; { const r = rng(7); for (let i = 0; i < 400; i++) U.push(Math.max(1e-6, r())); }
+    const o = { x: [0, 300], y: [0, 12], xLabel: "시간 t (fs)", yLabel: "전기장이 준 속도 (m/s)" };
+    const st = { Jt: 6 };
+    const newGoal = () => { let j; do { j = pick([2, 3, 4, 5, 6, 8, 10, 12]); } while (j === st.Jt); st.Jt = j; };
+    const calc = () => {
+      const m = gM(), n = M[m].n, tau = gTau() * 1e-15, E = gE();
+      const vd = (qe * tau * E) / me, J = n * qe * vd, rho = me / (n * qe * qe * tau), mu = (qe * tau) / me, vF = Solid.fermi(n).vF;
+      return { m, n, tau, E, vd, J, rho, mu, vF, vdT: (st.Jt * 1e10) / (n * qe) };
+    };
+    const cv = SB.canvas("cv-dr", (ctx, w, h, self) => {
+      const P = pal(), c = calc();
+      const ch = SB.chart(ctx, { x: 58, y: 34, w: w - 76, h: h - 80 }, { x: o.x, y: o.y, xLabel: o.xLabel, yLabel: o.yLabel });
+      const a = (qe * c.E) / me; // m/s²
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      // 목표선
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.setLineDash([2, 4]);
+      ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(c.vdT)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(c.vdT)); ctx.stroke(); ctx.setLineDash([]);
+      // 톱니
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.2; ctx.beginPath();
+      let t0 = 0, i = 0, area = 0;
+      ctx.moveTo(ch.X(0), ch.Y(0));
+      while (t0 < 300e-15 && i < U.length) {
+        const ft = -c.tau * Math.log(U[i++]), t1 = t0 + ft;
+        ctx.lineTo(ch.X(t1 * 1e15), ch.Y(a * ft)); ctx.lineTo(ch.X(t1 * 1e15), ch.Y(0));
+        area += 0.5 * a * ft * ft; t0 = t1;
+      }
+      ctx.stroke();
+      // 평균선
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(c.vd)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(c.vd)); ctx.stroke(); ctx.setLineDash([]);
+      // 기울기 a 안내선
+      ctx.strokeStyle = P.faint; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(0)); ctx.lineTo(ch.X(c.tau * 1e15), ch.Y(c.vd)); ctx.lineTo(ch.X(c.tau * 1e15), ch.Y(0)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.restore();
+      SB.label(ctx, `목표 J = ${st.Jt} MA/cm² → v_d = ${c.vdT.toFixed(2)} m/s`, ch.box.x + 6, Math.max(ch.box.y + 10, Math.min(ch.box.y + ch.box.h - 10, ch.Y(c.vdT) - 10)), { align: "left", size: 11, color: P.warn });
+      SB.label(ctx, `⟨v⟩ = eτE/m = ${c.vd.toFixed(2)} m/s`, ch.box.x + ch.box.w - 6, Math.max(ch.box.y + 10, Math.min(ch.box.y + ch.box.h - 10, ch.Y(c.vd) + 12)), { align: "right", size: 11, color: P.accent2, bold: true });
+      const hx = ch.X(Math.min(c.tau * 1e15, 300)), hy = ch.Y(Math.min(c.vd, 12));
+      handle(ctx, hx, hy, P.accent2, 11);
+      self._ch = ch; self._h = [hx, hy];
+    }, { aspect: 0.5, minHeight: 250, maxHeight: 340 });
+    const cvb = SB.canvas("cv-drv", (ctx, w, h) => {
+      const P = pal(), c = calc();
+      const ch = SB.chart(ctx, { x: 20, y: 10, w: w - 40, h: h - 58 }, { x: [1e-4, 1e9], y: [0, 1], logX: true, xLabel: "속력 (m/s, 로그 눈금)", yTicks: [], xTicks: w < 560 ? [1e-4, 1e-2, 1, 1e2, 1e4, 1e6, 1e8] : undefined, xFmt: (v) => "10" + String(Math.round(Math.log10(v))).split("").map((s) => SUP[s]).join("") });
+      const bars = [[c.vd, "표류 v_d", P.accent2], [Math.sqrt((3 * kB * 300) / me), "고전 열속력(300 K)", P.dim], [c.vF, "페르미 속도 v_F", P.accent], [2.998e8, "빛", P.faint]];
+      bars.forEach(([v, lab, col], i) => {
+        const y = ch.box.y + 8 + i * ((ch.box.h - 12) / 4), bh = (ch.box.h - 12) / 4 - 5;
+        ctx.fillStyle = col; ctx.globalAlpha = 0.85; ctx.fillRect(ch.box.x, y, Math.max(2, ch.X(Math.max(v, 1e-4)) - ch.box.x), bh); ctx.globalAlpha = 1;
+        SB.label(ctx, `${lab}  ${sci(v, 2)}`, Math.min(ch.X(Math.max(v, 1e-4)) + 6, ch.box.x + ch.box.w - 150), y + bh / 2, { align: "left", size: 11, color: P.text });
+      });
+    }, { aspect: 0.26, minHeight: 150, maxHeight: 190 });
+    function draw() {
+      const c = calc();
+      cv.redraw(); cvb.redraw();
+      SB.stat("dr-vd", c.vd.toFixed(2) + " m/s");
+      SB.stat("dr-J", (c.J / 1e10).toFixed(2) + " MA/cm²");
+      SB.stat("dr-rho", (c.rho * 1e8).toFixed(2) + " μΩ·cm");
+      SB.stat("dr-mu", (c.mu * 1e4).toFixed(1) + " cm²/(V·s)");
+      SB.stat("dr-ratio", sci(c.vd / c.vF, 1));
+      const ok = Math.abs(c.J / 1e10 - st.Jt) / st.Jt < 0.03;
+      SB.stat("dr-goal", ok ? `✔ ${st.Jt} MA/cm² 달성!` : `${st.Jt} MA/cm² (지금 ${(c.J / 1e10).toFixed(1)})`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id !== "h" || !cv._ch) return;
+        const tau = SB.clamp(invX(cv._ch, o, x), 2, 60), vd = SB.clamp(invY(cv._ch, o, y), 0, 12);
+        gTau.set(tau, true);
+        gE.set(SB.clamp((vd * me) / (qe * tau * 1e-15), 0, 2000), true);
+        draw();
+      },
+    });
+    $("dr-real").addEventListener("click", () => { gTau.set(tauOf(gM()) * 1e15, true); draw(); });
+    $("dr-new").addEventListener("click", () => { newGoal(); draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 블로흐–그뤼나이젠 ρ(T) (공용) */
+  const J5 = (x) => Solid.integrate((z) => (z < 1e-9 ? 0 : z ** 5 / (Math.expm1(z) * -Math.expm1(-z))), 0, x, 300);
+  const bgShape = (T, th) => (T <= 0 ? 0 : (T / th) ** 5 * J5(th / T));
+  const RHOM = {
+    Cu: { th: 343, rho: 1.68, rl: 1.68 * 39.9, a: 0.256 },
+    Al: { th: 428, rho: 2.65, rl: 2.65 * 18.9, a: 0.286 },
+    Na: { th: 158, rho: 4.77, rl: null, a: 0.372 },
+    W: { th: 400, rho: 5.28, rl: 5.28 * 19.1, a: 0.274 },
+  };
+  { const f = Solid.fermi(M.Na.n); RHOM.Na.rl = ((me * f.vF) / (M.Na.n * qe * qe)) * 1e17; }   // μΩ·cm·nm
+  Object.keys(RHOM).forEach((m) => { const r = RHOM[m]; r.C = r.rho / bgShape(300, r.th); r.tab = []; for (let i = 0; i <= 200; i++) { const T = 1 + (i * 599) / 200; r.tab.push([T, r.C * bgShape(T, r.th)]); } });
+  const rhoPh = (m, T) => { const r = RHOM[m]; if (T <= 1) return r.C * bgShape(Math.max(T, 0.5), r.th); const x = ((T - 1) / 599) * 200, i = Math.min(199, Math.floor(x)), f = x - i; return r.tab[i][1] * (1 - f) + r.tab[i + 1][1] * f; };
+
+  /* ---------------------------------------------------------- 미니: 길이 비교 */
+  {
+    const gT = SB.range("ell-T", (v) => v.toFixed(0) + " K", () => cv.redraw());
+    const gm = SB.seg("ell-m", () => cv.redraw());
+    const cv = SB.canvas("cv-ell", (ctx, w, h) => {
+      const P = pal(), m = gm(), T = gT(), n = M[m].n;
+      const rho = (rhoPh(m, T) + 0.002) * 1e-8, tau = me / (n * qe * qe * rho);
+      const vth = Math.sqrt((3 * kB * T) / me), vF = Solid.fermi(n).vF;
+      const lc = vth * tau * 1e9, lq = vF * tau * 1e9, a = RHOM[m].a;
+      const ch = SB.chart(ctx, { x: 24, y: 10, w: w - 60, h: h - 52 }, { x: [0.1, 1e5], y: [0, 1], logX: true, yTicks: [], xLabel: "길이 (nm, 로그 눈금)", xFmt: (v) => (v >= 1000 ? v / 1000 + " μm" : String(v)), vlines: [{ x: 20, color: P.warn, label: "선폭 20 nm", dash: [3, 3] }] });
+      const rows = [[a, "이온 간격", P.faint], [lc, "ℓ (드루드: 고전 속력)", P.dim], [lq, "ℓ = v_F τ (조머펠트)", P.accent]];
+      rows.forEach(([L, lab, col], i) => {
+        const y = ch.box.y + 26 + i * ((ch.box.h - 26) / 3), bh = (ch.box.h - 26) / 3 - 8;
+        ctx.fillStyle = col; ctx.fillRect(ch.box.x, y, Math.max(2, ch.X(L) - ch.box.x), bh);
+        SB.label(ctx, `${lab}  ${L >= 1000 ? (L / 1000).toPrecision(3) + " μm" : L.toPrecision(3) + " nm"}`, Math.min(ch.X(L) + 6, ch.box.x + ch.box.w - 190), y + bh / 2, { align: "left", size: 11 });
+      });
+      $("ell-r").textContent = `τ = ${sci(tau, 2)} s · 진짜 ℓ은 이온 간격의 ${Math.round(lq / a).toLocaleString()}배`;
+    }, { aspect: 0.32, minHeight: 190, maxHeight: 240 });
+  }
+
+  /* ---------------------------------------------------------- 미니: 1차원 상자 채우기 */
+  {
+    const E1 = 0.0381 * Math.PI * Math.PI;  // eV, L = 1 nm
+    const gN = SB.range("box-N", (v) => v.toFixed(0), () => cv.redraw());
+    $("box-cl").addEventListener("change", () => cv.redraw());
+    const cv = SB.canvas("cv-box", (ctx, w, h) => {
+      const P = pal(), N = gN(), cl = $("box-cl").checked, nt = Math.ceil(N / 2), nmax = Math.max(4, nt + 1);
+      const x0 = 104, x1 = w - 16, yb = h - 22, yt = 30, Emax = E1 * nmax * nmax, lx = x0 + Math.min(250, (x1 - x0) * 0.62);
+      const Y = (E) => yb - (E / Emax) * (yb - yt);
+      ctx.save(); ctx.font = font(11, true); ctx.fillStyle = P.dim; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      let lastY = Infinity;
+      for (let n = 1; n <= nmax; n++) {
+        const E = E1 * n * n, y = Y(E);
+        ctx.strokeStyle = n <= nt && !cl ? P.dim : P.border; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(lx, y); ctx.stroke();
+        if (lastY - y >= 13) { ctx.fillText(`n=${n}  ${E.toFixed(1)} eV`, x0 - 6, y); lastY = y; }
+      }
+      ctx.restore();
+      const spin = (x, y, up, col) => { ctx.save(); ctx.strokeStyle = ctx.fillStyle = col; ctx.lineWidth = 2; const d = up ? -1 : 1; ctx.beginPath(); ctx.moveTo(x, y - d * 1); ctx.lineTo(x, y + d * 9); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y + d * 12); ctx.lineTo(x - 4, y + d * 6); ctx.lineTo(x + 4, y + d * 6); ctx.closePath(); ctx.fill(); ctx.restore(); };
+      if (!cl) {
+        for (let i = 0; i < N; i++) { const n = Math.floor(i / 2) + 1, y = Y(E1 * n * n), xs = x0 + 40 + (i % 2) * 14; spin(xs, i % 2 ? y - 14 : y - 2, !(i % 2), i % 2 ? P.accent2 : P.accent); }
+        const EF = E1 * nt * nt;
+        SB.dashLine(ctx, x0, Y(EF), x1, Y(EF), P.accent2, [6, 4]);
+        SB.label(ctx, `E_F = ${EF.toFixed(2)} eV`, lx + 8, Y(EF) - 12, { align: "left", color: P.accent2, bold: true });
+        let tot = 0; for (let i = 0; i < N; i++) { const n = Math.floor(i / 2) + 1; tot += E1 * n * n; }
+        $("box-r").textContent = `E_F = ${EF.toFixed(2)} eV · 평균 에너지 ${(tot / N).toFixed(2)} eV (= ${((tot / N) / EF).toFixed(2)} E_F)`;
+      } else {
+        const y = Y(E1);
+        for (let i = 0; i < N; i++) spin(x0 + 12 + (i % 12) * Math.min(14, (lx - x0 - 20) / 12), y - 2 - Math.floor(i / 12) * 15, true, P.dim);
+        $("box-r").textContent = `모두 바닥(${E1.toFixed(3)} eV)에 — 실제 전자는 이럴 수 없다`;
+      }
+      SB.label(ctx, "1차원 상자 L = 1 nm, E_n = n²·0.376 eV (세로축 자동 확대)", x1 - 4, 12, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: 페르미 양 */
+  SB.tangle("tg-fermi", (v) => {
+    const f = Solid.fermi(v.n * 1e28);
+    return { kF: f.kF.toFixed(2) + " nm⁻¹", lam: (2 * Math.PI / f.kF).toFixed(3) + " nm", EF: f.EF.toFixed(2) + " eV", vF: (f.vF / 1e6).toFixed(2) + "×10⁶ m/s", TF: sci(f.TF, 2) + " K", frac: ((300 / f.TF) * 100).toFixed(2) + "%" };
+  });
+
+  /* ---------------------------------------------------------- 페르미 구 시뮬레이터 */
+  {
+    const P2 = [], P3 = [];
+    for (let i = -14; i <= 14; i++) for (let j = -14; j <= 14; j++) P2.push({ p: [i, j], e: i * i + j * j, f: 0 });
+    for (let i = -7; i <= 7; i++) for (let j = -7; j <= 7; j++) for (let k = -7; k <= 7; k++) P3.push({ p: [i, j, k], e: i * i + j * j + k * k, f: 0 });
+    [P2, P3].forEach((A) => A.sort((a, b) => a.e - b.e));
+    const st = { yaw: 0.6, pitch: 0.45, last: null, idle: 0 };
+    const gD = SB.seg("fs-dim", () => { $("fs-hint").textContent = gD() === "3" ? "끌어서 돌린다" : "페르미 원의 흰 원을 끌어 전자 수를 바꾼다"; update(); });
+    const gN = SB.range("fs-N", (v) => v.toFixed(0), () => update());
+    const gT = SB.range("fs-T", (v) => v.toFixed(3), () => update());
+    $("fs-circ").addEventListener("change", () => cv.redraw());
+    let res = {};
+    function fill() {
+      const d = gD(), A = d === "3" ? P3 : P2, N = gN(), t = gT();
+      const kF = d === "3" ? Math.cbrt((3 * N) / (8 * Math.PI)) : Math.sqrt(N / (2 * Math.PI)), eF = kF * kF;
+      let mu = eF, eTop = 0, exc = 0;
+      if (t < 0.002) {
+        let left = N; let i = 0;
+        while (i < A.length) {
+          let j = i; while (j < A.length && A[j].e === A[i].e) j++;
+          const cap = 2 * (j - i), fr = left <= 0 ? 0 : Math.min(1, left / cap);
+          for (let q = i; q < j; q++) A[q].f = fr;
+          if (fr > 0) eTop = A[i].e; left -= cap; i = j;
+        }
+        mu = eTop;
+      } else {
+        const kT = t * eF;
+        const cnt = (m) => { let s = 0; for (const a of A) s += 2 / (Math.exp((a.e - m) / kT) + 1); return s; };
+        mu = Solid.bisect((m) => cnt(m) - N, -20 * kT - eF, A[A.length - 1].e, 1e-6, 80);
+        for (const a of A) { a.f = 1 / (Math.exp((a.e - mu) / kT) + 1); if (a.e > mu) exc += 2 * a.f; }
+        let k = A.length - 1; while (k > 0 && A[k].f < 0.5) k--; eTop = A[k].e;
+      }
+      res = { d, A, N, t, kF, eF, mu, eTop, exc: exc / N };
+    }
+    const cv = SB.canvas("cv-fs", (ctx, w, h, self) => {
+      if (!res.A) fill();
+      const P = pal(), r = res, cx = w / 2, cy = h / 2 + 4;
+      if (r.d === "2") {
+        const s = Math.min(w - 30, h - 40) / 29;
+        ctx.save(); ctx.strokeStyle = P.axis; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(cx - 14.5 * s, cy); ctx.lineTo(cx + 14.5 * s, cy); ctx.moveTo(cx, cy - 14.5 * s); ctx.lineTo(cx, cy + 14.5 * s); ctx.stroke(); ctx.restore();
+        for (const a of r.A) {
+          const x = cx + a.p[0] * s, y = cy - a.p[1] * s;
+          ctx.fillStyle = P.faint; ctx.beginPath(); ctx.arc(x, y, 1.4, 0, Math.PI * 2); ctx.fill();
+          if (a.f > 0.01) { ctx.globalAlpha = a.f; ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(x, y, Math.max(2.2, s * 0.36), 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+        }
+        const R = r.kF * s;
+        if ($("fs-circ").checked) { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
+        const hx = cx + R * Math.SQRT1_2, hy = cy - R * Math.SQRT1_2;
+        handle(ctx, hx, hy, P.accent2, 11);
+        self._h = [hx, hy, s, cx, cy];
+        SB.label(ctx, "k_x", cx + 14.5 * s - 8, cy + 12, { size: 11, color: P.dim });
+        SB.label(ctx, "k_y", cx + 14, cy - 14.5 * s + 8, { size: 11, color: P.dim });
+      } else {
+        const s = Math.min(w, h) / 17;
+        const cam = Solid.camera({ yaw: st.yaw, pitch: st.pitch, scale: s, cx, cy });
+        const pr = r.A.map((a) => ({ q: cam.project(a.p), f: a.f }));
+        pr.sort((A, B) => A.q.z - B.q.z);
+        const zs = pr.map((p) => p.q.z), zmin = Math.min(...zs), zr = Math.max(...zs) - zmin || 1;
+        for (const p of pr) {
+          const dpt = (p.q.z - zmin) / zr;
+          if (p.f > 0.01) { ctx.globalAlpha = p.f * (0.35 + 0.65 * dpt); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(p.q.x, p.q.y, 2.2 + 2.4 * dpt, 0, Math.PI * 2); ctx.fill(); }
+          else { ctx.globalAlpha = 0.35; ctx.fillStyle = P.faint; ctx.fillRect(p.q.x - 0.7, p.q.y - 0.7, 1.4, 1.4); }
+        }
+        ctx.globalAlpha = 1;
+        if ($("fs-circ").checked) {
+          const c0 = cam.project([0, 0, 0]);
+          ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c0.x, c0.y, r.kF * s, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([4, 4]); ctx.lineWidth = 1.2; ctx.beginPath();
+          for (let i = 0; i <= 60; i++) { const a = (i / 60) * 2 * Math.PI, q = cam.project([r.kF * Math.cos(a), r.kF * Math.sin(a), 0]); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); }
+          ctx.stroke(); ctx.restore();
+        }
+        self._h = null;
+      }
+      SB.label(ctx, r.d === "2" ? "2차원 k 공간 (단위 2π/L)" : "3차원 k 공간: 페르미 구", 10, 14, { align: "left", size: 12, color: P.dim });
+    }, { aspect: 0.78, minHeight: 300, maxHeight: 500 });
+    function update() {
+      fill(); cv.redraw();
+      const r = res;
+      SB.stat("fs-occ", `${r.A.filter((a) => a.f > 0.5).length} (전자 ${r.N})`);
+      SB.stat("fs-kc", Math.sqrt(r.eTop).toFixed(2));
+      SB.stat("fs-kf", r.kF.toFixed(2));
+      SB.stat("fs-EF", `${r.t < 0.002 ? r.eTop.toFixed(0) : r.mu.toFixed(1)} (공식 ${r.eF.toFixed(1)})`);
+      SB.stat("fs-shell", r.t < 0.002 ? "0" : (r.exc * 100).toFixed(1) + "%");
+    }
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._h ? [{ id: "kf", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      down: (id, x, y) => { st.last = [x, y]; },
+      move: (id, x, y) => {
+        if (gD() === "3") {
+          if (st.last) { st.yaw += (x - st.last[0]) * 0.01; st.pitch = SB.clamp(st.pitch + (y - st.last[1]) * 0.01, -1.4, 1.4); }
+          st.last = [x, y]; st.idle = 3; return;
+        }
+        if (id !== "kf" || !cv._h) return;
+        const [, , s, cx, cy] = cv._h, k = Math.hypot(x - cx, y - cy) / s;
+        gN.set(SB.clamp(Math.round((2 * Math.PI * k * k) / 2) * 2, 2, 760), true); update();
+      },
+      up: () => { st.last = null; },
+    });
+    SB.loop("sim-fermi", (dt) => {
+      if (gD() !== "3") return;
+      if (st.idle > 0) { st.idle -= dt; return; }
+      st.yaw += dt * 0.25; cv.redraw();
+    });
+    update();
+  }
+
+  /* ---------------------------------------------------------- 미니: 페르미–디랙 분포 */
+  {
+    const n = M.Cu.n, EF = Solid.fermi(n).EF, Emax = 10;
+    const gT = SB.range("fd-T", (v) => v.toFixed(0) + " K", () => cv.redraw());
+    const solveMu = (T) => {
+      if (T < 1) return EF;
+      const kT = kBev * T;
+      const N = (mu) => Solid.integrate((E) => Q.dos3D(E) * Q.fermi(E, mu, T), 0, mu + 40 * kT, 400);
+      return Solid.bisect((mu) => N(mu) - n, EF - 2, EF + 1, 1e-6, 60);
+    };
+    const cv = SB.canvas("cv-fd", (ctx, w, h) => {
+      const P = pal(), T = gT(), mu = solveMu(T), gmax = 2.6;
+      const ch = SB.chart(ctx, { x: 52, y: 14, w: w - 100, h: h - 58 }, { x: [0, Emax], y: [0, gmax], xLabel: "에너지 E (eV)", yLabel: "g(E) (10²⁸ eV⁻¹m⁻³)", vlines: [{ x: EF, color: P.dim, label: "E_F" }] });
+      const g = [], gf = [], ff = [];
+      for (let i = 0; i <= 300; i++) { const E = (Emax * i) / 300, gg = Q.dos3D(E) / 1e28, f = Q.fermi(E, mu, T); g.push([E, gg]); gf.push([E, gg * f]); ff.push([E, f * gmax]); }
+      SB.chart(ctx, ch.box, { x: [0, Emax], y: [0, gmax], xTicks: [], yTicks: [], series: [{ data: gf, color: P.accent, width: 2, fill: SB.color("accent-soft") }, { data: g, color: P.dim, width: 1.4, dash: [5, 4] }, { data: ff, color: P.accent2, width: 2.2 }] });
+      ctx.save(); ctx.font = font(11, true); ctx.fillStyle = P.accent2; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      [0, 0.5, 1].forEach((v) => ctx.fillText(v.toFixed(1), ch.box.x + ch.box.w + 6, ch.Y(v * gmax)));
+      ctx.restore();
+      SB.label(ctx, "f(E)", ch.box.x + ch.box.w + 22, ch.Y(0.75 * gmax), { color: P.accent2, size: 11, bold: true });
+      let exc = 0; if (T > 1) exc = Solid.integrate((E) => Q.dos3D(E) * Q.fermi(E, mu, T), EF, EF + 40 * kBev * T, 300) / n;
+      $("fd-r").textContent = `k_BT = ${(kBev * T).toFixed(3)} eV · μ/E_F = ${(mu / EF).toFixed(5)} · E_F 위로 들뜬 전자 ${(exc * 100).toFixed(2)}%`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 전자 비열 대 포논 비열 */
+  {
+    const HM = {
+      Cu: { gx: 0.695, th: 343, Z: 1, EF: 7.03 }, Ag: { gx: 0.646, th: 225, Z: 1, EF: 5.50 }, Au: { gx: 0.729, th: 165, Z: 1, EF: 5.53 },
+      Al: { gx: 1.35, th: 428, Z: 3, EF: 11.67 }, Na: { gx: 1.38, th: 158, Z: 1, EF: 3.24 },
+    };
+    const debye = (T, th) => { const x = th / T; return 9 * Rgas * (T / th) ** 3 * Solid.integrate((z) => (z < 1e-9 ? 0 : (z ** 4 * Math.exp(z)) / Math.expm1(z) ** 2), 0, x, 300); };
+    Object.keys(HM).forEach((k) => {
+      const m = HM[k]; m.gf = ((Math.PI ** 2 / 2) * m.Z * Rgas * kBev) / m.EF * 1e3;  // mJ/(mol K²)
+      m.A = ((12 * Math.PI ** 4) / 5) * Rgas / m.th ** 3 * 1e3;                              // mJ/(mol K⁴)
+      m.Ts = Math.sqrt(m.gx / m.A); m.Tmax = 1.6 * m.Ts;
+      m.ph = []; for (let i = 0; i <= 120; i++) { const T = 0.3 * Math.pow(400 / 0.3, i / 120); m.ph.push([T, debye(T, m.th)]); }
+      const r = rng(11 + k.charCodeAt(0)); m.data = [];
+      for (let i = 1; i <= 14; i++) { const T2 = (i / 14) * m.Tmax ** 2; m.data.push([T2, (m.gx + m.A * T2) * (1 + 0.03 * (r() - 0.5))]); }
+    });
+    const gm = SB.seg("ht-m", () => { reset(); draw(); });
+    $("ht-free").addEventListener("change", () => draw());
+    const st = { T: 10, y0: 0, y1: 0, show: false };
+    const reset = () => { const m = HM[gm()]; st.y0 = m.gx * 0.45; st.y1 = (m.gx + m.A * m.Tmax ** 2) * 0.7; st.show = false; };
+    reset();
+    const oL = { x: [0.3, 400], y: [1e-5, 40], logX: true, logY: true };
+    const cvL = SB.canvas("cv-ht", (ctx, w, h, self) => {
+      const P = pal(), m = HM[gm()], g = ($("ht-free").checked ? m.gf : m.gx) * 1e-3;
+      const el = [], ph = [], tot = [];
+      m.ph.forEach(([T, c]) => { el.push([T, g * T]); ph.push([T, c]); tot.push([T, g * T + c]); });
+      const Ts = Math.sqrt(g / (m.A * 1e-3));
+      const ch = SB.chart(ctx, { x: 56, y: 30, w: w - 70, h: h - 76 }, { ...oL, xLabel: "T (K)", yLabel: "C (J/(mol·K))", series: [{ data: ph, color: P.accent2, width: 2 }, { data: el, color: P.accent, width: 2 }, { data: tot, color: P.text, width: 1.6, dash: [5, 4] }], vlines: [{ x: Ts, color: P.dim, label: `T* = ${Ts.toFixed(1)} K` }], hlines: [{ y: 3 * Rgas, color: P.faint, label: "3R" }] });
+      const c = g * st.T + debye(st.T, m.th), hx = ch.X(st.T), hy = ch.Y(c);
+      handle(ctx, hx, hy, P.text, 10);
+      SB.label(ctx, "전자 γT", ch.X(1.2), ch.Y(g * 1.2) - 12, { color: P.accent, size: 11, bold: true });
+      SB.label(ctx, "포논", ch.X(40), ch.Y(debye(40, m.th)) - 12, { color: P.accent2, size: 11, bold: true });
+      self._ch = ch; self._h = [hx, hy];
+    }, { aspect: 0.85, minHeight: 260, maxHeight: 380 });
+    const cvR = SB.canvas("cv-hf", (ctx, w, h, self) => {
+      const P = pal(), m = HM[gm()], X2 = m.Tmax ** 2, ymax = (m.gx + m.A * X2) * 1.3;
+      const o = { x: [0, X2 * 1.05], y: [0, ymax] };
+      const ch = SB.chart(ctx, { x: 56, y: 30, w: w - 70, h: h - 76 }, { ...o, xLabel: "T² (K²)", yLabel: "C/T (mJ/(mol·K²))", points: m.data.map(([x, y]) => ({ x, y, r: 3.5, color: P.accent })) });
+      if (st.show) SB.chart(ctx, ch.box, { ...o, xTicks: [], yTicks: [], series: [{ data: [[0, m.gx], [X2 * 1.05, m.gx + m.A * X2 * 1.05]], color: P.ok, width: 1.6, dash: [6, 4] }] });
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(st.y0)); ctx.lineTo(ch.X(X2), ch.Y(st.y1)); ctx.stroke(); ctx.restore();
+      handle(ctx, ch.X(0), ch.Y(st.y0), P.accent2, 10); handle(ctx, ch.X(X2), ch.Y(st.y1), P.accent2, 10);
+      SB.label(ctx, `γ = 절편`, ch.X(0) + 16, ch.Y(st.y0) + 16, { align: "left", size: 11, color: P.accent2 });
+      self._ch = ch; self._o = o; self._X2 = X2;
+    }, { aspect: 0.85, minHeight: 260, maxHeight: 380 });
+    function draw() {
+      cvL.redraw(); cvR.redraw();
+      const m = HM[gm()], g = ($("ht-free").checked ? m.gf : m.gx) * 1e-3;
+      const ce = g * st.T, cp = debye(st.T, m.th);
+      SB.stat("ht-T", st.T.toFixed(st.T < 10 ? 2 : 0) + " K");
+      SB.stat("ht-ratio", sci(ce / cp, 2));
+      SB.stat("ht-Ts", Math.sqrt(g / (m.A * 1e-3)).toFixed(2) + " K");
+      const gfit = st.y0, Af = (st.y1 - st.y0) / m.Tmax ** 2;
+      const thf = Af > 0 ? Math.cbrt((((12 * Math.PI ** 4) / 5) * Rgas * 1e3) / Af) : NaN;
+      SB.stat("ht-g", gfit.toFixed(3) + " mJ/(mol·K²)");
+      SB.stat("ht-th", isFinite(thf) ? thf.toFixed(0) + " K" : "—");
+      const ok = Math.abs(gfit - m.gx) / m.gx < 0.05 && Math.abs(thf - m.th) / m.th < 0.05;
+      SB.stat("ht-ok", ok ? `✔ 성공! m_th/m = ${(gfit / m.gf).toFixed(2)}` : "직선을 맞춰 보라");
+    }
+    SB.drag(cvL, { handles: () => (cvL._h ? [{ id: "T", x: cvL._h[0], y: cvL._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "T" || !cvL._ch) return; st.T = SB.clamp(invX(cvL._ch, oL, x), 0.3, 400); draw(); } });
+    SB.drag(cvR, {
+      handles: () => (cvR._ch ? [{ id: "a", x: cvR._ch.X(0), y: cvR._ch.Y(st.y0), r: 14 }, { id: "b", x: cvR._ch.X(cvR._X2), y: cvR._ch.Y(st.y1), r: 14 }] : []),
+      move: (id, x, y) => { if (!cvR._ch || !id) return; const v = SB.clamp(invY(cvR._ch, cvR._o, y), 0, cvR._o.y[1]); if (id === "a") st.y0 = v; else st.y1 = v; draw(); },
+    });
+    $("ht-ans").addEventListener("click", () => { st.show = !st.show; draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: 비데만–프란츠 */
+  SB.tangle("tg-wf", (v) => { const k = (Solid.lorenz * v.T) / (v.rho * 1e-8); return { k: k.toFixed(0) + " W/(m·K)", k2: (k / v.f).toFixed(0) + " W/(m·K)" }; });
+
+  /* ---------------------------------------------------------- ρ(T) 실험대 */
+  {
+    const gm = SB.seg("rho-m", () => draw());
+    const gR = SB.range("rho-r0", (v) => sci(Math.pow(10, v), 2) + " μΩ·cm", () => draw());
+    $("rho-log").addEventListener("change", () => draw());
+    $("rho-parts").addEventListener("change", () => draw());
+    const st = { T: 300, goal: 30 };
+    const opts = () => ($("rho-log").checked ? { x: [0, 400], y: [1e-4, 30], logY: true } : { x: [0, 400], y: [0, 1.4 * (RHOM[gm()].rho * 400 / 300) + Math.pow(10, gR())] });
+    const cv = SB.canvas("cv-rho", (ctx, w, h, self) => {
+      const P = pal(), m = gm(), r0 = Math.pow(10, gR()), o = opts();
+      const tot = [], ph = [];
+      for (let i = 0; i <= 200; i++) { const T = 1 + (i * 399) / 200; tot.push([T, r0 + rhoPh(m, T)]); ph.push([T, Math.max(rhoPh(m, T), 1e-9)]); }
+      const ser = [{ data: tot, color: P.text, width: 2.4 }];
+      if ($("rho-parts").checked) ser.unshift({ data: ph, color: P.accent, width: 1.6, dash: [6, 4] }, { data: [[0, r0], [400, r0]], color: P.accent2, width: 1.6, dash: [3, 4] });
+      const ch = SB.chart(ctx, { x: 60, y: 30, w: w - 76, h: h - 76 }, { ...o, xLabel: "T (K)", yLabel: "ρ (μΩ·cm)", series: ser, vlines: [{ x: RHOM[m].th, color: P.faint, label: "θ_D" }] });
+      const hx = ch.X(st.T), hy = ch.Y(r0 + rhoPh(m, st.T)), rx = ch.X(14), ry = ch.Y(r0);
+      handle(ctx, rx, ry, P.accent2, 11); handle(ctx, hx, hy, P.text, 10);
+      SB.label(ctx, "ρ₀", rx + 16, ry - 12, { color: P.accent2, size: 11, bold: true });
+      if ($("rho-parts").checked) SB.label(ctx, "ρ_ph(T)", ch.X(250), ch.Y(rhoPh(m, 250)) + 14, { color: P.accent, size: 11 });
+      self._ch = ch; self._o = o; self._hs = [[hx, hy], [rx, ry]];
+    }, { aspect: 0.55, minHeight: 260, maxHeight: 380 });
+    function draw() {
+      cv.redraw();
+      const m = gm(), r0 = Math.pow(10, gR()), rT = r0 + rhoPh(m, st.T), rrr = (r0 + rhoPh(m, 300)) / (r0 + rhoPh(m, 4.2));
+      const ell = RHOM[m].rl / rT;
+      SB.stat("rho-v", `${sci(rT, 2)} μΩ·cm (${st.T.toFixed(0)} K)`);
+      SB.stat("rho-rrr", rrr >= 1000 ? sci(rrr, 1) : rrr.toFixed(1));
+      SB.stat("rho-ell", ell >= 1000 ? (ell / 1000).toPrecision(3) + " μm" : ell.toPrecision(3) + " nm");
+      SB.stat("rho-sl", ((rhoPh(m, 310) - rhoPh(m, 290)) / 20).toFixed(4) + " μΩ·cm/K");
+      const ok = Math.abs(rrr - st.goal) / st.goal < 0.05;
+      SB.stat("rho-goal", ok ? `✔ RRR ${st.goal} 달성!` : `RRR ${st.goal} 만들기`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._hs ? [{ id: "T", x: cv._hs[0][0], y: cv._hs[0][1], r: 14 }, { id: "r0", x: cv._hs[1][0], y: cv._hs[1][1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (!cv._ch) return;
+        if (id === "T") st.T = SB.clamp(invX(cv._ch, cv._o, x), 2, 400);
+        else if (id === "r0") { const v = invY(cv._ch, cv._o, y); gR.set(SB.clamp(Math.log10(Math.max(v, 1e-4)), -3, 0.7), true); }
+        draw();
+      },
+    });
+    $("rho-new").addEventListener("click", () => { let g; do { g = pick([5, 10, 30, 100, 300]); } while (g === st.goal); st.goal = g; draw(); });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: 열전자 방출 */
+  SB.tangle("tg-rich", (v) => {
+    const J = Solid.richardson(v.T, v.W, 120), J2 = Solid.richardson(v.T + 100, v.W, 120);
+    const lg = Math.log10(120 * 300 * 300) - v.W / (kBev * 300 * Math.LN10);
+    return { J: sci(J, 2) + " A/cm²", r: (J2 / J).toFixed(1), J300: pow10(lg) + " A/cm²" };
+  });
+
+  /* ---------------------------------------------------------- 미니: 리처드슨 그림 */
+  {
+    const st = { T: 2000 };
+    const gW = SB.range("th-W", (v) => v.toFixed(2) + " eV", () => draw());
+    const gP = SB.seg("th-pre", (v) => { gW.set(Number(v), true); draw(); });
+    const o = { x: [0.3, 1.3], y: [-80, 5] };
+    const lnJT2 = (W, T) => Math.log(120) - W / (kBev * T);
+    const cv = SB.canvas("cv-th", (ctx, w, h, self) => {
+      const P = pal(), W = gW();
+      const ref = [[4.55, "W"], [2.63, "Th–W"], [1.9, "BaO"]].map(([Wr, lab], i) => ({ data: [[0.3, lnJT2(Wr, 1000 / 0.3)], [1.3, lnJT2(Wr, 1000 / 1.3)]], color: P.faint, width: 1.2, dash: [4, 4] }));
+      const ch = SB.chart(ctx, { x: 56, y: 30, w: w - 72, h: h - 76 }, { ...o, xLabel: "1000 / T (K⁻¹)", yLabel: "ln( J / T² )", series: ref.concat([{ data: [[0.3, lnJT2(W, 1000 / 0.3)], [1.3, lnJT2(W, 1000 / 1.3)]], color: P.accent, width: 2.6 }]) });
+      [[4.55, "W"], [2.63, "Th–W"], [1.9, "BaO"]].forEach(([Wr, lab]) => SB.label(ctx, lab, ch.box.x + ch.box.w - 4, ch.Y(lnJT2(Wr, 1000 / 1.3)) - 10, { align: "right", size: 10, color: P.dim }));
+      const x = 1000 / st.T, hx = ch.X(x), hy = ch.Y(lnJT2(W, st.T));
+      handle(ctx, hx, hy, P.accent, 11);
+      SB.label(ctx, `기울기 = −W/k_B = ${(-W / kBev / 1000).toFixed(1)}×10³ K`, ch.box.x + 8, ch.box.y + ch.box.h - 12, { align: "left", size: 11, color: P.accent });
+      self._ch = ch; self._h = [hx, hy];
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    function draw() {
+      cv.redraw();
+      const W = gW(), J = Solid.richardson(st.T, W, 120);
+      const T1 = Solid.bisect((T) => Math.log(Solid.richardson(T, W, 120)), 300, 6000, 1e-3);
+      $("th-r").textContent = `T = ${st.T.toFixed(0)} K → J = ${sci(J, 2)} A/cm² · J = 1 A/cm²에 필요한 온도 ${T1.toFixed(0)} K`;
+    }
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "t" || !cv._ch) return; st.T = 1000 / SB.clamp(invX(cv._ch, o, x), 0.3, 1.3); draw(); } });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 미니: 푹스–존트하이머 */
+  {
+    const st = { k: 0.25 };
+    const gp = SB.range("fsm-p", (v) => v.toFixed(2), () => { curve(); draw(); });
+    const o = { x: [0.05, 20], y: [0.9, 8], logX: true };
+    let cur = [], ref = [], apx = [];
+    const ks = []; for (let i = 0; i <= 70; i++) ks.push(0.05 * Math.pow(400, i / 70));
+    ref = ks.map((k) => [k, Solid.fsRatio(k, 0)]);
+    function curve() { const p = gp(); cur = ks.map((k) => [k, Solid.fsRatio(k, p)]); apx = ks.map((k) => [k, 1 + (0.375 * (1 - p)) / k]); }
+    curve();
+    const cv = SB.canvas("cv-fsm", (ctx, w, h, self) => {
+      const P = pal(), p = gp();
+      const ser = [{ data: apx, color: P.accent2, width: 1.6, dash: [6, 4] }, { data: cur, color: P.accent, width: 2.6 }];
+      if (p > 0) ser.unshift({ data: ref, color: P.faint, width: 1.4 });
+      const ch = SB.chart(ctx, { x: 52, y: 30, w: w - 68, h: h - 76 }, { ...o, xLabel: "t / λ (로그 눈금)", yLabel: "ρ / ρ₀", series: ser, hlines: [{ y: 1, color: P.faint }] });
+      const y = Solid.fsRatio(st.k, p), hx = ch.X(st.k), hy = ch.Y(Math.min(y, 8));
+      handle(ctx, hx, hy, P.accent, 11);
+      SB.label(ctx, "정확한 FS", ch.X(0.08), ch.Y(Math.min(8, Solid.fsRatio(0.08, p))) + 14, { align: "left", size: 11, color: P.accent });
+      SB.label(ctx, "근사 1 + 3(1−p)λ/8t", ch.X(1.2), ch.Y(1 + (0.375 * (1 - p)) / 1.2) - 14, { align: "left", size: 11, color: P.accent2 });
+      self._ch = ch; self._h = [hx, hy];
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    function draw() {
+      cv.redraw();
+      const p = gp(), ex = Solid.fsRatio(st.k, p), ap = 1 + (0.375 * (1 - p)) / st.k;
+      $("fsm-r").textContent = `t/λ = ${st.k.toFixed(2)}(Cu: ${(st.k * 39.9).toFixed(1)} nm) → ρ/ρ₀ = ${ex.toFixed(2)} (근사 ${ap.toFixed(2)}, 차이 ${(((ap - ex) / ex) * 100).toFixed(0)}%)`;
+    }
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "k", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { if (id !== "k" || !cv._ch) return; st.k = SB.clamp(invX(cv._ch, o, x), 0.05, 20); draw(); } });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 배선 크기 효과 실험대 */
+  {
+    const MET = ["Cu", "Co", "Ru", "W"];
+    const gm = SB.seg("sz-m", () => draw());
+    const gw = SB.range("sz-w", (v) => v.toFixed(1) + " nm", () => draw());
+    const gar = SB.range("sz-ar", (v) => v.toFixed(1), () => { recalc(); draw(); });
+    const gp = SB.range("sz-p", (v) => v.toFixed(2), () => { recalc(); draw(); });
+    const gR = SB.range("sz-R", (v) => v.toFixed(2), () => { recalc(); draw(); });
+    const gtb = SB.range("sz-tb", (v) => v.toFixed(1) + " nm", () => { recalc(); draw(); });
+    const tbOf = (m) => (m === "Cu" ? gtb() : m === "Ru" ? 0 : 1);
+    function line(m, w, h) {
+      const L = M[m], tb = tbOf(m), wc = w - 2 * tb, hc = h - tb, p = gp(), R = gR();
+      if (wc <= 0.5 || hc <= 0.5) return { rho: Infinity, Rl: Infinity, wc, hc, F: Infinity, Ms: Infinity };
+      const F = 1 + (Solid.fsRatio(wc / L.lam, p) - 1) + (Solid.fsRatio(hc / L.lam, p) - 1);
+      const Ms = R > 0 ? Solid.msRatio(L.lam, wc, R) : 1;
+      const rho = L.rho * F * Ms;
+      return { rho, Rl: (rho * 1e-8) / (wc * hc * 1e-18) * 1e-6, wc, hc, F, Ms, tb };   // Ω/μm
+    }
+    const ws = []; for (let i = 0; i <= 56; i++) ws.push(6 * Math.pow(100 / 6, i / 56));
+    let curves = {}, cross = NaN, found = false;
+    function recalc() {
+      const ar = gar();
+      MET.forEach((m) => (curves[m] = ws.map((w) => [w, line(m, w, ar * w).Rl])));
+      const g = (w) => line("Ru", w, ar * w).Rl - line("Cu", w, ar * w).Rl;
+      cross = NaN;
+      if (g(6) * g(100) < 0) cross = Solid.bisect(g, 6, 100, 1e-3, 60);
+    }
+    recalc();
+    const oR = { x: [6, 100], y: [0.5, 1e5], logX: true, logY: true };
+    const st = { lock: null };
+    const cvX = SB.canvas("cv-sx", (ctx, W, H, self) => {
+      const P = pal(), m = gm(), w = gw(), h = gar() * w, L = line(m, w, h);
+      const sc = st.lock || Math.min((W - 110) / w, (H - 90) / h);
+      const x0 = (W - w * sc) / 2 + 10, y0 = 40, ww = w * sc, hh = h * sc, tb = tbOf(m) * sc;
+      ctx.fillStyle = P.surface; ctx.fillRect(10, 26, W - 20, H - 40);
+      SB.label(ctx, "저유전막(low-k)", 16, H - 24, { align: "left", size: 11, color: P.dim });
+      ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(x0, y0, ww, hh);
+      const wc = Math.max(0, ww - 2 * tb), hc = Math.max(0, hh - tb);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0 + tb, y0, wc, hc);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.4; ctx.strokeRect(x0 + tb, y0, wc, hc);
+      ctx.fillStyle = P.dim; ctx.fillRect(x0 - 6, y0 - 5, ww + 12, 5);
+      SB.label(ctx, `${m}`, x0 + ww / 2, y0 + Math.min(hh / 2, 40), { bold: true, size: 13, color: P.accent });
+      SB.label(ctx, `w = ${w.toFixed(1)} nm`, x0 + ww / 2, y0 + hh + 14, { size: 11 });
+      SB.label(ctx, `h = ${h.toFixed(0)} nm`, x0 + ww + 8, y0 + hh / 2, { size: 11, align: "left" });
+      SB.label(ctx, `캡`, x0 + ww + 10, y0 - 3, { size: 10, align: "left", color: P.dim });
+      const fr = L.wc > 0 ? (Math.max(0, L.wc) * Math.max(0, L.hc)) / (w * h) : 0;
+      SB.label(ctx, `장벽 ${tbOf(m).toFixed(1)} nm · 도체 단면 ${(fr * 100).toFixed(0)}% · 결정립 D ≈ ${Math.max(0, L.wc).toFixed(1)} nm`, W / 2, 14, { size: 11, color: P.accent2 });
+      handle(ctx, x0 + ww, y0 + hh, P.accent, 11);
+      self._h = [x0 + ww, y0 + hh, x0, y0, sc];
+    }, { aspect: 0.95, minHeight: 280, maxHeight: 400 });
+    const cvR = SB.canvas("cv-sr", (ctx, W, H, self) => {
+      const P = pal(), w = gw(), ar = gar();
+      const cols = { Cu: P.series[0], Co: P.series[2], Ru: P.series[1], W: P.series[5] };
+      const ch = SB.chart(ctx, { x: 56, y: 30, w: W - 72, h: H - 76 }, { ...oR, xLabel: "선폭 w (nm)", yLabel: "선 저항 R′ (Ω/μm)", xTicks: [6, 10, 20, 50, 100], series: MET.map((m) => ({ data: curves[m], color: cols[m], width: m === "Cu" || m === "Ru" ? 2.6 : 1.6 })), vlines: [{ x: w, color: P.dim }] });
+      MET.forEach((m, i) => {
+        const v = line(m, w, ar * w).Rl;
+        if (isFinite(v) && v > oR.y[0] && v < oR.y[1]) { ctx.fillStyle = cols[m]; ctx.beginPath(); ctx.arc(ch.X(w), ch.Y(v), 5, 0, Math.PI * 2); ctx.fill(); }
+        SB.label(ctx, "— " + m, ch.box.x + 8, ch.box.y + ch.box.h - 12 - (3 - i) * 16, { align: "left", size: 12, bold: true, color: cols[m] });
+      });
+      if (found && isFinite(cross)) { const v = line("Cu", cross, ar * cross).Rl; ctx.save(); ctx.strokeStyle = P.ok; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(ch.X(cross), ch.Y(v), 9, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); SB.label(ctx, `교차 ${cross.toFixed(1)} nm`, ch.X(cross) + 12, ch.Y(v) - 14, { align: "left", size: 11, color: P.ok, bold: true }); }
+      self._ch = ch;
+    }, { aspect: 0.95, minHeight: 280, maxHeight: 400 });
+    function draw() {
+      const m = gm(), w = gw(), ar = gar(), L = line(m, w, ar * w), Lc = line("Cu", w, ar * w), Lr = line("Ru", w, ar * w);
+      if (!found && isFinite(cross) && Math.abs(w - cross) <= 1) found = true;
+      cvX.redraw(); cvR.redraw();
+      SB.stat("sz-rho", isFinite(L.rho) ? `${L.rho.toFixed(2)} μΩ·cm (${m})` : "도체 없음");
+      SB.stat("sz-fac", isFinite(L.F) ? `${L.F.toFixed(2)} × ${L.Ms.toFixed(2)}` : "—");
+      SB.stat("sz-Rl", isFinite(L.Rl) ? `${sci(L.Rl, 2)} Ω/μm` : "∞");
+      SB.stat("sz-cmp", isFinite(Lc.Rl) ? (Lr.Rl / Lc.Rl).toFixed(2) : "0 (Cu 도체 없음)");
+      SB.stat("sz-goal", found ? (isFinite(cross) ? `✔ 찾았다: ${cross.toFixed(1)} nm` : "이 조건에서는 교차 없음") : "폭을 움직여 찾아라");
+    }
+    SB.drag(cvX, {
+      handles: () => (cvX._h ? [{ id: "c", x: cvX._h[0], y: cvX._h[1], r: 14 }] : []),
+      down: () => { st.lock = cvX._h ? cvX._h[4] : null; },
+      move: (id, x, y) => {
+        if (id !== "c" || !cvX._h) return;
+        const [, , x0, y0, sc] = cvX._h, ww = SB.clamp((x - x0) / sc, 6, 100), hh = (y - y0) / sc;
+        gw.set(ww, true); gar.set(SB.clamp(hh / ww, 1, 3), true); recalc(); draw();
+      },
+      up: () => { st.lock = null; cvX.redraw(); },
+    });
+    SB.drag(cvR, { free: true, handles: () => [], move: (id, x) => { if (!cvR._ch) return; gw.set(SB.clamp(invX(cvR._ch, oR, x), 6, 100), true); draw(); } });
+    draw();
+  }
+
+  /* ---------------------------------------------------------- 드릴 */
+  const METS = [["소듐", 2.65], ["포타슘", 1.40], ["구리", 8.47], ["은", 5.86], ["금", 5.90], ["마그네슘(원자가 2)", 8.61], ["아연(원자가 2)", 13.2], ["알루미늄(원자가 3)", 18.1]];
+  SB.drill("drill-fermi", () => {
+    const [nm, n0] = pick(METS), n = n0 * 1e28, f = Solid.fermi(n), k = Math.floor(Math.random() * 4);
+    const q = `<p>${nm}의 전도 전자 밀도는 \\(${n0.toFixed(2)}\\times10^{28}\\) m⁻³이다. 자유 전자 모형의 `;
+    const kf = `\\(k_F = (3\\pi^2 n)^{1/3} = ${f.kF.toFixed(2)}\\) nm⁻¹`;
+    if (k === 0) return { q: q + `페르미 파수 \\(k_F\\)는?</p>`, answer: f.kF, label: "k_F =", unit: "nm⁻¹", sol: kf };
+    if (k === 1) return { q: q + `페르미 에너지는?</p>`, answer: f.EF, label: "E_F =", unit: "eV", sol: `${kf}, \\(E_F = \\hbar^2k_F^2/2m = 0.0381\\times${f.kF.toFixed(2)}^2 = ${f.EF.toFixed(2)}\\) eV` };
+    if (k === 2) return { q: q + `페르미 속도는?</p>`, answer: f.vF, label: "v_F =", unit: "m/s", sol: `${kf}, \\(v_F = \\hbar k_F/m = ${sci(f.vF, 3)}\\) m/s` };
+    return { q: q + `페르미 온도는?</p>`, answer: f.TF, label: "T_F =", unit: "K", sol: `\\(E_F = ${f.EF.toFixed(3)}\\) eV, \\(T_F = E_F/k_B = ${sci(f.TF, 3)}\\) K` };
+  });
+  SB.drill("drill-drude", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) {
+      const rho = Number((1.5 + Math.random() * 8).toFixed(2)), n0 = Number((2 + Math.random() * 16).toFixed(2)), tau = me / (n0 * 1e28 * qe * qe * rho * 1e-8);
+      return { q: `<p>비저항 \\(${rho}\\ \\mu\\Omega\\cdot\\text{cm}\\), 전도 전자 밀도 \\(${n0}\\times10^{28}\\) m⁻³인 금속의 드루드 완화 시간은?</p>`, answer: tau, label: "τ =", unit: "s", sol: `\\(\\tau = m/(ne^2\\rho) = 9.109\\times10^{-31}/(${n0}\\times10^{28}\\times(1.602\\times10^{-19})^2\\times${rho}\\times10^{-8}) = ${sci(tau, 3)}\\) s` };
+    }
+    if (k === 1) {
+      const vF = Number((1 + Math.random() * 1.2).toFixed(2)), tau = Number((0.5 + Math.random() * 4).toFixed(2)), l = vF * 1e6 * tau * 1e-14 * 1e9;
+      return { q: `<p>페르미 속도 \\(${vF}\\times10^6\\) m/s, 완화 시간 \\(${tau}\\times10^{-14}\\) s인 금속의 평균 자유 행로는 몇 nm인가?</p>`, answer: l, label: "ℓ =", unit: "nm", sol: `\\(\\ell = v_F\\tau = ${vF}\\times10^6\\times${tau}\\times10^{-14} = ${l.toFixed(2)}\\) nm` };
+    }
+    const rho = Number((1.5 + Math.random() * 10).toFixed(2)), T = pick([77, 200, 273, 300, 400, 500]), kap = (Solid.lorenz * T) / (rho * 1e-8);
+    return { q: `<p>온도 ${T} K에서 비저항 \\(${rho}\\ \\mu\\Omega\\cdot\\text{cm}\\)인 금속의 열전도도를 비데만–프란츠 법칙(\\(L = 2.44\\times10^{-8}\\) W·Ω/K²)으로 구하라.</p>`, answer: kap, label: "κ =", unit: "W/(m·K)", sol: `\\(\\kappa = LT/\\rho = 2.443\\times10^{-8}\\times${T}/(${rho}\\times10^{-8}) = ${kap.toFixed(0)}\\) W/(m·K)` };
+  });
+})();
+</script>
+</body>
+</html>
