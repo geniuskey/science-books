@@ -49,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "베르누이",
       "피토관"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -232,9 +231,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 5,
    "hero": 1
+  },
+  "bernoulli": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 2,
+ "published": 3,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
