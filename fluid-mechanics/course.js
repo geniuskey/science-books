@@ -114,8 +114,7 @@ SB.registerCourse({
      "tags": [
       "무디 선도",
       "손실"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "external-flow",
@@ -287,9 +286,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 5,
    "hero": 1
+  },
+  "pipe-flow": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 7,
+ "published": 8,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });

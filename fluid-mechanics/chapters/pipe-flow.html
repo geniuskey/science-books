@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>관 내 점성 유동 · 유체역학 · SciBook</title>
+<meta name="description" content="레이놀즈 실험과 층류·난류, 입구 길이, 하겐–푸아죄유 유동, 난류 속도 분포와 벽 법칙, 다르시–바이스바흐 식과 무디 선도, 부차 손실, 직렬·병렬 관로와 관망 해석을 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/fluid-mechanics/chapters/pipe-flow.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="관 내 점성 유동 · 유체역학 · SciBook">
+<meta property="og:description" content="레이놀즈 실험과 층류·난류, 입구 길이, 하겐–푸아죄유 유동, 난류 속도 분포와 벽 법칙, 다르시–바이스바흐 식과 무디 선도, 부차 손실, 직렬·병렬 관로와 관망 해석을 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/fluid-mechanics/chapters/pipe-flow.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "관 내 점성 유동 · 유체역학 · SciBook", "headline": "08 관 내 점성 유동", "url": "https://science.euiyun.com/fluid-mechanics/chapters/pipe-flow.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "레이놀즈 실험과 층류·난류, 입구 길이, 하겐–푸아죄유 유동, 난류 속도 분포와 벽 법칙, 다르시–바이스바흐 식과 무디 선도, 부차 손실, 직렬·병렬 관로와 관망 해석을 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 8, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/fluid-mechanics/#book", "name": "유체역학", "url": "https://science.euiyun.com/fluid-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "유체역학", "item": "https://science.euiyun.com/fluid-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "08 관 내 점성 유동", "item": "https://science.euiyun.com/fluid-mechanics/chapters/pipe-flow.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/flow.js"></script>
+<style>
+  .pf-plus { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .pf-plus .btn { min-width: 2.2rem; padding-left: .5rem; padding-right: .5rem; }
+  .pf-plus b { min-width: 1.4rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .pf-game { margin-top: .4rem; font-size: .92rem; line-height: 1.5; }
+  .pf-game.win { color: var(--ok); }
+  .pf-game.lose { color: var(--bad); }
+  .pf-tbl { font-size: .88rem; }
+</style>
+</head>
+<body data-chapter="pipe-flow">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="control-volume differential-analysis dimensional-analysis">
+    <div class="eyebrow">Chapter 08</div>
+    <h1>관 내 점성 유동</h1>
+    <p class="lead">수도관, 송유관, 혈관, 공조 덕트 — 공학에서 유체를 옮기는 가장 흔한 방법은 관이다. 관을 설계할 때 묻는 것은 결국 두 가지다. <em>이만큼 흘리려면 압력(펌프)이 얼마나 필요한가?</em> 그리고 <em>이 압력이면 얼마나 흐르는가?</em> 답을 쥐고 있는 것은 점성이 벽에서 만드는 마찰이고, 그 마찰은 흐름이 층류인지 난류인지에 따라 완전히 달라진다. 1883년 레이놀즈가 유리관에 염료를 흘려 본 실험부터 시작하자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">아래 손잡이를 끌어 레이놀즈 수를 바꾼다</span><div class="hero-ctrl"><button class="btn" id="hero-auto" type="button">자동 변화</button></div></div>
+    <ul class="objectives">
+      <li>레이놀즈 수로 관 유동을 층류(\(Re \lesssim 2300\))·천이·난류(\(Re \gtrsim 4000\))로 구분하고, 입구 길이를 추정한다.</li>
+      <li>힘의 평형에서 하겐–푸아죄유 속도 분포를 유도하고, 압력 강하·벽 전단 응력·\(f = 64/Re\)를 구한다(경사관 포함).</li>
+      <li>레이놀즈 응력, 점성 저층과 벽 법칙, 멱법칙 속도 분포로 난류 관 유동의 구조를 설명한다.</li>
+      <li>다르시–바이스바흐 식과 무디 선도(콜브룩·해일란드 식)로 마찰 손실을 계산하고, 비원형 관에는 수력 직경을 쓴다.</li>
+      <li>부차 손실 계수와 등가 길이로 입구·출구·엘보·밸브·급확대·급축소의 손실을 더한다.</li>
+      <li>관로 문제 세 유형(손실·유량·지름 구하기)과 직렬·병렬 관로, 관망(하디 크로스)을 풀고 시스템 곡선의 뜻을 안다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="regimes">
+    <h2>층류, 난류, 그리고 입구 영역</h2>
+    <p>레이놀즈는 수조에 연결한 유리관 한가운데로 가는 염료 줄기를 흘리고, 밸브로 유량을 천천히 키웠다. 유량이 작을 때 염료는 관 끝까지 한 가닥의 곧은 선으로 흘렀다. 유량을 키우자 어느 순간 줄기가 군데군데 흔들리며 끊기기 시작했고, 더 키우자 입구 근처에서 곧바로 흩어져 관 전체를 물들였다. 위의 장 머리 그림이 바로 이 실험이다. 레이놀즈가 발견한 것은 흐름의 모양이 속력·지름·점성 하나하나가 아니라 그 조합인 <span class="term">레이놀즈 수</span><span class="en">(Reynolds number)</span> 하나로 정해진다는 사실이다(7장의 차원 해석).</p>
+    <div class="formula">$$Re = \frac{\rho V D}{\mu} = \frac{V D}{\nu} = \frac{\text{관성력}}{\text{점성력}}$$<div class="where">\(V\): 단면 평균 속도(\(= Q/A\)), \(D\): 관 안지름, \(\mu\): 점성 계수, \(\nu = \mu/\rho\): 동점성 계수. 20 °C 물은 \(\nu = 1.004\times10^{-6}\) m²/s, 공기는 \(1.516\times10^{-5}\) m²/s.</div></div>
+    <div class="compare">
+      <div><h4><span class="term">층류</span><span class="en">(laminar flow)</span></h4><p>유체가 층을 이루어 미끄러진다. 염료는 섞이지 않고, 운동량은 분자 점성으로만 전달된다. 원형 관에서 \(Re \lesssim 2300\).</p></div>
+      <div><h4><span class="term">천이</span><span class="en">(transitional flow)</span></h4><p>층류 사이로 난류 덩어리(퍼프)가 간헐적으로 지나간다. \(2300 \lesssim Re \lesssim 4000\). 관 입구의 교란·진동에 민감해서 매끄럽게 다듬은 실험에서는 \(Re = 10^5\)까지 층류가 유지되기도 한다.</p></div>
+      <div><h4><span class="term">난류</span><span class="en">(turbulent flow)</span></h4><p>속도가 시간·공간적으로 불규칙하게 요동치고, 소용돌이가 운동량·열·물질을 빠르게 섞는다. \(Re \gtrsim 4000\). 공학의 관 유동 대부분이 여기에 속한다.</p></div>
+    </div>
+    <h3>입구 영역과 완전 발달 유동</h3>
+    <p>수조에서 관으로 들어오는 유체는 처음에 거의 균일한 속도를 갖는다. 벽에 닿은 유체는 점착 조건 때문에 멈추고, 그 영향이 <span class="term">경계층</span><span class="en">(boundary layer)</span>으로 안쪽을 향해 점점 두꺼워진다. 같은 유량이 지나가야 하므로 벽 근처가 느려진 만큼 가운데의 <em>비점성 코어</em>는 빨라진다. 경계층이 관 중심에서 만나면 그 뒤로는 속도 분포가 더 이상 변하지 않는다. 이 상태를 <span class="term">완전 발달 유동</span><span class="en">(fully developed flow)</span>이라 하고, 거기까지의 거리를 <span class="term">입구 길이</span><span class="en">(entrance length)</span> \(L_h\)라 한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="관 입구에서 경계층이 자라 중심에서 만나고 이후 포물선 분포로 완전히 발달하는 그림">
+        <defs><marker id="pf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="pf-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="52" width="770" height="18" class="f-surface"/><rect x="20" y="230" width="770" height="18" class="f-surface"/>
+        <path d="M20,30 C40,30 52,60 60,70 L790,70" class="s-line" stroke-width="2"/><path d="M20,270 C40,270 52,240 60,230 L790,230" class="s-line" stroke-width="2"/>
+        <path d="M60,70.0 L72,82.6 L94,91.9 L118,98.3 L140,103.5 L164,107.9 L186,112.0 L210,115.6 L232,119.0 L256,122.2 L278,125.1 L302,128.0 L324,130.7 L348,133.2 L370,135.7 L394,138.1 L416,140.4 L440,142.7 L462,144.8 L486,146.9 L508,149.0 L520,150.0" fill="none" stroke="var(--accent-2)" stroke-width="1.8" stroke-dasharray="6 4"/>
+        <path d="M60,230.0 L72,217.4 L94,208.1 L118,201.7 L140,196.5 L164,192.1 L186,188.0 L210,184.4 L232,181.0 L256,177.8 L278,174.9 L302,172.0 L324,169.3 L348,166.8 L370,164.3 L394,161.9 L416,159.6 L440,157.3 L462,155.2 L486,153.1 L508,151.0 L520,150.0" fill="none" stroke="var(--accent-2)" stroke-width="1.8" stroke-dasharray="6 4"/>
+        <g>
+          <line x1="110" y1="77" x2="158" y2="77" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="95" x2="172" y2="95" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="114" x2="172" y2="114" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="132" x2="172" y2="132" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="150" x2="172" y2="150" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="168" x2="172" y2="168" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="186" x2="172" y2="186" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="205" x2="172" y2="205" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="110" y1="223" x2="158" y2="223" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/>
+          <path d="M110,70 L141,74 L161,78 L171,82 L172,86 L172,214 L171,218 L161,222 L141,226 L110,230" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+          <line x1="110" y1="70" x2="110" y2="230" stroke="var(--text-dim)" stroke-width="1"/>
+        </g>
+        <g>
+          <line x1="300" y1="77" x2="324" y2="77" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="95" x2="366" y2="95" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="114" x2="380" y2="114" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="132" x2="380" y2="132" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="150" x2="380" y2="150" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="168" x2="380" y2="168" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="186" x2="380" y2="186" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="205" x2="366" y2="205" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="300" y1="223" x2="324" y2="223" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/>
+          <path d="M300,70 L314,74 L327,78 L338,82 L348,86 L357,90 L364,94 L370,98 L374,102 L378,106 L380,110 L380,190 L378,194 L374,198 L370,202 L364,206 L357,210 L348,214 L338,218 L327,222 L314,226 L300,230" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+          <line x1="300" y1="70" x2="300" y2="230" stroke="var(--text-dim)" stroke-width="1"/>
+        </g>
+        <g>
+          <line x1="640" y1="77" x2="659" y2="77" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="95" x2="699" y2="95" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="114" x2="727" y2="114" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="132" x2="744" y2="132" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="150" x2="750" y2="150" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="168" x2="744" y2="168" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="186" x2="727" y2="186" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="205" x2="699" y2="205" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/><line x1="640" y1="223" x2="659" y2="223" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#pf-ar)"/>
+          <path d="M640,70 L661,78 L680,86 L696,94 L710,102 L722,110 L732,118 L740,126 L746,134 L749,142 L750,150 L749,158 L746,166 L740,174 L732,182 L722,190 L710,198 L696,206 L680,214 L661,222 L640,230" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+          <line x1="640" y1="70" x2="640" y2="230" stroke="var(--text-dim)" stroke-width="1"/>
+        </g>
+        <text class="t" x="200" y="162" style="fill:var(--accent-2)">비점성 코어</text>
+        <text class="t" x="232" y="102" style="fill:var(--accent-2)">경계층</text>
+        <text class="t-dim" x="22" y="22">수조</text>
+        <line x1="60" y1="282" x2="520" y2="282" stroke="var(--text-dim)" stroke-width="1.2" marker-start="url(#pf-ar2)" marker-end="url(#pf-ar2)"/>
+        <text class="t" x="232" y="276">입구 영역 L<tspan dy="4" font-size="11">h</tspan></text>
+        <line x1="520" y1="40" x2="520" y2="292" stroke="var(--text-faint)" stroke-dasharray="3 4"/>
+        <text class="t" x="580" y="40">완전 발달 영역</text>
+        <text class="t-dim" x="660" y="276">u(r) 변하지 않음</text>
+      </svg>
+      <figcaption>입구에서 균일하던 속도가 경계층의 성장과 함께 바뀐다. 코어는 빨라지고(질량 보존), 경계층이 중심에서 만나는 \(x = L_h\) 이후로 층류는 중심 속도가 평균의 2배인 포물선 분포에 도달한다.</figcaption>
+    </figure>
+    <p>입구 길이는 실험과 해석으로 다음과 같이 알려져 있다(Çengel). 층류의 입구 길이는 \(Re\)에 비례해 매우 길 수 있지만, 난류는 섞임이 활발해서 짧다. 실제 배관에서 관 길이는 보통 지름의 수백 배이므로 입구 효과를 무시하고 관 전체를 완전 발달로 보는 경우가 많다.</p>
+    <div class="formula">$$\frac{L_{h,\text{층류}}}{D} \approx 0.05\,Re, \qquad \frac{L_{h,\text{난류}}}{D} \approx 1.359\,Re^{1/4} \;(\approx 10\text{–}40)$$<div class="where">입구 영역에서는 벽 근처 속도 기울기가 커서 벽 전단 응력이 완전 발달 값보다 크고, 따라서 같은 길이의 압력 강하도 더 크다.</div></div>
+    <div class="tangle" id="tg-entry">
+      <p>20 °C 물이 안지름 <span class="tn" data-var="D" data-min="0.5" data-max="20" data-step="0.5" data-unit=" cm">2</span>인 관을 평균 속도 <span class="tn" data-var="V" data-min="0.01" data-max="3" data-step="0.01" data-unit=" m/s">0.08</span>로 흐르면 \(Re\) = <span class="tn-out" data-out="Re"></span>로 <span class="tn-out" data-out="reg"></span>이다. 입구 길이는 약 <span class="tn-out" data-out="Lh"></span>(지름의 <span class="tn-out" data-out="LD"></span>배)이다.</p>
+    </div>
+    <div class="predict" data-for="sim-entry">
+      <p>층류가 입구 영역을 지나 완전히 발달하는 동안 관 <em>중심</em>의 속도는 어떻게 변할까?</p>
+      <div class="opts"><button class="opt">벽 마찰 때문에 점점 느려진다</button><button class="opt">변하지 않는다</button><button class="opt" data-correct>점점 빨라져 평균 속도의 2배가 된다</button><button class="opt">빨라졌다가 다시 평균 속도로 돌아온다</button></div>
+      <div class="quiz-exp">벽 근처가 느려지면 같은 유량을 흘리기 위해 중심이 빨라져야 한다. 아래 시뮬레이터의 그래프에서 중심 속도가 1에서 2로 올라가 평탄해지는 것을 확인하라(난류는 약 1.2에서 멈춘다).</div>
+    </div>
+    <div class="sim" id="sim-entry">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>입구 영역: 속도 분포가 자라는 모습</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-entry"></canvas><span class="hint top">관 위의 흰 원(측정 위치)을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>레이놀즈 수 Re <output id="en-re-out"></output></span><input type="range" id="en-re" min="2" max="6" step="0.01" value="3"></label>
+          <label class="check"><input type="checkbox" id="en-bl" checked> 경계층 두께 표시</label>
+          <label class="check"><input type="checkbox" id="en-pts" checked> 추적 입자</label>
+          <div class="ctrl-row"><button class="btn" id="en-play" type="button"></button><button class="btn" id="en-end" type="button">측정 위치를 L<sub>h</sub>로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">유동 영역</span><span class="v" id="en-reg">—</span></div>
+        <div class="stat"><span class="k">L<sub>h</sub>/D</span><span class="v" id="en-lh">—</span></div>
+        <div class="stat"><span class="k">측정 위치 x/D</span><span class="v" id="en-x">—</span></div>
+        <div class="stat"><span class="k">중심 속도 u<sub>c</sub>/V</span><span class="v" id="en-uc">—</span></div>
+      </div>
+      <div class="sim-note">위는 관의 세로 단면(가로는 x/D 축으로 압축해 그렸다), 아래는 중심 속도 그래프다. 해볼 것: ① 측정 위치를 입구에서 끝까지 끌면서 평평하던 분포가 포물선이 되는 과정을 보라. ② Re를 1000에서 2000으로 2배 하면 L<sub>h</sub>도 2배다(층류 \(L_h \propto Re\)). ③ Re를 \(10^4\) 이상으로 올리면 입구 길이가 지름의 20–40배로 확 짧아지고, 다 자란 분포도 훨씬 납작하다.</div>
+    </div>
+    <div class="example" data-title="층류일까 난류일까, 입구 길이는?">
+      <p>20 °C 물(\(\rho = 998\) kg/m³, \(\mu = 1.002\times10^{-3}\) Pa·s)이 안지름 1.5 cm인 관을 평균 속도 0.12 m/s로 흐른다. (a) 유동 영역과 입구 길이를 구하라. (b) 평균 속도를 얼마까지 올리면 확실한 난류(\(Re = 4000\))가 되며, 그때 입구 길이는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(Re = \rho VD/\mu\)로 영역을 판정한 뒤 해당 영역의 입구 길이 식을 쓴다.</div>
+        <div class="step"><b>풀이</b> (a) \(Re = (998)(0.12)(0.015)/(1.002\times10^{-3}) = 1793\) → 층류. \(L_h = 0.05\,Re\,D = 0.05(1793)(0.015) = 1.34\) m. (b) \(V = Re\,\mu/(\rho D) = 4000(1.002\times10^{-3})/(998\times0.015) = 0.268\) m/s. \(L_h = 1.359\,D\,Re^{1/4} = 1.359(0.015)(4000)^{1/4} = 0.162\) m.</div>
+        <div class="answer">(a) Re = 1790, 층류, L<sub>h</sub> ≈ 1.34 m (b) V ≈ 0.268 m/s, L<sub>h</sub> ≈ 0.16 m</div>
+        <div class="step"><b>검토</b> 층류의 입구 길이는 지름의 약 90배나 된다. 짧은 실험용 관이라면 관 전체가 입구 영역일 수도 있다. 속도를 2.2배로 올려 난류가 되자 입구 길이는 오히려 8분의 1로 줄었다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="laminar">
+    <h2>완전 발달 층류: 하겐–푸아죄유 유동</h2>
+    <p>완전 발달한 관 유동에서는 속도 분포가 \(x\)에 따라 변하지 않으므로 유체 입자는 가속되지 않는다. 그러면 압력이 미는 힘과 벽 쪽 전단 응력이 끄는 힘이 정확히 균형을 이룬다. 이 힘의 평형만으로 원형 관 층류의 정확한 해를 얻을 수 있다(6장에서 나비에–스토크스 식으로 푼 푸아죄유 유동과 같은 결과다). 아래 단계별 그림을 넘기며 따라가 보자.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 320" role="img" aria-label="관 속 원기둥 유체 요소의 힘의 평형으로 포물선 속도 분포를 유도하는 단계">
+        <defs><marker id="pf-hp1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="pf-hp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="pf-hp3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--ok)"/></marker></defs>
+        <rect x="30" y="24" width="740" height="16" class="f-surface"/><rect x="30" y="280" width="740" height="16" class="f-surface"/>
+        <line x1="30" y1="40" x2="770" y2="40" class="s-line" stroke-width="2"/><line x1="30" y1="280" x2="770" y2="280" class="s-line" stroke-width="2"/>
+        <line x1="30" y1="160" x2="770" y2="160" stroke="var(--text-faint)" stroke-dasharray="8 5"/>
+        <text class="t-dim" x="36" y="154">중심선</text>
+        <g data-step="1">
+          <rect x="300" y="90" width="180" height="140" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <ellipse cx="300" cy="160" rx="14" ry="70" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+          <ellipse cx="480" cy="160" rx="14" ry="70" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <line x1="215" y1="160" x2="292" y2="160" stroke="var(--accent)" stroke-width="3" marker-end="url(#pf-hp1)"/>
+          <text class="t-acc" x="168" y="146">p·πr²</text>
+          <line x1="575" y1="160" x2="498" y2="160" stroke="var(--accent)" stroke-width="3" marker-end="url(#pf-hp1)"/>
+          <text class="t-acc" x="530" y="146">(p+dp)·πr²</text>
+          <line x1="512" y1="160" x2="512" y2="90" stroke="var(--text-dim)" stroke-width="1"/><text class="t-dim" x="518" y="122">r</text>
+          <text class="t-dim" x="372" y="252">dx</text>
+        </g>
+        <g data-step="2">
+          <line x1="440" y1="80" x2="350" y2="80" stroke="var(--accent-2)" stroke-width="2.6" marker-end="url(#pf-hp2)"/>
+          <line x1="440" y1="240" x2="350" y2="240" stroke="var(--accent-2)" stroke-width="2.6" marker-end="url(#pf-hp2)"/>
+          <text class="t" x="350" y="70" style="fill:var(--accent-2)">τ·2πr dx (빠른 안쪽을 늦춤)</text>
+        </g>
+        <g data-step="3">
+          <path d="M620,40 C640,40 680,60 700,90 C726,124 740,145 740,160 C740,175 726,196 700,230 C680,260 640,280 620,280" fill="none" stroke="var(--ok)" stroke-width="2.4"/>
+          <line x1="620" y1="40" x2="620" y2="280" stroke="var(--text-dim)"/>
+          <line x1="620" y1="100" x2="704" y2="100" stroke="var(--ok)" stroke-width="1.5" marker-end="url(#pf-hp3)"/>
+          <line x1="620" y1="130" x2="732" y2="130" stroke="var(--ok)" stroke-width="1.5" marker-end="url(#pf-hp3)"/>
+          <line x1="620" y1="160" x2="738" y2="160" stroke="var(--ok)" stroke-width="1.5" marker-end="url(#pf-hp3)"/>
+          <line x1="620" y1="190" x2="732" y2="190" stroke="var(--ok)" stroke-width="1.5" marker-end="url(#pf-hp3)"/>
+          <line x1="620" y1="220" x2="704" y2="220" stroke="var(--ok)" stroke-width="1.5" marker-end="url(#pf-hp3)"/>
+          <text class="t" x="680" y="306" style="fill:var(--ok)">u(r) 포물선</text>
+        </g>
+        <g data-step="4">
+          <line x1="680" y1="44" x2="680" y2="276" stroke="var(--warn)" stroke-width="2" stroke-dasharray="6 4"/>
+          <text class="t" x="686" y="62" style="fill:var(--warn)">V = u<tspan dy="4" font-size="11">max</tspan><tspan dy="-4">/2</tspan></text>
+          <text class="t" x="90" y="230">ΔP = 32μLV/D²</text><text class="t" x="90" y="256">f = 64/Re</text>
+        </g>
+      </svg>
+      <ol class="steps-cap">
+        <li>반지름 \(r\), 길이 \(dx\)인 원기둥 요소. 양 끝면의 압력 차 \(-dp\,\pi r^2\)가 요소를 앞으로 민다(\(dp/dx < 0\)).</li>
+        <li>옆면에는 바깥쪽의 느린 유체가 전단 응력 \(\tau\)로 요소를 늦춘다. 평형: \(-\pi r^2 dp = 2\pi r\,dx\,\tau\) → \(\tau = -\dfrac{r}{2}\dfrac{dp}{dx}\). 전단 응력은 중심에서 0, 벽에서 최대로 \(r\)에 비례한다(층류·난류 공통).</li>
+        <li>층류는 \(\tau = -\mu\,du/dr\)이므로 \(du/dr = \dfrac{r}{2\mu}\dfrac{dp}{dx}\). 적분하고 벽 점착 조건 \(u(R) = 0\)을 쓰면 \(u(r) = -\dfrac{R^2}{4\mu}\dfrac{dp}{dx}\left(1 - \dfrac{r^2}{R^2}\right)\).</li>
+        <li>\(Q = \int_0^R u\,2\pi r\,dr\)로 평균 속도를 구하면 \(V = u_{\max}/2\). 길이 \(L\)의 압력 강하 \(\Delta P = -L\,dp/dx\)로 정리하면 하겐–푸아죄유 식과 \(f = 64/Re\)가 나온다.</li>
+      </ol>
+      <figcaption>원형 관 층류의 유도. 압력과 전단의 평형 → 선형 전단 응력 분포 → 뉴턴 점성 법칙 → 포물선 속도 분포.</figcaption>
+    </figure>
+    <p>결과를 평균 속도 \(V\)로 정리하면 원형 관 층류의 모든 것이 다음 몇 줄에 담긴다. 이것이 <span class="term">하겐–푸아죄유 유동</span><span class="en">(Hagen–Poiseuille flow)</span>이다.</p>
+    <div class="formula">$$u(r) = 2V\left(1 - \frac{r^2}{R^2}\right), \qquad \Delta P = \frac{32\mu L V}{D^2} = \frac{128\mu L Q}{\pi D^4}, \qquad \tau_w = \frac{8\mu V}{D} = \frac{D\,\Delta P}{4L}$$<div class="where">\(\tau_w = D\Delta P/(4L)\)는 힘의 평형에서 나왔으므로 층류·난류 모두 성립한다. 펌프가 이 손실을 메우는 데 드는 동력은 \(\dot W = Q\,\Delta P\).</div></div>
+    <p>관 마찰을 표현하는 무차원 수로 <span class="term">다르시 마찰 계수</span><span class="en">(Darcy friction factor)</span> \(f = 8\tau_w/(\rho V^2)\)를 정의한다. 그러면 압력 강하는 \(\Delta P = f\,(L/D)\,\rho V^2/2\)로 쓸 수 있는데(4절의 다르시–바이스바흐 식), 층류의 \(\Delta P\)를 대입하면</p>
+    <div class="formula">$$f_\text{층류} = \frac{64}{Re}$$<div class="where">층류 마찰 계수는 \(Re\)만의 함수이고 벽의 거칠기와 무관하다. 층류에서 \(\Delta P \propto V\)(유량에 비례)인 반면, 난류에서는 거의 \(V^2\)에 비례한다.</div></div>
+    <div class="tangle" id="tg-hp">
+      <p>점성 계수 <span class="tn" data-var="mu" data-min="1" data-max="1000" data-step="1" data-unit=" mPa·s">100</span>인 기름(ρ = 900 kg/m³)을 길이 <span class="tn" data-var="L" data-min="1" data-max="100" data-step="1" data-unit=" m">10</span>, 지름 <span class="tn" data-var="D" data-min="2" data-max="40" data-step="1" data-unit=" mm">20</span>인 관으로 <span class="tn" data-var="Q" data-min="0.1" data-max="10" data-step="0.1" data-unit=" L/min">5.0</span> 보내려면 압력 차 <span class="tn-out" data-out="dP"></span>, 펌프 동력 <span class="tn-out" data-out="W"></span>가 필요하다(<span class="tn-out" data-out="Re"></span>). 같은 유량에서 지름을 절반으로 줄이면 압력 차는 <b>16배</b>가 된다 — 지름을 끌어 \(\Delta P \propto D^{-4}\)를 몸으로 느껴 보라.</p>
+      <canvas id="cv-tghp"></canvas>
+    </div>
+    <h3>경사관</h3>
+    <p>관이 수평과 각 \(\theta\)를 이루며 위로 올라가면 요소의 무게 성분 \(\rho g\,\pi r^2 dx\,\sin\theta\)가 흐름을 거슬러 작용한다. 힘의 평형에서 \(dp/dx\) 자리에 \(dp/dx + \rho g\sin\theta\)가 들어갈 뿐 나머지는 같다.</p>
+    <div class="formula">$$V = \frac{(\Delta P - \rho g L\sin\theta)\,D^2}{32\mu L}, \qquad Q = \frac{\pi(\Delta P - \rho g L\sin\theta)\,D^4}{128\mu L}$$<div class="where">\(\theta > 0\): 위로 흐름, \(\theta < 0\): 아래로 흐름. \(\Delta P = \rho g L\sin\theta\)이면 정수압 평형이라 흐르지 않는다. 수두 손실 \(h_L = 32\mu LV/(\rho g D^2)\)는 기울기와 무관하다.</div></div>
+    <div class="tangle" id="tg-incline">
+      <p>지름 2 cm, 길이 10 m 관으로 글리세린(ρ = 1260 kg/m³, μ = 1.41 Pa·s)을 기울기 <span class="tn" data-var="th" data-min="-90" data-max="90" data-step="5" data-unit="°">30</span>로 보낸다. 입구와 출구의 압력 차가 <span class="tn" data-var="dP" data-min="0" data-max="300" data-step="5" data-unit=" kPa">150</span>이면 무게 성분은 <span class="tn-out" data-out="grav"></span> 유량은 <span class="tn-out" data-out="Q"></span>, <span class="tn-out" data-out="dir"></span>.</p>
+    </div>
+    <div class="example" data-title="송유관의 압력 강하와 펌프 동력">
+      <p>20 °C 엔진 오일(\(\rho = 888\) kg/m³, \(\mu = 0.800\) Pa·s)을 지름 5.0 cm, 길이 40 m인 수평관으로 1.5 L/s 보낸다. 완전 발달 층류로 보고 (a) 압력 강하, (b) 필요한 펌프 동력, (c) 벽 전단 응력과 마찰 계수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 먼저 \(Re\)로 층류인지 확인하고 하겐–푸아죄유 식을 쓴다.</div>
+        <div class="step"><b>풀이</b> \(V = Q/A = 1.5\times10^{-3}/(\pi\,0.025^2) = 0.764\) m/s, \(Re = (888)(0.764)(0.05)/0.800 = 42.4\) → 층류. (a) \(\Delta P = 32\mu LV/D^2 = 32(0.800)(40)(0.764)/(0.05)^2 = 3.13\times10^5\) Pa. (b) \(\dot W = Q\Delta P = (1.5\times10^{-3})(3.13\times10^5) = 469\) W. (c) \(\tau_w = 8\mu V/D = 97.8\) Pa, \(f = 64/42.4 = 1.51\).</div>
+        <div class="answer">(a) ΔP ≈ 313 kPa (b) Ẇ ≈ 469 W (c) τ<sub>w</sub> ≈ 97.8 Pa, f ≈ 1.51</div>
+        <div class="step"><b>검토</b> \(\tau_w = D\Delta P/(4L) = 0.05(3.13\times10^5)/160 = 97.8\) Pa로 일치한다. 기름처럼 점성이 큰 유체는 \(Re\)가 작아 층류이고 \(f\)가 1을 넘을 수도 있다. 수두로는 \(h_L = \Delta P/\rho g = 35.9\) m다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="경사관을 거슬러 올라가는 글리세린">
+      <p>20 °C 글리세린(\(\rho = 1260\) kg/m³, \(\mu = 1.41\) Pa·s)이 지름 2.0 cm, 길이 10 m, 수평과 30° 기울어진 관을 아래에서 위로 흐른다. 아래 끝의 압력이 위 끝보다 150 kPa 높다. 유량과 \(Re\)를 구하라. 압력 차가 얼마 이하면 흐름이 멈추는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 경사관 하겐–푸아죄유 식에서 무게 성분 \(\rho gL\sin\theta\)를 압력 차에서 뺀다.</div>
+        <div class="step"><b>풀이</b> \(\rho gL\sin\theta = (1260)(9.81)(10)(0.5) = 61.8\) kPa. \(Q = \pi(150 - 61.8)\times10^3(0.02)^4/(128\times1.41\times10) = 2.46\times10^{-5}\) m³/s. \(V = Q/A = 0.0782\) m/s, \(Re = (1260)(0.0782)(0.02)/1.41 = 1.40\).</div>
+        <div class="answer">Q ≈ 2.46×10⁻⁵ m³/s (0.0246 L/s), Re ≈ 1.4 (층류). ΔP ≤ 61.8 kPa이면 흐르지 않는다.</div>
+        <div class="step"><b>검토</b> 압력 차의 41%가 유체를 들어 올리는 데 쓰였다. 위의 기울기 문단에서 \(\theta\)를 바꿔 보면 \(\Delta P\)가 61.8 kPa보다 작을 때 흐름이 아래로 뒤집힌다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-lam" data-title="레이놀즈 수 · 층류 관 유동 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="turbulent">
+    <h2>난류 관 유동</h2>
+    <p>난류에서 한 점의 속도를 열선 풍속계로 재면 평균값 주위로 빠르게 요동치는 신호가 나온다. 레이놀즈는 순간 속도를 시간 평균과 요동으로 나누었다: \(u = \bar u + u'\), \(v = \bar v + v'\)(\(\overline{u'} = 0\)). 평균 운동 방정식에는 요동끼리의 곱 \(\overline{u'v'}\)이 남는데, 이것이 추가 전단 응력처럼 행동한다. 위쪽의 빠른 유체 덩어리가 아래로 내려오면(\(v' < 0\)) 앞으로 더 빠르고(\(u' > 0\)), 아래의 느린 덩어리가 올라가면(\(v' > 0\)) 느리다(\(u' < 0\)). 그래서 \(\overline{u'v'} < 0\)이고 운동량은 빠른 쪽에서 느린 쪽으로 대량 운반된다.</p>
+    <div class="formula">$$\tau = \underbrace{\mu\frac{d\bar u}{dy}}_{\text{점성}} \;\underbrace{-\;\rho\,\overline{u'v'}}_{\text{레이놀즈 응력}} \;\equiv\; (\mu + \mu_t)\frac{d\bar u}{dy}$$<div class="where">\(y = R - r\): 벽에서 잰 거리. \(-\rho\overline{u'v'}\)를 <span class="term">레이놀즈 응력</span><span class="en">(Reynolds stress)</span> 또는 난류 전단 응력이라 한다. \(\mu_t\)는 와점성 계수(유체 물성이 아니라 흐름의 성질)로, 관 중심부에서는 \(\mu\)의 수백–수천 배다.</div></div>
+    <figure class="mini" id="mini-fluct">
+      <div class="mini-view"><canvas id="cv-fluct"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>측정점 y/R (벽 0 → 중심 1) <output id="fl-y-out"></output></span><input type="range" id="fl-y" min="0.05" max="1" step="0.05" value="0.3"></label>
+        <button class="btn" id="fl-play" type="button"></button><button class="btn" id="fl-reset" type="button">평균 다시 시작</button>
+        <span class="readout" id="fl-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽은 한 점의 속도 신호 \(u(t)\)와 시간 평균(점선), 오른쪽은 요동 \((u', v')\)을 찍은 산점도다. 점들이 2·4사분면(\(u'v' < 0\))에 몰리는 것이 레이놀즈 응력의 정체다. 측정점을 중심(\(y/R = 1\))으로 옮기면 상관이 사라져 \(\overline{u'v'} \to 0\) — 대칭이므로 중심에서 전단 응력은 0이어야 한다.</figcaption>
+    </figure>
+    <h3>벽 법칙과 점성 저층</h3>
+    <p>벽 바로 옆에서는 요동이 벽에 눌려 사라지므로 점성 응력이 지배한다. 벽에서 멀어지면 레이놀즈 응력이 압도한다. 이 구조는 <span class="term">마찰 속도</span><span class="en">(friction velocity)</span> \(u_* = \sqrt{\tau_w/\rho}\)로 무차원화하면 모든 난류 벽 유동에서 같은 꼴이 된다: \(u^+ = \bar u/u_*\), \(y^+ = y u_*/\nu\).</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 330" role="img" aria-label="반로그 그래프에 그린 벽 법칙: 점성 저층, 완충층, 로그층">
+        <g data-step="1"><rect x="90" y="30" width="139.8" height="260" fill="var(--accent)" opacity=".10"/><text class="t" x="100" y="48" style="fill:var(--accent)">점성 저층</text><text class="t-dim" x="100" y="66">y⁺ &lt; 5</text>
+          <path d="M90.0,280.0 L150.2,270.0 L185.4,260.0 L229.8,240.0 L270.6,210.0 L305.8,170.0 L330.8,130.0" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/><text class="t" x="318" y="118" style="fill:var(--accent)">u⁺ = y⁺</text></g>
+        <g data-step="2"><rect x="385.4" y="30" width="304.6" height="260" fill="var(--accent-2)" opacity=".10"/><text class="t" x="500" y="48" style="fill:var(--accent-2)">로그층(겹침층)</text>
+          <path d="M185.4,213.2 L229.8,200.7 L290.0,183.8 L385.4,157.0 L490.0,127.7 L585.4,100.9 L690.0,71.5" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/><text class="t" x="450" y="170" style="fill:var(--accent-2)">u⁺ = 2.5 ln y⁺ + 5.0</text></g>
+        <g data-step="3"><rect x="229.8" y="30" width="155.6" height="260" fill="var(--warn)" opacity=".10"/><text class="t" x="262" y="48" style="fill:var(--warn)">완충층</text>
+          <path d="M90.0,280.0 L125.3,275.0 L150.3,270.0 L169.8,265.0 L185.9,260.0 L199.6,255.0 L211.6,250.0 L222.4,245.0 L232.4,240.0 L241.7,235.0 L250.6,230.0 L259.2,225.0 L267.7,220.0 L276.2,215.0 L284.8,210.0 L293.7,205.0 L302.9,200.0 L312.5,195.0 L322.6,190.0 L333.2,185.0 L344.5,180.0 L356.3,175.0 L368.8,170.0 L381.8,165.0 L395.5,160.0 L409.7,155.0 L424.4,150.0 L439.6,145.0 L455.2,140.0 L471.2,135.0 L487.5,130.0 L504.0,125.0 L520.8,120.0 L537.8,115.0 L555.0,110.0 L572.2,105.0 L589.6,100.0 L607.1,95.0 L624.7,90.0 L642.3,85.0 L660.0,80.0 L677.7,75.0 L686.5,72.5" fill="none" stroke="var(--text)" stroke-width="2.6"/><text class="t" x="560" y="140">실제 분포</text></g>
+        <g data-step="4"><text class="t" x="104" y="312" style="fill:var(--ok)">ε⁺ = εu*/ν &lt; 5: 거칠기가 점성 저층에 잠김 → 수력학적으로 매끈 · ε⁺ &gt; 70: 완전 거친 관</text></g>
+        <line x1="90" y1="290" x2="700" y2="290" class="s-axis"/><line x1="90" y1="290" x2="90" y2="24" class="s-axis"/>
+        <text class="t-dim" x="84" y="294" text-anchor="end">0</text><text class="t-dim" x="84" y="244" text-anchor="end">5</text><text class="t-dim" x="84" y="194" text-anchor="end">10</text><text class="t-dim" x="84" y="144" text-anchor="end">15</text><text class="t-dim" x="84" y="94" text-anchor="end">20</text><text class="t-dim" x="84" y="44" text-anchor="end">25</text>
+        <text class="t-dim" x="90" y="306" text-anchor="middle">1</text><text class="t-dim" x="290" y="306" text-anchor="middle">10</text><text class="t-dim" x="490" y="306" text-anchor="middle">100</text><text class="t-dim" x="690" y="306" text-anchor="middle">1000</text>
+        <text class="t" x="740" y="294">y⁺</text><text class="t" x="40" y="20">u⁺</text>
+      </svg>
+      <ol class="steps-cap">
+        <li><b>점성 저층</b>(\(y^+ < 5\)): 점성 응력만 남아 \(u^+ = y^+\), 즉 속도가 벽에서의 거리에 비례한다. 두께 \(\delta_s \approx 5\nu/u_*\) — 보통 0.1 mm도 안 된다.</li>
+        <li><b>로그층</b>(\(30 < y^+\), \(y/R \lesssim 0.2\)): 레이놀즈 응력이 지배하고 \(u^+ = \frac{1}{\kappa}\ln y^+ + B\) (\(\kappa = 0.41\), \(B = 5.0\)) — <span class="term">벽 법칙</span><span class="en">(law of the wall)</span>.</li>
+        <li><b>완충층</b>(\(5 < y^+ < 30\)): 두 응력이 비슷해 어느 식도 맞지 않는다. 실선은 두 층을 매끄럽게 잇는 스폴딩의 경험식이다.</li>
+        <li>벽의 요철 높이 \(\varepsilon\)이 점성 저층 안에 잠기면 마찰에 영향이 없고, 저층을 뚫고 나오면 요철 뒤의 박리가 마찰을 좌우한다. 이것이 무디 선도의 '매끈한 관'과 '완전 거친 관'의 차이다.</li>
+      </ol>
+      <figcaption>난류 벽 유동의 층 구조(반로그 그래프). 얇은 점성 저층에 큰 속도 기울기가 몰려 있어 난류의 벽 전단 응력이 층류보다 훨씬 크다.</figcaption>
+    </figure>
+    <h3>멱법칙 속도 분포</h3>
+    <p>실용 계산에는 관 단면 전체를 한 식으로 근사하는 <span class="term">멱법칙 분포</span><span class="en">(power-law profile)</span>가 편리하다. 지수 \(n\)은 \(Re\)와 함께 커지며, \(Re \approx 10^5\)에서 \(n \approx 7\)(1/7 멱법칙)이다.</p>
+    <div class="formula">$$\frac{\bar u}{u_{\max}} = \left(\frac{y}{R}\right)^{1/n} = \left(1 - \frac{r}{R}\right)^{1/n}, \qquad \frac{V}{u_{\max}} = \frac{2n^2}{(n+1)(2n+1)}$$<div class="where">\(n = 7\)이면 \(V/u_{\max} = 0.817\)(층류는 0.5). 벽에서 기울기가 무한대가 되므로 멱법칙으로 \(\tau_w\)를 구할 수는 없다 — \(\tau_w\)는 마찰 계수에서 구한다.</div></div>
+    <div class="predict" data-for="sim-profile">
+      <p>같은 관, 같은 평균 속도 \(V\)라면 관 중심의 속도는 층류와 난류 중 어느 쪽이 더 클까?</p>
+      <div class="opts"><button class="opt" data-correct>층류(약 2V vs 1.2V)</button><button class="opt">난류(요동이 크므로)</button><button class="opt">같다(평균이 같으므로)</button></div>
+      <div class="quiz-exp">난류는 활발한 섞임으로 단면 속도가 고르게 퍼져 납작하고, 그 대신 벽 바로 옆의 기울기가 매우 가파르다. 아래에서 두 분포와 입자 속도를 비교하라.</div>
+    </div>
+    <div class="sim" id="sim-profile">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>층류 포물선 vs 난류 멱법칙 (같은 평균 속도)</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-profile"></canvas><span class="hint">오른쪽 흰 원(측정 높이)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>난류 쪽 Re <output id="pr-re-out"></output></span><input type="range" id="pr-re" min="3.6" max="6.5" step="0.02" value="5"></label>
+          <label class="check"><input type="checkbox" id="pr-mean" checked> 평균 속도 V 선</label>
+          <label class="check"><input type="checkbox" id="pr-fl" checked> 난류 요동(입자)</label>
+          <div class="ctrl-row"><button class="btn" id="pr-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">멱 지수 n</span><span class="v" id="pr-n">—</span></div>
+        <div class="stat"><span class="k">u<sub>max</sub>/V 층류·난류</span><span class="v" id="pr-umax">—</span></div>
+        <div class="stat"><span class="k">측정 높이에서 u/V</span><span class="v" id="pr-u">—</span></div>
+        <div class="stat"><span class="k">τ<sub>w</sub> 난류/층류(같은 V, D, Re)</span><span class="v" id="pr-tw">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 측정 높이를 벽 가까이(r/R = 0.9)로 끌면 난류의 속도가 층류의 두 배가 넘는다 — 벽 근처 기울기가 크다는 뜻이다. ② Re를 키우면 n이 커지고 분포가 더 납작해진다. ③ 마지막 칸은 같은 Re에서 층류였다면 대비 벽 전단 응력의 비 \(f Re/64\)이다. Re = 10⁵이면 약 30배 — 난류 관의 손실이 큰 이유다.</div>
+    </div>
+    <div class="example" data-title="점성 저층의 두께와 거칠기">
+      <p>20 °C 물(\(\nu = 1.004\times10^{-6}\) m²/s)이 지름 10 cm인 매끈한 관에서 평균 속도 2.0 m/s로 흐른다(\(f = 0.0156\)). 벽 전단 응력, 마찰 속도, 점성 저층 두께, 그리고 1/7 멱법칙의 중심 속도를 구하라. 같은 크기의 상용 강관(\(\varepsilon = 0.045\) mm)은 수력학적으로 매끈하다고 볼 수 있는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(f = 8\tau_w/\rho V^2\)에서 \(\tau_w\), \(u_* = \sqrt{\tau_w/\rho}\), \(\delta_s = 5\nu/u_*\). 거칠기는 \(\varepsilon^+ = \varepsilon u_*/\nu\)로 판정한다.</div>
+        <div class="step"><b>풀이</b> \(Re = 1.99\times10^5\). \(\tau_w = f\rho V^2/8 = 0.0156(998)(2.0)^2/8 = 7.81\) Pa. \(u_* = \sqrt{7.81/998} = 0.0885\) m/s. \(\delta_s = 5(1.004\times10^{-6})/0.0885 = 5.7\times10^{-5}\) m \(= 0.057\) mm. \(u_{\max} = V/0.817 = 2.45\) m/s. 강관: \(\varepsilon^+ = (0.045\times10^{-3})(0.0885)/(1.004\times10^{-6}) = 4.0\).</div>
+        <div class="answer">τ<sub>w</sub> ≈ 7.8 Pa, u* ≈ 0.088 m/s, δ<sub>s</sub> ≈ 0.057 mm, u<sub>max</sub> ≈ 2.45 m/s. ε⁺ ≈ 4로 매끈한 관의 경계(5) 바로 아래.</div>
+        <div class="step"><b>검토</b> 점성 저층은 지름의 0.06%에 불과하다. 같은 관에서 유속을 올리면 \(u_*\)가 커져 저층이 얇아지고, 같은 거칠기가 '드러나' 마찰 계수가 매끈한 관 값보다 커진다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="moody">
+    <h2>다르시–바이스바흐 식과 무디 선도</h2>
+    <p>5장의 에너지 방정식에서 관로의 손실은 수두 손실 \(h_L\)로 나타났다. 완전 발달한 관에서 \(h_L\)은 길이에 비례하고, 차원 해석(7장)에 따르면 무차원 수들의 함수 \(f(Re, \varepsilon/D)\) 하나에 몰아넣을 수 있다. 이것이 층류·난류, 원형·비원형을 가리지 않고 쓰는 <span class="term">다르시–바이스바흐 식</span><span class="en">(Darcy–Weisbach equation)</span>이다.</p>
+    <div class="formula">$$h_L = f\,\frac{L}{D}\,\frac{V^2}{2g}, \qquad \Delta P_L = \rho g h_L = f\,\frac{L}{D}\,\frac{\rho V^2}{2}$$<div class="where">수평이고 지름이 일정한 관에서는 \(\Delta P = \Delta P_L\). 일반적으로는 에너지 방정식 \(\frac{P_1}{\rho g} + \alpha_1\frac{V_1^2}{2g} + z_1 + h_\text{펌프} = \frac{P_2}{\rho g} + \alpha_2\frac{V_2^2}{2g} + z_2 + h_\text{터빈} + h_L\)에 넣는다(운동 에너지 보정 계수 \(\alpha\): 층류 2, 난류 약 1.05).</div></div>
+    <p>난류의 \(f\)는 해석적으로 구할 수 없다. 니쿠라제는 관 벽에 크기가 고른 모래를 붙여, 무디는 상용 관을 써서 \(f\)를 측정했다. 그 결과를 하나의 식으로 묶은 것이 <span class="term">콜브룩 식</span><span class="en">(Colebrook equation)</span>이고, 이 식을 그린 것이 <span class="term">무디 선도</span><span class="en">(Moody chart)</span>다. 콜브룩 식은 \(f\)가 양변에 있어 반복해 풀어야 하므로, 1983년 해일란드가 제안한 양함수 근사식도 널리 쓴다(오차 2% 이내).</p>
+    <div class="formula">$$\frac{1}{\sqrt f} = -2.0\log\!\left(\frac{\varepsilon/D}{3.7} + \frac{2.51}{Re\sqrt f}\right) \;\;(\text{콜브룩}), \qquad \frac{1}{\sqrt f} \approx -1.8\log\!\left[\frac{6.9}{Re} + \left(\frac{\varepsilon/D}{3.7}\right)^{1.11}\right] \;\;(\text{해일란드})$$<div class="where">\(\varepsilon/D\): <span class="term">상대 거칠기</span><span class="en">(relative roughness)</span>. \(Re\)가 아주 크면 둘째 항이 사라져 \(f\)는 \(\varepsilon/D\)만의 함수가 된다(완전 거친 영역). \(\varepsilon = 0\)이면 매끈한 관 곡선이다.</div></div>
+    <div class="table-wrap"><table class="pf-tbl">
+      <thead><tr><th>관 재질(새 관)</th><th class="num">거칠기 ε (mm)</th><th>관 재질(새 관)</th><th class="num">거칠기 ε (mm)</th></tr></thead>
+      <tbody>
+        <tr><td>유리·플라스틱</td><td class="num">0(매끈)</td><td>주철</td><td class="num">0.26</td></tr>
+        <tr><td>인발관(구리·황동)</td><td class="num">0.0015</td><td>콘크리트</td><td class="num">0.3–3.0(대표 1.0)</td></tr>
+        <tr><td>상용 강관</td><td class="num">0.045</td><td>리벳 강관</td><td class="num">0.9–9.0(대표 3.0)</td></tr>
+        <tr><td>아연 도금 철관</td><td class="num">0.15</td><td colspan="2">오래된 관은 부식·침착으로 몇 배까지 커진다</td></tr>
+      </tbody>
+    </table></div>
+    <div class="predict" data-for="sim-moody">
+      <p>상대 거칠기 0.01인 거친 관에서 \(Re\)를 \(10^6\)에서 \(10^7\)로 10배 키우면 마찰 계수는?</p>
+      <div class="opts"><button class="opt">1/10로 준다</button><button class="opt">\(Re^{-1/4}\)에 따라 약 44% 준다</button><button class="opt" data-correct>거의 변하지 않는다</button><button class="opt">커진다</button></div>
+      <div class="quiz-exp">완전 거친 영역에서는 요철이 점성 저층을 뚫고 나와 형상 항력이 마찰을 결정하므로 점성(\(Re\))의 영향이 사라진다. 아래 선도에서 점을 오른쪽으로 끌어 곡선이 수평해지는 것을 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-moody">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>인터랙티브 무디 선도</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-moody"></canvas><span class="hint top">점을 끌면 좌우로 Re, 위아래로 ε/D가 바뀐다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>관 재질</span><select id="md-mat"></select></label>
+          <label class="ctrl"><span>관 지름 D <output id="md-D-out"></output></span><input type="range" id="md-D" min="0" max="3" step="0.02" value="1.7"></label>
+          <button class="btn" id="md-set" type="button">재질·지름으로 ε/D 정하기</button>
+          <label class="check"><input type="checkbox" id="md-haal"> 해일란드 식 겹쳐 보기</label>
+          <label class="check"><input type="checkbox" id="md-rough" checked> 완전 거친 영역 경계</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Re</span><span class="v" id="md-re">—</span></div>
+        <div class="stat"><span class="k">ε/D</span><span class="v" id="md-ed">—</span></div>
+        <div class="stat"><span class="k">f (콜브룩)</span><span class="v" id="md-f">—</span></div>
+        <div class="stat"><span class="k">해일란드 오차</span><span class="v" id="md-h">—</span></div>
+        <div class="stat"><span class="k">영역</span><span class="v" id="md-reg">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 점을 층류 영역(Re &lt; 2300)으로 끌면 모든 거칠기 곡선이 한 직선 \(f = 64/Re\)로 모인다. ② 매끈한 관 곡선을 따라 Re를 키우면 f가 계속 줄지만, 거친 관은 점선을 넘으면 수평이 된다. ③ 재질을 '상용 강관', 지름을 50 mm로 정한 뒤 Re = 1.5×10⁵에 놓으면 예제의 f ≈ 0.021이 읽힌다. ④ 해일란드 식을 켜고 오차가 가장 큰 곳을 찾아보라.</div>
+    </div>
+    <div class="example" data-title="손실 구하기(제1유형): 강관의 수두 손실과 펌프 동력">
+      <p>20 °C 물(\(\rho = 998\) kg/m³, \(\mu = 1.002\times10^{-3}\) Pa·s)이 지름 5.0 cm, 길이 60 m인 수평 상용 강관(\(\varepsilon = 0.045\) mm)을 6.0 L/s로 흐른다. 수두 손실, 압력 강하, 이 손실을 메우는 펌프 동력을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 유량·지름을 아니까 \(V\), \(Re\), \(\varepsilon/D\)를 바로 계산하고 무디 선도(콜브룩 식)에서 \(f\)를 읽는다. 반복이 필요 없다.</div>
+        <div class="step"><b>풀이</b> \(V = 6.0\times10^{-3}/(\pi\,0.025^2) = 3.06\) m/s, \(Re = (998)(3.06)(0.05)/(1.002\times10^{-3}) = 1.52\times10^5\), \(\varepsilon/D = 0.045/50 = 0.0009\). 콜브룩: \(f = 0.0210\) (해일란드 0.0209). \(h_L = 0.0210\,(60/0.05)\,(3.06)^2/(2\times9.81) = 12.0\) m. \(\Delta P = \rho g h_L = 118\) kPa, \(\dot W = \rho g Q h_L = 706\) W.</div>
+        <div class="answer">h<sub>L</sub> ≈ 12.0 m, ΔP ≈ 118 kPa, Ẇ ≈ 706 W</div>
+        <div class="step"><b>검토</b> 위 무디 선도에서 확인할 수 있다. 같은 유량을 층류로 보낼 수 있다면 \(f = 64/Re = 4.2\times10^{-4}\)로 손실은 50분의 1이겠지만, 이 유량에서 층류는 불가능하다.</div>
+      </details>
+    </div>
+    <h3>비원형 관: 수력 직경</h3>
+    <p>사각 덕트나 이중관(환형) 같은 비원형 관에는 원형 관의 식을 그대로 쓰되 지름 대신 <span class="term">수력 직경</span><span class="en">(hydraulic diameter)</span>을 쓴다. 원형 관에서는 \(D_h = D\)이다.</p>
+    <div class="formula">$$D_h = \frac{4A_c}{p}, \qquad Re = \frac{VD_h}{\nu}, \qquad h_L = f\,\frac{L}{D_h}\,\frac{V^2}{2g}$$<div class="where">\(A_c\): 유동 단면적, \(p\): 젖은 둘레(wetted perimeter). 난류에서는 무디 선도를 \(D_h\)로 쓰면 오차 약 15% 이내다. 층류에서는 단면 모양마다 \(f\,Re\) 값이 다르다(정사각형 56.9, 평행 평판 96).</div></div>
+    <figure class="mini" id="mini-dh">
+      <div class="mini-view"><canvas id="cv-dh"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>단면</span><div class="seg" id="dh-shape"><button data-value="circle" class="on">원</button><button data-value="rect">직사각형</button><button data-value="tri">정삼각형</button><button data-value="ann">환형</button></div></div>
+        <label class="ctrl"><span id="dh-k-lab">치수비</span><output id="dh-k-out"></output><input type="range" id="dh-k" min="0" max="100" step="1" value="30"></label>
+        <span class="readout" id="dh-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 단면적 0.01 m²에서 모양을 바꿔 보라. 납작하거나 가운데가 빈 단면은 둘레가 길어 \(D_h\)가 작아지고 마찰이 커진다. 직사각형 비를 키우면 층류 \(f\,Re\)가 56.9(정사각형)에서 96(평행 평판)으로 간다.</figcaption>
+    </figure>
+    <div class="drill" id="drill-pipe" data-title="마찰 계수 · 다르시–바이스바흐 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="minor">
+    <h2>부차 손실</h2>
+    <p>실제 배관에는 곧은 관 말고도 입구·출구, 엘보, 티, 밸브, 지름이 바뀌는 부분이 있다. 이런 부품에서는 흐름이 박리하고 소용돌이치며 에너지를 잃는다. 이것을 <span class="term">부차 손실</span><span class="en">(minor loss)</span>이라 하고 <span class="term">손실 계수</span><span class="en">(loss coefficient)</span> \(K_L\)로 나타낸다. 이름은 '부차'지만 짧은 배관에서는 오히려 주 손실보다 클 때가 많다.</p>
+    <div class="formula">$$h_{L,\text{부차}} = K_L\,\frac{V^2}{2g}, \qquad L_\text{eq} = \frac{K_L\,D}{f}, \qquad h_{L,\text{전체}} = \left(f\frac{L}{D} + \sum K_L\right)\frac{V^2}{2g}$$<div class="where">\(V\)는 보통 부품 하류(지름이 바뀌면 작은 관) 평균 속도. 등가 길이 \(L_\text{eq}\)는 같은 손실을 내는 곧은 관의 길이다. 지름이 다른 구간이 있으면 구간마다 따로 더한다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 230" role="img" aria-label="관 입구 모양 네 가지와 손실 계수">
+        <defs><pattern id="pf-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="var(--text-faint)" stroke-width="2"/></pattern></defs>
+        <g>
+          <rect x="20" y="20" width="22" height="58" fill="url(#pf-hatch)"/><rect x="20" y="142" width="22" height="58" fill="url(#pf-hatch)"/>
+          <line x1="42" y1="20" x2="42" y2="78" class="s-line"/><line x1="42" y1="142" x2="42" y2="200" class="s-line"/>
+          <line x1="12" y1="82" x2="190" y2="82" class="s-line" stroke-width="3"/><line x1="12" y1="138" x2="190" y2="138" class="s-line" stroke-width="3"/>
+          <path d="M8,60 C20,84 40,94 70,96 C110,98 140,86 190,84" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <path d="M8,160 C20,136 40,126 70,124 C110,122 140,134 190,136" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text class="t" x="100" y="222" text-anchor="middle">돌출 입구 K = 0.8</text>
+        </g>
+        <g>
+          <rect x="220" y="20" width="22" height="62" fill="url(#pf-hatch)"/><rect x="220" y="138" width="22" height="62" fill="url(#pf-hatch)"/>
+          <line x1="242" y1="20" x2="242" y2="82" class="s-line"/><line x1="242" y1="138" x2="242" y2="200" class="s-line"/>
+          <line x1="242" y1="82" x2="390" y2="82" class="s-line" stroke-width="3"/><line x1="242" y1="138" x2="390" y2="138" class="s-line" stroke-width="3"/>
+          <path d="M226,40 C238,80 250,94 280,96 C320,98 340,86 390,84" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <path d="M226,180 C238,140 250,126 280,124 C320,122 340,134 390,136" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text class="t-dim" x="280" y="114" text-anchor="middle">축류</text>
+          <text class="t" x="305" y="222" text-anchor="middle">날카로운 입구 K = 0.5</text>
+        </g>
+        <g>
+          <rect x="420" y="20" width="22" height="52" fill="url(#pf-hatch)"/><rect x="420" y="148" width="22" height="52" fill="url(#pf-hatch)"/>
+          <path d="M442,20 L442,72 Q442,82 452,82 L590,82" class="s-line" stroke-width="3" fill="none"/><path d="M442,200 L442,148 Q442,138 452,138 L590,138" class="s-line" stroke-width="3" fill="none"/>
+          <path d="M428,50 C440,80 452,88 480,89 L590,88" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <path d="M428,170 C440,140 452,132 480,131 L590,132" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text class="t" x="505" y="222" text-anchor="middle">약간 둥근 입구 K = 0.12</text>
+        </g>
+        <g>
+          <rect x="620" y="20" width="22" height="22" fill="url(#pf-hatch)"/><rect x="620" y="178" width="22" height="22" fill="url(#pf-hatch)"/>
+          <path d="M642,20 L642,42 Q642,82 690,82 L790,82" class="s-line" stroke-width="3" fill="none"/><path d="M642,200 L642,178 Q642,138 690,138 L790,138" class="s-line" stroke-width="3" fill="none"/>
+          <path d="M630,48 C650,76 670,85 700,86 L790,86" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <path d="M630,172 C650,144 670,135 700,134 L790,134" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text class="t" x="710" y="222" text-anchor="middle">잘 둥근 입구 K = 0.03</text>
+        </g>
+      </svg>
+      <figcaption>입구 모양과 손실 계수(Çengel). 날카로운 모서리에서 흐름이 박리해 축류(vena contracta)를 만들고, 다시 퍼지며 에너지를 잃는다. 모서리를 둥글게 하면 손실이 1/15 이하로 준다.</figcaption>
+    </figure>
+    <div class="table-wrap"><table class="pf-tbl">
+      <thead><tr><th>부품</th><th class="num">K<sub>L</sub></th><th>부품</th><th class="num">K<sub>L</sub></th></tr></thead>
+      <tbody>
+        <tr><td>날카로운 입구 / 잘 둥근 입구</td><td class="num">0.5 / 0.03</td><td>게이트 밸브(완전 열림 · ½ 열림)</td><td class="num">0.2 · 2.1</td></tr>
+        <tr><td>모든 출구(탱크로 방출)</td><td class="num">1.0 (층류 2)</td><td>글로브 밸브(완전 열림)</td><td class="num">10</td></tr>
+        <tr><td>90° 엘보: 플랜지 · 나사</td><td class="num">0.3 · 0.9</td><td>볼 밸브(완전 열림 · ½ 열림)</td><td class="num">0.05 · 5.5</td></tr>
+        <tr><td>45° 엘보(나사) · 180° 리턴 벤드</td><td class="num">0.4 · 0.2–1.5</td><td>티: 직진 · 분기</td><td class="num">0.2–0.9 · 1.0–2.0</td></tr>
+      </tbody>
+    </table></div>
+    <p>출구 손실 계수가 1인 이유는 간단하다. 관에서 탱크로 나온 분류의 운동 에너지 \(V^2/2g\)는 탱크 속에서 소용돌이로 전부 흩어지기 때문이다(층류는 \(\alpha = 2\)이므로 2). 지름이 갑자기 커지는 <span class="term">급확대</span><span class="en">(sudden expansion)</span>는 검사 체적 해석으로 손실 계수를 정확히 구할 수 있는 드문 경우다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="급확대 관의 검사 체적과 운동량·에너지 해석 단계">
+        <defs><marker id="pf-ex1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="pf-ex2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <path d="M30,150 L300,150 L300,90 L780,90" class="s-line" stroke-width="3" fill="none"/><path d="M30,210 L300,210 L300,270 L780,270" class="s-line" stroke-width="3" fill="none"/>
+        <path d="M300,150 C380,150 480,110 560,90" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 4"/><path d="M300,210 C380,210 480,250 560,270" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <path d="M330,100 C350,135 400,130 380,104 C370,96 345,96 335,104" fill="none" stroke="var(--text-dim)" stroke-width="1.4"/>
+        <path d="M330,260 C350,225 400,230 380,256 C370,264 345,264 335,256" fill="none" stroke="var(--text-dim)" stroke-width="1.4"/>
+        <line x1="80" y1="180" x2="140" y2="180" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#pf-ex1)"/><text class="t-acc" x="90" y="172">V₁, A₁</text>
+        <line x1="660" y1="180" x2="700" y2="180" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#pf-ex1)"/><text class="t-acc" x="660" y="172">V₂, A₂</text>
+        <text class="t-dim" x="390" y="92" text-anchor="middle">재순환 와류</text>
+        <g data-step="2"><rect x="304" y="94" width="336" height="172" fill="none" stroke="var(--warn)" stroke-width="1.8" stroke-dasharray="8 5"/><text class="t" x="560" y="110" style="fill:var(--warn)">검사 체적</text>
+          <line x1="250" y1="120" x2="300" y2="120" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#pf-ex2)"/><line x1="250" y1="240" x2="300" y2="240" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#pf-ex2)"/>
+          <text class="t" x="168" y="114" style="fill:var(--accent-2)">P₁ (전체 A₂에)</text>
+          <line x1="700" y1="230" x2="646" y2="230" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#pf-ex2)"/><text class="t" x="676" y="252" style="fill:var(--accent-2)">P₂A₂</text></g>
+        <g data-step="3"><line x1="30" y1="40" x2="300" y2="40" stroke="var(--ok)" stroke-width="2"/><path d="M300,40 C340,48 380,58 420,60 L780,64" fill="none" stroke="var(--ok)" stroke-width="2"/><text class="t" x="36" y="32" style="fill:var(--ok)">에너지선(EGL)</text>
+          <line x1="720" y1="40" x2="720" y2="62" stroke="var(--ok)" stroke-width="1.4"/><text class="t" x="728" y="56" style="fill:var(--ok)">h<tspan dy="4" font-size="11">L</tspan></text>
+          <line x1="30" y1="76" x2="300" y2="76" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="6 3"/><path d="M300,76 C360,72 420,70 780,70" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="6 3"/><text class="t-acc" x="36" y="70" font-size="12">수력 구배선(HGL) — 압력은 오히려 회복</text></g>
+        <g data-step="4"><text class="t" x="420" y="296" text-anchor="middle">h<tspan dy="4" font-size="11">L</tspan><tspan dy="-4"> = (V₁ − V₂)²/2g  →  K = (1 − A₁/A₂)²</tspan></text></g>
+      </svg>
+      <ol class="steps-cap">
+        <li>작은 관(\(A_1\))에서 나온 분류는 큰 관(\(A_2\))에서 곧바로 퍼지지 못하고, 모서리에 재순환 와류를 남긴 채 몇 지름 뒤에 벽에 붙는다.</li>
+        <li>검사 체적을 확대 단면에서 재부착 하류까지 잡는다. 와류 속 압력은 분류의 압력 \(P_1\)과 거의 같으므로 왼쪽 면 전체 \(A_2\)에 \(P_1\)이 작용한다. 벽 마찰을 무시하면 운동량: \((P_1 - P_2)A_2 = \rho Q(V_2 - V_1)\).</li>
+        <li>에너지 방정식: \(h_L = \dfrac{P_1 - P_2}{\rho g} + \dfrac{V_1^2 - V_2^2}{2g}\). 속도가 줄며 압력은 회복되지만(수력 구배선 상승), 회복량이 운동 에너지 감소분보다 작아 에너지선은 떨어진다.</li>
+        <li>운동량 식과 연속 \(V_1A_1 = V_2A_2\)를 넣으면 \(h_L = (V_1 - V_2)^2/2g\), 즉 작은 관 속도 기준 \(K_L = (1 - A_1/A_2)^2\). \(A_2 \to \infty\)(탱크)이면 \(K_L = 1\) — 출구 손실이다.</li>
+      </ol>
+      <figcaption>급확대 손실(보르다–카르노 식)의 유도. 검사 체적 해석(5장)으로 손실을 정확히 예측하는 대표 사례다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-expand">
+      <div class="mini-view"><canvas id="cv-expand"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>형태</span><div class="seg" id="ex-type"><button data-value="exp" class="on">급확대</button><button data-value="con">급축소</button></div></div>
+        <label class="ctrl"><span>지름비 d/D <output id="ex-b-out"></output></span><input type="range" id="ex-b" min="0.2" max="0.95" step="0.01" value="0.5"></label>
+        <span class="readout" id="ex-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위의 실선은 에너지선, 점선은 수력 구배선(높이 단위: 작은 관의 \(V^2/2g\)). 급확대에서는 압력이 회복되면서도 에너지선이 \(K_L = (1-d^2/D^2)^2\)만큼 떨어진다. 급축소는 축류에서 다시 퍼질 때 손실이 생기며 \(K_L \approx 0.42(1 - d^2/D^2)\)(작은 관 속도 기준)이다. 지름비를 0.2 근처로 두면 두 경우 모두 각각 출구(1)와 날카로운 입구(약 0.4–0.5)에 가까워진다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-eqlen">
+      <p>손실 계수 <span class="tn" data-var="K" data-min="0.1" data-max="20" data-step="0.1" data-unit="">10.0</span>인 부품(글로브 밸브 ≈ 10, 플랜지 엘보 ≈ 0.3)은 지름 <span class="tn" data-var="D" data-min="1" data-max="50" data-step="1" data-unit=" cm">5</span>, 마찰 계수 <span class="tn" data-var="f" data-min="0.010" data-max="0.060" data-step="0.001" data-unit="">0.022</span>인 곧은 관 <span class="tn-out" data-out="L"></span>와 손실이 같다. 지름의 <span class="tn-out" data-out="LD"></span>배다.</p>
+    </div>
+    <div class="example" data-title="부차 손실이 주인공일 때">
+      <p>지름 4.0 cm 관에서 물이 2.0 m/s로 흐른다. 관로에는 날카로운 입구 1개(0.5), 플랜지 90° 엘보 2개(각 0.3), 완전히 열린 글로브 밸브 1개(10), 탱크로의 출구 1개(1.0)가 있고 곧은 관 길이는 15 m이다(\(f = 0.020\)). 부차 손실, 주 손실, 부품 전체의 등가 길이를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 지름이 하나이므로 \(\sum K_L\)을 한꺼번에 더한다. \(V^2/2g = 4.0/19.62 = 0.204\) m.</div>
+        <div class="step"><b>풀이</b> \(\sum K_L = 0.5 + 2(0.3) + 10 + 1.0 = 12.1\). \(h_{L,\text{부차}} = 12.1(0.204) = 2.47\) m. \(h_{L,\text{주}} = 0.020(15/0.04)(0.204) = 1.53\) m. \(L_\text{eq} = \sum K_L\,D/f = 12.1(0.04)/0.020 = 24.2\) m.</div>
+        <div class="answer">부차 2.47 m, 주 1.53 m (전체 4.00 m), 등가 길이 24.2 m</div>
+        <div class="step"><b>검토</b> 손실의 62%가 '부차'에서 나왔고 그 대부분이 글로브 밸브다. 같은 위치에 게이트 밸브(0.2)를 쓰면 전체 손실이 1.5 m 이상 준다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-minor" data-title="부차 손실 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="systems">
+    <h2>관로 해석: 단일 관로, 직렬·병렬, 관망</h2>
+    <p>단일 관로의 계산 문제는 무엇을 알고 무엇을 구하느냐에 따라 세 유형으로 나뉜다. 핵심 관계는 하나 — 에너지 방정식과 \(f(Re, \varepsilon/D)\) — 인데, 미지수가 \(V\)나 \(D\) 안에 숨어 있으면 \(Re\)를 미리 알 수 없어 반복이 필요하다.</p>
+    <div class="table-wrap"><table class="pf-tbl">
+      <thead><tr><th>유형</th><th>알고 있는 것</th><th>구할 것</th><th>푸는 방법</th></tr></thead>
+      <tbody>
+        <tr><td>1. 손실 구하기</td><td>Q, D, L, ε</td><td>h<sub>L</sub>(ΔP, 펌프 수두)</td><td>Re·ε/D 바로 계산 → f → h<sub>L</sub>. 반복 없음.</td></tr>
+        <tr><td>2. 유량 구하기</td><td>h<sub>L</sub>, D, L, ε</td><td>Q</td><td>f 가정(완전 거친 값 또는 0.02) → V → Re → 새 f → … 2–3번이면 수렴.</td></tr>
+        <tr><td>3. 지름 구하기</td><td>h<sub>L</sub>, Q, L, ε</td><td>D</td><td>f 가정 → \(D = (8fLQ^2/\pi^2 g h_L)^{1/5}\) → Re, ε/D → 새 f → … 마지막에 규격 지름으로 올림.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="example" data-title="유량 구하기(제2유형): 반복 계산">
+      <p>지름 8.0 cm, 길이 100 m인 수평 상용 강관(\(\varepsilon = 0.045\) mm)에서 허용 수두 손실이 10 m이다. 20 °C 물(\(\nu = 1.004\times10^{-6}\) m²/s)의 최대 유량은? 부차 손실은 무시한다.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(h_L = f(L/D)V^2/2g\)에서 \(V = \sqrt{2gh_LD/(fL)}\). \(f\)를 가정해 \(V\)를 구하고 \(Re\)로 \(f\)를 고쳐 나간다. \(\varepsilon/D = 5.63\times10^{-4}\).</div>
+        <div class="step"><b>풀이</b> ① \(f = 0.020\) → \(V = \sqrt{2(9.81)(10)(0.08)/(0.020\times100)} = 2.80\) m/s → \(Re = 2.23\times10^5\) → 콜브룩 \(f = 0.01896\). ② \(V = 2.877\) m/s → \(Re = 2.29\times10^5\) → \(f = 0.01892\). ③ \(V = 2.880\) m/s(변화 0.1%) → 수렴. \(Q = VA = 2.880(\pi\,0.04^2) = 0.0145\) m³/s.</div>
+        <div class="answer">Q ≈ 0.0145 m³/s = 14.5 L/s (V ≈ 2.88 m/s, f ≈ 0.0189)</div>
+        <div class="step"><b>검토</b> 처음 가정이 5% 틀렸어도 두 번 만에 0.1% 안으로 들어왔다. \(f\)가 \(Re\)에 둔감하기 때문이다. 해일란드 식으로 같은 반복을 해도 결과는 1% 이내로 같다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="지름 구하기(제3유형): 규격관 고르기">
+      <p>20 °C 물 25 L/s를 길이 150 m인 수평 상용 강관으로 보내되 수두 손실이 8.0 m를 넘지 않게 하려 한다. 필요한 최소 지름은? 규격 안지름이 80, 100, 125, 150 mm 중에서 고른다면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(V = 4Q/\pi D^2\)를 다르시–바이스바흐 식에 넣으면 \(D = \left(\dfrac{8fLQ^2}{\pi^2 g h_L}\right)^{1/5}\). \(f\)를 가정해 반복한다.</div>
+        <div class="step"><b>풀이</b> ① \(f = 0.020\) → \(D = 0.1141\) m → \(V = 2.44\) m/s, \(Re = 2.78\times10^5\), \(\varepsilon/D = 3.94\times10^{-4}\) → \(f = 0.01770\). ② \(D = 0.1114\) m → \(f = 0.01772\) → \(D = 0.1114\) m(수렴).</div>
+        <div class="answer">D<sub>min</sub> ≈ 111 mm → 규격 125 mm 선택 (이때 h<sub>L</sub> ≈ 4.5 m)</div>
+        <div class="step"><b>검토</b> \(D \propto f^{1/5}\)이라 \(f\)의 오차가 지름에는 1/5로 줄어든다. 100 mm관은 \(h_L = 13.8\) m로 허용치를 넘는다. \(h_L \propto D^{-5}\)이므로 지름을 한 단계만 올려도 손실이 크게 준다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-tanks">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>두 탱크 사이 관로 계산기 + 도전: 최소 지름 고르기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-tanks"></canvas><span class="hint top">왼쪽 탱크의 수면(흰 원)을 위아래로 끌어 낙차를 바꾼다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>안지름 D (mm)</span><div class="seg" id="tk-D"><button data-value="25">25</button><button data-value="40">40</button><button data-value="50">50</button><button data-value="65">65</button><button data-value="80" class="on">80</button><button data-value="100">100</button><button data-value="125">125</button><button data-value="150">150</button></div></div>
+          <label class="ctrl"><span>관 길이 L <output id="tk-L-out"></output></span><input type="range" id="tk-L" min="10" max="500" step="10" value="120"></label>
+          <label class="ctrl"><span>재질</span><select id="tk-mat"></select></label>
+          <div class="ctrl"><span>입구</span><div class="seg" id="tk-in"><button data-value="0.5" class="on">날카로움 0.5</button><button data-value="0.03">둥긂 0.03</button><button data-value="0.8">돌출 0.8</button></div></div>
+          <div class="ctrl"><span>90° 엘보(K 0.3)</span><div class="pf-plus"><button class="btn" id="tk-e-" type="button">−</button><b id="tk-e">2</b><button class="btn" id="tk-e+" type="button">+</button></div></div>
+          <div class="ctrl"><span>밸브</span><div class="pf-plus"><span>게이트(0.2)</span><button class="btn" id="tk-g-" type="button">−</button><b id="tk-g">1</b><button class="btn" id="tk-g+" type="button">+</button><span>글로브(10)</span><button class="btn" id="tk-v-" type="button">−</button><b id="tk-v">0</b><button class="btn" id="tk-v+" type="button">+</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="tk-game" type="button">도전 시작</button><button class="btn" id="tk-submit" type="button" disabled>이 지름으로 제출</button></div>
+          <div class="pf-game" id="tk-msg" aria-live="polite">도전: 정해진 낙차·관로에서 목표 유량 이상을 내는 <b>가장 작은</b> 규격 지름을 계산으로 골라 제출한다. 도전 중에는 유량이 가려진다.</div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">낙차 H</span><span class="v" id="tk-H">—</span></div>
+        <div class="stat"><span class="k">유량 Q</span><span class="v" id="tk-Q">—</span></div>
+        <div class="stat"><span class="k">V, Re</span><span class="v" id="tk-V">—</span></div>
+        <div class="stat"><span class="k">f</span><span class="v" id="tk-f">—</span></div>
+        <div class="stat"><span class="k">ΣK<sub>L</sub>, fL/D</span><span class="v" id="tk-K">—</span></div>
+      </div>
+      <div class="sim-note">두 수면 사이에 에너지 방정식을 쓰면 \(H = \left(fL/D + \sum K_L\right)V^2/2g\)(출구 1.0 포함) — 제2유형 문제다. 아래 막대는 낙차 H가 어디에 쓰였는지(마찰·입구·엘보·밸브·출구)를 보여 준다. 해볼 것: ① L = 10 m로 짧게 하고 글로브 밸브를 넣으면 부차 손실이 막대 대부분을 차지한다. ② 지름을 80 → 100 mm로 25% 키우면 유량은 약 1.7배(긴 관에서 \(Q \propto D^{2.5}\)). ③ 낙차를 4배로 하면 유량은 2배쯤(\(Q \propto \sqrt H\)). ④ 도전에서는 해일란드 식으로 직접 계산해 보라.</div>
+    </div>
+    <h3>직렬·병렬 관로</h3>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 240" role="img" aria-label="직렬 관로와 병렬 관로의 비교">
+        <defs><marker id="pf-sp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <text class="t" x="190" y="26" text-anchor="middle" style="font-weight:700">직렬</text>
+        <rect x="20" y="80" width="110" height="24" class="f-acc-soft" stroke="var(--accent)"/><rect x="130" y="70" width="110" height="44" class="f-acc-soft" stroke="var(--accent)"/><rect x="240" y="86" width="120" height="12" class="f-acc-soft" stroke="var(--accent)"/>
+        <text class="t" x="75" y="72" text-anchor="middle">1</text><text class="t" x="185" y="62" text-anchor="middle">2</text><text class="t" x="300" y="78" text-anchor="middle">3</text>
+        <line x1="4" y1="92" x2="20" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#pf-sp)"/><line x1="360" y1="92" x2="384" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#pf-sp)"/>
+        <text class="t" x="190" y="150" text-anchor="middle">Q₁ = Q₂ = Q₃ (같은 유량)</text>
+        <text class="t" x="190" y="176" text-anchor="middle">h<tspan dy="4" font-size="11">L,A→B</tspan><tspan dy="-4"> = h</tspan><tspan dy="4" font-size="11">L1</tspan><tspan dy="-4"> + h</tspan><tspan dy="4" font-size="11">L2</tspan><tspan dy="-4"> + h</tspan><tspan dy="4" font-size="11">L3</tspan><tspan dy="-4"> (+ 연결부 손실)</tspan></text>
+        <line x1="400" y1="20" x2="400" y2="220" stroke="var(--border)"/>
+        <text class="t" x="600" y="26" text-anchor="middle" style="font-weight:700">병렬</text>
+        <circle cx="450" cy="92" r="6" fill="var(--text)"/><circle cx="750" cy="92" r="6" fill="var(--text)"/><text class="t" x="440" y="120">A</text><text class="t" x="752" y="120">B</text>
+        <path d="M450,92 C480,50 520,46 600,46 C680,46 720,50 750,92" fill="none" stroke="var(--accent)" stroke-width="10" opacity=".45"/>
+        <path d="M450,92 C480,134 520,140 600,140 C680,140 720,134 750,92" fill="none" stroke="var(--accent)" stroke-width="5" opacity=".45"/>
+        <text class="t" x="600" y="38" text-anchor="middle">1 (굵은 관)</text><text class="t" x="600" y="160" text-anchor="middle">2 (가는 관)</text>
+        <line x1="414" y1="92" x2="444" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#pf-sp)"/><line x1="756" y1="92" x2="790" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#pf-sp)"/>
+        <text class="t" x="600" y="194" text-anchor="middle">h<tspan dy="4" font-size="11">L1</tspan><tspan dy="-4"> = h</tspan><tspan dy="4" font-size="11">L2</tspan><tspan dy="-4"> (같은 수두 손실)</tspan></text>
+        <text class="t" x="600" y="220" text-anchor="middle">Q = Q₁ + Q₂</text>
+      </svg>
+      <figcaption>직렬은 전기 회로의 직렬 저항, 병렬은 병렬 저항과 같다. 다만 관의 '저항'은 \(h_L \approx rQ^2\)로 비선형이다. 병렬 관에서는 A와 B 사이 에너지 차가 하나뿐이므로 모든 가지의 수두 손실이 같다.</figcaption>
+    </figure>
+    <p>병렬 관로는 "총유량 \(Q\)가 정해졌을 때 각 가지로 얼마씩 나뉘는가"가 핵심 문제다. 가지마다 \(h_L = f_i(L_i/D_i)V_i^2/2g\)가 같다는 조건과 \(\sum Q_i = Q\)를 함께 푼다. \(f\)가 비슷하다면 \(Q_i \propto \sqrt{D_i^5/(f_iL_i)}\)이므로, 굵은 가지가 압도적으로 많이 가져간다.</p>
+    <div class="predict" data-for="sim-parallel">
+      <p>길이·재질이 같은 두 관이 병렬로 연결돼 있고, 관 1의 지름이 관 2의 2배다. 관 1의 유량은 관 2의 몇 배쯤일까?</p>
+      <div class="opts"><button class="opt">2배(지름 비)</button><button class="opt">4배(단면적 비)</button><button class="opt" data-correct>약 6배(\(D^{2.5}\) 비)</button><button class="opt">32배(\(D^5\) 비)</button></div>
+      <div class="quiz-exp">수두 손실이 같으므로 \(V^2/D \cdot f\)가 같고, \(Q = VA \propto D^{2.5}/\sqrt f\). \(2^{2.5} = 5.7\)이고 굵은 관의 \(f\)가 조금 작아 실제로는 6배 남짓이다. 아래에서 관의 굵기를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-parallel">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>병렬 관로의 유량 분배</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-par"></canvas><span class="hint">각 관 위쪽 가장자리의 흰 원을 위아래로 끌어 지름을 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>총유량 Q <output id="pa-Q-out"></output></span><input type="range" id="pa-Q" min="2" max="80" step="1" value="30"></label>
+          <label class="ctrl"><span>관 2 밸브 손실 계수 K <output id="pa-K-out"></output></span><input type="range" id="pa-K" min="0" max="60" step="0.5" value="0"></label>
+          <label class="check"><input type="checkbox" id="pa-3" checked> 관 3 연결(길이 200 m)</label>
+          <div class="ctrl-row"><button class="btn" id="pa-eq" type="button">세 지름 같게(100 mm)</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">공통 수두 손실 h<sub>L</sub></span><span class="v" id="pa-h">—</span></div>
+        <div class="stat"><span class="k">관 1 (100 m)</span><span class="v" id="pa-q1">—</span></div>
+        <div class="stat"><span class="k">관 2 (100 m)</span><span class="v" id="pa-q2">—</span></div>
+        <div class="stat"><span class="k">관 3 (200 m)</span><span class="v" id="pa-q3">—</span></div>
+      </div>
+      <div class="sim-note">세 관 모두 상용 강관, 20 °C 물이다. 계산기는 "공통 h<sub>L</sub>을 가정 → 각 가지의 Q(제2유형) → 합이 총유량이 될 때까지 h<sub>L</sub> 조정"을 반복한다. 해볼 것: ① 관 1을 100 mm, 관 2를 50 mm로 두고 유량 비를 읽어라(예측 문제). ② 관 2의 밸브를 조이면 관 2 유량이 줄고 나머지 관이 더 가져가며 공통 h<sub>L</sub>이 오른다. ③ 관 3을 떼어 내면 h<sub>L</sub>이 얼마나 오르는가?</div>
+    </div>
+    <h3>관망과 하디 크로스 방법</h3>
+    <p>도시 상수도처럼 관이 고리(loop)를 이루는 <span class="term">관망</span><span class="en">(pipe network)</span>에서는 두 규칙이 성립한다. ① 각 절점에서 들어온 유량 = 나간 유량, ② 어느 고리든 한 바퀴 돌며 더한 수두 손실의 합 = 0(같은 점으로 돌아오므로). 손으로 풀 때는 <span class="term">하디 크로스 방법</span><span class="en">(Hardy Cross method)</span>을 쓴다: 절점 조건을 만족하는 유량을 아무렇게나 가정한 뒤, 고리마다 아래 보정량 \(\Delta Q\)를 더하기를 반복한다(\(h_L = rQ|Q|\), 시계 방향 +).</p>
+    <div class="formula">$$\Delta Q = -\frac{\sum r_i Q_i|Q_i|}{\sum 2 r_i |Q_i|}$$<div class="where">\(r_i = 8f_iL_i/(\pi^2 g D_i^5)\): 관의 저항 계수(s²/m⁵). 이것은 고리의 \(\sum h_L(Q + \Delta Q) = 0\)에 뉴턴법을 한 번 적용한 것이다. 오늘날에는 같은 연립 방정식을 컴퓨터(EPANET 등)로 푼다.</div></div>
+    <figure class="mini" id="mini-hardy">
+      <div class="mini-view"><canvas id="cv-hardy"></canvas></div>
+      <div class="mini-ctrl">
+        <button class="btn primary" id="hc-step" type="button">보정 1회</button><button class="btn" id="hc-reset" type="button">처음 가정으로</button><button class="btn" id="hc-bad" type="button">엉뚱한 가정으로</button>
+        <span class="readout" id="hc-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>A로 100 L/s가 들어와 B·C·D로 30·40·30 L/s가 나가는 고리 하나. 관 옆 숫자는 저항 \(r\)(s²/m⁵)과 현재 유량이다. 처음 가정은 절점 조건만 맞춘 것이라 고리의 \(\sum h_L \ne 0\)이다. '보정 1회'를 눌러 \(\sum h_L\)이 0으로 가는 속도를 보라 — 2–3회면 충분하다. 가정이 엉뚱해 흐름 방향이 틀려도 보정이 방향을 바로잡는다.</figcaption>
+    </figure>
+    <h3>펌프가 있는 관로와 시스템 곡선</h3>
+    <p>탱크의 낙차 대신 펌프가 물을 올려 보내는 관로를 생각하자. 에너지 방정식에서 펌프가 줘야 할 수두는 \(h_\text{펌프} = (z_2 - z_1) + h_L(Q)\)이고, \(h_L \approx kQ^2\)이므로 이것은 \(Q\)에 대한 포물선이다. 이 곡선을 <span class="term">시스템 곡선</span><span class="en">(system curve)</span>이라 한다. 펌프는 유량이 늘수록 낼 수 있는 수두가 줄어드는 성능 곡선을 가지며, 실제 운전점은 두 곡선의 교점이다. 펌프의 선정과 상사 법칙은 12장에서 자세히 다룬다.</p>
+    <figure class="mini" id="mini-pump">
+      <div class="mini-view"><canvas id="cv-pump"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>정수두 Δz <output id="pu-z-out"></output></span><input type="range" id="pu-z" min="0" max="30" step="1" value="10"></label>
+        <label class="ctrl"><span>밸브 개도(손실 배율) <output id="pu-k-out"></output></span><input type="range" id="pu-k" min="0.5" max="4" step="0.1" value="1"></label>
+        <button class="btn" id="pu-new" type="button">새 목표</button>
+        <span class="readout" id="pu-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB · 도전</span>펌프 곡선의 흰 원(체절 수두, 회전수에 해당)을 위아래로 끌어 운전점이 목표 유량(초록 띠)에 들어가게 하라. 정수두를 키우거나 밸브를 조이면(손실 배율 ↑) 시스템 곡선이 가팔라져 같은 펌프의 유량이 준다.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>관 유동은 \(Re = VD/\nu\)로 구분한다: \(Re \lesssim 2300\) 층류, \(2300\)–\(4000\) 천이, \(\gtrsim 4000\) 난류. 입구 길이는 층류 \(L_h \approx 0.05\,Re\,D\), 난류 \(L_h \approx 1.359\,Re^{1/4}D\).</li>
+      <li>완전 발달 유동에서 \(\tau = (r/R)\tau_w\), \(\tau_w = D\Delta P/(4L)\)(층류·난류 공통). 층류(하겐–푸아죄유): \(u = 2V(1 - r^2/R^2)\), \(\Delta P = 32\mu LV/D^2 = 128\mu LQ/\pi D^4\), \(f = 64/Re\). 경사관은 \(\Delta P \to \Delta P - \rho gL\sin\theta\).</li>
+      <li>난류에는 레이놀즈 응력 \(-\rho\overline{u'v'}\)이 더해진다. 벽 근처에 점성 저층(\(u^+ = y^+\), \(y^+ < 5\))과 로그층(\(u^+ = 2.5\ln y^+ + 5.0\))이 있고, 단면 전체는 멱법칙 \(\bar u/u_{\max} = (1 - r/R)^{1/n}\)(\(n \approx 7\))으로 근사한다.</li>
+      <li>다르시–바이스바흐 \(h_L = f(L/D)V^2/2g\). 난류 \(f(Re, \varepsilon/D)\)는 콜브룩 식(무디 선도)이나 해일란드 식으로 구한다. 완전 거친 영역에서 \(f\)는 \(\varepsilon/D\)만의 함수. 비원형 관은 \(D_h = 4A_c/p\).</li>
+      <li>부차 손실 \(h_L = K_LV^2/2g\), 등가 길이 \(L_\text{eq} = K_LD/f\). 출구 \(K_L = 1\), 날카로운 입구 0.5, 급확대 \(K_L = (1 - A_1/A_2)^2\).</li>
+      <li>관로 문제: 제1유형(손실)은 직접, 제2유형(유량)·제3유형(지름)은 \(f\)를 가정해 반복한다. 직렬은 \(Q\) 같고 \(h_L\) 합, 병렬은 \(h_L\) 같고 \(Q\) 합. 관망은 절점 연속 + 고리 \(\sum h_L = 0\)(하디 크로스). 펌프 운전점은 펌프 곡선과 시스템 곡선 \(h = \Delta z + kQ^2\)의 교점이다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>특별한 말이 없으면 \(g = 9.81\) m/s², 20 °C 물은 \(\rho = 998\) kg/m³, \(\mu = 1.002\times10^{-3}\) Pa·s, \(\nu = 1.004\times10^{-6}\) m²/s, 공기는 \(\nu = 1.516\times10^{-5}\) m²/s이다. 거칠기: 상용 강관 0.045 mm, 아연 도금 철관 0.15 mm, 주철관 0.26 mm. 마찰 계수는 콜브룩 식(또는 해일란드 식)으로 구한다. 답이 ±1% 이내면 정답이다(반복 계산 문제는 ±2%).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="레이놀즈 수" data-answer="4.95e4" data-label="Re =">
+        <div class="prob-q"><p>20 °C 공기가 지름 25 cm인 원형 덕트를 평균 속도 3.0 m/s로 흐른다. 레이놀즈 수는? (층류인가, 난류인가?)</p></div>
+        <div class="prob-sol"><p>\(Re = VD/\nu = (3.0)(0.25)/(1.516\times10^{-5}) = 4.95\times10^4\) → 난류.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="층류 한계" data-answer="10.9" data-label="Q<sub>max</sub> =" data-unit="mL/s">
+        <div class="prob-q"><p>안지름 6.0 mm인 관에 20 °C 물을 흘린다. 층류(\(Re \le 2300\))를 유지할 수 있는 최대 유량은 몇 mL/s인가?</p></div>
+        <div class="prob-sol"><p>\(V = Re\,\nu/D = 2300(1.004\times10^{-6})/0.006 = 0.385\) m/s. \(Q = V\pi D^2/4 = 0.385\times\pi(0.003)^2 = 1.09\times10^{-5}\) m³/s = 10.9 mL/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="입구 길이" data-answer="0.75; 1.21" data-label="층류 L<sub>h</sub> =; 난류 L<sub>h</sub> =" data-unit="m; m">
+        <div class="prob-q"><p>(a) 지름 1.0 cm 관, \(Re = 1500\)인 층류의 입구 길이와 (b) 지름 5.0 cm 관, \(Re = 1.0\times10^5\)인 난류의 입구 길이를 구하라.</p></div>
+        <div class="prob-sol"><p>(a) \(L_h = 0.05(1500)(0.01) = 0.75\) m. (b) \(L_h = 1.359(0.05)(10^5)^{1/4} = 1.21\) m (지름의 24배).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="하겐–푸아죄유" data-answer="222" data-label="ΔP =" data-unit="kPa">
+        <div class="prob-q"><p>SAE 30 오일(\(\rho = 891\) kg/m³, \(\mu = 0.29\) Pa·s)을 지름 2.0 cm, 길이 15 m인 수평관으로 0.20 L/s 보낸다. 층류임을 확인하고 압력 강하를 구하라.</p></div>
+        <div class="prob-hint">\(V = 0.637\) m/s, \(Re = \rho VD/\mu\). \(\Delta P = 128\mu LQ/(\pi D^4)\).</div>
+        <div class="prob-sol"><p>\(V = 2\times10^{-4}/(\pi\,0.01^2) = 0.637\) m/s, \(Re = 891(0.637)(0.02)/0.29 = 39\) → 층류. \(\Delta P = 128(0.29)(15)(2\times10^{-4})/(\pi\,(0.02)^4) = 2.22\times10^5\) Pa = 222 kPa.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="벽 전단 응력" data-answer="73.8; 1.27" data-label="τ<sub>w</sub> =; u<sub>max</sub> =" data-unit="Pa; m/s">
+        <div class="prob-q"><p>앞 문제의 관에서 벽 전단 응력과 중심선 속도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\tau_w = D\Delta P/(4L) = 0.02(2.215\times10^5)/60 = 73.8\) Pa (또는 \(8\mu V/D\)). \(u_{\max} = 2V = 1.27\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="D⁻⁴ 법칙">
+        <div class="prob-q"><p>층류 관로에서 같은 유량을 유지하면서 관 지름을 절반으로 줄이면 압력 강하는 몇 배가 되는가?</p></div>
+        <div class="prob-choices"><button>2배</button><button>4배</button><button>8배</button><button data-correct>16배</button></div>
+        <div class="prob-sol"><p>\(\Delta P = 128\mu LQ/(\pi D^4)\)이므로 \(D\)가 1/2이면 \(\Delta P\)는 \(2^4 = 16\)배. (같은 압력 차라면 유량이 1/16이 된다.)</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수직관 중력 흐름" data-answer="2.15" data-label="Q =" data-unit="mL/s">
+        <div class="prob-q"><p>양 끝이 모두 대기에 열린 지름 1.0 cm의 긴 수직관 속을 글리세린(\(\rho = 1260\) kg/m³, \(\mu = 1.41\) Pa·s)이 중력만으로 흘러내린다(완전 발달, 압력 차 0). 유량은 몇 mL/s인가?</p></div>
+        <div class="prob-hint">경사관 식에서 \(\Delta P = 0\), \(\theta = -90^\circ\) → \(V = \rho g D^2/(32\mu)\).</div>
+        <div class="prob-sol"><p>\(V = \rho gD^2/(32\mu) = 1260(9.81)(10^{-4})/(32\times1.41) = 0.0274\) m/s. \(Q = V\pi D^2/4 = 2.15\times10^{-6}\) m³/s = 2.15 mL/s. \(Re = 0.24\)로 층류가 맞다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="멱법칙 분포" data-answer="2.39" data-label="u<sub>max</sub> =" data-unit="m/s">
+        <div class="prob-q"><p>난류 관 유동의 속도 분포가 \(n = 8\)인 멱법칙을 따르고 평균 속도가 2.0 m/s이다. 중심선 속도는?</p></div>
+        <div class="prob-sol"><p>\(V/u_{\max} = 2n^2/((n+1)(2n+1)) = 128/153 = 0.837\) → \(u_{\max} = 2.0/0.837 = 2.39\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="제1유형" data-answer="12.1" data-tol="2%" data-label="h<sub>L</sub> =" data-unit="m">
+        <div class="prob-q"><p>20 °C 물 40 L/s가 지름 15 cm, 길이 300 m인 주철관(\(\varepsilon = 0.26\) mm)을 흐른다. 수두 손실은?</p></div>
+        <div class="prob-hint">\(V = 2.26\) m/s, \(Re = 3.38\times10^5\), \(\varepsilon/D = 0.00173\).</div>
+        <div class="prob-sol"><p>\(V = 0.04/(\pi\,0.075^2) = 2.26\) m/s, \(Re = 2.26(0.15)/(1.004\times10^{-6}) = 3.38\times10^5\), \(\varepsilon/D = 0.00173\) → 콜브룩 \(f = 0.0231\). \(h_L = 0.0231(300/0.15)(2.26)^2/19.62 = 12.1\) m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수력 직경" data-answer="0.200; 6.60e4" data-label="D<sub>h</sub> =; Re =" data-unit="m; ">
+        <div class="prob-q"><p>단면 0.30 m × 0.15 m인 직사각형 덕트에 20 °C 공기가 평균 5.0 m/s로 흐른다. 수력 직경과 레이놀즈 수를 구하라.</p></div>
+        <div class="prob-sol"><p>\(D_h = 4A/p = 4(0.045)/(0.90) = 0.200\) m. \(Re = VD_h/\nu = 5.0(0.200)/(1.516\times10^{-5}) = 6.60\times10^4\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="급확대" data-answer="0.459" data-label="h<sub>L</sub> =" data-unit="m">
+        <div class="prob-q"><p>물이 지름 3.0 cm 관에서 4.0 m/s로 흐르다가 지름 6.0 cm 관으로 급확대된다. 확대부의 수두 손실은?</p></div>
+        <div class="prob-sol"><p>\(K_L = (1 - A_1/A_2)^2 = (1 - 0.25)^2 = 0.5625\). \(h_L = 0.5625(4.0)^2/(2\times9.81) = 0.459\) m. (또는 \(V_2 = 1.0\) m/s → \((V_1 - V_2)^2/2g = 9/19.62\).)</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="등가 길이" data-answer="22.7" data-label="L<sub>eq</sub> =" data-unit="m">
+        <div class="prob-q"><p>지름 5.0 cm 관(\(f = 0.022\))에 완전히 열린 글로브 밸브(\(K_L = 10\))가 있다. 이 밸브의 등가 길이는?</p></div>
+        <div class="prob-sol"><p>\(L_\text{eq} = K_LD/f = 10(0.05)/0.022 = 22.7\) m — 지름의 455배.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="제2유형(부차 손실 포함)" data-answer="5.00" data-tol="2%" data-label="Q =" data-unit="L/s">
+        <div class="prob-q"><p>수면 높이 차가 12 m인 두 탱크를 지름 5.0 cm, 길이 80 m인 상용 강관이 잇는다. 날카로운 입구(0.5), 플랜지 90° 엘보 2개(각 0.3), 출구(1.0)가 있다. 20 °C 물의 유량은 몇 L/s인가?</p></div>
+        <div class="prob-hint">\(12 = (fL/D + 2.1)V^2/2g\). \(f = 0.02\)로 시작해 \(V\) → \(Re\) → \(f\)를 반복.</div>
+        <div class="prob-hint">\(\varepsilon/D = 0.0009\). 수렴값은 \(f \approx 0.0214\).</div>
+        <div class="prob-sol"><p>\(V = \sqrt{2(9.81)(12)/(f(1600) + 2.1)}\). \(f = 0.02\) → \(V = 2.63\) m/s → \(Re = 1.30\times10^5\) → \(f = 0.0213\) → \(V = 2.55\) m/s → \(Re = 1.27\times10^5\) → \(f = 0.02135\) (수렴). \(Q = 2.55(\pi\,0.025^2) = 5.00\times10^{-3}\) m³/s = 5.00 L/s.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="제3유형" data-answer="86.0" data-tol="2%" data-label="D =" data-unit="mm">
+        <div class="prob-q"><p>20 °C 물 12 L/s를 길이 50 m인 수평 아연 도금 철관(\(\varepsilon = 0.15\) mm)으로 보낼 때 수두 손실을 3.0 m 이하로 하려면 지름이 최소 몇 mm여야 하는가? (부차 손실 무시)</p></div>
+        <div class="prob-hint">\(D = (8fLQ^2/\pi^2gh_L)^{1/5}\)에 \(f = 0.02\)를 넣어 시작한다.</div>
+        <div class="prob-sol"><p>① \(f = 0.02\) → \(D = 0.0831\) m → \(V = 2.21\) m/s, \(Re = 1.83\times10^5\), \(\varepsilon/D = 0.00180\) → \(f = 0.0238\). ② \(D = 0.0860\) m → \(f = 0.0237\) → \(D = 0.0860\) m (수렴). \(D_{\min} \approx 86.0\) mm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="병렬 관로" data-answer="17.6; 12.4; 25.6" data-label="Q₁ =; Q₂ =; h<sub>L</sub> =" data-unit="L/s; L/s; m">
+        <div class="prob-q"><p>두 관이 병렬로 연결돼 총 30 L/s를 나눠 흘린다. 관 1: \(L = 500\) m, \(D = 0.10\) m, \(f = 0.020\). 관 2: \(L = 300\) m, \(D = 0.08\) m, \(f = 0.022\). (마찰 계수는 일정하다고 본다.) 각 관의 유량과 공통 수두 손실은?</p></div>
+        <div class="prob-hint">\(h_L\)이 같으므로 \(Q_i = k_i\sqrt{h_L}\), \(k_i \propto \sqrt{D_i^5/(f_iL_i)}\). \(Q_1/Q_2 = k_1/k_2\).</div>
+        <div class="prob-sol"><p>\(k_1 \propto \sqrt{10^{-5}/(0.02\times500)} = 1.000\times10^{-3}\), \(k_2 \propto \sqrt{3.277\times10^{-6}/(0.022\times300)} = 7.05\times10^{-4}\). \(Q_1 = 30(1.000)/(1.705) = 17.6\) L/s, \(Q_2 = 12.4\) L/s. \(V_1 = 0.0176/(\pi\,0.05^2) = 2.24\) m/s, \(h_L = 0.020(500/0.10)(2.24)^2/19.62 = 25.6\) m. 관 2로 확인해도 같다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="완전 거친 영역">
+        <div class="prob-q"><p>무디 선도의 완전 거친 영역(Re가 매우 큼)에서 마찰 계수는 무엇에 의해 정해지는가?</p></div>
+        <div class="prob-choices"><button>Re만</button><button data-correct>상대 거칠기 ε/D만</button><button>Re와 ε/D 둘 다</button><button>관의 길이</button></div>
+        <div class="prob-sol"><p>콜브룩 식에서 \(2.51/(Re\sqrt f)\) 항이 사라져 \(1/\sqrt f = -2\log(\varepsilon/3.7D)\). 이 영역에서 \(h_L \propto V^2\)이 정확히 성립한다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>완전 발달 <b>층류</b> 관로에서 유량을 2배로 늘리면 수두 손실은?</p><div class="opts">
+        <button class="opt">그대로</button><button class="opt" data-correct>2배</button><button class="opt">4배</button><button class="opt">16배</button>
+      </div><div class="quiz-exp">\(h_L = 32\mu LV/(\rho gD^2) \propto V\). \(f = 64/Re\)가 \(1/V\)로 줄면서 \(V^2\)의 한 제곱을 상쇄한다.</div></div>
+      <div class="quiz-q"><p>완전 거친 난류 영역의 관로에서 유량을 2배로 늘리면 수두 손실은?</p><div class="opts">
+        <button class="opt">2배</button><button class="opt">약 3.4배</button><button class="opt" data-correct>4배</button><button class="opt">8배</button>
+      </div><div class="quiz-exp">\(f\)가 일정하므로 \(h_L \propto V^2\). 매끈한 관이면 \(f\)가 조금 줄어 약 3.4배(\(V^{1.75}\))다.</div></div>
+      <div class="quiz-q"><p>같은 상용 강관에서 유속을 크게 높였더니 매끈한 관 곡선보다 마찰 계수가 커졌다. 가장 좋은 설명은?</p><div class="opts">
+        <button class="opt">유속이 높아 관이 마모되었다.</button><button class="opt" data-correct>점성 저층이 얇아져 벽의 요철이 드러났다.</button><button class="opt">흐름이 층류로 돌아갔다.</button><button class="opt">레이놀즈 응력이 사라졌다.</button>
+      </div><div class="quiz-exp">\(\delta_s \approx 5\nu/u_*\)이고 \(u_*\)는 유속과 함께 커진다. \(\varepsilon\)이 저층보다 커지면 거칠기가 마찰을 좌우한다.</div></div>
+      <div class="quiz-q"><p>병렬로 연결된 두 관에서 반드시 같은 것은?</p><div class="opts">
+        <button class="opt">유량</button><button class="opt">평균 속도</button><button class="opt" data-correct>수두 손실</button><button class="opt">마찰 계수</button>
+      </div><div class="quiz-exp">두 가지는 같은 두 절점 A, B를 잇고, A와 B의 에너지 수두는 하나뿐이므로 \(h_{L1} = h_{L2}\).</div></div>
+      <div class="quiz-q"><p>한 변이 \(a\)인 정사각형 덕트의 수력 직경은?</p><div class="opts">
+        <button class="opt">\(a/2\)</button><button class="opt" data-correct>\(a\)</button><button class="opt">\(\sqrt2\,a\)</button><button class="opt">\(4a\)</button>
+      </div><div class="quiz-exp">\(D_h = 4A/p = 4a^2/(4a) = a\). 내접원의 지름과 같다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const g = 9.81, NU = 1.004e-6, pal = () => SB.palette();
+  const fr = (Re, eD) => (Re < 2300 ? 64 / Re : Flow.colebrook(Re, eD));
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const supN = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  /** 1.23×10⁵ 꼴 */
+  const sci = (x, d = 3) => {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    const e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e < 4) return String(Number(x.toPrecision(d)));
+    const m = x / Math.pow(10, e);
+    return m.toFixed(d - 1) + "×10" + supN(e);
+  };
+  const fmtP = (Pa) => (Math.abs(Pa) >= 1e6 ? (Pa / 1e6).toPrecision(3) + " MPa" : Math.abs(Pa) >= 1e3 ? (Pa / 1e3).toPrecision(3) + " kPa" : Pa.toPrecision(3) + " Pa");
+  const regName = (Re) => (Re < 2300 ? "층류" : Re < 4000 ? "천이" : "난류");
+  const regColor = (Re) => { const P = pal(); return Re < 2300 ? P.ok : Re < 4000 ? P.warn : P.bad; };
+  const dyeCol = () => (SB.isDark() ? "rgba(255,120,90,.85)" : "rgba(205,50,30,.75)");
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col || SB.color("accent"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const texSci = (x) => { const e = Math.floor(Math.log10(x)); return `${(x / Math.pow(10, e)).toFixed(1)}\\times10^{${e}}`; };
+  const rnd = (a, b, s = 1) => Math.round((a + Math.random() * (b - a)) / s) * s;
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  /* ---------------------------------------------------------- 장 머리: 레이놀즈 염료 실험 */
+  {
+    const lo = Math.log10(500), hi = Math.log10(12000);
+    const st = { Re: 1200, auto: true, t: 0, dye: [], puffs: [], acc: 0 };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), x0 = 52, x1 = w - 12, cy = h * 0.36, hp = Math.min(30, h * 0.15);
+      const ty = h - 50, tx0 = 64, tx1 = w - 40;
+      const KX = (Re) => tx0 + ((Math.log10(Re) - lo) / (hi - lo)) * (tx1 - tx0);
+      self._g = { x0, x1, cy, hp, ty, tx0, tx1 };
+      ctx.fillStyle = Flow.waterColor(0.22); ctx.fillRect(0, cy - hp * 2.4, x0 - 8, hp * 4.8);
+      ctx.fillStyle = Flow.waterColor(0.14); ctx.fillRect(x0 - 8, cy - hp, x1 - x0 + 8, 2 * hp);
+      ctx.fillStyle = dyeCol();
+      for (const d of st.dye) ctx.fillRect(x0 + d.x - 1, cy + d.y * hp - 1, 2.2, 2.2);
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.moveTo(x0 - 26, cy - hp * 2.4); ctx.quadraticCurveTo(x0 - 8, cy - hp, x0 + 6, cy - hp); ctx.lineTo(x1, cy - hp);
+      ctx.moveTo(x0 - 26, cy + hp * 2.4); ctx.quadraticCurveTo(x0 - 8, cy + hp, x0 + 6, cy + hp); ctx.lineTo(x1, cy + hp); ctx.stroke();
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x0 - 36, cy - hp * 2.6); ctx.lineTo(x0 - 36, cy); ctx.lineTo(x0, cy); ctx.stroke();
+      ctx.restore();
+      SB.label(ctx, "염료", x0 - 36, cy - hp * 2.6 - 8, { size: 11, color: P.dim });
+      SB.label(ctx, `Re = ${Math.round(st.Re)} · ${regName(st.Re)}${st.Re >= 2300 && st.Re < 4000 ? "(간헐적 퍼프)" : ""}`, (x0 + x1) / 2, cy + hp + 16, { bold: true, size: 13, color: regColor(st.Re) });
+      // 손잡이 트랙
+      ctx.save(); ctx.lineWidth = 6; ctx.lineCap = "round";
+      [[500, 2300, P.ok], [2300, 4000, P.warn], [4000, 12000, P.bad]].forEach(([a, b, c]) => { ctx.strokeStyle = c; ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(KX(a), ty); ctx.lineTo(KX(b), ty); ctx.stroke(); });
+      ctx.restore();
+      [2300, 4000].forEach((r) => SB.label(ctx, String(r), KX(r), ty - 14, { size: 10, color: P.dim, mono: true }));
+      SB.label(ctx, "유량(Re) →", tx0, ty - 14, { size: 11, color: P.dim, align: "left" });
+      const kx = KX(st.Re); handle(ctx, kx, ty, P.accent, 10);
+      self._k = [kx, ty];
+    }, { aspect: 0.36, minHeight: 200, maxHeight: 300 });
+    const setFromX = (x) => { const G = cv._g; const t = SB.clamp((x - G.tx0) / (G.tx1 - G.tx0), 0, 1); st.Re = Math.pow(10, lo + t * (hi - lo)); st.auto = false; };
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._k ? [{ id: "k", x: cv._k[0], y: cv._k[1], r: 14 }] : []),
+      down: (id, x, y) => { st.grab = id === "k" || Math.abs(y - cv._g.ty) < 26; if (st.grab) setFromX(x); },
+      move: (id, x) => { if (st.grab) setFromX(x); },
+      up: () => { st.grab = false; },
+    });
+    document.getElementById("hero-auto").addEventListener("click", () => { st.auto = true; });
+    SB.loop("hero", (dt) => {
+      const G = cv._g; if (!G) return;
+      if (st.auto) { st.t += dt; st.Re = Math.pow(10, Math.log10(1000) + (Math.log10(9000) - Math.log10(1000)) * (0.5 - 0.5 * Math.cos(st.t * 0.22))); }
+      const Re = st.Re, L = G.x1 - G.x0, Vd = 60 + 50 * ((Math.log10(Re) - lo) / (hi - lo));
+      st.acc += dt * 150; while (st.acc >= 1) { st.acc -= 1; st.dye.push({ x: 0, y: (Math.random() - 0.5) * 0.04, vy: 0 }); }
+      if (Re >= 2300 && Re < 4000 && Math.random() < 0.9 * ((Re - 2300) / 1700) * dt * 1.5) st.puffs.push({ x: L * 0.15, len: 40 + 80 * Math.random() });
+      st.puffs.forEach((p) => (p.x += Vd * dt)); st.puffs = st.puffs.filter((p) => p.x - p.len < L);
+      const xtr = L * (0.35 - 0.25 * Math.min(1, (Re - 4000) / 6000));
+      for (const d of st.dye) {
+        let I = 0;
+        if (Re >= 4000) I = d.x > xtr ? 1 : Math.max(0, (d.x - xtr * 0.6) / (xtr * 0.4));
+        else if (Re >= 2300) I = st.puffs.some((p) => d.x <= p.x && d.x >= p.x - p.len) ? 1 : 0;
+        else if (Re > 1900) I = 0.04 * (Re - 1900) / 400;
+        d.x += Vd * (1.15 - 0.5 * d.y * d.y) * dt + I * Vd * 0.25 * SB.randn() * dt;
+        d.vy += (-d.vy / 0.12) * dt + I * 3 * Math.sqrt((2 * dt) / 0.12) * SB.randn();
+        d.y += d.vy * dt;
+        if (d.y > 0.95) { d.y = 0.95; d.vy = -Math.abs(d.vy); } if (d.y < -0.95) { d.y = -0.95; d.vy = Math.abs(d.vy); }
+      }
+      st.dye = st.dye.filter((d) => d.x < L);
+      if (st.dye.length > 900) st.dye.splice(0, st.dye.length - 900);
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 입구 영역 드래그 숫자 */
+  SB.tangle("tg-entry", (v) => {
+    const D = v.D / 100, Re = (v.V * D) / NU, turb = Re >= 2300, LhD = turb ? 1.359 * Math.pow(Re, 0.25) : 0.05 * Re;
+    return { Re: sci(Re), reg: Re < 2300 ? "층류" : Re < 4000 ? "천이 영역(난류 식으로 추정)" : "난류", Lh: (LhD * D).toPrecision(3) + " m", LD: LhD.toFixed(0) };
+  });
+
+  /* ---------------------------------------------------------- 입구 영역 시뮬레이터 */
+  {
+    const shape = (eta, turb) => (turb ? Math.pow(Math.max(eta, 0), 1 / 7) : 2 * eta - eta * eta);
+    const mkTable = (turb) => { const T = []; for (let k = 0; k <= 100; k++) { const d = Math.max(1e-4, k / 100); let I = 0; const n = 60; for (let i = 0; i < n; i++) { const r = 1 - d + ((i + 0.5) / n) * d, eta = (1 - r) / d; I += (shape(eta, turb) * r * d) / n; } T.push(0.5 / ((1 - d) ** 2 / 2 + I)); } return T; };
+    const TB = { lam: mkTable(false), turb: mkTable(true) };
+    const st = { s: 0.35 };
+    const info = () => { const Re = Math.pow(10, getRe()), turb = Re >= 2300, LhD = turb ? 1.359 * Math.pow(Re, 0.25) : 0.05 * Re; return { Re, turb, LhD, X: 1.3 * LhD }; };
+    const dAt = (xr, turb) => Math.min(1, turb ? Math.pow(Math.max(xr, 0), 0.8) : Math.sqrt(Math.max(xr, 0)));
+    const ucAt = (xr, turb) => { const d = dAt(xr, turb), T = turb ? TB.turb : TB.lam, k = d * 100, i = Math.min(99, Math.floor(k)); return T[i] + (k - i) * (T[i + 1] - T[i]); };
+    const uAt = (xr, rs, turb) => { const d = Math.max(1e-4, dAt(xr, turb)), U = ucAt(xr, turb); if (1 - rs >= d) return U; return U * shape((1 - rs) / d, turb); };
+    const getRe = SB.range("en-re", (v) => sci(Math.pow(10, v), 2), () => { cv.redraw(); upd(); });
+    let init = true;
+    const PT = Flow.particles(170, [0, 1, -1, 1], { spawn: (r) => [init ? r() : r() * 0.01, r() * 1.94 - 0.97], life: 1e9 });
+    init = false;
+    const vel = (s, y) => { const I = info(); return [0.16 * uAt(s * 1.3, Math.abs(y), I.turb), 0]; };
+    const bl = document.getElementById("en-bl"), pts = document.getElementById("en-pts");
+    [bl, pts].forEach((e) => e.addEventListener("change", () => cv.redraw()));
+    function upd() {
+      const I = info();
+      SB.stat("en-reg", `<span style="color:${regColor(I.Re)}">${I.Re < 2300 ? "층류" : I.Re < 4000 ? "천이(난류 식)" : "난류"}</span>`);
+      SB.stat("en-lh", I.LhD.toFixed(I.LhD < 100 ? 1 : 0));
+      SB.stat("en-x", (st.s * I.X).toFixed(1));
+      SB.stat("en-uc", ucAt(st.s * 1.3, I.turb).toFixed(3));
+    }
+    const cv = SB.canvas("cv-entry", (ctx, w, h, self) => {
+      const P = pal(), I = info(), R = Math.min(44, h * 0.13), cy = 30 + R, px0 = 30, px1 = w - 14;
+      const X = (s) => px0 + s * (px1 - px0);
+      ctx.fillStyle = Flow.waterColor(0.14); ctx.fillRect(px0, cy - R, px1 - px0, 2 * R);
+      ctx.fillStyle = Flow.waterColor(0.25); ctx.fillRect(0, cy - R * 1.6, px0 - 4, R * 3.2);
+      if (bl.checked) {
+        ctx.save(); ctx.strokeStyle = P.accent2; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+        [-1, 1].forEach((sg) => { ctx.beginPath(); for (let k = 0; k <= 80; k++) { const s = k / 80, d = dAt(s * 1.3, I.turb), yy = cy + sg * R * (1 - d); k ? ctx.lineTo(X(s), yy) : ctx.moveTo(X(s), yy); } ctx.stroke(); });
+        ctx.restore();
+      }
+      if (pts.checked) PT.pts.forEach((p) => { const u = uAt(p.x * 1.3, Math.abs(p.y), I.turb); ctx.fillStyle = Flow.ramp(u / 2, 0.85); ctx.beginPath(); ctx.arc(X(p.x), cy + p.y * R, 2, 0, Math.PI * 2); ctx.fill(); });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(px0, cy - R); ctx.lineTo(px1, cy - R); ctx.moveTo(px0, cy + R); ctx.lineTo(px1, cy + R); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, X(1 / 1.3), cy - R - 6, X(1 / 1.3), cy + R + 6, P.dim, [3, 3]);
+      const ys = [], scale = Math.min(70, (px1 - px0) * 0.16) / 2;
+      for (let k = 0; k <= 24; k++) ys.push(cy - R + (2 * R * k) / 24);
+      const prof = (s) => ys.map((y) => uAt(s * 1.3, Math.min(1, Math.abs(y - cy) / R), I.turb));
+      [0.03, 0.25, 0.55].forEach((s) => { if (Math.abs(s - st.s) > 0.06) Flow.profile(ctx, X(s), ys, prof(s), scale, { color: P.faint, every: 4 }); });
+      const ps = Math.min(st.s, 0.995);
+      Flow.profile(ctx, X(ps), ys, prof(ps), scale, { color: P.accent, every: 3 });
+      handle(ctx, X(st.s), cy - R, P.accent, 9);
+      self._h = [X(st.s), cy - R];
+      SB.label(ctx, `x/D = ${(st.s * I.X).toFixed(1)}`, SB.clamp(X(st.s), 40, w - 40), cy - R - 18, { size: 11, color: P.accent, bold: true });
+      self._px = [px0, px1];
+      // 아래: 중심 속도 그래프
+      const top = cy + R + 26, box = { x: 58, y: top, w: w - 58 - 18, h: h - top - 46 };
+      const data = []; for (let k = 0; k <= 120; k++) { const s = k / 120; data.push([s * I.X, ucAt(s * 1.3, I.turb)]); }
+      SB.chart(ctx, box, { x: [0, I.X], y: [0.9, I.turb ? 1.35 : 2.15], xLabel: "x/D", yLabel: "u_c / V", series: [{ data, color: P.accent, width: 2.2 }], vlines: [{ x: I.LhD, label: "L_h", color: P.dim }], hlines: [{ y: I.turb ? TB.turb[100] : 2, label: I.turb ? "완전 발달(1/7 멱법칙)" : "완전 발달 = 2", color: P.faint }], points: [{ x: st.s * I.X, y: ucAt(st.s * 1.3, I.turb), color: P.accent2, r: 6 }] });
+    }, { aspect: 0.78, minHeight: 330, maxHeight: 470 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "p") return; st.s = SB.clamp((x - cv._px[0]) / (cv._px[1] - cv._px[0]), 0, 1); upd(); },
+    });
+    const loop = SB.loop("sim-entry", (dt) => { PT.step(vel, dt); cv.redraw(); });
+    SB.play("en-play", loop);
+    document.getElementById("en-end").addEventListener("click", () => { st.s = 1 / 1.3; upd(); cv.redraw(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 하겐–푸아죄유 드래그 숫자 (D⁻⁴) */
+  {
+    let vals = null, cv = null;
+    const calc = (v) => { const mu = v.mu * 1e-3, D = v.D * 1e-3, Q = v.Q / 60000, A = (Math.PI * D * D) / 4, V = Q / A; return { dP: (128 * mu * v.L * Q) / (Math.PI * D ** 4), V, Re: (900 * V * D) / mu, Q }; };
+    SB.tangle("tg-hp", (v) => {
+      vals = v; const c = calc(v);
+      return { dP: fmtP(c.dP), W: SB.si(c.Q * c.dP, "W"), Re: c.Re < 2300 ? `Re = ${sci(c.Re)}, 층류 확인` : `<span style="color:var(--bad)">Re = ${sci(c.Re)} — 층류가 아니어서 이 식은 맞지 않는다</span>` };
+    }, { onChange: () => cv && cv.redraw() });
+    cv = SB.canvas("cv-tghp", (ctx, w, h) => {
+      if (!vals) return;
+      const P = pal(), c = calc(vals), cy = h / 2, rmax = h / 2 - 8, r = Math.max(2, (vals.D / 40) * rmax);
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.3); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(14 + rmax, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `D ${vals.D} mm`, 14 + rmax, h - 8, { size: 10, color: P.dim });
+      const bx0 = 2 * rmax + 40, bx1 = w - 16, L0 = 2, L1 = 9, BX = (pa) => bx0 + ((SB.clamp(Math.log10(pa), L0, L1) - L0) / (L1 - L0)) * (bx1 - bx0), by = cy;
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(bx1, by); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(BX(c.dP), by); ctx.stroke(); ctx.restore();
+      for (let e = L0; e <= L1; e++) SB.label(ctx, e === 3 ? "1 kPa" : e === 6 ? "1 MPa" : e === 9 ? "1 GPa" : "", bx0 + ((e - L0) / (L1 - L0)) * (bx1 - bx0), by + 18, { size: 10, color: P.dim });
+      const half = c.dP * 16; SB.dashLine(ctx, BX(half), by - 12, BX(half), by + 8, P.bad, [2, 2]);
+      SB.label(ctx, "D/2이면", BX(half), by - 20, { size: 10, color: P.bad });
+      SB.label(ctx, "ΔP (로그 눈금)", bx0, by - 20, { size: 10, color: P.dim, align: "left" });
+    }, { aspect: 0.2, minHeight: 100, maxHeight: 140 });
+  }
+
+  /* ---------------------------------------------------------- 경사관 드래그 숫자 */
+  SB.tangle("tg-incline", (v) => {
+    const rho = 1260, mu = 1.41, D = 0.02, L = 10, grav = rho * g * L * Math.sin((v.th * Math.PI) / 180), net = v.dP * 1e3 - grav, Q = (Math.PI * net * D ** 4) / (128 * mu * L);
+    const gs = Math.abs(grav) < 1 ? "흐름에 영향을 주지 않고," : grav > 0 ? `압력 차 중 ${(grav / 1e3).toFixed(1)} kPa를 상쇄하고,` : `오히려 ${(-grav / 1e3).toFixed(1)} kPa만큼 흐름을 거들고,`;
+    const dir = Math.abs(net) < 1 ? "정수압 평형이라 흐르지 않는다" : net > 0 ? (v.th > 0 ? "위쪽으로 흐른다" : v.th < 0 ? "아래쪽으로 흐른다" : "수평으로 흐른다") : '<span style="color:var(--bad)">압력이 무게를 못 이겨 반대 방향(아래쪽)으로 흐른다</span>';
+    return { grav: gs, Q: (Math.abs(Q) * 1000).toPrecision(3) + " L/s", dir };
+  });
+
+  /* ---------------------------------------------------------- 난류 요동 */
+  {
+    const st = { a: 0, b: 0, hist: [], suv: 0, suu: 0, svv: 0, n: 0 };
+    const getY = SB.range("fl-y", (v) => v.toFixed(2), () => { reset(); });
+    function reset() { st.suv = st.suu = st.svv = 0; st.n = 0; st.hist = []; cv.redraw(); }
+    const par = () => { const y = getY(); return { y, ub: Math.pow(y, 1 / 7), su: 0.045 + 0.1 * Math.pow(1 - y, 1.5) + (y < 0.15 ? 0.03 : 0), c: -0.45 * Math.sqrt(Math.max(0, 1 - y)) }; };
+    const cv = SB.canvas("cv-fluct", (ctx, w, h) => {
+      const P = pal(), p = par(), split = Math.max(w - h - 10, w * 0.55), bx = { x: 44, y: 14, w: split - 60, h: h - 40 };
+      // 시간 신호
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.lineWidth = 1; ctx.strokeRect(bx.x, bx.y, bx.w, bx.h); ctx.restore();
+      const Yu = (u) => bx.y + bx.h - ((u - 0.3) / 1.0) * bx.h;
+      SB.dashLine(ctx, bx.x, Yu(p.ub), bx.x + bx.w, Yu(p.ub), P.accent2, [5, 4]);
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.4; ctx.beginPath();
+      st.hist.forEach((q, i) => { const x = bx.x + (i / 299) * bx.w, y = Yu(SB.clamp(p.ub + q[0], 0.3, 1.3)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "u(t)/u_max", bx.x + 4, bx.y + 10, { size: 11, align: "left", color: P.dim });
+      SB.label(ctx, "시간 평균 ū", bx.x + bx.w - 4, Yu(p.ub) - 10, { size: 11, align: "right", color: P.accent2 });
+      SB.label(ctx, "시간 →", bx.x + bx.w / 2, h - 12, { size: 11, color: P.dim });
+      // 산점도
+      const s = Math.min(h - 40, w - split - 20), sx = split + 6, sy = 14, c0 = sx + s / 2, c1 = sy + s / 2, k = s / 2 / 0.4;
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(sx, c1, s / 2, s / 2); ctx.fillRect(c0, sy, s / 2, s / 2); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.strokeRect(sx, sy, s, s); ctx.beginPath(); ctx.moveTo(c0, sy); ctx.lineTo(c0, sy + s); ctx.moveTo(sx, c1); ctx.lineTo(sx + s, c1); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = P.accent;
+      st.hist.forEach((q) => { const x = c0 + SB.clamp(q[0], -0.4, 0.4) * k, y = c1 - SB.clamp(q[1], -0.4, 0.4) * k; ctx.fillRect(x - 1.2, y - 1.2, 2.4, 2.4); });
+      SB.label(ctx, "u'", sx + s - 8, c1 - 9, { size: 11, color: P.dim });
+      SB.label(ctx, "v'", c0 + 9, sy + 9, { size: 11, color: P.dim });
+      SB.label(ctx, "u'v' < 0", sx + s * 0.25, sy + s - 10, { size: 10, color: P.dim });
+    }, { aspect: 0.42, minHeight: 190, maxHeight: 270 });
+    const loop = SB.loop("mini-fluct", (dt) => {
+      const p = par(), tau = 0.06;
+      for (let i = 0; i < 3; i++) {
+        const h = dt / 3;
+        st.a += (-st.a / tau) * h + Math.sqrt((2 * h) / tau) * SB.randn();
+        st.b += (-st.b / tau) * h + Math.sqrt((2 * h) / tau) * SB.randn();
+      }
+      const up = p.su * st.a, vp = 0.6 * p.su * (p.c * st.a + Math.sqrt(1 - p.c * p.c) * st.b);
+      st.hist.push([up, vp]); if (st.hist.length > 300) st.hist.shift();
+      st.suv += up * vp; st.suu += up * up; st.svv += vp * vp; st.n++;
+      const r = st.suv / Math.sqrt(st.suu * st.svv || 1);
+      document.getElementById("fl-r").textContent = `−u'v' 평균 = ${(-st.suv / st.n * 1e3).toFixed(2)}×10⁻³ u²max · 상관계수 ${r.toFixed(2)}`;
+      cv.redraw();
+    });
+    SB.play("fl-play", loop);
+    document.getElementById("fl-reset").addEventListener("click", reset);
+  }
+
+  /* ---------------------------------------------------------- 층류 vs 난류 속도 분포 */
+  {
+    const nT = [[3.6, 6], [4.36, 6.6], [5.04, 7], [6.04, 8.8], [6.5, 10]];
+    const st = { rp: 0.6 };
+    const getRe = SB.range("pr-re", (v) => sci(Math.pow(10, v), 2), () => { upd(); cv.redraw(); });
+    const nOf = () => Flow.interp(nT.map((q) => q[0]), nT.map((q) => q[1]), getRe());
+    const ratio = (n) => (2 * n * n) / ((n + 1) * (2 * n + 1));
+    const uL = (rs) => 2 * (1 - rs * rs), uT = (rs, n) => Math.pow(Math.max(0, 1 - rs), 1 / n) / ratio(n);
+    let init = true;
+    const sp = (r) => [init ? r() : r() * 0.01, r() * 1.94 - 0.97];
+    const PL = Flow.particles(80, [0, 1, -1, 1], { spawn: sp, life: 1e9 }), PTb = Flow.particles(80, [0, 1, -1, 1], { spawn: sp, life: 1e9 });
+    init = false;
+    const fl = document.getElementById("pr-fl"), mean = document.getElementById("pr-mean");
+    [fl, mean].forEach((e) => e.addEventListener("change", () => cv.redraw()));
+    function upd() {
+      const n = nOf(), Re = Math.pow(10, getRe()), rs = Math.abs(st.rp);
+      SB.stat("pr-n", n.toFixed(1));
+      SB.stat("pr-umax", `2.00 · ${(1 / ratio(n)).toFixed(2)}`);
+      SB.stat("pr-u", `r/R = ${rs.toFixed(2)}: ${uL(rs).toFixed(2)} · ${uT(rs, n).toFixed(2)}`);
+      SB.stat("pr-tw", ((Flow.colebrook(Re, 0) * Re) / 64).toFixed(1) + "배");
+    }
+    const geo = (w, h) => { const ph = (h - 16) / 2, R = ph / 2 - 16; return { ph, R, c1: 8 + ph / 2 + 6, c2: 8 + ph * 1.5 + 6, px0: 12, px1: w - 44 }; };
+    const cv = SB.canvas("cv-profile", (ctx, w, h, self) => {
+      const P = pal(), G = geo(w, h), n = nOf(), X = (s) => G.px0 + s * (G.px1 - G.px0), xp = X(0.1), k = (G.px1 - G.px0) * 0.15;
+      [[G.c1, PL, (rs) => uL(rs), "층류 (Re < 2300) · 포물선"], [G.c2, PTb, (rs) => uT(rs, n), `난류 Re = ${sci(Math.pow(10, getRe()), 2)} · 1/${n.toFixed(1)} 멱법칙`]].forEach(([cy, PP, uf, lab]) => {
+        ctx.fillStyle = Flow.waterColor(0.13); ctx.fillRect(G.px0, cy - G.R, G.px1 - G.px0, 2 * G.R);
+        PP.pts.forEach((p) => { const u = uf(Math.abs(p.y)); ctx.fillStyle = Flow.ramp(u / 2.05, 0.85); ctx.beginPath(); ctx.arc(X(p.x), cy + p.y * G.R, 2, 0, Math.PI * 2); ctx.fill(); });
+        ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(G.px0, cy - G.R); ctx.lineTo(G.px1, cy - G.R); ctx.moveTo(G.px0, cy + G.R); ctx.lineTo(G.px1, cy + G.R); ctx.stroke(); ctx.restore();
+        const ys = [], us = []; for (let i = 0; i <= 40; i++) { const y = cy - G.R + (2 * G.R * i) / 40; ys.push(y); us.push(uf(Math.min(1, Math.abs(y - cy) / G.R))); }
+        Flow.profile(ctx, xp, ys, us, k, { color: P.accent, every: 4 });
+        if (mean.checked) { SB.dashLine(ctx, xp + k, cy - G.R, xp + k, cy + G.R, P.accent2, [5, 4]); SB.label(ctx, "V", xp + k + 8, cy - G.R + 10, { size: 11, color: P.accent2, bold: true }); }
+        const yy = cy - st.rp * G.R, uu = uf(Math.abs(st.rp));
+        SB.dashLine(ctx, G.px0, yy, G.px1 + 30, yy, P.warn, [3, 3]);
+        ctx.save(); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(xp + uu * k, yy, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        SB.label(ctx, `u/V = ${uu.toFixed(2)}`, Math.min(xp + uu * k + 40, G.px1 - 30), yy - 10, { size: 11, color: P.warn, bold: true });
+        SB.label(ctx, lab, G.px1 - 6, cy - G.R - 8, { size: 11, color: P.dim, align: "right" });
+      });
+      const hy = G.c1 - st.rp * G.R; handle(ctx, G.px1 + 26, hy, P.warn, 9);
+      self._h = [G.px1 + 26, hy]; self._G = G;
+    }, { aspect: 0.64, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "r", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "r") return; const G = cv._G; st.rp = SB.clamp((G.c1 - y) / G.R, -0.98, 0.98); upd(); },
+    });
+    const loop = SB.loop("sim-profile", (dt) => {
+      const n = nOf();
+      PL.step((s, y) => [0.1 * uL(Math.abs(y)), 0], dt);
+      PTb.step((s, y) => [0.1 * uT(Math.abs(y), n), 0], dt);
+      if (fl.checked) PTb.pts.forEach((p) => { p.vy = (p.vy || 0) - ((p.vy || 0) / 0.12) * dt + 0.8 * Math.sqrt((2 * dt) / 0.12) * SB.randn(); p.y += p.vy * dt; if (p.y > 0.97) { p.y = 0.97; p.vy = -Math.abs(p.vy); } if (p.y < -0.97) { p.y = -0.97; p.vy = Math.abs(p.vy); } p.x += 0.012 * SB.randn() * dt * 10; if (p.x < 0) p.x = 0; });
+      cv.redraw();
+    });
+    SB.play("pr-play", loop);
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 무디 선도 */
+  {
+    const EDS = [0, 1e-6, 1e-5, 5e-5, 1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 0.01, 0.02, 0.05];
+    const RE0 = 600, RE1 = 1e8, F0 = 0.007, F1 = 0.1;
+    const curves = EDS.map((eD) => { const tr = [], tu = []; for (let k = 0; k <= 140; k++) { const Re = Math.pow(10, Math.log10(2300) + (k / 140) * (8 - Math.log10(2300))); (Re <= 4000 ? tr : tu).push([Re, Flow.colebrook(Re, eD)]); if (Re > 4000 && tu.length === 1) tr.push([Re, Flow.colebrook(Re, eD)]); } return { eD, tr, tu }; });
+    const rough = []; EDS.filter((e) => e > 0).forEach((eD) => { const finf = 1 / Math.pow(-2 * Math.log10(eD / 3.7), 2); let a = 3, b = 10; for (let i = 0; i < 50; i++) { const m = (a + b) / 2; (Flow.colebrook(Math.pow(10, m), eD) - finf) / finf > 0.01 ? (a = m) : (b = m); } const Re = Math.pow(10, (a + b) / 2); if (Re <= RE1) rough.push([Re, Flow.colebrook(Re, eD)]); });
+    const st = { Re: 1.5e5, eD: 0.0009 };
+    const sel = document.getElementById("md-mat");
+    Object.entries(Flow.roughness).forEach(([k, m]) => { const o = document.createElement("option"); o.value = k; o.textContent = `${m.ko} (ε = ${Number((m.e * 1000).toPrecision(3))} mm)`; if (k === "steel") o.selected = true; sel.append(o); });
+    const getD = SB.range("md-D", (v) => Math.pow(10, v).toPrecision(3) + " mm", () => applyMat());
+    function applyMat() { st.eD = Math.min(0.05, Flow.roughness[sel.value].e / (Math.pow(10, getD()) / 1000)); upd(); cv.redraw(); }
+    sel.addEventListener("change", applyMat);
+    document.getElementById("md-set").addEventListener("click", applyMat);
+    ["md-haal", "md-rough"].forEach((id) => document.getElementById(id).addEventListener("change", () => cv.redraw()));
+    function upd() {
+      const f = fr(st.Re, st.eD), fh = Flow.haaland(st.Re, st.eD);
+      SB.stat("md-re", sci(st.Re));
+      SB.stat("md-ed", st.eD === 0 ? "0 (매끈)" : sci(st.eD, 2));
+      SB.stat("md-f", f.toFixed(4));
+      SB.stat("md-h", st.Re < 2300 ? "— (층류)" : (((fh - f) / f) * 100).toFixed(2) + " %");
+      let reg;
+      if (st.Re < 2300) reg = "층류 f = 64/Re";
+      else if (st.Re < 4000) reg = "천이(불확실)";
+      else { const f0 = Flow.colebrook(st.Re, 0), finf = st.eD > 0 ? 1 / Math.pow(-2 * Math.log10(st.eD / 3.7), 2) : 0; reg = f / f0 < 1.02 ? "난류 · 매끈한 관" : (f - finf) / finf < 0.01 ? "완전 거친 영역" : "난류 · 천이 거칠기"; }
+      SB.stat("md-reg", reg);
+    }
+    let CH = null;
+    const cv = SB.canvas("cv-moody", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 58, y: 14, w: w - 58 - 14, h: h - 14 - 46 };
+      const series = [{ data: [[RE0, 64 / RE0], [2300, 64 / 2300]], color: P.text, width: 2.2 }, { data: [[2300, 64 / 2300], [4000, 0.016]], color: P.faint, width: 1.4, dash: [4, 4] }];
+      curves.forEach((c) => { const on = Math.abs(Math.log10((c.eD || 1e-9) / (st.eD || 1e-9))) < 0.02; series.push({ data: c.tr, color: P.faint, width: 1, dash: [3, 3] }); series.push({ data: c.tu, color: c.eD === 0 ? P.text : on ? P.accent : P.dim, width: c.eD === 0 || on ? 2 : 1.1 }); });
+      if (document.getElementById("md-rough").checked) series.push({ data: rough, color: P.warn, width: 1.4, dash: [6, 4] });
+      if (st.eD > 0 && !EDS.some((e) => Math.abs(e - st.eD) / st.eD < 0.02)) { const d = []; for (let k = 0; k <= 100; k++) { const Re = Math.pow(10, 3.6 + (k / 100) * 4.4); d.push([Re, Flow.colebrook(Re, st.eD)]); } series.push({ data: d, color: P.accent, width: 2 }); }
+      if (document.getElementById("md-haal").checked) { const d = []; for (let k = 0; k <= 100; k++) { const Re = Math.pow(10, 3.6 + (k / 100) * 4.4); d.push([Re, Flow.haaland(Re, st.eD)]); } series.push({ data: d, color: P.accent2, width: 2, dash: [6, 3] }); }
+      const f = fr(st.Re, st.eD);
+      CH = SB.chart(ctx, box, { x: [RE0, RE1], y: [F0, F1], logX: true, logY: true, xLabel: "레이놀즈 수 Re", yLabel: "마찰 계수 f", yTicks: [0.008, 0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.07, 0.1], yFmt: (v) => String(v), xFmt: (v) => "10" + supN(Math.round(Math.log10(v))), bands: [{ x0: 2300, x1: 4000, color: SB.color("accent-soft") }], series });
+      const every = w < 520 ? 2 : 1;
+      curves.forEach((c, i) => { if (c.eD === 0 || i % every) return; const fe = c.tu[c.tu.length - 1][1]; if (fe > F1 || fe < F0) return; SB.label(ctx, String(c.eD), box.x + box.w - 3, CH.Y(fe) - 6, { size: 10, color: P.dim, align: "right", mono: true }); });
+      SB.label(ctx, "매끈한 관", CH.X(3e7), CH.Y(Flow.colebrook(3e7, 0)) + 10, { size: 10, color: P.text });
+      SB.label(ctx, "층류 64/Re", CH.X(900), CH.Y(64 / 900) - 10, { size: 10, color: P.text, align: "left" });
+      if (document.getElementById("md-rough").checked && w >= 420) SB.label(ctx, "완전 거친 영역 →", CH.X(4e5), CH.Y(0.075), { size: 10, color: P.warn });
+      const px = CH.X(st.Re), py = CH.Y(f);
+      SB.dashLine(ctx, px, py, px, box.y + box.h, P.accent2, [3, 3]); SB.dashLine(ctx, box.x, py, px, py, P.accent2, [3, 3]);
+      handle(ctx, px, py, P.accent2, 9);
+      SB.label(ctx, `f = ${f.toFixed(4)}`, SB.clamp(px + 46, box.x + 40, box.x + box.w - 40), py - 16, { bold: true, color: P.accent2 });
+      self._h = [px, py]; self._box = box;
+    }, { aspect: 0.74, minHeight: 320, maxHeight: 520 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id !== "p") return;
+        const b = cv._box, lx = Math.log10(RE0) + ((x - b.x) / b.w) * (8 - Math.log10(RE0));
+        st.Re = Math.pow(10, SB.clamp(lx, Math.log10(RE0), 8));
+        const ft = Math.pow(10, Math.log10(F0) + ((b.y + b.h - y) / b.h) * (Math.log10(F1) - Math.log10(F0)));
+        if (st.Re >= 2300) {
+          if (ft <= Flow.colebrook(st.Re, 1e-7)) st.eD = 0;
+          else if (ft >= Flow.colebrook(st.Re, 0.05)) st.eD = 0.05;
+          else { let a = -7, c = Math.log10(0.05); for (let i = 0; i < 40; i++) { const m = (a + c) / 2; Flow.colebrook(st.Re, Math.pow(10, m)) < ft ? (a = m) : (c = m); } st.eD = Number(Math.pow(10, (a + c) / 2).toPrecision(2)); }
+        }
+        upd();
+      },
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 수력 직경 */
+  {
+    const A = 0.01;
+    const shapeSeg = SB.seg("dh-shape", () => { setLab(); cv.redraw(); });
+    const getK = SB.range("dh-k", () => "", () => cv.redraw());
+    const lab = document.getElementById("dh-k-lab"), out = document.getElementById("dh-k-out");
+    const fRect = (a) => { let s = 0; for (let n = 1; n < 60; n += 2) s += Math.tanh((n * Math.PI * a) / 2) / Math.pow(n, 5); return 96 / ((1 + 1 / a) ** 2 * (1 - (192 / (Math.pow(Math.PI, 5) * a)) * s)); };
+    const fAnn = (k) => (64 * (1 - k) ** 2) / (1 + k * k - (1 - k * k) / Math.log(1 / k));
+    function geom() {
+      const s = shapeSeg(), k = getK() / 100;
+      if (s === "rect") { const al = 1 + 9 * k, a = Math.sqrt(A / al), b = al * a, P = 2 * (a + b); return { s, al, a, b, P, Dh: (4 * A) / P, fRe: fRect(al), txt: `b/a = ${al.toFixed(1)}` }; }
+      if (s === "tri") { const sd = Math.sqrt((4 * A) / Math.sqrt(3)); return { s, sd, P: 3 * sd, Dh: sd / Math.sqrt(3), fRe: 53.3, txt: "—" }; }
+      if (s === "ann") { const kk = 0.05 + 0.85 * k, Do = Math.sqrt((4 * A) / (Math.PI * (1 - kk * kk))), Di = kk * Do; return { s, kk, Do, Di, P: Math.PI * (Do + Di), Dh: Do - Di, fRe: fAnn(kk), txt: `Dᵢ/Dₒ = ${kk.toFixed(2)}` }; }
+      const D = Math.sqrt((4 * A) / Math.PI); return { s, D, P: Math.PI * D, Dh: D, fRe: 64, txt: "—" };
+    }
+    function setLab() { const s = shapeSeg(); lab.textContent = s === "rect" ? "가로세로비 b/a" : s === "ann" ? "지름비 Dᵢ/Dₒ" : "치수비(해당 없음)"; getK.el.disabled = !(s === "rect" || s === "ann"); }
+    const cv = SB.canvas("cv-dh", (ctx, w, h) => {
+      const P = pal(), G = geom(), cx = Math.min(w * 0.36, w / 2 - 20), cy = h / 2, sc = (Math.min(w * 0.6, h) - 24) / 0.36;
+      ctx.save(); ctx.fillStyle = Flow.waterColor(0.35); ctx.strokeStyle = P.text; ctx.lineWidth = 2.2; ctx.beginPath();
+      if (G.s === "circle") ctx.arc(cx, cy, (G.D / 2) * sc, 0, Math.PI * 2);
+      else if (G.s === "rect") { const ww = Math.min(G.b * sc, w * 0.66), hh = G.a * sc * (ww / (G.b * sc)); ctx.rect(cx - ww / 2, cy - hh / 2, ww, hh); }
+      else if (G.s === "tri") { const r = (G.sd / Math.sqrt(3)) * sc; for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (i * 2 * Math.PI) / 3; i ? ctx.lineTo(cx + r * Math.cos(a), cy + r * 0.0 + r * Math.sin(a) + r * 0.25) : ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a) + r * 0.25); } ctx.closePath(); }
+      else { ctx.arc(cx, cy, (G.Do / 2) * sc, 0, Math.PI * 2); ctx.moveTo(cx + (G.Di / 2) * sc, cy); ctx.arc(cx, cy, (G.Di / 2) * sc, 0, Math.PI * 2, true); }
+      ctx.fill("evenodd"); ctx.stroke(); ctx.restore();
+      const rr = (G.Dh / 2) * sc * (G.s === "rect" ? Math.min(1, (w * 0.66) / (G.b * sc)) : 1);
+      if (G.s !== "ann") { ctx.save(); ctx.strokeStyle = P.accent2; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(cx, cy + (G.s === "tri" ? 0 : 0), rr, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
+      const tx = Math.min(w - 8, cx + w * 0.62);
+      SB.label(ctx, `A = 0.01 m², p = ${G.P.toFixed(3)} m`, w - 8, 16, { size: 11, align: "right", color: P.dim });
+      SB.label(ctx, `D_h = 4A/p = ${(G.Dh * 1000).toFixed(1)} mm`, w - 8, h - 30, { size: 12, align: "right", bold: true, color: P.accent2 });
+      SB.label(ctx, `층류 f·Re = ${G.fRe.toFixed(1)}`, w - 8, h - 12, { size: 12, align: "right", color: P.text });
+      void tx;
+      out.textContent = G.txt;
+      document.getElementById("dh-r").textContent = `D_h = ${(G.Dh * 1000).toFixed(1)} mm (원형의 ${((G.Dh / Math.sqrt((4 * A) / Math.PI)) * 100).toFixed(0)}%), f·Re = ${G.fRe.toFixed(1)}`;
+    }, { aspect: 0.42, minHeight: 190, maxHeight: 260 });
+    setLab(); cv.redraw();
+  }
+
+  /* ---------------------------------------------------------- 급확대·급축소 */
+  {
+    const st = { t: 0 };
+    const type = SB.seg("ex-type", () => cv.redraw());
+    const getB = SB.range("ex-b", (v) => v.toFixed(2), () => cv.redraw());
+    const K = () => { const b = getB(), r = b * b; return type() === "exp" ? (1 - r) ** 2 : 0.42 * (1 - r); };
+    const jets = Array.from({ length: 70 }, () => ({ x: Math.random(), e: Math.random() * 2 - 1 }));
+    const eddies = Array.from({ length: 16 }, (_, i) => ({ a: Math.random() * 6.28, s: i % 2 ? 1 : -1, r: 0.3 + 0.6 * Math.random() }));
+    const cv = SB.canvas("cv-expand", (ctx, w, h) => {
+      const P = pal(), exp = type() === "exp", b = getB(), Kv = K();
+      const cy = h * 0.62, Rb = Math.min(h * 0.3, 60), Rs = Rb * b, xs = w * 0.38, x0 = 10, x1 = w - 10;
+      const Rl = exp ? Rs : Rb, Rr = exp ? Rb : Rs; // 왼쪽/오른쪽 관 반지름
+      const Lr = exp ? Math.min(x1 - xs - 10, (Rb - Rs) * 6 + 20) : Rs * 2.5;
+      const half = (x) => { // 분류 반폭(px)
+        if (exp) return x < xs ? Rs : Rs + (Rb - Rs) * Math.min(1, Math.pow((x - xs) / Lr, 0.8));
+        if (x < xs - Rb) return Rb;
+        if (x < xs) return Rb - (Rb - Rs) * Math.pow((x - (xs - Rb)) / Rb, 1.5);
+        const vc = 0.62 + 0.38 * b * b, xm = xs + Rs * 0.8;
+        if (x < xm) return Rs * (1 - (1 - vc) * ((x - xs) / (xm - xs)));
+        return Rs * (vc + (1 - vc) * Math.min(1, (x - xm) / (Lr)));
+      };
+      ctx.fillStyle = Flow.waterColor(0.13); ctx.fillRect(x0, cy - Rl, xs - x0, 2 * Rl); ctx.fillRect(xs, cy - Rr, x1 - xs, 2 * Rr);
+      // 재순환 와류
+      ctx.save(); ctx.fillStyle = P.dim;
+      eddies.forEach((e) => { let ex, ey, rx, ry; if (exp) { rx = Lr * 0.35; ry = (Rb - Rs) * 0.42; ex = xs + rx * 1.05; ey = cy + e.s * (Rs + (Rb - Rs) * 0.52); } else { rx = Rs * 0.4; ry = Rs * (0.38 - 0.38 * b * b) * 0.5 + 1; ex = xs + Rs * 0.55; ey = cy + e.s * (Rs - ry - 1); } if (ry < 2) return; ctx.beginPath(); ctx.arc(ex + Math.cos(e.a) * rx * e.r, ey + Math.sin(e.a) * ry * e.r, 1.8, 0, 6.3); ctx.fill(); });
+      ctx.restore();
+      // 분류 입자
+      jets.forEach((p) => { const x = x0 + p.x * (x1 - x0), hh = half(x); ctx.fillStyle = Flow.ramp(Math.min(1, (Rs / hh) * 0.9), 0.9); ctx.beginPath(); ctx.arc(x, cy + p.e * hh * 0.92, 2, 0, 6.3); ctx.fill(); });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath();
+      ctx.moveTo(x0, cy - Rl); ctx.lineTo(xs, cy - Rl); ctx.lineTo(xs, cy - Rr); ctx.lineTo(x1, cy - Rr);
+      ctx.moveTo(x0, cy + Rl); ctx.lineTo(xs, cy + Rl); ctx.lineTo(xs, cy + Rr); ctx.lineTo(x1, cy + Rr); ctx.stroke(); ctx.restore();
+      // 에너지선과 수력 구배선 (단위: 작은 관 V²/2g = u px)
+      const u = Math.min(36, (cy - Rb - 20) / 2.2), top = cy - Rb - 12;
+      const vc = 0.62 + 0.38 * b * b, kin = (x) => (exp ? (x < xs ? 1 : 1 + (b ** 4 - 1) * Math.min(1, Math.pow((x - xs) / Lr, 0.7))) : x < xs ? b ** 4 : 1 + (1 / (vc * vc) - 1) * Math.min(1, (x - xs) / (Rs * 0.8)) * Math.exp(-Math.max(0, x - xs - Rs * 0.8) / (Rs * 1.5))); // 국소 V²/2g (작은 관 기준)
+      const egl = (x) => { const drop = Kv * SB.clamp((x - xs) / Math.max(20, Lr), 0, 1); return top - u * (2.2 - drop * 1.0) + u * 0; };
+      const Yg = (x) => egl(x), Yh = (x) => egl(x) + u * kin(x) * (x > xs && !exp && x < xs + Lr ? 1 : 1);
+      ctx.save(); ctx.lineWidth = 2; ctx.strokeStyle = P.ok; ctx.beginPath(); for (let x = x0; x <= x1; x += 4) x === x0 ? ctx.moveTo(x, Yg(x)) : ctx.lineTo(x, Yg(x)); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.setLineDash([6, 4]); ctx.beginPath(); for (let x = x0; x <= x1; x += 4) { const y = Yh(x); x === x0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke(); ctx.restore();
+      SB.label(ctx, "에너지선", x0 + 4, Yg(x0) - 9, { size: 10, color: P.ok, align: "left" });
+      SB.label(ctx, "수력 구배선", x1 - 4, Yh(x1) + 10, { size: 10, color: P.accent, align: "right" });
+      SB.label(ctx, `h_L = ${Kv.toFixed(3)} · V²/2g`, x1 - 4, Yg(x1) - 10, { size: 11, color: P.ok, align: "right", bold: true });
+      const V = 3, hl = (Kv * V * V) / (2 * g);
+      document.getElementById("ex-r").textContent = `K_L = ${Kv.toFixed(3)} (작은 관 V 기준) · V = 3 m/s이면 h_L = ${hl.toFixed(3)} m`;
+    }, { aspect: 0.42, minHeight: 210, maxHeight: 290 });
+    SB.loop("mini-expand", (dt) => {
+      const b = getB(), exp = type() === "exp";
+      jets.forEach((p) => { const x = p.x, small = exp ? x < 0.38 : x > 0.38; const sp = small ? 0.25 : 0.25 * b * b + 0.03; p.x += sp * dt; if (p.x > 1) { p.x = 0; p.e = Math.random() * 2 - 1; } });
+      eddies.forEach((e) => (e.a += e.s * dt * 2.2));
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 등가 길이 */
+  SB.tangle("tg-eqlen", (v) => { const L = (v.K * (v.D / 100)) / v.f; return { L: L.toPrecision(3) + " m", LD: (v.K / v.f).toFixed(0) }; });
+
+  /* ---------------------------------------------------------- 두 탱크 관로 계산기 + 게임 */
+  {
+    const SIZES = [25, 40, 50, 65, 80, 100, 125, 150];
+    const MATS = ["steel", "galv", "castIron", "drawn", "glass", "concrete"];
+    const st = { H: 15, nE: 2, nG: 1, nV: 0, game: null, parts: [] };
+    const sel = document.getElementById("tk-mat");
+    MATS.forEach((k) => { const o = document.createElement("option"); o.value = k; o.textContent = `${Flow.roughness[k].ko} (${Number((Flow.roughness[k].e * 1000).toPrecision(3))} mm)`; sel.append(o); });
+    const getD = SB.seg("tk-D", () => upd());
+    const getIn = SB.seg("tk-in", () => upd());
+    const getL = SB.range("tk-L", (v) => v + " m", () => upd());
+    sel.addEventListener("change", () => upd());
+    const cnt = (key, id, max) => { document.getElementById(id + "-").addEventListener("click", () => { st[key] = Math.max(0, st[key] - 1); upd(); }); document.getElementById(id + "+").addEventListener("click", () => { st[key] = Math.min(max, st[key] + 1); upd(); }); };
+    cnt("nE", "tk-e", 8); cnt("nG", "tk-g", 3); cnt("nV", "tk-v", 3);
+    function solve(c) {
+      const D = c.D / 1000, L = c.L, eD = Flow.roughness[c.mat].e / D, Ks = c.Kin + 0.3 * c.nE + 0.2 * c.nG + 10 * c.nV + 1;
+      const F = (V) => { const Re = (V * D) / NU; return ((fr(Re, eD) * L) / D + Ks) * V * V / (2 * g) - c.H; };
+      let a = 1e-7, b = Math.sqrt(2 * g * c.H); for (let i = 0; i < 60; i++) { const m = (a + b) / 2; F(m) > 0 ? (b = m) : (a = m); }
+      const V = (a + b) / 2, Re = (V * D) / NU, f = fr(Re, eD), q = (V * V) / (2 * g);
+      return { V, Re, f, Q: (V * Math.PI * D * D) / 4, Ks, fLD: (f * L) / D, parts: [["마찰", (f * L / D) * q], ["입구", c.Kin * q], ["엘보", 0.3 * c.nE * q], ["밸브", (0.2 * c.nG + 10 * c.nV) * q], ["출구", q]] };
+    }
+    const cfg = () => ({ H: st.H, D: Number(getD()), L: getL(), mat: sel.value, Kin: Number(getIn()), nE: st.nE, nG: st.nG, nV: st.nV });
+    let R = null;
+    function upd() {
+      R = solve(cfg());
+      document.getElementById("tk-e").textContent = st.nE; document.getElementById("tk-g").textContent = st.nG; document.getElementById("tk-v").textContent = st.nV;
+      SB.stat("tk-H", st.H.toFixed(1) + " <small>m</small>");
+      const hide = !!st.game;
+      SB.stat("tk-Q", hide ? "?" : (R.Q * 1000).toPrecision(3) + " <small>L/s</small>");
+      SB.stat("tk-V", hide ? "?" : `${R.V.toFixed(2)} <small>m/s</small>, ${sci(R.Re, 2)}`);
+      SB.stat("tk-f", hide ? "?" : R.f.toFixed(4));
+      SB.stat("tk-K", hide ? `${R.Ks.toFixed(2)}, ?` : `${R.Ks.toFixed(2)}, ${R.fLD.toFixed(1)}`);
+      cv && cv.redraw();
+    }
+    const pathPts = (xs, ys, xe, ye, nE, xeOdd, yeOdd) => {
+      if (nE === 0) return [[xs, ys], [xe, ye]];
+      const ex = nE % 2 ? xeOdd : xe, ey = nE % 2 ? yeOdd : ye, nh = Math.ceil((nE + 1) / 2), nv = Math.floor((nE + 1) / 2), pts = [[xs, ys]];
+      let x = xs, y = ys;
+      for (let i = 0; i <= nE; i++) { if (i % 2 === 0) x += (ex - xs) / nh; else y += (ey - ys) / nv; pts.push([x, y]); }
+      return pts;
+    };
+    const along = (pts) => { const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); return L; };
+    const posAt = (pts, L, s) => { const d = s * L[L.length - 1]; let i = 1; while (i < L.length - 1 && L[i] < d) i++; const t = (d - L[i - 1]) / (L[i] - L[i - 1] || 1); return [pts[i - 1][0] + t * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + t * (pts[i][1] - pts[i - 1][1]), Math.atan2(pts[i][1] - pts[i - 1][1], pts[i][0] - pts[i - 1][0])]; };
+    const parts = Array.from({ length: 46 }, () => ({ s: Math.random(), o: Math.random() * 2 - 1 }));
+    let cv = null;
+    cv = SB.canvas("cv-tanks", (ctx, w, h, self) => {
+      if (!R) return;
+      const P = pal(), c = cfg(), hs = h - 74, tw = Math.max(16, w * 0.17);
+      const yL = hs - 46, s = (yL - 40) / 40, yU = yL - st.H * s;
+      const uX0 = 10, uX1 = 10 + tw, lX0 = w - 10 - tw, lX1 = w - 10;
+      // 탱크
+      Flow.fillWater(ctx, [[uX0, yU], [uX1, yU], [uX1, yU + 46], [uX0, yU + 46]], { wave: 1.2, t: performance.now() / 1000 });
+      Flow.fillWater(ctx, [[lX0, yL], [lX1, yL], [lX1, hs - 4], [lX0, hs - 4]], { wave: 1.2, t: performance.now() / 1000 });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(uX0, yU - 16); ctx.lineTo(uX0, yU + 46); ctx.lineTo(uX1, yU + 46); ctx.lineTo(uX1, yU - 16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(lX0, yL - 20); ctx.lineTo(lX0, hs - 4); ctx.lineTo(lX1, hs - 4); ctx.lineTo(lX1, yL - 20); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, uX1, yU, lX0 + 6, yU, P.faint, [3, 4]);
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(lX0 - 14, yU); ctx.lineTo(lX0 - 14, yL); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `H = ${st.H.toFixed(1)} m`, lX0 - 18, (yU + yL) / 2, { size: 11, align: "right", color: P.dim, bold: true });
+      // 관
+      const pw = 3 + c.D / 9, pts = pathPts(uX1, yU + 32, lX0, yL + 24, c.nE, lX0 + tw * 0.35, yL + 22), L = along(pts);
+      ctx.save(); ctx.lineJoin = "round"; ctx.lineCap = "butt";
+      ctx.strokeStyle = P.text; ctx.lineWidth = pw + 4; ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+      ctx.strokeStyle = SB.isDark() ? "#1c3550" : "#d4e7f7"; ctx.lineWidth = pw; ctx.stroke(); ctx.restore();
+      parts.forEach((p) => { const [x, y, a] = posAt(pts, L, p.s); ctx.fillStyle = SB.color("accent"); ctx.beginPath(); ctx.arc(x - Math.sin(a) * p.o * pw * 0.3, y + Math.cos(a) * p.o * pw * 0.3, 1.8, 0, 6.3); ctx.fill(); });
+      const nv = c.nG + c.nV;
+      for (let k = 0; k < nv; k++) {
+        const [x, y, a] = posAt(pts, L, (k + 1) / (nv + 1)), sz = pw / 2 + 5, glob = k >= c.nG;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = glob ? P.accent2 : SB.color("bg-elev"); ctx.strokeStyle = glob ? P.accent2 : P.text; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(-sz, -sz); ctx.lineTo(sz, sz); ctx.lineTo(sz, -sz); ctx.lineTo(-sz, sz); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -sz - 6); ctx.moveTo(-5, -sz - 6); ctx.lineTo(5, -sz - 6); ctx.stroke(); ctx.restore();
+      }
+      self._path = { pts, L };
+      handle(ctx, (uX0 + uX1) / 2, yU, P.accent, 9);
+      self._h = [(uX0 + uX1) / 2, yU]; self._geo = { yL, s };
+      // 손실 막대
+      const bx0 = 14, bx1 = w - 14, by = hs + 10, bh = 18, cols = [P.accent, P.warn, P.ok, P.accent2, P.bad];
+      if (st.game) { ctx.save(); ctx.strokeStyle = P.border; ctx.setLineDash([4, 4]); ctx.strokeRect(bx0, by, bx1 - bx0, bh); ctx.restore(); SB.label(ctx, "수두 손실 분해: 제출 후 공개", (bx0 + bx1) / 2, by + bh / 2, { size: 11, color: P.dim }); return; }
+      let x = bx0; const tot = R.parts.reduce((a, q) => a + q[1], 0) || 1;
+      R.parts.forEach((q, i) => { const ww = ((bx1 - bx0) * q[1]) / tot; ctx.fillStyle = cols[i]; ctx.globalAlpha = 0.8; ctx.fillRect(x, by, ww, bh); ctx.globalAlpha = 1; if (ww > 46) SB.label(ctx, `${q[1].toFixed(1)} m`, x + ww / 2, by + bh / 2, { size: 10, color: "#fff", bg: cols[i] }); x += ww; });
+      ctx.font = "11px " + SB.color("font"); let lx = bx0, ly = by + bh + 16;
+      R.parts.forEach((q, i) => { const t = `${q[0]} ${((q[1] / tot) * 100).toFixed(0)}%`, tw2 = ctx.measureText(t).width + 22; if (lx + tw2 > bx1) { lx = bx0; ly += 15; } ctx.fillStyle = cols[i]; ctx.fillRect(lx, ly - 5, 10, 10); ctx.fillStyle = P.text; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(t, lx + 14, ly); lx += tw2; });
+    }, { aspect: 0.68, minHeight: 340, maxHeight: 480 });
+    SB.drag(cv, {
+      handles: () => (cv._h && !st.game ? [{ id: "H", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "H") return; const G = cv._geo; st.H = Math.round(SB.clamp((G.yL - y) / G.s, 2, 40) * 2) / 2; upd(); },
+    });
+    SB.loop("sim-tanks", (dt) => {
+      if (!R || !cv._path) return;
+      const Lp = cv._path.L[cv._path.L.length - 1] || 1, sp = SB.clamp(R.V * 28, 6, 220) / Lp;
+      parts.forEach((p) => { p.s += sp * dt; if (p.s > 1) { p.s -= 1; p.o = Math.random() * 2 - 1; } });
+      cv.redraw();
+    });
+    // 게임
+    const msg = document.getElementById("tk-msg"), sub = document.getElementById("tk-submit"), gbtn = document.getElementById("tk-game");
+    const lockables = () => [getL.el, sel, ...document.querySelectorAll("#tk-in button, #sim-tanks .pf-plus button")];
+    function startGame() {
+      let c, ans, Qt;
+      for (let tries = 0; tries < 50; tries++) {
+        c = { H: rnd(4, 30, 0.5), L: rnd(50, 400, 10), mat: pick(["steel", "galv", "castIron"]), Kin: 0.5, nE: rnd(0, 4), nG: 1, nV: rnd(0, 1) };
+        ans = rnd(1, SIZES.length - 1);
+        const qlo = solve({ ...c, D: SIZES[ans - 1] }).Q, qhi = solve({ ...c, D: SIZES[ans] }).Q;
+        Qt = Number((qlo + (0.25 + 0.6 * Math.random()) * (qhi - qlo)).toPrecision(3) * 1);
+        Qt = Number((Qt * 1000).toPrecision(3)) / 1000;
+        if (Qt > qlo * 1.005 && Qt < qhi * 0.995) break;
+      }
+      st.game = { c, ans, Qt };
+      st.H = c.H; getL.set(c.L, true); sel.value = c.mat; getIn.set("0.5", false); st.nE = c.nE; st.nG = c.nG; st.nV = c.nV;
+      lockables().forEach((e) => (e.disabled = true));
+      sub.disabled = false; gbtn.textContent = "도전 포기";
+      msg.className = "pf-game";
+      msg.innerHTML = `<b>목표: Q ≥ ${(Qt * 1000).toPrecision(3)} L/s.</b> 낙차 ${c.H} m, 관 길이 ${c.L} m, ${Flow.roughness[c.mat].ko}, 날카로운 입구, 엘보 ${c.nE}개, 게이트 밸브 1개${c.nV ? ", 글로브 밸브 1개" : ""}, 출구. 20 °C 물. 이 유량을 내는 가장 작은 규격 지름을 계산해 고른 뒤 제출하라.`;
+      upd();
+    }
+    function endGame(text, cls) { lockables().forEach((e) => (e.disabled = false)); sub.disabled = true; gbtn.textContent = "도전 시작"; st.game = null; if (text) { msg.className = "pf-game " + (cls || ""); msg.innerHTML = text; } upd(); }
+    gbtn.addEventListener("click", () => (st.game ? endGame("도전을 그만두었다. 다시 시작해 보라.") : startGame()));
+    sub.addEventListener("click", () => {
+      const G = st.game; if (!G) return;
+      const D = Number(getD()), ok = D === SIZES[G.ans];
+      const tbl = SIZES.map((d) => `${d} mm → ${(solve({ ...G.c, D: d }).Q * 1000).toPrecision(3)}`).join(" · ");
+      endGame(`${ok ? "정답! " : "아쉽다. "}최소 지름은 <b>${SIZES[G.ans]} mm</b>이다 (목표 ${(G.Qt * 1000).toPrecision(3)} L/s). 지름별 유량(L/s): ${tbl}`, ok ? "win" : "lose");
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 병렬 관로 */
+  {
+    const LS = [100, 100, 200], st = { D: [100, 50, 80], res: null };
+    const e = Flow.roughness.steel.e;
+    const getQ = SB.range("pa-Q", (v) => v + " L/s", () => upd());
+    const getK = SB.range("pa-K", (v) => v.toFixed(1), () => upd());
+    const on3 = document.getElementById("pa-3");
+    on3.addEventListener("change", () => upd());
+    const qOf = (i, hL) => { const D = st.D[i] / 1000, L = LS[i], K = i === 1 ? getK() : 0, eD = e / D; let a = 0, b = Math.sqrt((2 * g * hL) / (0.005 * L / D + K)); for (let k = 0; k < 50; k++) { const m = (a + b) / 2, Re = Math.max(1, (m * D) / NU); ((fr(Re, eD) * L) / D + K) * m * m / (2 * g) > hL ? (b = m) : (a = m); } const V = (a + b) / 2; return { V, Q: (V * Math.PI * D * D) / 4 }; };
+    function solve() {
+      const Qt = getQ() / 1000, n = on3.checked ? 3 : 2;
+      let a = -4, b = 4; for (let k = 0; k < 50; k++) { const m = (a + b) / 2, hL = Math.pow(10, m); let s = 0; for (let i = 0; i < n; i++) s += qOf(i, hL).Q; s > Qt ? (b = m) : (a = m); }
+      const hL = Math.pow(10, (a + b) / 2); return { hL, br: [0, 1, 2].map((i) => (i < n ? qOf(i, hL) : { V: 0, Q: 0 })), Qt };
+    }
+    function upd() {
+      st.res = solve(); const r = st.res;
+      SB.stat("pa-h", r.hL.toPrecision(3) + " <small>m</small>");
+      ["pa-q1", "pa-q2", "pa-q3"].forEach((id, i) => SB.stat(id, i === 2 && !on3.checked ? "연결 안 함" : `${(r.br[i].Q * 1000).toPrecision(3)} <small>L/s (${((r.br[i].Q / r.Qt) * 100).toFixed(0)}%), D ${st.D[i]} mm</small>`));
+      cv && cv.redraw();
+    }
+    const P0 = Array.from({ length: 3 }, () => Array.from({ length: 26 }, () => ({ s: Math.random(), o: Math.random() * 2 - 1 })));
+    const geo = (w, h) => { const cy = h / 2, sp = h * 0.3, xa = 34, xb = w - 34; return { cy, xa, xb, ys: [cy - sp, cy, cy + sp], xin: 80, xout: w - 80 }; };
+    const brPts = (G, i) => [[G.xa, G.cy], [G.xin, G.ys[i]], [G.xout, G.ys[i]], [G.xb, G.cy]];
+    let cv = null;
+    cv = SB.canvas("cv-par", (ctx, w, h, self) => {
+      if (!st.res) return;
+      const P = pal(), G = geo(w, h), r = st.res; self._G = G;
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 3; SB.arrow(ctx, 2, G.cy, G.xa - 6, G.cy, { color: P.accent, width: 3 }); SB.arrow(ctx, G.xb + 6, G.cy, w - 2, G.cy, { color: P.accent, width: 3 }); ctx.restore();
+      const hs = [];
+      [0, 1, 2].forEach((i) => {
+        const pts = brPts(G, i), t = st.D[i] / 6, act = i < 2 || on3.checked;
+        ctx.save(); ctx.lineJoin = "round"; ctx.globalAlpha = act ? 1 : 0.3;
+        ctx.strokeStyle = P.text; ctx.lineWidth = t + 4; ctx.beginPath(); pts.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.stroke();
+        ctx.strokeStyle = SB.isDark() ? "#1c3550" : "#d4e7f7"; ctx.lineWidth = t; ctx.stroke(); ctx.restore();
+        if (act) {
+          const L = along(pts);
+          P0[i].forEach((p) => { const [x, y, a] = posAt(pts, L, p.s); ctx.fillStyle = Flow.ramp(SB.clamp(r.br[i].V / 4, 0, 1)); ctx.beginPath(); ctx.arc(x - Math.sin(a) * p.o * t * 0.35, y + Math.cos(a) * p.o * t * 0.35, 1.9, 0, 6.3); ctx.fill(); });
+          SB.label(ctx, `${i + 1}: ${(r.br[i].Q * 1000).toPrecision(3)} L/s · ${r.br[i].V.toFixed(2)} m/s`, (G.xin + G.xout) / 2 + 60, G.ys[i] + t / 2 + 12, { size: 11, color: P.text, bold: true });
+          SB.label(ctx, `D ${st.D[i]} mm, ${LS[i]} m`, G.xin + 2, G.ys[i] - t / 2 - 10, { size: 10, color: P.dim, align: "left" });
+        }
+        if (i === 1 && getK() > 0) { const x = G.xout - 40, y = G.ys[1], sz = t / 2 + 5; ctx.save(); ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.moveTo(x - sz, y - sz); ctx.lineTo(x + sz, y + sz); ctx.lineTo(x + sz, y - sz); ctx.lineTo(x - sz, y + sz); ctx.closePath(); ctx.fill(); ctx.restore(); }
+        if (act) { const hx = G.xin + 0.72 * (G.xout - G.xin), hy = G.ys[i] - t / 2 - 2; handle(ctx, hx, hy, P.accent, 8); hs.push({ id: i, x: hx, y: hy, r: 13 }); }
+      });
+      [[G.xa, "A"], [G.xb, "B"]].forEach(([x, l]) => { ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(x, G.cy, 6, 0, 6.3); ctx.fill(); SB.label(ctx, l, x, G.cy + 18, { bold: true }); });
+      SB.label(ctx, `h_L = ${r.hL.toPrecision(3)} m (모든 가지 공통)`, w / 2, 12, { size: 11, color: P.accent2, bold: true });
+      self._hs = hs;
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      move: (id, x, y) => { if (id == null) return; const G = cv._G; st.D[id] = SB.clamp(Math.round((2 * (G.ys[id] - y - 2) * 6) / 5) * 5, 25, 200); upd(); },
+    });
+    SB.loop("sim-parallel", (dt) => {
+      if (!st.res || !cv._G) return;
+      [0, 1, 2].forEach((i) => { const sp = SB.clamp(st.res.br[i].V * 40, 0, 240) / (cv.w * 1.1); P0[i].forEach((p) => { p.s += sp * dt; if (p.s > 1) { p.s -= 1; p.o = Math.random() * 2 - 1; } }); });
+      cv.redraw();
+    });
+    document.getElementById("pa-eq").addEventListener("click", () => { st.D = [100, 100, 100]; upd(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 하디 크로스 */
+  {
+    // 시계 방향 고리 A→B→C→D→A, q > 0 이면 시계 방향
+    const PIPES = [{ n: "AB", r: 300 }, { n: "BC", r: 500 }, { n: "CD", r: 200 }, { n: "DA", r: 600 }];
+    const GOOD = [0.06, 0.03, -0.01, -0.04], BAD = [0.01, -0.02, -0.06, -0.09];
+    const st = { q: GOOD.slice(), k: 0, hist: [] };
+    const sumH = () => PIPES.reduce((s, p, i) => s + p.r * st.q[i] * Math.abs(st.q[i]), 0);
+    const setStart = (q0) => { st.q = q0.slice(); st.k = 0; st.hist = [{ k: 0, dq: null, h: sumH() }]; upd(); };
+    function step() { const num = sumH(), den = PIPES.reduce((s, p, i) => s + 2 * p.r * Math.abs(st.q[i]), 0) || 1, dq = -num / den; st.q = st.q.map((q) => q + dq); st.k++; st.hist.push({ k: st.k, dq, h: sumH() }); upd(); }
+    function upd() { const last = st.hist[st.hist.length - 1]; document.getElementById("hc-r").textContent = `반복 ${st.k}: 고리 Σh_L = ${(Math.abs(last.h) < 5e-4 ? 0 : last.h).toFixed(3)} m${last.dq != null ? `, 방금 ΔQ = ${(Math.abs(last.dq) < 5e-6 ? 0 : last.dq * 1000).toFixed(2)} L/s` : ""}`; cv && cv.redraw(); }
+    let t = 0, cv = null;
+    cv = SB.canvas("cv-hardy", (ctx, w, h) => {
+      const P = pal(), m = 46, side = Math.min(h - 2 * m + 20, w * 0.5), x0 = Math.max(56, w * 0.08), y0 = (h - side) / 2, N = { A: [x0, y0], B: [x0 + side, y0], C: [x0 + side, y0 + side], D: [x0, y0 + side] };
+      const ends = [["A", "B"], ["B", "C"], ["C", "D"], ["D", "A"]];
+      PIPES.forEach((p, i) => {
+        const [a, b] = ends[i], q = st.q[i], from = q >= 0 ? N[a] : N[b], to = q >= 0 ? N[b] : N[a], lw = 2 + Math.abs(q) * 120;
+        ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = lw + 4; ctx.beginPath(); ctx.moveTo(...N[a]); ctx.lineTo(...N[b]); ctx.stroke();
+        ctx.strokeStyle = P.accent; ctx.lineWidth = lw; ctx.setLineDash([8, 8]); ctx.lineDashOffset = -t * 300 * Math.abs(q) * 10; ctx.beginPath(); ctx.moveTo(...from); ctx.lineTo(...to); ctx.stroke(); ctx.restore();
+        const mx = (from[0] + to[0]) / 2, my = (from[1] + to[1]) / 2, dx = to[0] - from[0], dy = to[1] - from[1], L = Math.hypot(dx, dy);
+        SB.arrow(ctx, mx - (dx / L) * 10, my - (dy / L) * 10, mx + (dx / L) * 12, my + (dy / L) * 12, { color: P.accent2, width: 3, head: 10 });
+        const off = i === 0 ? [0, -22] : i === 1 ? [10, 0] : i === 2 ? [0, 22] : [12, 0];
+        SB.label(ctx, `${p.n} r=${p.r}: ${(Math.abs(q) * 1000).toFixed(1)} L/s`, mx + off[0], my + off[1], { size: 11, align: i === 1 || i === 3 ? "left" : "center", color: P.text });
+      });
+      Object.entries(N).forEach(([k, p]) => { ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, 6.3); ctx.fill(); SB.label(ctx, k, p[0] + (k === "A" || k === "D" ? -14 : 14), p[1] + (k === "A" || k === "B" ? -12 : 14), { bold: true }); });
+      SB.label(ctx, "↓100 유입", N.A[0], N.A[1] - 28, { size: 10, color: P.dim });
+      SB.label(ctx, "30 유출", N.B[0], N.B[1] - 28, { size: 10, color: P.dim });
+      SB.label(ctx, "40 유출", N.C[0], N.C[1] + 30, { size: 10, color: P.dim });
+      SB.label(ctx, "30 유출", N.D[0], N.D[1] + 30, { size: 10, color: P.dim });
+      // 반복 표
+      const tx = x0 + side + 150; if (tx < w - 170) {
+        ctx.font = "11px " + SB.color("mono"); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = P.dim;
+        ctx.fillText("k   ΔQ(L/s)   Σh_L(m)", tx, y0); st.hist.slice(-7).forEach((r, j) => { ctx.fillStyle = Math.abs(r.h) < 0.05 ? P.ok : P.text; ctx.fillText(`${String(r.k).padEnd(3)} ${r.dq == null ? "   —    " : (r.dq * 1000).toFixed(2).padStart(7)}   ${r.h.toFixed(3).padStart(7)}`, tx, y0 + 18 * (j + 1)); });
+      }
+    }, { aspect: 0.48, minHeight: 250, maxHeight: 320 });
+    SB.loop("mini-hardy", (dt) => { t += dt * 0.05; cv.redraw(); });
+    document.getElementById("hc-step").addEventListener("click", step);
+    document.getElementById("hc-reset").addEventListener("click", () => setStart(GOOD));
+    document.getElementById("hc-bad").addEventListener("click", () => setStart(BAD));
+    setStart(GOOD);
+  }
+
+  /* ---------------------------------------------------------- 펌프 + 시스템 곡선 */
+  {
+    const B = 0.012, k0 = 0.006, st = { H0: 50, Qt: 40 };
+    const getZ = SB.range("pu-z", (v) => v + " m", () => { fit(); cv.redraw(); });
+    const getKm = SB.range("pu-k", (v) => v.toFixed(1) + "×", () => { fit(); cv.redraw(); });
+    const kk = () => k0 * getKm();
+    const Qop = () => (st.H0 > getZ() ? Math.sqrt((st.H0 - getZ()) / (B + kk())) : 0);
+    function fit() { const qmax = Math.sqrt(Math.max(0, 85 - getZ()) / (B + kk())); if (st.Qt > qmax * 0.9) newT(); else upd(); }
+    function newT() { const qmax = Math.min(95, Math.sqrt(Math.max(1, 85 - getZ()) / (B + kk()))); st.Qt = Math.round(qmax * (0.35 + 0.5 * Math.random())); upd(); }
+    function upd() { const q = Qop(), hit = Math.abs(q - st.Qt) / st.Qt <= 0.03; document.getElementById("pu-r").innerHTML = `운전점 Q = ${q.toFixed(1)} L/s, h = ${(getZ() + kk() * q * q).toFixed(1)} m · 목표 ${st.Qt} L/s ± 3% ${hit ? '<b style="color:var(--ok)">→ 명중!</b>' : ""}`; }
+    const cv = SB.canvas("cv-pump", (ctx, w, h, self) => {
+      const P = pal(), box = { x: 52, y: 14, w: w - 52 - 16, h: h - 14 - 44 }, z = getZ(), q = Qop();
+      const pump = [], sys = []; for (let i = 0; i <= 100; i++) { const Q = i; const hp = st.H0 - B * Q * Q; if (hp >= 0) pump.push([Q, hp]); sys.push([Q, z + kk() * Q * Q]); }
+      const C = SB.chart(ctx, box, { x: [0, 100], y: [0, 90], xLabel: "유량 Q (L/s)", yLabel: "수두 h (m)", series: [{ data: pump, color: P.accent, width: 2.4 }, { data: sys, color: P.accent2, width: 2.4 }] });
+      ctx.save(); ctx.fillStyle = P.ok; ctx.globalAlpha = 0.2; ctx.fillRect(C.X(st.Qt * 0.97), box.y, C.X(st.Qt * 1.03) - C.X(st.Qt * 0.97), box.h); ctx.restore();
+      SB.label(ctx, "목표", C.X(st.Qt), box.y + 10, { size: 11, color: P.ok, bold: true });
+      if (q > 0) { ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(C.X(q), C.Y(z + kk() * q * q), 6, 0, 6.3); ctx.fill(); SB.label(ctx, "운전점", C.X(q) + 30, C.Y(z + kk() * q * q) - 12, { size: 11, color: P.warn, bold: true }); }
+      SB.label(ctx, "펌프 곡선", C.X(Math.min(60, Math.sqrt(st.H0 / B) * 0.55)), C.Y(st.H0 - B * Math.min(60, Math.sqrt(st.H0 / B) * 0.55) ** 2) - 12, { size: 11, color: P.accent, align: "left" });
+      SB.label(ctx, "시스템 곡선 Δz + kQ²", C.X(88), C.Y(Math.min(85, z + kk() * 88 * 88)) + (z + kk() * 7744 > 85 ? 14 : -12), { size: 11, color: P.accent2, align: "right" });
+      handle(ctx, C.X(0), C.Y(st.H0), P.accent, 9);
+      self._h = [C.X(0), C.Y(st.H0)]; self._C = C;
+    }, { aspect: 0.55, minHeight: 260, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "h") return; const C = cv._C, hh = 90 * (C.box.y + C.box.h - y) / C.box.h; st.H0 = SB.clamp(Math.round(hh * 2) / 2, 5, 88); upd(); },
+    });
+    document.getElementById("pu-new").addEventListener("click", () => { newT(); cv.redraw(); });
+    newT();
+  }
+
+  /* ---------------------------------------------------------- 드릴 */
+  SB.drill("drill-lam", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) { const D = rnd(1, 10, 0.5), Q = rnd(0.02, 2, 0.01), V = (Q / 1000) / (Math.PI * (D / 100) ** 2 / 4), Re = (V * D / 100) / NU; return { q: `<p>20 °C 물(\\(\\nu = 1.004\\times10^{-6}\\) m²/s)이 안지름 \\(${D}\\) cm 관을 \\(${Q.toFixed(2)}\\) L/s로 흐른다. 레이놀즈 수는?</p>`, answer: Re, label: "Re =", tol: "1%", sol: `\\(V = Q/A = ${V.toFixed(4)}\\) m/s, \\(Re = VD/\\nu = ${Re.toFixed(0)}\\) → ${regName(Re)}` }; }
+    if (k === 1) { const mu = rnd(0.05, 1.5, 0.05), L = rnd(5, 50, 1), D = rnd(1, 6, 0.5), V = rnd(0.1, 1.5, 0.1), dP = (32 * mu * L * V) / (D / 100) ** 2 / 1000; return { q: `<p>점성 계수 \\(${mu.toFixed(2)}\\) Pa·s인 기름이 지름 \\(${D}\\) cm, 길이 \\(${L}\\) m인 수평관을 평균 \\(${V.toFixed(1)}\\) m/s로 층류로 흐른다. 압력 강하는 몇 kPa인가?</p>`, answer: dP, label: "ΔP =", unit: "kPa", sol: `\\(\\Delta P = 32\\mu LV/D^2 = 32(${mu.toFixed(2)})(${L})(${V.toFixed(1)})/(${(D / 100).toFixed(3)})^2 = ${dP.toFixed(1)}\\) kPa` }; }
+    const Re = rnd(300, 2200, 50), D = rnd(0.5, 5, 0.5), Lh = 0.05 * Re * D / 100;
+    return { q: `<p>\\(Re = ${Re}\\)인 층류가 지름 \\(${D}\\) cm 관에 들어간다. 입구 길이는 약 몇 m인가?</p>`, answer: Lh, label: "L<sub>h</sub> =", unit: "m", sol: `\\(L_h = 0.05\\,Re\\,D = 0.05(${Re})(${(D / 100).toFixed(3)}) = ${Lh.toFixed(3)}\\) m` };
+  });
+  SB.drill("drill-pipe", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) { const Re = Number((Math.pow(10, 4 + 3 * Math.random())).toPrecision(2)), eD = pick([0, 1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 0.01]), f = Flow.colebrook(Re, eD); return { q: `<p>\\(Re = ${texSci(Re)}\\), \\(\\varepsilon/D = ${eD}\\)인 난류의 다르시 마찰 계수 \\(f\\)는? (콜브룩 또는 해일란드 식, ±2%)</p>`, answer: f, label: "f =", tol: "2%", sol: `콜브룩 식 반복 해 \\(f = ${f.toFixed(4)}\\) (해일란드 ${Flow.haaland(Re, eD).toFixed(4)})` }; }
+    if (k === 1) { const f = rnd(0.015, 0.04, 0.001), L = rnd(20, 500, 10), D = rnd(2, 30, 1), V = rnd(0.5, 4, 0.1), hL = f * L / (D / 100) * V * V / (2 * g); return { q: `<p>\\(f = ${f.toFixed(3)}\\), 길이 \\(${L}\\) m, 지름 \\(${D}\\) cm 관에서 평균 속도 \\(${V.toFixed(1)}\\) m/s. 수두 손실은?</p>`, answer: hL, label: "h<sub>L</sub> =", unit: "m", sol: `\\(h_L = f(L/D)V^2/2g = ${f.toFixed(3)}(${L}/${(D / 100).toFixed(2)})(${V.toFixed(1)})^2/19.62 = ${hL.toFixed(2)}\\) m` }; }
+    const a = rnd(10, 60, 5), b = rnd(10, 60, 5), Dh = 4 * a * b / (2 * (a + b));
+    return { q: `<p>단면 \\(${a}\\) cm × \\(${b}\\) cm인 직사각형 덕트의 수력 직경은 몇 cm인가?</p>`, answer: Dh, label: "D<sub>h</sub> =", unit: "cm", sol: `\\(D_h = 4A/p = 4(${a * b})/(${2 * (a + b)}) = ${Dh.toFixed(2)}\\) cm` };
+  });
+  SB.drill("drill-minor", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) { const nE = rnd(1, 5), V = rnd(1, 4, 0.5), glob = Math.random() < 0.5, K = 0.5 + 0.3 * nE + (glob ? 10 : 0.2) + 1, hm = K * V * V / (2 * g); return { q: `<p>날카로운 입구(0.5), 플랜지 엘보 \\(${nE}\\)개(각 0.3), ${glob ? "글로브 밸브(10)" : "게이트 밸브(0.2)"} 1개, 출구(1.0)가 있는 관에서 \\(V = ${V}\\) m/s이다. 부차 손실 합은?</p>`, answer: hm, label: "h<sub>L,부차</sub> =", unit: "m", sol: `\\(\\sum K = ${K.toFixed(1)}\\), \\(h = \\sum K\\,V^2/2g = ${K.toFixed(1)}(${V})^2/19.62 = ${hm.toFixed(3)}\\) m` }; }
+    if (k === 1) { const d1 = rnd(2, 10, 1), d2 = d1 + rnd(1, 10, 1), V1 = rnd(1, 5, 0.5), K = (1 - (d1 / d2) ** 2) ** 2, hL = K * V1 * V1 / (2 * g); return { q: `<p>물이 지름 \\(${d1}\\) cm 관에서 \\(${V1}\\) m/s로 흐르다 지름 \\(${d2}\\) cm로 급확대된다. 수두 손실은?</p>`, answer: hL, label: "h<sub>L</sub> =", unit: "m", sol: `\\(K = (1 - d_1^2/d_2^2)^2 = ${K.toFixed(4)}\\), \\(h_L = K V_1^2/2g = ${hL.toFixed(4)}\\) m` }; }
+    const K = rnd(0.2, 12, 0.1), D = rnd(2, 20, 1), f = rnd(0.015, 0.03, 0.001), L = K * D / 100 / f;
+    return { q: `<p>손실 계수 \\(${K.toFixed(1)}\\)인 부품이 지름 \\(${D}\\) cm, \\(f = ${f.toFixed(3)}\\)인 관에 있다. 등가 길이는?</p>`, answer: L, label: "L<sub>eq</sub> =", unit: "m", sol: `\\(L_\\text{eq} = KD/f = ${K.toFixed(1)}(${(D / 100).toFixed(2)})/${f.toFixed(3)} = ${L.toFixed(2)}\\) m` };
+  });
+
+  // 병렬·탱크에서 쓰는 경로 함수는 블록 밖에서도 필요
+  function along(pts) { const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); return L; }
+  function posAt(pts, L, s) { const d = s * L[L.length - 1]; let i = 1; while (i < L.length - 1 && L[i] < d) i++; const t = (d - L[i - 1]) / (L[i] - L[i - 1] || 1); return [pts[i - 1][0] + t * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + t * (pts[i][1] - pts[i - 1][1]), Math.atan2(pts[i][1] - pts[i - 1][1], pts[i][0] - pts[i - 1][0])]; }
+})();
+</script>
+</body>
+</html>
