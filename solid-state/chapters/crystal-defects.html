@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>결정 결함 · 고체물리 · SciBook</title>
+<meta name="description" content="공공·격자간 원자의 평형 농도를 배열 엔트로피로 유도하고, 무작위 걷기와 픽 법칙으로 도펀트 확산과 접합 깊이를 계산하며, 전위와 버거스 벡터, 적층 결함·결정립계, 결함 준위를 웨이퍼의 COP·슬립·게터링과 함께 직접 만지며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/crystal-defects.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="결정 결함 · 고체물리 · SciBook">
+<meta property="og:description" content="공공·격자간 원자의 평형 농도를 배열 엔트로피로 유도하고, 무작위 걷기와 픽 법칙으로 도펀트 확산과 접합 깊이를 계산하며, 전위와 버거스 벡터, 적층 결함·결정립계, 결함 준위를 웨이퍼의 COP·슬립·게터링과 함께 직접 만지며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/crystal-defects.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "결정 결함 · 고체물리 · SciBook", "headline": "04 결정 결함", "url": "https://science.euiyun.com/solid-state/chapters/crystal-defects.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "공공·격자간 원자의 평형 농도를 배열 엔트로피로 유도하고, 무작위 걷기와 픽 법칙으로 도펀트 확산과 접합 깊이를 계산하며, 전위와 버거스 벡터, 적층 결함·결정립계, 결함 준위를 웨이퍼의 COP·슬립·게터링과 함께 직접 만지며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 4, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "04 결정 결함", "item": "https://science.euiyun.com/solid-state/chapters/crystal-defects.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+<style>
+  .cd-legend { display:flex; flex-wrap:wrap; gap:.4rem 1rem; font-size:.85rem; color:var(--text-dim); margin:.3rem 0 0; }
+  .cd-goal { font-weight:600; }
+  .cd-goal.hit { color:var(--ok); }
+</style>
+</head>
+<body data-chapter="crystal-defects">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="crystal-structure bonding-elasticity">
+    <div class="eyebrow">Chapter 04</div>
+    <h1>결정 결함</h1>
+    <p class="lead">완전한 결정은 0 K에서만 존재할 수 있다. 온도가 조금만 올라가도 원자는 제자리를 떠나 빈자리를 남기고, 그 빈자리를 따라 다른 원자가 옮겨 다닌다. 1 cm³ 실리콘에 넣은 붕소 원자 10¹⁸개가 1000 °C에서 수백 nm를 파고들어 접합을 만드는 것도, 300 mm 웨이퍼가 열처리 도중 미끄러져 슬립선이 생기는 것도, 금속 원자 10¹⁰개가 소수 캐리어 수명을 망치는 것도 모두 <strong>결함</strong> 이야기다. 아래 격자에서 원자들이 빈자리로 뛰어드는 모습을 먼저 보자. 온도계를 올리면 뜀이 잦아진다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">오른쪽 온도계를 위아래로 끌거나, 빈자리 옆 원자를 눌러 보세요</span></div>
+    <ul class="objectives">
+      <li>공공·자기 격자간 원자·치환형·격자간 불순물과 프렌켈·쇼트키 결함을 구별하고, 실리콘에서 각각의 예를 든다.</li>
+      <li>배열 엔트로피로 자유 에너지를 최소화해 평형 농도 \(n/N = e^{S_v/k}e^{-E_f/kT}\)를 유도하고, 실험값에서 형성 에너지를 구한다.</li>
+      <li>무작위 걷기 \(\langle x^2\rangle = 2Dt\)와 아레니우스 식 \(D = D_0e^{-E_a/kT}\)을 쓰고, 공공 기구와 격자간 기구의 활성화 에너지를 비교한다.</li>
+      <li>픽 제1·2법칙을 세우고 erfc(선증착)·가우스(후확산) 해로 도즈와 접합 깊이를 계산한다.</li>
+      <li>칼날·나사 전위와 버거스 회로를 설명하고, 실리콘의 미끄럼계 {111}⟨110⟩과 분해 전단 응력으로 웨이퍼 슬립을 이해한다.</li>
+      <li>적층 결함·결정립계·쌍정·석출물·공동(COP)과 얕은·깊은 결함 준위를 웨이퍼 공정(게터링, OSF, 수명)과 연결한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="point-defects">
+    <h2>점결함의 종류</h2>
+    <p>결정의 주기성을 원자 하나 크기의 범위에서 깨는 것을 <span class="term">점결함</span><span class="en">(point defect)</span>이라 한다. 가장 단순한 것은 원자가 있어야 할 격자점이 빈 <span class="term">공공</span><span class="en">(vacancy)</span>이다. 반대로 같은 종류의 원자가 격자점 사이의 틈에 끼어 있으면 <span class="term">자기 격자간 원자</span><span class="en">(self-interstitial)</span>다. 다른 원소가 격자점을 차지하면 <span class="term">치환형 불순물</span><span class="en">(substitutional impurity)</span>, 틈에 들어가면 <span class="term">격자간 불순물</span><span class="en">(interstitial impurity)</span>이다.</p>
+    <p>실리콘에서 이 네 가지는 모두 공정의 주인공이다. 도펀트 붕소·인·비소는 치환형이라야 전기적으로 활성이고, 초크랄스키(CZ) 결정에 10¹⁷–10¹⁸ cm⁻³ 들어 있는 산소는 Si–Si 결합 가운데에 끼는 격자간 불순물이다. 구리·철·니켈 같은 금속은 격자간 자리를 따라 빠르게 돌아다닌다. 다이아몬드 구조는 채움률이 0.34밖에 안 돼 틈이 넓기 때문이다(1장). 실리콘의 자기 격자간 원자는 한 격자점에 원자 두 개가 ⟨110⟩ 방향으로 나란히 앉은 '아령' 꼴이 가장 안정하다고 알려져 있다.</p>
+    <figure class="mini" id="mini-types">
+      <div class="mini-view"><canvas id="cv-types"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>놓을 결함</span><div class="seg" id="ty-kind"><button data-value="vac" class="on">공공</button><button data-value="self">자기 격자간</button><button data-value="big">큰 치환형</button><button data-value="small">작은 치환형</button><button data-value="int">격자간 불순물</button></div></div>
+        <span class="readout" id="ty-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>격자점이나 틈을 누르면 고른 결함이 그 자리에 놓이고, 이웃 원자들이 밀리거나 끌려 온다(화살표는 변위를 20배 키운 것). 변위는 거리의 제곱에 반비례해 줄어든다 — 점결함의 변형장은 짧지만, 크기가 다른 불순물은 주위 격자를 늘이거나 줄여 결정 전체의 격자 상수까지 조금 바꾼다.</figcaption>
+    </figure>
+    <p>이온 결정에서는 전하 중성을 지켜야 하므로 결함이 짝을 지어 생긴다. 이온 하나가 제자리를 떠나 가까운 격자간 자리로 옮기면 공공과 격자간 이온 한 쌍이 생기는데, 이것이 <span class="term">프렌켈 결함</span><span class="en">(Frenkel defect)</span>이다. 양이온과 음이온이 한 개씩 결정 표면으로 빠져나가 공공 쌍만 남기는 것은 <span class="term">쇼트키 결함</span><span class="en">(Schottky defect)</span>이다. 원소 결정에서는 원자가 표면으로 나가며 생긴 단독 공공을 쇼트키 결함이라고도 부른다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 310" role="img" aria-label="완전한 이온 결정, 프렌켈 결함, 쇼트키 결함을 차례로 보여 주는 그림">
+        <defs><marker id="cd-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker></defs>
+
+<g data-only="1"><circle cx="196" cy="70" r="9" fill="var(--accent)"/><circle cx="242" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="70" r="9" fill="var(--accent)"/><circle cx="334" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="70" r="9" fill="var(--accent)"/><circle cx="426" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="70" r="9" fill="var(--accent)"/><circle cx="518" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="70" r="9" fill="var(--accent)"/><circle cx="196" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="116" r="9" fill="var(--accent)"/><circle cx="288" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="116" r="9" fill="var(--accent)"/><circle cx="380" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="116" r="9" fill="var(--accent)"/><circle cx="472" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="116" r="9" fill="var(--accent)"/><circle cx="564" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="162" r="9" fill="var(--accent)"/><circle cx="242" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="162" r="9" fill="var(--accent)"/><circle cx="334" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="162" r="9" fill="var(--accent)"/><circle cx="426" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="162" r="9" fill="var(--accent)"/><circle cx="518" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="162" r="9" fill="var(--accent)"/><circle cx="196" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="208" r="9" fill="var(--accent)"/><circle cx="288" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="208" r="9" fill="var(--accent)"/><circle cx="380" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="208" r="9" fill="var(--accent)"/><circle cx="472" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="208" r="9" fill="var(--accent)"/><circle cx="564" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="254" r="9" fill="var(--accent)"/><circle cx="242" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="254" r="9" fill="var(--accent)"/><circle cx="334" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="254" r="9" fill="var(--accent)"/><circle cx="426" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="254" r="9" fill="var(--accent)"/><circle cx="518" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="254" r="9" fill="var(--accent)"/><text class="t" x="400" y="300" text-anchor="middle">완전한 이온 결정: 양이온(작은 원)과 음이온(큰 원)이 번갈아 놓인다</text></g>
+<g data-only="2"><circle cx="196" cy="70" r="9" fill="var(--accent)"/><circle cx="242" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="70" r="9" fill="var(--accent)"/><circle cx="334" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="70" r="9" fill="var(--accent)"/><circle cx="426" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="70" r="9" fill="var(--accent)"/><circle cx="518" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="70" r="9" fill="var(--accent)"/><circle cx="196" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="116" r="9" fill="var(--accent)"/><circle cx="288" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="116" r="9" fill="var(--accent)"/><circle cx="380" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="116" r="9" fill="var(--accent)"/><circle cx="472" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="116" r="9" fill="var(--accent)"/><circle cx="564" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="162" r="9" fill="var(--accent)"/><circle cx="242" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="162" r="9" fill="var(--accent)"/><circle cx="334" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="162" r="9" fill="var(--accent)"/><circle cx="518" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="162" r="9" fill="var(--accent)"/><circle cx="196" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="208" r="9" fill="var(--accent)"/><circle cx="288" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="208" r="9" fill="var(--accent)"/><circle cx="380" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="208" r="9" fill="var(--accent)"/><circle cx="472" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="208" r="9" fill="var(--accent)"/><circle cx="564" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="254" r="9" fill="var(--accent)"/><circle cx="242" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="254" r="9" fill="var(--accent)"/><circle cx="334" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="254" r="9" fill="var(--accent)"/><circle cx="426" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="254" r="9" fill="var(--accent)"/><circle cx="518" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="254" r="9" fill="var(--accent)"/><rect x="365" y="147" width="30" height="30" rx="4" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="403.0" cy="139.0" r="9" fill="var(--accent)" stroke="var(--text)" stroke-width="2"/><path d="M380,158 Q382,145.0 395.0,146.0" fill="none" stroke="var(--text)" stroke-width="1.6" marker-end="url(#cd-ar)"/><text class="t" x="380" y="196" text-anchor="middle" style="font-size:12px" fill="var(--bad)">공공</text><line x1="415.0" y1="139.0" x2="592" y2="139.0" stroke="var(--text-dim)" stroke-dasharray="3 3"/><text class="t" x="598" y="143.0" style="font-size:12px">격자간 양이온</text><text class="t" x="400" y="300" text-anchor="middle">프렌켈 결함: 양이온 하나가 격자간 자리로 → 공공 + 격자간 원자 한 쌍</text></g>
+<g data-only="3"><circle cx="196" cy="70" r="9" fill="var(--accent)"/><circle cx="242" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="70" r="9" fill="var(--accent)"/><circle cx="334" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="70" r="9" fill="var(--accent)"/><circle cx="426" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="70" r="9" fill="var(--accent)"/><circle cx="518" cy="70" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="70" r="9" fill="var(--accent)"/><circle cx="196" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="116" r="9" fill="var(--accent)"/><circle cx="288" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="116" r="9" fill="var(--accent)"/><circle cx="380" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="116" r="9" fill="var(--accent)"/><circle cx="472" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="116" r="9" fill="var(--accent)"/><circle cx="564" cy="116" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="162" r="9" fill="var(--accent)"/><circle cx="242" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="162" r="9" fill="var(--accent)"/><circle cx="334" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="162" r="9" fill="var(--accent)"/><circle cx="426" cy="162" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="162" r="9" fill="var(--accent)"/><circle cx="196" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="242" cy="208" r="9" fill="var(--accent)"/><circle cx="288" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="334" cy="208" r="9" fill="var(--accent)"/><circle cx="380" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="426" cy="208" r="9" fill="var(--accent)"/><circle cx="472" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="518" cy="208" r="9" fill="var(--accent)"/><circle cx="564" cy="208" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="196" cy="254" r="9" fill="var(--accent)"/><circle cx="242" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="288" cy="254" r="9" fill="var(--accent)"/><circle cx="334" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="380" cy="254" r="9" fill="var(--accent)"/><circle cx="426" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="472" cy="254" r="9" fill="var(--accent)"/><circle cx="518" cy="254" r="16" fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5"/><circle cx="564" cy="254" r="9" fill="var(--accent)"/><rect x="457" y="147" width="30" height="30" rx="4" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="4 3"/><rect x="503" y="147" width="30" height="30" rx="4" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="288" cy="32" r="9" fill="var(--accent)" stroke="var(--text)" stroke-width="2"/><circle cx="334" cy="32" r="16" fill="var(--accent-2-soft)" stroke="var(--text)" stroke-width="2"/><path d="M462,148 C432,10 348,-6 300,26" fill="none" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#cd-ar)"/><path d="M514,144 C498,0 414,-16 354,24" fill="none" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#cd-ar)"/><text class="t" x="592" y="166" style="font-size:12px" fill="var(--bad)">← 양·음이온 공공 쌍</text><text class="t" x="258" y="36" text-anchor="end" style="font-size:12px">표면으로</text><text class="t" x="400" y="300" text-anchor="middle">쇼트키 결함: 양·음이온이 한 쌍씩 표면으로 → 전하 중성인 공공 쌍</text></g>
+      </svg>
+      <ol class="steps-cap"><li>완전한 AB형 이온 결정(예: NaCl). 모든 격자점이 차 있다.</li><li>프렌켈 결함: 작은 양이온이 이웃 틈으로 뛰어 공공(점선 네모)과 격자간 이온을 함께 만든다. 원자 수와 전하가 그대로라 표면이 필요 없다. AgBr·AgCl에서 흔하다.</li><li>쇼트키 결함: 양이온 공공과 음이온 공공이 한 쌍으로 생기고, 빠진 이온은 표면(또는 결정립계·전위)에 가서 붙는다. NaCl·KCl 같은 알칼리 할로젠화물의 주된 결함이다.</li></ol>
+      <figcaption>이온 결정의 두 가지 고유 결함. 어느 쪽이 많은지는 두 결함의 형성 에너지 차이가 정한다 — 작은 양이온이 쉽게 틈에 들어가는 결정은 프렌켈, 두 이온의 크기가 비슷한 결정은 쇼트키가 우세하다.</figcaption>
+    </figure>
+    <div class="example" data-title="불순물 농도와 ppma">
+      <p>실리콘의 격자 상수는 \(a = 0.5431\) nm이다. (a) 원자 밀도를 구하라. (b) 붕소 농도 \(1.0\times10^{17}\) cm⁻³은 몇 ppma(원자 백만 개당 개수)인가? (c) CZ 웨이퍼의 격자간 산소 \(7.0\times10^{17}\) cm⁻³은 몇 ppma인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 다이아몬드 구조의 관용 단위 셀에는 원자 8개. 농도를 원자 밀도로 나누면 원자 분율이다.</div>
+        <div class="step"><b>풀이</b> (a) \(n = 8/a^3 = 8/(0.5431\times10^{-7}\,\text{cm})^3 = 4.99\times10^{22}\) cm⁻³. (b) \(10^{17}/4.99\times10^{22} = 2.0\times10^{-6}\) → 2.0 ppma. (c) \(7.0\times10^{17}/4.99\times10^{22} = 1.40\times10^{-5}\) → 14 ppma.</div>
+        <div class="answer">(a) 4.99 × 10²² cm⁻³ (b) 2.0 ppma (c) 14 ppma</div>
+        <div class="step"><b>검토</b> 도핑은 원자 50만 개 중 하나를 바꾸는 일이다. 그런데도 이 장의 결함 농도들은 이보다 훨씬 작은 경우가 많다 — 다음 절에서 볼 실리콘의 열평형 공공은 1000 °C에서도 (엔트로피 인자를 빼면) 원자 10¹²–10¹⁵개에 하나 꼴이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="equilibrium">
+    <h2>점결함의 평형 농도</h2>
+    <p>공공 하나를 만들려면 결합을 끊어야 하므로 에너지 \(E_f\)(<span class="term">형성 에너지</span><span class="en">(formation energy)</span>)가 든다. 그렇다면 결정은 왜 공공을 만들까? 공공이 놓일 자리를 고르는 방법의 수, 곧 <span class="term">배열 엔트로피</span><span class="en">(configurational entropy)</span>가 자유 에너지를 낮추기 때문이다. 일정 온도·압력에서 평형 상태는 깁스 자유 에너지 \(G = H - TS\)가 최소인 상태다(<a href="../../modern-physics/chapters/quantum-statistics.html">현대물리학 · 양자 통계</a>의 볼츠만 인자와 같은 논리).</p>
+    <p>원자 자리 \(N\)개 중 \(n\)개가 비어 있다고 하자. 공공 사이 상호작용을 무시하면 엔탈피는 \(nE_f\)이고, \(n\)개의 공공을 \(N\)개 자리에 놓는 방법의 수는 \(W = N!/[n!(N-n)!]\)이다. 공공 하나마다 주위 원자의 진동이 달라져 생기는 진동 엔트로피 \(S_v\)도 더한다.</p>
+    <div class="formula">$$G(n) = nE_f - T\left[k\ln\frac{N!}{n!\,(N-n)!} + nS_v\right]$$<div class="where">\(G\)는 완전 결정을 기준으로 한 자유 에너지 변화. 스털링 근사 \(\ln x! \approx x\ln x - x\)를 쓰면 \(\dfrac{d}{dn}\ln W = \ln\dfrac{N-n}{n}\).</div></div>
+    <p>\(dG/dn = 0\)으로 놓으면 \(E_f - TS_v - kT\ln[(N-n)/n] = 0\), 곧 \(n/(N-n) = e^{S_v/k}e^{-E_f/kT}\)이다. 공공은 언제나 아주 드물어 \(n \ll N\)이므로 다음을 얻는다.</p>
+    <div class="def"><span class="def-k">점결함의 열평형 농도</span>
+      <p>$$\frac{n}{N} = \exp\!\left(\frac{S_v}{k}\right)\exp\!\left(-\frac{E_f}{kT}\right)$$</p>
+      <p>형성 에너지가 클수록, 온도가 낮을수록 지수적으로 줄어든다. 공공은 <strong>열역학적 평형 결함</strong>이다 — 결정이 아무리 완벽해도 0 K가 아닌 한 반드시 있다.</p>
+    </div>
+    <figure class="mini" id="mini-g">
+      <div class="mini-view"><canvas id="cv-g"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>온도 T <output id="g-T-out"></output></span><input type="range" id="g-T" min="400" max="1500" step="10" value="1000"></label>
+        <label class="ctrl"><span>형성 에너지 E<sub>f</sub> <output id="g-E-out"></output></span><input type="range" id="g-E" min="0.5" max="1.2" step="0.01" value="0.7"></label>
+        <span class="readout" id="g-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>원자 자리 10⁵개짜리 결정 조각에서 공공 수 \(n\)에 따른 \(nE_f\)(직선), \(-TS_\text{conf}\)(아래로 굽은 곡선)와 그 합 \(G\)(굵은 선). 점을 끌어 \(n\)을 바꿔 보라. 계승은 근사 없이 계산했다. 처음 몇 개의 공공은 엔트로피를 크게 올려 \(G\)를 낮추지만, 많아지면 에너지 비용이 이긴다. 최솟값의 자리 \(n^*\)는 \(Ne^{-E_f/kT}\)와 맞는다.</figcaption>
+    </figure>
+    <p>같은 논리로 다른 고유 결함의 농도도 구할 수 있다. 프렌켈 결함은 공공 자리 \(N\)개와 격자간 자리 \(N'\)개를 각각 고르므로 \(n_F = \sqrt{NN'}\,e^{-E_F/2kT}\), AB형 이온 결정의 쇼트키 쌍은 양이온·음이온 공공을 따로 배열하므로 \(n_S = N e^{-E_S/2kT}\)가 된다(\(E_F\), \(E_S\)는 결함 한 쌍의 형성 에너지). 지수에 2가 붙는 이유는 쌍의 에너지를 두 결함이 나눠 갖기 때문이다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>결정</th><th>결함</th><th class="num">형성 에너지 (eV)</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Cu</td><td>공공</td><td class="num">약 1.28 (문헌 1.0–1.3)</td><td>\(S_v \approx 1\)–\(3k\)</td></tr>
+        <tr><td>Al</td><td>공공</td><td class="num">약 0.67</td><td>녹는점 근처 \(n/N \sim 10^{-3}\)</td></tr>
+        <tr><td>Si</td><td>공공</td><td class="num">약 3.6 (문헌 3–4)</td><td>측정이 어려워 값이 흩어져 있다</td></tr>
+        <tr><td>Si</td><td>자기 격자간 원자</td><td class="num">약 3–4.5</td><td>공공과 비슷한 크기 — 둘 다 중요</td></tr>
+        <tr><td>NaCl</td><td>쇼트키 쌍</td><td class="num">약 2.2–2.5</td><td>\(n_S = Ne^{-E_S/2kT}\)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="predict" data-for="sim-vac">
+      <p>구리(\(E_f = 1.28\) eV)의 온도를 600 K에서 1200 K로 두 배 올리면 공공 농도는 약 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">2배</button><button class="opt">약 100배</button><button class="opt" data-correct>약 10⁵배</button><button class="opt">약 10¹⁰배</button></div>
+      <div class="quiz-exp">\(\exp[(E_f/k)(1/600 - 1/1200)] = e^{12.4} \approx 2\times10^5\). 아레니우스 그림의 가로축 \(1/T\)에서 두 점 사이 거리가 기울기 \(-E_f/k\)와 곱해진다. 아래 실험대에서 온도를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-vac">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>공공 농도 아레니우스 실험대</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-vac"></canvas><span class="hint top">아래 점을 좌우로 끌어 온도를 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="vac-T-out"></output></span><input type="range" id="vac-T" min="300" max="1700" step="5" value="1200"></label>
+          <div class="ctrl"><span>강조할 결정</span><div class="seg" id="vac-mat"><button data-value="Si" class="on">Si</button><button data-value="Cu">Cu</button><button data-value="Al">Al</button><button data-value="user">직접</button></div></div>
+          <label class="ctrl"><span>직접: E<sub>f</sub> <output id="vac-E-out"></output></span><input type="range" id="vac-E" min="0.5" max="4.5" step="0.05" value="2.0"></label>
+          <label class="ctrl"><span>진동 엔트로피 S<sub>v</sub>/k <output id="vac-S-out"></output></span><input type="range" id="vac-S" min="0" max="4" step="0.1" value="0"></label>
+          <label class="check"><input type="checkbox" id="vac-band" checked> Si 문헌 범위(E<sub>f</sub> = 3–4 eV) 띠</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">n/N</span><span class="v" id="vac-f">—</span></div>
+        <div class="stat"><span class="k">공공 농도 n</span><span class="v" id="vac-n">—</span></div>
+        <div class="stat"><span class="k">원자 몇 개에 하나</span><span class="v" id="vac-one">—</span></div>
+        <div class="stat"><span class="k">공공 사이 평균 거리</span><span class="v" id="vac-d">—</span></div>
+      </div>
+      <div class="sim-note">세로축은 \(\log_{10}(n/N)\), 가로축은 \(1000/T\). 각 직선의 기울기가 \(-E_f/(k\ln 10)\)이고, \(1/T \to 0\)으로 늘인 절편이 엔트로피 인자 \(e^{S_v/k}\)다. 원자 밀도는 Si 5.00×10²², Cu 8.47×10²², Al 6.03×10²² cm⁻³. 해볼 것: ① Cu와 Al을 녹는점(1358 K, 933 K)에 두고 \(n/N\)을 비교하라 — \(S_v = 0\)이면 10⁻⁵–10⁻⁴이고, 엔트로피를 넣은 실측값은 10⁻⁴–10⁻³이다. ② Si는 1400 K에서도 원자 10¹³개에 하나 꼴이다. \(S_v/k\)를 3으로 올리면 몇 배가 되는가? ③ '직접'을 고르고 \(E_f\)를 바꿔, 1000 K에서 \(n/N = 10^{-6}\)이 되는 형성 에너지를 찾아라(답: 약 1.19 eV).</div>
+    </div>
+    <div class="tangle" id="tg-vac">
+      <p>형성 에너지 <span class="tn" data-var="E" data-min="0.5" data-max="4.5" data-step="0.05" data-unit=" eV">3.6</span>인 공공이 원자 밀도 5.00×10²² cm⁻³인 결정 속에 <span class="tn" data-var="T" data-min="300" data-max="1400" data-step="10" data-unit=" °C">1100</span>에서 평형을 이루면 \(n/N =\) <span class="tn-out" data-out="f"></span>, 공공 농도는 <span class="tn-out" data-out="n"></span>이다. 온도를 100 °C만 올려도 <span class="tn-out" data-out="r"></span>배가 된다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="구리의 열평형 공공">
+      <p>구리의 공공 형성 에너지를 1.28 eV, 원자 밀도를 \(8.47\times10^{22}\) cm⁻³로 하고 진동 엔트로피는 무시한다. (a) 1000 °C에서 \(n/N\)과 공공 농도, (b) 300 K에서 \(n/N\)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n/N = e^{-E_f/kT}\), \(k = 8.617\times10^{-5}\) eV/K.</div>
+        <div class="step"><b>풀이</b> (a) \(T = 1273\) K, \(kT = 0.1097\) eV, \(E_f/kT = 11.67\) → \(n/N = 8.57\times10^{-6}\), \(n = 8.57\times10^{-6}\times8.47\times10^{22} = 7.26\times10^{17}\) cm⁻³. (b) \(kT = 0.02585\) eV, \(E_f/kT = 49.5\) → \(n/N = 3.1\times10^{-22}\).</div>
+        <div class="answer">(a) 8.57 × 10⁻⁶, 7.26 × 10¹⁷ cm⁻³ (b) 3.1 × 10⁻²²</div>
+        <div class="step"><b>검토</b> 상온 평형값은 1 cm³에 공공이 10개도 안 된다는 뜻이다. 실제 금속에 그보다 많은 공공이 있는 것은 고온에서 급랭하면 공공이 빠져나갈 시간이 없어 '얼어붙기' 때문이다. 진동 엔트로피 \(S_v \approx 1.5k\)를 넣으면 (a)는 \(e^{1.5} = 4.5\)배 커진다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="측정에서 형성 에너지 구하기">
+      <p>어떤 금속의 열평형 공공 분율이 900 K에서 \(9.12\times10^{-6}\), 1100 K에서 \(7.53\times10^{-5}\)으로 측정되었다. 형성 에너지는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 두 온도의 비를 잡으면 엔트로피 인자가 지워진다: \(\ln(f_2/f_1) = (E_f/k)(1/T_1 - 1/T_2)\).</div>
+        <div class="step"><b>풀이</b> \(\ln(7.53\times10^{-5}/9.12\times10^{-6}) = \ln 8.257 = 2.111\). \(1/900 - 1/1100 = 2.020\times10^{-4}\) K⁻¹. \(E_f = 8.617\times10^{-5}\times2.111/2.020\times10^{-4} = 0.900\) eV.</div>
+        <div class="answer">E_f ≈ 0.90 eV</div>
+        <div class="step"><b>검토</b> 이 값으로 \(e^{-E_f/kT}\)를 계산하면 900 K에서 \(9.1\times10^{-6}\)이 나와 엔트로피 인자가 거의 1임을 알 수 있다. 실제 측정(열팽창과 X선 격자 상수를 함께 재는 시몬스–발루피 실험, 양전자 소멸)에서도 이렇게 아레니우스 그림의 기울기를 읽는다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-vac" data-title="열평형 공공 분율 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="diffusion">
+    <h2>고체 속 확산</h2>
+    <p>결정 속 원자는 대부분의 시간을 제자리에서 진동하며 보내다가(진동수 \(\nu \sim 10^{13}\) Hz), 가끔 이웃 자리로 뛴다. 뛰려면 이웃 원자들을 비집고 지나는 안장점, 곧 높이 \(E_m\)(<span class="term">이동 에너지</span><span class="en">(migration energy)</span>)의 장벽을 넘어야 하므로 뜀 빈도는 \(\Gamma = z\nu e^{-E_m/kT}\)이다(\(z\)는 뛸 수 있는 이웃 자리 수). 뜀의 방향은 매번 무작위다. 이렇게 원자가 무작위로 옮겨 다니며 퍼지는 것이 <span class="term">고체 확산</span><span class="en">(solid-state diffusion)</span>이다.</p>
+    <p>한 번 뛸 때 변위가 \(\vec r_i\)(길이 \(a\))이면 \(N\)번 뛴 뒤의 변위는 \(\vec R = \sum\vec r_i\)이다. 뜀끼리 상관이 없으면 교차항 \(\langle\vec r_i\cdot\vec r_j\rangle\)(\(i\ne j\))이 평균 0이 되어 \(\langle R^2\rangle = Na^2\)만 남는다. 시간 \(t\) 동안 \(N = \Gamma t\)번 뛰므로 평균 제곱 변위는 시간에 <strong>비례</strong>한다. 그 비례 상수로 <span class="term">확산 계수</span><span class="en">(diffusion coefficient)</span> \(D\)를 정의한다.</p>
+    <div class="formula">$$\langle x^2\rangle = 2Dt \;(\text{한 방향}), \qquad \langle R^2\rangle = 6Dt \;(3\text{차원}), \qquad D = \tfrac16\Gamma a^2$$<div class="where">퍼진 거리는 시간의 제곱근 \(\sqrt{Dt}\)에 비례한다. \(D\)의 단위는 cm²/s. 무작위 걷기는 \(N\)번 뛰어도 \(\sqrt N\)번어치만 나아간다.</div></div>
+    <div class="predict" data-for="sim-walk">
+      <p>입자 무리가 무작위 걷기로 퍼지고 있다. 시간이 4배 지나면 무리의 폭(rms 변위)은?</p>
+      <div class="opts"><button class="opt">4배</button><button class="opt" data-correct>2배</button><button class="opt">16배</button><button class="opt">변하지 않는다</button></div>
+      <div class="quiz-exp">\(\langle x^2\rangle \propto t\)이므로 rms 폭 \(\sqrt{\langle x^2\rangle} \propto \sqrt t\). 아래 그래프에서 \(\langle x^2\rangle\)은 직선으로, 폭은 √t로 자란다.</div>
+    </div>
+    <div class="sim" id="sim-walk">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>무작위 걷기 확산: ⟨x²⟩는 직선이다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-walk"></canvas><span class="hint">격자를 누르면 그 자리에서 다시 출발</span></div><div><canvas id="cv-walk2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="wk-T-out"></output></span><input type="range" id="wk-T" min="600" max="1400" step="10" value="1100"></label>
+          <div class="ctrl"><span>확산 기구</span><div class="seg" id="wk-mech"><button data-value="int" class="on">격자간 (E<sub>a</sub> = E<sub>m</sub>)</button><button data-value="vac">공공 (E<sub>a</sub> = E<sub>f</sub> + E<sub>m</sub>)</button></div></div>
+          <label class="ctrl"><span>입자 수 <output id="wk-N-out"></output></span><input type="range" id="wk-N" min="50" max="400" step="10" value="300"></label>
+          <div class="ctrl-row"><button class="btn" id="wk-play" type="button"></button><button class="btn" id="wk-reset" type="button">다시 출발</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">경과 시간(모의 단위)</span><span class="v" id="wk-t">—</span></div>
+        <div class="stat"><span class="k">측정 ⟨x²⟩/2t = D</span><span class="v" id="wk-Dm">—</span></div>
+        <div class="stat"><span class="k">이론 D = Γa²/4</span><span class="v" id="wk-Dt">—</span></div>
+        <div class="stat"><span class="k">뜀 빈도 Γ(상대)</span><span class="v" id="wk-G">—</span></div>
+      </div>
+      <div class="sim-note">2차원 정사각 격자(간격 \(a\) = 1)에서 입자가 빈도 \(\Gamma\)로 네 이웃 중 하나로 뛴다. 한 방향 성분의 \(\langle x^2\rangle = 2Dt\), \(D = \Gamma a^2/4\)(2차원). 모의용으로 \(E_m = 0.5\) eV, \(E_f = 0.5\) eV를 골랐다. 아래 그래프는 \(x\)의 분포와 가우스 \(e^{-x^2/4Dt}\)(선)다. 해볼 것: ① ⟨x²⟩ 점들이 이론 직선을 따라가는지 보라(입자가 적으면 요동이 크다). ② 공공 기구로 바꾸면 같은 온도에서 훨씬 느리다 — 원자 옆에 공공이 올 때까지 기다려야 하기 때문이다. ③ 온도를 1100 → 1400으로 바꿔 두 기구의 D가 각각 몇 배 커지는지 비교하라.</div>
+    </div>
+    <p>원자가 실제로 어떻게 뛰는지는 두 가지 대표 기구로 나뉜다. 치환형 원자는 옆에 공공이 와야만 그 자리로 옮길 수 있다(<span class="term">공공 기구</span><span class="en">(vacancy mechanism)</span>). 그러므로 뜀 빈도에 '이웃이 공공일 확률' \(n/N = e^{-E_f/kT}\)이 곱해지고, 활성화 에너지는 \(E_a = E_f + E_m\)이 된다. 작은 격자간 원자는 틈에서 틈으로 바로 뛰므로(<span class="term">격자간 기구</span><span class="en">(interstitial mechanism)</span>) \(E_a = E_m\)뿐이다. 둘 다 결과는 <span class="term">아레니우스 식</span><span class="en">(Arrhenius equation)</span>이다.</p>
+    <div class="formula">$$D = D_0\exp\!\left(-\frac{E_a}{kT}\right), \qquad D_0 = \tfrac16 f z \nu a^2 e^{S/k}$$<div class="where">\(f\)는 상관 인자(공공 기구에서 방금 바꾼 공공과 다시 자리를 바꾸는 '되돌이 뜀' 보정, 다이아몬드 구조 0.5, FCC 0.78), \(S\)는 형성·이동 엔트로피의 합.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="공공 기구와 격자간 기구, 그리고 뜀의 에너지 장벽">
+        <defs><marker id="cd-ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <text class="t" x="20" y="22" style="font-weight:600">① 공공 기구</text>
+        <g fill="var(--accent)" opacity=".85">
+          <circle cx="40" cy="60" r="12"/><circle cx="85" cy="60" r="12"/><circle cx="130" cy="60" r="12"/><circle cx="175" cy="60" r="12"/><circle cx="220" cy="60" r="12"/>
+          <circle cx="40" cy="105" r="12"/><circle cx="85" cy="105" r="12"/><circle cx="175" cy="105" r="12"/><circle cx="220" cy="105" r="12"/>
+          <circle cx="40" cy="150" r="12"/><circle cx="85" cy="150" r="12"/><circle cx="130" cy="150" r="12"/><circle cx="175" cy="150" r="12"/><circle cx="220" cy="150" r="12"/>
+          <circle cx="40" cy="195" r="12"/><circle cx="85" cy="195" r="12"/><circle cx="130" cy="195" r="12"/><circle cx="175" cy="195" r="12"/><circle cx="220" cy="195" r="12"/>
+        </g>
+        <rect x="117" y="92" width="26" height="26" rx="4" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="4 3"/>
+        <circle cx="85" cy="105" r="12" fill="var(--accent-2)"/>
+        <path d="M92,94 Q108,80 122,96" fill="none" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#cd-ar2)"/>
+        <text class="t-dim" x="130" y="236" text-anchor="middle" style="font-size:12px">이웃 공공과 자리를 바꾼다</text>
+        <text class="t-dim" x="130" y="254" text-anchor="middle" style="font-size:12px">B·P·As·Sb, 자기 확산</text>
+        <text class="t" x="280" y="22" style="font-weight:600">② 격자간 기구</text>
+        <g fill="var(--accent)" opacity=".85">
+          <circle cx="300" cy="60" r="12"/><circle cx="345" cy="60" r="12"/><circle cx="390" cy="60" r="12"/><circle cx="435" cy="60" r="12"/><circle cx="480" cy="60" r="12"/>
+          <circle cx="300" cy="105" r="12"/><circle cx="345" cy="105" r="12"/><circle cx="390" cy="105" r="12"/><circle cx="435" cy="105" r="12"/><circle cx="480" cy="105" r="12"/>
+          <circle cx="300" cy="150" r="12"/><circle cx="345" cy="150" r="12"/><circle cx="390" cy="150" r="12"/><circle cx="435" cy="150" r="12"/><circle cx="480" cy="150" r="12"/>
+          <circle cx="300" cy="195" r="12"/><circle cx="345" cy="195" r="12"/><circle cx="390" cy="195" r="12"/><circle cx="435" cy="195" r="12"/><circle cx="480" cy="195" r="12"/>
+        </g>
+        <circle cx="322" cy="127" r="6" fill="var(--accent-2)"/><circle cx="367" cy="127" r="6" fill="none" stroke="var(--accent-2)" stroke-dasharray="3 2"/><circle cx="412" cy="127" r="6" fill="none" stroke="var(--accent-2)" stroke-dasharray="3 2"/>
+        <path d="M328,122 Q345,108 360,122" fill="none" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#cd-ar2)"/>
+        <path d="M373,122 Q390,108 405,122" fill="none" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#cd-ar2)"/>
+        <text class="t-dim" x="390" y="236" text-anchor="middle" style="font-size:12px">틈에서 틈으로 바로 뛴다</text>
+        <text class="t-dim" x="390" y="254" text-anchor="middle" style="font-size:12px">Cu·Fe·Ni·Li, 격자간 산소</text>
+        <text class="t" x="540" y="22" style="font-weight:600">③ 위치에 따른 에너지</text>
+        <line x1="545" y1="210" x2="785" y2="210" class="s-axis"/><line x1="545" y1="210" x2="545" y2="40" class="s-axis"/>
+        <path d="M550,170 C575,170 585,95 610,95 C635,95 645,170 670,170 C695,170 705,95 730,95 C755,95 765,170 780,170" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+        <line x1="600" y1="170" x2="680" y2="170" stroke="var(--text-dim)" stroke-dasharray="4 3"/>
+        <line x1="610" y1="95" x2="610" y2="170" stroke="var(--text-dim)" stroke-width="1.4" marker-start="url(#cd-ar)" marker-end="url(#cd-ar)"/>
+        <text class="t" x="618" y="138" style="font-size:13px">E<tspan dy="3" style="font-size:10px">m</tspan></text>
+        <text class="t-dim" x="665" y="230" text-anchor="middle" style="font-size:12px">원자 위치 →</text>
+        <text class="t-dim" x="540" y="268" style="font-size:12px">공공 기구: E<tspan dy="3" style="font-size:9px">a</tspan><tspan dy="-3"> = E</tspan><tspan dy="3" style="font-size:9px">f</tspan><tspan dy="-3"> + E</tspan><tspan dy="3" style="font-size:9px">m</tspan><tspan dy="-3"> (공공을 만들 값 + 뛸 값)</tspan></text>
+        <text class="t-dim" x="540" y="288" style="font-size:12px">격자간 기구: E<tspan dy="3" style="font-size:9px">a</tspan><tspan dy="-3"> = E</tspan><tspan dy="3" style="font-size:9px">m</tspan><tspan dy="-3"> (이미 틈에 있다)</tspan></text>
+      </svg>
+      <figcaption>확산의 두 기구. 격자간 기구는 공공을 기다릴 필요가 없어 활성화 에너지가 작고 훨씬 빠르다. 실리콘 속 금속 오염이 상온 근처에서도 웨이퍼를 가로지르는 이유다. 실리콘의 붕소·인은 실제로는 자기 격자간 원자와 짝을 지어 움직이는 몫이 크다(격자간 원자 매개 기구) — 이온 주입 손상이 확산을 키우는 TED의 뿌리다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-arr">
+      <div class="mini-view"><canvas id="cv-arr"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>온도 <output id="arr-T-out"></output></span><input type="range" id="arr-T" min="450" max="1350" step="5" value="1000"></label>
+        <label class="check"><input type="checkbox" id="arr-met" checked> 금속·산소도 보기</label>
+        <span class="readout" id="arr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>실리콘 속 원소의 확산 계수(로그) 대 \(1000/T\). 세로 점선을 끌거나 슬라이더로 온도를 바꾸면 각 원소의 \(D\)와 1시간 확산 길이 \(2\sqrt{Dt}\)가 나온다. 값은 진성·저농도 조건의 <strong>교재 대표값</strong>(Sze 등)이며, 농도·분위기·결함 상태에 따라 몇 배씩 달라진다. 치환형 도펀트(\(E_a \approx 3.5\) eV)와 격자간 금속(\(E_a\) 0.2–1 eV) 사이가 10⁸배 이상 벌어져 있다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-len">
+      <p>붕소를 <span class="tn" data-var="T" data-min="800" data-max="1200" data-step="10" data-unit=" °C">1000</span>에서 <span class="tn" data-var="t" data-min="1" data-max="600" data-step="1" data-unit=" 분">60</span> 동안 확산하면 \(D =\) <span class="tn-out" data-out="D"></span>, 확산 길이 \(2\sqrt{Dt} =\) <span class="tn-out" data-out="L"></span>다. 같은 조건에서 격자간 구리는 \(2\sqrt{Dt} =\) <span class="tn-out" data-out="Lc"></span> — 775 μm 두께 웨이퍼를 <span class="tn-out" data-out="cross"></span>.</p>
+    </div>
+    <div class="example" data-title="붕소 원자 하나의 여행">
+      <p>1000 °C에서 붕소의 확산 계수를 \(D = 0.76\exp(-3.46\ \text{eV}/kT)\) cm²/s로 놓는다. (a) \(D\), (b) 1시간 뒤 한 방향 rms 변위 \(\sqrt{2Dt}\)와 3차원 rms 변위 \(\sqrt{6Dt}\), (c) 뜀 거리를 Si 최근접 거리 0.235 nm로 볼 때 1시간 동안의 뜀 횟수와 총 이동 경로 길이를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 아레니우스 식으로 \(D\), \(\langle R^2\rangle = 6Dt = Na^2\)에서 \(N\).</div>
+        <div class="step"><b>풀이</b> (a) \(kT = 0.10971\) eV, \(3.46/0.10971 = 31.54\) → \(D = 0.76\times e^{-31.54} = 1.53\times10^{-14}\) cm²/s. (b) \(Dt = 5.50\times10^{-11}\) cm² → \(\sqrt{2Dt} = 1.05\times10^{-5}\) cm = 105 nm, \(\sqrt{6Dt} = 182\) nm. (c) \(N = 6Dt/a^2 = 3.30\times10^{-10}/(2.35\times10^{-8})^2 = 6.0\times10^5\)번, 경로 길이 \(Na = 1.4\times10^{-2}\) cm = 0.14 mm.</div>
+        <div class="answer">(a) 1.53 × 10⁻¹⁴ cm²/s (b) 105 nm, 182 nm (c) 약 6 × 10⁵번, 0.14 mm</div>
+        <div class="step"><b>검토</b> 0.14 mm를 걸어 0.18 μm 나아간다 — \(\sqrt N \approx 770\)배 손해. 1시간에 60만 번이면 초당 170번 뛰는 셈인데, 원자는 그 사이 초당 10¹³번 진동한다. 뜀 한 번에 장벽을 넘을 확률이 10⁻¹¹ 정도라는 뜻이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fick">
+    <h2>픽의 법칙과 확산 프로파일</h2>
+    <p>원자 하나하나의 무작위 걷기를 수많은 원자에 대해 평균하면 연속체의 법칙이 나온다. 농도가 높은 쪽에서 낮은 쪽으로 넘어가는 원자가 그 반대보다 많으므로, 알짜 흐름(플럭스)은 농도 기울기에 비례한다. 이것이 <span class="term">픽 제1법칙</span><span class="en">(Fick's first law)</span>이다. 여기에 원자 수 보존(연속 방정식 \(\partial C/\partial t = -\partial J/\partial x\))을 합치면 <span class="term">픽 제2법칙</span><span class="en">(Fick's second law)</span>, 곧 확산 방정식이 된다.</p>
+    <div class="formula">$$J = -D\frac{\partial C}{\partial x}, \qquad \frac{\partial C}{\partial t} = D\frac{\partial^2 C}{\partial x^2}\quad(D\text{가 농도와 무관할 때})$$<div class="where">\(J\): 단위 넓이·단위 시간당 지나는 원자 수(cm⁻²s⁻¹), \(C\): 농도(cm⁻³). 제2법칙은 "곡률이 위로 볼록한 곳(\(\partial^2C/\partial x^2 &lt; 0\))은 줄고, 오목한 곳은 는다"는 뜻이다.</div></div>
+    <figure class="mini" id="mini-fd">
+      <div class="mini-view"><canvas id="cv-fd"></canvas></div>
+      <div class="mini-ctrl">
+        <button class="btn" id="fd-play" type="button"></button>
+        <button class="btn" id="fd-reset" type="button">계단 모양으로</button>
+        <label class="check"><input type="checkbox" id="fd-fix"> 왼쪽 표면 농도 고정</label>
+        <span class="readout" id="fd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>캔버스를 끌어 처음 농도 \(C(x)\)를 아무렇게나 그려 보라. 확산 방정식을 차분법으로 푼다. 화살표는 플럭스 \(J = -D\,\partial C/\partial x\)다. 뾰족한 곳은 금방 무뎌지고, 고립계(양 끝을 막음)에서는 넓이(원자 총량)가 보존된다. '표면 농도 고정'을 켜면 왼쪽 끝이 원천이 되어 원자가 계속 들어온다 — 아래 erfc 해의 상황이다.</figcaption>
+    </figure>
+    <p>반도체 공정의 확산에는 두 가지 경계 조건이 대표적이다. 웨이퍼 표면을 도펀트 기체나 도핑 유리로 덮어 표면 농도를 고용 한계 \(C_s\)로 고정하는 <span class="term">선증착</span><span class="en">(predeposition)</span>, 그리고 원천을 걷어 내고 이미 들어간 총량(도즈) \(Q\)만 더 깊이 몰아넣는 <span class="term">후확산</span><span class="en">(drive-in)</span>이다. 이온 주입 뒤의 어닐도 근사적으로 후확산이다.</p>
+    <div class="compare">
+      <div><h4>선증착: 표면 농도 일정</h4><p>$$C(x,t) = C_s\,\text{erfc}\!\left(\frac{x}{2\sqrt{Dt}}\right)$$ 들어간 총량 \(Q(t) = 2C_s\sqrt{Dt/\pi}\)는 \(\sqrt t\)로 는다. \(\text{erfc}(u) = 1 - \tfrac{2}{\sqrt\pi}\int_0^u e^{-s^2}ds\).</p></div>
+      <div><h4>후확산: 총량 일정</h4><p>$$C(x,t) = \frac{Q}{\sqrt{\pi Dt}}\exp\!\left(-\frac{x^2}{4Dt}\right)$$ 표면 농도 \(Q/\sqrt{\pi Dt}\)는 줄고, 넓이 \(Q\)는 그대로다. 무작위 걷기의 분포 그 자체다.</p></div>
+    </div>
+    <p>도펀트와 반대 형의 기판(배경 농도 \(N_B\))에 확산하면, 도펀트 농도가 \(N_B\)와 같아지는 깊이에서 알짜 도핑이 0이 되고 pn 접합이 생긴다. 이 깊이가 <span class="term">접합 깊이</span><span class="en">(junction depth)</span> \(x_j\)다.</p>
+    <div class="formula">$$x_j = 2\sqrt{Dt}\;\text{erfc}^{-1}\!\left(\frac{N_B}{C_s}\right)\;(\text{erfc}), \qquad x_j = 2\sqrt{Dt\,\ln\frac{Q}{N_B\sqrt{\pi Dt}}}\;(\text{가우스})$$<div class="where">두 경우 모두 \(x_j \propto \sqrt{Dt}\)이고 농도비는 로그나 역 erfc로만 들어간다. 여러 번의 열처리는 온도가 달라도 \((Dt)_\text{합} = \sum D_it_i\)로 더한다 — 이것이 공정의 <strong>열 예산</strong>이다.</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="선증착 erfc 프로파일과 후확산 가우스 프로파일의 로그 농도 그래프">
+<line x1="80" y1="250" x2="745" y2="250" class="s-axis"/><line x1="80" y1="250" x2="80" y2="30" class="s-axis"/><line x1="76" y1="250.0" x2="80" y2="250.0" class="s-axis"/><text class="t-dim" x="72" y="254.0" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">15</tspan></text><line x1="76" y1="214.2" x2="80" y2="214.2" class="s-axis"/><text class="t-dim" x="72" y="218.2" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">16</tspan></text><line x1="76" y1="178.3" x2="80" y2="178.3" class="s-axis"/><text class="t-dim" x="72" y="182.3" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">17</tspan></text><line x1="76" y1="142.5" x2="80" y2="142.5" class="s-axis"/><text class="t-dim" x="72" y="146.5" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">18</tspan></text><line x1="76" y1="106.7" x2="80" y2="106.7" class="s-axis"/><text class="t-dim" x="72" y="110.7" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">19</tspan></text><line x1="76" y1="70.8" x2="80" y2="70.8" class="s-axis"/><text class="t-dim" x="72" y="74.8" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">20</tspan></text><line x1="76" y1="35.0" x2="80" y2="35.0" class="s-axis"/><text class="t-dim" x="72" y="39.0" text-anchor="end" style="font-size:11px">10<tspan dy="-5" style="font-size:9px">21</tspan></text><line x1="80.0" y1="250" x2="80.0" y2="254" class="s-axis"/><text class="t-dim" x="80.0" y="268" text-anchor="middle" style="font-size:11px">0</text><line x1="300.0" y1="250" x2="300.0" y2="254" class="s-axis"/><text class="t-dim" x="300.0" y="268" text-anchor="middle" style="font-size:11px">0.5</text><line x1="520.0" y1="250" x2="520.0" y2="254" class="s-axis"/><text class="t-dim" x="520.0" y="268" text-anchor="middle" style="font-size:11px">1.0</text><line x1="740.0" y1="250" x2="740.0" y2="254" class="s-axis"/><text class="t-dim" x="740.0" y="268" text-anchor="middle" style="font-size:11px">1.5</text><text class="t-dim" x="745" y="288" text-anchor="end" style="font-size:12px">깊이 x (μm)</text><text class="t-dim" x="88" y="22" style="font-size:12px">C (cm⁻³, 로그)</text><line x1="80" y1="214.2" x2="745" y2="214.2" stroke="var(--text-dim)" stroke-dasharray="6 4"/><text class="t-dim" x="740" y="208.2" text-anchor="end" style="font-size:12px">기판 농도 N<tspan dy="3" style="font-size:9px">B</tspan><tspan dy="-3"> = 10¹⁶</tspan></text>
+<g data-step="1"><path d="M80.0,70.8 L82.2,72.5 L84.4,74.4 L86.6,76.4 L88.8,78.6 L91.0,81.0 L93.2,83.6 L95.4,86.4 L97.6,89.3 L99.8,92.5 L102.0,95.9 L104.2,99.6 L106.4,103.4 L108.6,107.5 L110.8,111.7 L113.0,116.2 L115.2,121.0 L117.4,125.9 L119.6,131.1 L121.8,136.5 L124.0,142.2 L126.2,148.0 L128.4,154.2 L130.6,160.5 L132.8,167.1 L135.0,173.9 L137.2,181.0 L139.4,188.3 L141.6,195.9 L143.8,203.7 L146.0,211.7 L148.2,220.0 L150.4,228.5 L152.6,237.3 L154.8,246.3" fill="none" stroke="var(--accent)" stroke-width="2.6"/><circle cx="146.7" cy="214.2" r="5" fill="var(--accent)"/><text class="t-acc" x="156.7" y="190.2" style="font-size:12px;font-weight:600">x<tspan dy="3" style="font-size:9px">j</tspan><tspan dy="-3"> = 0.15 μm</tspan></text><text class="t" x="130" y="58" style="font-size:12px">① 선증착 950 °C, 30분: 표면 농도 C<tspan dy="3" style="font-size:9px">s</tspan><tspan dy="-3"> = 10²⁰ 고정 → erfc</tspan></text></g>
+<g data-step="2"><path d="M80.0,70.8 L80.0,250" stroke="var(--text-dim)" stroke-width="5" opacity=".5"/><text class="t" x="130" y="80" style="font-size:12px">② 원천을 걷어 내고(산화막 덮개) 도즈 Q = 3.1×10¹⁴ cm⁻²만 남긴다</text></g>
+<g data-step="3"><path d="M80.0,111.2 L82.2,111.2 L84.4,111.2 L86.6,111.2 L88.8,111.2 L91.0,111.2 L93.2,111.2 L95.4,111.2 L97.6,111.3 L99.8,111.3 L102.0,111.3 L104.2,111.4 L106.4,111.4 L108.6,111.5 L110.8,111.5 L113.0,111.6 L115.2,111.6 L117.4,111.7 L119.6,111.7 L121.8,111.8 L124.0,111.9 L126.2,111.9 L128.4,112.0 L130.6,112.1 L132.8,112.2 L135.0,112.3 L137.2,112.4 L139.4,112.5 L141.6,112.6 L143.8,112.7 L146.0,112.8 L148.2,112.9 L150.4,113.0 L152.6,113.1 L154.8,113.2 L157.0,113.3 L159.2,113.5 L161.4,113.6 L163.6,113.7 L165.8,113.9 L168.0,114.0 L170.2,114.1 L172.4,114.3 L174.6,114.4 L176.8,114.6 L179.0,114.8 L181.2,114.9 L183.4,115.1 L185.6,115.3 L187.8,115.4 L190.0,115.6 L192.2,115.8 L194.4,116.0 L196.6,116.1 L198.8,116.3 L201.0,116.5 L203.2,116.7 L205.4,116.9 L207.6,117.1 L209.8,117.3 L212.0,117.6 L214.2,117.8 L216.4,118.0 L218.6,118.2 L220.8,118.4 L223.0,118.7 L225.2,118.9 L227.4,119.1 L229.6,119.4 L231.8,119.6 L234.0,119.9 L236.2,120.1 L238.4,120.4 L240.6,120.6 L242.8,120.9 L245.0,121.2 L247.2,121.4 L249.4,121.7 L251.6,122.0 L253.8,122.3 L256.0,122.5 L258.2,122.8 L260.4,123.1 L262.6,123.4 L264.8,123.7 L267.0,124.0 L269.2,124.3 L271.4,124.6 L273.6,124.9 L275.8,125.2 L278.0,125.6 L280.2,125.9 L282.4,126.2 L284.6,126.5 L286.8,126.9 L289.0,127.2 L291.2,127.5 L293.4,127.9 L295.6,128.2 L297.8,128.6 L300.0,128.9 L302.2,129.3 L304.4,129.7 L306.6,130.0 L308.8,130.4 L311.0,130.8 L313.2,131.1 L315.4,131.5 L317.6,131.9 L319.8,132.3 L322.0,132.7 L324.2,133.1 L326.4,133.5 L328.6,133.9 L330.8,134.3 L333.0,134.7 L335.2,135.1 L337.4,135.5 L339.6,135.9 L341.8,136.3 L344.0,136.8 L346.2,137.2 L348.4,137.6 L350.6,138.1 L352.8,138.5 L355.0,138.9 L357.2,139.4 L359.4,139.8 L361.6,140.3 L363.8,140.7 L366.0,141.2 L368.2,141.7 L370.4,142.1 L372.6,142.6 L374.8,143.1 L377.0,143.6 L379.2,144.0 L381.4,144.5 L383.6,145.0 L385.8,145.5 L388.0,146.0 L390.2,146.5 L392.4,147.0 L394.6,147.5 L396.8,148.0 L399.0,148.5 L401.2,149.0 L403.4,149.6 L405.6,150.1 L407.8,150.6 L410.0,151.2 L412.2,151.7 L414.4,152.2 L416.6,152.8 L418.8,153.3 L421.0,153.9 L423.2,154.4 L425.4,155.0 L427.6,155.5 L429.8,156.1 L432.0,156.7 L434.2,157.2 L436.4,157.8 L438.6,158.4 L440.8,159.0 L443.0,159.6 L445.2,160.1 L447.4,160.7 L449.6,161.3 L451.8,161.9 L454.0,162.5 L456.2,163.1 L458.4,163.7 L460.6,164.4 L462.8,165.0 L465.0,165.6 L467.2,166.2 L469.4,166.8 L471.6,167.5 L473.8,168.1 L476.0,168.8 L478.2,169.4 L480.4,170.0 L482.6,170.7 L484.8,171.3 L487.0,172.0 L489.2,172.7 L491.4,173.3 L493.6,174.0 L495.8,174.7 L498.0,175.3 L500.2,176.0 L502.4,176.7 L504.6,177.4 L506.8,178.1 L509.0,178.8 L511.2,179.4 L513.4,180.1 L515.6,180.8 L517.8,181.6 L520.0,182.3 L522.2,183.0 L524.4,183.7 L526.6,184.4 L528.8,185.1 L531.0,185.9 L533.2,186.6 L535.4,187.3 L537.6,188.1 L539.8,188.8 L542.0,189.5 L544.2,190.3 L546.4,191.0 L548.6,191.8 L550.8,192.6 L553.0,193.3 L555.2,194.1 L557.4,194.9 L559.6,195.6 L561.8,196.4 L564.0,197.2 L566.2,198.0 L568.4,198.8 L570.6,199.6 L572.8,200.3 L575.0,201.1 L577.2,201.9 L579.4,202.8 L581.6,203.6 L583.8,204.4 L586.0,205.2 L588.2,206.0 L590.4,206.8 L592.6,207.7 L594.8,208.5 L597.0,209.3 L599.2,210.2 L601.4,211.0 L603.6,211.8 L605.8,212.7 L608.0,213.5 L610.2,214.4 L612.4,215.3 L614.6,216.1 L616.8,217.0 L619.0,217.9 L621.2,218.7 L623.4,219.6 L625.6,220.5 L627.8,221.4 L630.0,222.3 L632.2,223.1 L634.4,224.0 L636.6,224.9 L638.8,225.8 L641.0,226.7 L643.2,227.7 L645.4,228.6 L647.6,229.5 L649.8,230.4 L652.0,231.3 L654.2,232.2 L656.4,233.2 L658.6,234.1 L660.8,235.0 L663.0,236.0 L665.2,236.9 L667.4,237.9 L669.6,238.8 L671.8,239.8 L674.0,240.7 L676.2,241.7 L678.4,242.7 L680.6,243.6 L682.8,244.6 L685.0,245.6 L687.2,246.6 L689.4,247.6 L691.6,248.5 L693.8,249.5" fill="none" stroke="var(--accent-2)" stroke-width="2.6"/><circle cx="609.6" cy="214.2" r="5" fill="var(--accent-2)"/><text x="601.6" y="236.2" text-anchor="end" style="font-size:12px;font-weight:600" fill="var(--accent-2)">x<tspan dy="3" style="font-size:9px">j</tspan><tspan dy="-3"> = 1.20 μm</tspan></text><text class="t" x="130" y="102" style="font-size:12px">③ 후확산 1100 °C, 1시간: 같은 Q가 가우스로 퍼진다(C<tspan dy="3" style="font-size:9px">s</tspan><tspan dy="-3"> → 7.5×10¹⁸)</tspan></text></g>
+      </svg>
+      <ol class="steps-cap"><li>950 °C에서 30분 선증착. 표면은 고용 한계 근처 10²⁰ cm⁻³에 묶이고 붕소는 0.15 μm만 들어간다.</li><li>원천을 제거하고 표면을 산화막으로 덮는다. 이제 계 안의 붕소 총량 \(Q\)는 바뀌지 않는다.</li><li>1100 °C에서 1시간 후확산. \(Dt\)가 70배 커지며 같은 넓이의 가우스로 펴져, 표면 농도는 7.5×10¹⁸으로 내려가고 접합은 1.2 μm로 깊어진다.</li></ol>
+      <figcaption>2단계 확산(아래 예제 두 개의 수치). 로그 축이라 넓이가 같아 보이지 않지만 두 곡선 아래 넓이(도즈)는 같다. 선증착으로 도즈를, 후확산으로 깊이를 따로 조절할 수 있다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-prof">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>확산 프로파일 실험대: 목표 접합 깊이 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div><canvas id="cv-prof"></canvas></div><div style="position:relative"><canvas id="cv-pad"></canvas><span class="hint top">점을 끌어 온도·시간을 함께 바꾼다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>공정</span><div class="seg" id="pf-mode"><button data-value="erfc" class="on">선증착 (C<sub>s</sub> 일정)</button><button data-value="gauss">후확산 (Q 일정)</button></div></div>
+          <div class="ctrl"><span>도펀트</span><div class="seg" id="pf-dop"><button data-value="B" class="on">붕소</button><button data-value="P">인</button><button data-value="As">비소</button></div></div>
+          <label class="ctrl"><span>온도 <output id="pf-T-out"></output></span><input type="range" id="pf-T" min="850" max="1200" step="5" value="1000"></label>
+          <label class="ctrl"><span>시간 <output id="pf-t-out"></output></span><input type="range" id="pf-t" min="0" max="3" step="0.01" value="1.2"></label>
+          <label class="ctrl"><span>C<sub>s</sub> (선증착) <output id="pf-Cs-out"></output></span><input type="range" id="pf-Cs" min="18" max="20.7" step="0.05" value="20"></label>
+          <label class="ctrl"><span>Q (후확산) <output id="pf-Q-out"></output></span><input type="range" id="pf-Q" min="13" max="16" step="0.05" value="14.5"></label>
+          <label class="ctrl"><span>기판 농도 N<sub>B</sub> <output id="pf-Nb-out"></output></span><input type="range" id="pf-Nb" min="14" max="17.5" step="0.05" value="16"></label>
+          <div class="ctrl-row"><button class="btn" id="pf-new" type="button">새 목표</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">D</span><span class="v" id="pf-D">—</span></div>
+        <div class="stat"><span class="k">√(Dt)</span><span class="v" id="pf-L">—</span></div>
+        <div class="stat"><span class="k">접합 깊이 x<sub>j</sub></span><span class="v" id="pf-xj">—</span></div>
+        <div class="stat"><span class="k">도즈 Q / 표면 농도</span><span class="v" id="pf-q">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v cd-goal" id="pf-goal">—</span></div>
+      </div>
+      <div class="sim-note">확산 계수는 <code>Solid.dopantDiffusion</code>의 진성 대표값(붕소 \(D_0\) = 0.76 cm²/s, \(E_a\) = 3.46 eV; 인 3.85, 3.66; 비소 0.32, 3.56)이다. 실제 고농도 확산은 농도에 따라 \(D\)가 커져(외인성 확산) 프로파일이 더 가파르다. 시간 슬라이더는 로그(1분–1000분). 해볼 것: ① 목표 \(x_j\) = 0.30 μm(±0.01)를 선증착으로 맞혀라. 온도를 50 °C 올리면 같은 깊이에 시간이 몇 분의 1로 줄어드는가? ② 오른쪽 판에서 같은 \(x_j\)를 주는 (T, t)가 이루는 곡선(점선)을 따라 점을 옮겨 보라 — \(Dt\)가 같으면 깊이도 같다. ③ 기판 농도를 10배 올리면 \(x_j\)는 얼마나 얕아지는가?</div>
+    </div>
+    <div class="tangle" id="tg-dose">
+      <p>표면 농도 \(C_s =\) <span class="tn" data-var="cs" data-min="1" data-max="50" data-step="1">10</span>×10¹⁹ cm⁻³로 붕소를 <span class="tn" data-var="T" data-min="850" data-max="1150" data-step="5" data-unit=" °C">950</span>에서 <span class="tn" data-var="t" data-min="5" data-max="240" data-step="5" data-unit=" 분">30</span> 선증착하면 \(\sqrt{Dt} =\) <span class="tn-out" data-out="L"></span>, 도즈 \(Q = 2C_s\sqrt{Dt/\pi} =\) <span class="tn-out" data-out="Q"></span>이고, \(N_B = 10^{16}\) cm⁻³ 기판에서 접합 깊이는 <span class="tn-out" data-out="xj"></span>다.</p>
+    </div>
+    <div class="example" data-title="붕소 선증착">
+      <p>n형 실리콘(\(N_B = 1.0\times10^{16}\) cm⁻³)에 붕소를 950 °C에서 30분 선증착한다. 표면 농도는 \(C_s = 1.0\times10^{20}\) cm⁻³, \(D = 0.76\exp(-3.46\ \text{eV}/kT)\) cm²/s, \(\text{erfc}^{-1}(10^{-4}) = 2.751\). (a) \(D\)와 \(\sqrt{Dt}\), (b) 도즈 \(Q\), (c) 접합 깊이를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> erfc 해. \(Q = 2C_s\sqrt{Dt/\pi}\), \(x_j = 2\sqrt{Dt}\,\text{erfc}^{-1}(N_B/C_s)\).</div>
+        <div class="step"><b>풀이</b> (a) \(T = 1223\) K, \(kT = 0.10540\) eV, \(E_a/kT = 32.83\) → \(D = 4.21\times10^{-15}\) cm²/s, \(Dt = 7.58\times10^{-12}\) cm², \(\sqrt{Dt} = 2.75\times10^{-6}\) cm = 27.5 nm. (b) \(Q = 2\times10^{20}\times\sqrt{7.58\times10^{-12}/\pi} = 3.11\times10^{14}\) cm⁻². (c) \(x_j = 2\times2.75\times10^{-6}\times2.751 = 1.51\times10^{-5}\) cm.</div>
+        <div class="answer">(a) D = 4.21 × 10⁻¹⁵ cm²/s, √(Dt) = 27.5 nm (b) Q = 3.11 × 10¹⁴ cm⁻² (c) xⱼ = 0.151 μm</div>
+        <div class="step"><b>검토</b> \(x_j\)는 \(\sqrt{Dt}\)의 5.5배. 농도비 10⁴이 역 erfc를 통해 약한 인수(2.75)로만 들어간다는 것이 확산 공정이 비교적 견고한 이유다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="후확산으로 깊이 몰아넣기">
+      <p>앞 예제의 도즈 \(Q = 3.11\times10^{14}\) cm⁻²를 그대로 두고 1100 °C에서 1시간 후확산한다. 선증착의 \(Dt\)는 무시한다. (a) \(D\)와 \(Dt\), (b) 후확산 뒤 표면 농도, (c) 접합 깊이(\(N_B = 10^{16}\) cm⁻³)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 가우스 해. \(C(0) = Q/\sqrt{\pi Dt}\), \(x_j = 2\sqrt{Dt\ln[C(0)/N_B]}\).</div>
+        <div class="step"><b>풀이</b> (a) \(T = 1373\) K, \(kT = 0.11833\) eV, \(E_a/kT = 29.24\) → \(D = 1.52\times10^{-13}\) cm²/s, \(Dt = 5.47\times10^{-10}\) cm². (b) \(\sqrt{\pi Dt} = 4.15\times10^{-5}\) cm → \(C(0) = 7.49\times10^{18}\) cm⁻³. (c) \(\ln(7.49\times10^{18}/10^{16}) = 6.62\) → \(x_j = 2\sqrt{5.47\times10^{-10}\times6.62} = 1.20\times10^{-4}\) cm.</div>
+        <div class="answer">(a) D = 1.52 × 10⁻¹³ cm²/s, Dt = 5.47 × 10⁻¹⁰ cm² (b) 7.49 × 10¹⁸ cm⁻³ (c) xⱼ = 1.20 μm</div>
+        <div class="step"><b>검토</b> 선증착의 \(Dt\)(7.6×10⁻¹²)는 후확산의 1.4%라 무시해도 된다. 150 °C 차이가 \(D\)를 36배 바꾼다 — 활성화 에너지 3.5 eV의 위력이다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>열 예산과 과도 증속 확산</strong><p>오늘날 소스·드레인 접합은 수십 nm 깊이라, 확산은 '일부러 시키는 것'에서 '최대한 막아야 하는 것'으로 바뀌었다. 1000 °C 이상을 1초 남짓만 거치는 스파이크·플래시·레이저 어닐은 \(\sum D_it_i\)를 줄이면서 도펀트를 활성화하려는 장치다. 걸림돌은 이온 주입이 남긴 과잉 자기 격자간 원자다. 붕소·인은 격자간 원자와 짝을 지어 움직이므로, 첫 어닐 동안 격자간 원자가 남아 있는 사이에 확산 계수가 평형값의 수백–수천 배로 뛴다. 이것이 <span class="term">과도 증속 확산</span><span class="en">(transient enhanced diffusion, TED)</span>이고, 탄소를 함께 주입해 격자간 원자를 붙잡는 이유다. 공정 관점의 확산 방정식은 <a href="https://semi.euiyun.com/process/chapters/anneal.html">ProcessBook · 확산과 열처리</a>, 점결함이 도펀트를 실어 나르는 과정과 TED는 <a href="https://semi.euiyun.com/doping/chapters/diffusion.html">DopingBook · 확산</a>, 주입 손상 자체는 <a href="https://semi.euiyun.com/doping/chapters/damage.html">DopingBook · 격자 손상과 비정질화</a>에서 이어진다.</p></div>
+    <div class="drill" id="drill-xj" data-title="확산 길이 · 가우스 접합 깊이 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="dislocations">
+    <h2>선결함: 전위</h2>
+    <p>완전한 결정의 위 절반을 아래 절반 위로 통째로 한 원자 간격 미끄러뜨리는 데 필요한 전단 응력을 어림하면 \(\tau_\text{th} \approx G/2\pi\)(\(G\)는 전단 탄성률, 프렌켈의 이론 전단 강도)이다. 그런데 실제 금속 결정은 그보다 10³–10⁴배 작은 응력에서 소성 변형한다. 차이를 메우는 것이 선 모양의 결함, <span class="term">전위</span><span class="en">(dislocation)</span>다. 전위는 '이미 미끄러진 영역'과 '아직 안 미끄러진 영역'의 경계선이고, 그 선이 결정을 가로질러 지나가면 결합을 한 줄씩만 바꿔 가며 전체를 미끄러뜨린다. 카펫의 주름을 밀어 옮기는 것과 같다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 330" role="img" aria-label="칼날 전위의 단면과 나사 전위의 위에서 본 원자 배열">
+        <text class="t" x="200" y="22" text-anchor="middle" style="font-weight:600">칼날 전위: b ⊥ 전위선</text>
+<g class="s-line" stroke-width="1.2" opacity=".45"><line x1="63.0" y1="152.2" x2="61.1" y2="118.0"/><line x1="63.0" y1="152.2" x2="65.3" y2="185.8"/><line x1="63.0" y1="152.2" x2="96.7" y2="151.8"/><line x1="61.1" y1="118.0" x2="59.6" y2="83.6"/><line x1="61.1" y1="118.0" x2="94.4" y2="117.4"/><line x1="59.6" y1="83.6" x2="58.5" y2="49.2"/><line x1="59.6" y1="83.6" x2="92.8" y2="82.9"/><line x1="58.5" y1="49.2" x2="91.8" y2="48.5"/><line x1="70.2" y1="286.5" x2="69.2" y2="252.9"/><line x1="70.2" y1="286.5" x2="105.0" y2="285.6"/><line x1="69.2" y1="252.9" x2="67.6" y2="219.4"/><line x1="69.2" y1="252.9" x2="104.2" y2="252.0"/><line x1="67.6" y1="219.4" x2="65.3" y2="185.8"/><line x1="67.6" y1="219.4" x2="102.6" y2="218.6"/><line x1="65.3" y1="185.8" x2="99.8" y2="185.2"/><line x1="96.7" y1="151.8" x2="94.4" y2="117.4"/><line x1="96.7" y1="151.8" x2="99.8" y2="185.2"/><line x1="96.7" y1="151.8" x2="130.2" y2="151.2"/><line x1="94.4" y1="117.4" x2="92.8" y2="82.9"/><line x1="94.4" y1="117.4" x2="127.4" y2="116.6"/><line x1="92.8" y1="82.9" x2="91.8" y2="48.5"/><line x1="92.8" y1="82.9" x2="125.8" y2="82.0"/><line x1="91.8" y1="48.5" x2="125.0" y2="47.6"/><line x1="105.0" y1="285.6" x2="104.2" y2="252.0"/><line x1="105.0" y1="285.6" x2="139.7" y2="284.7"/><line x1="104.2" y1="252.0" x2="102.6" y2="218.6"/><line x1="104.2" y1="252.0" x2="139.3" y2="250.7"/><line x1="102.6" y1="218.6" x2="99.8" y2="185.2"/><line x1="102.6" y1="218.6" x2="138.2" y2="217.2"/><line x1="99.8" y1="185.2" x2="134.9" y2="184.3"/><line x1="130.2" y1="151.2" x2="127.4" y2="116.6"/><line x1="130.2" y1="151.2" x2="134.9" y2="184.3"/><line x1="130.2" y1="151.2" x2="163.1" y2="150.3"/><line x1="127.4" y1="116.6" x2="125.8" y2="82.0"/><line x1="127.4" y1="116.6" x2="159.8" y2="115.2"/><line x1="125.8" y1="82.0" x2="125.0" y2="47.6"/><line x1="125.8" y1="82.0" x2="158.7" y2="80.7"/><line x1="125.0" y1="47.6" x2="158.3" y2="46.7"/><line x1="139.7" y1="284.7" x2="139.3" y2="250.7"/><line x1="139.7" y1="284.7" x2="174.3" y2="284.1"/><line x1="139.3" y1="250.7" x2="138.2" y2="217.2"/><line x1="139.3" y1="250.7" x2="174.2" y2="249.7"/><line x1="138.2" y1="217.2" x2="134.9" y2="184.3"/><line x1="138.2" y1="217.2" x2="173.9" y2="215.2"/><line x1="134.9" y1="184.3" x2="163.1" y2="150.3"/><line x1="134.9" y1="184.3" x2="172.2" y2="181.5"/><line x1="163.1" y1="150.3" x2="159.8" y2="115.2"/><line x1="163.1" y1="150.3" x2="172.2" y2="181.5"/><line x1="163.1" y1="150.3" x2="193.8" y2="147.5"/><line x1="159.8" y1="115.2" x2="158.7" y2="80.7"/><line x1="159.8" y1="115.2" x2="192.1" y2="113.2"/><line x1="158.7" y1="80.7" x2="158.3" y2="46.7"/><line x1="158.7" y1="80.7" x2="191.8" y2="79.7"/><line x1="158.3" y1="46.7" x2="191.7" y2="46.1"/><line x1="174.3" y1="284.1" x2="174.2" y2="249.7"/><line x1="174.3" y1="284.1" x2="208.7" y2="284.1"/><line x1="174.2" y1="249.7" x2="173.9" y2="215.2"/><line x1="174.2" y1="249.7" x2="208.8" y2="249.7"/><line x1="173.9" y1="215.2" x2="172.2" y2="181.5"/><line x1="173.9" y1="215.2" x2="209.1" y2="215.2"/><line x1="172.2" y1="181.5" x2="193.8" y2="147.5"/><line x1="172.2" y1="181.5" x2="210.8" y2="181.5"/><line x1="193.8" y1="147.5" x2="192.1" y2="113.2"/><line x1="193.8" y1="147.5" x2="210.8" y2="181.5"/><line x1="193.8" y1="147.5" x2="223.2" y2="147.5"/><line x1="192.1" y1="113.2" x2="191.8" y2="79.7"/><line x1="192.1" y1="113.2" x2="224.9" y2="113.2"/><line x1="191.8" y1="79.7" x2="191.7" y2="46.1"/><line x1="191.8" y1="79.7" x2="225.2" y2="79.7"/><line x1="191.7" y1="46.1" x2="225.3" y2="46.1"/><line x1="208.7" y1="284.1" x2="208.8" y2="249.7"/><line x1="208.7" y1="284.1" x2="243.3" y2="284.7"/><line x1="208.8" y1="249.7" x2="209.1" y2="215.2"/><line x1="208.8" y1="249.7" x2="243.7" y2="250.7"/><line x1="209.1" y1="215.2" x2="210.8" y2="181.5"/><line x1="209.1" y1="215.2" x2="244.8" y2="217.2"/><line x1="210.8" y1="181.5" x2="223.2" y2="147.5"/><line x1="210.8" y1="181.5" x2="248.1" y2="184.3"/><line x1="223.2" y1="147.5" x2="224.9" y2="113.2"/><line x1="223.2" y1="147.5" x2="253.9" y2="150.3"/><line x1="224.9" y1="113.2" x2="225.2" y2="79.7"/><line x1="224.9" y1="113.2" x2="257.2" y2="115.2"/><line x1="225.2" y1="79.7" x2="225.3" y2="46.1"/><line x1="225.2" y1="79.7" x2="258.3" y2="80.7"/><line x1="225.3" y1="46.1" x2="258.7" y2="46.7"/><line x1="243.3" y1="284.7" x2="243.7" y2="250.7"/><line x1="243.3" y1="284.7" x2="278.0" y2="285.6"/><line x1="243.7" y1="250.7" x2="244.8" y2="217.2"/><line x1="243.7" y1="250.7" x2="278.8" y2="252.0"/><line x1="244.8" y1="217.2" x2="248.1" y2="184.3"/><line x1="244.8" y1="217.2" x2="280.4" y2="218.6"/><line x1="248.1" y1="184.3" x2="253.9" y2="150.3"/><line x1="248.1" y1="184.3" x2="283.2" y2="185.2"/><line x1="253.9" y1="150.3" x2="257.2" y2="115.2"/><line x1="253.9" y1="150.3" x2="286.8" y2="151.2"/><line x1="257.2" y1="115.2" x2="258.3" y2="80.7"/><line x1="257.2" y1="115.2" x2="289.6" y2="116.6"/><line x1="258.3" y1="80.7" x2="258.7" y2="46.7"/><line x1="258.3" y1="80.7" x2="291.2" y2="82.0"/><line x1="258.7" y1="46.7" x2="292.0" y2="47.6"/><line x1="278.0" y1="285.6" x2="278.8" y2="252.0"/><line x1="278.0" y1="285.6" x2="312.8" y2="286.5"/><line x1="278.8" y1="252.0" x2="280.4" y2="218.6"/><line x1="278.8" y1="252.0" x2="313.8" y2="252.9"/><line x1="280.4" y1="218.6" x2="283.2" y2="185.2"/><line x1="280.4" y1="218.6" x2="315.4" y2="219.4"/><line x1="283.2" y1="185.2" x2="286.8" y2="151.2"/><line x1="283.2" y1="185.2" x2="317.7" y2="185.8"/><line x1="286.8" y1="151.2" x2="289.6" y2="116.6"/><line x1="286.8" y1="151.2" x2="320.3" y2="151.8"/><line x1="289.6" y1="116.6" x2="291.2" y2="82.0"/><line x1="289.6" y1="116.6" x2="322.6" y2="117.4"/><line x1="291.2" y1="82.0" x2="292.0" y2="47.6"/><line x1="291.2" y1="82.0" x2="324.2" y2="82.9"/><line x1="292.0" y1="47.6" x2="325.2" y2="48.5"/><line x1="312.8" y1="286.5" x2="313.8" y2="252.9"/><line x1="312.8" y1="286.5" x2="347.5" y2="287.2"/><line x1="313.8" y1="252.9" x2="315.4" y2="219.4"/><line x1="313.8" y1="252.9" x2="348.6" y2="253.6"/><line x1="315.4" y1="219.4" x2="317.7" y2="185.8"/><line x1="315.4" y1="219.4" x2="350.1" y2="220.0"/><line x1="317.7" y1="185.8" x2="320.3" y2="151.8"/><line x1="317.7" y1="185.8" x2="352.0" y2="186.2"/><line x1="320.3" y1="151.8" x2="322.6" y2="117.4"/><line x1="320.3" y1="151.8" x2="354.0" y2="152.2"/><line x1="322.6" y1="117.4" x2="324.2" y2="82.9"/><line x1="322.6" y1="117.4" x2="355.9" y2="118.0"/><line x1="324.2" y1="82.9" x2="325.2" y2="48.5"/><line x1="347.5" y1="287.2" x2="348.6" y2="253.6"/><line x1="348.6" y1="253.6" x2="350.1" y2="220.0"/><line x1="350.1" y1="220.0" x2="352.0" y2="186.2"/><line x1="352.0" y1="186.2" x2="354.0" y2="152.2"/><line x1="354.0" y1="152.2" x2="355.9" y2="118.0"/></g><circle cx="63.0" cy="152.2" r="7" fill="var(--accent)"/><circle cx="61.1" cy="118.0" r="7" fill="var(--accent)"/><circle cx="59.6" cy="83.6" r="7" fill="var(--accent)"/><circle cx="58.5" cy="49.2" r="7" fill="var(--accent)"/><circle cx="70.2" cy="286.5" r="7" fill="var(--accent)"/><circle cx="69.2" cy="252.9" r="7" fill="var(--accent)"/><circle cx="67.6" cy="219.4" r="7" fill="var(--accent)"/><circle cx="65.3" cy="185.8" r="7" fill="var(--accent)"/><circle cx="96.7" cy="151.8" r="7" fill="var(--accent)"/><circle cx="94.4" cy="117.4" r="7" fill="var(--accent)"/><circle cx="92.8" cy="82.9" r="7" fill="var(--accent)"/><circle cx="91.8" cy="48.5" r="7" fill="var(--accent)"/><circle cx="105.0" cy="285.6" r="7" fill="var(--accent)"/><circle cx="104.2" cy="252.0" r="7" fill="var(--accent)"/><circle cx="102.6" cy="218.6" r="7" fill="var(--accent)"/><circle cx="99.8" cy="185.2" r="7" fill="var(--accent)"/><circle cx="130.2" cy="151.2" r="7" fill="var(--accent)"/><circle cx="127.4" cy="116.6" r="7" fill="var(--accent)"/><circle cx="125.8" cy="82.0" r="7" fill="var(--accent)"/><circle cx="125.0" cy="47.6" r="7" fill="var(--accent)"/><circle cx="139.7" cy="284.7" r="7" fill="var(--accent)"/><circle cx="139.3" cy="250.7" r="7" fill="var(--accent)"/><circle cx="138.2" cy="217.2" r="7" fill="var(--accent)"/><circle cx="134.9" cy="184.3" r="7" fill="var(--accent)"/><circle cx="163.1" cy="150.3" r="7" fill="var(--accent)"/><circle cx="159.8" cy="115.2" r="7" fill="var(--accent)"/><circle cx="158.7" cy="80.7" r="7" fill="var(--accent)"/><circle cx="158.3" cy="46.7" r="7" fill="var(--accent)"/><circle cx="174.3" cy="284.1" r="7" fill="var(--accent)"/><circle cx="174.2" cy="249.7" r="7" fill="var(--accent)"/><circle cx="173.9" cy="215.2" r="7" fill="var(--accent)"/><circle cx="172.2" cy="181.5" r="7" fill="var(--accent)"/><circle cx="193.8" cy="147.5" r="7" fill="var(--accent-2)"/><circle cx="192.1" cy="113.2" r="7" fill="var(--accent-2)"/><circle cx="191.8" cy="79.7" r="7" fill="var(--accent-2)"/><circle cx="191.7" cy="46.1" r="7" fill="var(--accent-2)"/><circle cx="208.7" cy="284.1" r="7" fill="var(--accent)"/><circle cx="208.8" cy="249.7" r="7" fill="var(--accent)"/><circle cx="209.1" cy="215.2" r="7" fill="var(--accent)"/><circle cx="210.8" cy="181.5" r="7" fill="var(--accent)"/><circle cx="223.2" cy="147.5" r="7" fill="var(--accent)"/><circle cx="224.9" cy="113.2" r="7" fill="var(--accent)"/><circle cx="225.2" cy="79.7" r="7" fill="var(--accent)"/><circle cx="225.3" cy="46.1" r="7" fill="var(--accent)"/><circle cx="243.3" cy="284.7" r="7" fill="var(--accent)"/><circle cx="243.7" cy="250.7" r="7" fill="var(--accent)"/><circle cx="244.8" cy="217.2" r="7" fill="var(--accent)"/><circle cx="248.1" cy="184.3" r="7" fill="var(--accent)"/><circle cx="253.9" cy="150.3" r="7" fill="var(--accent)"/><circle cx="257.2" cy="115.2" r="7" fill="var(--accent)"/><circle cx="258.3" cy="80.7" r="7" fill="var(--accent)"/><circle cx="258.7" cy="46.7" r="7" fill="var(--accent)"/><circle cx="278.0" cy="285.6" r="7" fill="var(--accent)"/><circle cx="278.8" cy="252.0" r="7" fill="var(--accent)"/><circle cx="280.4" cy="218.6" r="7" fill="var(--accent)"/><circle cx="283.2" cy="185.2" r="7" fill="var(--accent)"/><circle cx="286.8" cy="151.2" r="7" fill="var(--accent)"/><circle cx="289.6" cy="116.6" r="7" fill="var(--accent)"/><circle cx="291.2" cy="82.0" r="7" fill="var(--accent)"/><circle cx="292.0" cy="47.6" r="7" fill="var(--accent)"/><circle cx="312.8" cy="286.5" r="7" fill="var(--accent)"/><circle cx="313.8" cy="252.9" r="7" fill="var(--accent)"/><circle cx="315.4" cy="219.4" r="7" fill="var(--accent)"/><circle cx="317.7" cy="185.8" r="7" fill="var(--accent)"/><circle cx="320.3" cy="151.8" r="7" fill="var(--accent)"/><circle cx="322.6" cy="117.4" r="7" fill="var(--accent)"/><circle cx="324.2" cy="82.9" r="7" fill="var(--accent)"/><circle cx="325.2" cy="48.5" r="7" fill="var(--accent)"/><circle cx="347.5" cy="287.2" r="7" fill="var(--accent)"/><circle cx="348.6" cy="253.6" r="7" fill="var(--accent)"/><circle cx="350.1" cy="220.0" r="7" fill="var(--accent)"/><circle cx="352.0" cy="186.2" r="7" fill="var(--accent)"/><circle cx="354.0" cy="152.2" r="7" fill="var(--accent)"/><circle cx="355.9" cy="118.0" r="7" fill="var(--accent)"/><g stroke="var(--text)" stroke-width="3"><line x1="188" y1="167" x2="212" y2="167"/><line x1="200" y1="167" x2="200" y2="147"/></g>
+        <line x1="120" y1="292" x2="154" y2="292" stroke="var(--bad)" stroke-width="3" marker-end="url(#cd-ar3)"/><text class="t" x="162" y="297" style="font-size:13px">b</text>
+        <text class="t-dim" x="200" y="318" text-anchor="middle" style="font-size:12px">여분의 반평면(주황)이 끝나는 곳 ⊥ = 전위선(지면을 뚫는 방향)</text>
+        <text class="t" x="585" y="22" text-anchor="middle" style="font-weight:600">나사 전위: b ∥ 전위선</text>
+<circle cx="492.0" cy="95.2" r="6" fill="var(--accent)"/><circle cx="497.0" cy="113.2" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="118.5" r="6" fill="var(--accent)"/><circle cx="497.0" cy="136.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="141.8" r="6" fill="var(--accent)"/><circle cx="497.0" cy="159.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="165.0" r="6" fill="var(--accent)"/><circle cx="497.0" cy="182.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="188.2" r="6" fill="var(--accent)"/><circle cx="497.0" cy="206.2" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="211.5" r="6" fill="var(--accent)"/><circle cx="497.0" cy="229.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="492.0" cy="234.8" r="6" fill="var(--accent)"/><circle cx="497.0" cy="252.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="95.2" r="6" fill="var(--accent)"/><circle cx="515.6" cy="112.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="118.5" r="6" fill="var(--accent)"/><circle cx="515.6" cy="136.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="141.8" r="6" fill="var(--accent)"/><circle cx="515.6" cy="159.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="165.0" r="6" fill="var(--accent)"/><circle cx="515.6" cy="182.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="188.2" r="6" fill="var(--accent)"/><circle cx="515.6" cy="205.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="211.5" r="6" fill="var(--accent)"/><circle cx="515.6" cy="229.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="510.6" cy="234.8" r="6" fill="var(--accent)"/><circle cx="515.6" cy="252.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="95.2" r="6" fill="var(--accent)"/><circle cx="534.2" cy="112.3" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="118.5" r="6" fill="var(--accent)"/><circle cx="534.2" cy="135.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="141.8" r="6" fill="var(--accent)"/><circle cx="534.2" cy="158.8" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="165.0" r="6" fill="var(--accent)"/><circle cx="534.2" cy="182.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="188.2" r="6" fill="var(--accent)"/><circle cx="534.2" cy="205.3" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="211.5" r="6" fill="var(--accent)"/><circle cx="534.2" cy="228.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="529.2" cy="234.8" r="6" fill="var(--accent)"/><circle cx="534.2" cy="251.8" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="95.2" r="6" fill="var(--accent)"/><circle cx="552.8" cy="111.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="118.5" r="6" fill="var(--accent)"/><circle cx="552.8" cy="134.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="141.8" r="6" fill="var(--accent)"/><circle cx="552.8" cy="157.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="165.0" r="6" fill="var(--accent)"/><circle cx="552.8" cy="181.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="188.2" r="6" fill="var(--accent)"/><circle cx="552.8" cy="204.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="211.5" r="6" fill="var(--accent)"/><circle cx="552.8" cy="227.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="547.8" cy="234.8" r="6" fill="var(--accent)"/><circle cx="552.8" cy="250.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="95.2" r="6" fill="var(--accent)"/><circle cx="571.4" cy="109.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="118.5" r="6" fill="var(--accent)"/><circle cx="571.4" cy="132.3" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="141.8" r="6" fill="var(--accent)"/><circle cx="571.4" cy="155.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="165.0" r="6" fill="var(--accent)"/><circle cx="571.4" cy="178.8" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="188.2" r="6" fill="var(--accent)"/><circle cx="571.4" cy="202.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="211.5" r="6" fill="var(--accent)"/><circle cx="571.4" cy="225.3" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="566.4" cy="234.8" r="6" fill="var(--accent)"/><circle cx="571.4" cy="248.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="95.2" r="6" fill="var(--accent)"/><circle cx="590.0" cy="102.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="118.5" r="6" fill="var(--accent)"/><circle cx="590.0" cy="126.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="141.8" r="6" fill="var(--accent)"/><circle cx="590.0" cy="149.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="165.0" r="6" fill="var(--accent)"/><circle cx="590.0" cy="172.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="188.2" r="6" fill="var(--accent)"/><circle cx="590.0" cy="195.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="211.5" r="6" fill="var(--accent)"/><circle cx="590.0" cy="219.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="585.0" cy="234.8" r="6" fill="var(--accent)"/><circle cx="590.0" cy="242.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="95.2" r="6" fill="var(--accent)"/><circle cx="608.6" cy="96.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="118.5" r="6" fill="var(--accent)"/><circle cx="608.6" cy="119.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="141.8" r="6" fill="var(--accent)"/><circle cx="608.6" cy="143.2" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="165.0" r="6" fill="var(--accent)"/><circle cx="608.6" cy="166.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="188.2" r="6" fill="var(--accent)"/><circle cx="608.6" cy="189.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="211.5" r="6" fill="var(--accent)"/><circle cx="608.6" cy="212.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="603.6" cy="234.8" r="6" fill="var(--accent)"/><circle cx="608.6" cy="236.2" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="95.2" r="6" fill="var(--accent)"/><circle cx="627.2" cy="94.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="118.5" r="6" fill="var(--accent)"/><circle cx="627.2" cy="117.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="141.8" r="6" fill="var(--accent)"/><circle cx="627.2" cy="140.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="165.0" r="6" fill="var(--accent)"/><circle cx="627.2" cy="164.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="188.2" r="6" fill="var(--accent)"/><circle cx="627.2" cy="187.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="211.5" r="6" fill="var(--accent)"/><circle cx="627.2" cy="210.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="622.2" cy="234.8" r="6" fill="var(--accent)"/><circle cx="627.2" cy="233.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="95.2" r="6" fill="var(--accent)"/><circle cx="645.8" cy="93.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="118.5" r="6" fill="var(--accent)"/><circle cx="645.8" cy="116.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="141.8" r="6" fill="var(--accent)"/><circle cx="645.8" cy="139.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="165.0" r="6" fill="var(--accent)"/><circle cx="645.8" cy="163.2" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="188.2" r="6" fill="var(--accent)"/><circle cx="645.8" cy="186.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="211.5" r="6" fill="var(--accent)"/><circle cx="645.8" cy="209.7" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="640.8" cy="234.8" r="6" fill="var(--accent)"/><circle cx="645.8" cy="232.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="95.2" r="6" fill="var(--accent)"/><circle cx="664.4" cy="92.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="118.5" r="6" fill="var(--accent)"/><circle cx="664.4" cy="116.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="141.8" r="6" fill="var(--accent)"/><circle cx="664.4" cy="139.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="165.0" r="6" fill="var(--accent)"/><circle cx="664.4" cy="162.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="188.2" r="6" fill="var(--accent)"/><circle cx="664.4" cy="185.9" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="211.5" r="6" fill="var(--accent)"/><circle cx="664.4" cy="209.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="659.4" cy="234.8" r="6" fill="var(--accent)"/><circle cx="664.4" cy="232.4" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="95.2" r="6" fill="var(--accent)"/><circle cx="683.0" cy="92.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="118.5" r="6" fill="var(--accent)"/><circle cx="683.0" cy="115.8" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="141.8" r="6" fill="var(--accent)"/><circle cx="683.0" cy="139.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="165.0" r="6" fill="var(--accent)"/><circle cx="683.0" cy="162.3" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="188.2" r="6" fill="var(--accent)"/><circle cx="683.0" cy="185.6" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="211.5" r="6" fill="var(--accent)"/><circle cx="683.0" cy="208.8" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/><circle cx="678.0" cy="234.8" r="6" fill="var(--accent)"/><circle cx="683.0" cy="232.1" r="8" fill="none" stroke="var(--accent-2)" stroke-width="1.8"/>
+        <line x1="585" y1="62" x2="585" y2="272" stroke="var(--text)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text class="t" x="593" y="56" style="font-size:13px">ξ (전위선)</text>
+        <line x1="700" y1="240" x2="700" y2="263" stroke="var(--bad)" stroke-width="3" marker-end="url(#cd-ar3)"/><text class="t" x="708" y="258" style="font-size:13px">b</text>
+        <text class="t-dim" x="585" y="300" text-anchor="middle" style="font-size:12px">● 아래 면 ○ 위 면: 왼쪽(미끄러진 쪽)만 b만큼 어긋났다</text>
+        <text class="t-dim" x="585" y="318" text-anchor="middle" style="font-size:12px">원자면이 전위선을 축으로 나선 계단이 된다</text>
+        <defs><marker id="cd-ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--bad)"/></marker></defs>
+      </svg>
+      <figcaption>두 가지 기본 전위. 왼쪽 그림의 원자 위치는 등방 탄성론의 칼날 전위 변위장으로 계산했다(\(\nu = 0.3\)). 위 절반은 눌리고 아래 절반은 늘어나, 전위 주위에 압축·인장 응력장이 생긴다. 실제 전위는 대부분 둘이 섞인 혼합 전위이고, 실리콘의 대표 전위는 b와 전위선이 60°를 이루는 '60° 전위'다.</figcaption>
+    </figure>
+    <p>전위의 종류와 세기는 <span class="term">버거스 회로</span><span class="en">(Burgers circuit)</span>로 정의한다. 전위를 둘러싸고 원자에서 원자로, 오른쪽 \(m\)칸 → 위 \(n\)칸 → 왼쪽 \(m\)칸 → 아래 \(n\)칸을 걷는다. 완전 결정이라면 출발점으로 돌아오지만, 전위를 감싸면 회로가 닫히지 않는다. 닫히지 않은 틈(끝점 → 출발점)이 <span class="term">버거스 벡터</span><span class="en">(Burgers vector)</span> \(\vec b\)다. \(\vec b\)가 전위선 방향 \(\vec\xi\)에 수직이면 <span class="term">칼날 전위</span><span class="en">(edge dislocation)</span>, 나란하면 <span class="term">나사 전위</span><span class="en">(screw dislocation)</span>다.</p>
+    <div class="predict" data-for="sim-burg">
+      <p>칼날 전위를 <strong>감싸지 않는</strong> 곳(전위에서 멀리 떨어진 곳)에서 같은 크기의 회로를 그리면?</p>
+      <div class="opts"><button class="opt">전위가 가까이 있으니 역시 b만큼 열린다.</button><button class="opt">b의 절반만큼 열린다.</button><button class="opt" data-correct>닫힌다. 회로 안에 전위선이 있을 때만 열린다.</button><button class="opt">거리에 반비례해 조금 열린다.</button></div>
+      <div class="quiz-exp">원자는 비틀려 있어도 이웃 관계(위상)는 그대로라, 회로 안에 전위선이 없으면 원자를 세어 걷는 길은 반드시 닫힌다. 버거스 벡터는 회로의 모양·크기와 무관한 위상적 양이다. 아래에서 회로 중심을 끌어 전위 밖으로 옮겨 보라.</div>
+    </div>
+    <div class="sim" id="sim-burg">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>버거스 회로 그리기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-burg"></canvas><span class="hint top">원자를 차례로 누르거나, 회로 중심(흰 원)을 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="bg-mode"><button data-value="auto" class="on">자동 회로</button><button data-value="hand">직접 클릭</button></div></div>
+          <label class="ctrl"><span>회로 크기(칸) <output id="bg-n-out"></output></span><input type="range" id="bg-n" min="2" max="6" step="1" value="4"></label>
+          <label class="check"><input type="checkbox" id="bg-perf"> 완전 결정과 비교</label>
+          <div class="ctrl-row"><button class="btn" id="bg-undo" type="button">한 칸 취소</button><button class="btn" id="bg-clear" type="button">지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">걸음 (→ ↑ ← ↓)</span><span class="v" id="bg-steps">—</span></div>
+        <div class="stat"><span class="k">회로</span><span class="v" id="bg-close">—</span></div>
+        <div class="stat"><span class="k">닫힘 실패 벡터</span><span class="v" id="bg-b">—</span></div>
+      </div>
+      <div class="sim-note">원자 위치는 칼날 전위(\(\vec b = a\hat x\))의 탄성 변위장으로 계산했다. 회로는 시계 방향(→ ↑ ← ↓ 순서가 아니어도 된다)으로 같은 칸 수만큼 오가면 된다. 직접 클릭 모드에서는 이웃 원자만 누를 수 있고, 오른쪽·왼쪽 걸음 수와 위·아래 걸음 수가 같아지면 판정한다. 해볼 것: ① 전위를 감싸는 회로는 크기와 상관없이 정확히 한 칸(\(a\)) 열린다. ② 회로 중심을 전위 밖으로 끌면 닫힌다. ③ '완전 결정과 비교'로 같은 걸음을 완전 결정에서 걸어 보라 — 이번에는 닫히고, 대신 전위 결정의 회로에서 남는 한 칸이 바로 여분의 반평면이다.</div>
+    </div>
+    <p>전위의 탄성 에너지는 길이당 \(E/L \approx \tfrac12 Gb^2\) 정도로 \(b^2\)에 비례한다. 그래서 결정은 가능한 가장 짧은 격자 벡터를 버거스 벡터로 고른다. 면심 입방 격자를 바탕으로 하는 실리콘에서는 최근접 격자점 사이 벡터 \(\vec b = \tfrac a2\langle110\rangle\)(길이 \(a/\sqrt2 = 0.384\) nm)이다. 전위가 움직이는 면, 곧 <span class="term">미끄럼면</span><span class="en">(slip plane)</span>은 원자가 가장 빽빽하고 면 사이가 가장 넓은 {111}이다. 미끄럼면과 그 안의 미끄럼 방향을 묶은 것이 <span class="term">미끄럼계</span><span class="en">(slip system)</span>로, 실리콘은 {111}면 4개 × 면마다 ⟨110⟩ 방향 3개 = 12개의 {111}⟨110⟩ 미끄럼계를 가진다.</p>
+    <figure class="mini" id="mini-slip">
+      <div class="mini-view"><canvas id="cv-slip"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>{111} 면</span><div class="seg" id="sl-plane"><button data-value="0" class="on">(111)</button><button data-value="1">(1̄11)</button><button data-value="2">(11̄1)</button><button data-value="3">(111̄)</button></div></div>
+        <span class="readout" id="sl-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>실리콘 단위 셀(끌어서 돌린다). 고른 {111}면 위 원자(테두리)와 그 면이 셀을 자르는 정삼각형을 칠했다. 삼각형의 세 변이 그 면 안의 ⟨110⟩ 방향이고, 빨간 화살표가 버거스 벡터 \(\tfrac a2\langle110\rangle\)(면 대각선의 절반)이다. 면 4개 × 변 3개 = 미끄럼계 12개.</figcaption>
+    </figure>
+    <p>전위는 미끄럼면 안에서만 쉽게 움직인다. 이것이 <span class="term">미끄럼 운동</span><span class="en">(glide)</span>이고, 전위 하나가 결정을 다 가로지르면 결정 표면에 높이 \(b\)의 계단, 곧 <span class="term">슬립</span><span class="en">(slip)</span>이 남는다. 칼날 전위가 미끄럼면을 벗어나려면 여분의 반평면 끝에 원자를 붙이거나 떼야 하므로 공공의 확산이 필요하다(<span class="term">상승 운동</span><span class="en">(climb)</span>, 고온에서만 일어남). 미끄럼을 일으키는 것은 미끄럼면 위, 미끄럼 방향으로 분해된 전단 응력이다.</p>
+    <div class="formula">$$\tau_R = \sigma\cos\phi\cos\lambda \qquad (\text{슈미트 법칙, } m = \cos\phi\cos\lambda \le 0.5)$$<div class="where">\(\sigma\): 단축 응력, \(\phi\): 응력 축과 미끄럼면 법선의 각, \(\lambda\): 응력 축과 미끄럼 방향의 각. \(\tau_R\)이 <span class="term">임계 분해 전단 응력</span><span class="en">(critical resolved shear stress, CRSS)</span>을 넘는 미끄럼계부터 움직인다.</div></div>
+    <figure class="mini" id="mini-glide">
+      <div class="mini-view"><canvas id="cv-glide"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>전단 응력 τ/τ<sub>P</sub> <output id="gl-s-out"></output></span><input type="range" id="gl-s" min="0" max="3" step="0.05" value="0"></label>
+        <button class="btn" id="gl-reset" type="button">처음으로</button>
+        <span class="readout" id="gl-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>위쪽 화살표를 오른쪽으로 끌거나 슬라이더로 전단 응력을 건다. 응력이 격자 저항(파이얼스 응력 \(\tau_P\))을 넘으면 칼날 전위(⊥)가 미끄럼면(점선)을 따라 한 칸씩 움직이고, 오른쪽 끝을 빠져나가면 결정 위쪽이 \(b\)만큼 미끄러진 계단이 남는다. 어느 순간에도 끊어지는 결합은 전위 핵 근처의 한 줄뿐이다.</figcaption>
+    </figure>
+    <div class="example" data-title="실리콘 전위의 에너지와 슈미트 인자">
+      <p>실리콘(\(a = 0.5431\) nm, 전단 탄성률 \(G \approx 64\) GPa)의 \(\vec b = \tfrac a2[\bar101]\) 전위에 대해 (a) \(|\vec b|\), (b) 길이당 에너지 \(\tfrac12Gb^2\)(eV/nm)와 \(b\) 길이 하나당 에너지, (c) [001] 방향 인장에서 (111)[\(\bar1\)01] 미끄럼계의 슈미트 인자를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(|\vec b| = a/\sqrt2\). 슈미트 인자는 방향 사이 코사인: \(\cos\phi = \hat z\cdot(111)/\sqrt3\), \(\cos\lambda = \hat z\cdot[\bar101]/\sqrt2\).</div>
+        <div class="step"><b>풀이</b> (a) \(b = 0.5431/\sqrt2 = 0.384\) nm. (b) \(\tfrac12Gb^2 = 0.5\times64\times10^9\times(3.84\times10^{-10})^2 = 4.72\times10^{-9}\) J/m \(= 29.5\) eV/nm. \(b\) 하나 길이당 \(29.5\times0.384 = 11.3\) eV. (c) \(\cos\phi = 1/\sqrt3\), \(\cos\lambda = 1/\sqrt2\) → \(m = 1/\sqrt6 = 0.408\).</div>
+        <div class="answer">(a) 0.384 nm (b) 약 29 eV/nm, b 길이당 약 11 eV (c) m = 0.408</div>
+        <div class="step"><b>검토</b> 원자 한 칸 길이에 10 eV가 넘는 에너지는 \(kT\)(1000 °C에서 0.11 eV)보다 100배 크다. 배열 엔트로피로는 도저히 갚을 수 없으므로, 전위는 공공과 달리 <strong>열평형 결함이 아니다</strong>. 결정 성장이나 응력이 만들어 넣은 것이고, 잘 키운 실리콘 단결정은 전위가 없다(무전위 결정).</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-stress">
+      <p>1000 °C의 웨이퍼 안에서 중심과 가장자리 온도가 <span class="tn" data-var="dT" data-min="1" data-max="60" data-step="1" data-unit=" K">10</span> 다르면 열응력은 어림잡아 \(\sigma \approx E\alpha\Delta T =\) <span class="tn-out" data-out="s"></span>이다(\(E\) = 130 GPa, 고온 열팽창 계수 \(\alpha \approx 4.4\times10^{-6}\) K⁻¹). 최대 슈미트 인자 0.41을 곱한 분해 전단 응력은 <span class="tn-out" data-out="tau"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>열처리 중 웨이퍼 슬립</strong><p>실리콘은 상온에서는 유리처럼 부서지지만 약 700 °C 위에서는 전위가 움직여 소성 변형한다. 고온에서 CRSS는 수–수십 MPa 정도로 작아지는데(온도·산소 농도·기존 전위에 따라 크게 다름), 지름 300 mm 웨이퍼를 빠르게 가열·냉각하면 가장자리가 먼저 식거나 데워져 위 어림처럼 MPa 단위의 열응력이 쉽게 생긴다. 그 결과 가장자리나 지지 핀 자리에서 {111}면을 따라 전위가 미끄러져 ⟨110⟩ 방향의 <strong>슬립선</strong>이 생기고, 웨이퍼가 휘어 노광 오버레이를 망친다. 장비는 가장자리 링으로 웨이퍼를 받치고, 램프 출력을 영역별로 조절해 반경 방향 온도 구배를 줄이며, 무거운 300 mm 웨이퍼의 자체 무게 응력까지 고려해 지지점을 정한다. 격자간 산소는 전위를 붙잡아 CZ 웨이퍼를 FZ 웨이퍼보다 슬립에 강하게 만든다. 어닐 장비의 온도 이력은 <a href="https://semi.euiyun.com/doping/chapters/anneal.html">DopingBook · 어닐</a>에서 이어진다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="planar">
+    <h2>면결함과 부피 결함</h2>
+    <p>면심 입방 격자의 {111}면은 정삼각형으로 빽빽이 놓인 원자층이다. 한 층(A) 위에 다음 층을 얹을 때 원자는 아래층의 오목한 자리 두 종류(B 또는 C) 중 하나에 앉는다. 면심 입방은 …ABCABC…, 육방 조밀은 …ABAB…로 쌓은 것이다. 실리콘의 다이아몬드 구조도 이 ABC 순서(층마다 원자 두 개짜리 이중층)로 쌓여 있다. 이 순서가 한 곳에서 끊긴 면이 <span class="term">적층 결함</span><span class="en">(stacking fault)</span>이다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 340" role="img" aria-label="ABC 쌓기 순서와 내인성·외인성 적층 결함, 쌍정">
+
+<g data-only="1"><text class="t-mono" x="185" y="295" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="271" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="247" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="223" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="199" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="175" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="151" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="127" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="103" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><polyline points="316.0,290 338.0,266 360.0,242 382.0,218 404.0,194 426.0,170 448.0,146 470.0,122 492.0,98" fill="none" stroke="var(--text)" stroke-width="2"/><text class="t" x="400" y="328" text-anchor="middle" style="font-size:13px">완전한 면심 입방(다이아몬드) 쌓기: …ABCABC…</text></g>
+<g data-only="2"><rect x="200" y="174.0" width="440" height="40.0" fill="var(--accent-2-soft)"/><text class="t-mono" x="185" y="295" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="271" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="247" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="223" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="199" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="175" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="151" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="127" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="103" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><polyline points="316.0,290 338.0,266 360.0,242 382.0,218 360.0,194 382.0,170 404.0,146 426.0,122 448.0,98" fill="none" stroke="var(--text)" stroke-width="2"/><text class="t" x="400" y="328" text-anchor="middle" style="font-size:13px">내인성 적층 결함: B층 하나가 빠져 …ABC|AC|ABC… (빠진 면)</text></g>
+<g data-only="3"><rect x="200" y="150.0" width="440" height="40.0" fill="var(--accent-2-soft)"/><text class="t-mono" x="185" y="295" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="271" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="247" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="223" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="199" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="175" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="151" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="127" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="103" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="79" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><polyline points="316.0,290 338.0,266 360.0,242 382.0,218 404.0,194 382.0,170 360.0,146 382.0,122 404.0,98 426.0,74" fill="none" stroke="var(--text)" stroke-width="2"/><text class="t" x="400" y="328" text-anchor="middle" style="font-size:13px">외인성 적층 결함: 여분의 층이 끼어 …ABCAB|A|CABC…</text></g>
+<g data-only="4"><line x1="200" y1="170.0" x2="640" y2="170.0" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/><text class="t-mono" x="185" y="295" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="290" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="271" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="266" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="247" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="242" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="223" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="218" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="199" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="194" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="175" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="170" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="151" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="146" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="127" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="122" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="103" text-anchor="end" style="font-size:14px;font-weight:600">C</text><circle cx="294.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="360.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="426.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="492.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="558.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><circle cx="624.0" cy="98" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="79" text-anchor="end" style="font-size:14px;font-weight:600">B</text><circle cx="272.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="338.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="404.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="470.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="536.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><circle cx="602.0" cy="74" r="9" fill="var(--accent)" opacity=".85"/><text class="t-mono" x="185" y="55" text-anchor="end" style="font-size:14px;font-weight:600">A</text><circle cx="250.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><circle cx="316.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><circle cx="382.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><circle cx="448.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><circle cx="514.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><circle cx="580.0" cy="50" r="9" fill="var(--accent)" opacity=".85"/><polyline points="316.0,290 338.0,266 360.0,242 382.0,218 404.0,194 426.0,170 404.0,146 382.0,122 360.0,98 338.0,74 316.0,50" fill="none" stroke="var(--text)" stroke-width="2"/><text class="t" x="400" y="328" text-anchor="middle" style="font-size:13px">쌍정: …ABCABC|BACBA… 경계를 거울로 결정 방향이 뒤집힌다</text></g>
+      </svg>
+      <ol class="steps-cap"><li>완전한 쌓기. 굵은 선은 같은 원자 열을 층마다 따라간 것으로, 곧게 기울어 있다.</li><li><span class="term">내인성 적층 결함</span><span class="en">(intrinsic stacking fault)</span>: 층 하나(B)가 빠져 …CA|CA…가 된다. 공공이 {111}면에 원반 모양으로 모여 무너지면 생긴다. 굵은 선이 한 번 꺾인다.</li><li><span class="term">외인성 적층 결함</span><span class="en">(extrinsic stacking fault)</span>: 여분의 층 하나(A)가 끼어든다. 자기 격자간 원자가 {111}면에 모이면 생긴다. 굵은 선이 두 번 꺾인다.</li><li><span class="term">쌍정</span><span class="en">(twin)</span>: 경계면(점선)에서 쌓기 순서가 거꾸로(…ABC|BAC…) 되어 양쪽 결정이 거울상이다. 굵은 선의 기울기가 뒤집힌다.</li></ol>
+      <figcaption>{111} 쌓기 순서의 결함. 최근접 이웃 관계는 모두 그대로이고 둘째 이웃부터 달라지므로 에너지가 작다. 실리콘의 적층 결함 에너지는 약 50–70 mJ/m²(문헌마다 다름)로, 전위가 두 개의 부분 전위(\(\tfrac a6\langle112\rangle\))로 갈라지고 그 사이에 적층 결함 띠를 끼고 다닐 만큼 작다.</figcaption>
+    </figure>
+    <p>결정 방향이 다른 두 결정립이 맞닿은 면은 <span class="term">결정립계</span><span class="en">(grain boundary)</span>다. 방위 차이 \(\theta\)가 작은 경계(대략 15° 이하)는 칼날 전위가 간격 \(D\)로 늘어선 것으로 정확히 기술된다. 기울기 \(\theta\)를 만들려면 높이 \(D\)마다 여분의 반평면 하나가 필요하므로 \(D = b/\theta\)다. \(\theta\)가 커지면 전위 핵이 겹쳐 개별 전위로 볼 수 없는 고각 경계가 된다. 쌍정 경계는 원자가 거울면 양쪽에 완벽히 맞는 특별한(정합) 결정립계로, 에너지가 일반 경계의 수십분의 1이라 구리 배선과 다결정 실리콘에 흔하다.</p>
+    <figure class="mini" id="mini-gb">
+      <div class="mini-view"><canvas id="cv-gb"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>방위 차이 θ <output id="gb-th-out"></output></span><input type="range" id="gb-th" min="2" max="30" step="0.5" value="8"></label>
+        <span class="readout" id="gb-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>대칭 경사 결정립계. 왼쪽·오른쪽 결정을 \(\pm\theta/2\)씩 기울여 붙이면 경계에 칼날 전위(⊥)가 \(D = b/\theta\) 간격으로 생긴다. 각도를 키우면 전위가 촘촘해지고, 15°를 넘으면 핵(빨간 원)이 서로 겹친다. 결정립계 에너지는 저각에서 리드–쇼클리 식 \(\gamma \propto \theta(A - \ln\theta)\)를 따른다.</figcaption>
+    </figure>
+    <p>3차원으로 덩어리진 결함이 <span class="term">부피 결함</span><span class="en">(volume defect)</span>이다. 대표는 다른 상의 작은 덩어리인 <span class="term">석출물</span><span class="en">(precipitate)</span>과 빈 공간인 <span class="term">공동</span><span class="en">(void)</span>이다. CZ 실리콘의 격자간 산소는 고온에서 과포화되면 SiO₂ 석출물로 뭉친다. SiO₂ 분자 하나는 Si 원자 하나의 약 2배 넘는 부피를 차지하므로 석출물은 주위를 밀어내며 자기 격자간 원자를 내놓고, 크게 자라면 전위 고리와 적층 결함을 거느린 <span class="term">BMD</span><span class="en">(bulk micro defect)</span>가 된다. 반대로 결정 성장 중 과잉 공공이 모이면 {111}면으로 둘러싸인 팔면체 공동이 생기는데, 웨이퍼 표면에 드러난 이 구멍이 <span class="term">COP</span><span class="en">(crystal originated particle)</span>다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="웨이퍼 단면의 무결함층, BMD, 금속 게터링, COP">
+        <rect x="40" y="50" width="720" height="200" rx="4" fill="var(--surface)" stroke="var(--border)"/>
+        <rect x="40" y="50" width="720" height="52" fill="var(--accent-soft)" opacity=".7"/>
+        <text class="t" x="52" y="40" style="font-size:13px;font-weight:600">앞면(소자)</text>
+        <text class="t-dim" x="752" y="40" text-anchor="end" style="font-size:12px">두께 775 μm (그림은 축척 아님)</text>
+        <text class="t" x="400" y="82" text-anchor="middle" style="font-size:13px">무결함층(DZ, 수십 μm): 산소가 밖으로 빠져 석출물이 없다</text>
+        <path d="M150,50 l10,10 l14,0 l10,-10z" fill="var(--canvas-bg, #fff)" stroke="var(--bad)" stroke-width="1.6"/>
+        <text x="186" y="66" style="font-size:12px" fill="var(--bad)">COP(표면에 드러난 공동)</text>
+        <g fill="var(--accent-2)">
+          <circle cx="80" cy="140" r="5"/><circle cx="130" cy="190" r="4"/><circle cx="175" cy="125" r="6"/><circle cx="220" cy="215" r="5"/><circle cx="268" cy="160" r="4"/><circle cx="318" cy="200" r="6"/><circle cx="360" cy="132" r="5"/><circle cx="410" cy="180" r="4"/><circle cx="455" cy="225" r="5"/><circle cx="500" cy="140" r="6"/><circle cx="548" cy="196" r="4"/><circle cx="596" cy="130" r="5"/><circle cx="640" cy="210" r="6"/><circle cx="690" cy="160" r="4"/><circle cx="730" cy="225" r="5"/>
+        </g>
+        <g fill="var(--bad)"><circle cx="186" cy="131" r="2.5"/><circle cx="170" cy="117" r="2.5"/><circle cx="508" cy="133" r="2.5"/><circle cx="371" cy="127" r="2.5"/><circle cx="326" cy="207" r="2.5"/><circle cx="650" cy="203" r="2.5"/></g>
+        <circle cx="430" cy="112" r="2.5" fill="var(--bad)"/><path d="M430,115 C425,124 405,130 368,129" fill="none" stroke="var(--bad)" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#cd-ar3)"/>
+        <text class="t" x="400" y="242" text-anchor="middle" style="font-size:13px">벌크: 산소 석출물(BMD, 10⁸–10¹⁰ cm⁻³)이 금속 원자(빨간 점)를 붙잡는다 — 진성 게터링</text>
+        <rect x="40" y="250" width="720" height="14" fill="var(--text-faint)" opacity=".5"/>
+        <text class="t-dim" x="400" y="286" text-anchor="middle" style="font-size:12px">뒷면: 다결정 실리콘 막·기계적 손상·고농도 인 확산층 — 외인성 게터링</text>
+      </svg>
+      <figcaption>게터링 웨이퍼의 단면. 소자가 놓이는 앞면 수십 μm는 결함이 없어야 하고, 그 아래 벌크와 뒷면에는 일부러 결함을 만들어 빠르게 확산하는 금속 오염을 소자 영역 밖에 가둔다. 결함이 곧 공정 도구가 되는 예다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>COP, 산소 석출, 게터링, OSF</strong><p>CZ 결정을 끌어올리는 속도 \(v\)와 고액 계면의 온도 기울기 \(G\)의 비가 임계값(보론코프 기준, 약 \(1.3\times10^{-3}\) cm²/(min·K))보다 크면 공공이, 작으면 자기 격자간 원자가 남아돈다. 공공이 남는 결정에서는 냉각 중 공공이 뭉쳐 100 nm 안팎의 팔면체 공동이 되고, 이것이 웨이퍼 표면의 COP로 드러나 게이트 산화막 결함과 수율 저하를 부른다. 그래서 \(v/G\)를 임계값 근처의 좁은 창에 맞춰 키운 '무결함(perfect) 결정'이나, 표면에 결함 없는 층을 새로 키운 에피 웨이퍼를 쓴다. 웨이퍼 열처리는 고온(산소를 표면 밖으로 빼서 무결함층 형성) → 저온(석출 핵 생성) → 중온(성장) 순으로 BMD를 벌크에만 만든다. 이 BMD가 철·니켈·구리를 붙잡는 진성 게터링이고, 뒷면의 다결정 실리콘 막이나 인 확산층은 외인성 게터링이다. 한편 산화는 산화막 아래로 자기 격자간 원자를 주입하는데, 이들이 표면 근처 핵(금속 오염, 손상) 위에 {111} 외인성 적층 결함으로 모인 것이 OSF(산화 유기 적층 결함)다. CZ 성장과 웨이퍼 사양은 <a href="https://semi.euiyun.com/process/chapters/wafer.html">ProcessBook · 실리콘 웨이퍼와 세정</a>에서 이어진다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="levels">
+    <h2>결함이 띠 간격에 만드는 준위</h2>
+    <p>결함은 결정의 주기성을 깨므로, 결함 근처의 전자는 블로흐 파가 아닌 국소 상태를 가질 수 있다(<a href="../../modern-physics/chapters/energy-bands.html">현대물리학 · 에너지 띠</a>). 그 에너지가 띠 간격 안에 놓이면 결함은 전자를 붙잡거나 내놓는 <span class="term">결함 준위</span><span class="en">(defect level)</span>를 만든다. 띠 끝에서 수십 meV 안쪽의 <span class="term">얕은 준위</span><span class="en">(shallow level)</span>와 띠 간격 가운데 근처의 <span class="term">깊은 준위</span><span class="en">(deep level)</span>는 하는 일이 전혀 다르다.</p>
+    <p>인을 실리콘에 넣으면 다섯째 전자는 P⁺ 이온에 쿨롱 힘으로 약하게 묶인다. 이것은 수소 원자를 결정 속에 넣은 것과 같아, 전자 질량을 유효 질량 \(m^*\)로, 진공 유전율을 \(\varepsilon_r\varepsilon_0\)로 바꾸면 된다(<span class="term">수소 유사 모형</span><span class="en">(hydrogenic model)</span>).</p>
+    <div class="formula">$$E_d = \frac{m^*/m_e}{\varepsilon_r^2}\times13.6\ \text{eV}, \qquad a^* = \frac{\varepsilon_r}{m^*/m_e}\times0.0529\ \text{nm}$$<div class="where">Si(\(m^* \approx 0.26\), \(\varepsilon_r = 11.7\))이면 \(E_d \approx 26\) meV, \(a^* \approx 2.4\) nm. 궤도가 격자 상수의 네 배가 넘으니 연속체 근사가 그럴듯하다. 실측값(P 45, As 54, Sb 39 meV)이 더 깊은 것은 이온 바로 근처에서 가림이 약해지는 '중심 세포 보정' 때문이다.</div></div>
+    <div class="tangle" id="tg-hydro">
+      <p>유효 질량 <span class="tn" data-var="m" data-min="0.05" data-max="1.0" data-step="0.01">0.26</span>\(m_e\), 비유전율 <span class="tn" data-var="e" data-min="4" data-max="20" data-step="0.1">11.7</span>인 반도체의 수소 유사 도너는 이온화 에너지 \(E_d =\) <span class="tn-out" data-out="E"></span>, 궤도 반지름 \(a^* =\) <span class="tn-out" data-out="a"></span>다. 300 K의 \(kT\) = 25.9 meV와 비교하면 <span data-out="msg"></span></p>
+    </div>
+    <p>전이 금속(금, 철, 니켈, 구리), 공공-산소 복합체(VO, 이른바 A 센터), 이중 공공(V₂) 같은 결함은 전자를 원자 크기로 단단히 가두어 띠 간격 깊숙이 준위를 만든다. 수소 유사 모형으로는 설명되지 않고, 한 결함이 전하 상태를 여러 개 가지는 경우가 많다(금: 도너 \(E_v + 0.35\) eV, 억셉터 \(E_c - 0.55\) eV). 깊은 준위에 붙잡힌 전자가 전도대로 열적으로 다시 나오는 빈도는 상세 균형으로 정해진다.</p>
+    <div class="formula">$$e_n = \sigma_n v_\text{th} N_c \exp\!\left(-\frac{E_c - E_t}{kT}\right), \qquad e_p = \sigma_p v_\text{th} N_v \exp\!\left(-\frac{E_t - E_v}{kT}\right)$$<div class="where">\(\sigma\): 포획 단면적(10⁻¹⁷–10⁻¹³ cm²), \(v_\text{th} \approx 10^7\) cm/s, \(N_c, N_v\): 유효 상태 밀도. 방출 시간 \(1/e_n\)의 온도 의존을 재어 \(E_c - E_t\)와 \(\sigma\)를 얻는 것이 DLTS(깊은 준위 과도 분광)다.</div></div>
+    <div class="sim" id="sim-lev">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>결함 준위 실험대: 얕은 준위와 깊은 준위</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-lev"></canvas><span class="hint top">주황 준위를 위아래로 끈다</span></div><div><canvas id="cv-lev2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>결함 고르기</span><select id="lv-pick">
+            <option value="0.045,c">인 P (Ec − 0.045)</option>
+            <option value="0.054,c">비소 As (Ec − 0.054)</option>
+            <option value="0.045,v">붕소 B (Ev + 0.045)</option>
+            <option value="0.17,c">공공-산소 VO (Ec − 0.17)</option>
+            <option value="0.23,c">철-붕소 쌍 FeB (Ec − 0.23)</option>
+            <option value="0.42,c">이중 공공 V₂ (Ec − 0.42)</option>
+            <option value="0.55,c" selected>금 억셉터 Au (Ec − 0.55)</option>
+            <option value="0.35,v">금 도너 Au (Ev + 0.35)</option>
+            <option value="0.38,v">격자간 철 Feᵢ (Ev + 0.38)</option>
+          </select></label>
+          <label class="ctrl"><span>온도 T <output id="lv-T-out"></output></span><input type="range" id="lv-T" min="100" max="500" step="5" value="300"></label>
+          <label class="ctrl"><span>포획 단면적 σ <output id="lv-s-out"></output></span><input type="range" id="lv-s" min="-17" max="-13" step="0.1" value="-15"></label>
+          <label class="ctrl"><span>n형 도핑 N<sub>D</sub> <output id="lv-N-out"></output></span><input type="range" id="lv-N" min="13" max="18" step="0.1" value="15"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">E<sub>t</sub> (E<sub>v</sub> 기준)</span><span class="v" id="lv-Et">—</span></div>
+        <div class="stat"><span class="k">전자 방출 시간 1/e<sub>n</sub></span><span class="v" id="lv-tn">—</span></div>
+        <div class="stat"><span class="k">정공 방출 시간 1/e<sub>p</sub></span><span class="v" id="lv-tp">—</span></div>
+        <div class="stat"><span class="k">SRH 수명 / 최솟값</span><span class="v" id="lv-tau">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 Si 띠 그림(\(E_g\)는 온도에 따라 <code>Solid.Eg</code>), 오른쪽은 준위 위치에 따른 방출 시간(로그)과, n형 저주입에서의 SRH 수명 \(\tau \propto 1 + (n_1 + p_1)/n_0\)(12장에서 유도)이다. \(n_1 = n_ie^{(E_t-E_i)/kT}\), \(p_1 = n_ie^{(E_i-E_t)/kT}\). 준위 값은 문헌 대표값이다. 해볼 것: ① 인의 준위에서 전자 방출 시간은 피코초 — 상온에서 즉시 이온화된다. ② 금 억셉터처럼 가운데 근처 준위는 전자도 정공도 쉽게 내놓지 않는 대신, 하나를 붙잡은 뒤 다른 쪽을 붙잡아 재결합시킨다. 수명 곡선의 바닥이 어디인지 보라. ③ 온도를 올리면 '효과적인 재결합 중심'의 창이 어떻게 넓어지는가?</div>
+    </div>
+    <div class="example" data-title="깊은 준위와 얕은 준위의 방출 시간">
+      <p>300 K 실리콘에서 \(\sigma_n = 10^{-15}\) cm², \(v_\text{th} = 10^7\) cm/s, \(N_c = 2.86\times10^{19}\) cm⁻³로 놓는다. 준위가 (a) \(E_c - 0.045\) eV(인), (b) \(E_c - 0.55\) eV(금 억셉터)일 때 전자 방출 시간 \(1/e_n\)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(e_n = \sigma v_\text{th}N_c e^{-\Delta E/kT}\), 앞 인자 \(\sigma v_\text{th}N_c = 2.86\times10^{11}\) s⁻¹, \(kT = 0.025852\) eV.</div>
+        <div class="step"><b>풀이</b> (a) \(e^{-0.045/0.025852} = e^{-1.741} = 0.175\) → \(e_n = 5.0\times10^{10}\) s⁻¹, \(1/e_n = 2.0\times10^{-11}\) s. (b) \(e^{-0.55/0.025852} = e^{-21.27} = 5.8\times10^{-10}\) → \(e_n = 165\) s⁻¹, \(1/e_n = 6.1\) ms.</div>
+        <div class="answer">(a) 약 20 ps (b) 약 6 ms</div>
+        <div class="step"><b>검토</b> 준위가 0.5 eV 깊어지자 방출이 10⁸배 느려졌다. 얕은 준위는 상온에서 전자를 곧바로 띠에 내놓아 도펀트가 되고, 깊은 준위는 전자를 오래 붙잡아 두는 함정이자 재결합 중심이 된다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>금속 오염과 소수 캐리어 수명</strong><p>띠 간격 가운데 근처의 깊은 준위는 전자 하나와 정공 하나를 차례로 붙잡아 없애는 가장 효율적인 재결합 중심이다(12장의 SRH 재결합). 수명은 \(\tau \approx 1/(\sigma v_\text{th}N_t)\)이라, 포획 단면적 10⁻¹⁴ cm²인 결함이 10¹² cm⁻³만 있어도 \(\tau \approx 10\) μs로 떨어진다. 실리콘 원자 5×10¹⁰개 중 하나다. 그래서 팹은 웨이퍼의 철 농도를 10¹⁰ cm⁻³ 단위로 관리하고, p형 웨이퍼에서 FeB 쌍을 빛으로 쪼개기 전후의 수명 변화로 철을 잰다. CMOS 이미지 센서의 암전류 백점, DRAM의 리텐션 불량도 공핍층 안의 깊은 준위가 만드는 생성 전류다. 결함을 통한 생성·재결합은 <a href="https://semi.euiyun.com/device/chapters/gr.html">DeviceBook · 생성과 재결합</a>에서 이어진다.</p></div>
+  </section>
+
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>점결함은 공공·자기 격자간 원자·치환형·격자간 불순물이다. 이온 결정에서는 전하 중성 때문에 공공+격자간 이온(프렌켈) 또는 양·음이온 공공 쌍(쇼트키)으로 생긴다.</li>
+      <li>배열 엔트로피 \(k\ln[N!/n!(N-n)!]\)가 자유 에너지를 낮추므로 공공은 열평형 결함이고, 농도는 \(n/N = e^{S_v/k}e^{-E_f/kT}\)다(쌍 결함은 지수에 \(1/2\)). 아레니우스 그림의 기울기에서 \(E_f\)를 읽는다. Si의 \(E_f\)는 약 3.6 eV(문헌 3–4 eV)다.</li>
+      <li>무작위 걷기에서 \(\langle x^2\rangle = 2Dt\), \(\langle R^2\rangle = 6Dt\), \(D = \Gamma a^2/6\). \(D = D_0e^{-E_a/kT}\)이고, 공공 기구는 \(E_a = E_f + E_m\), 격자간 기구는 \(E_a = E_m\)이라 금속 불순물이 도펀트보다 10⁸배 이상 빠르다.</li>
+      <li>픽 법칙 \(J = -D\,\partial C/\partial x\), \(\partial C/\partial t = D\,\partial^2C/\partial x^2\). 표면 농도 일정이면 \(C_s\,\text{erfc}(x/2\sqrt{Dt})\)와 \(Q = 2C_s\sqrt{Dt/\pi}\), 총량 일정이면 가우스 \(Q/\sqrt{\pi Dt}\,e^{-x^2/4Dt}\). 접합 깊이는 \(C(x_j) = N_B\)이며 \(\sqrt{Dt}\)에 비례하고, 열 예산은 \(\sum D_it_i\)로 더한다.</li>
+      <li>전위는 미끄러진 영역의 경계선이다. 버거스 회로의 닫힘 실패가 버거스 벡터이고, \(\vec b\perp\vec\xi\)면 칼날, \(\vec b\parallel\vec\xi\)면 나사 전위다. Si는 \(\vec b = \tfrac a2\langle110\rangle\)(0.384 nm), 미끄럼계 {111}⟨110⟩ 12개, 분해 전단 응력 \(\tau_R = \sigma\cos\phi\cos\lambda\)가 CRSS를 넘으면 미끄러진다. 전위는 길이당 에너지가 커서 평형 결함이 아니다.</li>
+      <li>면결함: {111} 쌓기 순서 ABC가 끊긴 적층 결함(내인성·외인성), 결정립계(저각은 전위 배열 \(D = b/\theta\)), 쌍정. 부피 결함: 산소 석출물(BMD, 진성 게터링)과 공공이 뭉친 공동(COP).</li>
+      <li>결함은 띠 간격에 준위를 만든다. 얕은 준위는 수소 유사 모형 \(E_d = 13.6\,(m^*/\varepsilon_r^2)\) eV로 어림되고 상온에서 이온화된다. 깊은 준위는 방출이 \(e^{-\Delta E/kT}\)로 느려 함정·재결합 중심이 되며, 가운데 근처일수록 수명을 크게 줄인다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(k = 8.617\times10^{-5}\) eV/K, 섭씨온도는 \(T(\text{K}) = t(°\text{C}) + 273.15\). Si의 원자 밀도는 \(5.00\times10^{22}\) cm⁻³, \(a = 0.5431\) nm. 답이 ±1% 이내면 정답이다(지수 함수의 민감도 때문에 중간 계산은 넉넉한 자릿수로).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="공공 농도" data-answer="4.83e-13; 2.42e10" data-label="n/N =; n =" data-unit="; cm⁻³">
+        <div class="prob-q"><p>실리콘의 공공 형성 에너지를 3.6 eV로 하고 진동 엔트로피를 무시할 때, 1200 °C에서 열평형 공공 분율 \(n/N\)과 공공 농도는?</p></div>
+        <div class="prob-hint">\(T = 1473.15\) K, \(kT = 0.12695\) eV.</div>
+        <div class="prob-sol"><p>\(E_f/kT = 3.6/0.12695 = 28.36\) → \(n/N = e^{-28.36} = 4.83\times10^{-13}\), \(n = 4.83\times10^{-13}\times5.00\times10^{22} = 2.42\times10^{10}\) cm⁻³. 문헌 범위 3–4 eV를 넣으면 이 값이 10⁻¹⁴–10⁻¹¹ 사이로 세 자릿수나 흔들린다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="슈미트 법칙" data-answer="4.08" data-label="τ_R =" data-unit="MPa">
+        <div class="prob-q"><p>실리콘 단결정 막대를 [001] 방향으로 10.0 MPa 인장한다. (111)[\(\bar1\)01] 미끄럼계의 분해 전단 응력은?</p></div>
+        <div class="prob-sol"><p>\(\cos\phi = [001]\cdot[111]/\sqrt3 = 1/\sqrt3\), \(\cos\lambda = [001]\cdot[\bar101]/\sqrt2 = 1/\sqrt2\). \(\tau_R = 10.0/\sqrt6 = 4.08\) MPa. [001] 인장에서는 12개 미끄럼계 중 8개가 같은 슈미트 인자 0.408을 가진다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="형성 에너지" data-answer="2.18" data-label="E_f =" data-unit="eV">
+        <div class="prob-q"><p>어떤 결정의 열평형 공공 농도가 1000 K에서 1100 K로 올리자 10배가 되었다. 형성 에너지는?</p></div>
+        <div class="prob-sol"><p>\(E_f = k\ln 10/(1/1000 - 1/1100) = 8.617\times10^{-5}\times2.3026/9.091\times10^{-5} = 2.18\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="쇼트키 결함" data-answer="1.60e-6" data-label="n_S/N =">
+        <div class="prob-q"><p>NaCl의 쇼트키 쌍 형성 에너지를 2.3 eV로 하면, 1000 K에서 이온 쌍 하나당 쇼트키 결함 수 \(n_S/N\)은?</p></div>
+        <div class="prob-hint">양이온 공공과 음이온 공공을 따로 배열하므로 \(n_S = Ne^{-E_S/2kT}\).</div>
+        <div class="prob-sol"><p>\(E_S/2kT = 2.3/(2\times0.08617) = 13.35\) → \(n_S/N = e^{-13.35} = 1.60\times10^{-6}\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="확산 길이" data-answer="0.170" data-label="2√(Dt) =" data-unit="μm">
+        <div class="prob-q"><p>\(D = 1.0\times10^{-14}\) cm²/s인 도펀트를 2시간 확산했다. 확산 길이 \(2\sqrt{Dt}\)는 몇 μm인가?</p></div>
+        <div class="prob-sol"><p>\(Dt = 7.2\times10^{-11}\) cm², \(2\sqrt{Dt} = 1.70\times10^{-5}\) cm = 0.170 μm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="아레니우스" data-answer="1.25e-14" data-label="D =" data-unit="cm²/s">
+        <div class="prob-q"><p>실리콘 속 인의 진성 확산 계수를 \(D_0 = 3.85\) cm²/s, \(E_a = 3.66\) eV로 할 때 1000 °C의 \(D\)는?</p></div>
+        <div class="prob-sol"><p>\(kT = 0.10971\) eV, \(E_a/kT = 33.36\) → \(D = 3.85\,e^{-33.36} = 1.25\times10^{-14}\) cm²/s. 붕소(1.53×10⁻¹⁴)와 거의 같다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="활성화 에너지" data-answer="3.46" data-label="E_a =" data-unit="eV">
+        <div class="prob-q"><p>어떤 도펀트의 확산 계수가 1000 °C에서 \(1.53\times10^{-14}\), 1100 °C에서 \(1.52\times10^{-13}\) cm²/s였다. 활성화 에너지는?</p></div>
+        <div class="prob-sol"><p>\(1/1273.15 - 1/1373.15 = 5.720\times10^{-5}\) K⁻¹. \(E_a = 8.617\times10^{-5}\times\ln(9.935)/5.720\times10^{-5} = 8.617\times10^{-5}\times2.296/5.720\times10^{-5} = 3.46\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="선증착 도즈" data-answer="3.39e14" data-label="Q =" data-unit="cm⁻²">
+        <div class="prob-q"><p>표면 농도를 \(5.0\times10^{19}\) cm⁻³로 고정하고 \(D = 1.0\times10^{-14}\) cm²/s에서 1시간 선증착하면 들어간 도즈는?</p></div>
+        <div class="prob-sol"><p>\(Q = 2C_s\sqrt{Dt/\pi} = 2\times5.0\times10^{19}\times\sqrt{3.6\times10^{-11}/\pi} = 10^{20}\times3.385\times10^{-6} = 3.39\times10^{14}\) cm⁻².</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="erfc 접합 깊이" data-answer="0.330" data-label="x_j =" data-unit="μm">
+        <div class="prob-q"><p>\(N_B = 5.0\times10^{15}\) cm⁻³ 기판에 표면 농도 \(5.0\times10^{19}\) cm⁻³로 \(D = 1.0\times10^{-14}\) cm²/s, 1시간 선증착했다. \(\text{erfc}^{-1}(10^{-4}) = 2.751\)을 써서 접합 깊이를 구하라.</p></div>
+        <div class="prob-sol"><p>\(N_B/C_s = 10^{-4}\). \(\sqrt{Dt} = 6.0\times10^{-6}\) cm → \(x_j = 2\times6.0\times10^{-6}\times2.751 = 3.30\times10^{-5}\) cm = 0.330 μm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="가우스 접합 깊이" data-answer="8.58e18; 1.71" data-label="C(0) =; x_j =" data-unit="cm⁻³; μm">
+        <div class="prob-q"><p>도즈 \(5.0\times10^{14}\) cm⁻²의 붕소를 \(D = 1.5\times10^{-13}\) cm²/s에서 2시간 후확산한다(\(N_B = 1.0\times10^{16}\) cm⁻³). 후확산 뒤 표면 농도와 접합 깊이는?</p></div>
+        <div class="prob-hint">\(Dt = 1.08\times10^{-9}\) cm².</div>
+        <div class="prob-sol"><p>\(\sqrt{\pi Dt} = 5.825\times10^{-5}\) cm → \(C(0) = 5.0\times10^{14}/5.825\times10^{-5} = 8.58\times10^{18}\) cm⁻³. \(\ln(858) = 6.755\) → \(x_j = 2\sqrt{1.08\times10^{-9}\times6.755} = 1.71\times10^{-4}\) cm = 1.71 μm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="확산 기구">
+        <div class="prob-q"><p>1000 °C 실리콘 속에서 구리·철의 확산 계수가 붕소·인보다 10⁸배 이상 큰 가장 중요한 이유는?</p></div>
+        <div class="prob-choices"><button>구리·철 원자가 더 가볍기 때문이다.</button><button data-correct>격자간 자리를 따라 뛰므로 공공을 만들 에너지가 필요 없어 활성화 에너지가 훨씬 작다.</button><button>구리·철은 실리콘 속에서 이온화되지 않기 때문이다.</button><button>구리·철의 \(D_0\)가 10⁸배 크기 때문이다.</button></div>
+        <div class="prob-sol"><p>치환형 도펀트는 \(E_a = E_f + E_m \approx 3.5\) eV, 격자간 금속은 \(E_a = E_m\)(Cu 약 0.2 eV, Fe 약 0.7 eV)이다. \(D_0\)는 오히려 도펀트 쪽이 크다. 차이는 거의 전부 지수 인자에서 온다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="저각 결정립계" data-answer="110; 9.09" data-label="D =; 개수 =" data-unit="nm; 개/μm">
+        <div class="prob-q"><p>실리콘에서 방위 차이 0.20°의 대칭 경사 결정립계가 \(b = 0.384\) nm인 칼날 전위로 이루어져 있다. 전위 사이 간격과, 경계 1 μm당 전위 수는?</p></div>
+        <div class="prob-sol"><p>\(\theta = 0.20° = 3.491\times10^{-3}\) rad. \(D = b/\theta = 0.384/3.491\times10^{-3} = 110\) nm, 1 μm당 \(1000/110 = 9.09\)개.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="적층 결함">
+        <div class="prob-q"><p>{111} 쌓기 순서 가운데 내인성 적층 결함을 하나 포함한 것은?</p></div>
+        <div class="prob-choices"><button>…ABCABCABC…</button><button>…ABABABAB…</button><button data-correct>…ABCABCBCABC…</button><button>…ABCABCBACBA…</button></div>
+        <div class="prob-sol"><p>…ABCABC|BCABC…는 A층 하나가 빠진 꼴이다(C 다음에 A가 와야 할 자리에 B). 첫째는 완전한 FCC, 둘째는 육방 조밀, 넷째는 쌓기 방향이 뒤집힌 쌍정이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수소 유사 도너" data-answer="5.48; 10.2" data-label="E_d =; a* =" data-unit="meV; nm">
+        <div class="prob-q"><p>GaAs(\(m^* = 0.067\,m_e\), \(\varepsilon_r = 12.9\))의 얕은 도너 이온화 에너지와 궤도 반지름을 수소 유사 모형으로 구하라. 수소의 값은 13.606 eV, 0.05292 nm.</p></div>
+        <div class="prob-sol"><p>\(E_d = 13.606\times0.067/12.9^2 = 13.606\times0.067/166.41 = 5.48\) meV. \(a^* = 0.05292\times12.9/0.067 = 10.2\) nm. 실측 GaAs 도너(약 6 meV)와 잘 맞는다 — 궤도가 커서 중심 세포 보정이 작다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="깊은 준위 방출" data-answer="1.83e-5; 2.01e-6" data-label="300 K:; 350 K:" data-unit="s; s">
+        <div class="prob-q"><p>\(E_c - 0.40\) eV의 전자 함정이 있다. \(\sigma_n = 10^{-15}\) cm², \(v_\text{th} = 10^7\) cm/s, \(N_c = 2.86\times10^{19}\) cm⁻³가 온도와 무관하다고 가정하고, 300 K와 350 K에서 전자 방출 시간 \(1/e_n\)을 구하라.</p></div>
+        <div class="prob-sol"><p>앞 인자 \(2.86\times10^{11}\) s⁻¹. 300 K: \(0.40/0.025852 = 15.47\), \(e_n = 2.86\times10^{11}\times1.908\times10^{-7} = 5.45\times10^4\) s⁻¹ → \(1.83\times10^{-5}\) s. 350 K: \(0.40/0.030161 = 13.26\), \(e_n = 4.97\times10^5\) s⁻¹ → \(2.01\times10^{-6}\) s. 50 K 차이로 9배 빨라진다. DLTS는 이렇게 온도를 훑으며 방출 시간이 측정 창과 맞는 온도를 찾는다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>형성 에너지가 양수인데도 결정이 열평형에서 공공을 가지는 이유는?</p><div class="opts">
+        <button class="opt">공공이 생기면 결합 에너지가 낮아지기 때문이다.</button><button class="opt" data-correct>공공을 놓는 방법의 수(배열 엔트로피)가 자유 에너지 \(G = H - TS\)를 낮추기 때문이다.</button><button class="opt">결정 성장 중 실수로 들어갔기 때문이다.</button><button class="opt">0 K에서도 양자 요동으로 생기기 때문이다.</button>
+      </div><div class="quiz-exp">\(n\)이 작을 때 \(-TS_\text{conf}\)의 기울기는 \(-kT\ln(N/n)\)으로 무한히 가파르다. 그래서 처음 몇 개의 공공은 반드시 \(G\)를 낮춘다.</div></div>
+      <div class="quiz-q"><p>같은 도펀트를 900 °C로 4시간 확산한 것과 같은 접합 깊이를 1시간에 얻으려면?</p><div class="opts">
+        <button class="opt">온도를 4배로 올린다.</button><button class="opt" data-correct>\(D\)가 4배가 되는 온도로 올린다(\(Dt\)를 같게).</button><button class="opt">\(D\)가 2배가 되는 온도로 올린다.</button><button class="opt">표면 농도를 4배로 올린다.</button>
+      </div><div class="quiz-exp">\(x_j\)는 \(\sqrt{Dt}\)와 농도비의 함수다. 농도 조건이 같으면 \(Dt\)가 같을 때 프로파일 전체가 같다. \(E_a = 3.5\) eV이면 900 °C 근처에서 약 50 °C만 올려도 \(D\)가 4배가 된다.</div></div>
+      <div class="quiz-q"><p>버거스 벡터에 대해 옳은 것은?</p><div class="opts">
+        <button class="opt">회로를 크게 그릴수록 커진다.</button><button class="opt">칼날 전위에서는 전위선과 나란하다.</button><button class="opt" data-correct>한 전위선을 따라 어디서나 같고, 전위선은 결정 안에서 끝날 수 없다.</button><button class="opt">결정이 바뀌어도 늘 격자 상수 \(a\)와 같다.</button>
+      </div><div class="quiz-exp">버거스 벡터는 위상적 불변량이라 전위선 전체에서 보존된다. 그래서 전위는 표면이나 결정립계에서 끝나거나, 고리를 이루거나, 다른 전위와 만나는 점에서 버거스 벡터의 합이 보존되어야 한다.</div></div>
+      <div class="quiz-q"><p>웨이퍼 벌크의 산소 석출물(BMD)이 소자에 이로운 이유는?</p><div class="opts">
+        <button class="opt">캐리어 이동도를 높인다.</button><button class="opt" data-correct>빠르게 확산하는 금속 불순물을 소자 영역 밖에 붙잡아 둔다.</button><button class="opt">표면의 COP를 메운다.</button><button class="opt">도펀트의 확산을 완전히 막는다.</button>
+      </div><div class="quiz-exp">진성 게터링이다. 석출물 주위의 변형장과 전위·적층 결함이 금속 원자에게 낮은 에너지 자리를 준다. 단, 표면의 무결함층에는 석출물이 없어야 한다.</div></div>
+      <div class="quiz-q"><p>실리콘 띠 간격 한가운데 근처의 깊은 준위가 가장 해로운 재결합 중심인 이유는?</p><div class="opts">
+        <button class="opt">농도가 가장 높기 때문이다.</button><button class="opt">전자를 가장 빨리 전도대로 내놓기 때문이다.</button><button class="opt" data-correct>붙잡은 전자(또는 정공)를 띠로 다시 내놓는 열적 방출이 양쪽 모두 느려, 반대 캐리어를 붙잡아 재결합할 확률이 크기 때문이다.</button><button class="opt">수소 유사 모형으로 기술되기 때문이다.</button>
+      </div><div class="quiz-exp">띠 끝 근처 준위는 붙잡은 캐리어를 곧바로 가까운 띠로 돌려보내 재결합이 일어나지 않는다. 가운데 준위는 \(n_1\), \(p_1\)이 모두 작아 SRH 수명이 최소가 된다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const kB = Solid.const.kBev;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e);
+    if (e >= -2 && e <= 3) return x.toPrecision(d + 1);
+    const ms = m.toFixed(d);
+    if (ms.startsWith("10")) return "1" + (d ? "." + "0".repeat(d) : "") + "×10" + String(e + 1).split("").map((c) => SUP[c]).join("");
+    return ms + "×10" + String(e).split("").map((c) => SUP[c]).join("");
+  };
+  const tex10 = (x, d = 2) => { const e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); return `${m.toFixed(d)}\\times10^{${e}}`; };
+  const fmtLen = (cm) => { if (!isFinite(cm)) return "—"; const nm = cm * 1e7; if (nm < 1000) return nm.toPrecision(3) + " nm"; if (nm < 1e6) return (nm / 1000).toPrecision(3) + " μm"; if (nm < 1e7) return (nm / 1e6).toPrecision(3) + " mm"; return (cm).toPrecision(3) + " cm"; };
+  const fmtTime = (s) => {
+    if (!isFinite(s)) return "—";
+    if (s < 1e-9) return (s * 1e12).toPrecision(2) + " ps"; if (s < 1e-6) return (s * 1e9).toPrecision(2) + " ns";
+    if (s < 1e-3) return (s * 1e6).toPrecision(2) + " μs"; if (s < 1) return (s * 1e3).toPrecision(2) + " ms";
+    if (s < 120) return s.toPrecision(2) + " s"; if (s < 7200) return (s / 60).toPrecision(2) + " 분";
+    if (s < 3.15e7 * 2) return (s / 3600).toPrecision(2) + " 시간"; return sci(s / 3.156e7, 1) + " 년";
+  };
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const inv = (ch, opts, px, py) => [opts.x[0] + ((px - ch.box.x) / ch.box.w) * (opts.x[1] - opts.x[0]), opts.y[0] + ((ch.box.y + ch.box.h - py) / ch.box.h) * (opts.y[1] - opts.y[0])];
+  const clipBox = (ctx, ch) => { ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip(); };
+  const dot = (ctx, x, y, r, fill, stroke, lw = 1.5) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); } };
+  const font = (px, bold) => (bold ? "600 " : "") + px + "px " + SB.color("font");
+  const perp = (ctx, x, y, s, col, rot = 0) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-s, 0); ctx.lineTo(s, 0); ctx.moveTo(0, 0); ctx.lineTo(0, -s * 1.4); ctx.stroke(); ctx.restore(); };
+  /* ln n! (스털링 급수, n ≥ 0 실수) */
+  const lnFact = (n) => (n < 1e-9 ? 0 : n < 8 ? Math.log(gammaInt(n)) : n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n) + 1 / (12 * n) - 1 / (360 * n ** 3));
+  function gammaInt(n) { // Γ(n+1) for small real n (Lanczos)
+    const g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    let x = n; let a = c[0]; const t = x + g + 0.5;
+    for (let i = 1; i < 9; i++) a += c[i] / (x + i);
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, x + 0.5) * Math.exp(-t) * a;
+  }
+  /* 역 erfc (이분법) */
+  const erfcinv = (y) => Solid.bisect((u) => Solid.erfc(u) - y, 0, 8, 1e-10);
+  const DD = Solid.dopantDiffusion;
+  const Dof = (el, TK) => Solid.arrhenius(DD[el].D0, DD[el].Ea, TK);
+
+  /* ================================================== 장 머리: 공공으로 뛰어드는 원자 */
+  {
+    const st = { T: 1100, t: 0, cols: 0, rows: 0, sp: 30, x0: 0, y0: 0, grid: [], atoms: [], vac: [], trail: [] };
+    const Ev = 0.35;
+    const build = (w, h) => {
+      const sp = SB.clamp(w / 24, 22, 34), cols = Math.max(6, Math.floor((w - 100) / sp)), rows = Math.max(4, Math.floor((h - 62) / sp));
+      if (cols === st.cols && rows === st.rows && Math.abs(sp - st.sp) < 0.5) return;
+      Object.assign(st, { sp, cols, rows, x0: 22 + sp / 2, y0: 34 + sp / 2 });
+      st.grid = []; st.atoms = [];
+      for (let i = 0; i < cols; i++) { st.grid.push([]); for (let j = 0; j < rows; j++) { st.atoms.push({ i, j, fx: i, fy: j, p: 0, ph: Math.random() * 6.28, ph2: Math.random() * 6.28 }); st.grid[i].push(st.atoms.length - 1); } }
+      st.vac = [];
+      const nv = Math.max(2, Math.round((cols * rows) / 45));
+      while (st.vac.length < nv) { const i = 1 + Math.floor(Math.random() * (cols - 2)), j = Math.floor(Math.random() * rows); if (st.grid[i][j] >= 0) { st.atoms[st.grid[i][j]].dead = true; st.grid[i][j] = -1; st.vac.push([i, j]); } }
+      st.trail = st.vac.map((v) => [v.slice()]);
+    };
+    const jump = (vi, ai) => {
+      const [vx, vy] = st.vac[vi], a = st.atoms[ai];
+      if (a.p > 0) return;
+      st.grid[vx][vy] = ai; st.grid[a.i][a.j] = -1;
+      a.fx = a.i; a.fy = a.j; a.p = 1e-6;
+      st.vac[vi] = [a.i, a.j]; a.i = vx; a.j = vy;
+      st.trail[vi].push([vx, vy]); if (st.trail[vi].length > 14) st.trail[vi].shift();
+    };
+    const nbrs = (i, j) => [[i + 1, j], [i - 1, j], [i, j + 1], [i, j - 1]].filter(([a, b]) => a >= 0 && b >= 0 && a < st.cols && b < st.rows);
+    const rate = () => 2.5 * Math.exp((-Ev / kB) * (1 / st.T - 1 / 1500));
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      build(w, h);
+      const P = pal(), sp = st.sp, X = (i) => st.x0 + i * sp, Y = (j) => st.y0 + j * sp;
+      const amp = 0.6 + (2.6 * (st.T - 300)) / 1200;
+      // 공공 자취
+      st.trail.forEach((tr) => { ctx.save(); ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.35; ctx.lineWidth = 2; ctx.setLineDash([3, 4]); ctx.beginPath(); tr.forEach(([i, j], k) => (k ? ctx.lineTo(X(i), Y(j)) : ctx.moveTo(X(i), Y(j)))); ctx.stroke(); ctx.restore(); });
+      st.vac.forEach(([i, j]) => { ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.strokeRect(X(i) - sp * 0.32, Y(j) - sp * 0.32, sp * 0.64, sp * 0.64); ctx.restore(); });
+      const R = sp * 0.3;
+      st.atoms.forEach((a) => {
+        if (a.dead) return;
+        let x = X(a.i), y = Y(a.j);
+        if (a.p > 0) { const s = a.p, e = s * s * (3 - 2 * s), arc = Math.sin(Math.PI * s) * sp * 0.18; x = X(a.fx) + (X(a.i) - X(a.fx)) * e; y = Y(a.fy) + (Y(a.j) - Y(a.fy)) * e - arc; }
+        x += amp * Math.sin(st.t * 23 + a.ph); y += amp * Math.sin(st.t * 19 + a.ph2);
+        dot(ctx, x, y, R, a.p > 0 ? P.accent2 : P.accent);
+      });
+      // 온도계
+      const tx = w - 42, ty0 = 44, ty1 = h - 34, TY = (T) => ty1 - ((T - 300) / 1200) * (ty1 - ty0);
+      ctx.save(); ctx.fillStyle = P.surface; ctx.strokeStyle = P.border; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx - 7, ty0 - 6, 14, ty1 - ty0 + 12, 7) : ctx.rect(tx - 7, ty0 - 6, 14, ty1 - ty0 + 12); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = P.bad; ctx.fillRect(tx - 4, TY(st.T), 8, ty1 - TY(st.T) + 4); ctx.restore();
+      handle(ctx, tx, TY(st.T), P.bad, 12);
+      SB.label(ctx, st.T.toFixed(0) + " K", tx - 4, ty0 - 20, { size: 12, bold: true, color: P.text });
+      const G = 1e13 * Math.exp(-0.45 / (kB * st.T)), vis = rate() / 4;
+      SB.label(ctx, w < 560 ? `Si 공공 뜀 빈도 ≈ ${sci(G, 1)} /s` : `T = ${st.T.toFixed(0)} K · 실제 Si 공공 뜀 빈도 ≈ ${sci(G, 1)} /s (화면은 약 ${sci(G / Math.max(vis, 1e-30), 0)}배 느리게)`, 14, 14, { align: "left", size: 12, color: P.dim });
+      self._tx = tx; self._TY = TY;
+    }, { aspect: 0.38, minHeight: 230, maxHeight: 330 });
+    let mode = null;
+    SB.drag(cv, {
+      free: true,
+      handles: () => [],
+      down: (id, x, y) => {
+        mode = x > cv._tx - 30 ? "T" : "click";
+        if (mode === "click") {
+          const i = Math.round((x - st.x0) / st.sp), j = Math.round((y - st.y0) / st.sp);
+          if (i < 0 || j < 0 || i >= st.cols || j >= st.rows) return;
+          const ai = st.grid[i][j]; if (ai < 0) return;
+          const vi = st.vac.findIndex(([a, b]) => Math.abs(a - i) + Math.abs(b - j) === 1);
+          if (vi >= 0) jump(vi, ai);
+        }
+      },
+      move: (id, x, y) => { if (mode === "T" && cv._TY) { const T = 300 + ((cv._TY(300) - y) / (cv._TY(300) - cv._TY(1500))) * 1200; st.T = Math.round(SB.clamp(T, 300, 1500) / 10) * 10; } },
+      up: () => { mode = null; },
+    });
+    SB.loop("hero", (dt) => {
+      st.t += dt;
+      const r = rate();
+      st.vac.forEach(([i, j], vi) => {
+        if (Math.random() < r * dt) { const c = nbrs(i, j).map(([a, b]) => st.grid[a][b]).filter((ai) => ai >= 0 && st.atoms[ai].p === 0); if (c.length) jump(vi, c[Math.floor(Math.random() * c.length)]); }
+      });
+      st.atoms.forEach((a) => { if (a.p > 0) { a.p += dt / 0.25; if (a.p >= 1) a.p = 0; } });
+      cv.redraw();
+    });
+  }
+
+  /* ================================================== 점결함 종류 미니 */
+  {
+    const kinds = {
+      vac: { s: -0.10, msg: "공공: 이웃 원자들이 빈자리 쪽으로 조금 끌려 들어온다(국소 수축)." },
+      self: { s: 0.16, msg: "자기 격자간 원자: 틈에 억지로 끼어 이웃을 크게 밀어낸다 — 형성 에너지가 크다." },
+      big: { s: 0.09, msg: "큰 치환형(예: Si 속 As·Sb·Ge): 이웃을 밀어내 격자를 늘인다." },
+      small: { s: -0.08, msg: "작은 치환형(예: Si 속 B·C): 이웃을 끌어당겨 격자를 줄인다 — 고농도 붕소 층은 격자 상수가 작아진다." },
+      int: { s: 0.11, msg: "격자간 불순물(예: Si 속 Cu·Fe·Li, 결합 중심의 O): 틈 사이를 쉽게 옮겨 다닌다." },
+    };
+    const st = { kind: "vac", pos: [4, 2] };
+    const kind = SB.seg("ty-kind", (v) => { st.kind = v; st.pos = v === "self" || v === "int" ? [3.5, 2.5] : [4, 2]; cv.redraw(); });
+    const cv = SB.canvas("cv-types", (ctx, w, h, self) => {
+      const P = pal(), nx = 9, ny = 6, sp = Math.min((w - 30) / nx, (h - 24) / ny), x0 = (w - (nx - 1) * sp) / 2, y0 = (h - (ny - 1) * sp) / 2 + 4;
+      self._g = { sp, x0, y0 };
+      const K = kinds[st.kind], [dx, dy] = st.pos, onSite = Number.isInteger(dx);
+      for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+        if (onSite && i === dx && j === dy && st.kind === "vac") continue;
+        const rx = i - dx, ry = j - dy, r = Math.hypot(rx, ry);
+        let ux = 0, uy = 0;
+        if (r > 0.1) { const m = (K.s / (r * r)); ux = (m * rx) / r; uy = (m * ry) / r; }
+        const px = x0 + (i + ux) * sp, py = y0 + (j + uy) * sp;
+        if (onSite && i === dx && j === dy) {
+          dot(ctx, px, py, st.kind === "big" ? sp * 0.4 : sp * 0.2, P.accent2, P.text, 2);
+          continue;
+        }
+        dot(ctx, px, py, sp * 0.28, P.accent);
+        if (r > 0.1 && r < 3.2) SB.arrow(ctx, x0 + i * sp, y0 + j * sp, x0 + (i + ux * 4.5) * sp, y0 + (j + uy * 4.5) * sp, { color: P.text, width: 1.6, head: 6 });
+      }
+      const cx = x0 + dx * sp, cy = y0 + dy * sp;
+      if (st.kind === "vac") { ctx.save(); ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.strokeRect(cx - sp * 0.3, cy - sp * 0.3, sp * 0.6, sp * 0.6); ctx.restore(); }
+      if (st.kind === "self") dot(ctx, cx, cy, sp * 0.28, P.accent, P.text, 2.5);
+      if (st.kind === "int") dot(ctx, cx, cy, sp * 0.16, P.accent2, P.text, 2);
+      $("ty-r").textContent = K.msg;
+    }, { aspect: 0.62, maxHeight: 340 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => {
+      const g = cv._g, fx = (x - g.x0) / g.sp, fy = (y - g.y0) / g.sp;
+      const inter = st.kind === "self" || st.kind === "int";
+      let px = inter ? Math.floor(fx) + 0.5 : Math.round(fx), py = inter ? Math.floor(fy) + 0.5 : Math.round(fy);
+      px = SB.clamp(px, inter ? 0.5 : 0, inter ? 7.5 : 8); py = SB.clamp(py, inter ? 0.5 : 0, inter ? 4.5 : 5);
+      st.pos = [px, py];
+    } });
+  }
+
+  /* ================================================== 자유 에너지 최소 미니 */
+  {
+    const N = 1e5, st = { n: null };
+    const getT = SB.range("g-T", (v) => v.toFixed(0) + " K", () => { st.n = null; cv.redraw(); });
+    const getE = SB.range("g-E", (v) => v.toFixed(2) + " eV", () => { st.n = null; cv.redraw(); });
+    const lnW = (n) => lnFact(N) - lnFact(n) - lnFact(N - n);
+    const cv = SB.canvas("cv-g", (ctx, w, h, self) => {
+      const P = pal(), T = getT(), Ef = getE(), kT = kB * T, ns = N * Math.exp(-Ef / kT);
+      const nmax = Math.max(8, Math.ceil(3 * ns));
+      if (st.n == null) st.n = Math.max(1, Math.round(nmax * 0.12));
+      st.n = SB.clamp(st.n, 0, nmax);
+      const G = (n) => n * Ef - kT * lnW(n), S = (n) => -kT * lnW(n);
+      const M = 240, gs = [], hs = [], ss = [];
+      let gmin = Infinity, nbest = 0;
+      for (let k = 0; k <= M; k++) { const n = (nmax * k) / M, g = G(n); gs.push([n, g]); hs.push([n, n * Ef]); ss.push([n, S(n)]); }
+      for (let n = 0; n <= Math.min(nmax, 5000); n++) { const g = G(n); if (g < gmin) { gmin = g; nbest = n; } }
+      const gEnd = G(nmax), span = Math.max(Math.abs(gmin), Math.abs(gEnd), 1e-3);
+      const opts = { x: [0, nmax], y: [-span * 1.5, span * 1.5] };
+      const ch = SB.chart(ctx, { x: 62, y: 12, w: w - 76, h: h - 56 }, { x: opts.x, y: opts.y, xLabel: "공공 수 n (자리 10⁵개)", yLabel: "에너지 (eV)", hlines: [{ y: 0, color: P.faint }],
+        series: [{ data: hs, color: P.accent2, width: 1.6, dash: [6, 4] }, { data: ss, color: P.dim, width: 1.6, dash: [2, 3] }, { data: gs, color: P.accent, width: 2.8 }] });
+      ctx.save(); clipBox(ctx, ch);
+      ctx.strokeStyle = P.ok; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ch.X(ns), ch.box.y); ctx.lineTo(ch.X(ns), ch.box.y + ch.box.h); ctx.stroke(); ctx.restore();
+      const nH = Math.min(nmax, opts.y[1] / Ef), sx = ss.find((p) => p[1] < opts.y[0]), nS = sx ? sx[0] : nmax;
+      SB.label(ctx, "nE_f", Math.min(ch.X(nH) + 22, ch.box.x + ch.box.w - 20), ch.Y(Math.min(nH * Ef, opts.y[1])) + 12, { size: 11, color: P.accent2, bold: true });
+      SB.label(ctx, "−TS", Math.min(ch.X(nS) + 22, ch.box.x + ch.box.w - 20), ch.Y(Math.max(S(nS), opts.y[0])) - 12, { size: 11, color: P.dim, bold: true });
+      SB.label(ctx, "n* = Ne^(−E_f/kT)", Math.min(ch.X(ns) + 6, ch.box.x + ch.box.w - 120), ch.box.y + 12, { size: 11, align: "left", color: P.ok });
+      const gx = ch.X(st.n), gy = ch.Y(SB.clamp(G(st.n), opts.y[0], opts.y[1]));
+      handle(ctx, gx, gy, P.accent, 11);
+      self._ch = ch; self._o = opts; self._h = [gx, gy];
+      const slope = G(st.n + 1) - G(st.n);
+      $("g-r").innerHTML = `n = ${st.n.toFixed(0)}, G = ${G(st.n).toFixed(3)} eV · 하나 더 만들면 ΔG = ${slope >= 0 ? "+" : ""}${slope.toFixed(3)} eV → ${slope < 0 ? "<b>더 만드는 쪽이 이득</b>" : "<b>손해</b>"} · 최소 n = ${nbest} (이론 n* = ${ns < 0.01 ? sci(ns, 1) : ns.toFixed(1)})`;
+    }, { aspect: 0.55, maxHeight: 340 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const [n] = inv(cv._ch, cv._o, x, y); st.n = Math.round(SB.clamp(n, 0, cv._o.x[1])); } });
+  }
+
+  /* ================================================== 공공 아레니우스 실험대 */
+  {
+    const mats = { Si: { E: 3.6, n: 5.0e22, mp: 1687, ko: "Si" }, Cu: { E: 1.28, n: 8.47e22, mp: 1358, ko: "Cu" }, Al: { E: 0.67, n: 6.03e22, mp: 933, ko: "Al" } };
+    const getT = SB.range("vac-T", (v) => v.toFixed(0) + " K", () => cv.redraw());
+    const getE = SB.range("vac-E", (v) => v.toFixed(2) + " eV", () => { if (mat() === "user") cv.redraw(); else mat.set("user"); });
+    const getS = SB.range("vac-S", (v) => v.toFixed(1), () => cv.redraw());
+    const mat = SB.seg("vac-mat", () => cv.redraw());
+    $("vac-band").addEventListener("change", () => cv.redraw());
+    const opts = { x: [0.55, 3.4], y: [-40, 0] };
+    const cv = SB.canvas("cv-vac", (ctx, w, h, self) => {
+      const P = pal(), T = getT(), S = getS(), m = mat(), cols = { Si: P.series[0], Cu: P.series[1], Al: P.series[2], user: P.series[3] };
+      const lines = Object.keys(mats).map((k) => ({ k, E: mats[k].E })); lines.push({ k: "user", E: getE() });
+      const f10 = (E, x, s) => s / Math.LN10 - (E * (x / 1000)) / (kB * Math.LN10);
+      const ch = SB.chart(ctx, { x: 58, y: 14, w: w - 72, h: h - 62 }, { x: opts.x, y: opts.y, xLabel: "1000/T (K⁻¹)", yLabel: "log₁₀(n/N)" });
+      ctx.save(); clipBox(ctx, ch);
+      if ($("vac-band").checked) {
+        ctx.fillStyle = SB.color("accent-soft"); ctx.beginPath();
+        ctx.moveTo(ch.X(opts.x[0]), ch.Y(f10(3.0, opts.x[0], 0))); ctx.lineTo(ch.X(opts.x[1]), ch.Y(f10(3.0, opts.x[1], 0)));
+        ctx.lineTo(ch.X(opts.x[1]), ch.Y(f10(4.0, opts.x[1], 0))); ctx.lineTo(ch.X(opts.x[0]), ch.Y(f10(4.0, opts.x[0], 0))); ctx.closePath(); ctx.fill();
+      }
+      lines.forEach((L) => {
+        const on = L.k === m, s = on ? S : 0;
+        ctx.strokeStyle = cols[L.k]; ctx.lineWidth = on ? 3 : 1.6; ctx.globalAlpha = on ? 1 : 0.6; if (L.k === "user" && !on) ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(ch.X(opts.x[0]), ch.Y(f10(L.E, opts.x[0], s))); ctx.lineTo(ch.X(opts.x[1]), ch.Y(f10(L.E, opts.x[1], s))); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+        if (mats[L.k]) { const xm = 1000 / mats[L.k].mp; dot(ctx, ch.X(xm), ch.Y(f10(L.E, xm, s)), 4, P.surface, cols[L.k], 2); }
+      });
+      ctx.restore();
+      lines.forEach((L, idx) => { const s = L.k === m ? S : 0, xr = opts.x[0] + 0.04, yv = f10(L.E, xr, s); if (yv > opts.y[0] + 1 && yv < -0.5) SB.label(ctx, (L.k === "user" ? "직접 " : L.k + " ") + L.E.toFixed(2) + " eV", ch.X(xr) + 4, ch.Y(yv) - 10 - idx * 0, { size: 11, align: "left", color: cols[L.k], bold: L.k === m }); });
+      const x = 1000 / T, E = m === "user" ? getE() : mats[m].E, yv = f10(E, x, S);
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ch.X(x), ch.box.y); ctx.lineTo(ch.X(x), ch.box.y + ch.box.h); ctx.stroke(); ctx.restore();
+      if (yv > opts.y[0]) dot(ctx, ch.X(x), ch.Y(yv), 6, cols[m], P.text, 1.5);
+      const hx = ch.X(x), hy = ch.box.y + ch.box.h - 14;
+      handle(ctx, hx, hy, P.accent, 12);
+      SB.label(ctx, T.toFixed(0) + " K", SB.clamp(hx, ch.box.x + 26, ch.box.x + ch.box.w - 26), hy - 22, { size: 11, bold: true });
+      self._ch = ch; self._h = [hx, hy];
+      const f = Math.pow(10, yv), n = f * (m === "user" ? 5e22 : mats[m].n);
+      SB.stat("vac-f", sci(f));
+      SB.stat("vac-n", sci(n) + " cm⁻³");
+      SB.stat("vac-one", sci(1 / f, 1) + "개");
+      SB.stat("vac-d", n > 0 ? fmtLen(Math.pow(n, -1 / 3)) : "—");
+    }, { aspect: 0.62, maxHeight: 420 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "T", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const [xv] = inv(cv._ch, opts, x, y); getT.set(Math.round(SB.clamp(1000 / SB.clamp(xv, 0.588, 3.33), 300, 1700) / 5) * 5); } });
+  }
+
+  /* ================================================== 공공 농도 tangle */
+  SB.tangle("tg-vac", (v) => {
+    const T = v.T + 273.15, f = Math.exp(-v.E / (kB * T)), n = f * 5e22, r = Math.exp((v.E / kB) * (1 / T - 1 / (T + 100)));
+    const msg = n < 1 ? "1 cm³에 공공이 하나도 없는 셈이다." : n < 1e12 ? "도핑 농도(10¹⁴–10²⁰ cm⁻³)보다 훨씬 적다 — 그래도 원자를 움직이는 데는 충분하다." : "도핑 농도에 맞먹는다.";
+    return { f: sci(f), n: sci(n) + " cm⁻³", r: sci(r, 1), msg };
+  });
+
+  /* ================================================== 무작위 걷기 */
+  {
+    const Em = 0.5, Ef = 0.5, Tref = 1400;
+    const st = { N: 300, xs: new Int32Array(300), ys: new Int32Array(300), ox: 0, oy: 0, t: 0, hist: [], sample: 0 };
+    const getT = SB.range("wk-T", (v) => v.toFixed(0) + " K", () => upd());
+    const getN = SB.range("wk-N", (v) => v.toFixed(0) + "개", () => reset());
+    const mech = SB.seg("wk-mech", () => reset());
+    const Gam = () => { const T = getT(); return mech() === "int" ? 40 * Math.exp((-Em / kB) * (1 / T - 1 / Tref)) : 10 * Math.exp((-(Em + Ef) / kB) * (1 / T - 1 / Tref)); };
+    function reset() { st.N = getN(); st.xs = new Int32Array(st.N).fill(st.ox); st.ys = new Int32Array(st.N).fill(st.oy); st.t = 0; st.hist = [[0, 0]]; st.sample = 0; upd(); }
+    function upd() { cv && cv.redraw(); cv2 && cv2.redraw(); }
+    const msd = () => { let s = 0; for (let i = 0; i < st.N; i++) { const d = st.xs[i] - st.ox; s += d * d; } return s / st.N; };
+    let cv = null, cv2 = null;
+    cv = SB.canvas("cv-walk", (ctx, w, h, self) => {
+      const P = pal(), half = 26, sc = Math.min(w, h) / (2 * half + 2), cx = w / 2, cy = h / 2;
+      self._g = { sc, cx, cy, half };
+      ctx.save(); ctx.strokeStyle = P.grid; ctx.lineWidth = 1;
+      for (let k = -half; k <= half; k += 2) { ctx.beginPath(); ctx.moveTo(cx + k * sc, cy - half * sc); ctx.lineTo(cx + k * sc, cy + half * sc); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx - half * sc, cy + k * sc); ctx.lineTo(cx + half * sc, cy + k * sc); ctx.stroke(); }
+      ctx.restore();
+      const rms = Math.sqrt(msd());
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+      ctx.strokeRect(cx + (st.ox - rms) * sc, cy - half * sc, 2 * rms * sc, 2 * half * sc); ctx.restore();
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.75;
+      for (let i = 0; i < st.N; i++) { const x = cx + st.xs[i] * sc, y = cy + st.ys[i] * sc; ctx.fillRect(x - 2, y - 2, 4, 4); }
+      ctx.globalAlpha = 1;
+      dot(ctx, cx + st.ox * sc, cy + st.oy * sc, 5, null, P.text, 2);
+      SB.label(ctx, "±√⟨x²⟩", cx + (st.ox + rms) * sc + 4, cy - half * sc + 12, { size: 11, align: "left", color: P.accent2 });
+    }, { aspect: 1, maxHeight: 360 });
+    cv2 = SB.canvas("cv-walk2", (ctx, w, h) => {
+      const P = pal(), D = Gam() / 4, tmax = Math.max(4, st.t * 1.15), mmax = Math.max(8, 2 * D * tmax * 1.1, ...st.hist.map((p) => p[1] * 1.1));
+      const h1 = h * 0.5;
+      SB.chart(ctx, { x: 54, y: 10, w: w - 66, h: h1 - 44 }, { x: [0, tmax], y: [0, mmax], xLabel: "t", yLabel: "⟨x²⟩", series: [{ data: [[0, 0], [tmax, 2 * D * tmax]], color: P.dim, width: 1.6, dash: [6, 4] }, { data: st.hist, color: P.accent, width: 2.4 }], points: st.hist.length ? [{ x: st.hist[st.hist.length - 1][0], y: st.hist[st.hist.length - 1][1], color: P.accent, r: 5 }] : [] });
+      // 분포
+      const half = 26, nb = 26, bw = (2 * half) / nb, counts = new Array(nb).fill(0);
+      for (let i = 0; i < st.N; i++) { const b = Math.floor((st.xs[i] - st.ox + half) / bw); if (b >= 0 && b < nb) counts[b]++; }
+      const cmax = Math.max(5, ...counts) * 1.15;
+      const ch = SB.chart(ctx, { x: 54, y: h1 + 6, w: w - 66, h: h - h1 - 50 }, { x: [-half, half], y: [0, cmax], xLabel: "x − x₀ (격자 간격)", yLabel: "입자 수" });
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft");
+      counts.forEach((c, b) => { const x0 = -half + b * bw; ctx.fillRect(ch.X(x0) + 1, ch.Y(c), ch.X(x0 + bw) - ch.X(x0) - 2, ch.Y(0) - ch.Y(c)); });
+      if (st.t > 0.05) {
+        ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath();
+        for (let k = 0; k <= 120; k++) { const x = -half + (2 * half * k) / 120, y = (st.N * bw * Math.exp((-x * x) / (4 * D * st.t))) / Math.sqrt(4 * Math.PI * D * st.t); k ? ctx.lineTo(ch.X(x), ch.Y(Math.min(y, cmax))) : ctx.moveTo(ch.X(x), ch.Y(Math.min(y, cmax))); }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }, { aspect: 1, maxHeight: 360 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { const g = cv._g; st.ox = SB.clamp(Math.round((x - g.cx) / g.sc), -18, 18); st.oy = SB.clamp(Math.round((y - g.cy) / g.sc), -18, 18); reset(); } });
+    const loop = SB.loop("sim-walk", (dt) => {
+      const G = Gam(), lam = G * dt;
+      for (let i = 0; i < st.N; i++) {
+        const nj = lam < 30 ? SB.poisson(lam) : Math.round(lam + Math.sqrt(lam) * SB.randn());
+        for (let k = 0; k < nj; k++) { const r = Math.random(); if (r < 0.25) st.xs[i]++; else if (r < 0.5) st.xs[i]--; else if (r < 0.75) st.ys[i]++; else st.ys[i]--; }
+      }
+      st.t += dt; st.sample += dt;
+      if (st.sample > 0.2) { st.sample = 0; st.hist.push([st.t, msd()]); }
+      const m = msd();
+      if (Math.sqrt(m) > 15 || st.t > 120) reset();
+      SB.stat("wk-t", st.t.toFixed(1));
+      SB.stat("wk-Dm", st.t > 0.2 ? (m / (2 * st.t)).toPrecision(3) : "—");
+      SB.stat("wk-Dt", (G / 4).toPrecision(3));
+      SB.stat("wk-G", G.toPrecision(3) + " /단위시간");
+      cv.redraw(); cv2.redraw();
+    });
+    SB.play("wk-play", loop);
+    $("wk-reset").addEventListener("click", () => { st.ox = 0; st.oy = 0; reset(); });
+    reset();
+  }
+
+  /* ================================================== 실리콘 속 확산 계수 미니 */
+  {
+    const els = [["B", "붕소"], ["P", "인"], ["As", "비소"], ["Sb", "안티모니"], ["O", "산소"], ["Fe", "철"], ["Au", "금"], ["Cu", "구리"]];
+    const getT = SB.range("arr-T", (v) => v.toFixed(0) + " °C", () => cv.redraw());
+    $("arr-met").addEventListener("change", () => cv.redraw());
+    const opts = { x: [0.6, 1.4], y: [-20, -3] };
+    const cv = SB.canvas("cv-arr", (ctx, w, h, self) => {
+      const P = pal(), met = $("arr-met").checked, Tc = getT(), TK = Tc + 273.15, xT = 1000 / TK;
+      const list = els.filter((e, i) => met || i < 4);
+      const series = list.map(([el], i) => ({ data: [opts.x[0], opts.x[1]].map((x) => [x, Math.log10(Dof(el, 1000 / x))]), color: P.series[els.findIndex((e) => e[0] === el) % P.series.length], width: 2, dash: els.findIndex((e) => e[0] === el) >= 4 ? [6, 4] : null }));
+      const ch = SB.chart(ctx, { x: 58, y: 12, w: w - 128, h: h - 58 }, { x: opts.x, y: opts.y, xLabel: "1000/T (K⁻¹)", yLabel: "log₁₀ D (cm²/s)", series });
+      list.forEach(([el, ko], i) => { const ly = ch.box.y + 8 + i * 17, lx = ch.box.x + ch.box.w + 10; ctx.save(); ctx.strokeStyle = series[i].color; ctx.lineWidth = 2.5; if (series[i].dash) ctx.setLineDash([5, 3]); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 14, ly); ctx.stroke(); ctx.restore(); SB.label(ctx, ko, lx + 18, ly, { size: 11, align: "left", color: P.text }); });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ch.X(xT), ch.box.y); ctx.lineTo(ch.X(xT), ch.box.y + ch.box.h); ctx.stroke(); ctx.restore();
+      list.forEach(([el], i) => { const yv = Math.log10(Dof(el, TK)); if (yv > opts.y[0] && yv < opts.y[1]) dot(ctx, ch.X(xT), ch.Y(yv), 4.5, series[i].color); });
+      const hx = ch.X(xT), hy = ch.box.y + 14; handle(ctx, hx, hy, P.accent, 12);
+      self._ch = ch; self._h = [hx, hy];
+      const LB = 2 * Math.sqrt(Dof("B", TK) * 3600), LC = 2 * Math.sqrt(Dof("Cu", TK) * 3600);
+      $("arr-r").textContent = `${Tc.toFixed(0)} °C: 붕소 D = ${sci(Dof("B", TK))} cm²/s (1시간 ${fmtLen(LB)}), 구리 D = ${sci(Dof("Cu", TK))} cm²/s (1시간 ${fmtLen(LC)}) — ${sci(Dof("Cu", TK) / Dof("B", TK), 0)}배 차이`;
+    }, { aspect: 0.6, maxHeight: 380 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "T", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const [xv] = inv(cv._ch, opts, x, y); getT.set(Math.round(SB.clamp(1000 / SB.clamp(xv, 0.6, 1.4) - 273.15, 450, 1350) / 5) * 5); } });
+  }
+
+  /* ================================================== 확산 길이 tangle */
+  SB.tangle("tg-len", (v) => {
+    const TK = v.T + 273.15, t = v.t * 60, D = Dof("B", TK), L = 2 * Math.sqrt(D * t), Lc = 2 * Math.sqrt(Dof("Cu", TK) * t);
+    const cross = Lc > 0.0775 ? `${(Lc / 0.0775).toFixed(0)}번 가로지를 만한 거리다` : `${((Lc / 0.0775) * 100).toFixed(0)}% 깊이까지 파고드는 거리다`;
+    return { D: sci(D) + " cm²/s", L: fmtLen(L), Lc: fmtLen(Lc), cross };
+  });
+
+  /* ================================================== 차분법 확산 미니 */
+  {
+    const M = 120, st = { C: new Float64Array(M), paint: false, last: null };
+    const step = () => { for (let i = 0; i < M; i++) st.C[i] = i < M * 0.3 ? 1 : 0; };
+    step();
+    const area = () => { let s = 0; for (let i = 0; i < M; i++) s += st.C[i]; return s / M; };
+    const opts = { x: [0, 1], y: [0, 1.15] };
+    const cv = SB.canvas("cv-fd", (ctx, w, h, self) => {
+      const P = pal(), data = Array.from(st.C, (c, i) => [(i + 0.5) / M, c]);
+      const ch = SB.chart(ctx, { x: 46, y: 10, w: w - 58, h: h - 52 }, { x: opts.x, y: opts.y, xLabel: "깊이 x", yLabel: "C", series: [{ data, color: P.accent, width: 2.6, fill: SB.color("accent-soft") }] });
+      for (let k = 1; k < 12; k++) {
+        const i = Math.round((k * M) / 12), J = -(st.C[Math.min(M - 1, i + 1)] - st.C[Math.max(0, i - 1)]) / 2 * M * 0.06;
+        if (Math.abs(J) > 0.004) { const x = ch.X((i + 0.5) / M), y = ch.Y(st.C[i]) - 12, L = SB.clamp(J * 450, -48, 48); SB.arrow(ctx, x - L / 2, y, x + L / 2, y, { color: P.accent2, width: 2, head: 7 }); }
+      }
+      if ($("fd-fix").checked) { ctx.save(); ctx.fillStyle = P.accent2; ctx.fillRect(ch.box.x - 6, ch.Y(1), 5, ch.Y(0) - ch.Y(1)); ctx.restore(); }
+      self._ch = ch;
+      $("fd-r").textContent = `총량 ∫C dx = ${area().toFixed(3)}${$("fd-fix").checked ? " (원천에서 계속 들어옴)" : " (보존)"}`;
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 300 });
+    const paintAt = (x, y) => {
+      const [xv, yv] = inv(cv._ch, opts, x, y), i = Math.floor(SB.clamp(xv, 0, 0.9999) * M), c = SB.clamp(yv, 0, 1.1);
+      if (st.last) { const [i0, c0] = st.last, n = Math.abs(i - i0); for (let k = 0; k <= n; k++) { const ii = i0 + Math.sign(i - i0) * k; st.C[ii] = c0 + ((c - c0) * k) / Math.max(1, n); } }
+      else st.C[i] = c;
+      st.last = [i, c];
+    };
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { st.paint = true; st.last = null; paintAt(x, y); }, move: (id, x, y) => { if (st.paint) paintAt(x, y); }, up: () => { st.paint = false; st.last = null; } });
+    $("fd-fix").addEventListener("change", () => cv.redraw());
+    $("fd-reset").addEventListener("click", () => { step(); cv.redraw(); });
+    const tmp = new Float64Array(M);
+    const loop = SB.loop("mini-fd", () => {
+      if (!st.paint) for (let s = 0; s < 6; s++) {
+        const r = 0.24, fix = $("fd-fix").checked;
+        for (let i = 0; i < M; i++) { const l = i === 0 ? (fix ? 1 : st.C[0]) : st.C[i - 1], rr = i === M - 1 ? st.C[M - 1] : st.C[i + 1]; tmp[i] = st.C[i] + r * (l - 2 * st.C[i] + rr); }
+        st.C.set(tmp); if (fix) st.C[0] = Math.max(st.C[0], 0);
+      }
+      cv.redraw();
+    });
+    SB.play("fd-play", loop);
+  }
+
+  /* ================================================== 확산 프로파일 실험대 */
+  {
+    const st = { target: 0.3, hit: false };
+    const mode = SB.seg("pf-mode", () => { syncDim(); redraw(); });
+    const dop = SB.seg("pf-dop", () => redraw());
+    const getT = SB.range("pf-T", (v) => v.toFixed(0) + " °C", () => redraw());
+    const getLt = SB.range("pf-t", (v) => { const m = Math.pow(10, v); return m < 120 ? m.toFixed(m < 10 ? 1 : 0) + " 분" : (m / 60).toFixed(1) + " 시간"; }, () => redraw());
+    const getCs = SB.range("pf-Cs", (v) => sci(Math.pow(10, v), 1) + " cm⁻³", () => redraw());
+    const getQ = SB.range("pf-Q", (v) => sci(Math.pow(10, v), 1) + " cm⁻²", () => redraw());
+    const getNb = SB.range("pf-Nb", (v) => sci(Math.pow(10, v), 1) + " cm⁻³", () => redraw());
+    function syncDim() { const e = mode() === "erfc"; getCs.el.closest(".ctrl").style.opacity = e ? 1 : 0.45; getQ.el.closest(".ctrl").style.opacity = e ? 0.45 : 1; }
+    const prof = (Tc, tmin) => {
+      const TK = Tc + 273.15, D = Dof(dop(), TK), Dt = D * tmin * 60, Nb = Math.pow(10, getNb());
+      if (mode() === "erfc") {
+        const Cs = Math.pow(10, getCs()), f = (x) => Solid.erfcProfile(x, Cs, Dt);
+        const xj = Nb < Cs ? 2 * Math.sqrt(Dt) * erfcinv(Nb / Cs) : 0;
+        return { D, Dt, f, xj, Q: 2 * Cs * Math.sqrt(Dt / Math.PI), C0: Cs, Nb };
+      }
+      const Q = Math.pow(10, getQ()), f = (x) => Solid.gaussProfile(x, Q, Dt), C0 = Q / Math.sqrt(Math.PI * Dt);
+      const xj = C0 > Nb ? Solid.junctionDepth(f, Nb, 40 * Math.sqrt(Dt)) : 0;
+      return { D, Dt, f, xj, Q, C0, Nb };
+    };
+    let cv = null, pad = null;
+    function redraw() { cv && cv.redraw(); pad && pad.redraw(); }
+    cv = SB.canvas("cv-prof", (ctx, w, h) => {
+      const P = pal(), r = prof(getT(), Math.pow(10, getLt())), xjum = r.xj * 1e4;
+      const xmax = Math.max(0.5, Math.ceil(Math.max(xjum, st.target) * 1.6 * 10) / 10);
+      const data = []; for (let k = 0; k <= 200; k++) { const x = (xmax * k) / 200, c = r.f(x * 1e-4); data.push([x, Math.log10(Math.max(c, 1e10))]); }
+      const ch = SB.chart(ctx, { x: 54, y: 12, w: w - 66, h: h - 58 }, { x: [0, xmax], y: [14, 21], xLabel: "깊이 x (μm)", yLabel: "log₁₀ C (cm⁻³)",
+        bands: [{ x0: st.target - Math.max(0.01, 0.03 * st.target), x1: st.target + Math.max(0.01, 0.03 * st.target), color: SB.color("accent-2-soft") }],
+        hlines: [{ y: Math.log10(r.Nb), color: P.dim, dash: [6, 4], label: "기판 N_B" }],
+        series: [{ data, color: P.accent, width: 2.8 }] });
+      SB.label(ctx, "목표 " + st.target.toFixed(2) + " μm", SB.clamp(ch.X(st.target), ch.box.x + 40, ch.box.x + ch.box.w - 40), ch.box.y + 12, { size: 11, color: P.accent2, bold: true });
+      if (r.xj > 0) { dot(ctx, ch.X(xjum), ch.Y(Math.log10(r.Nb)), 6, st.hit ? P.ok : P.accent, P.text, 1.5); SB.label(ctx, "x_j = " + xjum.toFixed(3) + " μm", SB.clamp(ch.X(xjum) + 8, ch.box.x + 50, ch.box.x + ch.box.w - 60), ch.Y(Math.log10(r.Nb)) + 18, { size: 12, bold: true, align: "left" }); }
+      SB.stat("pf-D", sci(r.D) + " cm²/s");
+      SB.stat("pf-L", fmtLen(Math.sqrt(r.Dt)));
+      SB.stat("pf-xj", r.xj > 0 ? xjum.toFixed(3) + " μm" : "접합 없음");
+      SB.stat("pf-q", sci(r.Q, 1) + " cm⁻² / " + sci(r.C0, 1) + " cm⁻³");
+      const tol = Math.max(0.01, 0.03 * st.target), diff = xjum - st.target;
+      st.hit = r.xj > 0 && Math.abs(diff) <= tol;
+      const g = $("pf-goal"); g.classList.toggle("hit", st.hit);
+      g.textContent = st.hit ? `명중! x_j = ${xjum.toFixed(3)} μm` : `목표 ${st.target.toFixed(2)} μm · 차이 ${diff >= 0 ? "+" : ""}${diff.toFixed(3)} μm`;
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 340 });
+    const popt = { x: [0, 3], y: [850, 1200] };
+    pad = SB.canvas("cv-pad", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 54, y: 30, w: w - 66, h: h - 76 }, { x: popt.x, y: popt.y, xLabel: "시간 (분, 로그)", yLabel: "온도 (°C)", xTicks: [0, 1, 2, 3], xFmt: (v) => String(Math.round(Math.pow(10, v))) });
+      // 목표 x_j 등고선
+      const pts = [];
+      for (let k = 0; k <= 60; k++) {
+        const lt = (3 * k) / 60, tmin = Math.pow(10, lt);
+        const g = (Tc) => prof(Tc, tmin).xj * 1e4 - st.target;
+        if (g(850) < 0 && g(1200) > 0) pts.push([lt, Solid.bisect(g, 850, 1200, 0.01)]);
+      }
+      if (pts.length > 1) { ctx.save(); clipBox(ctx, ch); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(ch.X(x), ch.Y(y)) : ctx.moveTo(ch.X(x), ch.Y(y)))); ctx.stroke(); ctx.restore(); SB.label(ctx, "x_j = 목표", ch.X(pts[Math.floor(pts.length / 2)][0]) + 6, ch.Y(pts[Math.floor(pts.length / 2)][1]) - 12, { size: 11, color: P.accent2, align: "left" }); }
+      const hx = ch.X(getLt()), hy = ch.Y(getT());
+      handle(ctx, hx, hy, st.hit ? P.ok : P.accent, 12);
+      self._ch = ch; self._h = [hx, hy];
+    }, { aspect: 0.4, minHeight: 200, maxHeight: 280 });
+    SB.drag(pad, { free: true, handles: () => (pad._h ? [{ id: "p", x: pad._h[0], y: pad._h[1], r: 14 }] : []), move: (id, x, y) => {
+      const [lt, Tc] = inv(pad._ch, popt, x, y);
+      getLt.set(Math.round(SB.clamp(lt, 0, 3) * 100) / 100, true); getT.set(Math.round(SB.clamp(Tc, 850, 1200) / 5) * 5, true); redraw();
+    } });
+    $("pf-new").addEventListener("click", () => { const c = mode() === "erfc" ? [0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6] : [0.5, 0.8, 1.0, 1.5, 2.0, 2.5]; let t; do { t = c[Math.floor(Math.random() * c.length)]; } while (t === st.target); st.target = t; redraw(); });
+    syncDim();
+  }
+
+  /* ================================================== 선증착 tangle */
+  SB.tangle("tg-dose", (v) => {
+    const TK = v.T + 273.15, Dt = Dof("B", TK) * v.t * 60, Cs = v.cs * 1e19, Q = 2 * Cs * Math.sqrt(Dt / Math.PI), xj = 2 * Math.sqrt(Dt) * erfcinv(1e16 / Cs);
+    return { L: fmtLen(Math.sqrt(Dt)), Q: sci(Q) + " cm⁻²", xj: fmtLen(xj) };
+  });
+
+  /* ================================================== 버거스 회로 */
+  {
+    const nu = 0.3, I = 10, J = 7;
+    const disp = (x, y) => { const r2 = x * x + y * y, th = Math.atan2(y, x); return [(th + (x * y) / (2 * (1 - nu) * r2)) / (2 * Math.PI), -(((1 - 2 * nu) / (4 * (1 - nu))) * Math.log(r2) + (x * x - y * y) / (4 * (1 - nu) * r2)) / (2 * Math.PI)]; };
+    const mk = (perfect) => { const A = []; for (let i = -I; i <= I; i++) for (let j = -J; j <= J; j++) { const x = i + 0.5, y = j + 0.5, [ux, uy] = perfect ? [0, 0] : disp(x, y); A.push({ i, j, x: x + ux, y: y + uy }); } return A; };
+    const atomsD = mk(false), atomsP = mk(true);
+    const st = { cx: 0, cy: 0, path: [], hand: [] };
+    const getN = SB.range("bg-n", (v) => v.toFixed(0), () => cv.redraw());
+    const mode = SB.seg("bg-mode", () => { st.hand = []; cv.redraw(); });
+    $("bg-perf").addEventListener("change", () => { st.hand = []; cv.redraw(); });
+    $("bg-undo").addEventListener("click", () => { st.hand.pop(); cv.redraw(); });
+    $("bg-clear").addEventListener("click", () => { st.hand = []; cv.redraw(); });
+    const atoms = () => ($("bg-perf").checked ? atomsP : atomsD);
+    const nearest = (A, x, y, tol = 0.6) => { let b = -1, bd = tol; A.forEach((a, k) => { const d = Math.hypot(a.x - x, a.y - y); if (d < bd) { bd = d; b = k; } }); return b; };
+    const DIRS = { R: [1, 0], U: [0, 1], L: [-1, 0], D: [0, -1] };
+    const walk = (A, k0, seq) => { const path = [k0]; let k = k0; for (const d of seq) { const a = A[k], nk = nearest(A, a.x + DIRS[d][0], a.y + DIRS[d][1]); if (nk < 0) return null; path.push(nk); k = nk; } return path; };
+    const dirOf = (a, b) => { const dx = b.x - a.x, dy = b.y - a.y; if (Math.hypot(dx, dy) > 1.3 || Math.hypot(dx, dy) < 0.5) return null; return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "R" : "L") : dy > 0 ? "U" : "D"; };
+    const cv = SB.canvas("cv-burg", (ctx, w, h, self) => {
+      const P = pal(), A = atoms(), sc = Math.min(w / 13.2, h / 9.4), ox = w / 2, oy = h / 2 + 6, X = (x) => ox + x * sc, Y = (y) => oy - y * sc;
+      self._t = { sc, ox, oy };
+      const vis = (a) => Math.abs(a.x) < 6.3 && Math.abs(a.y) < 4.3;
+      // 결합
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.lineWidth = 1.2;
+      for (let p = 0; p < A.length; p++) { if (!vis(A[p])) continue; for (let q = p + 1; q < A.length; q++) { if (!vis(A[q])) continue; const d = Math.hypot(A[p].x - A[q].x, A[p].y - A[q].y); if (d < 1.3) { ctx.beginPath(); ctx.moveTo(X(A[p].x), Y(A[p].y)); ctx.lineTo(X(A[q].x), Y(A[q].y)); ctx.stroke(); } } }
+      ctx.restore();
+      A.forEach((a) => { if (vis(a)) dot(ctx, X(a.x), Y(a.y), Math.max(3.5, sc * 0.17), P.accent); });
+      if (!$("bg-perf").checked) perp(ctx, X(0), Y(0) + 4, sc * 0.3, P.bad);
+      // 회로
+      let path, seq;
+      if (mode() === "auto") {
+        const n = getN(), k0 = nearest(A, st.cx - n / 2, st.cy - n / 2, 0.8);
+        seq = [].concat(Array(n).fill("R"), Array(n).fill("U"), Array(n).fill("L"), Array(n).fill("D"));
+        path = k0 >= 0 ? walk(A, k0, seq) : null;
+      } else { path = st.hand.slice(); seq = []; for (let k = 1; k < path.length; k++) seq.push(dirOf(A[path[k - 1]], A[path[k]])); }
+      const cnt = { R: 0, U: 0, L: 0, D: 0 }; seq.forEach((d) => d && cnt[d]++);
+      SB.stat("bg-steps", `${cnt.R} · ${cnt.U} · ${cnt.L} · ${cnt.D}`);
+      if (path && path.length) {
+        ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.lineJoin = "round";
+        ctx.beginPath(); path.forEach((k, m) => (m ? ctx.lineTo(X(A[k].x), Y(A[k].y)) : ctx.moveTo(X(A[k].x), Y(A[k].y)))); ctx.stroke(); ctx.restore();
+        const s = A[path[0]], f = A[path[path.length - 1]];
+        dot(ctx, X(s.x), Y(s.y), 7, P.ok, P.text, 2); SB.label(ctx, "S", X(s.x) - 13, Y(s.y) - 13, { size: 12, bold: true, color: P.ok });
+        const balanced = cnt.R === cnt.L && cnt.U === cnt.D && cnt.R > 0 && cnt.U > 0;
+        if (path.length > 1) { dot(ctx, X(f.x), Y(f.y), 6, P.accent2, P.text, 2); SB.label(ctx, "F", X(f.x) + 12, Y(f.y) + 12, { size: 12, bold: true, color: P.accent2 }); }
+        if (balanced) {
+          const closed = path[0] === path[path.length - 1];
+          SB.stat("bg-close", closed ? "닫힘 ✓" : "<b>닫히지 않음</b>");
+          if (!closed) { SB.arrow(ctx, X(f.x), Y(f.y), X(s.x), Y(s.y), { color: P.bad, width: 3, label: "b" }); SB.stat("bg-b", `F→S = (${s.i - f.i}, ${s.j - f.j}) a`); }
+          else SB.stat("bg-b", "0");
+        } else { SB.stat("bg-close", mode() === "auto" ? (path ? "—" : "회로가 가장자리를 벗어남") : "걸음 수를 맞추는 중"); SB.stat("bg-b", "—"); }
+      } else { SB.stat("bg-close", mode() === "auto" ? "회로가 가장자리를 벗어남" : "원자를 눌러 출발점을 정한다"); SB.stat("bg-b", "—"); }
+      if (mode() === "auto") { const hx = X(st.cx), hy = Y(st.cy); handle(ctx, hx, hy, P.accent2, 12); self._h = [hx, hy]; } else self._h = null;
+      if (!$("bg-perf").checked) perp(ctx, X(0), Y(0) + 4, sc * 0.3, P.bad);
+    }, { aspect: 0.7, maxHeight: 440 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._h ? [{ id: "c", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      down: (id, x, y) => {
+        if (mode() !== "hand") return;
+        const t = cv._t, A = atoms(), k = nearest(A, (x - t.ox) / t.sc, (t.oy - y) / t.sc, 0.45);
+        if (k < 0) return;
+        if (!st.hand.length) st.hand.push(k);
+        else { const last = A[st.hand[st.hand.length - 1]], d = dirOf(last, A[k]); if (d && nearest(A, last.x + DIRS[d][0], last.y + DIRS[d][1]) === k) st.hand.push(k); }
+      },
+      move: (id, x, y) => { if (id !== "c") return; const t = cv._t; st.cx = SB.clamp((x - t.ox) / t.sc, -3.5, 3.5); st.cy = SB.clamp((t.oy - y) / t.sc, -1.8, 1.8); },
+    });
+  }
+
+  /* ================================================== {111} 미끄럼계 3D */
+  {
+    const atoms = Solid.supercell("diamond", 1), bonds = Solid.bonds(atoms, Solid.structures.diamond.nn), edges = Solid.cubeEdges(1);
+    const normals = [[1, 1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1]];
+    const corners = []; for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) for (let c = 0; c < 2; c++) corners.push([a, b, c]);
+    const tri = normals.map((n) => { for (let v = -1; v <= 3; v++) { const cs = corners.filter((c) => Math.abs(c[0] * n[0] + c[1] * n[1] + c[2] * n[2] - v) < 1e-9); if (cs.length === 3) return { v, cs }; } return null; });
+    const st = { yaw: 0.6, pitch: 0.35, p: 0 };
+    const plane = SB.seg("sl-plane", (v) => { st.p = Number(v); cv.redraw(); });
+    const bar = (k) => (k < 0 ? "1̄" : k > 0 ? "1" : "0");
+    const cv = SB.canvas("cv-slip", (ctx, w, h) => {
+      const P = pal(), n = normals[st.p], T = tri[st.p];
+      const cam = Solid.camera({ yaw: st.yaw, pitch: st.pitch, scale: Math.min(w, h) * 0.5, cx: w / 2, cy: h / 2, center: [0.5, 0.5, 0.5] });
+      const on = new Set(); atoms.forEach((a, i) => { if (Math.abs(a.p[0] * n[0] + a.p[1] * n[1] + a.p[2] * n[2] - T.v) < 1e-6) on.add(i); });
+      const pc = T.cs.map((c) => cam.project(c));
+      ctx.save(); ctx.fillStyle = SB.color("accent-2-soft"); ctx.globalAlpha = 0.8; ctx.beginPath(); pc.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.closePath(); ctx.fill(); ctx.restore();
+      Solid.drawCrystal(ctx, cam, atoms, { bonds, edges, radius: 0.07, highlight: on, alpha: (i) => (on.has(i) ? 1 : 0.4) });
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); pc.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.closePath(); ctx.stroke(); ctx.restore();
+      const c0 = T.cs[0], c1 = T.cs[1], mid = [(c0[0] + c1[0]) / 2, (c0[1] + c1[1]) / 2, (c0[2] + c1[2]) / 2], A0 = cam.project(c0), A1 = cam.project(mid);
+      SB.arrow(ctx, A0.x, A0.y, A1.x, A1.y, { color: P.bad, width: 3.5, label: "b" });
+      const bv = [c1[0] - c0[0], c1[1] - c0[1], c1[2] - c0[2]];
+      $("sl-r").textContent = `(${n.map(bar).join("")}) 면 · b = a/2[${bv.map(bar).join("")}], |b| = a/√2 = 0.384 nm · 이 면의 ⟨110⟩ 방향 3개`;
+    }, { aspect: 0.75, maxHeight: 340 });
+    Solid.orbit(cv, st, () => cv.redraw());
+  }
+
+  /* ================================================== 전위의 미끄럼 */
+  {
+    const st = { xd: -16, tau: 0 };
+    const getS = SB.range("gl-s", (v) => v.toFixed(2), (v) => { st.tau = v; });
+    $("gl-reset").addEventListener("click", () => { st.xd = -16; getS.set(0); cv.redraw(); });
+    const cols = 15, rows = 6;
+    const pos = () => { const out = []; for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) { const x = i - 7, y = j - 2.5, wy = 0.9 + 0.55 * Math.abs(y), D = 0.5 - Math.atan((x - st.xd) / wy) / Math.PI, s = y > 0 ? D / 2 : -D / 2; out.push({ x: x + s, y, j }); } return out; };
+    const cv = SB.canvas("cv-glide", (ctx, w, h, self) => {
+      const P = pal(), sc = Math.min((w - 60) / 18, (h - 70) / 7.2), ox = w / 2, oy = h / 2 + 18, X = (x) => ox + x * sc, Y = (y) => oy - y * sc;
+      const A = pos();
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.lineWidth = 1.3;
+      for (let p = 0; p < A.length; p++) for (let q = p + 1; q < A.length; q++) { const a = A[p], b = A[q]; if ((a.j === b.j && Math.abs(a.x - b.x) < 1.6) || (Math.abs(a.j - b.j) === 1 && Math.abs(a.x - b.x) < 0.55)) { ctx.beginPath(); ctx.moveTo(X(a.x), Y(a.y)); ctx.lineTo(X(b.x), Y(b.y)); ctx.stroke(); } }
+      ctx.restore();
+      SB.dashLine(ctx, X(-8.6), Y(0), X(8.6), Y(0), P.dim, [6, 4]);
+      A.forEach((a) => dot(ctx, X(a.x), Y(a.y), Math.max(3.5, sc * 0.22), a.y > 0 ? P.accent : P.series[2] || P.accent));
+      if (st.xd > -8.5 && st.xd < 8.5) perp(ctx, X(st.xd), Y(0) - 2, sc * 0.35, P.bad);
+      const bx = X(-3), by = Y(3.2) - 14, L = (st.tau / 3) * sc * 6;
+      SB.arrow(ctx, bx, by, bx + Math.max(L, 2), by, { color: P.accent2, width: 3, label: "τ" });
+      if (L > 6) SB.arrow(ctx, X(3), Y(-3.2) + 14, X(3) - L, Y(-3.2) + 14, { color: P.accent2, width: 3 });
+      handle(ctx, bx + Math.max(L, 2), by, P.accent2, 12);
+      self._h = [bx + Math.max(L, 2), by, bx, sc];
+      $("gl-r").textContent = st.tau <= 1 ? (st.xd < -8 ? "τ ≤ τ_P: 전위가 들어오지 못한다" : st.xd > 8 ? "슬립 완료: 위쪽이 b만큼 미끄러져 양 끝에 계단이 생겼다" : "τ ≤ τ_P: 전위가 그 자리에 멈춰 있다") : st.xd > 8 ? "슬립 완료: 위쪽이 b만큼 미끄러져 양 끝에 계단이 생겼다" : `전위가 미끄러지는 중 (x = ${st.xd.toFixed(1)} a)`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { const [, , bx, sc] = cv._h; const v = SB.clamp(((x - bx) / (sc * 6)) * 3, 0, 3); getS.set(Math.round(v * 20) / 20); } });
+    SB.loop("mini-glide", (dt) => { if (st.tau > 1 && st.xd < 16) st.xd += dt * 2.2 * (st.tau - 1) * (1 + 0.6 * Math.cos(2 * Math.PI * st.xd)); cv.redraw(); });
+  }
+
+  /* ================================================== 열응력 tangle */
+  SB.tangle("tg-stress", (v) => {
+    const s = 130e9 * 4.4e-6 * v.dT / 1e6, tau = 0.41 * s;
+    const msg = tau < 1 ? "고온 CRSS(수–수십 MPa)에 비해 여유가 있다." : tau < 5 ? "CRSS 하한에 닿는다 — 가장자리에서 슬립이 시작될 수 있는 구간이다." : "CRSS를 넘기 쉬워 슬립선이 생길 위험이 크다.";
+    return { s: s.toFixed(1) + " MPa", tau: tau.toFixed(1) + " MPa", msg };
+  });
+
+  /* ================================================== 저각 결정립계 */
+  {
+    const getTh = SB.range("gb-th", (v) => v.toFixed(1) + "°", () => cv.redraw());
+    const cv = SB.canvas("cv-gb", (ctx, w, h) => {
+      const P = pal(), th = (getTh() * Math.PI) / 180, sp = Math.max(13, Math.min(w, h) / 17), cx = w / 2, cy = h / 2;
+      const R = Math.ceil(Math.hypot(w, h) / (2 * sp)) + 2;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h); ctx.clip();
+      for (const side of [-1, 1]) {
+        const a = (side * th) / 2, c = Math.cos(a), s = Math.sin(a);
+        for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) {
+          const lx = i + 0.5 * side, ly = j, x = cx + (c * lx - s * ly) * sp, y = cy + (s * lx + c * ly) * sp;
+          if ((x - cx) * side < sp * 0.25 || x < -sp || x > w + sp || y < -sp || y > h + sp) continue;
+          dot(ctx, x, y, sp * 0.24, side < 0 ? P.accent : P.series[1]);
+        }
+      }
+      const D = 1 / th, core = 1.9;
+      for (let k = -20; k <= 20; k++) {
+        const y = cy + k * D * sp; if (y < -sp || y > h + sp) continue;
+        ctx.save(); ctx.fillStyle = P.bad; ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(cx, y, core * sp, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        perp(ctx, cx, y, sp * 0.4, P.bad, -Math.PI / 2);
+      }
+      ctx.restore();
+      const tm = (15 * Math.PI) / 180, g = th < tm ? (th / tm) * (1 - Math.log(th / tm)) : 1;
+      $("gb-r").textContent = `전위 간격 D = b/θ = ${(D * 0.384).toFixed(2)} nm (${D.toFixed(1)} b) · γ/γ_max ≈ ${g.toFixed(2)}${th > tm ? " · 고각 경계: 핵이 겹쳐 개별 전위로 볼 수 없다" : ""}`;
+    }, { aspect: 0.55, maxHeight: 320 });
+  }
+
+  /* ================================================== 수소 유사 도너 tangle */
+  SB.tangle("tg-hydro", (v) => {
+    const E = (13.6057 * v.m) / (v.e * v.e) * 1000, a = (0.052918 * v.e) / v.m;
+    const msg = E < 25.9 ? "kT보다 얕아 상온에서 거의 모두 이온화된다." : E < 100 ? "kT의 몇 배지만, 전도대의 상태 수가 압도적으로 많아 상온에서 대부분 이온화된다." : "깊어서 상온 이온화가 불완전하다 — 수소 유사 모형의 적용 한계에도 가깝다.";
+    return { E: E.toFixed(1) + " meV", a: a.toFixed(2) + " nm", msg };
+  });
+
+  /* ================================================== 결함 준위 실험대 */
+  {
+    const presets = Array.from($("lv-pick").options).map((o) => { const [d, r] = o.value.split(","); return { dE: Number(d), ref: r, name: o.textContent.split(" (")[0] }; });
+    const st = { dE: 0.55, ref: "c" };
+    const getT = SB.range("lv-T", (v) => v.toFixed(0) + " K", () => redraw());
+    const getS = SB.range("lv-s", (v) => sci(Math.pow(10, v), 1) + " cm²", () => redraw());
+    const getN = SB.range("lv-N", (v) => sci(Math.pow(10, v), 1) + " cm⁻³", () => redraw());
+    $("lv-pick").addEventListener("change", (e) => { const [d, r] = e.target.value.split(","); st.dE = Number(d); st.ref = r; redraw(); });
+    const phys = () => {
+      const T = getT(), kT = kB * T, Eg = Solid.Eg("Si", T), Nc = Solid.Nc("Si", T), Nv = Solid.Nv("Si", T), ni = Solid.ni("Si", T), Ei = Solid.Ei("Si", T), vth = 1e7 * Math.sqrt(T / 300), sig = Math.pow(10, getS());
+      const ND = Math.pow(10, getN()), n0 = ND / 2 + Math.sqrt((ND * ND) / 4 + ni * ni), p0 = (ni * ni) / n0;
+      const en = (Et) => sig * vth * Nc * Math.exp(-(Eg - Et) / kT), ep = (Et) => sig * vth * Nv * Math.exp(-Et / kT);
+      const F = (Et) => (n0 + p0 + ni * Math.exp((Et - Ei) / kT) + ni * Math.exp((Ei - Et) / kT)) / (n0 + p0);
+      return { T, kT, Eg, Nc, Nv, ni, Ei, en, ep, F, n0 };
+    };
+    const EtOf = (ph) => SB.clamp(st.ref === "c" ? ph.Eg - st.dE : st.dE, 0.005, ph.Eg - 0.005);
+    let cv = null, cv2 = null;
+    function redraw() { cv && cv.redraw(); cv2 && cv2.redraw(); }
+    cv = SB.canvas("cv-lev", (ctx, w, h, self) => {
+      const P = pal(), ph = phys(), y0 = h - 34, y1 = 34, Y = (E) => y0 - (E / ph.Eg) * (y0 - y1), x0 = 50, x1 = w - 16;
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0, 6, x1 - x0, y1 - 6); ctx.fillRect(x0, y0, x1 - x0, h - 6 - y0); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x0, y1); ctx.lineTo(x1, y1); ctx.moveTo(x0, y0); ctx.lineTo(x1, y0); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "E_c", x0 - 22, y1, { size: 12, bold: true }); SB.label(ctx, "E_v", x0 - 22, y0, { size: 12, bold: true });
+      SB.label(ctx, "전도대", x0 + 30, 18, { size: 11, color: P.dim }); SB.label(ctx, "가전자대", x0 + 34, h - 18, { size: 11, color: P.dim });
+      SB.dashLine(ctx, x0, Y(ph.Ei), x1, Y(ph.Ei), P.faint, [2, 4]); SB.label(ctx, "E_i", x0 - 22, Y(ph.Ei), { size: 11, color: P.dim });
+      const EF = ph.Eg - ph.kT * Math.log(ph.Nc / ph.n0);
+      if (EF > 0 && EF < ph.Eg) { SB.dashLine(ctx, x0, Y(EF), x1, Y(EF), P.ok, [6, 4]); SB.label(ctx, "E_F", x1 - 16, Y(EF) - 9, { size: 11, color: P.ok }); }
+      const xs = (k) => x0 + 20 + ((k % 3) * (x1 - x0 - 60)) / 3;
+      presets.forEach((p, k) => { const E = p.ref === "c" ? ph.Eg - p.dE : p.dE, x = xs(k); ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, Y(E)); ctx.lineTo(x + 22, Y(E)); ctx.stroke(); ctx.restore(); SB.label(ctx, p.name.split(" ").slice(-1)[0], x + 26, Y(E), { size: 10, align: "left", color: P.dim }); });
+      const Et = EtOf(ph), hx = (x0 + x1) / 2 + 30;
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(x0 + 4, Y(Et)); ctx.lineTo(x1 - 4, Y(Et)); ctx.stroke(); ctx.restore();
+      handle(ctx, hx, Y(Et), P.accent2, 12);
+      self._h = [hx, Y(Et)]; self._Y = { y0, y1, Eg: ph.Eg };
+    }, { aspect: 0.95, maxHeight: 380 });
+    cv2 = SB.canvas("cv-lev2", (ctx, w, h) => {
+      const P = pal(), ph = phys(), Et = EtOf(ph), M = 160;
+      const tn = [], tp = [], fr = [];
+      let Fmin = Infinity; for (let k = 0; k <= M; k++) { const E = (ph.Eg * k) / M; Fmin = Math.min(Fmin, ph.F(E)); }
+      for (let k = 0; k <= M; k++) { const E = (ph.Eg * k) / M; tn.push([E, Math.log10(1 / ph.en(E))]); tp.push([E, Math.log10(1 / ph.ep(E))]); fr.push([E, Math.log10(ph.F(E) / Fmin)]); }
+      const h1 = h * 0.56;
+      SB.chart(ctx, { x: 54, y: 10, w: w - 66, h: h1 - 44 }, { x: [0, ph.Eg], y: [-13, 6], xLabel: "E_t − E_v (eV)", yLabel: "log₁₀ 방출 시간 (s)", series: [{ data: tn, color: P.accent, width: 2.2 }, { data: tp, color: P.series[1], width: 2.2, dash: [6, 4] }], vlines: [{ x: Et, color: P.accent2 }], points: [{ x: Et, y: Math.log10(1 / ph.en(Et)), color: P.accent, r: 5 }, { x: Et, y: Math.log10(1 / ph.ep(Et)), color: P.series[1], r: 5 }] });
+      SB.label(ctx, "1/e_n", w - 40, 22, { size: 11, color: P.accent }); SB.label(ctx, "1/e_p", 90, 22, { size: 11, color: P.series[1] });
+      SB.chart(ctx, { x: 54, y: h1 + 6, w: w - 66, h: h - h1 - 50 }, { x: [0, ph.Eg], y: [0, 8], xLabel: "E_t − E_v (eV)", yLabel: "log₁₀ τ/τ_min", series: [{ data: fr, color: P.ok, width: 2.4 }], vlines: [{ x: Et, color: P.accent2 }], points: [{ x: Et, y: Math.min(8, Math.log10(ph.F(Et) / Fmin)), color: P.ok, r: 5 }] });
+      SB.stat("lv-Et", `${Et.toFixed(3)} eV (E_c − ${(ph.Eg - Et).toFixed(3)})`);
+      SB.stat("lv-tn", fmtTime(1 / ph.en(Et)));
+      SB.stat("lv-tp", fmtTime(1 / ph.ep(Et)));
+      SB.stat("lv-tau", sci(ph.F(Et) / Fmin, 1) + "배");
+    }, { aspect: 0.95, maxHeight: 380 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "e", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => {
+      const g = cv._Y, E = SB.clamp(((g.y0 - y) / (g.y0 - g.y1)) * g.Eg, 0.005, g.Eg - 0.005);
+      if (E > g.Eg / 2) { st.ref = "c"; st.dE = g.Eg - E; } else { st.ref = "v"; st.dE = E; }
+      cv2.redraw();
+    } });
+  }
+
+  /* ================================================== 드릴 */
+  SB.drill("drill-vac", () => {
+    const si = Math.random() < 0.35, E = si ? 3 + 0.1 * Math.floor(Math.random() * 11) : 0.6 + 0.05 * Math.floor(Math.random() * 15), T = si ? 1100 + 50 * Math.floor(Math.random() * 10) : 600 + 50 * Math.floor(Math.random() * 15);
+    const kT = kB * T, f = Math.exp(-E / kT);
+    return { q: `<p>형성 에너지 \\(E_f = ${E.toFixed(2)}\\) eV인 공공의 \\(T = ${T}\\) K 열평형 분율 \\(n/N\\)은? (\\(k = 8.617\\times10^{-5}\\) eV/K, 엔트로피 무시)</p>`, answer: f, label: "n/N =", tol: "1%",
+      sol: `\\(kT = ${kT.toFixed(5)}\\) eV, \\(E_f/kT = ${(E / kT).toFixed(3)}\\) → \\(n/N = e^{-${(E / kT).toFixed(3)}} = ${tex10(f)}\\)` };
+  });
+  SB.drill("drill-xj", () => {
+    if (Math.random() < 0.5) {
+      const D = (1 + Math.floor(Math.random() * 9)) * Math.pow(10, -14 + Math.floor(Math.random() * 2)), tm = [10, 20, 30, 60, 90, 120, 240][Math.floor(Math.random() * 7)], Dt = D * tm * 60, L = 2 * Math.sqrt(Dt) * 1e4;
+      return { q: `<p>\\(D = ${tex10(D, 0)}\\) cm²/s에서 ${tm}분 확산할 때 확산 길이 \\(2\\sqrt{Dt}\\)는 몇 μm인가?</p>`, answer: L, label: "2√(Dt) =", unit: "μm", tol: "1%",
+        sol: `\\(Dt = ${tex10(Dt)}\\) cm², \\(2\\sqrt{Dt} = ${(L * 1e-4).toExponential(3)}\\) cm \\(= ${L.toPrecision(3)}\\) μm` };
+    }
+    const Q = (1 + Math.floor(Math.random() * 9)) * 1e14, Nb = [1e15, 1e16, 1e17][Math.floor(Math.random() * 3)], D = (1 + Math.floor(Math.random() * 9)) * 1e-13, tm = [30, 60, 120][Math.floor(Math.random() * 3)];
+    const Dt = D * tm * 60, C0 = Q / Math.sqrt(Math.PI * Dt);
+    if (C0 <= Nb * 3) return { q: `<p>\\(D = ${tex10(D, 0)}\\) cm²/s, \\(t = ${tm}\\)분일 때 \\(\\sqrt{Dt}\\)는 몇 μm인가?</p>`, answer: Math.sqrt(Dt) * 1e4, label: "√(Dt) =", unit: "μm", tol: "1%", sol: `\\(\\sqrt{Dt} = ${(Math.sqrt(Dt) * 1e4).toPrecision(3)}\\) μm` };
+    const xj = 2 * Math.sqrt(Dt * Math.log(C0 / Nb)) * 1e4;
+    return { q: `<p>도즈 \\(Q = ${tex10(Q, 0)}\\) cm⁻²를 \\(D = ${tex10(D, 0)}\\) cm²/s에서 ${tm}분 후확산했다. 기판 농도 \\(N_B = ${tex10(Nb, 0)}\\) cm⁻³일 때 가우스 프로파일의 접합 깊이는 몇 μm인가?</p>`, answer: xj, label: "x_j =", unit: "μm", tol: "1%",
+      sol: `\\(Dt = ${tex10(Dt)}\\) cm², \\(C(0) = Q/\\sqrt{\\pi Dt} = ${tex10(C0)}\\) cm⁻³, \\(x_j = 2\\sqrt{Dt\\ln(C(0)/N_B)} = 2\\sqrt{${tex10(Dt)}\\times${Math.log(C0 / Nb).toFixed(3)}} = ${xj.toPrecision(3)}\\) μm` };
+  });
+})();
+</script>
+</body>
+</html>
