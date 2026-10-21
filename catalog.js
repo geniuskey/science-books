@@ -92,12 +92,12 @@ SB.registerCatalog({
    "level": "대학 3학년 · 반도체 기초",
    "description": "결정 구조와 X선 회절, 결합과 변형, 결함, 포논과 열, 자유 전자와 띠 구조, 캐리어 통계·수송·재결합, 접합과 계면, 유전체·자성·나노 구조까지 — 실리콘 웨이퍼 위에서 일어나는 일을 원자 배열부터 직접 계산하고 만지며 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/solid-state/",
-   "published": 8,
+   "published": 16,
    "total": 18,
    "color": "#0e7490",
    "colorDark": "#22d3ee",
-   "sims": 38,
-   "problems": 121
+   "sims": 75,
+   "problems": 235
   },
   {
    "id": "organic-chemistry",

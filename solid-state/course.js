@@ -125,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "정공",
       "홀 효과"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -142,8 +141,7 @@ SB.registerCourse({
      "tags": [
       "페르미 준위",
       "도핑"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "carrier-transport",
@@ -154,8 +152,7 @@ SB.registerCourse({
      "tags": [
       "이동도",
       "확산"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "recombination",
@@ -166,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "SRH",
       "수명"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "junctions",
@@ -195,8 +191,7 @@ SB.registerCourse({
      "tags": [
       "유전 함수",
       "high-k"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "magnetism",
@@ -207,8 +202,7 @@ SB.registerCourse({
      "tags": [
       "강자성",
       "TMR"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "nanostructures",
@@ -219,8 +213,7 @@ SB.registerCourse({
      "tags": [
       "양자 전도도",
       "2차원 물질"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -237,8 +230,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -351,9 +343,105 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 4,
    "hero": 1
+  },
+  "electron-dynamics": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 4,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "carrier-statistics": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "carrier-transport": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "recombination": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 6,
+   "steps": 4,
+   "predicts": 3,
+   "hero": 1
+  },
+  "dielectric-optical": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 12,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "magnetism": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 16,
+   "drills": 2,
+   "minis": 9,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 4,
+   "hero": 1
+  },
+  "nanostructures": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 5,
+   "figures": 11,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 3,
+   "hero": 1
+  },
+  "materials-data": {
+   "problems": 8,
+   "examples": 0,
+   "sims": 6,
+   "figures": 0,
+   "drills": 1,
+   "minis": 0,
+   "tangles": 3,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 8,
+ "published": 16,
  "total": 18,
  "url": "https://science.euiyun.com/solid-state/"
 });
