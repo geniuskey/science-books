@@ -635,7 +635,7 @@
     Ge: { ko: "저마늄", Eg300: 0.661, Eg0: 0.7437, alpha: 4.774e-4, beta: 235, Nc: 1.04e19, Nv: 6.0e18, er: 16.0, chi: 4.0, mnc: 0.12, mpc: 0.21, gap: "간접" },
     GaAs: { ko: "갈륨 비소", Eg300: 1.424, Eg0: 1.519, alpha: 5.405e-4, beta: 204, Nc: 4.7e17, Nv: 9.0e18, er: 12.9, chi: 4.07, mnc: 0.067, mpc: 0.34, gap: "직접" },
     GaN: { ko: "질화 갈륨", Eg300: 3.39, Eg0: 3.47, alpha: 7.7e-4, beta: 600, Nc: 2.3e18, Nv: 4.6e19, er: 8.9, chi: 4.1, mnc: 0.2, mpc: 1.0, gap: "직접" },
-    SiC: { ko: "탄화 규소(4H)", Eg300: 3.26, Eg0: 3.29, alpha: 3.3e-4, beta: 240, Nc: 1.7e19, Nv: 2.5e19, er: 9.7, chi: 3.7, mnc: 0.37, mpc: 1.0, gap: "간접" },
+    SiC: { ko: "탄화 규소(4H)", Eg300: 3.26, Eg0: 3.315, alpha: 3.3e-4, beta: 240, Nc: 1.7e19, Nv: 2.5e19, er: 9.7, chi: 3.7, mnc: 0.37, mpc: 1.0, gap: "간접" },
   };
   const S_ = (m) => (typeof m === "string" ? Solid.semis[m] : m);
   /** 바르시니 Eg(T) = Eg0 − αT²/(T+β) */
