@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "브라베 격자",
       "밀러 지수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "reciprocal-diffraction",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "역격자",
       "XRD"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "bonding-elasticity",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "응집 에너지",
       "탄성 상수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "crystal-defects",
@@ -63,8 +60,7 @@ SB.registerCourse({
      "tags": [
       "점결함",
       "전위"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "분산 관계",
       "라만"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "thermal-properties",
@@ -92,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "디바이 모형",
       "열전도"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -109,8 +103,7 @@ SB.registerCourse({
      "tags": [
       "드루드",
       "페르미 면"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "band-structure",
@@ -121,8 +114,7 @@ SB.registerCourse({
      "tags": [
       "띠 간격",
       "유효 질량"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "electron-dynamics",
@@ -263,8 +255,105 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "crystal-structure": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 13,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "reciprocal-diffraction": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 12,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "bonding-elasticity": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 4,
+   "figures": 9,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "crystal-defects": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 13,
+   "drills": 2,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "phonons": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 4,
+   "figures": 12,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 2,
+   "hero": 1
+  },
+  "thermal-properties": {
+   "problems": 15,
+   "examples": 9,
+   "sims": 6,
+   "figures": 12,
+   "drills": 2,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "free-electron": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "band-structure": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 5,
+   "figures": 9,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  }
+ },
+ "published": 8,
  "total": 18,
  "url": "https://science.euiyun.com/solid-state/"
 });

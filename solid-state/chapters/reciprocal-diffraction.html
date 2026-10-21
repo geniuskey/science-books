@@ -1,0 +1,1482 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>역격자와 X선 회절 · 고체물리 · SciBook</title>
+<meta name="description" content="브래그 법칙과 라우에 조건, 역격자와 에발트 구, 브릴루앙 영역과 Γ·X·L·K, 구조 인자와 소멸 규칙, 분말 회절과 셰러 식, 고분해능 XRD로 SiGe 에피층의 조성과 완화도를 재는 법을 직접 끌고 계산하며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/reciprocal-diffraction.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="역격자와 X선 회절 · 고체물리 · SciBook">
+<meta property="og:description" content="브래그 법칙과 라우에 조건, 역격자와 에발트 구, 브릴루앙 영역과 Γ·X·L·K, 구조 인자와 소멸 규칙, 분말 회절과 셰러 식, 고분해능 XRD로 SiGe 에피층의 조성과 완화도를 재는 법을 직접 끌고 계산하며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/reciprocal-diffraction.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "역격자와 X선 회절 · 고체물리 · SciBook", "headline": "02 역격자와 X선 회절", "url": "https://science.euiyun.com/solid-state/chapters/reciprocal-diffraction.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "브래그 법칙과 라우에 조건, 역격자와 에발트 구, 브릴루앙 영역과 Γ·X·L·K, 구조 인자와 소멸 규칙, 분말 회절과 셰러 식, 고분해능 XRD로 SiGe 에피층의 조성과 완화도를 재는 법을 직접 끌고 계산하며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 2, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "02 역격자와 X선 회절", "item": "https://science.euiyun.com/solid-state/chapters/reciprocal-diffraction.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+<style>
+  .rd-targets { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; }
+  .rd-targets span { font: 12px var(--mono); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim); }
+  .rd-targets span.hit { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+  .rd-msg { font-size: 13px; color: var(--text-dim); min-height: 1.4em; }
+  .rd-msg.ok { color: var(--ok, var(--accent)); font-weight: 600; }
+</style>
+</head>
+<body data-chapter="reciprocal-diffraction">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="crystal-structure">
+    <div class="eyebrow">Chapter 02</div>
+    <h1>역격자와 X선 회절</h1>
+    <p class="lead">원자 사이 거리는 0.2–0.5 nm라서 가시광선 현미경으로는 보이지 않는다. 그런데 파장이 0.154 nm인 X선을 결정에 비추면 원자면들이 일제히 거울처럼 빛을 되돌려 보내는 각도가 있다. 그 각도들의 목록이 곧 결정의 지문이다. 앞 장이 원자가 놓인 <strong>실공간</strong>을 다뤘다면, 이 장은 회절이 사는 <strong>역공간</strong>으로 넘어간다. 역격자, 브릴루앙 영역, 구조 인자라는 도구를 갖추고 나면, 팹의 인라인 XRD가 SiGe 소스·드레인의 Ge 조성을 0.5% 정밀도로 읽어 내는 원리까지 이해하게 된다. 아래 화면에서 X선이 원자면에서 반사되는 모습을 먼저 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">입사각 손잡이나 그래프를 끌어 보세요</span></div>
+    <ul class="objectives">
+      <li>브래그 법칙 \(2d\sin\theta = n\lambda\)를 경로차로 유도하고, 입방정 \(d_{hkl} = a/\sqrt{h^2+k^2+l^2}\)과 함께 회절각을 계산한다.</li>
+      <li>역격자 벡터 \(\vec b_i\)를 실격자에서 구하고, \(\vec G_{hkl} \perp (hkl)\), \(|\vec G_{hkl}| = 2\pi/d_{hkl}\)를 보인다. fcc의 역격자가 bcc임을 계산한다.</li>
+      <li>라우에 조건 \(\vec k' - \vec k = \vec G\)가 브래그 법칙과 같음을 보이고, 에발트 구로 어떤 반사가 나타나는지 판단한다.</li>
+      <li>브릴루앙 영역을 역격자의 위그너–자이츠 셀로 그리고, fcc 영역(깎은 팔면체)의 Γ·X·L·K 점의 좌표와 거리를 구한다.</li>
+      <li>구조 인자 \(F_{hkl}\)로 bcc·fcc·다이아몬드·섬아연석의 소멸 규칙을 유도하고, 원자 산란 인자와 디바이–월러 인자의 역할을 설명한다.</li>
+      <li>분말 회절 패턴을 지수화해 구조와 격자 상수를 정하고, 셰러 식으로 결정립 크기를 구한다.</li>
+      <li>고분해능 XRD의 (004)·(224) 로킹 곡선과 역공간 지도에서 SiGe 에피층의 Ge 조성과 완화도를 구한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="bragg">
+    <h2>브래그 법칙: 원자면이 거울이 되는 각도</h2>
+    <p>결정에 X선을 쏘면 각 원자의 전자 구름이 X선의 전기장에 흔들려 같은 진동수의 빛을 사방으로 다시 내보낸다(톰슨 산란). 원자 하나가 내보내는 빛은 약하고 방향도 없지만, 수십억 개 원자가 규칙적으로 늘어서 있으면 이야기가 달라진다. 대부분의 방향에서는 산란파들의 위상이 제멋대로라 서로 지워지고, 특정한 방향에서만 모든 원자의 파가 같은 위상으로 겹쳐 강한 빔이 된다. 이것이 <span class="term">회절</span><span class="en">(diffraction)</span>이다.</p>
+    <p>1913년 W. L. 브래그는 이 현상을 놀랍도록 단순한 그림으로 풀었다. 결정을 간격 \(d\)인 평행한 원자면의 더미로 보고, 각 면이 X선의 일부를 거울처럼 반사한다고 생각하자. 한 면에서의 반사는 입사각과 반사각이 같은 방향에서 위상이 맞는다(같은 면 안 원자들끼리). 남은 질문은 <em>서로 다른 면</em>에서 반사된 파의 위상이 맞느냐다. 아래 그림에서 아래 면에서 반사된 파는 위 면의 파보다 \(d\sin\theta\)씩 두 번, 모두 \(2d\sin\theta\) 더 간다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 320" role="img" aria-label="간격 d인 두 원자면에서 반사된 두 X선의 경로차 2d sin theta">
+        <defs><marker id="rd-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g fill="var(--text-dim)">
+          <circle cx="120" cy="170" r="7"/><circle cx="200" cy="170" r="7"/><circle cx="280" cy="170" r="7"/><circle cx="360" cy="170" r="7"/><circle cx="440" cy="170" r="7"/><circle cx="520" cy="170" r="7"/><circle cx="600" cy="170" r="7"/><circle cx="680" cy="170" r="7"/>
+          <circle cx="120" cy="250" r="7"/><circle cx="200" cy="250" r="7"/><circle cx="280" cy="250" r="7"/><circle cx="360" cy="250" r="7"/><circle cx="440" cy="250" r="7"/><circle cx="520" cy="250" r="7"/><circle cx="600" cy="250" r="7"/><circle cx="680" cy="250" r="7"/>
+        </g>
+        <line x1="90" y1="170" x2="710" y2="170" class="s-line" opacity=".35"/><line x1="90" y1="250" x2="710" y2="250" class="s-line" opacity=".35"/>
+        <!-- 입사·반사 광선 (θ = 30°) -->
+        <g stroke="var(--accent)" stroke-width="2.4" fill="none">
+          <line x1="226" y1="80" x2="380" y2="170"/><line x1="380" y1="170" x2="534" y2="80" marker-end="url(#rd-ar)"/>
+          <line x1="226" y1="160" x2="380" y2="250"/><line x1="380" y1="250" x2="534" y2="160" marker-end="url(#rd-ar)"/>
+        </g>
+        <!-- 경로차 구간 -->
+        <line x1="380" y1="170" x2="345.4" y2="230" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+        <line x1="380" y1="170" x2="414.6" y2="230" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+        <g stroke="var(--accent-2)" stroke-width="5" stroke-linecap="round" opacity=".85"><line x1="345.4" y1="230" x2="380" y2="250"/><line x1="380" y1="250" x2="414.6" y2="230"/></g>
+        <line x1="740" y1="170" x2="740" y2="250" class="s-axis"/><line x1="732" y1="170" x2="748" y2="170" class="s-axis"/><line x1="732" y1="250" x2="748" y2="250" class="s-axis"/>
+        <text class="t" x="752" y="215">d</text>
+        <path d="M330,170 A50,50 0 0 0 336.7,145" fill="none" class="s-line"/><text class="t" x="300" y="160">θ</text>
+        <path d="M430,250 A50,50 0 0 1 423.3,225" fill="none" class="s-line"/>
+        <text class="t" x="438" y="244" style="font-size:13px">θ</text>
+        <text class="t-acc" x="120" y="74" style="font-size:13px">입사 X선 (파장 λ)</text>
+        <text class="t-acc" x="560" y="74" style="font-size:13px">반사 X선</text>
+        <text fill="var(--accent-2)" x="300" y="292" style="font-size:13px;font-weight:600">d sinθ + d sinθ = 2d sinθ</text>
+        <text class="t-dim" x="470" y="292" style="font-size:12px">= 아래 면 파가 더 가는 거리</text>
+      </svg>
+      <figcaption>간격 \(d\)인 두 원자면에서의 반사. 굵은 주황 구간이 아래 면에서 반사된 파가 더 가는 길이다. 이 경로차가 파장의 정수배일 때 모든 면의 반사파가 같은 위상으로 더해진다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">브래그 법칙</span>
+      <p>간격 \(d\)인 원자면 무리에서 파장 \(\lambda\)인 X선이 강하게 반사되는 조건은</p>
+      <p>$$2d\sin\theta = n\lambda \qquad (n = 1, 2, 3, \dots)$$</p>
+      <p>\(\theta\)는 원자면과 빔 사이의 각(<span class="term">브래그 각</span><span class="en">(Bragg angle)</span>)으로, 면 법선과의 각이 아니다. 입사 빔과 회절 빔 사이의 각은 \(2\theta\)이고, 회절계는 보통 이 \(2\theta\)를 눈금으로 쓴다.</p>
+    </div>
+    <p>\(\sin\theta \le 1\)이므로 \(\lambda \le 2d\)여야 반사가 생긴다. 가시광선(400–700 nm)으로는 원자 간격(0.3 nm)의 면이 반사를 만들 수 없고, 1 Å 근처의 X선이어야 한다. 실험실 회절계는 대부분 구리 표적에서 나오는 <span class="term">Cu Kα1</span><span class="en">(Cu Kα1 line)</span> 선 \(\lambda = 0.15406\) nm를 쓴다. \(n\)차 반사는 간격 \(d/n\)인 가상의 면에서의 1차 반사로 볼 수 있어서, 결정학에서는 보통 \(n\)을 밀러 지수에 흡수해 \(2d_{hkl}\sin\theta = \lambda\)로 쓴다. 예를 들어 (111) 면의 2차 반사는 "(222) 반사"라 부른다.</p>
+    <p>입방정에서 면 간격은 앞 장에서 본 대로 \(d_{hkl} = a/\sqrt{h^2+k^2+l^2}\)이다. 따라서</p>
+    <div class="formula">$$\sin^2\theta_{hkl} = \frac{\lambda^2}{4a^2}\,(h^2 + k^2 + l^2)$$<div class="where">입방정에서는 \(\sin^2\theta\)가 정수 \(N = h^2+k^2+l^2\)에 비례한다. 분말 패턴을 지수화할 때 이 사실을 쓴다(5절).</div></div>
+    <div class="tangle" id="tg-bragg">
+      <p>면 간격 <span class="tn" data-var="d" data-min="0.08" data-max="0.6" data-step="0.0001" data-unit=" nm">0.3136</span>(실리콘 (111) 면)에 파장 <span class="tn" data-var="lam" data-min="0.05" data-max="0.4" data-step="0.0001" data-unit=" nm">0.1541</span>인 X선을 비추면, 1차 반사는 \(\theta =\) <span class="tn-out" data-out="th"></span>, 회절계 눈금으로 \(2\theta =\) <span class="tn-out" data-out="tth"></span>에서 나타난다. <span data-out="msg"></span></p>
+    </div>
+    <p>왜 하필 위상이 <em>정확히</em> 맞을 때만 밝을까? 면이 두 장이면 경로차가 반 파장일 때만 완전히 꺼지고 그 사이는 어중간하게 밝다. 그러나 면이 \(N\)장이면 합 \(\sum_n e^{in\delta}\)(\(\delta = 2\pi\cdot2d\sin\theta/\lambda\))는 \(\delta\)가 \(2\pi\)의 정수배에서 크기 \(N\)이 되고, 조금만 벗어나도 거의 0이 된다. 봉우리 폭은 \(1/N\)에 비례해 좁아진다. 결정은 \(N \sim 10^5\)장이 넘으니 반사는 칼날처럼 날카롭다. 거꾸로 결정이 작으면 봉우리가 넓어진다 — 5절의 셰러 식이 이 원리를 이용한다.</p>
+    <div class="predict" data-for="sim-bragg">
+      <p>면 간격 0.3136 nm인 실리콘 (111) 면에 Cu Kα1(0.1541 nm)을 쓰면, 입사각을 0°에서 90°까지 돌릴 때 강한 반사(\(n = 1, 2, \dots\))는 몇 번 나타날까?</p>
+      <div class="opts"><button class="opt">1번</button><button class="opt">2번</button><button class="opt" data-correct>4번</button><button class="opt">무한히 많다</button></div>
+      <div class="quiz-exp">\(n \le 2d/\lambda = 0.6272/0.1541 = 4.07\)이므로 \(n = 1, 2, 3, 4\)의 네 번이다. 실험대에서 입사각을 끌어 과녁 네 개를 모두 찾아보자. (실제 Si에서는 \(n = 2\), 곧 (222) 반사가 구조 인자 때문에 거의 사라진다 — 4절.)</div>
+    </div>
+    <div class="sim" id="sim-bragg">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>브래그 실험대: 경로차를 파장에 맞춰라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-bg"></canvas><span class="hint top">광원 손잡이를 끌어 입사각을 바꾼다</span></div><div><canvas id="cv-bgw"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>입사각 θ <output id="bg-th-out"></output></span><input type="range" id="bg-th" min="2" max="88" step="0.05" value="20"></label>
+          <label class="ctrl"><span>면 간격 d <output id="bg-d-out"></output></span><input type="range" id="bg-d" min="0.10" max="0.45" step="0.0001" value="0.3136"></label>
+          <label class="ctrl"><span>파장 λ <output id="bg-l-out"></output></span><input type="range" id="bg-l" min="0.05" max="0.30" step="0.0001" value="0.1541"></label>
+          <div class="ctrl"><span>X선 관</span><div class="seg" id="bg-src"><button data-value="0.1541" class="on">Cu Kα</button><button data-value="0.0709">Mo Kα</button><button data-value="0.2290">Cr Kα</button></div></div>
+          <div class="ctrl"><span>찾은 반사(과녁)</span><div class="rd-targets" id="bg-targets"></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">경로차 2d sinθ</span><span class="v" id="bg-pd">—</span></div>
+        <div class="stat"><span class="k">경로차 / λ</span><span class="v" id="bg-ratio">—</span></div>
+        <div class="stat"><span class="k">반사 세기(면 20장)</span><span class="v" id="bg-I">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 입사각을 끌어 경로차/λ가 1, 2, 3 …이 되는 각을 모두 찾아 과녁을 채워라. 오른쪽 두 파가 겹쳐 합이 커지는지 보라. ② Mo Kα(짧은 파장)로 바꾸면 과녁이 몇 개로 늘어나는가? Cr Kα는? ③ 면 간격을 0.1 nm로 줄이고 Cr Kα를 쓰면 왜 반사가 하나도 없는가?</div>
+    </div>
+    <div class="example" data-title="실리콘 (111) 반사의 각도">
+      <p>실리콘(\(a = 0.5431\) nm)의 (111) 면에서 Cu Kα1(\(\lambda = 0.15406\) nm) 1차 반사가 나타나는 \(2\theta\)를 구하라. 이 면 무리로 가능한 최고 차수 \(n\)은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(d_{111} = a/\sqrt3\)을 구해 브래그 법칙에 넣는다. 최고 차수는 \(\sin\theta \le 1\)에서.</div>
+        <div class="step"><b>풀이</b> \(d_{111} = 0.5431/1.7321 = 0.31356\) nm. \(\sin\theta = \lambda/2d = 0.15406/0.62712 = 0.24566\) → \(\theta = 14.22°\), \(2\theta = 28.44°\). \(n_\text{max} = \lfloor 2d/\lambda \rfloor = \lfloor 4.07 \rfloor = 4\).</div>
+        <div class="answer">2θ = 28.44°, n ≤ 4</div>
+        <div class="step"><b>검토</b> 실리콘 분말 회절의 첫 봉우리가 실제로 \(2\theta = 28.44°\)에 있다(표준 자료). 이 값은 장비 각도 보정에 쓰는 기준이기도 하다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="반사 각도에서 미지 결정 찾기">
+      <p>다이아몬드 구조로 알려진 시료의 (111) 반사가 Cu Kα1로 \(2\theta = 27.28°\)에서 관측되었다. 면 간격과 격자 상수를 구하고 물질을 추정하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(d = \lambda/(2\sin\theta)\), 다음 \(a = d\sqrt{3}\).</div>
+        <div class="step"><b>풀이</b> \(\theta = 13.64°\), \(\sin\theta = 0.23582\) → \(d = 0.15406/(2\times0.23582) = 0.3266\) nm. \(a = 0.3266\times\sqrt3 = 0.5658\) nm.</div>
+        <div class="answer">d₁₁₁ = 0.3266 nm, a = 0.5658 nm → 저마늄(Ge)</div>
+        <div class="step"><b>검토</b> Si보다 각이 1.16° 작다. 격자 상수가 4.2% 크면 \(\sin\theta\)가 4.2% 작아지기 때문이다. 이 작은 각도 차이가 6절에서 SiGe 조성을 재는 원리다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="reciprocal">
+    <h2>역격자와 라우에 조건</h2>
+    <p>브래그 그림은 직관적이지만, 면 무리가 수없이 많은 3차원 결정에서 "어느 면에서 어떤 방향으로 반사되는가"를 한꺼번에 다루기에는 불편하다. 면 무리 하나를 그 <em>법선 방향</em>과 <em>간격</em> 두 가지로 요약하면 화살표 하나로 나타낼 수 있다. 방향은 면에 수직, 길이는 \(2\pi/d\)인 벡터 — 이런 벡터들이 모여 만드는 격자가 <span class="term">역격자</span><span class="en">(reciprocal lattice)</span>다.</p>
+    <div class="def"><span class="def-k">역격자</span>
+      <p>실격자의 기본 벡터가 \(\vec a_1, \vec a_2, \vec a_3\)이면 역격자의 기본 벡터는</p>
+      <p>$$\vec b_1 = 2\pi\,\frac{\vec a_2\times\vec a_3}{\vec a_1\cdot(\vec a_2\times\vec a_3)},\quad \vec b_2 = 2\pi\,\frac{\vec a_3\times\vec a_1}{\vec a_1\cdot(\vec a_2\times\vec a_3)},\quad \vec b_3 = 2\pi\,\frac{\vec a_1\times\vec a_2}{\vec a_1\cdot(\vec a_2\times\vec a_3)}$$</p>
+      <p>로, \(\vec a_i\cdot\vec b_j = 2\pi\delta_{ij}\)를 만족한다. <span class="term">역격자 벡터</span><span class="en">(reciprocal lattice vector)</span>는 \(\vec G = h\vec b_1 + k\vec b_2 + l\vec b_3\)(\(h,k,l\) 정수)이고, 모든 실격자 벡터 \(\vec R\)에 대해 \(e^{i\vec G\cdot\vec R} = 1\)이다.</p>
+    </div>
+    <p>마지막 성질이 역격자의 정체다. 역격자 벡터는 "격자의 주기와 맞아떨어지는 평면파 \(e^{i\vec G\cdot\vec r}\)의 파수"들이다. 결정의 전자 밀도처럼 격자 주기를 가진 함수는 모두 이런 평면파들의 푸리에 급수 \(n(\vec r) = \sum_{\vec G} n_{\vec G}\,e^{i\vec G\cdot\vec r}\)로 쓸 수 있다. 실격자의 단위가 길이라면 역격자의 단위는 길이의 역수(nm⁻¹)이고, 실격자에서 촘촘한 방향은 역격자에서 듬성듬성해진다. 결정학에서는 \(2\pi\)를 빼고 \(|\vec G| = 1/d\)로 쓰기도 하니 문헌을 읽을 때 조심한다(이 책은 물리 관례 \(2\pi\)를 넣는다).</p>
+    <figure class="mini" id="mini-recip">
+      <div class="mini-view"><canvas id="cv-rc"></canvas></div>
+      <div class="mini-ctrl"><button class="btn" id="rc-sq" type="button">정사각</button><button class="btn" id="rc-hex" type="button">육방</button><span class="readout" id="rc-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽 실격자의 기본 벡터 \(\vec a_1\)(청록), \(\vec a_2\)(주황) 끝을 끌어 보라. 오른쪽 역격자에서 \(\vec b_1\)은 언제나 \(\vec a_2\)에 수직이고 \(\vec b_2\)는 \(\vec a_1\)에 수직이다. \(\vec a_1\)을 늘이면 \(\vec b_1\)은 짧아진다 — 실격자 셀 넓이와 역격자 셀 넓이의 곱은 늘 \((2\pi)^2\)이다.</figcaption>
+    </figure>
+    <h3>역격자 벡터와 면 무리</h3>
+    <p>역격자의 쓸모는 다음 정리에 있다. 밀러 지수 \((hkl)\)인 면 무리에 대해, 역격자 벡터 \(\vec G_{hkl} = h\vec b_1 + k\vec b_2 + l\vec b_3\)는</p>
+    <div class="formula">$$\vec G_{hkl} \perp (hkl)\ \text{면}, \qquad |\vec G_{hkl}| = \frac{2\pi}{d_{hkl}}$$<div class="where">증명: \((hkl)\) 면은 축을 \(\vec a_1/h, \vec a_2/k, \vec a_3/l\)에서 자른다. 면 위의 두 벡터 \(\vec a_1/h - \vec a_2/k\)와 \(\vec G\)의 내적은 \(2\pi - 2\pi = 0\)이라 수직이다. 원점에서 면까지의 거리는 \(\hat G\cdot\vec a_1/h = 2\pi/|\vec G|\)이다.</div></div>
+    <p>즉 면 무리 하나 = 역격자점 하나다. 실리콘 결정 속의 수많은 면들((111), (220), (311), …)이 역공간에서는 질서 정연한 점들의 격자로 정리된다. 입방정에서는 \(\vec b_i = (2\pi/a)\hat x_i\)라서 \(|\vec G_{hkl}| = (2\pi/a)\sqrt{h^2+k^2+l^2}\)이고, 위의 \(d_{hkl}\) 식이 바로 나온다.</p>
+    <figure class="mini" id="mini-planes">
+      <div class="mini-view"><canvas id="cv-pl"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="pl-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>오른쪽 역격자에서 \(\vec G\)의 끝(흰 손잡이)을 다른 역격자점으로 끌어 보라. 왼쪽 실격자에 그 \((hk)\) 면 무리(직선들)가 그려진다. \(\vec G\)가 길수록 면 간격이 좁고, 면은 늘 \(\vec G\)에 수직이다.</figcaption>
+    </figure>
+    <h3>라우에 조건과 에발트 구</h3>
+    <p>회절을 파수 벡터로 다시 쓰자. 입사 X선의 파수 벡터를 \(\vec k\), 회절된 X선을 \(\vec k'\)라 하면(탄성 산란이므로 \(|\vec k'| = |\vec k| = 2\pi/\lambda\)), 위치 \(\vec r\)의 전자에서 산란된 파는 위상 인자 \(e^{-i\Delta\vec k\cdot\vec r}\)(\(\Delta\vec k = \vec k' - \vec k\))를 얻는다. 결정 전체의 산란 진폭은 전자 밀도의 푸리에 변환</p>
+    <div class="formula">$$A(\Delta\vec k) \propto \int n(\vec r)\,e^{-i\Delta\vec k\cdot\vec r}\,dV = \sum_{\vec G} n_{\vec G}\int e^{i(\vec G - \Delta\vec k)\cdot\vec r}\,dV$$<div class="where">적분은 \(\Delta\vec k = \vec G\)일 때만 결정 부피에 비례하는 큰 값이 되고, 그 밖에서는 진동해 거의 0이 된다.</div></div>
+    <div class="def"><span class="def-k">라우에 조건</span>
+      <p>회절은 산란 벡터가 역격자 벡터와 같을 때 일어난다.</p>
+      <p>$$\Delta\vec k = \vec k' - \vec k = \vec G$$</p>
+      <p>이것이 <span class="term">라우에 조건</span><span class="en">(Laue condition)</span>이다. 산란 진폭의 크기는 \(n_{\vec G}\)에, 곧 단위 셀 안 원자 배치(4절의 구조 인자)에 달려 있다.</p>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="라우에 조건에서 브래그 법칙을 유도하는 네 단계">
+        <defs>
+          <marker id="rd-ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="rd-ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="rd-ar4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker>
+        </defs>
+        <!-- 기본: k -->
+        <line x1="120" y1="230" x2="320" y2="130" stroke="var(--accent)" stroke-width="3" marker-end="url(#rd-ar2)"/>
+        <text class="t-acc" x="190" y="165" style="font-weight:700">k</text>
+        <circle cx="120" cy="230" r="4" fill="var(--text-dim)"/>
+        <g data-step="2">
+          <line x1="120" y1="230" x2="342" y2="230" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#rd-ar3)" transform="rotate(-53.13 120 230)"/>
+          <text fill="var(--accent-2)" x="196" y="112" style="font-weight:700">k′</text>
+          <text class="t-dim" x="30" y="40" style="font-size:13px">|k′| = |k| = 2π/λ (탄성 산란)</text>
+        </g>
+        <g data-step="3">
+          <line x1="320" y1="130" x2="253.3" y2="52.3" stroke="var(--text)" stroke-width="3" marker-end="url(#rd-ar4)"/>
+          <text class="t" x="300" y="80" style="font-weight:700">G = k′ − k</text>
+          <path d="M175,202 A62,62 0 0 1 185,190" fill="none" class="s-line"/>
+          <text class="t" x="158" y="185" style="font-size:13px">2θ</text>
+          <line x1="120" y1="230" x2="286.6" y2="91.2" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+          <text class="t-dim" x="30" y="64" style="font-size:13px">k, k′, G는 이등변 삼각형</text>
+        </g>
+        <g data-step="4">
+          <rect x="430" y="70" width="350" height="170" rx="10" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="450" y="104">|G| = 2|k| sin θ</text>
+          <text class="t" x="450" y="138">2π/d = 2 · (2π/λ) · sin θ</text>
+          <text class="t-acc" x="450" y="178" style="font-weight:700;font-size:17px">⇒ 2d sin θ = λ</text>
+          <text class="t-dim" x="450" y="214" style="font-size:12px">n차 반사는 G = nG₀ (d → d/n)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>입사 X선의 파수 벡터 \(\vec k\), 크기 \(2\pi/\lambda\).</li><li>탄성 산란이므로 회절 파 \(\vec k'\)도 크기가 같고 방향만 \(2\theta\) 꺾인다.</li><li>라우에 조건: 두 벡터의 차가 역격자 벡터 \(\vec G\). \(\vec k, \vec k', \vec G\)는 두 변이 같은 삼각형을 이룬다. \(\vec G\)는 반사면의 법선이고, \(\vec k\)와 면이 이루는 각이 \(\theta\)다.</li><li>삼각형 밑변 \(|\vec G| = 2k\sin\theta\)에 \(|\vec G| = 2\pi/d\)를 넣으면 브래그 법칙이 나온다. 두 그림은 같은 물리다.</li></ol>
+      <figcaption>라우에 조건 \(\vec k' - \vec k = \vec G\)에서 브래그 법칙으로. 제곱하면 \(2\vec k\cdot\vec G + G^2 = 0\) — 이 식은 다음 절의 브릴루앙 영역 경계, 그리고 8장 띠 구조에서 전자파가 반사되는 조건으로 다시 나온다.</figcaption>
+    </figure>
+    <p>라우에 조건을 그림으로 푸는 방법이 <span class="term">에발트 구</span><span class="en">(Ewald sphere)</span>다. 역격자를 그리고, 입사 파수 벡터 \(\vec k\)를 그 끝이 역격자 원점 O에 오도록 놓는다. \(\vec k\)의 시작점 C를 중심으로 반지름 \(k = 2\pi/\lambda\)인 구를 그리면, <strong>구 표면에 걸린 역격자점마다 회절 빔이 하나씩</strong> 나간다(C에서 그 점을 향하는 방향이 \(\vec k'\)). 구가 아무 점도 지나지 않으면 회절은 없다. 단색 X선과 고정된 단결정으로는 대개 반사가 없으므로, 실험은 다음 셋 중 하나로 구에 점을 걸리게 한다.</p>
+    <div class="compare">
+      <div><h4>라우에법</h4><p>파장이 연속인 백색 X선 → 반지름이 다른 구가 여러 개 → 많은 반사가 한 번에 생긴다. 고정 결정의 방위를 정하는 데 쓴다.</p></div>
+      <div><h4>회전 결정법·고분해능 XRD</h4><p>단색 X선, 결정을 돌려(\(\omega\)) 원하는 역격자점을 구 위로 가져온다. 6절의 로킹 곡선이 이 방식이다.</p></div>
+      <div><h4>분말법</h4><p>단색 X선, 무작위 방향의 미세 결정 수백만 개 → 각 \(|\vec G|\)가 구와 원뿔 모양으로 만나 회절 고리가 생긴다(5절).</p></div>
+    </div>
+    <div class="predict" data-for="sim-ewald">
+      <p>X선 파장을 절반으로 줄이면(\(k\)가 두 배) 에발트 구에 걸릴 수 있는 역격자점의 범위는 어떻게 되는가?</p>
+      <div class="opts"><button class="opt">변하지 않는다</button><button class="opt">절반으로 줄어든다</button><button class="opt" data-correct>반지름 \(2k\)인 구 안쪽, 곧 부피로 8배까지 늘어난다</button><button class="opt">아무 점도 걸리지 않는다</button></div>
+      <div class="quiz-exp">\(|\vec G| = 2k\sin\theta \le 2k\)이므로 원점에서 \(2k\) 안의 점만 반사될 수 있다(이를 "한계 구"라 한다). 파장이 짧을수록 더 많은(\(d\)가 작은) 반사가 가능하다. 아래에서 C를 끌어 구를 키워 보자.</div>
+    </div>
+    <div class="sim" id="sim-ewald">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>에발트 구 2D: 구에 걸리면 빛난다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ew"></canvas><span class="hint top">C(파수 벡터의 꼬리)를 끌어 방향과 파장을 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>결정 회전 ω <output id="ew-rot-out"></output></span><input type="range" id="ew-rot" min="-45" max="45" step="0.1" value="0"></label>
+          <label class="ctrl"><span>파장 퍼짐(라우에법) <output id="ew-bw-out"></output></span><input type="range" id="ew-bw" min="0" max="60" step="1" value="0"></label>
+          <label class="check"><input type="checkbox" id="ew-lim"> 한계 구(반지름 2k) 보기</label>
+          <div class="ctrl"><span>과녁</span><div class="rd-msg" id="ew-goal"></div><button class="btn" id="ew-new" type="button">새 과녁</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">파장 λ (a = 0.5431 nm 정사각 격자)</span><span class="v" id="ew-lam">—</span></div>
+        <div class="stat"><span class="k">켜진 반사</span><span class="v" id="ew-on">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① C를 끌어 구가 (1 1) 점을 지나게 하라. 그 순간 C에서 그 점으로 회절 빔 \(\vec k'\)가 나간다. ② C는 그대로 두고 결정 회전 ω만 돌려도 점들이 구를 지나며 차례로 켜진다 — 회전 결정법이다. ③ 파장 퍼짐을 키우면 두 구 사이의 모든 점이 한 번에 켜진다(라우에법). 과녁 문제를 풀어 보라.</div>
+    </div>
+    <div class="example" data-title="fcc의 역격자는 bcc">
+      <p>fcc 격자의 기본 벡터 \(\vec a_1 = \tfrac a2(0,1,1)\), \(\vec a_2 = \tfrac a2(1,0,1)\), \(\vec a_3 = \tfrac a2(1,1,0)\)에서 역격자 기본 벡터를 구하고, 실리콘(\(a = 0.5431\) nm)의 \(|\vec G_{111}|\)과 \(d_{111}\)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 정의대로 외적을 계산한다. 기본 셀 부피는 \(a^3/4\).</div>
+        <div class="step"><b>풀이</b> \(\vec a_2\times\vec a_3 = \tfrac{a^2}{4}(-1,1,1)\), \(\vec a_1\cdot(\vec a_2\times\vec a_3) = a^3/4\) → \(\vec b_1 = \tfrac{2\pi}{a}(-1,1,1)\). 같은 방법으로 \(\vec b_2 = \tfrac{2\pi}{a}(1,-1,1)\), \(\vec b_3 = \tfrac{2\pi}{a}(1,1,-1)\). 이 세 벡터는 한 변 \(4\pi/a\)인 정육면체의 체심 입방(bcc) 격자를 만든다. \(\vec G_{111}\)(관용 지수)은 \(\vec b_1+\vec b_2+\vec b_3 = \tfrac{2\pi}{a}(1,1,1)\)이고 \(|\vec G_{111}| = 2\pi\sqrt3/a = 20.04\) nm⁻¹, \(d_{111} = 2\pi/|\vec G| = a/\sqrt3 = 0.3136\) nm.</div>
+        <div class="answer">b₁ = (2π/a)(−1,1,1) 등 → bcc, |G₁₁₁| = 20.0 nm⁻¹, d₁₁₁ = 0.3136 nm</div>
+        <div class="step"><b>검토</b> 거꾸로 bcc의 역격자는 fcc다. 관용 지수로 쓴 fcc 역격자에는 \((100)\)이나 \((110)\) 같은 점이 없다 — 4절에서 "fcc는 \(h,k,l\)이 모두 홀수이거나 모두 짝수일 때만 반사"라는 소멸 규칙으로 다시 만난다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>웨이퍼 방위는 X선으로 확인한다</strong><p>단결정 잉곳을 자르기 전에, 라우에 사진이나 단색 X선 회절로 (100) 축이 잉곳 축에서 몇 도 기울었는지 재어 오프컷을 0.1° 안쪽으로 맞추고, 노치(또는 플랫) 위치를 ⟨110⟩ 방향에 새긴다. 로직 웨이퍼의 (100)±0.5°, 에피용 웨이퍼의 의도적 오프컷 4° 같은 사양이 모두 이 측정으로 보증된다. → <a href="https://semi.euiyun.com/process/chapters/wafer.html">ProcessBook · 실리콘 웨이퍼와 세정</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="brillouin">
+    <h2>브릴루앙 영역</h2>
+    <p>실공간에서 한 격자점에 "가장 가까운 영역"으로 자른 기본 셀이 위그너–자이츠 셀이다(원점과 이웃 격자점을 잇는 선분의 수직 이등분면으로 둘러싸인 영역). 같은 작업을 역격자에서 하면 <span class="term">브릴루앙 영역</span><span class="en">(Brillouin zone)</span>을 얻는다. 원점 Γ에서 가장 가까운 이등분면들로 둘러싸인 영역이 제1 브릴루앙 영역이다.</p>
+    <p>왜 하필 이등분면일까? 라우에 조건 \(\vec k' = \vec k + \vec G\)와 \(|\vec k'| = |\vec k|\)를 묶으면 \(2\vec k\cdot\vec G + G^2 = 0\), 곧 \(\vec k\cdot(\vec G/2) = |\vec G/2|^2\)이다. 이것은 "\(\vec k\)의 끝이 \(\vec G\)의 수직 이등분면 위에 있다"는 식이다. <strong>브릴루앙 영역의 경계는 회절(브래그 반사)이 일어나는 모든 파수 벡터의 자리</strong>다. X선이든 결정 속 전자의 파동이든 포논이든, 파수가 영역 경계에 닿으면 반사된다. 현대물리학 <a href="../../modern-physics/chapters/energy-bands.html">결정 속 전자와 에너지 띠</a>에서 1차원 경계 \(k = \pm\pi/a\)에 띠 간격이 열린 이유가 바로 이것이고, 8장에서 3차원 띠 구조를 그릴 때 이 장의 영역과 점 이름을 쓴다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 330" role="img" aria-label="2차원 정사각 격자와 육방 격자의 제1 브릴루앙 영역과 대칭점">
+        <g transform="translate(200,170)">
+          <g fill="var(--text-faint)"><circle cx="-110" cy="-110" r="4"/><circle cx="0" cy="-110" r="4"/><circle cx="110" cy="-110" r="4"/><circle cx="-110" cy="0" r="4"/><circle cx="110" cy="0" r="4"/><circle cx="-110" cy="110" r="4"/><circle cx="0" cy="110" r="4"/><circle cx="110" cy="110" r="4"/></g>
+          <rect x="-55" y="-55" width="110" height="110" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <g stroke="var(--text-faint)" stroke-dasharray="4 3"><line x1="0" y1="0" x2="110" y2="0"/><line x1="0" y1="0" x2="110" y2="-110"/></g>
+          <circle cx="0" cy="0" r="5" fill="var(--text)"/><text class="t" x="-20" y="18" style="font-weight:700">Γ</text>
+          <circle cx="55" cy="0" r="5" fill="var(--accent-2)"/><text class="t" x="62" y="18" style="font-weight:700">X</text>
+          <circle cx="55" cy="-55" r="5" fill="var(--accent-2)"/><text class="t" x="62" y="-62" style="font-weight:700">M</text>
+          <line x1="0" y1="0" x2="55" y2="0" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="55" y1="0" x2="55" y2="-55" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="55" y1="-55" x2="0" y2="0" stroke="var(--accent-2)" stroke-width="2.5"/>
+          <text class="t" x="0" y="148" text-anchor="middle">정사각 격자 (b = 2π/a)</text>
+          <text class="t-dim" x="0" y="-130" text-anchor="middle" style="font-size:12px">ΓX = π/a,  ΓM = √2 π/a</text>
+        </g>
+        <g transform="translate(590,170)">
+          <g fill="var(--text-faint)"><circle cx="110" cy="0" r="4"/><circle cx="-110" cy="0" r="4"/><circle cx="55" cy="95.3" r="4"/><circle cx="-55" cy="95.3" r="4"/><circle cx="55" cy="-95.3" r="4"/><circle cx="-55" cy="-95.3" r="4"/></g>
+          <polygon points="63.5,0 31.75,55 -31.75,55 -63.5,0 -31.75,-55 31.75,-55" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+          <g stroke="var(--text-faint)" stroke-dasharray="4 3"><line x1="0" y1="0" x2="55" y2="-95.3"/><line x1="0" y1="0" x2="110" y2="0"/></g>
+          <circle cx="0" cy="0" r="5" fill="var(--text)"/><text class="t" x="-20" y="18" style="font-weight:700">Γ</text>
+          <circle cx="27.5" cy="-47.6" r="5" fill="var(--accent-2)"/><text class="t" x="-2" y="-56" style="font-weight:700">M</text>
+          <circle cx="63.5" cy="0" r="5" fill="var(--accent-2)"/><text class="t" x="72" y="6" style="font-weight:700">K</text>
+          <line x1="0" y1="0" x2="27.5" y2="-47.6" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="27.5" y1="-47.6" x2="63.5" y2="0" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="63.5" y1="0" x2="0" y2="0" stroke="var(--accent-2)" stroke-width="2.5"/>
+          <text class="t" x="0" y="148" text-anchor="middle">육방 격자 (그래핀 등)</text>
+          <text class="t-dim" x="0" y="-130" text-anchor="middle" style="font-size:12px">ΓM = 2π/(√3a),  ΓK = 4π/(3a)</text>
+        </g>
+      </svg>
+      <figcaption>2차원 정사각 격자와 육방 격자의 제1 브릴루앙 영역(색칠). 회색 점은 이웃 역격자점, 점선은 Γ에서 그 점까지의 \(\vec G\)이며 영역 경계는 이 선분의 수직 이등분선이다. 육방 격자의 역격자는 30° 돌아간 육방 격자이고, 영역은 정육각형이 된다. 주황 삼각형은 띠 구조를 그릴 때 따라가는 대칭 경로다.</figcaption>
+    </figure>
+    <p>영역 안에서 대칭이 높은 점에는 이름이 붙는다. 중심은 늘 <span class="term">Γ점</span><span class="en">(Gamma point)</span>이고, 정사각 격자에서 변의 중점은 X, 꼭짓점은 M, 육방 격자에서 변의 중점은 M, 꼭짓점은 K다. 그래핀의 원뿔형 띠(디랙 점)는 K에 있다(16장).</p>
+    <figure class="mini" id="mini-zones">
+      <div class="mini-view"><canvas id="cv-zn"></canvas></div>
+      <div class="mini-ctrl"><div class="seg" id="zn-lat"><button data-value="sq" class="on">정사각</button><button data-value="hex">육방</button></div><span class="readout" id="zn-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>흰 손잡이(파수 벡터 \(\vec k\)의 끝)를 끌어 보라. 색은 브릴루앙 영역 번호다: \(\vec k\)에서 Γ보다 가까운 역격자점이 \(n-1\)개이면 제\(n\) 영역. 고차 영역들은 조각조각 흩어져 있지만, 역격자 벡터만큼 옮기면 모두 제1 영역을 정확히 한 번 덮는다(넓이가 같다).</figcaption>
+    </figure>
+    <h3>fcc 격자의 브릴루앙 영역: 깎은 팔면체</h3>
+    <p>실리콘·저마늄·GaAs·구리처럼 fcc 격자를 가진 결정의 역격자는 bcc다(앞 예제). bcc 역격자의 위그너–자이츠 셀은 정팔면체의 꼭짓점 여섯 개를 잘라 낸 <span class="term">깎은 팔면체</span><span class="en">(truncated octahedron)</span>로, 정사각형 면 6개와 정육각형 면 8개를 가진다. 정사각형 면은 \(\langle100\rangle\) 방향의 가장 가까운 역격자점 (2π/a)(2,0,0)의 이등분면이고, 육각형 면은 \(\langle111\rangle\) 방향 (2π/a)(1,1,1)의 이등분면이다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>점</th><th>좌표 (2π/a 단위)</th><th>위치</th><th class="num">Γ에서 거리</th><th>띠 구조에서</th></tr></thead>
+      <tbody>
+        <tr><td>Γ</td><td>(0, 0, 0)</td><td>영역 중심</td><td class="num">0</td><td>GaAs 전도대 바닥, 모든 반도체의 가전자대 꼭대기</td></tr>
+        <tr><td>X</td><td>(1, 0, 0)</td><td>정사각형 면 중심</td><td class="num">2π/a</td><td>Si 전도대 바닥은 Γ–X 선의 0.85 지점(Δ 골짜기)</td></tr>
+        <tr><td>L</td><td>(½, ½, ½)</td><td>육각형 면 중심</td><td class="num">√3 π/a</td><td>Ge 전도대 바닥</td></tr>
+        <tr><td>K</td><td>(¾, ¾, 0)</td><td>육각형 두 면이 만나는 모서리 중점</td><td class="num">3√2 π/(2a)</td><td>경로 Γ–K(Σ 선)의 끝</td></tr>
+        <tr><td>W</td><td>(1, ½, 0)</td><td>꼭짓점</td><td class="num">√5 π/a</td><td>—</td></tr>
+        <tr><td>U</td><td>(1, ¼, ¼)</td><td>정사각형·육각형 면이 만나는 모서리 중점</td><td class="num">3√2 π/(2a)</td><td>U와 K는 역격자 벡터만큼 떨어진 같은 점</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="mini" id="mini-bz3d">
+      <div class="mini-view"><canvas id="cv-bz"></canvas></div>
+      <div class="mini-ctrl"><label class="check"><input type="checkbox" id="bz-path" checked> 띠 구조 경로 L–Γ–X–U|K–Γ</label><label class="check"><input type="checkbox" id="bz-axes"> 축과 이웃 역격자점</label><span class="readout" id="bz-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>fcc 결정의 제1 브릴루앙 영역. 끌어서 돌려 보라. 정사각형 면 중심이 X, 육각형 면 중심이 L이다. 8장의 실리콘 띠 구조 그래프 가로축이 바로 이 주황 경로를 따라간다. 점을 누르면 이름과 좌표가 나온다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-bz">
+      <p>격자 상수 <span class="tn" data-var="a" data-min="0.35" data-max="0.65" data-step="0.0001" data-unit=" nm">0.5431</span>인 fcc 결정(이 값은 Si)에서 Γ–X 거리는 \(2\pi/a =\) <span class="tn-out" data-out="X"></span>, Γ–L은 <span class="tn-out" data-out="L"></span>, Γ–K는 <span class="tn-out" data-out="K"></span>다. 자유 전자라면 X점의 에너지는 \(\hbar^2k^2/2m_e =\) <span class="tn-out" data-out="EX"></span>로, 띠 구조의 에너지 눈금이 왜 수 eV인지 알 수 있다.</p>
+    </div>
+    <div class="example" data-title="실리콘 브릴루앙 영역의 크기">
+      <p>실리콘(\(a = 0.5431\) nm)에서 Γ–X, Γ–L 거리를 nm⁻¹로 구하고, 각 점에서 자유 전자의 에너지(\(\hbar^2/2m_e = 0.0381\) eV·nm²)를 구하라. 전도대 바닥이 있는 \(0.85\,X\)의 파수도 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 표의 거리 식에 \(a\)를 넣는다.</div>
+        <div class="step"><b>풀이</b> \(\Gamma X = 2\pi/0.5431 = 11.57\) nm⁻¹ → \(E = 0.0381\times11.57^2 = 5.10\) eV. \(\Gamma L = \sqrt3\pi/0.5431 = 10.02\) nm⁻¹ → \(E = 3.82\) eV. \(0.85\,X = 9.83\) nm⁻¹.</div>
+        <div class="answer">ΓX = 11.6 nm⁻¹ (5.10 eV), ΓL = 10.0 nm⁻¹ (3.82 eV), 0.85X = 9.83 nm⁻¹</div>
+        <div class="step"><b>검토</b> L이 X보다 Γ에 가깝다(육각형 면이 정사각형 면보다 안쪽). 빛의 파수(1 eV 광자 \(\approx 5\times10^{-3}\) nm⁻¹)는 영역 크기의 1/2000 정도라서, 광학 전이는 영역에서 거의 수직이다 — Si의 간접 전이에 포논이 필요한 이유다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="structure">
+    <h2>구조 인자와 소멸 규칙</h2>
+    <p>라우에 조건은 "어디에서 회절이 일어날 수 있는가"를 말해 줄 뿐, "얼마나 강한가"는 말하지 않는다. 세기는 단위 셀 안에서 원자들이 내보내는 파가 서로 얼마나 보강하는지에 달려 있다. 관용 단위 셀 안 원자 \(j\)의 분수 좌표를 \((x_j, y_j, z_j)\)라 하면, \(\vec G_{hkl}\) 방향의 산란 진폭은</p>
+    <div class="def"><span class="def-k">구조 인자</span>
+      <p>$$F_{hkl} = \sum_{j\,\in\,\text{셀}} f_j\,e^{2\pi i(hx_j + ky_j + lz_j)}, \qquad I_{hkl} \propto |F_{hkl}|^2$$</p>
+      <p>\(F_{hkl}\)을 <span class="term">구조 인자</span><span class="en">(structure factor)</span>, \(f_j\)를 원자 \(j\)의 <span class="term">원자 산란 인자</span><span class="en">(atomic form factor)</span>라 한다. 원자마다 크기 \(f_j\), 방향(위상) \(2\pi(hx_j+ky_j+lz_j)\)인 화살표를 이어 붙인 합이 \(F\)다.</p>
+    </div>
+    <p>관용 셀(입방체)에는 격자점이 여러 개 있으므로, 어떤 \((hkl)\)에서는 화살표들이 정확히 상쇄되어 \(F = 0\)이 된다. 이렇게 라우에 조건은 만족해도 사라지는 반사를 <span class="term">소멸 규칙</span><span class="en">(extinction rule, systematic absence)</span>이라 한다. 소멸 규칙은 결정 구조를 판별하는 가장 강력한 단서다.</p>
+    <ul>
+      <li><strong>단순 입방</strong>(원자 1개, (0,0,0)): \(F = f\). 모든 반사가 있다.</li>
+      <li><strong>체심 입방 bcc</strong>((0,0,0), (½,½,½)): \(F = f[1 + e^{i\pi(h+k+l)}]\) → \(h+k+l\)이 짝수면 \(2f\), 홀수면 0. (100)·(111) 없음, (110)·(200)·(211) 있음.</li>
+      <li><strong>면심 입방 fcc</strong>((0,0,0), (0,½,½), (½,0,½), (½,½,0)): \(F = f[1 + e^{i\pi(k+l)} + e^{i\pi(h+l)} + e^{i\pi(h+k)}]\) → \(h,k,l\)이 모두 홀수이거나 모두 짝수면 \(4f\), 섞이면 0. (111)·(200)·(220)·(311) 있음.</li>
+    </ul>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="다이아몬드 구조 구조 인자를 fcc 인자와 기저 인자의 곱으로 나누는 세 단계">
+        <text class="t" x="30" y="36" style="font-weight:700">다이아몬드 = fcc 격자 × 기저 {(0,0,0), (¼,¼,¼)}</text>
+        <text class="t" x="30" y="76">F = S<tspan dy="4" style="font-size:11px">fcc</tspan><tspan dy="-4"> · f [ 1 + e</tspan><tspan dy="-6" style="font-size:11px">iπ(h+k+l)/2</tspan><tspan dy="6"> ]</tspan></text>
+        <g data-step="2">
+          <rect x="30" y="100" width="340" height="150" rx="8" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="46" y="128" style="font-weight:600">fcc 인자 S<tspan dy="4" style="font-size:11px">fcc</tspan></text>
+          <text class="t" x="46" y="160">h,k,l 모두 홀수 또는 모두 짝수 → 4</text>
+          <text class="t" x="46" y="190">홀짝이 섞이면 → 0</text>
+          <text class="t-dim" x="46" y="226" style="font-size:12px">(100), (110), (210)… 소멸</text>
+        </g>
+        <g data-step="3">
+          <rect x="400" y="100" width="370" height="150" rx="8" class="f-surface" stroke="var(--border)"/>
+          <text class="t" x="416" y="128" style="font-weight:600">기저 인자 1 + e<tspan dy="-6" style="font-size:11px">iπN/2</tspan><tspan dy="6">, N = h+k+l</tspan></text>
+          <text class="t" x="416" y="160">모두 홀수(N 홀수): 1 ± i → |F|² = 32f²</text>
+          <text class="t" x="416" y="190">모두 짝수, N = 4m: 2 → |F|² = 64f²</text>
+          <text fill="var(--accent-2)" x="416" y="220" style="font-weight:700">모두 짝수, N = 4m+2: 0 → (200), (222) 소멸!</text>
+          <text class="t-dim" x="30" y="282" style="font-size:12px">Si 분말: (111) (220) (311) (400) (331) (422) … 있음,  (200) (222) (420) … 없음</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>다이아몬드 구조는 fcc 격자의 각 점에 원자 두 개(\((0,0,0)\)과 \((\tfrac14,\tfrac14,\tfrac14)\))를 붙인 것이다. 합을 격자 합 × 기저 합으로 나눌 수 있다.</li><li>fcc 격자 인자는 지수의 홀짝이 섞이면 0이다.</li><li>기저 인자는 두 원자의 위상차 \(\pi(h+k+l)/2\)에 달렸다. 짝수 지수이면서 \(h+k+l = 4m+2\)이면 두 원자가 정반대 위상이라 지워진다. 그래서 fcc에서는 보이던 (200)과 (222)가 실리콘에서는 사라진다.</li></ol>
+      <figcaption>다이아몬드 구조의 소멸 규칙. 같은 fcc 격자라도 기저가 다르면 회절 패턴이 다르다.</figcaption>
+    </figure>
+    <p><span class="term">섬아연석 구조</span><span class="en">(zincblende structure)</span>(GaAs, InP, 3C-SiC)는 같은 자리에 서로 다른 원자 A, B가 앉는다. 기저 인자가 \(f_A + f_B\,e^{i\pi(h+k+l)/2}\)가 되므로 다이아몬드에서 꺼졌던 반사가 \(4|f_A - f_B|\)만큼 살아난다.</p>
+    <div class="formula">$$F_{200}^{\text{섬아연석}} = 4(f_A - f_B), \qquad F_{220} = 4(f_A + f_B), \qquad |F_{111}|^2 = 16(f_A^2 + f_B^2)$$<div class="where">GaAs는 Ga(Z = 31)와 As(Z = 33)의 전자 수가 거의 같아 (200)이 (220)의 \(10^{-3}\) 정도로 아주 약하다. InP(49, 15)는 (200)이 뚜렷하다. 이 "약하게 살아난 금지 반사"로 섬아연석의 질서(반위상 결함, 조성)를 본다.</div></div>
+    <h3>원자 산란 인자와 디바이–월러 인자</h3>
+    <p>원자의 전자는 점이 아니라 0.1 nm 크기의 구름이다. 산란각이 커지면 구름의 앞쪽과 뒤쪽에서 산란된 파 사이에 위상차가 생겨 원자 하나의 산란이 약해진다. 그래서 \(f\)는 전방(\(\theta = 0\))에서 전자 수 \(Z\)와 같고, \(s = \sin\theta/\lambda\)가 커질수록 줄어든다. 또 원자는 열 때문에 평형 자리 주위를 진동하므로 산란 위상이 흐려진다. 이 효과를 <span class="term">디바이–월러 인자</span><span class="en">(Debye–Waller factor)</span> \(e^{-2Bs^2}\)(세기 기준, \(B = 8\pi^2\langle u^2\rangle\))로 넣는다. 실리콘 상온에서 \(B \approx 0.46\) Å²다.</p>
+    <figure class="mini" id="mini-ff">
+      <div class="mini-view"><canvas id="cv-ff"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>디바이–월러 B <output id="ff-B-out"></output></span><input type="range" id="ff-B" min="0" max="3" step="0.05" value="0.5"></label><span class="readout" id="ff-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>근사 원자 산란 인자 \(f(s)\)(점선)와 열진동까지 넣은 유효값 \(f\,e^{-Bs^2}\)(실선). 세로 눈금선은 Si 분말 반사의 \(s\) 위치다. \(B\)를 키우면(온도를 높이면) 고각 반사가 먼저 약해진다. 곡선을 끌면 그 \(s\)의 값을 읽는다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-sf">
+      <p>실리콘(다이아몬드 구조)의 (200) 반사는? fcc 격자라 \(h,k,l\)이 모두 짝수인데…</p>
+      <div class="opts"><button class="opt">fcc 규칙대로 강하게 나타난다(\(|F|^2 = 16f^2\))</button><button class="opt" data-correct>0이다 — 두 원자의 파가 정반대 위상이다</button><button class="opt">(111)보다 두 배 강하다</button><button class="opt">파장에 따라 다르다</button></div>
+      <div class="quiz-exp">\(h+k+l = 2\)이라 기저 인자 \(1 + e^{i\pi} = 0\). 아래 페이저 그림에서 원자 8개의 화살표(4개는 위상 0, 4개는 위상 π)가 서로 상쇄되는지 확인하자. 구조를 섬아연석으로 바꾸면 두 묶음의 길이가 달라 합이 조금 남는다.</div>
+    </div>
+    <div class="sim" id="sim-sf">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>구조 인자 페이저 합: 화살표가 상쇄되면 반사가 사라진다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-sfm"></canvas><span class="hint top">역격자점을 누르거나 끌어 hkl을 고른다</span></div><div><canvas id="cv-sfp"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>구조</span><div class="seg" id="sf-st"><button data-value="sc">sc</button><button data-value="bcc">bcc</button><button data-value="fcc">fcc</button><button data-value="diamond" class="on">다이아몬드</button><button data-value="zincblende">섬아연석</button><button data-value="rocksalt">암염</button></div></div>
+          <label class="ctrl"><span>지도 면 l <output id="sf-l-out"></output></span><input type="range" id="sf-l" min="0" max="3" step="1" value="0"></label>
+          <label class="ctrl"><span>f<sub>B</sub>/f<sub>A</sub> (두 종류일 때) <output id="sf-fr-out"></output></span><input type="range" id="sf-fr" min="0" max="2" step="0.01" value="1.06"></label>
+          <div class="ctrl"><span>자주 쓰는 B/A</span><div class="seg" id="sf-mat"><button data-value="1.06">GaAs</button><button data-value="0.306">InP</button><button data-value="1.8">NaCl</button><button data-value="1">KCl</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">선택한 반사</span><span class="v" id="sf-hkl">—</span></div>
+        <div class="stat"><span class="k">F (f<sub>A</sub> = 1 단위)</span><span class="v" id="sf-F">—</span></div>
+        <div class="stat"><span class="k">|F|²</span><span class="v" id="sf-F2">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 다이아몬드에서 (2 0 0)과 (2 2 0)을 차례로 눌러 화살표들이 상쇄되거나 한 방향으로 모이는 것을 보라. (1 1 1)에서는 두 묶음이 90° 어긋난다. 지도 면을 l = 2로 올려 (2 2 2)도 확인하라. ② 섬아연석으로 바꾸고 GaAs와 InP를 비교하라. (2 0 0)의 |F|²는 몇 배 차이인가? ③ 암염에서 KCl(K⁺와 Cl⁻는 전자 수가 18개로 같다)을 고르면 지도가 어떤 구조처럼 보이는가?</div>
+    </div>
+    <div class="example" data-title="GaAs와 InP의 (200) 반사">
+      <p>원자 산란 인자를 전자 수로 근사(\(f \approx Z\))할 때, 섬아연석 GaAs(Ga 31, As 33)와 InP(In 49, P 15)에서 \(|F_{200}|^2/|F_{220}|^2\)을 각각 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(F_{200} = 4(f_A - f_B)\), \(F_{220} = 4(f_A + f_B)\)를 쓴다.</div>
+        <div class="step"><b>풀이</b> GaAs: \((31-33)^2/(31+33)^2 = 4/4096 = 9.8\times10^{-4}\). InP: \((49-15)^2/(64)^2 = 1156/4096 = 0.282\).</div>
+        <div class="answer">GaAs 9.8 × 10⁻⁴, InP 0.282</div>
+        <div class="step"><b>검토</b> 두 화합물의 전자 수 합(64)은 같지만 차이가 크게 다르다. GaAs의 (200)은 실리콘처럼 거의 사라지고, InP의 (200)은 뚜렷하다. 실제 \(f\)는 각도에 따라 줄지만 비율은 크게 바뀌지 않는다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="powder">
+    <h2>분말 회절과 셰러 식</h2>
+    <p>단결정 대신 무작위 방향의 미세한 결정(분말이나 다결정 박막)을 쓰면, 어떤 결정립은 반드시 각 \((hkl)\) 면이 브래그 각을 이루는 방향으로 놓여 있다. 그래서 입사각을 돌릴 필요 없이 모든 \(d_{hkl}\)이 한 번에 원뿔 모양 회절을 만든다. 실험실 회절계는 시료를 \(\theta\)만큼, 검출기를 \(2\theta\)만큼 함께 돌려(<span class="term">θ–2θ 주사</span><span class="en">(θ–2θ scan)</span>) 시료 면에 평행한 면들의 반사를 차례로 기록한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="θ–2θ 회절계와 고분해능 회절계의 각도 정의">
+        <defs><marker id="rd-ar5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g transform="translate(200,210)">
+          <rect x="-90" y="0" width="180" height="16" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t-dim" x="0" y="44" text-anchor="middle" style="font-size:12px">시료 (면이 표면에 평행)</text>
+          <rect x="-196" y="-104" width="40" height="24" rx="4" class="f-elev" stroke="var(--border)" transform="rotate(30 -176 -92)"/>
+          <text class="t" x="-200" y="-122" style="font-size:12px">X선관</text>
+          <line x1="-150" y1="-86.6" x2="0" y2="0" stroke="var(--accent)" stroke-width="2.4"/>
+          <line x1="0" y1="0" x2="150" y2="-86.6" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#rd-ar5)"/>
+          <rect x="152" y="-112" width="36" height="24" rx="4" class="f-elev" stroke="var(--border)" transform="rotate(-30 170 -100)"/>
+          <text class="t" x="150" y="-128" style="font-size:12px">검출기</text>
+          <path d="M-60,0 A60,60 0 0 1 -52,-30" fill="none" class="s-line"/><text class="t" x="-92" y="-10">θ</text>
+          <path d="M70,-40.4 A80,80 0 0 0 -69.3,-40" fill="none" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+          <text class="t" x="-12" y="-92">2θ</text>
+          <text class="t" x="0" y="-160" text-anchor="middle" style="font-weight:700">분말 θ–2θ 주사</text>
+          <text class="t-dim" x="0" y="72" text-anchor="middle" style="font-size:12px">시료 θ, 검출기 2θ가 함께 돈다</text>
+        </g>
+        <g transform="translate(590,210)">
+          <rect x="-110" y="0" width="220" height="22" class="f-surface" stroke="var(--border)"/>
+          <rect x="-110" y="-10" width="220" height="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t-dim" x="0" y="44" text-anchor="middle" style="font-size:12px">Si 기판 + SiGe 에피층</text>
+          <line x1="-150" y1="-71.5" x2="0" y2="-10" stroke="var(--accent)" stroke-width="2.4"/>
+          <line x1="0" y1="-10" x2="140" y2="-110" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#rd-ar5)"/>
+          <path d="M-70,-10 A70,70 0 0 1 -65,-37" fill="none" class="s-line"/><text class="t" x="-104" y="-20">ω</text>
+          <text class="t" x="40" y="-90">2θ 고정</text>
+          <text class="t" x="0" y="-160" text-anchor="middle" style="font-weight:700">고분해능 XRD ω 주사(로킹 곡선)</text>
+          <text class="t-dim" x="0" y="72" text-anchor="middle" style="font-size:12px">검출기는 두고 시료만 ω로 흔든다</text>
+        </g>
+      </svg>
+      <figcaption>왼쪽: 분말 회절계. 시료 면에 평행한 원자면만 반사 조건을 만족하므로 \(\theta = \omega\), 검출기는 \(2\theta\)에 있다. 오른쪽: 고분해능 XRD의 로킹 곡선. 단결정 기판의 반사 근처에서 시료를 아주 조금씩 기울이며(ω) 기판과 에피층의 반사를 각각 찾는다(6절).</figcaption>
+    </figure>
+    <p>분말 패턴의 봉우리 세기는 \(|F|^2\) 말고도 몇 가지 인자를 곱해 얻는다.</p>
+    <div class="formula">$$I_{hkl} \propto |F_{hkl}|^2 \cdot m_{hkl} \cdot \frac{1+\cos^2 2\theta}{\sin^2\theta\cos\theta} \cdot e^{-2Bs^2}$$<div class="where">\(m_{hkl}\)은 <span class="term">다중도</span><span class="en">(multiplicity)</span>: 같은 \(d\)를 가진 등가 면의 수(입방정 {100} 6, {110} 12, {111} 8, {311} 24). 가운데 항은 편광과 기하(로런츠) 인자, 마지막은 디바이–월러 인자다. 실제 측정에는 흡수, 우선 방위(박막에서 특정 면이 표면에 평행하게 몰리는 것)가 더해진다.</div></div>
+    <p>입방정 패턴을 지수화하는 요령은 \(\sin^2\theta \propto N = h^2+k^2+l^2\)이다. 관측한 \(\sin^2\theta\)들을 첫 값으로 나눠 정수비를 찾는다. 허용되는 \(N\)의 순서가 구조마다 다르다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>구조</th><th>허용되는 N = h²+k²+l² (작은 순)</th><th>첫 두 봉우리의 sin²θ 비</th></tr></thead>
+      <tbody>
+        <tr><td>단순 입방</td><td>1, 2, 3, 4, 5, 6, 8, 9 …(7 없음)</td><td class="num">1 : 2</td></tr>
+        <tr><td>bcc</td><td>2, 4, 6, 8, 10, 12, 14 …</td><td class="num">1 : 2</td></tr>
+        <tr><td>fcc</td><td>3, 4, 8, 11, 12, 16, 19 …</td><td class="num">3 : 4</td></tr>
+        <tr><td>다이아몬드</td><td>3, 8, 11, 16, 19, 24, 27 …</td><td class="num">3 : 8</td></tr>
+      </tbody>
+    </table></div>
+    <p>단순 입방과 bcc는 첫 비가 같지만 단순 입방에는 \(N = 7\)이 없는 빈칸이 생기고, bcc는 2, 4, 6, 8, 10, 12, 14, 16처럼 고르게 이어진다(\(N=7\)에 해당하는 위치에 봉우리가 있으면 bcc). 실리콘 분말의 실제 봉우리는 Cu Kα1로 \(2\theta = 28.44°\)(111), \(47.30°\)(220), \(56.12°\)(311)이고, 표준 자료(PDF) 상대 세기는 100 : 55 : 30이다. 이 장의 시뮬레이터는 근사 산란 인자와 \(B = 0.5\) Å²로 100 : 62 : 36을 준다 — 위치는 정확하고 세기는 근사다.</p>
+    <div class="sim" id="sim-powder">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>분말 회절 시뮬레이터: 미지 시료의 구조를 맞혀라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><canvas id="cv-pw"></canvas><span class="hint top">그래프 위를 끌면 커서 위치의 d와 지수를 읽는다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>구조</span><div class="seg" id="pw-st"><button data-value="sc">sc</button><button data-value="bcc">bcc</button><button data-value="fcc">fcc</button><button data-value="diamond" class="on">다이아몬드</button><button data-value="zincblende">섬아연석</button><button data-value="rocksalt">암염</button></div></div>
+          <label class="ctrl"><span>격자 상수 a <output id="pw-a-out"></output></span><input type="range" id="pw-a" min="0.28" max="0.66" step="0.0001" value="0.5431"></label>
+          <label class="ctrl"><span>원자 번호 Z<sub>A</sub>, Z<sub>B</sub></span><select id="pw-z"><option value="14,14" selected>14, 14 (Si)</option><option value="32,32">32, 32 (Ge)</option><option value="31,33">31, 33 (GaAs)</option><option value="49,15">49, 15 (InP)</option><option value="29,29">29 (Cu)</option><option value="13,13">13 (Al)</option><option value="74,74">74 (W)</option><option value="26,26">26 (Fe)</option><option value="10,18">10, 18 (NaCl 이온)</option><option value="18,18">18, 18 (KCl 이온)</option><option value="84,84">84 (Po)</option></select></label>
+          <label class="ctrl"><span>X선 파장</span><select id="pw-lam"><option value="0.1540598" selected>Cu Kα1 0.15406 nm</option><option value="0.17890">Co Kα 0.17890 nm</option><option value="0.07093">Mo Kα 0.07093 nm</option><option value="0.22897">Cr Kα 0.22897 nm</option></select></label>
+          <label class="ctrl"><span>결정립 크기 D <output id="pw-D-out"></output></span><input type="range" id="pw-D" min="5" max="200" step="1" value="80"></label>
+          <label class="check"><input type="checkbox" id="pw-dw" checked> 디바이–월러 B = 0.5 Å²</label>
+          <div class="ctrl"><span>미지 시료 게임</span><div><button class="btn primary" id="pw-new" type="button">미지 시료 받기</button> <button class="btn" id="pw-give" type="button">정답 보기</button></div><div class="rd-msg" id="pw-msg">버튼을 누르면 정체를 모르는 시료의 패턴(주황)이 겹쳐진다. 구조·Z·a를 바꿔 내 모형(청록)을 겹쳐라.</div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">커서</span><span class="v" id="pw-cur">—</span></div>
+        <div class="stat"><span class="k">첫 두 봉우리 sin²θ 비</span><span class="v" id="pw-ratio">—</span></div>
+        <div class="stat"><span class="k">일치도</span><span class="v" id="pw-score">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 다이아몬드(Si)와 fcc를 번갈아 눌러 (200)·(222) 봉우리가 나타났다 사라지는 것을 보라. ② 섬아연석에서 GaAs와 InP를 비교하라. ③ 결정립 크기를 10 nm 아래로 줄이면 봉우리가 넓어진다(셰러). ④ 미지 시료를 받아 첫 봉우리들의 sin²θ 비로 구조를 먼저 정하고, 첫 봉우리 위치로 a를 맞춰라. 일치도 90% 이상이면 성공.</div>
+    </div>
+    <div class="example" data-title="분말 패턴 지수화">
+      <p>어떤 금속 분말의 Cu Kα1 회절 봉우리가 \(2\theta = 38.47°, 44.72°, 65.10°, 78.23°\)에 있다. 결정 구조와 격자 상수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\sin^2\theta\)를 구해 정수비를 찾고 표와 비교한다.</div>
+        <div class="step"><b>풀이</b> \(\sin^2\theta = 0.10855,\ 0.14474,\ 0.28947,\ 0.39802\). 첫 값으로 나누고 3을 곱하면 \(3.000 : 4.000 : 8.00 : 11.00\) → \(N = 3, 4, 8, 11\) → fcc의 (111), (200), (220), (311). \(a = \lambda\sqrt{N}/(2\sin\theta)\): (311)에서 \(a = 0.15406\times\sqrt{11}/(2\times0.63089) = 0.4050\) nm.</div>
+        <div class="answer">fcc, a = 0.4050 nm (알루미늄)</div>
+        <div class="step"><b>검토</b> 정수비가 3 : 8로 시작했다면 다이아몬드, 2 : 4(1 : 2)면 bcc나 sc다. 격자 상수는 고각 봉우리에서 구하는 것이 정확하다(\(\theta\)가 클수록 \(d\)의 각도 오차가 작다).</div>
+      </details>
+    </div>
+    <h3>봉우리 폭과 결정립 크기: 셰러 식</h3>
+    <p>1절에서 본 대로 봉우리 폭은 반사에 참여하는 면 수 \(N\)에 반비례한다. 결정립 두께가 \(D = Nd\)이면 봉우리 반치폭(라디안, \(2\theta\) 눈금)은 대략 \(\lambda/(D\cos\theta)\)이다. 정확한 비례 상수까지 넣은 식이 <span class="term">셰러 식</span><span class="en">(Scherrer equation)</span>이다.</p>
+    <div class="formula">$$D = \frac{K\lambda}{\beta\cos\theta}$$<div class="where">\(\beta\): 결정립 크기 때문에 넓어진 반치폭(\(2\theta\) 눈금, 라디안), \(K \approx 0.9\)(결정립 모양에 따라 0.89–0.94), \(\theta\): 브래그 각. 측정 폭 \(\beta_\text{m}\)에서 장비 폭 \(\beta_\text{i}\)를 빼야 한다(가우스형이면 \(\beta^2 = \beta_\text{m}^2 - \beta_\text{i}^2\)). 미세 변형도 폭을 넓히므로(\(\propto\tan\theta\)), 여러 봉우리로 둘을 나누는 방법(윌리엄슨–홀 그림)을 쓴다. 대략 100 nm 넘는 결정립은 장비 폭에 묻혀 재기 어렵다.</div></div>
+    <figure class="mini" id="mini-scherrer">
+      <div class="mini-view"><canvas id="cv-sch"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>결정립 속 면 수 N <output id="sch-N-out"></output></span><input type="range" id="sch-N" min="4" max="200" step="1" value="30"></label><span class="readout" id="sch-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>Si (111) 면 \(N\)장에서 반사된 파를 정확히 더한 세기(라우에 간섭 함수 \(\sin^2(N\delta/2)/\sin^2(\delta/2)\), 최댓값 1로 맞춤). 반치폭에서 셰러 식으로 되돌려 구한 크기를 실제 두께 \(Nd\)와 비교해 보라. 주변의 작은 물결이 유한한 두께의 흔적이다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-sch">
+      <p>2θ = <span class="tn" data-var="tth" data-min="10" data-max="140" data-step="0.01" data-unit="°">28.44</span>의 봉우리에서 장비 폭을 뺀 반치폭이 <span class="tn" data-var="beta" data-min="0.02" data-max="3" data-step="0.01" data-unit="°">0.39</span>이면, Cu Kα1(0.15406 nm), \(K = 0.9\)로 결정립 크기는 \(D =\) <span class="tn-out" data-out="D"></span>다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="다결정 실리콘 박막의 결정립">
+      <p>LPCVD로 증착한 다결정 실리콘 박막의 (111) 봉우리(\(2\theta = 28.44°\))의 측정 반치폭이 0.40°, 같은 장비로 잰 표준 시료의 폭이 0.10°였다. 결정립 크기를 구하라(\(K = 0.9\), 가우스형 폭 보정).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 폭을 제곱으로 빼고 라디안으로 바꿔 셰러 식에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(\beta = \sqrt{0.40^2 - 0.10^2} = 0.387°= 6.76\times10^{-3}\) rad. \(\cos 14.22° = 0.9694\). \(D = 0.9\times0.15406/(6.76\times10^{-3}\times0.9694) = 21.2\) nm.</div>
+        <div class="answer">D ≈ 21 nm</div>
+        <div class="step"><b>검토</b> 장비 폭을 빼지 않으면 20.5 nm로 3% 작게 나온다. 결정립이 클수록 보정의 영향이 커진다. 실제 다결정 Si 결정립은 기둥 모양이라 박막 수직 방향 크기만 이 값으로 잰다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-powder" data-title="입방정 회절각 · 면 간격 반복 연습"></div>
+    <div class="callout semi"><strong>박막이 결정인지, 결정립이 얼마나 큰지</strong><p>증착 직후의 비정질 실리콘이 어닐링으로 다결정이 되었는지, 텅스텐·구리 배선이나 high-k HfO₂가 어떤 상(단사정·정방정·사방정)으로 결정화되었는지는 스침각 XRD(GIXRD)의 θ–2θ 패턴으로 본다. 강유전성 HfZrO 메모리는 사방정 봉우리(약 30.5°)의 세기로, 배선 구리는 (111) 우선 방위와 셰러 결정립 크기로 관리한다. 결정립이 작을수록 배선 저항이 커진다(7장). → <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="hrxrd">
+    <h2>고분해능 XRD: SiGe 에피층의 조성과 변형</h2>
+    <p>현대 로직 공정에서 XRD가 가장 바쁘게 일하는 곳은 에피 SiGe다. PMOS 소스·드레인을 SiGe로 채워 채널을 압축 변형시키고, 게이트 올 어라운드(GAA) 나노시트는 Si/SiGe를 번갈아 쌓은 초격자에서 시작한다. 이때 Ge 조성 \(x\)가 1% 틀리면 식각 선택비와 변형이 달라진다. <span class="term">고분해능 X선 회절</span><span class="en">(high-resolution XRD, HRXRD)</span>은 단결정 분광기로 파장 퍼짐과 빔 발산을 수 각초로 줄여, 기판 봉우리와 에피층 봉우리 사이의 각도 차이 \(\Delta\omega\)를 0.001° 수준으로 잰다.</p>
+    <h3>베가드 법칙과 정방 변형</h3>
+    <p>Si₁₋ₓGeₓ 합금의 격자 상수는 Si(0.5431 nm)와 Ge(0.5658 nm) 사이에서 거의 직선으로 변한다(<span class="term">베가드 법칙</span><span class="en">(Vegard's law)</span>). 실제로는 약간 아래로 휘어서, 다음 보정식(Dismukes 1964)을 많이 쓴다.</p>
+    <div class="formula">$$a_\text{SiGe}(x) = 0.54310 + 0.01992\,x + 0.002733\,x^2\ \ \text{nm}$$<div class="where">\(x = 1\)에서 0.5658 nm(Ge). 직선 보간보다 \(x = 0.5\)에서 0.0007 nm(0.13%) 작다. 격자 불일치 \(f = (a_\text{SiGe} - a_\text{Si})/a_\text{Si} \approx 0.042x\).</div></div>
+    <p>얇은 SiGe를 Si(001) 기판 위에 키우면, 면 안의 격자 상수가 기판에 맞춰 \(a_\parallel = a_\text{Si}\)로 눌린다(<span class="term">의사 정합</span><span class="en">(pseudomorphic)</span> 성장). 면 안에서 눌린 결정은 푸아송 효과로 위아래로 늘어나 정육면체가 정방(tetragonal) 상자가 된다. (001) 면의 2축 변형에 대해 탄성론(3장)은</p>
+    <div class="formula">$$\varepsilon_\perp = -\frac{2C_{12}}{C_{11}}\,\varepsilon_\parallel, \qquad \varepsilon_\parallel = \frac{a_\parallel - a_\text{SiGe}}{a_\text{SiGe}},\quad a_\perp = a_\text{SiGe}(1 + \varepsilon_\perp)$$<div class="where">Si: \(C_{11} = 165.7\), \(C_{12} = 63.9\) GPa(\(2C_{12}/C_{11} = 0.771\)). Ge: 128.5, 48.3 GPa. SiGe는 조성으로 선형 보간한다. 두께가 임계 두께를 넘으면 계면에 부정합 전위가 생겨 층이 일부 완화된다. <span class="term">완화도</span><span class="en">(degree of relaxation)</span> \(R = (a_\parallel - a_\text{Si})/(a_\text{SiGe} - a_\text{Si})\): 완전 변형 0, 완전 완화 1.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="Si 기판, 자유로운 SiGe, 의사 정합 SiGe, 완화된 SiGe의 단위 셀 모양과 역격자점 위치">
+        <line x1="40" y1="230" x2="760" y2="230" class="s-axis" opacity=".4"/>
+        <rect x="60" y="130" width="100" height="100" class="f-surface" stroke="var(--text-dim)" stroke-width="2"/>
+        <text class="t" x="110" y="186" text-anchor="middle">Si</text>
+        <text class="t-dim" x="110" y="254" text-anchor="middle" style="font-size:12px">a = 0.5431 nm</text>
+        <text class="t-dim" x="110" y="276" text-anchor="middle" style="font-size:12px">기판</text>
+        <g data-step="2">
+          <rect x="230" y="120" width="110" height="110" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+          <text class="t" x="285" y="182" text-anchor="middle">SiGe</text>
+          <text class="t-dim" x="285" y="254" text-anchor="middle" style="font-size:12px">자유 상태: 정육면체</text>
+          <text class="t-dim" x="285" y="276" text-anchor="middle" style="font-size:12px">a = a<tspan dy="3" style="font-size:9px">SiGe</tspan><tspan dy="-3"> &gt; a</tspan><tspan dy="3" style="font-size:9px">Si</tspan></text>
+        </g>
+        <g data-step="3">
+          <rect x="410" y="110" width="100" height="120" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+          <rect x="410" y="230" width="100" height="40" class="f-surface" stroke="var(--text-dim)"/>
+          <text class="t" x="460" y="176" text-anchor="middle">a⊥ ↑</text>
+          <text class="t-dim" x="460" y="100" text-anchor="middle" style="font-size:12px">의사 정합 (R = 0)</text>
+          <text class="t-dim" x="460" y="290" text-anchor="middle" style="font-size:12px">a∥ = a<tspan dy="3" style="font-size:9px">Si</tspan><tspan dy="-3">, 위로 늘어남</tspan></text>
+        </g>
+        <g data-step="4">
+          <rect x="590" y="120" width="110" height="110" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+          <rect x="590" y="230" width="110" height="40" class="f-surface" stroke="var(--text-dim)"/>
+          <g stroke="var(--bad, var(--accent-2))" stroke-width="3"><line x1="620" y1="222" x2="620" y2="238"/><line x1="612" y1="230" x2="628" y2="230"/><line x1="670" y1="222" x2="670" y2="238"/><line x1="662" y1="230" x2="678" y2="230"/></g>
+          <text class="t" x="645" y="182" text-anchor="middle">SiGe</text>
+          <text class="t-dim" x="645" y="110" text-anchor="middle" style="font-size:12px">완화 (R = 1)</text>
+          <text class="t-dim" x="645" y="290" text-anchor="middle" style="font-size:12px">계면 부정합 전위(⊥)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>Si 기판의 정육면체 셀.</li><li>Ge가 섞인 SiGe는 자유 상태에서 더 큰 정육면체다(\(x = 0.3\)이면 1.15% 크다).</li><li>얇게 키우면 면 안은 기판에 맞춰 눌리고, 그 대가로 위아래는 더 늘어난다(\(x = 0.3\): \(a_\perp\)가 Si보다 2.0% 크다). (004) 반사는 \(a_\perp\)만 본다.</li><li>두껍게 키우면 계면에 부정합 전위가 생기며 원래 정육면체로 돌아간다. 면 안 격자 상수 \(a_\parallel\)을 보려면 면에 비스듬한 (224) 같은 비대칭 반사가 필요하다.</li></ol>
+      <figcaption>에피층의 변형 상태. 대칭 반사 하나만으로는 "조성이 높고 완화된 층"과 "조성이 낮고 변형된 층"을 구별할 수 없다 — 그래서 HRXRD는 (004)와 (224)를 함께 잰다.</figcaption>
+    </figure>
+    <p>대칭 (004) 반사는 표면에 평행한 면 간격 \(d_{004} = a_\perp/4\)만 본다. 기판과 층의 브래그 각 차이가 로킹 곡선의 봉우리 간격이다. 미분하면</p>
+    <div class="formula">$$\Delta\omega_{004} = \theta_\text{층} - \theta_\text{기판} \approx -\frac{\Delta d}{d}\tan\theta_B, \qquad \theta_B^{\,\text{Si}(004)} = 34.565°\ (\text{Cu K}\alpha_1)$$<div class="where">층의 \(d\)가 크므로 층 봉우리는 기판보다 낮은 각(음의 \(\Delta\omega\))에 있다. 비대칭 (224) 반사는 면이 표면과 \(\varphi = 35.26°\) 기울어 있어서, 스침 입사(\(\omega = \theta_B - \varphi\))와 스침 출사(\(\omega = \theta_B + \varphi\)) 두 기하에서 잰 \(\Delta\omega\)로 \(a_\parallel\)과 \(a_\perp\)를 함께 푼다. 역공간 지도(RSM)는 \(\vec G_{224}\)의 면내 성분 \(Q_\parallel\)과 수직 성분 \(Q_\perp\)를 2차원으로 직접 그린다.</div></div>
+    <div class="tangle" id="tg-sige">
+      <p>Ge 조성 \(x =\) <span class="tn" data-var="x" data-min="0" data-max="0.6" data-step="0.005">0.300</span>인 SiGe의 자유 격자 상수는 <span class="tn-out" data-out="aL"></span>, 불일치는 \(f =\) <span class="tn-out" data-out="f"></span>다. Si(001) 위에 완전 변형으로 키우면 \(a_\perp =\) <span class="tn-out" data-out="ap"></span>이고, Cu Kα1 (004) 로킹 곡선에서 층 봉우리는 기판보다 \(\Delta\omega =\) <span class="tn-out" data-out="dw"></span> 떨어져 나타난다. 매슈스–블레이크슬리 임계 두께(평형값)는 약 <span class="tn-out" data-out="hc"></span>다. 저온에서 빠르게 키우면 이보다 몇 배 두꺼워도 준안정 상태로 변형이 유지된다.</p>
+    </div>
+    <div class="predict" data-for="sim-hrxrd">
+      <p>같은 Ge 30% 층이라도 완전 변형(R = 0)일 때와 완전 완화(R = 1)일 때, (004) 로킹 곡선의 층 봉우리는 기판에서 어느 쪽이 더 멀리 떨어질까?</p>
+      <div class="opts"><button class="opt" data-correct>완전 변형일 때 더 멀다</button><button class="opt">완전 완화일 때 더 멀다</button><button class="opt">똑같다 — 조성이 같으니까</button></div>
+      <div class="quiz-exp">완전 변형이면 면 안이 눌린 만큼 위아래가 늘어나 \(a_\perp\)가 자유 격자 상수보다 더 크다(0.5541 대 0.5493 nm). 그래서 \(\Delta\omega_{004}\)는 −2806″ 대 −1605″다. (004)만 보고 완화를 모른 채 조성을 구하면 크게 틀린다.</div>
+    </div>
+    <div class="sim" id="sim-hrxrd">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>SiGe/Si(001) 로킹 곡선과 역공간 지도</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rk"></canvas></div><div style="position:relative"><canvas id="cv-rsm"></canvas><span class="hint top">층 점(주황)을 끌어 조성·완화도를 바꾼다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>Ge 조성 x <output id="hr-x-out"></output></span><input type="range" id="hr-x" min="0" max="0.6" step="0.001" value="0.30"></label>
+          <label class="ctrl"><span>완화도 R <output id="hr-R-out"></output></span><input type="range" id="hr-R" min="0" max="1" step="0.01" value="0"></label>
+          <label class="ctrl"><span>층 두께 t <output id="hr-t-out"></output></span><input type="range" id="hr-t" min="10" max="300" step="1" value="40"></label>
+          <div class="ctrl"><span>반사</span><div class="seg" id="hr-refl"><button data-value="004" class="on">(004)</button><button data-value="inc">(224) 스침 입사</button><button data-value="exit">(224) 스침 출사</button></div></div>
+          <div class="ctrl"><span>역산 문제</span><div><button class="btn primary" id="hr-new" type="button">미지 층 받기</button> <button class="btn" id="hr-give" type="button">정답 보기</button></div><div class="rd-msg" id="hr-msg">미지 층의 곡선(점선)과 지도 점(◇)에 내 층을 겹쳐 x와 R을 맞혀라.</div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">a∥ / a⊥</span><span class="v" id="hr-a">—</span></div>
+        <div class="stat"><span class="k">Δω (004)</span><span class="v" id="hr-d4">—</span></div>
+        <div class="stat"><span class="k">Δω (224) 입사 / 출사</span><span class="v" id="hr-d2">—</span></div>
+        <div class="stat"><span class="k">임계 두께 h<sub>c</sub></span><span class="v" id="hr-hc">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① R = 0에서 x만 바꾸면 지도의 층 점이 기판 바로 아래 세로선(완전 변형선)을 따라 움직인다. R을 1로 올리면 원점을 지나는 대각선(완전 완화선)으로 옮겨 간다. ② 두께를 키우면 층 봉우리가 좁아지고 두께 무늬의 간격이 좁아진다. ③ (004)만 보면 구별이 안 되는 두 층(예: x = 0.30, R = 0.5와 x ≈ 0.24, R = 0)을 (224)로 구별해 보라. ④ 역산 문제를 풀어 보라.</div>
+    </div>
+    <div class="example" data-title="로킹 곡선에서 Ge 조성 구하기">
+      <p>Si(001) 위 SiGe 층의 Cu Kα1 (004) 로킹 곡선에서 층 봉우리가 기판보다 \(\Delta\omega = -2806″\) 떨어져 있다. 역공간 지도로 층이 완전 변형(\(R = 0\))임을 확인했다. \(2C_{12}/C_{11} = 0.766\)(조성 0.3 근처 보간값)을 써서 Ge 조성을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 층의 브래그 각 → \(d_{004}\) → \(a_\perp\). 완전 변형이므로 \(a_\parallel = a_\text{Si}\). \(a_\perp = a_L[1 - 0.766(a_\text{Si} - a_L)/a_L]\)를 \(a_L\)에 대해 풀고, 보정 베가드 식을 \(x\)에 대해 푼다.</div>
+        <div class="step"><b>풀이</b> \(\theta_\text{층} = 34.5646° - 0.7794° = 33.7851°\). \(d = 0.15406/(2\sin33.7851°) = 0.138523\) nm → \(a_\perp = 0.55409\) nm. \(a_\perp = a_L + 0.766(a_L - a_\text{Si})\) → \(a_L = (a_\perp + 0.766\,a_\text{Si})/1.766 = 0.54932\) nm. \(0.002733x^2 + 0.01992x = 0.00622\) → \(x = 0.300\).</div>
+        <div class="answer">x ≈ 0.30 (Si₀.₇Ge₀.₃)</div>
+        <div class="step"><b>검토</b> 완화를 무시하고 \(a_\perp\)를 그대로 자유 격자 상수로 쓰면 \(x \approx 0.52\)라는 엉터리 답이 나온다. 변형 상태를 먼저 알아야 하는 이유다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-sige" data-title="SiGe 격자 상수 · 변형 · 로킹 곡선 반복 연습"></div>
+    <div class="callout semi"><strong>인라인 XRD 계측</strong><p>300 mm 팹의 인라인 HRXRD는 패턴이 있는 웨이퍼의 50 µm 크기 시험 패드에서 수 분 안에 (004) 로킹 곡선과 (224) RSM을 찍어 SiGe 소스·드레인의 Ge 조성(±0.5%), 두께, 완화도를 매 로트 관리한다. 소스·드레인 SiGe의 Ge가 높을수록 채널 압축 응력이 커져 PMOS 구동 전류가 오르지만, 임계 두께를 넘겨 완화되면 응력이 사라지고 누설이 생긴다. → <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율</a></p></div>
+    <div class="callout semi"><strong>나노시트 초격자의 위성 봉우리</strong><p>GAA 나노시트는 Si와 SiGe(Ge 25–35%)를 각각 5–10 nm씩 3–4쌍 쌓은 초격자에서 시작한다. 주기 \(\Lambda\)인 초격자는 \(2\pi/\Lambda\) 간격의 새로운 역격자점(위성 봉우리)을 만들므로, 로킹 곡선의 위성 간격으로 주기를, 평균 봉우리 위치로 평균 조성을 읽는다. 나중에 SiGe를 선택 식각해 시트를 띄울 때 식각 속도가 Ge 조성에 민감하다. → <a href="https://semi.euiyun.com/process/chapters/advanced.html">ProcessBook · 첨단 소자 공정</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>간격 \(d\)인 원자면의 반사는 경로차 \(2d\sin\theta\)가 파장의 정수배일 때 강하다: \(2d\sin\theta = n\lambda\). 입방정 \(d_{hkl} = a/\sqrt{h^2+k^2+l^2}\), 회절계 눈금은 \(2\theta\)다. 면이 \(N\)장이면 봉우리 폭은 \(1/N\)에 비례한다.</li>
+      <li>역격자 \(\vec b_i\)는 \(\vec a_i\cdot\vec b_j = 2\pi\delta_{ij}\)로 정의되고, \(\vec G_{hkl}\)은 \((hkl)\) 면에 수직이며 \(|\vec G_{hkl}| = 2\pi/d_{hkl}\)이다. fcc의 역격자는 bcc, bcc의 역격자는 fcc다.</li>
+      <li>라우에 조건 \(\vec k' - \vec k = \vec G\)는 브래그 법칙과 같다. 에발트 구(중심 C, 반지름 \(2\pi/\lambda\)) 위의 역격자점마다 회절 빔이 나간다. 라우에법·회전 결정법·분말법은 구에 점을 걸리게 하는 세 방법이다.</li>
+      <li>브릴루앙 영역은 역격자의 위그너–자이츠 셀이고, 그 경계는 브래그 반사가 일어나는 파수다. fcc 결정의 영역은 깎은 팔면체: Γ(0,0,0), X(1,0,0), L(½,½,½), K(¾,¾,0) (2π/a 단위).</li>
+      <li>구조 인자 \(F_{hkl} = \sum f_j e^{2\pi i(hx_j+ky_j+lz_j)}\). bcc는 \(h+k+l\) 짝수, fcc는 모두 홀수 또는 모두 짝수만 반사. 다이아몬드는 여기에 더해 \(h+k+l = 4m+2\)인 (200)·(222)가 금지되고, 섬아연석에서는 \(4|f_A - f_B|\)로 약하게 살아난다.</li>
+      <li>분말 패턴은 \(\sin^2\theta \propto h^2+k^2+l^2\)의 정수비로 지수화한다(fcc 3:4, 다이아몬드 3:8, bcc 2:4). 세기에는 \(|F|^2\), 다중도, 로런츠–편광 인자, 디바이–월러 인자가 곱해진다. 셰러 식 \(D = K\lambda/(\beta\cos\theta)\)로 결정립 크기를 구한다.</li>
+      <li>SiGe/Si(001) 에피층은 면 안이 눌려 \(a_\perp\)가 커진다(\(\varepsilon_\perp = -2C_{12}\varepsilon_\parallel/C_{11}\)). (004) 로킹 곡선은 \(a_\perp\)만, (224)는 \(a_\parallel\)까지 본다. 둘을 함께 쓰면 Ge 조성과 완화도가 동시에 정해진다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>Cu Kα1 \(\lambda = 0.15406\) nm, \(a_\text{Si} = 0.5431\) nm, \(\hbar^2/2m_e = 0.0381\) eV·nm². SiGe 격자 상수는 본문의 보정 베가드 식을 쓴다. 각도는 도(°), 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="브래그 법칙" data-answer="22.65" data-label="θ =" data-unit="°">
+        <div class="prob-q"><p>면 간격 0.200 nm인 면 무리에서 Cu Kα1 1차 반사가 일어나는 브래그 각 \(\theta\)는?</p></div>
+        <div class="prob-sol"><p>\(\sin\theta = 0.15406/(2\times0.200) = 0.38515\) → \(\theta = 22.65°\) (\(2\theta = 45.31°\)).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="면 간격" data-answer="0.1278" data-label="d₂₂₀ =" data-unit="nm">
+        <div class="prob-q"><p>구리(fcc, \(a = 0.3615\) nm)의 (220) 면 간격은?</p></div>
+        <div class="prob-sol"><p>\(d = 0.3615/\sqrt{8} = 0.1278\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="소멸 규칙">
+        <div class="prob-q"><p>bcc 금속(예: 텅스텐)의 분말 회절에서 나타나지 <em>않는</em> 반사는?</p></div>
+        <div class="prob-choices"><button>(110)</button><button>(200)</button><button data-correct>(111)</button><button>(211)</button></div>
+        <div class="prob-sol"><p>bcc는 \(h+k+l\)이 짝수인 반사만 있다. (111)은 합이 3(홀수)이라 \(F = f(1 + e^{3\pi i}) = 0\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="2차원 역격자" data-answer="29.5" data-label="|b| =" data-unit="nm⁻¹">
+        <div class="prob-q"><p>그래핀의 육방 격자 상수는 \(a = 0.246\) nm이다(\(\vec a_1 = a(1, 0)\), \(\vec a_2 = a(\tfrac12, \tfrac{\sqrt3}{2})\)). 역격자 기본 벡터의 길이 \(|\vec b_1|\)은?</p></div>
+        <div class="prob-hint">2차원에서 \(\vec b_1\)은 \(\vec a_2\)에 수직이고 \(\vec a_1\cdot\vec b_1 = 2\pi\)이다.</div>
+        <div class="prob-sol"><p>\(\vec b_1 \perp \vec a_2\)이고 \(\vec a_1\)과 30°를 이루므로 \(|\vec a_1||\vec b_1|\cos30° = 2\pi\) → \(|\vec b_1| = 4\pi/(\sqrt3 a) = 4\pi/(1.732\times0.246) = 29.5\) nm⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="브릴루앙 영역" data-answer="9.63" data-label="ΓL =" data-unit="nm⁻¹">
+        <div class="prob-q"><p>GaAs(\(a = 0.56533\) nm)의 브릴루앙 영역에서 Γ점과 L점 사이 거리는?</p></div>
+        <div class="prob-sol"><p>L = (2π/a)(½,½,½) → 거리 \(\sqrt3\pi/a = 5.441/0.56533 = 9.63\) nm⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="에발트 구" data-answer="0.627" data-label="λ_max =" data-unit="nm">
+        <div class="prob-q"><p>실리콘 단결정에서 어떤 반사라도 일어날 수 있는 가장 긴 X선 파장은? (실리콘에서 실제로 나타나는 가장 큰 \(d\)는 \(d_{111}\)이다.)</p></div>
+        <div class="prob-hint">\(|\vec G| \le 2k\), 곧 \(\lambda \le 2d\).</div>
+        <div class="prob-sol"><p>\(\lambda_\text{max} = 2d_{111} = 2\times0.5431/\sqrt3 = 0.627\) nm. 이보다 긴 파장에서는 에발트 구가 너무 작아 원점 외의 역격자점에 닿지 못한다. (200)이 금지라서 (111)이 가장 큰 \(d\)다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="다이아몬드 소멸 규칙">
+        <div class="prob-q"><p>실리콘의 다음 반사 가운데 구조 인자가 0인 것은?</p></div>
+        <div class="prob-choices"><button>(111)</button><button>(220)</button><button>(400)</button><button data-correct>(222)</button></div>
+        <div class="prob-sol"><p>(222)는 모두 짝수이고 \(h+k+l = 6 = 4\cdot1+2\)라 기저 인자 \(1+e^{3\pi i} = 0\). (400)은 \(h+k+l = 4\)라 \(|F|^2 = 64f^2\)로 강하다. 다만 실제 Si에서는 결합 전자의 비대칭 때문에 (222)가 아주 약하게(\(10^{-3}\) 정도) 보인다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="섬아연석 구조 인자" data-answer="0.282" data-label="|F₂₀₀|²/|F₂₂₀|² =">
+        <div class="prob-q"><p>섬아연석 InP에서 \(f \approx Z\)(In 49, P 15)로 근사할 때 \(|F_{200}|^2/|F_{220}|^2\)은?</p></div>
+        <div class="prob-sol"><p>\((49-15)^2/(49+15)^2 = 1156/4096 = 0.282\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="분말 회절" data-answer="45.30" data-label="2θ₂₂₀ =" data-unit="°">
+        <div class="prob-q"><p>저마늄(\(a = 0.5658\) nm)의 (220) 봉우리는 Cu Kα1으로 \(2\theta\) 몇 도에 나타나는가?</p></div>
+        <div class="prob-sol"><p>\(d_{220} = 0.5658/\sqrt8 = 0.20004\) nm, \(\sin\theta = 0.15406/0.40008 = 0.38507\) → \(\theta = 22.648°\), \(2\theta = 45.30°\). Si(47.30°)보다 2° 낮다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="지수화" data-answer="0.3165" data-label="a =" data-unit="nm">
+        <div class="prob-q"><p>bcc인 텅스텐 분말의 첫 봉우리가 Cu Kα1로 \(2\theta = 40.26°\)에 있다. 격자 상수는?</p></div>
+        <div class="prob-hint">bcc의 첫 반사는 (110)이다.</div>
+        <div class="prob-sol"><p>\(d_{110} = 0.15406/(2\sin20.13°) = 0.15406/0.68836 = 0.22381\) nm. \(a = d\sqrt2 = 0.3165\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="셰러 식" data-answer="33.8" data-label="D =" data-unit="nm">
+        <div class="prob-q"><p>\(2\theta = 40.0°\)인 봉우리의 (장비 폭을 뺀) 반치폭이 0.25°다. \(K = 0.9\), Cu Kα1으로 결정립 크기는?</p></div>
+        <div class="prob-sol"><p>\(\beta = 0.25° = 4.363\times10^{-3}\) rad, \(\cos20° = 0.9397\). \(D = 0.9\times0.15406/(4.363\times10^{-3}\times0.9397) = 33.8\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="셰러 식 장비 보정" data-answer="30.1" data-label="D =" data-unit="nm">
+        <div class="prob-q"><p>HfO₂ 박막의 \(2\theta = 32.0°\) 봉우리의 측정 반치폭이 0.30°, 장비 폭이 0.12°다(둘 다 가우스형). \(K = 0.9\), Cu Kα1으로 결정립 크기는?</p></div>
+        <div class="prob-sol"><p>\(\beta = \sqrt{0.30^2 - 0.12^2} = 0.2750° = 4.799\times10^{-3}\) rad. \(\cos16° = 0.9613\). \(D = 0.9\times0.15406/(4.799\times10^{-3}\times0.9613) = 30.1\) nm. 보정하지 않으면 27.6 nm로 8% 작게 나온다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="베가드 법칙" data-answer="0.54825; 0.948" data-label="a =; f =" data-unit="nm; %" data-tol="0.02%; 1%">
+        <div class="prob-q"><p>Si₀.₇₅Ge₀.₂₅의 자유 격자 상수와 Si에 대한 격자 불일치(%)는?</p></div>
+        <div class="prob-sol"><p>\(a = 0.54310 + 0.01992(0.25) + 0.002733(0.25)^2 = 0.54310 + 0.004980 + 0.000171 = 0.54825\) nm. \(f = 0.00515/0.5431 = 0.948\%\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="변형 SiGe 로킹 곡선" data-answer="0.55034; -1863" data-label="a⊥ =; Δω =" data-unit="nm; ″" data-tol="0.02%; 1.5%">
+        <div class="prob-q"><p>Si₀.₈Ge₀.₂ 층을 Si(001) 위에 완전 변형으로 키웠다. \(2C_{12}/C_{11} = 0.768\)일 때 \(a_\perp\)와 Cu Kα1 (004) 로킹 곡선의 \(\Delta\omega\)(각초, ″)를 구하라. Si(004)의 브래그 각은 34.5646°다.</p></div>
+        <div class="prob-hint">\(a_L = 0.54719\) nm. \(a_\perp = a_L[1 - 0.768(a_\text{Si} - a_L)/a_L]\).</div>
+        <div class="prob-sol"><p>\(a_L = 0.547193\) nm, \(\varepsilon_\parallel = (0.54310 - 0.547193)/0.547193 = -7.48\times10^{-3}\), \(\varepsilon_\perp = +5.745\times10^{-3}\) → \(a_\perp = 0.55034\) nm. \(d_{004} = 0.137584\) nm, \(\sin\theta = 0.55987\) → \(\theta = 34.0471°\). \(\Delta\omega = (34.0471 - 34.5646)\times3600 = -1863″\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="조성과 완화도" data-answer="0.300; 0.50" data-label="x =; R =" data-tol="1.5%; 3%">
+        <div class="prob-q"><p>(004)와 (224) 측정으로 SiGe/Si(001) 층의 \(a_\parallel = 0.54621\) nm, \(a_\perp = 0.55171\) nm를 얻었다. \(2C_{12}/C_{11} = 0.766\)으로 Ge 조성 \(x\)와 완화도 \(R\)을 구하라.</p></div>
+        <div class="prob-hint">\(a_\perp - a_L = -0.766(a_\parallel - a_L)\)에서 \(a_L = (a_\perp + 0.766\,a_\parallel)/1.766\).</div>
+        <div class="prob-sol"><p>\(a_L = (0.55171 + 0.766\times0.54621)/1.766 = 0.54932\) nm. \(0.002733x^2 + 0.01992x - 0.00622 = 0\) → \(x = 0.300\). \(R = (0.54621 - 0.54310)/(0.54932 - 0.54310) = 0.50\). 절반쯤 완화된 Si₀.₇Ge₀.₃다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>역격자 벡터 \(\vec G_{hkl}\)에 대해 옳은 것은?</p><div class="opts">
+        <button class="opt">\((hkl)\) 면 안에 놓이고 길이는 \(d_{hkl}\)이다.</button><button class="opt" data-correct>\((hkl)\) 면에 수직이고 길이는 \(2\pi/d_{hkl}\)이다.</button><button class="opt">실격자 벡터 \([hkl]\)과 길이가 같다.</button><button class="opt">결정의 원자 배치(기저)에 따라 방향이 바뀐다.</button>
+      </div><div class="quiz-exp">역격자점 하나가 면 무리 하나를 나타낸다. 기저는 방향이 아니라 그 점의 세기(구조 인자)를 정한다.</div></div>
+      <div class="quiz-q"><p>에발트 구 그림에서 회절이 일어나는 조건은?</p><div class="opts">
+        <button class="opt">역격자 원점이 구 안에 있을 때</button><button class="opt" data-correct>역격자점(원점 아닌)이 구 표면 위에 놓일 때</button><button class="opt">구의 반지름이 \(|\vec G|\)와 같을 때</button><button class="opt">입사 빔이 역격자 축과 평행할 때</button>
+      </div><div class="quiz-exp">구 위의 점 \(\vec G\)에 대해 \(\vec k' = \vec k + \vec G\)의 크기가 \(k\)와 같아 탄성 산란과 라우에 조건을 동시에 만족한다.</div></div>
+      <div class="quiz-q"><p>fcc 금속에서는 보이는 (200) 반사가 같은 fcc 격자를 가진 실리콘에서 사라지는 이유는?</p><div class="opts">
+        <button class="opt">실리콘의 원자 산란 인자가 작아서</button><button class="opt">실리콘의 격자 상수가 커서 (200)의 브래그 각이 90°를 넘어서</button><button class="opt" data-correct>기저의 두 원자 (0,0,0)과 (¼,¼,¼)가 내보내는 파가 정반대 위상이라서</button><button class="opt">디바이–월러 인자 때문에</button>
+      </div><div class="quiz-exp">기저 인자 \(1 + e^{i\pi(h+k+l)/2}\)가 \(h+k+l = 2\)에서 0이다. 격자(fcc)가 같아도 기저가 회절 패턴을 바꾼다.</div></div>
+      <div class="quiz-q"><p>분말 회절 봉우리가 넓어지는 원인이 <em>아닌</em> 것은?</p><div class="opts">
+        <button class="opt">결정립이 작다.</button><button class="opt">결정립 안에 불균일한 미세 변형이 있다.</button><button class="opt">장비의 빔 발산과 파장 퍼짐</button><button class="opt" data-correct>결정립이 수 µm 이상으로 크다.</button>
+      </div><div class="quiz-exp">봉우리 폭은 면 수에 반비례한다. 결정립이 크면 크기 때문의 폭은 장비 폭보다 작아져 보이지 않는다. 셰러 식은 대략 100 nm 이하에서 쓸모 있다.</div></div>
+      <div class="quiz-q"><p>Si(001) 위 SiGe 층의 (004) 로킹 곡선만으로 Ge 조성을 정할 수 없는 이유는?</p><div class="opts">
+        <button class="opt">(004)는 SiGe에서 금지 반사라서</button><button class="opt" data-correct>(004)는 \(a_\perp\)만 보는데, \(a_\perp\)는 조성과 완화도 둘 다에 달려 있어서</button><button class="opt">기판 봉우리가 층 봉우리를 가려서</button><button class="opt">Cu Kα1 파장이 너무 길어서</button>
+      </div><div class="quiz-exp">완화도를 모르면 "고조성·완화"와 "저조성·변형"이 같은 \(a_\perp\)를 줄 수 있다. 비대칭 (224)로 \(a_\parallel\)을 함께 재야 한다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const pal = () => SB.palette();
+  const D2R = Math.PI / 180, R2D = 180 / Math.PI, TAU = 2 * Math.PI;
+  const LAM = Solid.const.CuKa1, ASI = 0.5431;
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const inv = (ch, opts, px, py) => [opts.x[0] + ((px - ch.box.x) / ch.box.w) * (opts.x[1] - opts.x[0]), opts.y[0] + ((ch.box.y + ch.box.h - py) / ch.box.h) * (opts.y[1] - opts.y[0])];
+  const inBox = (b, x, y, m = 0) => x >= b.x - m && x <= b.x + b.w + m && y >= b.y - m && y <= b.y + b.h + m;
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  /** N장 면의 간섭 함수(최댓값 1): [sin(Nδ/2)/(N sin(δ/2))]² */
+  const laueN = (delta, N) => { const s = Math.sin(delta / 2); if (Math.abs(s) < 1e-9) return 1; const v = Math.sin((N * delta) / 2) / (N * s); return v * v; };
+
+  /* ---------- SiGe 모형 (solid.js의 Solid.aSiGe는 2차 계수가 0.0002733으로 적혀 있어 x = 1에서 Ge(0.5658 nm)가 안 나온다 → 지역 함수로 보정) */
+  const aSiGe = (x) => 0.54310 + 0.01992 * x + 0.002733 * x * x;
+  const xFromA = (a) => { const c = a - 0.5431; return (-0.01992 + Math.sqrt(0.01992 * 0.01992 + 4 * 0.002733 * c)) / (2 * 0.002733); };
+  const nuR = (x) => { const s = Solid.elastic.Si, g = Solid.elastic.Ge; return (s.C12 + (g.C12 - s.C12) * x) / (s.C11 + (g.C11 - s.C11) * x); };   // C12/C11
+  function sigeCell(x, R) {
+    const aL = aSiGe(x), ap = ASI + R * (aL - ASI), eps = (ap - aL) / aL;
+    return { aL, apar: ap, aperp: aL * (1 - 2 * nuR(x) * eps) };
+  }
+  /** (hkl) 반사(면 법선이 [001]에서 기운 각 φ): θ_B, φ (rad) */
+  function reflAng(apar, aperp, h, k, l) {
+    const qx = Math.hypot(h, k) / apar, qz = l / aperp, q = Math.hypot(qx, qz);
+    return { th: Math.asin((LAM * q) / 2), phi: Math.atan2(qx, qz) };
+  }
+  /** 기하별 ω와 출사 각 */
+  function omegaOf(r, mode) { const w = mode === "004" ? r.th : mode === "inc" ? r.th - r.phi : r.th + r.phi; return { w, exit: 2 * r.th - w }; }
+  const SUB = { "004": reflAng(ASI, ASI, 0, 0, 4), "224": reflAng(ASI, ASI, 2, 2, 4) };
+  function dOmega(x, R, mode) {
+    const c = sigeCell(x, R), r = mode === "004" ? reflAng(c.apar, c.aperp, 0, 0, 4) : reflAng(c.apar, c.aperp, 2, 2, 4);
+    const s = mode === "004" ? SUB["004"] : SUB["224"];
+    const L = omegaOf(r, mode), S = omegaOf(s, mode);
+    return { dw: (L.w - S.w) * R2D * 3600, th: r.th, exit: L.exit, cell: c };
+  }
+
+  /* ---------------------------------------------------------- 머리 애니메이션: 원자면 반사 */
+  {
+    const N = 5, ratio = 0.35;            // λ/2d
+    const I = (thDeg) => laueN((TAU * Math.sin(thDeg * D2R)) / ratio, N);
+    const peaks = []; for (let n = 1; n * ratio <= 1; n++) peaks.push(Math.asin(n * ratio) * R2D);
+    const curve = []; for (let i = 0; i <= 400; i++) { const t = 3 + (84 * i) / 400; curve.push([t, I(t)]); }
+    const st = { th: 12, dir: 1, hold: 0, t: 0 };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 560;
+      const sc = narrow ? { x: 0, y: 0, w, h: h * 0.6 } : { x: 0, y: 0, w: w * 0.58, h };
+      const lamPx = narrow ? 18 : 24, dPx = lamPx / (2 * ratio);
+      const cx = sc.x + sc.w * 0.5, y0 = sc.y + sc.h - (N - 1) * dPx - 18;
+      const th = st.th * D2R, uin = [Math.cos(th), Math.sin(th)], uout = [Math.cos(th), -Math.sin(th)];
+      const k = TAU / lamPx, wt = st.t * 9;
+      ctx.save(); ctx.beginPath(); ctx.rect(sc.x, sc.y, sc.w, sc.h); ctx.clip();
+      // 원자면
+      for (let n = 0; n < N; n++) {
+        const y = y0 + n * dPx;
+        ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sc.x + 6, y); ctx.lineTo(sc.x + sc.w - 6, y); ctx.stroke();
+        ctx.fillStyle = P.dim; for (let x = cx - Math.floor(sc.w / 2 / 26) * 26; x < sc.x + sc.w; x += 26) { ctx.beginPath(); ctx.arc(x, y, 3.2, 0, TAU); ctx.fill(); }
+      }
+      const Lr = Math.hypot(sc.w, sc.h);
+      const inten = I(st.th);
+      // 반사 빔 빛(세기)
+      ctx.save(); ctx.globalAlpha = 0.08 + 0.4 * inten; ctx.strokeStyle = P.accent2; ctx.lineWidth = 6 + 12 * inten; ctx.lineCap = "round";
+      const pm = [cx, y0 + ((N - 1) * dPx) / 2];
+      ctx.beginPath(); ctx.moveTo(pm[0], pm[1]); ctx.lineTo(pm[0] + uout[0] * Lr, pm[1] + uout[1] * Lr); ctx.stroke(); ctx.restore();
+      for (let n = 0; n < N; n++) {
+        const Pn = [cx, y0 + n * dPx], al = 1 - n * 0.12;
+        ctx.globalAlpha = al; ctx.strokeStyle = P.faint; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(Pn[0] - uin[0] * Lr, Pn[1] - uin[1] * Lr); ctx.lineTo(Pn[0], Pn[1]); ctx.lineTo(Pn[0] + uout[0] * Lr, Pn[1] + uout[1] * Lr); ctx.stroke();
+        // 마루(위상 0) 표시: s = (2πm + ωt)/k − u_in·P_n
+        const base = uin[0] * Pn[0] + uin[1] * Pn[1];
+        const m0 = Math.floor(((-Lr + base) * k - wt) / TAU), m1 = Math.ceil(((Lr + base) * k - wt) / TAU);
+        for (let m = m0; m <= m1; m++) {
+          const s = (TAU * m + wt) / k - base; if (Math.abs(s) > Lr) continue;
+          const u = s < 0 ? uin : uout, p = [Pn[0] + u[0] * s, Pn[1] + u[1] * s], nrm = [-u[1], u[0]];
+          ctx.strokeStyle = s < 0 ? P.accent : P.accent2; ctx.lineWidth = 2.2;
+          ctx.beginPath(); ctx.moveTo(p[0] - nrm[0] * 6, p[1] - nrm[1] * 6); ctx.lineTo(p[0] + nrm[0] * 6, p[1] + nrm[1] * 6); ctx.stroke();
+        }
+      }
+      ctx.globalAlpha = 1;
+      // 광원 손잡이
+      const hl = Math.min(cx - sc.x - 20, (y0 - sc.y - (narrow ? 40 : 16)) / Math.max(0.2, uin[1]), sc.w * 0.45);
+      const hp = [cx - uin[0] * hl, y0 - uin[1] * hl];
+      self._hp = hp; self._P0 = [cx, y0];
+      ctx.restore();
+      handle(ctx, hp[0], hp[1], P.accent, 11);
+      const pd = (2 * Math.sin(th)) / ratio;
+      // 세기 그래프
+      const box = narrow ? { x: 46, y: h * 0.6 + 14, w: w - 60, h: h * 0.4 - 60 } : { x: sc.w + 46, y: 40, w: w - sc.w - 62, h: h - 88 };
+      const opts = { x: [0, 90], y: [0, 1.08] };
+      const ch = SB.chart(ctx, box, { x: opts.x, y: opts.y, xLabel: "θ (°)",  xTicks: [0, 15, 30, 45, 60, 75, 90], yTicks: [0, 0.5, 1], series: [{ data: curve, color: P.accent2, width: 2 }], vlines: peaks.map((t, i) => ({ x: t, color: P.faint, label: `n=${i + 1}` })) });
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(st.th), ch.Y(inten), 7, 0, TAU); ctx.fill();
+      const lab = `θ = ${st.th.toFixed(1)}° · 경로차 ${pd.toFixed(2)} λ · 세기 ${(inten * 100).toFixed(0)}%`;
+      if (narrow) SB.label(ctx, lab, box.x + box.w, h * 0.6 + 1, { align: "right", size: 11, color: P.text, mono: true });
+      else { SB.label(ctx, "반사 세기 (원자면 5장)", box.x, box.y - 24, { align: "left", size: 12, color: P.dim, bold: true }); SB.label(ctx, lab, sc.x + 10, sc.y + 14, { align: "left", size: 12, color: P.text, mono: true }); }
+      self._ch = ch; self._opts = opts;
+    }, { aspect: 0.42, minHeight: 300, maxHeight: 360 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._hp ? [{ id: "src", x: cv._hp[0], y: cv._hp[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id === "src") { const a = Math.atan2(cv._P0[1] - y, cv._P0[0] - x) * R2D; st.th = SB.clamp(a, 3, 86); st.hold = 4; }
+        else if (cv._ch && inBox(cv._ch.box, x, y, 10)) { st.th = SB.clamp(inv(cv._ch, cv._opts, x, y)[0], 3, 86); st.hold = 4; }
+      },
+    });
+    SB.loop("hero", (dt) => {
+      st.t += dt;
+      if (st.hold > 0) st.hold -= dt;
+      else { st.th += st.dir * dt * 7 * (1 - 0.85 * I(st.th)); if (st.th > 80) st.dir = -1; if (st.th < 6) st.dir = 1; }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 브래그 tangle */
+  SB.tangle("tg-bragg", (v) => {
+    const s = v.lam / (2 * v.d);
+    if (s > 1) return { th: "—", tth: "—", msg: `<b>λ &gt; 2d라서 반사가 없다.</b>` };
+    const th = Math.asin(s) * R2D, nmax = Math.floor((2 * v.d) / v.lam);
+    return { th: th.toFixed(2) + "°", tth: (2 * th).toFixed(2) + "°", msg: `가능한 차수는 \\(n \\le 2d/\\lambda = ${((2 * v.d) / v.lam).toFixed(2)}\\), 곧 ${nmax}차까지다.` };
+  }, { onChange: () => { const el = $("tg-bragg"); if (el) SB.math(el); } });
+
+  /* ---------------------------------------------------------- 브래그 실험대 */
+  {
+    let cvG = null, cvW = null;
+    const found = new Set(); let key = "";
+    const getT = SB.range("bg-th", (v) => v.toFixed(2) + "°", () => upd());
+    const getD = SB.range("bg-d", (v) => v.toFixed(4) + " nm", () => upd());
+    const getL = SB.range("bg-l", (v) => v.toFixed(4) + " nm", () => upd());
+    SB.seg("bg-src", (v) => getL.set(Number(v)));
+    function upd() {
+      const d = getD(), lam = getL(), th = getT() * D2R, k = d.toFixed(4) + "," + lam.toFixed(4);
+      if (k !== key) { key = k; found.clear(); }
+      const pd = 2 * d * Math.sin(th), r = pd / lam, nmax = Math.floor((2 * d) / lam);
+      const nn = Math.round(r); if (nn >= 1 && Math.abs(r - nn) < 0.015) found.add(nn);
+      SB.stat("bg-pd", pd.toFixed(4) + " nm");
+      SB.stat("bg-ratio", r.toFixed(3) + " λ");
+      const I = laueN(TAU * r, 20);
+      SB.stat("bg-I", (I * 100).toFixed(I > 0.1 ? 0 : 1) + " %");
+      const tg = $("bg-targets");
+      tg.innerHTML = nmax < 1 ? `<span>반사 불가능 (λ &gt; 2d)</span>` : Array.from({ length: nmax }, (_, i) => `<span class="${found.has(i + 1) ? "hit" : ""}">n = ${i + 1}${found.has(i + 1) ? " ✓ " + (Math.asin(((i + 1) * lam) / (2 * d)) * R2D).toFixed(2) + "°" : ""}</span>`).join("") + (nmax >= 1 && found.size === nmax ? `<span class="hit">모두 찾음!</span>` : "");
+      cvG && cvG.redraw(); cvW && cvW.redraw();
+    }
+    cvG = SB.canvas("cv-bg", (ctx, w, h, self) => {
+      const P = pal(), d = getD(), lam = getL(), th = getT() * D2R;
+      const D = SB.clamp(d * 230, 26, 100), cx = w * 0.5, y1 = h * 0.5, y2 = y1 + D;
+      for (let n = -1; n <= 2; n++) {
+        const y = y1 + n * D; if (y < 30 || y > h - 6) continue;
+        ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(8, y); ctx.lineTo(w - 8, y); ctx.stroke();
+        ctx.fillStyle = P.dim; for (let x = cx - 8 * 30; x < w; x += 30) if (x > 0) { ctx.beginPath(); ctx.arc(x, y, 4.5, 0, TAU); ctx.fill(); }
+      }
+      const uin = [Math.cos(th), Math.sin(th)], uout = [Math.cos(th), -Math.sin(th)], L = Math.hypot(w, h);
+      const A = [cx, y1], B = [cx, y2];
+      const r = (2 * d * Math.sin(th)) / lam, I = laueN(TAU * r, 20);
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h); ctx.clip();
+      ctx.lineWidth = 2.4; ctx.strokeStyle = P.accent;
+      for (const Q of [A, B]) { ctx.beginPath(); ctx.moveTo(Q[0] - uin[0] * L, Q[1] - uin[1] * L); ctx.lineTo(Q[0], Q[1]); ctx.stroke(); }
+      ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.35 + 0.65 * I;
+      for (const Q of [A, B]) { ctx.beginPath(); ctx.moveTo(Q[0], Q[1]); ctx.lineTo(Q[0] + uout[0] * L, Q[1] + uout[1] * L); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+      const ds = D * Math.sin(th), F1 = [B[0] - uin[0] * ds, B[1] - uin[1] * ds], F2 = [B[0] + uout[0] * ds, B[1] + uout[1] * ds];
+      SB.dashLine(ctx, A[0], A[1], F1[0], F1[1], P.faint); SB.dashLine(ctx, A[0], A[1], F2[0], F2[1], P.faint);
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.globalAlpha = 0.9;
+      ctx.beginPath(); ctx.moveTo(F1[0], F1[1]); ctx.lineTo(B[0], B[1]); ctx.lineTo(F2[0], F2[1]); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.restore();
+      // 각도 호
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(A[0], A[1], 34, Math.PI, Math.PI + th); ctx.stroke();
+      SB.label(ctx, "θ", A[0] - 46 * Math.cos(th / 2), A[1] - 46 * Math.sin(th / 2), { size: 13 });
+      SB.label(ctx, "d", w - 20, (y1 + y2) / 2, { size: 13 });
+      const hl = Math.min(cx - 18, (y1 - 22) / Math.max(0.15, uin[1]));
+      const hp = [A[0] - uin[0] * hl, A[1] - uin[1] * hl];
+      self._hp = hp; self._A = A;
+      handle(ctx, hp[0], hp[1], P.accent, 12);
+    }, { aspect: 0.75, minHeight: 230, maxHeight: 340 });
+    SB.drag(cvG, {
+      handles: () => (cvG._hp ? [{ id: "src", x: cvG._hp[0], y: cvG._hp[1], r: 14 }] : []),
+      move: (id, x, y) => { const a = Math.atan2(cvG._A[1] - y, cvG._A[0] - x) * R2D; getT.set(SB.clamp(a, 2, 88)); },
+    });
+    let ph = 0;
+    cvW = SB.canvas("cv-bgw", (ctx, w, h) => {
+      const P = pal(), r = (2 * getD() * Math.sin(getT() * D2R)) / getL(), dphi = TAU * r;
+      const rows = [{ y: h * 0.2, c: P.accent2, f: (x) => Math.sin(x - ph), lab: "위 면 반사파" }, { y: h * 0.47, c: P.accent2, f: (x) => Math.sin(x - ph - dphi), lab: "아래 면 반사파" }, { y: h * 0.78, c: P.text, f: (x) => Math.sin(x - ph) + Math.sin(x - ph - dphi), lab: "합" }];
+      const amp = h * 0.075;
+      rows.forEach((rw, i) => {
+        ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(10, rw.y); ctx.lineTo(w - 10, rw.y); ctx.stroke();
+        ctx.strokeStyle = rw.c; ctx.lineWidth = i === 2 ? 2.6 : 2; ctx.beginPath();
+        for (let px = 10; px <= w - 10; px += 2) { const x = ((px - 10) / (w - 20)) * 3 * TAU, y = rw.y - amp * rw.f(x); px === 10 ? ctx.moveTo(px, y) : ctx.lineTo(px, y); }
+        ctx.stroke();
+        SB.label(ctx, rw.lab, 12, rw.y - amp * (i === 2 ? 2 : 1) - 10, { align: "left", size: 11, color: P.dim });
+      });
+      const frac = ((r % 1) + 1) % 1;
+      SB.label(ctx, `위상차 ${(frac * 360).toFixed(0)}°`, w - 12, h - 10, { align: "right", size: 12, color: Math.min(frac, 1 - frac) < 0.015 ? P.accent : P.dim, bold: true });
+    }, { aspect: 0.75, minHeight: 230, maxHeight: 340 });
+    SB.loop("sim-bragg", (dt) => { ph += dt * 3; cvW.redraw(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 실격자 ↔ 역격자 (2D) */
+  {
+    const st = { a1: [1, 0], a2: [0.3, 1.05] };
+    const area = () => st.a1[0] * st.a2[1] - st.a1[1] * st.a2[0];
+    const recip = () => { const A = area(); return { b1: [st.a2[1] / A, -st.a2[0] / A], b2: [-st.a1[1] / A, st.a1[0] / A] }; };   // 2π/a 단위
+    const lattice = (ctx, o, v1, v2, s, box, col) => {
+      ctx.fillStyle = col;
+      for (let i = -8; i <= 8; i++) for (let j = -8; j <= 8; j++) {
+        const x = o[0] + s * (i * v1[0] + j * v2[0]), y = o[1] - s * (i * v1[1] + j * v2[1]);
+        if (inBox(box, x, y, -4)) { ctx.beginPath(); ctx.arc(x, y, 3.5, 0, TAU); ctx.fill(); }
+      }
+    };
+    const cv = SB.canvas("cv-rc", (ctx, w, h, self) => {
+      const P = pal(), stack = w < 560;
+      const L = stack ? { x: 0, y: 0, w, h: h / 2 - 3 } : { x: 0, y: 0, w: w / 2 - 4, h }, Rb = stack ? { x: 0, y: h / 2 + 3, w, h: h / 2 - 3 } : { x: w / 2 + 4, y: 0, w: w / 2 - 4, h };
+      const s = Math.min(L.w, L.h) * 0.22, sr = s;
+      const oL = [L.x + L.w * 0.42, L.y + L.h * 0.62], oR = [Rb.x + Rb.w * 0.5, Rb.y + Rb.h * 0.56];
+      ctx.strokeStyle = P.border; ctx.beginPath(); if (stack) { ctx.moveTo(8, h / 2); ctx.lineTo(w - 8, h / 2); } else { ctx.moveTo(w / 2, 8); ctx.lineTo(w / 2, h - 8); } ctx.stroke();
+      const { b1, b2 } = recip();
+      ctx.save(); ctx.beginPath(); ctx.rect(L.x, L.y, L.w, L.h); ctx.clip(); lattice(ctx, oL, st.a1, st.a2, s, L, P.faint);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.beginPath(); ctx.moveTo(oL[0], oL[1]); ctx.lineTo(oL[0] + s * st.a1[0], oL[1] - s * st.a1[1]); ctx.lineTo(oL[0] + s * (st.a1[0] + st.a2[0]), oL[1] - s * (st.a1[1] + st.a2[1])); ctx.lineTo(oL[0] + s * st.a2[0], oL[1] - s * st.a2[1]); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      const t1 = [oL[0] + s * st.a1[0], oL[1] - s * st.a1[1]], t2 = [oL[0] + s * st.a2[0], oL[1] - s * st.a2[1]];
+      SB.arrow(ctx, oL[0], oL[1], t1[0], t1[1], { color: P.accent, width: 2.6, label: "a₁" });
+      SB.arrow(ctx, oL[0], oL[1], t2[0], t2[1], { color: P.accent2, width: 2.6, label: "a₂" });
+      handle(ctx, t1[0], t1[1], P.accent, 9); handle(ctx, t2[0], t2[1], P.accent2, 9);
+      ctx.save(); ctx.beginPath(); ctx.rect(Rb.x, Rb.y, Rb.w, Rb.h); ctx.clip(); lattice(ctx, oR, b1, b2, sr, Rb, P.faint);
+      // b₁은 a₂ 방향(같은 색 점선)에, b₂는 a₁ 방향에 수직
+      const ln = (v, col) => { const n = Math.hypot(...v), u = [v[0] / n, v[1] / n]; SB.dashLine(ctx, oR[0] - u[0] * 400, oR[1] + u[1] * 400, oR[0] + u[0] * 400, oR[1] - u[1] * 400, col, [3, 4]); };
+      ln(st.a2, P.accent); ln(st.a1, P.accent2);
+      ctx.restore();
+      SB.arrow(ctx, oR[0], oR[1], oR[0] + sr * b1[0], oR[1] - sr * b1[1], { color: P.accent, width: 2.8, label: "b₁" });
+      SB.arrow(ctx, oR[0], oR[1], oR[0] + sr * b2[0], oR[1] - sr * b2[1], { color: P.accent2, width: 2.8, label: "b₂" });
+      SB.label(ctx, "실격자 (a 단위)", L.x + 10, L.y + 14, { align: "left", size: 12, color: P.dim, bold: true });
+      SB.label(ctx, "역격자 (2π/a 단위) · 같은 색 점선 ⟂ b", Rb.x + 10, Rb.y + 14, { align: "left", size: 12, color: P.dim, bold: true });
+      self._t = [t1, t2]; self._oL = oL; self._s = s;
+      const ang = Math.acos((st.a1[0] * st.a2[0] + st.a1[1] * st.a2[1]) / (Math.hypot(...st.a1) * Math.hypot(...st.a2))) * R2D;
+      $("rc-r").textContent = `|a₁| = ${Math.hypot(...st.a1).toFixed(2)}a, |a₂| = ${Math.hypot(...st.a2).toFixed(2)}a, 사잇각 ${ang.toFixed(0)}° → |b₁| = ${Math.hypot(...b1).toFixed(2)}, |b₂| = ${Math.hypot(...b2).toFixed(2)} (2π/a), 셀 넓이 곱 = (2π)² × ${(area() * (b1[0] * b2[1] - b1[1] * b2[0])).toFixed(3)}`;
+    }, { aspect: 0.5, minHeight: window.innerWidth < 600 ? 460 : 240, maxHeight: window.innerWidth < 600 ? 520 : 340 });
+    SB.drag(cv, {
+      handles: () => (cv._t ? [{ id: 0, x: cv._t[0][0], y: cv._t[0][1], r: 12 }, { id: 1, x: cv._t[1][0], y: cv._t[1][1], r: 12 }] : []),
+      move: (id, x, y) => {
+        if (id == null) return;
+        let v = [(x - cv._oL[0]) / cv._s, (cv._oL[1] - y) / cv._s]; const L = Math.hypot(...v);
+        if (L < 0.5) v = v.map((c) => (c / L) * 0.5); if (L > 1.8) v = v.map((c) => (c / L) * 1.8);
+        const old = st[id ? "a2" : "a1"]; st[id ? "a2" : "a1"] = v;
+        if (area() < 0.25) st[id ? "a2" : "a1"] = old;
+      },
+    });
+    $("rc-sq").addEventListener("click", () => { st.a1 = [1, 0]; st.a2 = [0, 1]; cv.redraw(); });
+    $("rc-hex").addEventListener("click", () => { st.a1 = [1, 0]; st.a2 = [0.5, Math.sqrt(3) / 2]; cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 면 무리와 G (2D 정사각) */
+  {
+    const st = { h: 1, k: 1 };
+    const g = (a, b) => (b ? g(b, a % b) : Math.abs(a));
+    const cv = SB.canvas("cv-pl", (ctx, w, h, self) => {
+      const P = pal(), stack = w < 560;
+      const L = stack ? { x: 0, y: 0, w, h: h / 2 - 3 } : { x: 0, y: 0, w: w / 2 - 4, h }, Rb = stack ? { x: 0, y: h / 2 + 3, w, h: h / 2 - 3 } : { x: w / 2 + 4, y: 0, w: w / 2 - 4, h };
+      const s = Math.min(L.w, L.h) / 5.2, sr = Math.min(Rb.w, Rb.h) / 7.4, oL = [L.x + L.w / 2, L.y + L.h / 2], oR = [Rb.x + Rb.w / 2, Rb.y + Rb.h / 2 + 6];
+      ctx.strokeStyle = P.border; ctx.beginPath(); if (stack) { ctx.moveTo(8, h / 2); ctx.lineTo(w - 8, h / 2); } else { ctx.moveTo(w / 2, 8); ctx.lineTo(w / 2, h - 8); } ctx.stroke();
+      const { h: H, k: K } = st, n = Math.hypot(H, K), d = 1 / n;
+      ctx.save(); ctx.beginPath(); ctx.rect(L.x, L.y, L.w, L.h); ctx.clip();
+      // 면: Hx + Ky = m
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.6; ctx.globalAlpha = 0.75;
+      const ux = -K / n, uy = H / n;   // 면 방향
+      for (let m = -20; m <= 20; m++) { const px = (m * H) / (n * n), py = (m * K) / (n * n); const X0 = oL[0] + s * (px - ux * 9), Y0 = oL[1] - s * (py - uy * 9), X1 = oL[0] + s * (px + ux * 9), Y1 = oL[1] - s * (py + uy * 9); ctx.beginPath(); ctx.moveTo(X0, Y0); ctx.lineTo(X1, Y1); ctx.stroke(); }
+      ctx.globalAlpha = 1; ctx.fillStyle = P.text;
+      for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) { const x = oL[0] + s * i, y = oL[1] - s * j; if (inBox(L, x, y, -3)) { ctx.beginPath(); ctx.arc(x, y, 3.6, 0, TAU); ctx.fill(); } }
+      SB.arrow(ctx, oL[0], oL[1], oL[0] + s * d * (H / n), oL[1] - s * d * (K / n), { color: P.accent2, width: 2.4 });
+      ctx.restore();
+      SB.label(ctx, `d = a/√${H * H + K * K}`, oL[0] + s * d * (H / n) * 0.5 + 12, oL[1] - s * d * (K / n) * 0.5 - 12, { size: 12, color: P.accent2, bold: true, align: "left" });
+      SB.label(ctx, `실격자: (${H} ${K}) 면`, 10, 14, { align: "left", size: 12, color: P.dim, bold: true });
+      // 역격자
+      ctx.fillStyle = P.faint;
+      for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) { const x = oR[0] + sr * i, y = oR[1] - sr * j; ctx.beginPath(); ctx.arc(x, y, i || j ? 4 : 5, 0, TAU); ctx.fill(); }
+      const tip = [oR[0] + sr * H, oR[1] - sr * K];
+      SB.arrow(ctx, oR[0], oR[1], tip[0], tip[1], { color: P.accent, width: 2.8 });
+      handle(ctx, tip[0], tip[1], P.accent, 10);
+      SB.label(ctx, `G = (${H} ${K})`, tip[0], tip[1] - 20, { size: 12, color: P.accent, bold: true });
+      SB.label(ctx, "역격자 (2π/a 간격)", Rb.x + 10, Rb.y + 14, { align: "left", size: 12, color: P.dim, bold: true });
+      self._tip = tip; self._oR = oR; self._sr = sr;
+      const gg = g(H, K);
+      $("pl-r").textContent = `(${H} ${K}): d = a/√${H * H + K * K} = ${(ASI / n).toFixed(4)} nm, |G| = 2π/d = ${((TAU * n) / ASI).toFixed(2)} nm⁻¹ (a = 0.5431 nm)` + (gg > 1 ? ` · (${H / gg} ${K / gg}) 면의 ${gg}차 반사: 원자 없는 중간 면까지 포함한 간격이다` : "");
+    }, { aspect: 0.5, minHeight: window.innerWidth < 600 ? 480 : 240, maxHeight: window.innerWidth < 600 ? 540 : 340 });
+    SB.drag(cv, {
+      handles: () => (cv._tip ? [{ id: "g", x: cv._tip[0], y: cv._tip[1], r: 12 }] : []),
+      move: (id, x, y) => {
+        if (id == null) return;
+        let H = Math.round((x - cv._oR[0]) / cv._sr), K = Math.round((cv._oR[1] - y) / cv._sr);
+        H = SB.clamp(H, -3, 3); K = SB.clamp(K, -3, 3); if (!H && !K) return;
+        st.h = H; st.k = K;
+      },
+    });
+  }
+
+  /* ---------------------------------------------------------- 에발트 구 2D */
+  {
+    const b = TAU / ASI;   // nm⁻¹
+    const st = { C: [-3.1 * b, 0.9 * b], goal: [1, 1], solved: false };
+    const getRot = SB.range("ew-rot", (v) => v.toFixed(1) + "°", () => cv.redraw());
+    const getBw = SB.range("ew-bw", (v) => (v ? "±" + (v / 2).toFixed(0) + " %" : "단색"), () => cv.redraw());
+    $("ew-lim").addEventListener("change", () => cv.redraw());
+    const goals = [[1, 1], [2, 0], [2, 1], [1, 2], [3, 1], [-1, 2], [2, 2], [3, 0], [0, 2], [1, -2], [3, 2]];
+    const newGoal = () => { let g; do g = goals[Math.floor(Math.random() * goals.length)]; while (g[0] === st.goal[0] && g[1] === st.goal[1]); st.goal = g; st.solved = false; cv.redraw(); };
+    $("ew-new").addEventListener("click", newGoal);
+    function litList() {
+      const k = Math.hypot(...st.C), kh = [-st.C[0] / k, -st.C[1] / k], bw = getBw() / 200;
+      const kmin = k * (1 - bw), kmax = k * (1 + bw), tol = 0.006 * k, rot = getRot() * D2R, c = Math.cos(rot), s = Math.sin(rot);
+      const out = [];
+      for (let i = -7; i <= 7; i++) for (let j = -7; j <= 7; j++) {
+        if (!i && !j) continue;
+        const G = [b * (c * i - s * j), b * (s * i + c * j)], kg = kh[0] * G[0] + kh[1] * G[1];
+        if (kg >= 0) continue;
+        const kp = -(G[0] * G[0] + G[1] * G[1]) / (2 * kg);   // 이 G를 회절시키는 |k|
+        if (kp >= kmin - tol && kp <= kmax + tol) out.push({ i, j, G, kp, tth: 2 * Math.asin(Math.min(1, Math.hypot(...G) / (2 * kp))) * R2D });
+      }
+      return { k, kh, kmin, kmax, out, rot: [c, s] };
+    }
+    const cv = SB.canvas("cv-ew", (ctx, w, h, self) => {
+      const P = pal(), sc = Math.min(w / 12.5, h / 7.6) / b, O = [w * 0.66, h * 0.56];
+      const X = (v) => O[0] + v[0] * sc, Y = (v) => O[1] - v[1] * sc;
+      const L = litList(), [c, s] = L.rot;
+      // 파장 퍼짐 구간
+      if (L.kmax > L.kmin * 1.0001) {
+        ctx.fillStyle = SB.color("accent-soft");
+        ctx.beginPath(); ctx.arc(O[0] - L.kh[0] * L.kmax * sc, O[1] + L.kh[1] * L.kmax * sc, L.kmax * sc, 0, TAU); ctx.fill();
+        ctx.fillStyle = SB.color("canvas-bg"); ctx.beginPath(); ctx.arc(O[0] - L.kh[0] * L.kmin * sc, O[1] + L.kh[1] * L.kmin * sc, L.kmin * sc, 0, TAU); ctx.fill();
+      }
+      // 한계 구
+      if ($("ew-lim").checked) { ctx.strokeStyle = P.dim; ctx.setLineDash([6, 5]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(O[0], O[1], 2 * L.k * sc, 0, TAU); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, "한계 구 2k", O[0], O[1] - 2 * L.k * sc + 12, { size: 11, color: P.dim }); }
+      // 격자점
+      for (let i = -7; i <= 7; i++) for (let j = -7; j <= 7; j++) {
+        const G = [b * (c * i - s * j), b * (s * i + c * j)], x = X(G), y = Y(G);
+        if (x < -5 || x > w + 5 || y < -5 || y > h + 5) continue;
+        const isGoal = i === st.goal[0] && j === st.goal[1];
+        ctx.fillStyle = !i && !j ? P.text : P.faint; ctx.beginPath(); ctx.arc(x, y, !i && !j ? 5 : 3.5, 0, TAU); ctx.fill();
+        if (isGoal) { ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, 11, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
+      }
+      // 에발트 구
+      const Cp = [X(st.C), Y(st.C)];
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(Cp[0], Cp[1], L.k * sc, 0, TAU); ctx.stroke();
+      // 켜진 점과 k'
+      L.out.forEach((p) => {
+        const x = X(p.G), y = Y(p.G);
+        const Ck = [O[0] - L.kh[0] * p.kp * sc, O[1] + L.kh[1] * p.kp * sc];
+        SB.arrow(ctx, Ck[0], Ck[1], x, y, { color: P.accent2, width: 1.8 });
+        ctx.save(); ctx.shadowColor = P.accent2; ctx.shadowBlur = 14; ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.fill(); ctx.restore();
+        if (L.out.length <= 8) SB.label(ctx, `(${p.i} ${p.j})`, Math.min(x + 14, w - 40), Math.max(y - 12, 12), { size: 11, color: P.text, align: "left", mono: true });
+      });
+      SB.arrow(ctx, Cp[0], Cp[1], O[0], O[1], { color: P.accent, width: 2.8, label: "k" });
+      SB.label(ctx, "O", O[0] + 12, O[1] + 14, { size: 12, bold: true });
+      SB.label(ctx, "C", Cp[0] - 14, Cp[1] - 14, { size: 12, bold: true, color: P.accent });
+      handle(ctx, Cp[0], Cp[1], P.accent, 11);
+      self._C = Cp; self._O = O; self._sc = sc;
+      const lam = TAU / L.k;
+      SB.stat("ew-lam", L.kmax > L.kmin * 1.0001 ? `${(TAU / L.kmax).toFixed(3)}–${(TAU / L.kmin).toFixed(3)} nm` : `${lam.toFixed(4)} nm`);
+      SB.stat("ew-on", L.out.length ? L.out.slice(0, 3).map((p) => `(${p.i} ${p.j}) 2θ=${p.tth.toFixed(1)}°`).join(", ") + (L.out.length > 3 ? ` 외 ${L.out.length - 3}개` : "") : "없음");
+      const hit = L.out.find((p) => p.i === st.goal[0] && p.j === st.goal[1]);
+      if (hit && !st.solved) st.solved = true;
+      $("ew-goal").className = "rd-msg" + (hit ? " ok" : "");
+      $("ew-goal").textContent = hit ? `명중! (${st.goal.join(" ")}) 반사: λ = ${(TAU / hit.kp).toFixed(3)} nm, 2θ = ${hit.tth.toFixed(1)}°` : `(${st.goal.join(" ")}) 점(점선 고리)을 구 위에 올려라.`;
+    }, { aspect: 0.62, minHeight: 280, maxHeight: 420 });
+    SB.drag(cv, {
+      handles: () => (cv._C ? [{ id: "C", x: cv._C[0], y: cv._C[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id == null) return;
+        x = SB.clamp(x, 12, cv.w - 12); y = SB.clamp(y, 12, cv.h - 12);
+        let v = [(x - cv._O[0]) / cv._sc, (cv._O[1] - y) / cv._sc]; const L = Math.hypot(...v);
+        if (L < 0.8 * b) v = v.map((q) => (q / L) * 0.8 * b); if (L > 9 * b) v = v.map((q) => (q / L) * 9 * b);
+        st.C = v;
+      },
+    });
+  }
+
+  /* ---------------------------------------------------------- 브릴루앙 영역 번호 (2D) */
+  {
+    const st = { k: [0.62, 0.35] };   // b 단위
+    const lats = {
+      sq: { b1: [1, 0], b2: [0, 1], pts: [["Γ", [0, 0]], ["X", [0.5, 0]], ["M", [0.5, 0.5]]] },
+      hex: { b1: [Math.sqrt(3) / 2, -0.5], b2: [0, 1], pts: [["Γ", [0, 0]], ["M", [Math.sqrt(3) / 4, 0.25]], ["K", [1 / Math.sqrt(3), 0]]] },
+    };
+    let lat = "sq", cache = null;
+    const Gs = (L) => { const o = []; for (let i = -5; i <= 5; i++) for (let j = -5; j <= 5; j++) if (i || j) { const g = [i * L.b1[0] + j * L.b2[0], i * L.b1[1] + j * L.b2[1]]; if (Math.hypot(...g) < 4.2) o.push(g); } return o; };
+    const zoneOf = (k, G) => { const k2 = k[0] * k[0] + k[1] * k[1]; let n = 1; for (const g of G) { const dx = k[0] - g[0], dy = k[1] - g[1]; if (dx * dx + dy * dy < k2) n++; } return n; };
+    const getLat = SB.seg("zn-lat", (v) => { lat = v; cache = null; st.k = v === "sq" ? [0.62, 0.35] : [0.55, 0.3]; cv.redraw(); });
+    const cv = SB.canvas("cv-zn", (ctx, w, h, self) => {
+      const P = pal(), L = lats[lat], G = Gs(L), sc = Math.min(w, h) / 3.6, O = [w / 2, h / 2];
+      const keyNow = [w, h, lat, SB.isDark()].join(",");
+      if (!cache || cache.key !== keyNow) {
+        const off = document.createElement("canvas"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+        off.width = Math.round(w * dpr); off.height = Math.round(h * dpr);
+        const oc = off.getContext("2d"); oc.scale(dpr, dpr);
+        const cols = [P.series[0], P.series[1], P.series[2], P.series[3], P.series[4] || P.series[0], P.series[5] || P.series[1]];
+        const step = 3;
+        for (let py = 0; py < h; py += step) for (let px = 0; px < w; px += step) {
+          const n = zoneOf([(px + step / 2 - O[0]) / sc, (O[1] - py - step / 2) / sc], G);
+          oc.globalAlpha = n === 1 ? 0.42 : Math.max(0.1, 0.34 - 0.04 * n); oc.fillStyle = cols[(n - 1) % cols.length]; oc.fillRect(px, py, step, step);
+        }
+        cache = { key: keyNow, off };
+      }
+      ctx.drawImage(cache.off, 0, 0, w, h);
+      // 브래그 선(가까운 G의 수직 이등분선)
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1; ctx.globalAlpha = 0.6;
+      G.filter((g) => Math.hypot(...g) < 2.05).forEach((g) => { const m = [g[0] / 2, g[1] / 2], t = [-g[1], g[0]]; ctx.beginPath(); ctx.moveTo(O[0] + (m[0] - t[0] * 4) * sc, O[1] - (m[1] - t[1] * 4) * sc); ctx.lineTo(O[0] + (m[0] + t[0] * 4) * sc, O[1] - (m[1] + t[1] * 4) * sc); ctx.stroke(); });
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = P.text; G.forEach((g) => { const x = O[0] + g[0] * sc, y = O[1] - g[1] * sc; if (x > 0 && x < w && y > 0 && y < h) { ctx.beginPath(); ctx.arc(x, y, 3.5, 0, TAU); ctx.fill(); } });
+      L.pts.forEach(([n, p]) => { const x = O[0] + p[0] * sc, y = O[1] - p[1] * sc; ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fill(); SB.label(ctx, n, x + (n === "Γ" ? -12 : 12), y + 12, { size: 13, bold: true }); });
+      // k와 환원된 k
+      const kz = zoneOf(st.k, G);
+      let best = [0, 0], bd = Math.hypot(...st.k); G.forEach((g) => { const d = Math.hypot(st.k[0] - g[0], st.k[1] - g[1]); if (d < bd - 1e-9) { bd = d; best = g; } });
+      const red = [st.k[0] - best[0], st.k[1] - best[1]];
+      const kp = [O[0] + st.k[0] * sc, O[1] - st.k[1] * sc], rp = [O[0] + red[0] * sc, O[1] - red[1] * sc];
+      SB.arrow(ctx, O[0], O[1], kp[0], kp[1], { color: P.text, width: 2 });
+      if (kz > 1) { SB.dashLine(ctx, kp[0], kp[1], rp[0], rp[1], P.text, [4, 3]); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(rp[0], rp[1], 6, 0, TAU); ctx.stroke(); }
+      handle(ctx, kp[0], kp[1], P.accent, 10);
+      self._kp = kp; self._O = O; self._sc = sc;
+      $("zn-r").textContent = `제${kz} 브릴루앙 영역 · |k| = ${(Math.hypot(...st.k) * (lat === "sq" ? 2 : 4 / Math.sqrt(3))).toFixed(2)} π/a` + (kz > 1 ? ` · G = (${best.map((v) => v.toFixed(2)).join(", ")})b만큼 옮기면 제1 영역의 ○ 자리` : "");
+    }, { aspect: 0.6, minHeight: 260, maxHeight: 380 });
+    SB.drag(cv, { handles: () => (cv._kp ? [{ id: "k", x: cv._kp[0], y: cv._kp[1], r: 12 }] : []), free: true, move: (id, x, y) => { st.k = [SB.clamp((x - cv._O[0]) / cv._sc, -1.7, 1.7), SB.clamp((cv._O[1] - y) / cv._sc, -1.7, 1.7)]; } });
+  }
+
+  /* ---------------------------------------------------------- fcc 브릴루앙 영역 3D */
+  {
+    const V = Solid.vec;
+    const verts = [];
+    const base = [1, 0.5, 0], perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]], key = new Set();
+    perms.forEach((pm) => [-1, 1].forEach((sx) => [-1, 1].forEach((sy) => { const v = [0, 0, 0]; v[pm[0]] = base[0] * sx; v[pm[1]] = base[1] * sy; v[pm[2]] = 0; const kk = v.join(","); if (!key.has(kk)) { key.add(kk); verts.push(v); } })));
+    const edges = []; for (let i = 0; i < verts.length; i++) for (let j = i + 1; j < verts.length; j++) if (Math.abs(V.len(V.sub(verts[i], verts[j])) - Math.SQRT1_2) < 1e-6) edges.push([i, j]);
+    const faces = [];
+    [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach((n) => faces.push({ n, c: n, d: 1 }));
+    [-1, 1].forEach((a) => [-1, 1].forEach((b) => [-1, 1].forEach((c) => faces.push({ n: [a, b, c], c: [a / 2, b / 2, c / 2], d: 1.5 }))));
+    faces.forEach((f) => {
+      f.v = verts.filter((v) => Math.abs(V.dot(v, f.n) - f.d) < 1e-6);
+      const u = V.norm(V.sub(f.v[0], f.c)), w2 = V.norm(V.cross(f.n, u));
+      f.v.sort((A, B) => Math.atan2(V.dot(V.sub(A, f.c), w2), V.dot(V.sub(A, f.c), u)) - Math.atan2(V.dot(V.sub(B, f.c), w2), V.dot(V.sub(B, f.c), u)));
+    });
+    const pts = { Γ: [0, 0, 0], X: [1, 0, 0], L: [0.5, 0.5, 0.5], K: [0.75, 0.75, 0], U: [1, 0.25, 0.25], W: [1, 0.5, 0] };
+    const path = [["L", "Γ"], ["Γ", "X"], ["X", "U"], ["K", "Γ"]];
+    const st = { yaw: 0.55, pitch: 0.32, dragged: false, sel: "X", idle: 0 };
+    $("bz-path").addEventListener("change", () => cv.redraw());
+    $("bz-axes").addEventListener("change", () => cv.redraw());
+    const info = () => {
+      const p = pts[st.sel], d = V.len(p);
+      $("bz-r").textContent = `${st.sel} = (${p.map((v) => (Math.abs(v - 0.25) < 1e-6 ? "¼" : Math.abs(v - 0.5) < 1e-6 ? "½" : Math.abs(v - 0.75) < 1e-6 ? "¾" : v)).join(", ")}) 2π/a · Γ에서 ${d.toFixed(3)} × 2π/a = ${((d * TAU) / ASI).toFixed(2)} nm⁻¹ (Si)`;
+    };
+    const cv = SB.canvas("cv-bz", (ctx, w, h, self) => {
+      const P = pal(), axes = $("bz-axes").checked, sc = Math.min(w, h) * (axes ? 0.2 : 0.33);
+      const cam = Solid.camera({ yaw: st.yaw, pitch: st.pitch, scale: sc, cx: w / 2, cy: h / 2, center: [0, 0, 0] });
+      const pr = (p) => cam.project(p);
+      if (axes) {
+        ["kₓ", "k_y", "k_z"].forEach((lab, i) => { const e = [0, 0, 0]; e[i] = 2.3; const A = pr(V.mul(e, -1)), B = pr(e); SB.dashLine(ctx, A.x, A.y, B.x, B.y, P.faint, [3, 4]); SB.label(ctx, ["kx", "ky", "kz"][i], B.x, B.y, { size: 11, color: P.dim }); });
+        const nb = []; [-1, 1].forEach((a) => [-1, 1].forEach((b) => [-1, 1].forEach((c) => nb.push([a, b, c])))); [0, 1, 2].forEach((i) => [-2, 2].forEach((s) => { const v = [0, 0, 0]; v[i] = s; nb.push(v); }));
+        nb.forEach((v) => { const q = pr(v); ctx.fillStyle = P.dim; ctx.beginPath(); ctx.arc(q.x, q.y, 4, 0, TAU); ctx.fill(); });
+      }
+      const z0 = pr([0, 0, 0]).z, front = (f) => pr(f.n).z - z0 > 1e-9;
+      faces.map((f) => ({ f, z: pr(f.c).z })).sort((A, B) => A.z - B.z).forEach(({ f }) => {
+        const sq = f.d === 1;
+        ctx.fillStyle = sq ? SB.color("accent-2-soft") : SB.color("accent-soft"); ctx.globalAlpha = front(f) ? 0.6 : 0.2;
+        ctx.beginPath(); f.v.forEach((v, i) => { const q = pr(v); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); }); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      });
+      edges.forEach(([i, j]) => { const A = pr(verts[i]), B = pr(verts[j]), vis = faces.some((f) => front(f) && f.v.includes(verts[i]) && f.v.includes(verts[j])); ctx.strokeStyle = vis ? P.accent : P.faint; ctx.lineWidth = vis ? 1.6 : 1; ctx.setLineDash(vis ? [] : [3, 3]); ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); });
+      ctx.setLineDash([]);
+      if ($("bz-path").checked) path.forEach(([a, b]) => { const A = pr(pts[a]), B = pr(pts[b]); ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); });
+      self._pp = {};
+      Object.entries(pts).forEach(([n, p]) => { const q = pr(p); self._pp[n] = q; ctx.fillStyle = n === st.sel ? P.accent2 : P.text; ctx.beginPath(); ctx.arc(q.x, q.y, n === st.sel ? 6 : 4.5, 0, TAU); ctx.fill(); SB.label(ctx, n, q.x + 11, q.y - 11, { size: 13, bold: true, color: n === st.sel ? P.accent2 : P.text }); });
+      SB.label(ctx, "끌어서 돌리기 · 점 누르기", 10, h - 12, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.62, minHeight: 280, maxHeight: 400 });
+    Solid.orbit(cv, st, () => { st.idle = 4; cv.redraw(); });
+    (cv.canvas || $("cv-bz")).addEventListener("click", (e) => {
+      if (st.dragged) { st.dragged = false; return; }
+      const r = (cv.canvas || $("cv-bz")).getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      let best = null, bd = 22; Object.entries(cv._pp || {}).forEach(([n, q]) => { const d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = n; } });
+      if (best) { st.sel = best; info(); cv.redraw(); }
+    });
+    SB.loop("mini-bz3d", (dt) => { if (st.idle > 0) st.idle -= dt; else { st.yaw += dt * 0.25; cv.redraw(); } });
+    info();
+  }
+  SB.tangle("tg-bz", (v) => {
+    const X = TAU / v.a, L = (Math.sqrt(3) * Math.PI) / v.a, K = (3 * Math.SQRT2 * Math.PI) / (2 * v.a);
+    return { X: X.toFixed(2) + " nm⁻¹", L: L.toFixed(2) + " nm⁻¹", K: K.toFixed(2) + " nm⁻¹", EX: (0.0380998 * X * X).toFixed(2) + " eV" };
+  });
+
+  /* ---------------------------------------------------------- 원자 산란 인자 */
+  {
+    let cur = 0.25;
+    const els = [["Si", 14], ["Ge", 32], ["O", 8]];
+    const siRefl = [[1, 1, 1], [2, 2, 0], [3, 1, 1], [4, 0, 0], [3, 3, 1], [4, 2, 2]].map((hkl) => ({ hkl, s: 1 / (2 * Solid.dCubic(ASI * 10, ...hkl)) }));   // Å⁻¹
+    const getB = SB.range("ff-B", (v) => v.toFixed(2) + " Å²", () => cv.redraw());
+    const opts = { x: [0, 0.8], y: [0, 34] };
+    const cv = SB.canvas("cv-ff", (ctx, w, h, self) => {
+      const P = pal(), B = getB();
+      const series = [];
+      els.forEach(([n, Z], i) => {
+        const col = P.series[i];
+        const f0 = [], fe = [];
+        for (let j = 0; j <= 160; j++) { const s = (0.8 * j) / 160, f = Solid.formFactor(Z, s * 10); f0.push([s, f]); fe.push([s, f * Math.exp(-B * s * s)]); }
+        series.push({ data: f0, color: col, width: 1.2, dash: [4, 4] }, { data: fe, color: col, width: 2.4 });
+      });
+      const ch = SB.chart(ctx, { x: 52, y: 14, w: w - 66, h: h - 60 }, { x: opts.x, y: opts.y, xLabel: "s = sinθ/λ (Å⁻¹)", yLabel: "f (전자 수)", series, vlines: siRefl.map((r, i) => ({ x: r.s, color: P.faint, label: r.hkl.join(""), row: i % 2 })).concat([{ x: cur, color: P.text, dash: [2, 2] }]) });
+      els.forEach(([n, Z], i) => { const f = Solid.formFactor(Z, cur * 10) * Math.exp(-B * cur * cur); ctx.fillStyle = P.series[i]; ctx.beginPath(); ctx.arc(ch.X(cur), ch.Y(f), 5, 0, TAU); ctx.fill(); SB.label(ctx, n, ch.X(0.02) + 4, ch.Y(Z) - 2, { align: "left", size: 11, color: P.series[i], bold: true }); });
+      self._ch = ch;
+      const fs = Solid.formFactor(14, cur * 10);
+      $("ff-r").textContent = `s = ${cur.toFixed(3)} Å⁻¹: Si f = ${fs.toFixed(2)} → 열진동 포함 ${(fs * Math.exp(-B * cur * cur)).toFixed(2)}, 세기 감소 e^(−2Bs²) = ${Math.exp(-2 * B * cur * cur).toFixed(3)}`;
+    }, { aspect: 0.48, minHeight: 240, maxHeight: 320 });
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x, y) => { if (cv._ch) cur = SB.clamp(inv(cv._ch, opts, x, y)[0], 0, 0.8); } });
+  }
+
+  /* ---------------------------------------------------------- 구조 인자 페이저 */
+  {
+    let cvM = null, cvP = null;
+    const st = { h: 2, k: 0 };
+    const getL = SB.range("sf-l", (v) => String(v), () => upd());
+    const getFr = SB.range("sf-fr", (v) => v.toFixed(2), () => upd());
+    const getSt = SB.seg("sf-st", () => upd());
+    SB.seg("sf-mat", (v) => getFr.set(Number(v)));
+    const two = (n) => ["zincblende", "rocksalt", "cscl"].includes(n);
+    const F = (n, h, k, l) => Solid.structureFactor(n, h, k, l, [1, two(n) ? getFr() : 1]);
+    const fracPi = (ph) => { let v = ((ph / Math.PI) % 2 + 2) % 2; const t = [[0, "0"], [0.5, "½"], [1, "1"], [1.5, "3/2"], [2, "0"]].find((q) => Math.abs(q[0] - v) < 1e-6); return t ? t[1] : v.toFixed(2); };
+    function upd() {
+      const n = getSt(), l = getL(), f = F(n, st.h, st.k, l);
+      SB.stat("sf-hkl", `(${st.h} ${st.k} ${l})`);
+      SB.stat("sf-F", `${f.re.toFixed(2)} ${f.im < 0 ? "−" : "+"} ${Math.abs(f.im).toFixed(2)} i`);
+      SB.stat("sf-F2", f.abs2 < 1e-9 ? "0 (소멸)" : f.abs2.toFixed(2));
+      getFr.el.disabled = !two(n);
+      cvM && cvM.redraw(); cvP && cvP.redraw();
+    }
+    cvM = SB.canvas("cv-sfm", (ctx, w, h, self) => {
+      const P = pal(), n = getSt(), l = getL(), N = 4, cell = Math.min(w - 30, h - 56) / (2 * N + 1), O = [w / 2 + 6, 28 + (h - 56) / 2];
+      let mx = 0; const vals = {};
+      for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) { const v = F(n, i, j, l).abs2; vals[i + "," + j] = v; mx = Math.max(mx, v); }
+      ctx.strokeStyle = P.grid; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(O[0] - (N + 0.5) * cell, O[1]); ctx.lineTo(O[0] + (N + 0.5) * cell, O[1]); ctx.moveTo(O[0], O[1] - (N + 0.5) * cell); ctx.lineTo(O[0], O[1] + (N + 0.5) * cell); ctx.stroke();
+      for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+        const x = O[0] + i * cell, y = O[1] - j * cell, v = vals[i + "," + j];
+        if (v > 1e-9) { ctx.fillStyle = !i && !j && !l ? P.faint : P.accent; ctx.beginPath(); ctx.arc(x, y, Math.max(1.8, 0.46 * cell * Math.sqrt(v / mx)), 0, TAU); ctx.fill(); }
+        else { ctx.strokeStyle = P.faint; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3); ctx.moveTo(x + 3, y - 3); ctx.lineTo(x - 3, y + 3); ctx.stroke(); }
+        if (i === st.h && j === st.k) { ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, 0.5 * cell, 0, TAU); ctx.stroke(); }
+      }
+      SB.label(ctx, `hk${l} 면 · 원 넓이 ∝ |F|² · × = 소멸`, 8, h - 10, { align: "left", size: 11, color: P.dim, bold: true });
+      SB.label(ctx, "h →", O[0] + (N + 0.5) * cell, O[1] + cell * 0.5, { size: 11, color: P.dim, align: "right" });
+      SB.label(ctx, "k ↑", O[0] + 16, O[1] - (N + 0.5) * cell + 4, { size: 11, color: P.dim });
+      self._O = O; self._cell = cell;
+    }, { aspect: 1, minHeight: 240, maxHeight: 380 });
+    SB.drag(cvM, { free: true, handles: () => [], move: (id, x, y) => { if (!cvM._O) return; const i = Math.round((x - cvM._O[0]) / cvM._cell), j = Math.round((cvM._O[1] - y) / cvM._cell); if (Math.abs(i) <= 4 && Math.abs(j) <= 4 && (i !== st.h || j !== st.k)) { st.h = i; st.k = j; upd(); } } });
+    cvP = SB.canvas("cv-sfp", (ctx, w, h) => {
+      const P = pal(), n = getSt(), l = getL(), cellAt = Solid.structures[n].cell, fr = two(n) ? getFr() : 1;
+      const tot = cellAt.reduce((s, a) => s + (a.t ? fr : 1), 0), sc = (Math.min(w, h - 40) * 0.42) / tot, O = [w / 2, (h - 26) / 2];
+      ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(10, O[1]); ctx.lineTo(w - 10, O[1]); ctx.moveTo(O[0], 8); ctx.lineTo(O[0], h - 34); ctx.stroke();
+      SB.label(ctx, "Re", w - 16, O[1] - 10, { size: 11, color: P.dim }); SB.label(ctx, "Im", O[0] + 14, 32, { size: 11, color: P.dim });
+      // 같은 위상·같은 종류 원자는 한 화살표로 묶는다(길이 = f 합, ×개수)
+      const groups = new Map(); let p = [0, 0]; const phs = [];
+      cellAt.forEach((a) => {
+        const f = a.t ? fr : 1, ph = TAU * (st.h * a.p[0] + st.k * a.p[1] + l * a.p[2]); phs.push(fracPi(ph));
+        const pm = (((ph % TAU) + TAU) % TAU), key = a.t + ":" + Math.round((pm / TAU) * 64) % 64;
+        const g = groups.get(key) || { t: a.t, ph: pm, f: 0, n: 0 }; g.f += f; g.n++; groups.set(key, g);
+        p = [p[0] + f * Math.cos(ph), p[1] + f * Math.sin(ph)];
+      });
+      groups.forEach((g) => {
+        const off = g.t ? 0.06 : 0, ex = O[0] + g.f * sc * Math.cos(g.ph + off), ey = O[1] - g.f * sc * Math.sin(g.ph + off);
+        SB.arrow(ctx, O[0], O[1], ex, ey, { color: g.t ? P.accent2 : P.accent, width: 2.6, head: 9 });
+        SB.label(ctx, (g.t ? "B" : "A") + "×" + g.n, ex + 14 * Math.cos(g.ph + off), ey - 14 * Math.sin(g.ph + off), { size: 11, bold: true, color: g.t ? P.accent2 : P.accent });
+      });
+      if (Math.hypot(...p) > 1e-6) { SB.arrow(ctx, O[0], O[1], O[0] + p[0] * sc, O[1] - p[1] * sc, { color: P.text, width: 3.4, dash: [6, 4] }); SB.label(ctx, "F", O[0] + p[0] * sc * 0.5 + 10, O[1] - p[1] * sc * 0.5 + 12, { size: 13, bold: true }); }
+      else SB.label(ctx, "합 F = 0: 서로 상쇄", O[0], O[1] + 26, { size: 12, bold: true, color: P.accent2 });
+      ctx.font = font(11, true); ctx.fillStyle = P.dim; ctx.textAlign = "left";
+      let txt = `위상(π 단위): ${phs.join(" ")}`;
+      if (ctx.measureText(txt).width > w - 16) { while (txt.length > 4 && ctx.measureText(txt + "…").width > w - 16) txt = txt.slice(0, -1); txt += "…"; }
+      ctx.fillText(txt, 8, h - 10);
+      SB.label(ctx, `셀 원자 ${cellAt.length}개의 위상 화살표 (청록 A, 주황 B)`, 8, 12, { align: "left", size: 11, color: P.dim, bold: true });
+    }, { aspect: 1, minHeight: 240, maxHeight: 380 });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 분말 회절 시뮬레이터 */
+  {
+    const UNKNOWN = [
+      { name: "실리콘 Si", st: "diamond", a: 0.5431, Z: "14,14" }, { name: "저마늄 Ge", st: "diamond", a: 0.5658, Z: "32,32" },
+      { name: "갈륨 비소 GaAs", st: "zincblende", a: 0.56533, Z: "31,33" }, { name: "인화 인듐 InP", st: "zincblende", a: 0.58687, Z: "49,15" },
+      { name: "구리 Cu", st: "fcc", a: 0.3615, Z: "29,29" }, { name: "알루미늄 Al", st: "fcc", a: 0.40495, Z: "13,13" },
+      { name: "텅스텐 W", st: "bcc", a: 0.31652, Z: "74,74" }, { name: "철 α-Fe", st: "bcc", a: 0.28665, Z: "26,26" },
+      { name: "염화 소듐 NaCl", st: "rocksalt", a: 0.5640, Z: "10,18" }, { name: "폴로늄 α-Po", st: "sc", a: 0.3359, Z: "84,84" },
+    ];
+    let cv = null, cursor = null, hidden = null, solved = false;
+    const getSt = SB.seg("pw-st", () => upd());
+    const getA = SB.range("pw-a", (v) => v.toFixed(4) + " nm", () => upd());
+    const getD = SB.range("pw-D", (v) => v + " nm", () => upd());
+    ["pw-z", "pw-lam", "pw-dw"].forEach((id) => $(id).addEventListener(id === "pw-dw" ? "change" : "input", () => upd()));
+    const lam = () => Number($("pw-lam").value);
+    const pattern = (st, a, Zs) => Solid.powderPattern(st, a, lam(), { Z: Zs.split(",").map(Number), B: $("pw-dw").checked ? 0.5 : 0, tthMax: 140, hmax: 8 }).filter((p) => p.I > 0.05 && p.tth >= 10);
+    // 같은 2θ(예: 333과 511)는 합친다
+    const merge = (pk) => { const o = []; pk.forEach((p) => { const q = o.find((r) => Math.abs(r.tth - p.tth) < 1e-6); if (q) { q.I += p.I; q.lab += "/" + p.hkl.join(""); } else o.push({ tth: p.tth, I: p.I, lab: p.hkl.join(""), d: p.d }); }); const mx = Math.max(...o.map((p) => p.I)); o.forEach((p) => (p.I = (100 * p.I) / mx)); return o; };
+    const fwhm = (tth) => { const b = (0.9 * lam()) / (getD() * Math.cos((tth * D2R) / 2)) * R2D; return Math.sqrt(b * b + 0.06 * 0.06); };
+    const profile = (pk) => { const out = [], xs = []; for (let i = 0; i <= 1300; i++) xs.push(10 + (130 * i) / 1300); pk.forEach((p) => { const wd = fwhm(p.tth) / 2.3548; for (let j = -12; j <= 12; j++) xs.push(p.tth + (j * wd) / 3); }); xs.sort((u, v) => u - v); for (const t of xs) { if (t < 10 || t > 140) continue; let y = 0; pk.forEach((p) => { const wd = fwhm(p.tth) / 2.3548, dx = t - p.tth; if (Math.abs(dx) < 8 * wd) y += p.I * Math.exp((-dx * dx) / (2 * wd * wd)); }); out.push([t, y]); } return out; };
+    let mine = [], hid = [];
+    function score() {
+      if (!hidden) return null;
+      let m = 0; const used = new Set();
+      hid.forEach((p) => { let best = -1, bd = 0.15; mine.forEach((q, j) => { const d = Math.abs(q.tth - p.tth); if (d < bd && !used.has(j)) { bd = d; best = j; } }); if (best >= 0) { used.add(best); m += Math.min(p.I, mine[best].I); } });
+      const S1 = hid.reduce((s, p) => s + p.I, 0), S2 = mine.reduce((s, p) => s + p.I, 0);
+      return (100 * m) / Math.max(S1, S2);
+    }
+    function upd() {
+      mine = merge(pattern(getSt(), getA(), $("pw-z").value));
+      hid = hidden ? merge(pattern(hidden.st, hidden.a, hidden.Z)) : [];
+      const s2 = mine.slice(0, 2).map((p) => Math.sin((p.tth * D2R) / 2) ** 2);
+      SB.stat("pw-ratio", s2.length === 2 ? `1 : ${(s2[1] / s2[0]).toFixed(3)}` : "—");
+      const sc = score();
+      SB.stat("pw-score", sc == null ? "—" : sc.toFixed(0) + " %");
+      if (hidden) {
+        const msg = $("pw-msg");
+        if (sc >= 90 && !solved) { solved = true; }
+        msg.className = "rd-msg" + (sc >= 90 ? " ok" : "");
+        msg.textContent = sc >= 90 ? `성공! 정체는 ${hidden.name} (${Solid.structures[hidden.st].ko}, a = ${hidden.a} nm)` : `미지 시료(주황, 아래로 뒤집어 그림)의 봉우리 ${hid.length}개. 첫 두 봉우리 sin²θ 비 = 1 : ${(Math.sin((hid[1].tth * D2R) / 2) ** 2 / Math.sin((hid[0].tth * D2R) / 2) ** 2).toFixed(3)}`;
+      }
+      cv && cv.redraw();
+    }
+    const opts0 = { x: [10, 140] };
+    cv = SB.canvas("cv-pw", (ctx, w, h, self) => {
+      const P = pal(), y = hidden ? [-110, 125] : [0, 125];
+      const prof = profile(mine), series = [{ data: prof, color: P.accent, width: 1.8, fill: SB.color("accent-soft") }];
+      if (hidden) series.push({ data: profile(hid).map(([t, v]) => [t, -v]), color: P.accent2, width: 1.6 });
+      const ch = SB.chart(ctx, { x: 46, y: 26, w: w - 60, h: h - 72 }, { x: opts0.x, y, xLabel: "2θ (°)", yLabel: "상대 세기", yTicks: hidden ? [-100, -50, 0, 50, 100] : [0, 50, 100], yFmt: (v) => String(Math.abs(v)), series, vlines: cursor != null ? [{ x: cursor, color: P.text, dash: [3, 3] }] : [] });
+      // 지수 라벨
+      ctx.font = font(10, true); let lastX = -99;
+      mine.forEach((p) => { if (p.I < 6) return; const x = ch.X(p.tth); if (x - lastX < 30) return; lastX = x; SB.label(ctx, p.lab, x, ch.Y(Math.min(118, p.I + 7)), { size: 10, color: P.text, mono: true }); });
+      self._ch = ch; self._y = y;
+      if (cursor != null) {
+        const th = (cursor * D2R) / 2, d = lam() / (2 * Math.sin(th));
+        let near = null, bd = 0.6; mine.forEach((p) => { const dd = Math.abs(p.tth - cursor); if (dd < bd) { bd = dd; near = p; } });
+        SB.stat("pw-cur", `2θ = ${cursor.toFixed(2)}°, d = ${d.toFixed(4)} nm` + (near ? ` · (${near.lab}) ${near.tth.toFixed(2)}°, I = ${near.I.toFixed(0)}` : ""));
+      }
+    }, { aspect: 0.4, minHeight: 260, maxHeight: 360 });
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x, y) => { if (cv._ch) { cursor = SB.clamp(inv(cv._ch, { x: opts0.x, y: cv._y }, x, y)[0], 10, 140); } } });
+    $("pw-new").addEventListener("click", () => {
+      let u; do u = UNKNOWN[Math.floor(Math.random() * UNKNOWN.length)]; while (hidden && u === hidden);
+      hidden = u; solved = false; upd();
+    });
+    $("pw-give").addEventListener("click", () => {
+      if (!hidden) return;
+      document.querySelectorAll("#pw-st button").forEach((b) => { if (b.dataset.value === hidden.st) b.click(); });
+      $("pw-z").value = hidden.Z; getA.set(hidden.a);
+    });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 셰러: N장 면의 봉우리 */
+  {
+    const d = Solid.dCubic(ASI, 1, 1, 1), th0 = Math.asin(LAM / (2 * d));
+    const getN = SB.range("sch-N", (v) => v + "장", () => cv.redraw());
+    const cv = SB.canvas("cv-sch", (ctx, w, h) => {
+      const P = pal(), N = getN();
+      const est = ((0.9 * LAM) / (N * d * Math.cos(th0))) * R2D, half = Math.max(0.25, est * 3.2), c = 2 * th0 * R2D;
+      const I = (tth) => laueN((4 * Math.PI * d * Math.sin((tth * D2R) / 2)) / LAM, N);
+      const data = []; for (let i = 0; i <= 600; i++) { const t = c - half + (2 * half * i) / 600; data.push([t, I(t)]); }
+      // 반치폭 수치 계산
+      let lo = c, hi = c; while (I(lo) > 0.5 && lo > c - half) lo -= half / 4000; while (I(hi) > 0.5 && hi < c + half) hi += half / 4000;
+      const beta = hi - lo, Ds = Solid.scherrer(beta, c);
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 60, h: h - 60 }, { x: [c - half, c + half], y: [0, 1.08], xLabel: "2θ (°)", yLabel: "세기", yTicks: [0, 0.5, 1], series: [{ data, color: P.accent, width: 2.2, fill: SB.color("accent-soft") }], hlines: [{ y: 0.5, color: P.faint }], xFmt: (v) => v.toFixed(2) });
+      SB.arrow(ctx, ch.X(lo), ch.Y(0.5), ch.X(hi), ch.Y(0.5), { color: P.accent2, width: 2 }); SB.arrow(ctx, ch.X(hi), ch.Y(0.5), ch.X(lo), ch.Y(0.5), { color: P.accent2, width: 2 });
+      SB.label(ctx, `β = ${beta.toFixed(3)}°`, ch.X(hi) + 8, ch.Y(0.5) - 12, { align: "left", size: 12, color: P.accent2, bold: true });
+      $("sch-r").textContent = `두께 Nd = ${(N * d).toFixed(1)} nm · 반치폭 ${beta.toFixed(3)}° → 셰러 D = ${Ds.toFixed(1)} nm (K = 0.9)`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 300 });
+  }
+  SB.tangle("tg-sch", (v) => {
+    const D = Solid.scherrer(v.beta, v.tth);
+    return { D: D.toFixed(1) + " nm", msg: D > 100 ? "이 정도 크기는 장비 폭(0.05–0.1°)에 묻혀 셰러 식으로 재기 어렵다." : D < 3 ? "봉우리가 이만큼 넓으면 결정이라기보다 비정질에 가깝다." : `봉우리 하나에 결정립 속 원자면 약 ${Math.round(D / (LAM / (2 * Math.sin((v.tth * D2R) / 2))))}장이 기여한다.` };
+  });
+  SB.drill("drill-powder", () => {
+    const M = [["Si", "diamond", 0.5431, [14, 14]], ["Ge", "diamond", 0.5658, [32, 32]], ["GaAs", "zincblende", 0.56533, [31, 33]], ["Cu", "fcc", 0.3615, [29, 29]], ["Al", "fcc", 0.40495, [13, 13]], ["Ni", "fcc", 0.3524, [28, 28]], ["W", "bcc", 0.31652, [74, 74]], ["α-Fe", "bcc", 0.28665, [26, 26]]];
+    const m = M[Math.floor(Math.random() * M.length)];
+    const pk = Solid.powderPattern(m[1], m[2], LAM, { Z: m[3], hmax: 4 }).filter((p) => p.I > 2).slice(0, 5);
+    const p = pk[Math.floor(Math.random() * pk.length)], [h, k, l] = p.hkl, N = h * h + k * k + l * l;
+    const askD = Math.random() < 0.35;
+    const d = m[2] / Math.sqrt(N), th = Math.asin(LAM / (2 * d)) * R2D;
+    return askD
+      ? { q: `<p>${m[0]}(${Solid.structures[m[1]].ko}, \\(a = ${m[2]}\\) nm)의 (${h}${k}${l}) 면 간격 \\(d\\)는?</p>`, answer: Number(d.toFixed(5)), label: "d =", unit: "nm", tol: "0.2%", sol: `\\(d = a/\\sqrt{${N}} = ${m[2]}/${Math.sqrt(N).toFixed(4)} = ${d.toFixed(5)}\\) nm` }
+      : { q: `<p>${m[0]}(${Solid.structures[m[1]].ko}, \\(a = ${m[2]}\\) nm)의 (${h}${k}${l}) 반사는 Cu Kα1(\\(\\lambda = 0.15406\\) nm)로 \\(2\\theta\\) 몇 도에 나타나는가?</p>`, answer: Number((2 * th).toFixed(2)), label: "2θ =", unit: "°", tol: "0.05", sol: `\\(d = a/\\sqrt{${N}} = ${d.toFixed(5)}\\) nm, \\(\\sin\\theta = \\lambda/2d = ${(LAM / (2 * d)).toFixed(5)}\\) → \\(\\theta = ${th.toFixed(3)}°\\), \\(2\\theta = ${(2 * th).toFixed(2)}°\\)` };
+  });
+
+  /* ---------------------------------------------------------- SiGe tangle */
+  SB.tangle("tg-sige", (v) => {
+    const c = sigeCell(v.x, 0), f = (c.aL - ASI) / ASI, dw = dOmega(v.x, 0, "004").dw, hc = f > 1e-4 ? Solid.criticalThickness(f) : Infinity;
+    return { aL: c.aL.toFixed(5) + " nm", f: (100 * f).toFixed(3) + " %", ap: c.aperp.toFixed(5) + " nm", dw: `${dw.toFixed(0)}″ (${(dw / 3600).toFixed(3)}°)`, hc: isFinite(hc) ? (hc > 1000 ? "1 µm 이상" : hc.toFixed(1) + " nm") : "무한대" };
+  }, { fmt: { x: (x) => x.toFixed(3) } });
+
+  /* ---------------------------------------------------------- HRXRD 로킹 곡선 + RSM */
+  {
+    let cvR = null, cvM = null, hidden = null;
+    const getX = SB.range("hr-x", (v) => v.toFixed(3), () => upd());
+    const getR = SB.range("hr-R", (v) => v.toFixed(2), () => upd());
+    const getT = SB.range("hr-t", (v) => v + " nm", () => upd());
+    const getRefl = SB.seg("hr-refl", () => upd());
+    const SQ8 = Math.sqrt(8);
+    const Qof = (apar, aperp) => [(TAU * SQ8) / apar, (TAU * 4) / aperp];
+    const QS = Qof(ASI, ASI);
+    /** 로킹 곡선 세기(기판 1) */
+    function curve(x, R, t, mode, lo, hi) {
+      const L = dOmega(x, R, mode), out = [];
+      const A = 0.25 * (1 - Math.exp(-t / 80)), m = Math.min(0.9, 4 * R * (1 - R) + 0.3 * R), wm = 60 + 250 * 4 * R * (1 - R);
+      const s2 = Math.sin(2 * L.th), gh = Math.max(0.05, Math.sin(L.exit));
+      for (let i = 0; i <= 700; i++) {
+        const dw = lo + ((hi - lo) * i) / 700, ds = dw / 8, sub = 1 / (1 + ds * ds);
+        const u = (Math.PI * t * ((dw - L.dw) / 206265) * s2) / (LAM * gh), sinc = Math.abs(u) < 1e-9 ? 1 : (Math.sin(u) / u) ** 2;
+        const g = Math.exp(-0.5 * ((dw - L.dw) / wm) ** 2) * 0.5;
+        out.push([dw, sub + A * ((1 - m) * sinc + m * g) + 2e-5]);
+      }
+      return { data: out, L };
+    }
+    function upd() {
+      const x = getX(), R = getR(), t = getT(), c = sigeCell(x, R);
+      const d4 = dOmega(x, R, "004").dw, di = dOmega(x, R, "inc").dw, de = dOmega(x, R, "exit").dw;
+      SB.stat("hr-a", `${c.apar.toFixed(5)} / ${c.aperp.toFixed(5)} nm`);
+      SB.stat("hr-d4", `${d4.toFixed(0)}″`);
+      SB.stat("hr-d2", `${di.toFixed(0)}″ / ${de.toFixed(0)}″`);
+      const f = (c.aL - ASI) / ASI, hc = f > 1e-4 ? Solid.criticalThickness(f) : Infinity;
+      SB.stat("hr-hc", isFinite(hc) ? (hc > 1000 ? "> 1 µm" : `${hc.toFixed(1)} nm`) + (t > hc ? " (t가 넘음 → 완화 가능)" : "") : "—");
+      if (hidden) {
+        const ok = Math.abs(x - hidden.x) < 0.01 && Math.abs(R - hidden.R) < 0.06;
+        $("hr-msg").className = "rd-msg" + (ok ? " ok" : "");
+        $("hr-msg").textContent = ok ? `성공! 미지 층은 x = ${hidden.x.toFixed(3)}, R = ${hidden.R.toFixed(2)}, t = ${hidden.t} nm` : `미지 층(두께 ${hidden.t} nm): (004) Δω = ${dOmega(hidden.x, hidden.R, "004").dw.toFixed(0)}″, (224) 입사 Δω = ${dOmega(hidden.x, hidden.R, "inc").dw.toFixed(0)}″. 두 반사를 모두 맞춰라.`;
+      }
+      cvR && cvR.redraw(); cvM && cvM.redraw();
+    }
+    cvR = SB.canvas("cv-rk", (ctx, w, h) => {
+      const P = pal(), mode = getRefl(), x = getX(), R = getR(), t = getT();
+      const Ld = dOmega(x, R, mode).dw, Hd = hidden ? dOmega(hidden.x, hidden.R, mode).dw : 0;
+      const lo = Math.min(-1500, Math.min(Ld, Hd) * 1.25 - 700), hi = 900;
+      const cur = curve(x, R, t, mode, lo, hi), series = [{ data: cur.data, color: P.accent, width: 1.8 }];
+      if (hidden) series.unshift({ data: curve(hidden.x, hidden.R, hidden.t, mode, lo, hi).data, color: P.accent2, width: 1.6, dash: [5, 4] });
+      const ch = SB.chart(ctx, { x: 50, y: 24, w: w - 62, h: h - 70 }, { x: [lo, hi], y: [1e-5, 3], logY: true, xLabel: "Δω (각초 ″)", yLabel: "세기 (기판 = 1)", series, xFmt: (v) => String(Math.round(v)) });
+      SB.label(ctx, "기판", ch.X(0), 14, { size: 11, color: P.dim, bold: true });
+      const lx = ch.X(Ld); if (lx > ch.box.x + 20) SB.label(ctx, `층 ${Ld.toFixed(0)}″`, lx, 14, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, { "004": "(004) 대칭", inc: "(224) 스침 입사", exit: "(224) 스침 출사" }[mode], ch.box.x + 6, ch.box.y + ch.box.h - 12, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.8, minHeight: 250, maxHeight: 360 });
+    const xr = [(TAU * SQ8) / 0.5600, (TAU * SQ8) / 0.5405], zr = [(TAU * 4) / sigeCell(0.6, 0).aperp - 0.25, QS[1] + 0.35];
+    cvM = SB.canvas("cv-rsm", (ctx, w, h, self) => {
+      const P = pal(), c = sigeCell(getX(), getR()), Q = Qof(c.apar, c.aperp);
+      const ch = SB.chart(ctx, { x: 52, y: 24, w: w - 64, h: h - 70 }, { x: xr, y: zr, xLabel: "Q∥ [110] (nm⁻¹)", yLabel: "Q⊥ [001] (nm⁻¹)", xFmt: (v) => v.toFixed(1), yFmt: (v) => v.toFixed(1) });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      // 완전 변형선(수직)과 완전 완화선(원점 방향)
+      ctx.strokeStyle = P.dim; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.moveTo(ch.X(QS[0]), ch.Y(zr[0])); ctx.lineTo(ch.X(QS[0]), ch.Y(QS[1])); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ch.X(QS[0]), ch.Y(QS[1])); ctx.lineTo(ch.X(QS[0] * 0.9), ch.Y(QS[1] * 0.9)); ctx.stroke(); ctx.setLineDash([]);
+      // 조성 등고선 x = 0.1 … 0.6
+      for (let xx = 0.1; xx < 0.61; xx += 0.1) { const c0 = sigeCell(xx, 0), A = Qof(c0.apar, c0.aperp), B = Qof(sigeCell(xx, 1).apar, sigeCell(xx, 1).aperp); SB.dashLine(ctx, ch.X(A[0]), ch.Y(A[1]), ch.X(B[0]), ch.Y(B[1]), P.faint, [2, 3]); SB.label(ctx, "x=" + xx.toFixed(1), ch.X(B[0]) - 4, ch.Y(B[1]) - 8, { size: 10, color: P.dim, align: "right" }); }
+      ctx.restore();
+      SB.label(ctx, "R = 0 (변형)", ch.X(QS[0]) - 6, ch.Y(zr[0]) - 12, { size: 11, color: P.dim, align: "right" });
+      { const c1 = sigeCell(0.6, 1), Q1 = Qof(c1.apar, c1.aperp); SB.label(ctx, "R = 1 (완화)", ch.X(Q1[0]) + 4, ch.Y(Q1[1]) + 26, { size: 11, color: P.dim, align: "left" }); }
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(ch.X(QS[0]), ch.Y(QS[1]), 6, 0, TAU); ctx.fill();
+      SB.label(ctx, "Si 기판 (224)", ch.X(QS[0]) - 8, ch.Y(QS[1]) - 12, { size: 11, align: "right", bold: true });
+      if (hidden) { const hc = sigeCell(hidden.x, hidden.R), HQ = Qof(hc.apar, hc.aperp), hx = ch.X(HQ[0]), hy = ch.Y(HQ[1]); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(hx, hy - 9); ctx.lineTo(hx + 9, hy); ctx.lineTo(hx, hy + 9); ctx.lineTo(hx - 9, hy); ctx.closePath(); ctx.stroke(); }
+      const px = ch.X(Q[0]), py = ch.Y(Q[1]);
+      ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.ellipse(px, py, 6 + 30 * getR() * (1 - getR()), 6 + 60 / getT() * 4, 0, 0, TAU); ctx.fill(); ctx.restore();
+      handle(ctx, px, py, P.accent2, 10);
+      self._p = [px, py]; self._ch = ch;
+    }, { aspect: 0.8, minHeight: 250, maxHeight: 360 });
+    SB.drag(cvM, {
+      handles: () => (cvM._p ? [{ id: "L", x: cvM._p[0], y: cvM._p[1], r: 13 }] : []),
+      move: (id, px, py) => {
+        if (id == null || !cvM._ch) return;
+        const [Qx, Qz] = inv(cvM._ch, { x: xr, y: zr }, px, py), apar = (TAU * SQ8) / Qx, aperp = (TAU * 4) / Qz;
+        let x = 0.3, aL = ASI;
+        for (let i = 0; i < 6; i++) { const n2 = 2 * nuR(x); aL = (aperp + n2 * apar) / (1 + n2); x = SB.clamp(xFromA(Math.max(ASI, aL)), 0, 0.6); }
+        aL = aSiGe(x);
+        const R = aL - ASI > 1e-5 ? SB.clamp((apar - ASI) / (aL - ASI), 0, 1) : 0;
+        getX.set(Number(x.toFixed(3)), true); getR.set(Number(R.toFixed(2)), true); upd();
+      },
+    });
+    $("hr-new").addEventListener("click", () => { hidden = { x: Math.round((0.12 + Math.random() * 0.33) * 200) / 200, R: Math.random() < 0.4 ? 0 : Math.round(Math.random() * 20) / 20, t: [30, 40, 60, 80, 120][Math.floor(Math.random() * 5)] }; upd(); });
+    $("hr-give").addEventListener("click", () => { if (!hidden) return; getX.set(hidden.x, true); getR.set(hidden.R, true); getT.set(hidden.t, true); upd(); });
+    upd();
+  }
+  SB.drill("drill-sige", () => {
+    const x = Math.round((0.1 + Math.random() * 0.35) * 100) / 100, aL = aSiGe(x), n2 = Number((2 * nuR(x)).toFixed(3));
+    const ap = aL * (1 - (n2 * (ASI - aL)) / aL);
+    if (Math.random() < 0.5) {
+      const f = (100 * (aL - ASI)) / ASI, ep = (100 * (ap - aL)) / aL;
+      return { q: `<p>Si₁₋ₓGeₓ, \\(x = ${x}\\)인 층을 Si(001) 위에 완전 변형으로 키웠다. 격자 불일치 \\(f\\)(%)와 수직 변형 \\(\\varepsilon_\\perp\\)(%)는? \\(2C_{12}/C_{11} = ${n2}\\).</p>`, answer: [Number(f.toFixed(3)), Number(ep.toFixed(3))], label: ["f =", "ε⊥ ="], unit: ["%", "%"], tol: "1.5%",
+        sol: `\\(a_L = 0.54310 + 0.01992(${x}) + 0.002733(${x})^2 = ${aL.toFixed(5)}\\) nm, \\(f = ${f.toFixed(3)}\\%\\). \\(\\varepsilon_\\parallel = (a_\\text{Si} - a_L)/a_L = ${((100 * (ASI - aL)) / aL).toFixed(3)}\\%\\), \\(\\varepsilon_\\perp = -${n2}\\,\\varepsilon_\\parallel = ${ep.toFixed(3)}\\%\\)` };
+    }
+    const thS = Math.asin(LAM / (2 * (ASI / 4))), thL = Math.asin(LAM / (2 * (ap / 4))), dw = (thL - thS) * R2D * 3600;
+    return { q: `<p>Si₁₋ₓGeₓ, \\(x = ${x}\\) 층(완전 변형, \\(2C_{12}/C_{11} = ${n2}\\))의 Cu Kα1 (004) 로킹 곡선에서 층 봉우리와 기판 봉우리의 간격 \\(\\Delta\\omega\\)는 몇 각초인가? Si(004) \\(\\theta_B = 34.5646°\\).</p>`, answer: Number(dw.toFixed(0)), label: "Δω =", unit: "″", tol: "1.5%",
+      sol: `\\(a_L = ${aL.toFixed(5)}\\) nm → \\(a_\\perp = a_L[1 - ${n2}(a_\\text{Si} - a_L)/a_L] = ${ap.toFixed(5)}\\) nm. \\(\\sin\\theta = \\lambda/(2a_\\perp/4) = ${(LAM / (ap / 2)).toFixed(5)}\\) → \\(\\theta = ${(thL * R2D).toFixed(4)}°\\). \\(\\Delta\\omega = (${(thL * R2D).toFixed(4)} - 34.5646)\\times3600 = ${dw.toFixed(0)}\\)″` };
+  });
+})();
+</script>
+</body>
+</html>
