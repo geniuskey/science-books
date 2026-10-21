@@ -1,0 +1,1388 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>평면파 · 전자기학 · SciBook</title>
+<meta name="description" content="파동 방정식과 균일 평면파, 고유 임피던스, 복소 유전율과 손실 탄젠트, 양도체의 표피 깊이와 표면 저항, 편광의 종류와 감긴 방향, 위상 속도와 군속도, 플라스마의 차단 밀도까지 — 배선 표피 효과와 플라스마 밀도 측정을 직접 끌며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/electromagnetics/chapters/plane-waves.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="평면파 · 전자기학 · SciBook">
+<meta property="og:description" content="파동 방정식과 균일 평면파, 고유 임피던스, 복소 유전율과 손실 탄젠트, 양도체의 표피 깊이와 표면 저항, 편광의 종류와 감긴 방향, 위상 속도와 군속도, 플라스마의 차단 밀도까지 — 배선 표피 효과와 플라스마 밀도 측정을 직접 끌며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/electromagnetics/chapters/plane-waves.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "평면파 · 전자기학 · SciBook", "headline": "10 평면파", "url": "https://science.euiyun.com/electromagnetics/chapters/plane-waves.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "파동 방정식과 균일 평면파, 고유 임피던스, 복소 유전율과 손실 탄젠트, 양도체의 표피 깊이와 표면 저항, 편광의 종류와 감긴 방향, 위상 속도와 군속도, 플라스마의 차단 밀도까지 — 배선 표피 효과와 플라스마 밀도 측정을 직접 끌며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 10, "dateModified": "2026-10-22", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/electromagnetics/#book", "name": "전자기학", "url": "https://science.euiyun.com/electromagnetics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "전자기학", "item": "https://science.euiyun.com/electromagnetics/"}, {"@type": "ListItem", "position": 3, "name": "10 평면파", "item": "https://science.euiyun.com/electromagnetics/chapters/plane-waves.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/em.js"></script>
+</head>
+<body data-chapter="plane-waves">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="maxwell-equations">
+    <div class="eyebrow">Chapter 10</div>
+    <h1>평면파</h1>
+    <p class="lead">9장에서 맥스웰 방정식이 완성되자 하나의 예언이 나왔다. 전하도 전류도 없는 빈 공간에서 변하는 전기장이 자기장을 만들고, 그 자기장이 다시 전기장을 만들며 스스로 퍼져 나가는 파동이 있고, 그 속력이 \(1/\sqrt{\mu_0\varepsilon_0}\), 곧 빛의 속력이라는 것이다. 이 장은 그 파동의 가장 단순한 꼴인 균일 평면파에서 출발한다. 같은 파동이 유리에서는 느려지고, 실리콘 기판에서는 줄어들고, 구리에서는 몇 µm 만에 사라지고, 플라스마에서는 아예 튕겨 나온다. 그 차이를 정하는 숫자 하나가 \(\sigma/\omega\varepsilon\)이다. 아래에서 오른쪽 매질의 손실을 끌어 바꿔 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">아래 막대의 흰 원을 끌어 매질의 손실을 바꾼다</span></div>
+    <ul class="objectives">
+      <li>맥스웰 방정식에서 파동 방정식과 헬름홀츠 방정식 \(\nabla^2\tilde{\mathbf E} + k^2\tilde{\mathbf E} = 0\)을 유도하고, 균일 평면파의 \(\mathbf E\), \(\mathbf H\), 진행 방향이 이루는 TEM 구조를 설명한다.</li>
+      <li>위상 속도 \(u_p = 1/\sqrt{\mu\varepsilon}\), 파장, 고유 임피던스 \(\eta = \sqrt{\mu/\varepsilon}\)(진공 376.7 Ω), 평균 포인팅 벡터 \(|E_0|^2/2\eta\)를 계산한다.</li>
+      <li>복소 유전율 \(\varepsilon_c = \varepsilon - j\sigma/\omega\)와 손실 탄젠트로 전파 상수 \(\gamma = \alpha + j\beta\)와 복소 고유 임피던스를 구하고, 저손실 근사 \(\alpha \approx \tfrac{\beta}{2}\tan\delta_c\)를 쓴다.</li>
+      <li>양도체에서 \(\alpha = \beta = 1/\delta\), \(\eta_c = (1+j)/\sigma\delta\), 표면 저항 \(R_s = 1/\sigma\delta\)를 유도하고, 둥근 도선의 교류 저항과 배선의 표피 효과를 계산한다.</li>
+      <li>두 직교 성분의 진폭비와 위상차로 직선·원·타원 편광을 판별하고, IEEE 관례로 감긴 방향(오른손·왼손)과 축비, 기울기를 구한다.</li>
+      <li>맥놀이로 군속도 \(u_g = d\omega/d\beta\)를 이해하고, 분산 매질에서 위상 속도와 군속도가 갈리는 모습을 확인한다.</li>
+      <li>드루드 모형으로 플라스마의 유전율 \(1 - \omega_p^2/\omega^2\)을 유도하고, 차단 밀도 \(n_c\), 마이크로파 간섭계의 위상 변화로 플라스마 밀도를 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="wave-equation">
+    <h2>파동 방정식과 균일 평면파</h2>
+    <p>선형·균질·등방이고 전하와 전류가 없는(\(\rho_v = 0,\ \mathbf J = 0\)) 매질을 생각하자. 유전율 \(\varepsilon\)과 투자율 \(\mu\)는 상수다. 9장의 맥스웰 방정식은 다음 네 줄로 줄어든다.</p>
+    <div class="formula">$$\nabla\times\mathbf E = -\mu\frac{\partial\mathbf H}{\partial t},\qquad \nabla\times\mathbf H = \varepsilon\frac{\partial\mathbf E}{\partial t},\qquad \nabla\cdot\mathbf E = 0,\qquad \nabla\cdot\mathbf H = 0$$</div>
+    <p>첫째 식에 회전을 한 번 더 취하고 벡터 항등식 \(\nabla\times\nabla\times\mathbf E = \nabla(\nabla\cdot\mathbf E) - \nabla^2\mathbf E\)(1장)를 쓰면, \(\nabla\cdot\mathbf E = 0\)이므로 왼쪽은 \(-\nabla^2\mathbf E\)가 된다. 오른쪽은 둘째 식을 넣어 \(-\mu\,\partial(\nabla\times\mathbf H)/\partial t = -\mu\varepsilon\,\partial^2\mathbf E/\partial t^2\)이다. 이렇게 얻은 식이 <span class="term">파동 방정식</span><span class="en">(wave equation)</span>이다.</p>
+    <div class="formula">$$\nabla^2\mathbf E - \mu\varepsilon\frac{\partial^2\mathbf E}{\partial t^2} = 0,\qquad \nabla^2\mathbf H - \mu\varepsilon\frac{\partial^2\mathbf H}{\partial t^2} = 0,\qquad u = \frac{1}{\sqrt{\mu\varepsilon}}$$<div class="where">1차원 파동 방정식 \(\partial^2 f/\partial z^2 = (1/u^2)\,\partial^2 f/\partial t^2\)과 비교하면 파동의 속력은 \(u = 1/\sqrt{\mu\varepsilon}\)이다. 진공에서 \(1/\sqrt{\mu_0\varepsilon_0} = 2.998\times10^8\) m/s — 맥스웰은 이 값이 빛의 속력과 같다는 데서 빛이 전자기파라고 결론지었다.</div></div>
+    <p>시간 조화장(9장의 페이저, \(e^{j\omega t}\) 관례)에서는 \(\partial/\partial t \to j\omega\)이므로 시간 미분이 사라지고 <span class="term">헬름홀츠 방정식</span><span class="en">(Helmholtz equation)</span>이 남는다.</p>
+    <div class="formula">$$\nabla^2\tilde{\mathbf E} + k^2\tilde{\mathbf E} = 0,\qquad k = \omega\sqrt{\mu\varepsilon} = \frac{\omega}{u} = \frac{2\pi}{\lambda}$$<div class="where">\(k\)를 <span class="term">파수</span><span class="en">(wavenumber)</span>라 한다(단위 rad/m). 길이 1 m 동안 위상이 몇 라디안 도는지를 나타낸다. 손실이 없는 매질에서는 위상 상수 \(\beta\)와 같다.</div></div>
+    <h3>균일 평면파</h3>
+    <p>가장 단순한 해는 장이 한 방향(\(z\))으로만 변하고, \(z\)에 수직인 평면 위에서는 어디서나 크기와 위상이 같은 파동이다. 이것을 <span class="term">균일 평면파</span><span class="en">(uniform plane wave)</span>라 한다. 먼 안테나나 별에서 온 파동을 좁은 영역에서 보면 이렇게 보인다. \(\partial/\partial x = \partial/\partial y = 0\)이면 \(\nabla\cdot\tilde{\mathbf E} = \partial\tilde E_z/\partial z = 0\)이고, 헬름홀츠 방정식에서 \(\tilde E_z\)는 상수(파동이 아님)이므로 0으로 둔다. 곧 장은 진행 방향에 수직이다. \(\mathbf E\)를 \(x\) 방향으로 잡으면</p>
+    <div class="formula">$$\tilde{\mathbf E}(z) = \hat{\mathbf x}\left(E_0^+e^{-jkz} + E_0^-e^{+jkz}\right),\qquad \mathbf E(z,t) = \hat{\mathbf x}\,|E_0^+|\cos(\omega t - kz + \phi^+) + \cdots$$<div class="where">\(e^{-jkz}\)항은 \(+z\) 방향으로, \(e^{+jkz}\)항은 \(-z\) 방향으로 가는 파동이다. \(\omega t - kz\)가 일정한 점(마루)은 \(dz/dt = \omega/k\)로 움직인다. 이 속력이 <span class="term">위상 속도</span><span class="en">(phase velocity)</span> \(u_p = \omega/k\)이다.</div></div>
+    <p>자기장은 패러데이 법칙 \(\nabla\times\tilde{\mathbf E} = -j\omega\mu\tilde{\mathbf H}\)에서 바로 나온다. \(+z\)로 가는 파동만 있으면 \(\nabla\times(\hat{\mathbf x}E_0e^{-jkz}) = \hat{\mathbf y}\,(-jk)E_0e^{-jkz}\)이므로</p>
+    <div class="formula">$$\tilde{\mathbf H}(z) = \hat{\mathbf y}\,\frac{E_0}{\eta}\,e^{-jkz},\qquad \eta = \frac{\omega\mu}{k} = \sqrt{\frac{\mu}{\varepsilon}},\qquad \eta_0 = \sqrt{\frac{\mu_0}{\varepsilon_0}} \approx 376.7\ \Omega \approx 120\pi\ \Omega$$<div class="where">\(\eta\)는 매질의 <span class="term">고유 임피던스</span><span class="en">(intrinsic impedance)</span>로, 진행파 하나의 \(|E|/|H|\) 비다. 단위가 V/m ÷ A/m = Ω이지만 저항이 아니라 매질의 성질이다. 비자성 유전체에서는 \(\eta = \eta_0/\sqrt{\varepsilon_r} = \eta_0/n\), 여기서 \(n = \sqrt{\mu_r\varepsilon_r}\)는 <span class="term">굴절률</span><span class="en">(refractive index)</span>이다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="균일 평면파의 구조: 파면, x 방향 전기장, y 방향 자기장, z 방향 포인팅 벡터">
+        <defs>
+          <marker id="pw-ar1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="pw-ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="pw-ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker>
+        </defs>
+        <line x1="40" y1="160" x2="560" y2="160" stroke="var(--text-dim)" stroke-width="1.6" marker-end="url(#pw-ar3)"/>
+        <text class="t" x="566" y="165">z</text>
+        <g data-only="1">
+          <g fill="var(--accent-2)" opacity=".10" stroke="var(--text-dim)" stroke-width="1">
+            <path d="M110 70 L150 50 L150 230 L110 250 Z"/><path d="M230 70 L270 50 L270 230 L230 250 Z"/><path d="M350 70 L390 50 L390 230 L350 250 Z"/><path d="M470 70 L510 50 L510 230 L470 250 Z"/>
+          </g>
+          <text class="t" x="300" y="34" text-anchor="middle">파면: z = 일정인 평면 위에서 장은 어디서나 같다</text>
+        </g>
+        <g data-step="2">
+          <path d="M60 160 Q 90 70 120 160 T 180 160 T 240 160 T 300 160 T 360 160 T 420 160 T 480 160 T 540 160" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+          <line x1="90" y1="160" x2="90" y2="96" stroke="var(--accent)" stroke-width="2" marker-end="url(#pw-ar1)"/>
+          <line x1="210" y1="160" x2="210" y2="96" stroke="var(--accent)" stroke-width="2" marker-end="url(#pw-ar1)"/>
+          <line x1="330" y1="160" x2="330" y2="96" stroke="var(--accent)" stroke-width="2" marker-end="url(#pw-ar1)"/>
+          <line x1="150" y1="160" x2="150" y2="224" stroke="var(--accent)" stroke-width="2" marker-end="url(#pw-ar1)"/>
+          <line x1="270" y1="160" x2="270" y2="224" stroke="var(--accent)" stroke-width="2" marker-end="url(#pw-ar1)"/>
+          <text class="t" x="60" y="70" style="fill:var(--accent);font-weight:700">E (x̂)</text>
+        </g>
+        <g data-step="3">
+          <line x1="90" y1="160" x2="52" y2="190" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar2)"/>
+          <line x1="210" y1="160" x2="172" y2="190" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar2)"/>
+          <line x1="330" y1="160" x2="292" y2="190" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar2)"/>
+          <line x1="150" y1="160" x2="188" y2="130" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar2)"/>
+          <line x1="270" y1="160" x2="308" y2="130" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar2)"/>
+          <text class="t" x="34" y="214" style="fill:var(--accent-2);font-weight:700">H (ŷ, 화면 밖)</text>
+        </g>
+        <g data-step="4">
+          <line x1="420" y1="58" x2="520" y2="58" stroke="var(--text)" stroke-width="3" marker-end="url(#pw-ar3)"/>
+          <text class="t" x="430" y="44" style="font-weight:700">S = E × H</text>
+        </g>
+        <g class="t">
+          <text x="600" y="60" style="font-weight:700">TEM 구조</text>
+          <text x="600" y="90" data-step="2">E ⟂ z (x 방향)</text>
+          <text x="600" y="116" data-step="3">H ⟂ z, H ⟂ E (y 방향)</text>
+          <text x="600" y="142" data-step="3">E, H 같은 위상 (손실 없음)</text>
+          <text x="600" y="168" data-step="3">|E|/|H| = η</text>
+          <text x="600" y="200" data-step="4" style="font-weight:700">x̂ × ŷ = ẑ : 진행 방향</text>
+          <text x="600" y="226" data-step="4" class="t-dim">E 방향 → H 방향으로 감은</text>
+          <text x="600" y="248" data-step="4" class="t-dim">오른손 엄지가 진행 방향</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>균일 평면파는 \(z\)에 수직인 평면(파면) 위에서 장이 모두 같다. 파면은 \(u_p\)로 \(+z\) 쪽으로 움직인다.</li><li>전기장은 진행 방향에 수직이다. 여기서는 \(x\) 방향으로 잡았다(이것이 편광의 방향).</li><li>자기장은 전기장과 진행 방향 모두에 수직인 \(y\) 방향이고, 손실이 없으면 전기장과 같은 위상으로 오르내린다. 크기의 비가 \(\eta\)다.</li><li>\(\mathbf E\times\mathbf H\)가 진행 방향을 가리킨다. 이렇게 전기장과 자기장이 모두 진행 방향에 가로놓인 파동을 TEM파라 한다.</li></ol>
+      <figcaption>균일 평면파의 구조. 전기장, 자기장, 진행 방향이 서로 수직인 오른손 세 짝을 이룬다.</figcaption>
+    </figure>
+    <p>전기장과 자기장이 모두 진행 방향에 수직이므로 이런 파동을 <span class="term">TEM파</span><span class="en">(transverse electromagnetic wave)</span>라 한다. 진행 방향이 임의의 단위 벡터 \(\hat{\mathbf k}\)이면 \(\tilde{\mathbf E} = \mathbf E_0e^{-jk\hat{\mathbf k}\cdot\mathbf r}\), \(\hat{\mathbf k}\cdot\mathbf E_0 = 0\), \(\tilde{\mathbf H} = \frac1\eta\hat{\mathbf k}\times\tilde{\mathbf E}\)로 일반화된다. 12장의 전송선 속 파동도 TEM파라서, 동축선 안의 장은 평면파와 똑같이 \(|E|/|H|\)가 \(\eta\)이고 속력이 \(1/\sqrt{\mu\varepsilon}\)이다.</p>
+    <div class="tangle" id="tg-wave">
+      <p>비유전율 <span class="tn" data-var="er" data-min="1" data-max="80" data-step="0.1">3.9</span>인 비자성 유전체에서 진동수 <span class="tn" data-var="f" data-min="0.1" data-max="100" data-step="0.1" data-unit=" GHz">10.0</span>인 평면파는 굴절률 \(n\) = <span class="tn-out" data-out="n"></span>, 위상 속도 <span class="tn-out" data-out="v"></span>로 달리고, 파장은 <span class="tn-out" data-out="lam"></span>(진공에서는 <span class="tn-out" data-out="lam0"></span>), 위상 상수 \(\beta\) = <span class="tn-out" data-out="k"></span>이다. 고유 임피던스는 <span class="tn-out" data-out="eta"></span>로 진공의 \(1/n\)이다. SiO₂(3.9)에 묻힌 배선 위의 신호는 빛의 속력의 약 절반으로 달린다.</p>
+    </div>
+    <figure class="mini" id="mini-travel">
+      <div class="mini-view"><canvas id="cv-travel"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>ε<sub>r</sub> <output id="tr-er-out"></output></span><input type="range" id="tr-er" min="1" max="12" step="0.1" value="1"></label>
+        <button class="btn" id="tr-play" type="button"></button>
+        <span class="readout" id="tr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(+z\)로 가는 1 GHz 평면파의 순간 모습. 탐침 P₂(흰 원)를 끌어 옮기면 아래 그래프에서 두 탐침의 \(E(t)\)가 \(\beta\Delta z\)만큼 늦게 따라온다. P₂를 한 파장만큼 옮기면 두 곡선이 다시 겹친다. \(\varepsilon_r\)을 키우면 파장이 \(1/\sqrt{\varepsilon_r}\)로 짧아진다.</figcaption>
+    </figure>
+    <h3>에너지 흐름</h3>
+    <p>9장의 포인팅 정리에 따르면 단위 넓이를 지나는 전력은 \(\mathbf S = \mathbf E\times\mathbf H\)이다. 페이저로 쓴 시간 평균은 \(\mathbf S_{av} = \tfrac12\mathrm{Re}\{\tilde{\mathbf E}\times\tilde{\mathbf H}^*\}\)이고, 손실 없는 매질의 평면파에서는</p>
+    <div class="formula">$$\mathbf S_{av} = \hat{\mathbf z}\,\frac{|E_0|^2}{2\eta}\ \ \text{W/m}^2,\qquad w_e = \tfrac12\varepsilon E^2 = \tfrac12\mu H^2 = w_m,\qquad S = (w_e + w_m)\,u_p$$<div class="where">전기 에너지 밀도와 자기 에너지 밀도는 순간마다 같고, 에너지는 위상 속도로 실려 간다. 지표의 햇빛 1000 W/m²는 진폭 \(E_0 = \sqrt{2\eta_0 S} \approx 868\) V/m, \(H_0 \approx 2.30\) A/m인 평면파와 같은 세기다.</div></div>
+    <div class="example" data-title="유전체 속 평면파의 기본량">
+      <p>비유전율 4.0인 무손실 비자성 매질에서 진동수 300 MHz, 진폭 30 V/m인 평면파가 \(+z\) 방향으로 간다. 전기장은 \(x\) 방향이다. 위상 상수, 파장, 위상 속도, 고유 임피던스, 자기장의 진폭과 방향, 평균 전력 밀도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n = \sqrt{\varepsilon_r} = 2\). \(\beta = n\omega/c\), \(\lambda = \lambda_0/n\), \(u_p = c/n\), \(\eta = \eta_0/n\), \(\tilde{\mathbf H} = \frac1\eta\hat{\mathbf z}\times\tilde{\mathbf E}\).</div>
+        <div class="step"><b>풀이</b> \(\beta = 2\times2\pi(3\times10^8)/(2.998\times10^8) = 12.58\) rad/m, \(\lambda = 2\pi/\beta = 0.500\) m, \(u_p = 1.499\times10^8\) m/s, \(\eta = 376.7/2 = 188.4\ \Omega\). \(H_0 = 30/188.4 = 0.159\) A/m, 방향 \(\hat{\mathbf z}\times\hat{\mathbf x} = \hat{\mathbf y}\). \(S_{av} = 30^2/(2\times188.4) = 2.39\) W/m².</div>
+        <div class="answer">\(\beta = 12.6\) rad/m, \(\lambda = 0.500\) m, \(u_p = 1.50\times10^8\) m/s, \(\eta = 188\ \Omega\), \(\mathbf H = \hat{\mathbf y}\,0.159\cos(\omega t - \beta z)\) A/m, \(S_{av} = 2.39\) W/m²</div>
+        <div class="step"><b>검토</b> 같은 \(E_0\)이면 \(\eta\)가 작은 매질일수록 \(H\)가 크고 전력 밀도도 크다(진공이었다면 1.19 W/m²). 매질 안의 파장은 진공 파장 1 m의 절반이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="lossy-media">
+    <h2>손실 매질과 손실 탄젠트</h2>
+    <p>이제 매질에 전도도 \(\sigma\)가 있다고 하자. 앙페르–맥스웰 법칙에 전도 전류 \(\sigma\tilde{\mathbf E}\)가 더해진다.</p>
+    <div class="formula">$$\nabla\times\tilde{\mathbf H} = \sigma\tilde{\mathbf E} + j\omega\varepsilon\tilde{\mathbf E} = j\omega\Big(\varepsilon - j\frac{\sigma}{\omega}\Big)\tilde{\mathbf E} = j\omega\varepsilon_c\tilde{\mathbf E}$$<div class="where">\(\varepsilon_c = \varepsilon' - j\varepsilon''\)를 <span class="term">복소 유전율</span><span class="en">(complex permittivity)</span>이라 한다. 전도 손실은 \(\varepsilon'' = \sigma/\omega\)로, 분극이 장을 늦게 따라가며 생기는 유전 손실(고체물리의 \(\varepsilon''\))도 같은 자리에 더해진다. 손실 없는 식에서 \(\varepsilon\)을 \(\varepsilon_c\)로 바꾸기만 하면 모든 결과가 그대로 성립한다.</div></div>
+    <p>전도 전류 밀도와 변위 전류 밀도의 크기 비를 <span class="term">손실 탄젠트</span><span class="en">(loss tangent)</span>라 한다. 이 무차원 수 하나가 매질이 유전체처럼 행동할지 도체처럼 행동할지를 정한다.</p>
+    <div class="formula">$$\tan\delta_c = \frac{\varepsilon''}{\varepsilon'} = \frac{|\sigma\tilde{\mathbf E}|}{|j\omega\varepsilon\tilde{\mathbf E}|} = \frac{\sigma}{\omega\varepsilon}$$<div class="where">\(\sigma/\omega\varepsilon \ll 1\)(대략 0.01 이하)이면 <b>좋은 유전체</b>, \(\gg 1\)(대략 100 이상)이면 <b>양도체</b>다. 같은 물질이라도 진동수에 따라 바뀐다 — 바닷물은 1 kHz에서 양도체지만 10 GHz에서는 손실 많은 유전체다. 5장의 전하 이완 시간 \(\tau = \varepsilon/\sigma\)로 쓰면 \(\tan\delta_c = 1/\omega\tau\)이다.</div></div>
+    <p>복소 유전율을 헬름홀츠 방정식에 넣으면 파수가 복소수가 된다. 이것을 <span class="term">전파 상수</span><span class="en">(propagation constant)</span> \(\gamma = jk_c = \alpha + j\beta\)로 쓴다. 실수부 \(\alpha\)는 <span class="term">감쇠 상수</span><span class="en">(attenuation constant)</span>, 허수부 \(\beta\)는 <span class="term">위상 상수</span><span class="en">(phase constant)</span>다.</p>
+    <div class="formula">$$\gamma = \alpha + j\beta = j\omega\sqrt{\mu\varepsilon_c} = \sqrt{j\omega\mu(\sigma + j\omega\varepsilon)}$$
+    $$\alpha = \omega\sqrt{\frac{\mu\varepsilon}{2}}\left[\sqrt{1 + \Big(\frac{\sigma}{\omega\varepsilon}\Big)^2} - 1\right]^{1/2},\qquad \beta = \omega\sqrt{\frac{\mu\varepsilon}{2}}\left[\sqrt{1 + \Big(\frac{\sigma}{\omega\varepsilon}\Big)^2} + 1\right]^{1/2}$$
+    $$\eta_c = \sqrt{\frac{\mu}{\varepsilon_c}} = \frac{\sqrt{\mu/\varepsilon}}{\left(1 - j\,\sigma/\omega\varepsilon\right)^{1/2}} = |\eta_c|\,e^{j\theta_\eta},\qquad 0 \le \theta_\eta \le 45^\circ$$<div class="where">파동은 \(\tilde{\mathbf E} = \hat{\mathbf x}E_0e^{-\alpha z}e^{-j\beta z}\), \(\tilde{\mathbf H} = \hat{\mathbf y}\frac{E_0}{|\eta_c|}e^{-\alpha z}e^{-j\beta z}e^{-j\theta_\eta}\)이다. 진폭이 \(e^{-\alpha z}\)로 줄고, 자기장이 전기장보다 \(\theta_\eta\)만큼 늦는다. 평균 전력은 \(S_{av} = \frac{E_0^2}{2|\eta_c|}e^{-2\alpha z}\cos\theta_\eta\)로 \(e^{-2\alpha z}\)를 따라 준다.</div></div>
+    <p>\(\alpha\)의 단위는 <span class="term">네퍼</span><span class="en">(neper, Np)</span>/m이다. 진폭이 \(e\)분의 1이 되는 감쇠가 1 Np이고, 데시벨로는 \(20\log_{10}e = 8.686\) dB이다. 진폭이 \(1/e\)이 되는 거리 \(\delta_p = 1/\alpha\)를 <b>침투 깊이</b>라 부른다. 양도체에서는 이것이 8장의 표피 깊이가 된다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="손실 탄젠트 눈금 위에 놓인 재료들: 석영, FR-4, 물, 실리콘 기판, 바닷물, 구리">
+        <rect x="40" y="96" width="103" height="30" fill="var(--accent-2)" opacity=".16"/>
+        <rect x="143" y="96" width="206" height="30" fill="var(--warn)" opacity=".16"/>
+        <rect x="349" y="96" width="411" height="30" fill="var(--accent)" opacity=".16"/>
+        <line x1="40" y1="126" x2="760" y2="126" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <g class="t t-dim" style="font-size:11px" text-anchor="middle">
+          <text x="40" y="144">10⁻⁴</text><text x="143" y="144">10⁻²</text><text x="246" y="144">1</text><text x="349" y="144">10²</text><text x="451" y="144">10⁴</text><text x="554" y="144">10⁶</text><text x="657" y="144">10⁸</text><text x="760" y="144">10¹⁰</text>
+        </g>
+        <g stroke="var(--text-dim)"><line x1="143" y1="122" x2="143" y2="130"/><line x1="246" y1="122" x2="246" y2="130"/><line x1="349" y1="122" x2="349" y2="130"/><line x1="451" y1="122" x2="451" y2="130"/><line x1="554" y1="122" x2="554" y2="130"/><line x1="657" y1="122" x2="657" y2="130"/></g>
+        <text class="t" x="400" y="170" text-anchor="middle">σ / ωε (로그 눈금)</text>
+        <g class="t" style="font-size:12px;font-weight:700" text-anchor="middle">
+          <text x="91" y="116" style="fill:var(--accent-2)">좋은 유전체</text>
+          <text x="246" y="116" style="fill:var(--warn)">준도체</text>
+          <text x="554" y="116" style="fill:var(--accent)">양도체</text>
+        </g>
+        <g class="t" style="font-size:11.5px">
+          <circle cx="40" cy="80" r="4" fill="var(--text)"/><text x="46" y="64">석영 유리</text><text x="46" y="78" class="t-dim">10 GHz</text>
+          <circle cx="159" cy="80" r="4" fill="var(--text)"/><text x="140" y="44">FR-4</text><text x="140" y="58" class="t-dim">tanδ 0.02</text>
+                    <circle cx="200" cy="200" r="4" fill="var(--text)"/><text x="150" y="222">물 2.45 GHz (0.13)</text>
+          <circle cx="307" cy="200" r="4" fill="var(--text)"/><text x="268" y="240">Si 기판 10 Ω·cm, 1 GHz (15)</text>
+          <circle cx="398" cy="80" r="4" fill="var(--text)"/><text x="360" y="58">바닷물 1 MHz (890)</text>
+          <circle cx="710" cy="80" r="4" fill="var(--text)"/><text x="640" y="58">구리 1 GHz (10⁹)</text>
+          <circle cx="83" cy="200" r="4" fill="var(--text)"/><text x="40" y="222">진성 Si 1 GHz</text>
+        </g>
+        <g stroke="var(--text-faint)" stroke-dasharray="2 3"><line x1="40" y1="84" x2="40" y2="96"/><line x1="159" y1="84" x2="159" y2="96"/><line x1="398" y1="84" x2="398" y2="96"/><line x1="710" y1="84" x2="710" y2="96"/><line x1="200" y1="126" x2="200" y2="196"/><line x1="307" y1="126" x2="307" y2="196"/><line x1="83" y1="126" x2="83" y2="196"/></g>
+      </svg>
+      <figcaption>손실 탄젠트 눈금. 같은 \(\sigma/\omega\varepsilon\)이면 매질의 종류와 상관없이 \(\alpha/\beta\)와 \(\theta_\eta\)가 같다. 실리콘 기판(10 Ω·cm)은 15 GHz 근처에서 유전체와 도체의 경계(\(\sigma/\omega\varepsilon = 1\))를 지난다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-medium">
+      <p>바닷물(\(\sigma = 4\) S/m, \(\varepsilon_r = 81\))에서 1 kHz 파동과 1 GHz 파동 가운데 진폭이 \(1/e\)이 되는 거리가 더 긴 것은?</p>
+      <div class="opts"><button class="opt" data-correct>1 kHz — 감쇠 상수가 \(\sqrt f\)에 비례해 낮은 진동수일수록 깊이 들어간다</button><button class="opt">1 GHz — 진동수가 높을수록 에너지가 커서 더 뚫고 들어간다</button><button class="opt">같다 — 감쇠는 전도도로만 정해진다</button></div>
+      <div class="quiz-exp">1 kHz에서 \(1/\alpha \approx 8.0\) m, 1 GHz에서는 약 1.3 cm다. 잠수함과 교신할 때 수십 kHz 이하의 초장파(VLF)를 쓰는 이유다. 아래 시뮬레이터에서 바닷물을 고르고 진동수를 바꿔 확인하라. 진동수가 아주 높아지면 \(\alpha\)는 \(\frac\sigma2\sqrt{\mu/\varepsilon}\)에서 더 커지지 않는다.</div>
+    </div>
+    <div class="sim" id="sim-medium">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>유전체에서 도체까지: σ/ωε 탐험기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-med"></canvas><span class="hint top">흰 점을 좌우로 끈다</span></div><div><canvas id="cv-med2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>매질</span><div class="seg" id="md-m"><button data-value="sea" class="on">바닷물</button><button data-value="si">Si 기판</button><button data-value="soil">젖은 흙</button><button data-value="isi">진성 Si</button><button data-value="cu">구리</button></div></div>
+          <label class="ctrl"><span>진동수 f <output id="md-f-out"></output></span><input type="range" id="md-f" min="0" max="12" step="0.01" value="6"></label>
+          <div class="ctrl"><span>목표</span><div class="seg" id="md-goal"><button data-value="p1" class="on">σ/ωε = 1</button><button data-value="d1">1/α = 1 m</button><button data-value="t30">θ<sub>η</sub> = 30°</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">σ/ωε</span><span class="v" id="md-p">—</span></div>
+        <div class="stat"><span class="k">α</span><span class="v" id="md-a">—</span></div>
+        <div class="stat"><span class="k">β · 파장 λ</span><span class="v" id="md-b">—</span></div>
+        <div class="stat"><span class="k">η<sub>c</sub></span><span class="v" id="md-eta">—</span></div>
+        <div class="stat"><span class="k">1/α</span><span class="v" id="md-d">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="md-g">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 \(\alpha\)와 \(\beta\)를 손실 없는 파수 \(k = \omega\sqrt{\mu\varepsilon}\)로 나눈 값으로, 모든 매질이 같은 곡선 위에 놓인다(파랑 띠: 좋은 유전체, 빨강 띠: 양도체). 오른쪽은 그 매질 속 파동의 순간 모습이다(빨강 \(E\), 파랑 \(|\eta_c|H\), 세 파장 구간). 재료 상수는 진동수와 무관하다고 단순화했다. 해볼 것: ① 점을 왼쪽 끝으로 끌면 \(\alpha/k \approx \tfrac12\sigma/\omega\varepsilon\), 오른쪽 끝에서는 \(\alpha = \beta\)이고 \(H\)가 \(E\)보다 45° 늦는다. ② 양도체 영역에서는 한 파장 안에 진폭이 \(e^{-2\pi} \approx 0.2\%\)로 준다 — "파동"이라기보다 확산이다. ③ 목표 세 가지를 달성하라(±3%). 구리는 이 진동수 범위(1 Hz–1 THz)에서 언제나 양도체라 세 목표를 모두 만들 수 없다.</div>
+    </div>
+    <h3>저손실 근사와 양도체 근사</h3>
+    <p>좋은 유전체(\(\sigma/\omega\varepsilon \ll 1\))에서는 제곱근을 테일러 전개해 간단한 식을 얻는다. \(\beta\)와 \(\eta\)는 손실 없는 값과 거의 같고, 감쇠만 새로 생긴다.</p>
+    <div class="formula">$$\alpha \approx \frac{\sigma}{2}\sqrt{\frac{\mu}{\varepsilon}} = \frac{\beta}{2}\tan\delta_c,\qquad \beta \approx \omega\sqrt{\mu\varepsilon}\Big[1 + \tfrac18\Big(\frac{\sigma}{\omega\varepsilon}\Big)^2\Big],\qquad \eta_c \approx \sqrt{\frac\mu\varepsilon}\Big(1 + j\frac{\sigma}{2\omega\varepsilon}\Big)$$<div class="where">유전 손실을 \(\tan\delta\)로 주는 기판 재료(FR-4, ABF, 세라믹)는 \(\alpha \approx \frac{\pi\sqrt{\varepsilon_r}}{\lambda_0}\tan\delta\)이므로 dB/m 손실이 진동수에 정비례한다. 고속 신호의 손실이 진동수와 함께 커지는 첫째 이유다(둘째 이유는 다음 절의 표피 효과).</div></div>
+    <div class="tangle" id="tg-loss">
+      <p>비유전율 <span class="tn" data-var="er" data-min="2" data-max="12" data-step="0.1">4.4</span>, 손실 탄젠트 <span class="tn" data-var="td" data-min="0.0001" data-max="0.05" data-step="0.0001">0.0200</span>인 기판에서 <span class="tn" data-var="f" data-min="1" data-max="100" data-step="1" data-unit=" GHz">10</span> 신호의 유전 감쇠는 \(\alpha\) = <span class="tn-out" data-out="a"></span>, 곧 <span class="tn-out" data-out="db"></span>(<span class="tn-out" data-out="dbi"></span>)이다. 길이 10 cm 배선이면 유전 손실만으로 <span class="tn-out" data-out="d10"></span>를 잃는다 — 전력이 <span class="tn-out" data-out="frac"></span>로 준다.</p>
+    </div>
+    <div class="example" data-title="바닷물 속 초장파 통신">
+      <p>바닷물(\(\sigma = 4\) S/m, \(\varepsilon_r = 81\), \(\mu_r = 1\))에서 10 kHz 파동의 손실 탄젠트, 감쇠 상수, 침투 깊이, 고유 임피던스를 구하라. 수면에서 1 mV/m인 전기장이 몇 m 깊이에서 1 µV/m가 되는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 먼저 \(\sigma/\omega\varepsilon\)를 보고 근사를 고른다.</div>
+        <div class="step"><b>풀이</b> \(\sigma/\omega\varepsilon = 4/(2\pi\cdot10^4\cdot81\cdot8.854\times10^{-12}) = 8.88\times10^4 \gg 1\) — 양도체. \(\alpha = \beta = \sqrt{\pi f\mu_0\sigma} = \sqrt{\pi\cdot10^4\cdot4\pi\times10^{-7}\cdot4} = 0.397\) Np/m, \(1/\alpha = 2.52\) m, \(\eta_c = (1+j)\alpha/\sigma = (1+j)\,0.0993 = 0.140\angle45^\circ\ \Omega\). 진폭비 \(10^{-3}\)은 \(\alpha z = \ln1000 = 6.91\)이므로 \(z = 17.4\) m.</div>
+        <div class="answer">\(\sigma/\omega\varepsilon = 8.9\times10^4\), \(\alpha = 0.397\) Np/m (3.45 dB/m), \(1/\alpha = 2.52\) m, \(\eta_c = 0.140\angle45^\circ\ \Omega\), 깊이 17.4 m</div>
+        <div class="step"><b>검토</b> \(|\eta_c|\)가 진공의 2700분의 1이라 바닷물 속에서는 같은 전기장에 비해 자기장이 매우 크다. 1 GHz였다면 침투 깊이가 1.3 cm로 줄어 통신이 불가능하다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="FR-4 기판의 유전 손실">
+      <p>FR-4 기판(\(\varepsilon_r = 4.4\), \(\tan\delta = 0.02\))을 지나는 10 GHz 평면파(또는 TEM 선로 신호)의 감쇠 상수를 저손실 근사와 정확한 식으로 구하고, dB/inch로 나타내라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\tan\delta = 0.02 \ll 1\)이므로 \(\alpha \approx \frac\beta2\tan\delta\). 정확한 값은 \(\gamma = j\frac\omega c\sqrt{\varepsilon_r(1 - j\tan\delta)}\).</div>
+        <div class="step"><b>풀이</b> \(\beta = 2\pi f\sqrt{\varepsilon_r}/c = 2\pi(10^{10})(2.098)/(2.998\times10^8) = 439.6\) rad/m. 근사: \(\alpha = 439.6\times0.01 = 4.396\) Np/m. 정확한 식: 4.396 Np/m(차이 0.005%). \(8.686\times4.396 = 38.2\) dB/m \(= 0.97\) dB/inch.</div>
+        <div class="answer">\(\alpha \approx 4.40\) Np/m \(= 38.2\) dB/m \(\approx 0.97\) dB/inch</div>
+        <div class="step"><b>검토</b> 30 cm 보드 배선이면 유전 손실만 11 dB다. 20 GHz에서는 두 배가 된다. 그래서 고속 SerDes 보드는 \(\tan\delta \approx 0.002\)–0.005인 저손실 재료를 쓴다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>SerDes 채널 손실의 절반은 유전 손실</strong> PCIe·이더넷 링크의 나이퀴스트 주파수(수–수십 GHz)에서 보드·패키지 배선의 손실은 두 갈래다. 도체의 표피 효과 손실은 \(\sqrt f\)로, 유전체 손실은 \(f\tan\delta\sqrt{\varepsilon_r}\)로 자란다. 높은 진동수로 갈수록 유전 손실이 이겨서, FR-4(0.02)에서 Megtron 계열(0.002–0.004)로 바꾸면 같은 길이에서 손실 dB가 몇 분의 1로 준다. 채널 설계자는 이 손실 곡선(삽입 손실 vs 진동수)을 받아 송신 FFE와 수신 CTLE·DFE의 등화 범위를 정한다. 아이 다이어그램이 닫히는 이유를 SoC 쪽에서 보려면 → <a href="https://semi.euiyun.com/soc/chapters/io.html">SoCBook · 인터럽트·DMA·고속 I/O(채널 손실과 이퀄라이저)</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="good-conductors">
+    <h2>양도체와 표피 깊이</h2>
+    <p>금속처럼 \(\sigma/\omega\varepsilon \gg 1\)인 <span class="term">양도체</span><span class="en">(good conductor)</span>에서는 변위 전류를 버리고 \(\gamma \approx \sqrt{j\omega\mu\sigma}\)로 쓸 수 있다. \(\sqrt j = (1+j)/\sqrt2\)이므로 감쇠 상수와 위상 상수가 같아진다.</p>
+    <div class="formula">$$\gamma \approx (1+j)\sqrt{\pi f\mu\sigma} = \frac{1+j}{\delta},\qquad \alpha = \beta = \frac1\delta,\qquad \delta = \frac{1}{\sqrt{\pi f\mu\sigma}}$$
+    $$\eta_c \approx \sqrt{\frac{j\omega\mu}{\sigma}} = (1+j)\sqrt{\frac{\pi f\mu}{\sigma}} = \frac{1+j}{\sigma\delta},\qquad u_p = \omega\delta,\qquad \lambda = 2\pi\delta$$<div class="where">\(\delta\)는 8장에서 와전류로 만난 표피 깊이 그대로다. 평면파 관점에서는 "도체 속 파동이 한 라디안의 위상을 돌 동안 진폭이 \(1/e\)이 되는 거리"다. 고유 임피던스는 위상이 정확히 45°이고 크기는 매우 작다: 구리에서 1 GHz일 때 \(|\eta_c| = 11.5\) mΩ.</div></div>
+    <p>도체 속 파동은 이상하다. 1 GHz 구리 속에서 파장은 13 µm, 위상 속도는 초속 13 km에 불과하고, 한 파장을 가는 동안 진폭이 \(e^{-2\pi} = 0.19\%\)로 준다. 이것은 진행하는 파동이라기보다 표면에서 안쪽으로 번지는 확산에 가깝다. 실제로 \(\sigma \gg \omega\varepsilon\)인 앙페르 법칙과 패러데이 법칙을 합치면 확산 방정식 \(\nabla^2\mathbf H = \mu\sigma\,\partial\mathbf H/\partial t\)이 된다.</p>
+    <figure class="mini" id="mini-cond">
+      <div class="mini-view"><canvas id="cv-cond"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>f <output id="cd-f-out"></output></span><input type="range" id="cd-f" min="3" max="10" step="0.05" value="6"></label>
+        <div class="seg" id="cd-m"><button data-value="cu" class="on">Cu</button><button data-value="al">Al</button><button data-value="w">W</button></div>
+        <span class="readout" id="cd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>공기에서 도체 표면(왼쪽 경계)으로 들어온 파동의 도체 속 모습. 가로축은 \(\delta\) 단위의 깊이다. 빨강 \(E\)와 파랑 \(|\eta_c|H\)는 같은 포락선 \(e^{-z/\delta}\) 안에서 진동하지만 \(H\)가 \(E\)보다 45° 늦다(\(E = \eta_c H\), \(\eta_c\)의 위상 +45°). 둘 다 표면 값을 1로 맞춰 그렸다. 진동수를 바꿔도 \(\delta\) 단위로 본 그림은 그대로이고, 위에 적힌 실제 깊이만 \(1/\sqrt f\)로 바뀐다.</figcaption>
+    </figure>
+    <h3>표면 임피던스와 표면 저항</h3>
+    <p>도체 표면의 접선 전기장과 접선 자기장의 비 \(Z_s = E_t/H_t\)를 <span class="term">표면 임피던스</span><span class="en">(surface impedance)</span>라 한다. 두꺼운 양도체에서는 \(Z_s = \eta_c\)이고, 그 실수부가 <span class="term">표면 저항</span><span class="en">(surface resistance)</span> \(R_s\)이다.</p>
+    <div class="formula">$$Z_s = R_s + jX_s = \frac{1+j}{\sigma\delta},\qquad R_s = \frac{1}{\sigma\delta} = \sqrt{\frac{\pi f\mu}{\sigma}},\qquad P_{loss} = \frac12|\mathbf J_s|^2R_s = \frac12|H_t|^2R_s\ \ \text{W/m}^2$$<div class="where">도체 속 전류를 모두 더한 면전류 \(\mathbf J_s = \int_0^\infty\mathbf J\,dz\)는 표면의 접선 자기장과 같다(\(|\mathbf J_s| = |H_t|\)). 실제로는 지수적으로 줄며 위상이 돌아가는 전류지만, 손실은 "두께 \(\delta\)인 층에 고르게 흐르는 직류"의 손실과 정확히 같다. 그래서 \(R_s\)는 두께 \(\delta\)인 판의 면저항이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="양도체 속 전류 밀도는 표면에서 지수적으로 줄며 위상이 돈다. 손실은 두께 delta인 층의 균일 전류와 같다.">
+        <defs><marker id="pw-ar4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="60" y="40" width="300" height="190" fill="var(--text-dim)" opacity=".12"/>
+        <line x1="60" y1="40" x2="60" y2="230" stroke="var(--text)" stroke-width="2.4"/>
+        <text class="t" x="20" y="34">공기</text><text class="t" x="300" y="34">도체 σ</text>
+        <line x1="60" y1="236" x2="360" y2="236" stroke="var(--text-dim)" stroke-width="1.2" marker-end="url(#pw-ar4)"/><text class="t" x="364" y="241">z</text>
+        <path d="M60 60 C 110 112, 150 150, 200 176 S 300 205, 355 212" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+        <path d="M60 60 C 85 110, 105 190, 130 214 S 170 216, 200 205 S 260 196, 300 202 S 340 210, 355 212" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".8"/>
+        <line x1="60" y1="212" x2="360" y2="212" stroke="var(--text-faint)" stroke-width="1"/>
+        <line x1="140" y1="40" x2="140" y2="230" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text class="t" x="146" y="56" style="font-weight:700">z = δ</text>
+        <text class="t" x="200" y="150" style="fill:var(--accent);font-weight:700">|J| ∝ e^(−z/δ)</text>
+        <text class="t" x="215" y="110" style="fill:var(--accent)">점선: 순간 J (위상이 돎)</text>
+        <rect x="460" y="60" width="300" height="150" fill="var(--text-dim)" opacity=".12"/>
+        <rect x="460" y="60" width="80" height="150" fill="var(--accent)" opacity=".30"/>
+        <line x1="460" y1="60" x2="460" y2="210" stroke="var(--text)" stroke-width="2.4"/>
+        <text class="t" x="500" y="140" text-anchor="middle" style="font-weight:700">두께 δ</text>
+        <text class="t" x="500" y="162" text-anchor="middle">균일 J</text>
+        <g class="t"><text x="560" y="96">손실이 같다:</text><text x="560" y="122">R<tspan dy="4" style="font-size:10px">s</tspan><tspan dy="-4"> = 1/(σδ)</tspan></text><text x="560" y="148">J<tspan dy="4" style="font-size:10px">s</tspan><tspan dy="-4"> = H</tspan><tspan dy="4" style="font-size:10px">t</tspan></text><text x="560" y="182" class="t-dim">(두께 δ 판의 면저항)</text></g>
+        <text class="t" x="400" y="140" text-anchor="middle" style="font-size:20px">≡</text>
+      </svg>
+      <figcaption>양도체 속 전류는 표면에서 \(e^{-z/\delta}\)로 줄고 위상이 깊이에 따라 돈다(점선은 한 순간의 전류). 이 전류가 내는 줄 열은 두께 \(\delta\)인 층에 고르게 흐르는 같은 총전류의 열과 같다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-skin">
+      <p>진동수 <span class="tn" data-var="lf" data-min="3" data-max="11" data-step="0.1">9.0</span>(로그, 10의 지수) = <span class="tn-out" data-out="f"></span>에서 구리(\(\sigma = 5.96\times10^7\) S/m)의 표피 깊이는 <span class="tn-out" data-out="d"></span>, 표면 저항은 <span class="tn-out" data-out="rs"></span>이다. 도체 속 파장은 <span class="tn-out" data-out="lam"></span>, 위상 속도는 <span class="tn-out" data-out="vp"></span>로, 같은 진동수의 진공 파장 <span class="tn-out" data-out="lam0"></span>와 비교가 안 된다. 칩의 굵은 최상층 금속(두께 3 µm)은 이 진동수에서 두께가 <span class="tn-out" data-out="ratio"></span>δ다.</p>
+    </div>
+    <h3>둥근 도선의 교류 저항</h3>
+    <p>반지름 \(a\)인 둥근 도선에 교류가 흐르면 전류가 표면으로 몰린다. 직류 저항은 단위 길이당 \(R'_{dc} = 1/\sigma\pi a^2\)이다. \(\delta \ll a\)이면 전류가 둘레 \(2\pi a\), 두께 \(\delta\)인 껍질에만 흐르는 것과 같으므로 \(R'_{ac} \approx R_s/2\pi a\)이다. 도선 속 전류 밀도의 정확한 해는 베셀 함수로 쓴다(\(k = (1-j)/\delta\)).</p>
+    <div class="formula">$$\frac{J(\rho)}{J(a)} = \frac{J_0(k\rho)}{J_0(ka)},\qquad \frac{Z'}{R'_{dc}} = \frac{ka}{2}\,\frac{J_0(ka)}{J_1(ka)},\qquad \frac{R'_{ac}}{R'_{dc}} \approx \frac{a}{2\delta} + \frac14\quad(a \gg \delta)$$<div class="where">\(a/\delta\)가 1 근처일 때까지는 저항이 거의 그대로이고(\(a/\delta = 1\)에서 2% 증가), \(a/\delta\)가 커지면 \(\sqrt f\)에 비례해 커진다. 허수부는 내부 인덕턴스로, 고주파에서 \(\omega L'_{int} = R'_{ac}\)이 되어 직류 값 \(\mu_0/8\pi\)(8장)에서 줄어든다.</div></div>
+    <div class="sim" id="sim-wire">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>둥근 도선의 표피 효과</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-wire"></canvas></div><div style="position:relative"><canvas id="cv-wire2"></canvas><span class="hint top">곡선 위 흰 점을 끈다</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>금속</span><div class="seg" id="wr-m"><button data-value="cu" class="on">Cu</button><button data-value="al">Al</button><button data-value="w">W</button></div></div>
+          <label class="ctrl"><span>반지름 a <output id="wr-a-out"></output></span><input type="range" id="wr-a" min="-5" max="-2.7" step="0.01" value="-3.3"></label>
+          <label class="ctrl"><span>진동수 f <output id="wr-f-out"></output></span><input type="range" id="wr-f" min="2" max="11" step="0.01" value="5"></label>
+          <div class="ctrl"><span>목표</span><div class="seg" id="wr-goal"><button data-value="2" class="on">R = 2R<sub>dc</sub></button><button data-value="10">R = 10R<sub>dc</sub></button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">δ · a/δ</span><span class="v" id="wr-d">—</span></div>
+        <div class="stat"><span class="k">R′<sub>dc</sub></span><span class="v" id="wr-rdc">—</span></div>
+        <div class="stat"><span class="k">R′<sub>ac</sub> · 비</span><span class="v" id="wr-rac">—</span></div>
+        <div class="stat"><span class="k">껍질 근사 R<sub>s</sub>/2πa</span><span class="v" id="wr-rs">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="wr-g">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 도선 단면의 전류 밀도 크기 \(|J(\rho)|\)(밝을수록 큼, 점선 원은 표면에서 \(\delta\) 안쪽)와 그 반지름 분포다. 아래 그래프의 빨강 실선은 한 순간의 전류 밀도로, 깊이에 따라 위상이 돌아 중심 근처에서는 표면과 반대 방향으로 흐르기도 한다. 오른쪽은 \(R'_{ac}/R'_{dc}\)의 진동수 의존성(점선: 껍질 근사 \(a/2\delta\))이다. 해볼 것: ① 반지름 0.5 mm 구리선에서 저항이 두 배가 되는 진동수를 찾아라(약 200 kHz). ② 같은 진동수에서 W로 바꾸면 \(\delta\)가 커져 비가 작아진다 — 그래도 절대 저항은 W가 크다. ③ 1 GHz 이상에서는 기울기가 정확히 \(\sqrt f\)이다.</div>
+    </div>
+    <div class="example" data-title="1 GHz 구리 도선">
+      <p>구리(\(\sigma = 5.96\times10^7\) S/m)의 1 GHz에서 표피 깊이, 표면 저항, 도체 속 파장과 위상 속도를 구하라. 반지름 0.50 mm인 구리 도선의 단위 길이당 직류 저항과 1 GHz 교류 저항은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\delta = 1/\sqrt{\pi f\mu_0\sigma}\), \(R_s = 1/\sigma\delta\). \(a/\delta \gg 1\)이면 \(R'_{ac} \approx R_s/2\pi a\).</div>
+        <div class="step"><b>풀이</b> \(\delta = 1/\sqrt{\pi(10^9)(4\pi\times10^{-7})(5.96\times10^7)} = 2.06\ \mu\)m. \(R_s = 1/(5.96\times10^7\times2.06\times10^{-6}) = 8.14\) mΩ. \(\lambda = 2\pi\delta = 13.0\ \mu\)m, \(u_p = \omega\delta = 1.30\times10^4\) m/s. \(R'_{dc} = 1/(\sigma\pi a^2) = 21.4\) mΩ/m. \(a/\delta = 243\)이므로 \(R'_{ac} \approx R_s/(2\pi a) = 0.00814/(2\pi\times5\times10^{-4}) = 2.59\) Ω/m.</div>
+        <div class="answer">\(\delta = 2.06\ \mu\)m, \(R_s = 8.14\) mΩ, \(\lambda = 13.0\ \mu\)m, \(u_p = 1.30\times10^4\) m/s, \(R'_{dc} = 21.4\) mΩ/m, \(R'_{ac} \approx 2.59\) Ω/m (121배)</div>
+        <div class="step"><b>검토</b> \(R'_{ac}/R'_{dc} \approx a/2\delta + 1/4 = 121.5\)와 맞는다. 단면적의 0.8%(\(2\delta/a\))만 전류를 나르는 셈이다. 그래서 고주파 코일은 가는 절연선을 꼰 리츠선을, 마이크로파 부품은 은도금을 쓴다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>표면 거칠기가 손실을 키운다</strong><p>표피 깊이가 표면의 요철 크기와 비슷해지면 전류가 요철을 따라 오르내리는 더 긴 길을 가야 해서 손실이 커진다. 흔히 쓰는 해머스태드 보정은 \(K = 1 + \frac2\pi\arctan\!\big[1.4(\Delta/\delta)^2\big]\)이다(\(\Delta\)는 rms 거칠기). 10 GHz 구리(\(\delta = 0.65\ \mu\)m)에서 \(\Delta = 1\ \mu\)m이면 \(K \approx 1.81\), 곧 도체 손실이 81% 커진다. \(K\)는 2에서 포화한다 — 요철 경로가 직선 경로의 약 두 배라는 뜻이다.</p></div>
+    <div class="callout semi"><strong>칩 배선은 표피 효과가 없고, 패키지 배선은 있다</strong> 10 GHz에서 구리의 표피 깊이는 0.65 µm다. 칩 하층 배선(두께 수십 nm)은 \(\delta\)보다 훨씬 얇아 전류가 단면 전체에 고르게 흐르고, 저항을 키우는 것은 표피 효과가 아니라 표면·결정립계 산란(5장의 크기 효과)이다. 반면 두께 2–4 µm인 최상층 재배선과 온칩 인덕터, 두께 15 µm 안팎인 패키지 기판 배선, PCB 배선은 \(\delta\)보다 훨씬 두꺼워 교류 저항이 \(\sqrt f\)로 자란다. 패키지 기판의 구리를 일부러 거칠게 만들어 수지와의 밀착력을 얻는 공정이 고속 신호에서는 위의 거칠기 손실이 된다. → <a href="https://semi.euiyun.com/packaging/chapters/substrate.html">PackagingBook · 기판과 패키지 형태(기판 배선의 전기 특성)</a> · <a href="https://semi.euiyun.com/digital/chapters/wire.html">DigitalBook · 배선: 칩 안의 도로(인덕턴스와 전원 배선)</a></div>
+    <div class="drill" id="drill-skin" data-title="표피 깊이와 표면 저항 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="polarization">
+    <h2>편광</h2>
+    <p>지금까지는 전기장이 늘 \(x\) 방향인 평면파만 보았다. 일반적으로 \(+z\)로 가는 평면파의 전기장은 \(x\)와 \(y\) 두 성분을 가질 수 있고, 두 성분의 진폭과 위상이 서로 다를 수 있다. 한 점에서 전기장 벡터의 끝이 시간에 따라 그리는 궤적의 모양을 <span class="term">편광</span><span class="en">(polarization)</span>이라 한다.</p>
+    <div class="formula">$$\tilde{\mathbf E}(z) = \big(\hat{\mathbf x}\,a + \hat{\mathbf y}\,b\,e^{j\delta}\big)e^{-jkz}\quad\Rightarrow\quad \mathbf E(0,t) = \hat{\mathbf x}\,a\cos\omega t + \hat{\mathbf y}\,b\cos(\omega t + \delta)$$<div class="where">\(a, b \ge 0\)는 두 성분의 진폭, \(\delta\)는 \(y\) 성분이 \(x\) 성분보다 앞선 위상(\(-180^\circ < \delta \le 180^\circ\)). 일반적인 궤적은 타원이다.</div></div>
+    <div class="compare">
+      <div><h4>직선 편광</h4><p>\(\delta = 0\) 또는 \(180^\circ\). 두 성분이 함께 0을 지나므로 끝점이 선분 위를 오간다. 기울기는 \(\tan^{-1}(\pm b/a)\). <span class="term">직선 편광</span><span class="en">(linear polarization)</span></p></div>
+      <div><h4>원편광</h4><p>\(a = b\)이고 \(\delta = \pm90^\circ\). 끝점이 일정한 크기로 원을 돈다. <span class="term">원편광</span><span class="en">(circular polarization)</span></p></div>
+      <div><h4>타원 편광</h4><p>그 밖의 모든 경우. 장축과 단축의 비가 <span class="term">축비</span><span class="en">(axial ratio)</span> AR, 장축이 \(x\)축과 이루는 각이 기울기 \(\psi\)다. <span class="term">타원 편광</span><span class="en">(elliptical polarization)</span></p></div>
+    </div>
+    <div class="formula">$$\tan2\psi = \frac{2ab\cos\delta}{a^2 - b^2},\qquad \sin2\chi = \frac{2ab\sin\delta}{a^2 + b^2},\qquad \mathrm{AR} = \frac{1}{|\tan\chi|}\ \ (1 \le \mathrm{AR} \le \infty)$$<div class="where">\(\chi\)는 타원율 각(\(|\chi| \le 45^\circ\)). \(\chi = 0\)이면 직선(AR = ∞), \(|\chi| = 45^\circ\)이면 원(AR = 1). <b>감긴 방향</b>은 \(\sin\delta\)의 부호로 정한다: IEEE 관례(오른손 엄지를 진행 방향으로 두었을 때 나머지 손가락이 감기는 방향으로 \(\mathbf E\)가 돌면 오른손)로 \(0 < \delta < 180^\circ\)이면 <b>왼손</b>, \(-180^\circ < \delta < 0\)이면 <b>오른손</b> 편광이다.</div></div>
+    <figure class="mini" id="mini-helix">
+      <div class="mini-view"><canvas id="cv-helix"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="seg" id="hx-h"><button data-value="R" class="on">오른손 원편광</button><button data-value="L">왼손 원편광</button></div>
+        <button class="btn" id="hx-play" type="button"></button>
+        <span class="readout" id="hx-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>원편광 파동의 한 순간을 공간에 얼린 모습(\(z\)는 오른쪽)과, 오른쪽 끝 관측면에서 본 시간에 따른 회전. 오른손 원편광에서 관측면의 \(\mathbf E\)는 오른손 엄지를 \(+z\)로 둘 때 손가락 방향으로 돌지만, 공간에 얼린 나선은 왼나사처럼 감겨 있다. 감긴 방향을 "시간에 따른 회전"으로 정의하는 이유다.</figcaption>
+    </figure>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="두 직교 성분이 합쳐 원편광이 되고, 반대 방향 원편광 둘이 합쳐 직선 편광이 되는 과정">
+        <defs>
+          <marker id="pw-ar5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="pw-ar6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="pw-ar7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker>
+        </defs>
+        <g stroke="var(--text-faint)" stroke-width="1"><line x1="60" y1="140" x2="280" y2="140"/><line x1="170" y1="30" x2="170" y2="250"/></g>
+        <text class="t t-dim" x="284" y="144">x</text><text class="t t-dim" x="176" y="30">y</text>
+        <g data-only="1">
+          <line x1="80" y1="140" x2="260" y2="140" stroke="var(--accent)" stroke-width="5" opacity=".35"/>
+          <line x1="170" y1="140" x2="250" y2="140" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#pw-ar5)"/>
+          <text class="t" x="214" y="128" style="fill:var(--accent);font-weight:700">a cos ωt</text>
+        </g>
+        <g data-only="2">
+          <line x1="80" y1="140" x2="260" y2="140" stroke="var(--accent)" stroke-width="5" opacity=".35"/>
+          <line x1="170" y1="140" x2="250" y2="140" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#pw-ar5)"/>
+          <text class="t" x="214" y="128" style="fill:var(--accent);font-weight:700">a cos ωt</text>
+        </g>
+        <g data-only="3">
+          <line x1="80" y1="140" x2="260" y2="140" stroke="var(--accent)" stroke-width="5" opacity=".35"/>
+          <line x1="170" y1="140" x2="250" y2="140" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#pw-ar5)"/>
+          <text class="t" x="214" y="128" style="fill:var(--accent);font-weight:700">a cos ωt</text>
+        </g>
+        <g data-only="2">
+          <line x1="170" y1="50" x2="170" y2="230" stroke="var(--accent-2)" stroke-width="5" opacity=".35"/>
+          <text class="t" x="180" y="66" style="fill:var(--accent-2);font-weight:700">a cos(ωt − 90°)</text>
+        </g>
+        <g data-only="3">
+          <line x1="170" y1="50" x2="170" y2="230" stroke="var(--accent-2)" stroke-width="5" opacity=".35"/>
+          <text class="t" x="180" y="66" style="fill:var(--accent-2);font-weight:700">a cos(ωt − 90°)</text>
+        </g>
+        <g data-only="3">
+          <circle cx="170" cy="140" r="80" fill="none" stroke="var(--text)" stroke-width="2.4"/>
+          <path d="M 236 95 A 80 80 0 0 0 125 74" fill="none" stroke="var(--text)" stroke-width="3" marker-end="url(#pw-ar7)"/>
+          <line x1="170" y1="140" x2="226" y2="83" stroke="var(--text)" stroke-width="2.4" marker-end="url(#pw-ar7)"/>
+        </g>
+        <g data-only="4">
+          <circle cx="170" cy="140" r="50" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4"/>
+          <circle cx="170" cy="140" r="50" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="2 6"/>
+          <line x1="170" y1="140" x2="205" y2="105" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#pw-ar5)"/>
+          <line x1="170" y1="140" x2="205" y2="175" stroke="var(--accent-2)" stroke-width="2.2" marker-end="url(#pw-ar6)"/>
+          <line x1="170" y1="140" x2="240" y2="140" stroke="var(--text)" stroke-width="3" marker-end="url(#pw-ar7)"/>
+          <line x1="70" y1="140" x2="270" y2="140" stroke="var(--text)" stroke-width="5" opacity=".25"/>
+        </g>
+        <g class="t">
+          <text x="340" y="56" style="font-weight:700" data-only="1">x 성분만: x축 위를 오가는 직선 편광</text>
+          <text x="340" y="56" style="font-weight:700" data-only="2">y 성분이 90° 늦게(δ = −90°) 같은 진폭으로</text>
+          <text x="340" y="56" style="font-weight:700" data-only="3">합: 끝점이 원을 돈다 — x → y 방향(반시계)</text>
+          <text x="340" y="56" style="font-weight:700" data-only="4">오른손 원 + 왼손 원(같은 진폭) = 직선</text>
+          <text x="340" y="96" data-only="2">x가 최대일 때 y는 0, 1/4주기 뒤 y가 최대</text>
+          <text x="340" y="96" data-only="3">화면 밖으로 나오는 z(파가 다가옴)에서 반시계</text>
+          <text x="340" y="122" data-only="3">= 오른손 엄지 +z, 손가락 방향 → 오른손(RHCP)</text>
+          <text x="340" y="148" data-only="3" class="t-dim">페이저: (x̂ − jŷ)·a</text>
+          <text x="340" y="96" data-only="4">(x̂ − jŷ)/2 + (x̂ + jŷ)/2 = x̂</text>
+          <text x="340" y="122" data-only="4">두 원의 상대 위상을 바꾸면 직선의 기울기가 돈다</text>
+          <text x="340" y="148" data-only="4" class="t-dim">(패러데이 회전, 광학 활성의 원리)</text>
+          <text x="340" y="220" class="t-dim">모든 편광 = 두 직교 직선 편광의 합</text>
+          <text x="340" y="244" class="t-dim">= 오른손·왼손 원편광의 합</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>\(x\) 성분 \(a\cos\omega t\)만 있으면 직선 편광이다.</li><li>같은 진폭의 \(y\) 성분을 90° 늦게(\(\delta = -90^\circ\)) 더한다.</li><li>두 성분의 합은 크기가 일정하고 \(x \to y\) 방향으로 도는 벡터, 곧 오른손 원편광이다.</li><li>거꾸로, 같은 진폭의 오른손·왼손 원편광을 더하면 직선 편광이 된다. 어떤 편광도 두 기저 가운데 하나로 쪼갤 수 있다.</li></ol>
+      <figcaption>편광의 두 가지 분해. 직교 직선 성분의 합으로 보면 위상차가, 원편광 성분의 합으로 보면 두 원의 진폭비가 편광을 정한다.</figcaption>
+    </figure>
+    <div class="callout warn"><strong>광학 책과 감긴 방향이 반대일 수 있다</strong><p>이 책은 IEEE 관례(\(e^{j\omega t}\), 파가 멀어지는 쪽에서 보며 시계 방향 = 오른손)를 쓴다. 많은 광학 교재는 \(e^{-i\omega t}\)를 쓰고 광원을 마주 보며 회전을 정의해서, 같은 물리 상태를 반대 이름으로 부른다. 페이저 \((1, j)\)이 IEEE에서는 왼손, 그런 광학 관례에서는 오른손이 된다. 숫자를 가져다 쓸 때는 관례부터 확인한다.</p></div>
+    <div class="predict" data-for="sim-pol">
+      <p>페이저가 \(\tilde{\mathbf E} = (\hat{\mathbf x} + j\hat{\mathbf y})E_0e^{-jkz}\)인 평면파는 어떤 편광인가?</p>
+      <div class="opts"><button class="opt">오른손 원편광</button><button class="opt" data-correct>왼손 원편광</button><button class="opt">45° 직선 편광</button><button class="opt">타원 편광</button></div>
+      <div class="quiz-exp">\(j = e^{j90^\circ}\)이므로 \(a = b\), \(\delta = +90^\circ\). \(E_x = \cos\omega t\), \(E_y = \cos(\omega t + 90^\circ) = -\sin\omega t\)라서 \(x \to -y\)(시계 방향, 화면 밖으로 다가오는 파를 볼 때)로 돈다. IEEE 관례로 왼손이다. 시뮬레이터에서 \(\delta\) 다이얼을 +90°에 두고 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-pol">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>편광 타원 그리기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-pol"></canvas><span class="hint top">흰 원 세 개(a, b, δ 다이얼)를 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>위상차 δ <output id="pl-d-out"></output></span><input type="range" id="pl-d" min="-180" max="180" step="1" value="-60"></label>
+          <div class="ctrl"><span>목표</span><div class="seg" id="pl-goal"><button data-value="rhcp" class="on">오른손 원</button><button data-value="lin">−45° 직선</button><button data-value="ell">왼손 타원 AR 2, ψ 0°</button></div></div>
+          <button class="btn" id="pl-play" type="button"></button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">a, b∠δ</span><span class="v" id="pl-ph">—</span></div>
+        <div class="stat"><span class="k">기울기 ψ</span><span class="v" id="pl-tilt">—</span></div>
+        <div class="stat"><span class="k">축비 AR</span><span class="v" id="pl-ar">—</span></div>
+        <div class="stat"><span class="k">종류</span><span class="v" id="pl-kind">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="pl-g">—</span></div>
+      </div>
+      <div class="sim-note">파가 화면 밖으로 나와 보는 사람 쪽으로 다가온다(\(+z\)가 화면 밖). 이 시점에서 반시계로 돌면 IEEE 오른손이다. 빨강은 \(E_x(t)\), 파랑은 \(E_y(t)\)이고 검은 화살표가 합 벡터다. 해볼 것: ① \(\delta = 0\)에서 \(b\)만 바꾸면 직선의 기울기가 \(\tan^{-1}(b/a)\)로 바뀐다. ② \(a = b\)로 두고 \(\delta\)를 0 → 90° → 180°로 돌리면 직선 → 원 → 반대쪽 직선으로 바뀌며 회전 방향이 \(\sin\delta\)의 부호를 따른다. ③ 목표 세 가지를 만들어라(±3%, ±2°).</div>
+    </div>
+    <div class="example" data-title="편광의 판별">
+      <p>\(\tilde{\mathbf E} = (3\hat{\mathbf x} + j4\hat{\mathbf y})e^{-jkz}\) V/m인 평면파의 편광 종류, 감긴 방향, 축비, 장축의 방향을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(a = 3\), \(b = 4\), \(j4 = 4e^{j90^\circ}\)이므로 \(\delta = +90^\circ\). 공식에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(\tan2\psi = 2\cdot3\cdot4\cos90^\circ/(9 - 16) = 0/(-7)\) → \(2\psi = 180^\circ\), \(\psi = 90^\circ\)(장축이 \(y\)축). \(\sin2\chi = 24/25 = 0.96\) → \(\chi = 36.87^\circ\), \(\tan\chi = 0.75\), AR \(= 1/0.75 = 1.33\). \(\sin\delta > 0\)이므로 왼손. 순간값은 \(E_x = 3\cos\omega t\), \(E_y = -4\sin\omega t\)로 \((3,0) \to (0,-4)\) 방향으로 돈다.</div>
+        <div class="answer">왼손 타원 편광, AR = 4/3 ≈ 1.33, 장축은 \(y\) 방향(ψ = 90°)</div>
+        <div class="step"><b>검토</b> \(\delta = \pm90^\circ\)이면 장축이 언제나 \(x\)나 \(y\)축에 놓이고, 축비는 진폭비 \(b/a\)(또는 \(a/b\))와 같다. 직접 순간값을 그려 \(x\to -y\) 회전(다가오는 파를 볼 때 시계 방향)을 확인하면 왼손이 맞다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>편광은 측정 도구다: 엘립소미터와 편광 센서</strong> 엘립소미터는 알려진 편광(보통 45° 직선)을 웨이퍼에 비스듬히 쏘고, 반사된 빛의 편광 타원 — 곧 이 절의 \(b/a\)와 \(\delta\)에 해당하는 \(\tan\Psi\)와 \(\Delta\) — 를 재서 박막 두께와 굴절률을 거꾸로 푼다(11장). 같은 원리로 이미지 센서 위에 금속 와이어 그리드를 얹으면 픽셀마다 편광 방향을 가려 받는 편광 이미지 센서가 된다. 존스 벡터, 파장판, 스토크스 파라미터까지 광학 쪽에서 이어 보려면 → <a href="https://semi.euiyun.com/optics/chapters/polarization.html">OpticsBook · 편광</a> · <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율(엘립소미터)</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="group-velocity">
+    <h2>위상 속도, 군속도와 분산</h2>
+    <p>하나의 진동수로 끝없이 이어지는 사인파는 정보를 싣지 못한다. 신호는 켜고 끄거나 진폭을 바꿔야 하고, 그러면 여러 진동수가 섞인다. 가장 단순한 경우로 진동수가 조금 다른 두 파동 \(\omega_0 \pm \Delta\omega\)를 더해 보자. 각각의 위상 상수는 \(\beta_0 \pm \Delta\beta\)이다.</p>
+    <div class="formula">$$E = E_0\cos[(\omega_0 + \Delta\omega)t - (\beta_0 + \Delta\beta)z] + E_0\cos[(\omega_0 - \Delta\omega)t - (\beta_0 - \Delta\beta)z] = \underbrace{2E_0\cos(\Delta\omega\,t - \Delta\beta\,z)}_{\text{포락선}}\,\underbrace{\cos(\omega_0t - \beta_0z)}_{\text{반송파}}$$<div class="where">빠르게 진동하는 반송파의 마루는 \(u_p = \omega_0/\beta_0\)로, 느리게 변하는 포락선(맥놀이)은 \(\Delta\omega/\Delta\beta\)로 움직인다.</div></div>
+    <p>\(\Delta\omega \to 0\)인 극한에서 포락선의 속력이 <span class="term">군속도</span><span class="en">(group velocity)</span>이다. 진동수가 좁은 띠에 몰린 <span class="term">파속</span><span class="en">(wave packet)</span>, 곧 실제 신호 펄스가 이 속력으로 움직이고, 손실이 작은 매질에서는 에너지도 이 속력으로 실려 간다.</p>
+    <div class="formula">$$u_g = \frac{d\omega}{d\beta} = \frac{1}{d\beta/d\omega},\qquad u_p = \frac\omega\beta,\qquad n_g = \frac{c}{u_g} = n + \omega\frac{dn}{d\omega}$$<div class="where">\(\omega\)와 \(\beta\)의 관계 \(\omega(\beta)\)를 <span class="term">분산 관계</span><span class="en">(dispersion relation)</span>라 한다. 그래프에서 \(u_p\)는 원점과 이은 직선의 기울기, \(u_g\)는 접선의 기울기다. \(u_p\)가 진동수에 따라 달라지는 것을 <span class="term">분산</span><span class="en">(dispersion)</span>이라 하며, \(n_g\)는 군굴절률이다.</div></div>
+    <p>진공이나 손실 없는 유전체(상수 \(\varepsilon\))에서는 \(\omega = u\beta\)가 직선이라 \(u_g = u_p\)이고 펄스가 모양을 유지한다. 플라스마(아래 절)와 도파관(14장)은 \(\omega^2 = \omega_c^2 + c^2\beta^2\) 꼴이어서 \(u_p > c > u_g\)이고 \(u_pu_g = c^2\)이다. 양도체에서는 \(\beta = \sqrt{\omega\mu\sigma/2}\)이므로 \(u_g = 2u_p\)가 된다.</p>
+    <div class="sim" id="sim-group">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>맥놀이로 보는 위상 속도와 군속도</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-grp"></canvas><span class="hint top">곡선 위 흰 점을 끈다</span></div><div><canvas id="cv-grp2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>매질</span><div class="seg" id="gp-m"><button data-value="vac">진공</button><button data-value="pl" class="on">플라스마</button><button data-value="cond">양도체</button></div></div>
+          <label class="ctrl"><span>두 성분의 간격 Δβ <output id="gp-db-out"></output></span><input type="range" id="gp-db" min="0.04" max="0.4" step="0.01" value="0.12"></label>
+          <button class="btn" id="gp-play" type="button"></button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">u<sub>p</sub>/c (마루, ●)</span><span class="v" id="gp-vp">—</span></div>
+        <div class="stat"><span class="k">u<sub>g</sub>/c (포락선, ◆)</span><span class="v" id="gp-vg">—</span></div>
+        <div class="stat"><span class="k">u<sub>p</sub>u<sub>g</sub>/c²</span><span class="v" id="gp-pr">—</span></div>
+        <div class="stat"><span class="k">목표 (플라스마)</span><span class="v" id="gp-g">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 분산 관계 \(\omega(\beta)\)(축은 \(\omega_p\)와 \(\omega_p/c\) 단위)다. 점선은 빛의 선 \(\omega = c\beta\), 빨강 직선의 기울기가 \(u_p\), 파랑 접선의 기울기가 \(u_g\)이다. 오른쪽은 두 성분을 더한 파형으로, 빨강 점은 반송파 마루 하나를, 파랑 마름모는 포락선의 꼭대기를 따라간다. 해볼 것: ① 진공에서는 두 표시가 함께 움직인다. ② 플라스마에서 동작점을 차단(\(\omega = \omega_p\)) 쪽으로 내리면 마루는 빛보다 빨리 달리는데 포락선은 거의 멈춘다. ③ 플라스마에서 \(u_g = 0.5c\)를 만들어라(±2%). 그때 \(u_p\)는 몇 \(c\)인가?</div>
+    </div>
+    <figure class="mini" id="mini-packet">
+      <div class="mini-view"><canvas id="cv-packet"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>반송파 ω₀/ω<sub>p</sub> <output id="pk-w-out"></output></span><input type="range" id="pk-w" min="1.4" max="4" step="0.05" value="1.6"></label>
+        <button class="btn" id="pk-play" type="button"></button>
+        <button class="btn" id="pk-reset" type="button">처음부터</button>
+        <span class="readout" id="pk-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>플라스마 속을 가는 가우스 펄스(빨강)와 같은 시각에 진공을 간 펄스(회색 점선). 61개 진동수 성분을 각자의 \(\beta(\omega)\)로 더한 정확한 합이다. 펄스는 \(u_g\)로 늦어지고, 성분마다 \(u_g\)가 달라 점점 퍼진다(군속도 분산). 반송파를 차단 가까이 낮추면 늦어짐과 퍼짐이 모두 심해진다.</figcaption>
+    </figure>
+    <div class="example" data-title="플라스마 속 마이크로파의 두 속력">
+      <p>전자 밀도 \(5.0\times10^{16}\) m⁻³인 플라스마에 2.45 GHz 마이크로파가 들어간다(충돌 무시). 플라스마 진동수, 위상 속도, 군속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(f_p = 8.98\sqrt{n}\) Hz. 분산 관계 \(\omega^2 = \omega_p^2 + c^2\beta^2\)에서 \(u_p = c/\sqrt{1 - (f_p/f)^2}\), \(u_g = c\sqrt{1 - (f_p/f)^2}\).</div>
+        <div class="step"><b>풀이</b> \(f_p = 8.979\sqrt{5\times10^{16}} = 2.008\) GHz. \(\sqrt{1 - (2.008/2.45)^2} = 0.573\). \(u_p = 2.998\times10^8/0.573 = 5.23\times10^8\) m/s, \(u_g = 2.998\times10^8\times0.573 = 1.72\times10^8\) m/s.</div>
+        <div class="answer">\(f_p = 2.01\) GHz, \(u_p = 5.23\times10^8\) m/s \((1.74c)\), \(u_g = 1.72\times10^8\) m/s \((0.573c)\)</div>
+        <div class="step"><b>검토</b> \(u_pu_g = c^2\)을 만족한다. 위상 속도가 \(c\)를 넘어도 상대성 이론과 어긋나지 않는다 — 마루 하나는 정보를 싣지 않고, 신호는 \(u_g < c\)로 간다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="plasma">
+    <h2>플라스마 속의 파동과 차단</h2>
+    <p>식각·증착 장비의 플라스마, 전리층, 금속 속 전자 기체는 모두 자유 전자가 이온 배경 속에서 움직이는 매질이다. 이온은 무거워서 고주파 전기장에 거의 반응하지 않으므로 전자만 생각한다. 밀도 \(n\)인 전자가 전기장에 밀리고 중성 기체와 충돌(충돌 진동수 \(\nu\))하는 <span class="term">드루드 모형</span><span class="en">(Drude model)</span>의 운동 방정식은</p>
+    <div class="formula">$$m\frac{d\mathbf v}{dt} = -e\mathbf E - m\nu\mathbf v\ \ \Rightarrow\ \ \tilde{\mathbf v} = \frac{-e\tilde{\mathbf E}}{m(\nu + j\omega)},\qquad \tilde{\mathbf J} = -ne\tilde{\mathbf v} = \underbrace{\frac{ne^2}{m(\nu + j\omega)}}_{\sigma(\omega)}\tilde{\mathbf E}$$</div>
+    <p>이 전류를 복소 유전율에 넣으면(\(\varepsilon_c = \varepsilon_0 + \sigma/j\omega\)) 플라스마의 비유전율이 된다.</p>
+    <div class="formula">$$\varepsilon_r(\omega) = 1 - \frac{\omega_p^2}{\omega(\omega - j\nu)} \ \xrightarrow{\ \nu\,\ll\,\omega\ }\ 1 - \frac{\omega_p^2}{\omega^2},\qquad \omega_p = \sqrt{\frac{ne^2}{\varepsilon_0m}},\qquad f_p \approx 8.98\sqrt{n\,[\text{m}^{-3}]}\ \ \text{Hz}$$<div class="where">\(\omega_p\)는 <span class="term">플라스마 진동수</span><span class="en">(plasma frequency)</span>로, 전자 무리를 이온 배경에서 살짝 밀었다 놓을 때 되돌아오며 진동하는 고유 진동수다. 전자 밀도에만 의존한다. 고체물리의 자유 전자 금속에서 만난 바로 그 \(\omega_p\)다.</div></div>
+    <p>충돌이 없으면 \(\varepsilon_r\)은 실수이고, 부호가 \(\omega = \omega_p\)에서 바뀐다.</p>
+    <div class="compare">
+      <div><h4>\(\omega > \omega_p\): 전파</h4><p>\(0 < \varepsilon_r < 1\). \(\beta = \frac\omega c\sqrt{1 - \omega_p^2/\omega^2}\)인 진행파이고 굴절률이 1보다 작다. 분산 관계 \(\omega^2 = \omega_p^2 + c^2\beta^2\).</p></div>
+      <div><h4>\(\omega < \omega_p\): 차단</h4><p>\(\varepsilon_r < 0\). \(\gamma = \alpha = \frac1c\sqrt{\omega_p^2 - \omega^2}\)인 실수라서 장이 진동 없이 지수적으로 준다. 이런 장을 <span class="term">소산파</span><span class="en">(evanescent wave)</span>라 한다. \(\eta\)가 순허수라 평균 전력이 흐르지 않고, 파동은 전부 반사된다.</p></div>
+    </div>
+    <p>주어진 진동수 \(f\)의 파동이 더는 들어가지 못하는 전자 밀도를 <span class="term">차단 밀도</span><span class="en">(critical density, cutoff density)</span>라 한다. \(\omega_p = \omega\)로 두면</p>
+    <div class="formula">$$n_c = \frac{\varepsilon_0m\omega^2}{e^2} \approx 1.24\times10^{-2}\,f^2\ \ \text{m}^{-3}\quad(f\ \text{in Hz}),\qquad \alpha\big|_{\omega\,\ll\,\omega_p} \approx \frac{\omega_p}{c}$$<div class="where">13.56 MHz: \(n_c = 2.3\times10^{12}\) m⁻³, 2.45 GHz: \(7.4\times10^{16}\) m⁻³, 94 GHz: \(1.1\times10^{20}\) m⁻³. 밀도가 \(n_c\)보다 훨씬 큰 플라스마 속으로는 장이 \(c/\omega_p\)(\(10^{17}\) m⁻³에서 1.7 cm) 정도밖에 들어가지 못한다. 8장 ICP 시뮬레이터의 "플라스마 표피 깊이"가 이것이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="전자 밀도 눈금 위의 차단 밀도: 13.56 MHz, 60 MHz, 2.45 GHz, 94 GHz와 공정 플라스마의 밀도 범위">
+        <line x1="60" y1="150" x2="764" y2="150" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <g stroke="var(--text-dim)"><line x1="124" y1="146" x2="124" y2="154"/><line x1="188" y1="146" x2="188" y2="154"/><line x1="252" y1="146" x2="252" y2="154"/><line x1="316" y1="146" x2="316" y2="154"/><line x1="380" y1="146" x2="380" y2="154"/><line x1="444" y1="146" x2="444" y2="154"/><line x1="508" y1="146" x2="508" y2="154"/><line x1="572" y1="146" x2="572" y2="154"/><line x1="636" y1="146" x2="636" y2="154"/><line x1="700" y1="146" x2="700" y2="154"/></g>
+        <g class="t t-dim" style="font-size:11px" text-anchor="middle"><text x="60" y="168">10¹⁰</text><text x="188" y="168">10¹²</text><text x="316" y="168">10¹⁴</text><text x="444" y="168">10¹⁶</text><text x="572" y="168">10¹⁸</text><text x="700" y="168">10²⁰</text></g>
+        <text class="t" x="412" y="194" text-anchor="middle">전자 밀도 n (m⁻³, 로그 눈금)</text>
+        <rect x="60" y="112" width="128" height="22" rx="4" fill="var(--accent-2)" opacity=".28"/><text class="t" x="124" y="127" text-anchor="middle" style="font-size:12px">전리층</text>
+        <rect x="380" y="86" width="128" height="22" rx="4" fill="var(--warn)" opacity=".32"/><text class="t" x="444" y="101" text-anchor="middle" style="font-size:12px">CCP</text>
+        <rect x="444" y="112" width="128" height="22" rx="4" fill="var(--accent)" opacity=".28"/><text class="t" x="508" y="127" text-anchor="middle" style="font-size:12px">ICP · ECR</text>
+        <g stroke="var(--accent)" stroke-width="2"><line x1="211" y1="40" x2="211" y2="150"/><line x1="294" y1="58" x2="294" y2="150"/><line x1="500" y1="40" x2="500" y2="84"/><line x1="703" y1="58" x2="703" y2="150"/></g>
+        <g class="t" style="font-size:12px;font-weight:700;fill:var(--accent)"><text x="215" y="36">n<tspan dy="3" style="font-size:9px">c</tspan><tspan dy="-3">(13.56 MHz)</tspan></text><text x="298" y="54">n<tspan dy="3" style="font-size:9px">c</tspan><tspan dy="-3">(60 MHz)</tspan></text><text x="504" y="36">n<tspan dy="3" style="font-size:9px">c</tspan><tspan dy="-3">(2.45 GHz)</tspan></text><text x="699" y="54" text-anchor="end">n<tspan dy="3" style="font-size:9px">c</tspan><tspan dy="-3">(94 GHz)</tspan></text></g>
+        <text class="t t-dim" x="60" y="228" style="font-size:12px">금속의 전자 밀도(~10²⁹ m⁻³)는 눈금 밖: f<tspan dy="3" style="font-size:9px">p</tspan><tspan dy="-3"> ~ 10¹⁵ Hz(자외선)라서 가시광을 반사한다</tspan></text>
+      </svg>
+      <figcaption>차단 밀도와 공정 플라스마. 13.56 MHz와 60 MHz RF는 공정 플라스마 밀도보다 수천 배 낮은 밀도에서 이미 차단된다. 2.45 GHz 마이크로파는 ICP 밀도 범위의 한가운데에서 차단된다. 94 GHz 간섭계 빔은 모든 공정 플라스마를 통과한다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-crit">
+      <p>진동수 <span class="tn" data-var="lf" data-min="6" data-max="11.5" data-step="0.05">9.40</span>(10의 지수) = <span class="tn-out" data-out="f"></span>인 전자기파의 차단 밀도는 \(n_c\) = <span class="tn-out" data-out="nc"></span>이다. 전자 밀도가 <span class="tn" data-var="ln" data-min="14" data-max="19" data-step="0.1">17.0</span>(10의 지수) = <span class="tn-out" data-out="n"></span>인 플라스마의 플라스마 진동수는 \(f_p\) = <span class="tn-out" data-out="fp"></span>이므로 이 파동은 <span class="tn-out" data-out="verdict"></span>.</p>
+    </div>
+    <div class="predict" data-for="sim-plasma">
+      <p>2.45 GHz 마이크로파가 가운데 밀도가 차단 밀도의 두 배인 두꺼운 플라스마 층에 수직으로 들어간다(충돌 무시). 가장자리 밀도는 0에서 서서히 오른다. 무슨 일이 일어날까?</p>
+      <div class="opts"><button class="opt">플라스마 가장자리(밀도가 0이 아닌 첫 지점)에서 모두 반사된다</button><button class="opt" data-correct>밀도가 \(n_c\)가 되는 층까지 들어갔다가 거의 전부 반사된다</button><button class="opt">파장이 짧아지며 통과한다</button><button class="opt">플라스마에 모두 흡수된다</button></div>
+      <div class="quiz-exp">국소 굴절률 \(\sqrt{1 - n(z)/n_c}\)이 실수인 동안 파동은 진행하고(파장은 오히려 <em>길어진다</em>), \(n = n_c\)인 층(차단층)에서 굴절률이 0이 되어 되돌아선다. 그 너머는 소산파다. 충돌이 없으면 흡수가 없으니 반사율은 1이다. 아래 시뮬레이터에서 확인하고 충돌을 켜 보라.</div>
+    </div>
+    <div class="sim" id="sim-plasma">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>플라스마 층에 부딪히는 마이크로파</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-pl"></canvas><span class="hint top">흰 원을 위아래로 끌어 최대 밀도를 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>진동수 f <output id="ps-f-out"></output></span><input type="range" id="ps-f" min="9" max="10.3" step="0.005" value="9.389"></label>
+          <label class="ctrl"><span>충돌 ν/ω <output id="ps-nu-out"></output></span><input type="range" id="ps-nu" min="0" max="0.5" step="0.005" value="0"></label>
+          <label class="ctrl"><span>층 두께 <output id="ps-L-out"></output></span><input type="range" id="ps-L" min="1" max="20" step="0.5" value="16"></label>
+          <div class="ctrl"><span>목표</span><div class="seg" id="ps-goal"><button data-value="T50" class="on">투과 50%</button><button data-value="A50">흡수 50%</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">최대 밀도 n₀ · n₀/n<sub>c</sub></span><span class="v" id="ps-n">—</span></div>
+        <div class="stat"><span class="k">f<sub>p</sub> (최대)</span><span class="v" id="ps-fp">—</span></div>
+        <div class="stat"><span class="k">반사 R</span><span class="v" id="ps-R">—</span></div>
+        <div class="stat"><span class="k">투과 T</span><span class="v" id="ps-T">—</span></div>
+        <div class="stat"><span class="k">흡수 1 − R − T</span><span class="v" id="ps-A">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="ps-g">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 진공에서 들어온 평면파가 가운데 플라스마 층(회색 면적 = 밀도, 오른쪽 로그 눈금 m⁻³)을 만난다. 가로 점선은 지금 진동수의 차단 밀도 \(n_c\)다. 빨강은 \(E\)의 순간값, 점선은 진폭 \(|E|\)이다. 층을 얇은 판 300장으로 나눠 전달 행렬로 정확히 풀었다. 해볼 것: ① 밀도가 \(n_c\)를 넘는 순간 투과가 급격히 0으로 떨어진다. 왼쪽에는 정재파가 선다. ② 층을 얇게 하고 밀도를 \(n_c\) 바로 위로 두면 소산파가 층을 뚫고 일부 투과한다(터널링). 투과 50%를 만들어라. ③ 충돌을 켜면 차단층 근처에서 장이 커진 만큼 흡수가 커진다. 흡수 50%를 만들어라.</div>
+    </div>
+    <h3>마이크로파 간섭계로 밀도 재기</h3>
+    <p>플라스마 굴절률이 1보다 작다는 것은 플라스마를 지난 빔의 위상이 진공보다 덜 돈다는 뜻이다. \(n \ll n_c\)인 높은 진동수의 빔을 쓰면 \(\sqrt{1 - n/n_c} \approx 1 - n/2n_c\)이므로, 플라스마를 지나는 길과 기준 길의 위상차는 경로를 따라 적분한 밀도(선적분 밀도)에 비례한다.</p>
+    <div class="formula">$$\Delta\phi = \int\big(k_0 - \beta\big)\,dl \approx \frac{k_0}{2n_c}\int n\,dl = r_e\lambda_0\int n\,dl,\qquad r_e = \frac{e^2}{4\pi\varepsilon_0mc^2} = 2.82\times10^{-15}\ \text{m}$$<div class="where">\(r_e\)는 고전 전자 반지름. 위상차를 세면 경로 평균 밀도 \(\bar n = \Delta\phi/(r_e\lambda_0L)\)를 얻는다. 간섭 무늬 하나(\(2\pi\))가 지나갈 때마다 선적분 밀도가 \(2\pi/r_e\lambda_0\)만큼 바뀐 것이다. 진동수는 \(n_c\)가 측정하려는 밀도보다 충분히 높게, 그러나 위상차가 너무 작지 않게 고른다.</div></div>
+    <figure class="mini" id="mini-interf">
+      <div class="mini-view"><canvas id="cv-int"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>평균 밀도 n̄ <output id="it-n-out"></output></span><input type="range" id="it-n" min="15" max="20" step="0.02" value="17"></label>
+        <div class="seg" id="it-f"><button data-value="35">35 GHz</button><button data-value="94" class="on">94 GHz</button></div>
+        <span class="readout" id="it-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>마하–젠더형 마이크로파 간섭계. 빔 하나는 지름 30 cm 챔버를 지나고 다른 하나는 기준 경로를 간다. 오른쪽 그래프에서 두 신호의 위상차가 밀도에 비례해 벌어진다. 35 GHz로 바꾸면 위상차가 커지지만(\(\propto\lambda_0\)), 밀도가 그 차단 밀도 \(1.5\times10^{19}\) m⁻³에 가까워지면 근사가 깨지고 결국 빔이 끊긴다.</figcaption>
+    </figure>
+    <div class="example" data-title="공정 플라스마와 차단 밀도">
+      <p>(a) 13.56 MHz와 2.45 GHz의 차단 밀도를 구하라. (b) 전자 밀도 \(1.0\times10^{17}\) m⁻³인 ICP 플라스마의 플라스마 진동수와, 13.56 MHz 장이 플라스마 속으로 들어가는 깊이 \(c/\omega_p\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n_c = \varepsilon_0m(2\pi f)^2/e^2\). \(\omega \ll \omega_p\)이면 \(\alpha \approx \omega_p/c\).</div>
+        <div class="step"><b>풀이</b> (a) \(n_c = (8.854\times10^{-12})(9.109\times10^{-31})(2\pi\cdot13.56\times10^6)^2/(1.602\times10^{-19})^2 = 2.28\times10^{12}\) m⁻³. 2.45 GHz는 \((2450/13.56)^2\)배인 \(7.45\times10^{16}\) m⁻³. (b) \(\omega_p = \sqrt{10^{17}e^2/\varepsilon_0m} = 1.784\times10^{10}\) rad/s, \(f_p = 2.84\) GHz. \(c/\omega_p = 1.68\) cm.</div>
+        <div class="answer">(a) \(2.28\times10^{12}\) m⁻³, \(7.45\times10^{16}\) m⁻³ (b) \(f_p = 2.84\) GHz, \(c/\omega_p = 1.68\) cm</div>
+        <div class="step"><b>검토</b> 13.56 MHz 플라스마는 차단 밀도의 수만 배라서 RF는 평면파로 플라스마 속을 지나가지 못한다. CCP에서는 시스를 건너는 변위 전류로, ICP에서는 두께 2 cm 안팎의 표피층에서 유도 전기장으로 에너지가 전달된다(8장).</div>
+      </details>
+    </div>
+    <div class="example" data-title="간섭계 위상차와 평균 밀도">
+      <p>94 GHz 간섭계 빔이 지름 30 cm인 챔버를 지나며 평균 밀도 \(1.0\times10^{17}\) m⁻³인 플라스마를 만난다. 위상차는 몇 rad인가? 근사식과 정확한 식 \(\Delta\phi = k_0L(1 - \sqrt{1 - n/n_c})\)를 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\lambda_0 = c/f = 3.19\) mm, \(\Delta\phi \approx r_e\lambda_0\bar nL\).</div>
+        <div class="step"><b>풀이</b> 근사: \((2.818\times10^{-15})(3.189\times10^{-3})(10^{17})(0.30) = 0.2696\) rad. 정확한 식: \(n_c(94\text{ GHz}) = 1.096\times10^{20}\), \(k_0 = 1970\) rad/m, \(1 - \sqrt{1 - 9.12\times10^{-4}} = 4.562\times10^{-4}\), \(\Delta\phi = 1970\times0.30\times4.562\times10^{-4} = 0.2697\) rad.</div>
+        <div class="answer">\(\Delta\phi \approx 0.270\) rad (15.4°), 근사와 정확한 값의 차이 0.02%</div>
+        <div class="step"><b>검토</b> 위상차가 한 무늬(\(2\pi\))보다 훨씬 작으므로 위상 검출기의 분해능이 중요하다. 밀도가 10배인 \(10^{18}\) m⁻³이면 2.7 rad이 된다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>13.56 MHz는 플라스마를 뚫지 못하고, 마이크로파는 차단 밀도에 걸린다</strong> 식각기의 RF 전원(13.56, 27, 60 MHz)은 공정 플라스마의 차단 밀도보다 수천 배 낮아서 평면파로는 플라스마에 들어가지 못한다. CCP는 시스를 건너는 변위 전류로, ICP는 유전체 창 아래 \(c/\omega_p\) 두께의 표피층에서 에너지를 넣는다. 2.45 GHz 마이크로파 플라스마는 밀도가 \(7.4\times10^{16}\) m⁻³에 이르면 마이크로파가 반사되기 시작하므로, 875 G 자기장으로 전자 사이클로트론 공명을 일으키는 ECR이나 플라스마 표면을 따라 퍼지는 표면파 방식으로 이 한계를 넘는다. 공정 개발에서는 94 GHz 간섭계나 랭뮤어 탐침으로 밀도를 재고, 그 밀도와 전자 온도가 식각 속도를 정한다. → <a href="https://semi.euiyun.com/etch/chapters/plasma.html">EtchBook · 플라스마: 식각의 재료</a> · <a href="https://semi.euiyun.com/etch/chapters/reactors.html">EtchBook · 반응기: 배럴에서 ICP까지(ECR)</a></div>
+    <div class="drill" id="drill-plasma" data-title="플라스마 진동수와 차단 밀도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>무원천 매질의 맥스웰 방정식은 파동 방정식 \(\nabla^2\mathbf E = \mu\varepsilon\,\partial^2\mathbf E/\partial t^2\), 페이저로 헬름홀츠 방정식 \(\nabla^2\tilde{\mathbf E} + k^2\tilde{\mathbf E} = 0\)이 된다. 균일 평면파 \(\hat{\mathbf x}E_0e^{-jkz}\)는 TEM파로 \(\tilde{\mathbf H} = \frac1\eta\hat{\mathbf z}\times\tilde{\mathbf E}\).</li>
+      <li>\(u_p = 1/\sqrt{\mu\varepsilon} = c/n\), \(k = \omega\sqrt{\mu\varepsilon} = 2\pi/\lambda\), \(\eta = \sqrt{\mu/\varepsilon}\)(진공 376.7 Ω), \(S_{av} = |E_0|^2/2\eta\). 전기·자기 에너지 밀도는 같다.</li>
+      <li>손실 매질은 \(\varepsilon_c = \varepsilon - j\sigma/\omega\). 손실 탄젠트 \(\sigma/\omega\varepsilon\)(전도 전류 ÷ 변위 전류)가 유전체(≪1)와 도체(≫1)를 가른다. \(\gamma = \alpha + j\beta = \sqrt{j\omega\mu(\sigma + j\omega\varepsilon)}\), \(\eta_c = |\eta_c|e^{j\theta_\eta}\)(0–45°). 저손실이면 \(\alpha \approx \frac\beta2\tan\delta\)로 dB 손실이 \(f\)에 비례한다.</li>
+      <li>양도체: \(\alpha = \beta = 1/\delta\), \(\delta = 1/\sqrt{\pi f\mu\sigma}\)(Cu 1 GHz 2.06 µm), \(\eta_c = (1+j)/\sigma\delta\), \(\lambda = 2\pi\delta\). 표면 저항 \(R_s = 1/\sigma\delta\), 손실 \(\tfrac12|H_t|^2R_s\). 둥근 도선 \(R'_{ac} \approx R_s/2\pi a\)(\(a \gg \delta\)), 정확한 해는 \(J_0(k\rho)\).</li>
+      <li>편광은 \(\hat{\mathbf x}a + \hat{\mathbf y}be^{j\delta}\)로 정해진다: \(\delta = 0, \pi\) 직선, \(a = b\)·\(\delta = \pm90^\circ\) 원, 그 밖은 타원(\(\tan2\psi\), \(\sin2\chi\), AR = \(1/|\tan\chi|\)). IEEE 관례로 \(\sin\delta > 0\)이면 왼손, \(< 0\)이면 오른손.</li>
+      <li>군속도 \(u_g = d\omega/d\beta\)는 포락선(신호·에너지)의 속력이고 \(u_p = \omega/\beta\)는 마루의 속력이다. 분산 매질에서 둘이 갈린다: 플라스마·도파관 \(u_pu_g = c^2\), 양도체 \(u_g = 2u_p\).</li>
+      <li>플라스마 \(\varepsilon_r = 1 - \omega_p^2/\omega(\omega - j\nu)\), \(f_p \approx 8.98\sqrt n\) Hz. \(\omega < \omega_p\)이면 소산파(침투 \(\approx c/\omega_p\))와 전반사. 차단 밀도 \(n_c \approx 1.24\times10^{-2}f^2\) m⁻³(13.56 MHz \(2.3\times10^{12}\), 2.45 GHz \(7.4\times10^{16}\)). 간섭계 위상차 \(\Delta\phi \approx r_e\lambda_0\int n\,dl\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(c = 2.998\times10^8\) m/s, \(\mu_0 = 4\pi\times10^{-7}\) H/m, \(\varepsilon_0 = 8.854\times10^{-12}\) F/m, \(\eta_0 = 376.7\ \Omega\), \(e = 1.602\times10^{-19}\) C, \(m_e = 9.109\times10^{-31}\) kg, \(r_e = 2.818\times10^{-15}\) m. 전도도: Cu \(5.96\times10^{7}\), Al \(3.77\times10^{7}\) S/m. 따로 말이 없으면 \(\mu_r = 1\)이다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="평면파" data-answer="0.125; 50.3" data-label="λ =; β =" data-unit="m; rad/m">
+        <div class="prob-q"><p>2.4 GHz Wi-Fi 신호가 자유 공간을 간다. 파장과 위상 상수는?</p></div>
+        <div class="prob-sol"><p>\(\lambda = c/f = 2.998\times10^8/2.4\times10^9 = 0.125\) m, \(\beta = 2\pi/\lambda = 50.3\) rad/m.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="고유 임피던스" data-answer="0.265; 13.3" data-label="H₀ =; S_av =" data-unit="A/m; W/m²">
+        <div class="prob-q"><p>자유 공간의 평면파에서 전기장 진폭이 100 V/m이다. 자기장 진폭과 시간 평균 전력 밀도는?</p></div>
+        <div class="prob-sol"><p>\(H_0 = E_0/\eta_0 = 100/376.7 = 0.265\) A/m, \(S_{av} = E_0^2/2\eta_0 = 10^4/753.5 = 13.3\) W/m².</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="유전체 속 평면파" data-answer="1.63e8; 204" data-label="u_p =; η =" data-unit="m/s; Ω">
+        <div class="prob-q"><p>폴리이미드(\(\varepsilon_r = 3.4\)) 속 평면파의 위상 속도와 고유 임피던스는?</p></div>
+        <div class="prob-sol"><p>\(n = \sqrt{3.4} = 1.844\). \(u_p = c/n = 1.63\times10^8\) m/s, \(\eta = 376.7/1.844 = 204\ \Omega\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="E와 H의 관계" data-answer="25.1" data-label="E₀ =" data-unit="V/m">
+        <div class="prob-q"><p>\(\varepsilon_r = 2.25\)인 무손실 비자성 매질에서 \(+z\)로 가는 평면파의 자기장이 \(\mathbf H = \hat{\mathbf y}\,0.10\cos(\omega t - \beta z)\) A/m이다. 전기장의 진폭은 몇 V/m이고, 방향은?</p></div>
+        <div class="prob-hint">\(\tilde{\mathbf H} = \frac1\eta\hat{\mathbf z}\times\tilde{\mathbf E}\)를 만족하는 \(\mathbf E\) 방향을 찾는다.</div>
+        <div class="prob-sol"><p>\(\eta = 376.7/1.5 = 251.2\ \Omega\), \(E_0 = \eta H_0 = 25.1\) V/m. \(\hat{\mathbf z}\times\hat{\mathbf x} = \hat{\mathbf y}\)이므로 \(\mathbf E = \hat{\mathbf x}\,25.1\cos(\omega t - \beta z)\) V/m. 확인: \(\mathbf E\times\mathbf H \parallel \hat{\mathbf x}\times\hat{\mathbf y} = \hat{\mathbf z}\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="손실 탄젠트" data-answer="15.4" data-label="f =" data-unit="GHz">
+        <div class="prob-q"><p>비저항 10 Ω·cm(\(\sigma = 10\) S/m), \(\varepsilon_r = 11.7\)인 실리콘 기판에서 전도 전류와 변위 전류의 크기가 같아지는 진동수는?</p></div>
+        <div class="prob-sol"><p>\(\sigma/\omega\varepsilon = 1\) → \(f = \sigma/(2\pi\varepsilon_0\varepsilon_r) = 10/(2\pi\times8.854\times10^{-12}\times11.7) = 1.54\times10^{10}\) Hz = 15.4 GHz. 이보다 낮은 진동수에서 기판은 도체처럼 행동해 온칩 인덕터와 배선 아래에 와전류·변위 손실을 만든다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="저손실 매질" data-answer="0.0328; 0.285" data-label="α =; 손실 =" data-unit="Np/m; dB/m">
+        <div class="prob-q"><p>알루미나 세라믹(\(\varepsilon_r = 9.8\), \(\tan\delta = 1.0\times10^{-4}\))의 10 GHz 감쇠 상수를 Np/m와 dB/m로 구하라.</p></div>
+        <div class="prob-sol"><p>\(\beta = 2\pi f\sqrt{\varepsilon_r}/c = 2\pi(10^{10})(3.130)/(2.998\times10^8) = 656.1\) rad/m. \(\alpha \approx \frac\beta2\tan\delta = 0.0328\) Np/m \(= 8.686\times0.0328 = 0.285\) dB/m. FR-4보다 200배 가까이 작다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="양도체 감쇠" data-answer="2.52; 17.4" data-label="δ =; z =" data-unit="m; m">
+        <div class="prob-q"><p>바닷물(\(\sigma = 4\) S/m)에서 10 kHz 파동의 표피 깊이와, 전력이 60 dB 줄어드는 깊이는?</p></div>
+        <div class="prob-hint">진폭 dB와 전력 dB는 같다: 60 dB는 진폭 \(10^{-3}\)이다.</div>
+        <div class="prob-sol"><p>\(\delta = 1/\sqrt{\pi\cdot10^4\cdot4\pi\times10^{-7}\cdot4} = 2.52\) m. 60 dB → \(\alpha z = 60/8.686 = 6.91\) → \(z = 6.91\delta = 17.4\) m.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="표피 깊이" data-answer="2.59" data-label="δ =" data-unit="µm">
+        <div class="prob-q"><p>알루미늄의 1 GHz 표피 깊이는 몇 µm인가?</p></div>
+        <div class="prob-sol"><p>\(\delta = 1/\sqrt{\pi(10^9)(4\pi\times10^{-7})(3.77\times10^7)} = 2.59\ \mu\)m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="표면 저항" data-answer="0.0257; 8.19" data-label="R_s =; R′ =" data-unit="Ω; Ω/m">
+        <div class="prob-q"><p>구리의 10 GHz 표면 저항과, 반지름 0.50 mm인 구리 도선의 단위 길이당 교류 저항(\(a \gg \delta\) 근사)은?</p></div>
+        <div class="prob-sol"><p>\(\delta = 0.652\ \mu\)m, \(R_s = 1/\sigma\delta = \sqrt{\pi f\mu_0/\sigma} = 0.0257\ \Omega\). \(R' = R_s/2\pi a = 0.0257/(2\pi\times5\times10^{-4}) = 8.19\ \Omega\)/m. (보정항 1/4을 넣으면 8.20 Ω/m.)</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="편광">
+        <div class="prob-q"><p>\(\tilde{\mathbf E} = E_0(\hat{\mathbf x} - j\hat{\mathbf y})e^{-jkz}\)인 평면파의 편광은? (IEEE 관례)</p></div>
+        <div class="prob-choices"><button data-correct>오른손 원편광</button><button>왼손 원편광</button><button>−45° 직선 편광</button><button>오른손 타원 편광</button></div>
+        <div class="prob-sol"><p>\(a = b\), \(-j = e^{-j90^\circ}\)이므로 \(\delta = -90^\circ\). \(E_x = E_0\cos\omega t\), \(E_y = E_0\sin\omega t\)로 \(x \to y\) 방향으로 돌고, 오른손 엄지를 \(+z\)로 두면 손가락 방향과 같다. 오른손 원편광이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="타원 편광" data-answer="45; 1.73" data-label="ψ =; AR =" data-unit="°; ">
+        <div class="prob-q"><p>\(a = b = 1\) V/m, \(\delta = 60^\circ\)인 평면파의 장축 기울기 \(\psi\)와 축비는? 감긴 방향도 말하라.</p></div>
+        <div class="prob-hint">\(\tan2\psi = 2ab\cos\delta/(a^2 - b^2)\)에서 분모가 0이다. \(2\psi = 90^\circ\).</div>
+        <div class="prob-sol"><p>\(a = b\)이고 \(\cos\delta > 0\)이므로 \(2\psi = 90^\circ\), \(\psi = 45^\circ\). \(\sin2\chi = \sin60^\circ = 0.866\) → \(\chi = 30^\circ\), AR = \(1/\tan30^\circ = 1.73\). \(\sin\delta > 0\)이므로 왼손 타원 편광.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="플라스마 진동수" data-answer="2.84; 7.45e16" data-label="f_p =; n_c =" data-unit="GHz; m⁻³">
+        <div class="prob-q"><p>전자 밀도 \(1.0\times10^{17}\) m⁻³인 플라스마의 플라스마 진동수(GHz)와, 2.45 GHz 마이크로파의 차단 밀도는?</p></div>
+        <div class="prob-sol"><p>\(f_p = \frac{1}{2\pi}\sqrt{ne^2/\varepsilon_0m} = 8.98\sqrt{10^{17}} = 2.84\) GHz. \(n_c = \varepsilon_0m(2\pi\cdot2.45\times10^9)^2/e^2 = 7.45\times10^{16}\) m⁻³. 이 플라스마는 2.45 GHz에 대해 과밀(overdense)이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="간섭계" data-answer="5.34e17" data-label="n̄ =" data-unit="m⁻³">
+        <div class="prob-q"><p>94 GHz 간섭계 빔이 플라스마 속 25 cm를 지난 뒤 기준 빔보다 위상이 1.2 rad 앞선다. 경로 평균 전자 밀도는?</p></div>
+        <div class="prob-sol"><p>\(\lambda_0 = c/f = 3.189\) mm. \(\bar n = \Delta\phi/(r_e\lambda_0L) = 1.2/(2.818\times10^{-15}\times3.189\times10^{-3}\times0.25) = 5.34\times10^{17}\) m⁻³. \(n_c(94\ \text{GHz}) = 1.1\times10^{20}\)의 0.5%라 근사가 정확하다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="군속도" data-answer="2.23e8; 346" data-label="u_g =; 지연 =" data-unit="m/s; ps">
+        <div class="prob-q"><p>전자 밀도 \(5.0\times10^{16}\) m⁻³인 플라스마 속 30 cm를 3.0 GHz 펄스가 지난다. 군속도와, 같은 거리를 진공에서 간 펄스보다 늦게 도착하는 시간(ps)은?</p></div>
+        <div class="prob-sol"><p>\(f_p = 2.008\) GHz, \(\sqrt{1 - (2.008/3)^2} = 0.743\). \(u_g = 0.743c = 2.23\times10^8\) m/s. 지연 \(= 0.30/u_g - 0.30/c = 1.347 - 1.001 = 0.346\) ns = 346 ps.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="차단과 소산파">
+        <div class="prob-q"><p>전자 밀도 \(1.0\times10^{16}\) m⁻³인 플라스마 경계에 13.56 MHz 평면파가 수직으로 닿는다(충돌 무시). 옳은 것은?</p></div>
+        <div class="prob-choices"><button>파장이 길어진 진행파로 플라스마를 통과한다</button><button data-correct>장이 약 5.3 cm 깊이마다 \(1/e\)로 줄어드는 소산파가 되고, 평면파는 전부 반사된다</button><button>모두 흡수되어 플라스마를 데운다</button><button>표피 깊이가 구리와 같아진다</button></div>
+        <div class="prob-sol"><p>\(n_c(13.56\ \text{MHz}) = 2.3\times10^{12} \ll 10^{16}\)이므로 \(\omega \ll \omega_p\)이고 \(\alpha \approx \omega_p/c\). \(\omega_p = 5.64\times10^9\) rad/s, \(c/\omega_p = 5.3\) cm. 충돌이 없으면 \(\eta\)가 순허수라 평균 전력이 들어가지 않는다. 실제 플라스마에서는 충돌(\(\nu\))이 이 표피층에서 약간의 흡수를 만든다 — ICP 가열이 이것이다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>진공의 고유 임피던스 \(\eta_0 \approx 377\ \Omega\)에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">진공이 전류에 주는 저항이라 전자기파가 진공에서 점점 약해진다</button><button class="opt" data-correct>진행파 하나에서 전기장과 자기장 세기의 비이고, 손실이 아니라 \(\mu_0\)와 \(\varepsilon_0\)가 정하는 매질의 성질이다</button><button class="opt">안테나의 입력 저항이 늘 377 Ω이라는 뜻이다</button><button class="opt">진공에서 \(|E| = |H|\)라는 뜻이다</button>
+      </div><div class="quiz-exp">\(\eta\)는 \(|E|/|H|\)이고 단위가 Ω일 뿐, 실수 \(\eta\)인 무손실 매질에서는 에너지를 잃지 않는다. 전송선의 특성 임피던스(12장)도 같은 뜻이다 — 소모가 아니라 전압·전류의 비다.</div></div>
+      <div class="quiz-q"><p>손실 매질에서 \(\sigma/\omega\varepsilon\)를 0에서 무한대로 키울 때 자기장과 전기장의 위상차 \(\theta_\eta\)는?</p><div class="opts">
+        <button class="opt">0°에서 90°까지 커진다</button><button class="opt" data-correct>0°에서 45°까지 커진다</button><button class="opt">늘 0°다</button><button class="opt">45°에서 0°로 줄어든다</button>
+      </div><div class="quiz-exp">\(\eta_c \propto (1 - j\sigma/\omega\varepsilon)^{-1/2}\)이고 괄호 안의 위상이 0에서 −90°로 가므로, 제곱근의 역수는 0에서 +45°까지 간다. 양도체에서 \(\eta_c = (1+j)/\sigma\delta\)가 정확히 45°인 이유다.</div></div>
+      <div class="quiz-q"><p>플라스마 속 위상 속도는 빛의 속력보다 크다. 이것이 상대성 이론과 모순되지 않는 이유는?</p><div class="opts">
+        <button class="opt">플라스마 속에서는 빛의 속력 자체가 커지기 때문</button><button class="opt" data-correct>정보와 에너지는 군속도로 전달되고 군속도는 \(c\)보다 작기 때문</button><button class="opt">위상 속도는 측정할 수 없는 양이기 때문</button><button class="opt">플라스마 속에는 전자기파가 없기 때문</button>
+      </div><div class="quiz-exp">끝없이 이어진 사인파의 마루는 정보를 싣지 않는다. 신호의 시작이나 펄스의 포락선은 \(u_g = c\sqrt{1 - \omega_p^2/\omega^2} < c\)로 간다. \(u_pu_g = c^2\).</div></div>
+      <div class="quiz-q"><p>오른손 원편광 평면파가 완전 도체판에 수직으로 입사해 반사되었다. 반사파의 편광은?</p><div class="opts">
+        <button class="opt">오른손 원편광 그대로</button><button class="opt" data-correct>왼손 원편광</button><button class="opt">직선 편광</button><button class="opt">편광이 사라진다</button>
+      </div><div class="quiz-exp">도체 표면에서 접선 전기장이 0이어야 하므로 반사파의 \(\mathbf E\)는 입사파와 부호만 반대이고, 한 점에서 시간에 따라 도는 방향은 같다. 그런데 진행 방향이 뒤집혔으니 오른손 엄지를 새 진행 방향으로 두면 회전이 반대로 보인다. 원편광 안테나 레이더가 같은 방향 편광으로 받으면 짝수 번 반사한 표적만 보이는 이유다.</div></div>
+      <div class="quiz-q"><p>같은 플라스마의 밀도를 재려 할 때, 간섭계 진동수를 35 GHz에서 94 GHz로 바꾸면?</p><div class="opts">
+        <button class="opt">위상차가 커지고 차단 밀도가 낮아진다</button><button class="opt" data-correct>위상차는 \(\lambda_0\)에 비례해 작아지지만 차단 밀도가 \(f^2\)로 높아져 더 진한 플라스마까지 잴 수 있다</button><button class="opt">위상차도 차단 밀도도 변하지 않는다</button><button class="opt">빔이 플라스마에 흡수되어 측정이 안 된다</button>
+      </div><div class="quiz-exp">\(\Delta\phi \approx r_e\lambda_0\int n\,dl\)이므로 진동수가 높으면 위상차가 줄고, \(n_c \propto f^2\)라 측정 상한은 올라간다. 측정할 밀도 범위에 맞춰 진동수를 고른다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const K = EM.const, mu0 = K.mu0, eps0 = K.eps0, c0 = K.c, eta0 = K.eta0, cx = EM.cx, PI = Math.PI, TAU = 2 * Math.PI;
+  const J = { re: 0, im: 1 }, ONE = { re: 1, im: 0 };
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const ex = Math.floor(Math.log10(Math.abs(x))); const m = x / Math.pow(10, ex);
+    if (ex >= -2 && ex <= 3) return String(Number(x.toPrecision(d + 1)));
+    return m.toFixed(d) + "×10" + sup(ex);
+  };
+  const si = (x, u, d = 3) => SB.si(x, u, d);
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const invX = (ch, o, px) => { const t = (px - ch.box.x) / ch.box.w; return o.logX ? Math.pow(10, Math.log10(o.x[0]) + t * (Math.log10(o.x[1]) - Math.log10(o.x[0]))) : o.x[0] + t * (o.x[1] - o.x[0]); };
+  const invY = (ch, o, py) => { const t = (ch.box.y + ch.box.h - py) / ch.box.h; return o.logY ? Math.pow(10, Math.log10(o.y[0]) + t * (Math.log10(o.y[1]) - Math.log10(o.y[0]))) : o.y[0] + t * (o.y[1] - o.y[0]); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const rnd = (a, b, step) => Math.round((a + Math.random() * (b - a)) / step) * step;
+  const p10 = (v) => "10" + sup(Math.round(Math.log10(v)));
+  const texSci = (x, d = 2) => { const ex = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, ex); return ex >= -2 && ex <= 3 ? String(Number(x.toPrecision(d + 1))) : `${m.toFixed(d)}\\times10^{${ex}}`; };
+  const len = (m) => (m >= 1 ? m.toPrecision(3) + " m" : m >= 1e-2 ? (m * 100).toPrecision(3) + " cm" : m >= 1e-3 ? (m * 1000).toPrecision(3) + " mm" : m >= 1e-6 ? (m * 1e6).toPrecision(3) + " µm" : (m * 1e9).toPrecision(3) + " nm");
+  const fstr = (f) => si(f, "Hz");
+  const deg = (r) => (r * 180) / PI;
+  /** 복소 베셀 함수 J_n(z) — 멱급수(|z| ≲ 30에서 충분히 정확) */
+  function besJ(n, z) {
+    let term = cx.of(1, 0), s = cx.of(0, 0); const z2 = cx.scale(cx.mul(z, z), -0.25);
+    for (let m = 0; m < 300; m++) { if (m > 0) term = cx.div(cx.mul(term, z2), m * (m + n)); s = cx.add(s, term); if (cx.abs(term) < 1e-17 * cx.abs(s)) break; }
+    let pre = cx.of(1, 0); for (let i = 1; i <= n; i++) pre = cx.scale(cx.mul(pre, z), 0.5 / i);
+    return cx.mul(pre, s);
+  }
+  /** 둥근 도선: J(ρ)/J(a) (k = (1−j)/δ), 큰 a/δ는 점근형 √(a/ρ)·e^{(1+j)(ρ−a)/δ} */
+  function jRatio(rho, a, d) {
+    if (a / d < 18) { const k = { re: 1 / d, im: -1 / d }; return cx.div(besJ(0, cx.scale(k, rho)), besJ(0, cx.scale(k, a))); }
+    const x = (rho - a) / d, r = Math.max(rho, a * 1e-3);
+    return cx.polar(Math.sqrt(a / r) * Math.exp(x), x);
+  }
+  /** R_ac/R_dc — em.js EM.wireRacExact는 a/δ ≳ 100에서 수치가 무너지므로 a/δ ≥ 18은 점근식 */
+  function racRatio(sigma, a, f) {
+    const d = EM.skinDepth(sigma, f), x = a / d;
+    if (x < 18) { const k = { re: 1 / d, im: -1 / d }, z = cx.scale(k, a); return cx.mul(cx.scale(z, 0.5), cx.div(besJ(0, z), besJ(1, z))).re; }
+    return x / 2 + 0.25 + 3 / (64 * x);
+  }
+
+  /* ================================================================ 머리: 손실 매질로 들어가는 평면파 */
+  {
+    const ER = 4, ZL = -1.5, ZR = 2.5;
+    const st = { lp: -2, drag: false, idle: 5, T: 0, dir: 1 };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 560, p = Math.pow(10, st.lp);
+      const N = cx.sqrt(cx.of(ER, -ER * p));   // n − jκ
+      const G = cx.div(cx.sub(ONE, N), cx.add(ONE, N)), tau = cx.add(ONE, G);
+      const x0 = 14, x1 = w - 14, X = (z) => x0 + ((z - ZL) / (ZR - ZL)) * (x1 - x0), xb = X(0);
+      const y0 = Math.round(h * (narrow ? 0.46 : 0.45)), A = Math.min(h * (narrow ? 0.15 : 0.17), 78);
+      const hx = -0.2 * A, hy = 0.4 * A;
+      // 매질
+      ctx.save(); ctx.fillStyle = P.text; ctx.globalAlpha = 0.05 + 0.1 * SB.clamp((st.lp + 3) / 5, 0, 1); ctx.fillRect(xb, 8, x1 - xb + 14, h - (narrow ? 112 : 96)); ctx.restore();
+      SB.dashLine(ctx, xb, 8, xb, h - (narrow ? 104 : 88), P.dim, [5, 4]);
+      SB.label(ctx, "진공", (x0 + xb) / 2, 18, { size: 12, color: P.dim, bold: true });
+      SB.label(ctx, `손실 매질 (ε_r = ${ER})`, (xb + x1) / 2, 18, { size: 12, color: P.dim, bold: true });
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const ph = cx.polar(1, TAU * 0.45 * st.T);
+      const field = (z) => {
+        let E, H;
+        if (z < 0) { const ef = cx.polar(1, -TAU * z), eb = cx.mul(G, cx.polar(1, TAU * z)); E = cx.add(ef, eb); H = cx.sub(ef, eb); }
+        else { const pr = cx.exp(cx.scale(cx.mul(J, N), -TAU * z)); E = cx.mul(tau, pr); H = cx.mul(cx.mul(tau, N), pr); }
+        return [cx.mul(E, ph).re, cx.mul(H, ph).re];
+      };
+      const n = Math.max(160, Math.round((x1 - x0) / 2)), pts = [];
+      for (let i = 0; i <= n; i++) { const z = ZL + ((ZR - ZL) * i) / n; pts.push([z, ...field(z)]); }
+      // H (파랑, 비스듬히 = ŷ 화면 밖)
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
+      for (let i = 0; i <= n; i += 3) { const [z, , H] = pts[i], x = X(z); ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x + hx * H, y0 + hy * H); ctx.stroke(); }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.2; ctx.beginPath();
+      pts.forEach(([z, , H], i) => { const x = X(z) + hx * H, y = y0 + hy * H; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.restore();
+      // E (빨강, 세로 = x̂)
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
+      for (let i = 0; i <= n; i += 3) { const [z, E] = pts[i], x = X(z); ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y0 - A * E); ctx.stroke(); }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.6; ctx.beginPath();
+      pts.forEach(([z, E], i) => { const x = X(z), y = y0 - A * E; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "E", x0 + 10, y0 - A * 1.15 - 6, { color: P.accent, bold: true, size: 14 });
+      SB.label(ctx, "H", x0 + 14, y0 + hy * 1.2 + 10, { color: P.accent2, bold: true, size: 14 });
+      SB.arrow(ctx, x1 - 60, y0 + 14, x1 - 10, y0 + 14, { color: P.text, width: 2, head: 8 });
+      SB.label(ctx, "진행 z", x1 - 36, y0 + 28, { size: 11, color: P.dim });
+      // 정보
+      const kap = -N.im, alpha = TAU * kap;
+      const info1 = `σ/ωε = ${sci(p, 1)} · |Γ| = ${cx.abs(G).toFixed(2)} · θη = ${deg(cx.arg(cx.div(ONE, N))).toFixed(1)}°`;
+      const info2 = alpha > 1e-3 ? `진폭 1/e 거리 = ${sci(1 / alpha, 2)} λ₀ (매질 속 파장 ${sci(1 / N.re, 2)} λ₀)` : "거의 무손실: 감쇠가 보이지 않는다";
+      SB.label(ctx, info1, (xb + x1) / 2, 40, { size: 11.5, color: P.text, bold: true });
+      SB.label(ctx, info2, (xb + x1) / 2, 57, { size: 11, color: P.dim });
+      // 슬라이더
+      const ty = h - 52, ta = narrow ? 26 : Math.max(140, w * 0.3), tb = w - 26;
+      const TX = (lp) => ta + ((lp + 3) / 5) * (tb - ta);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(ta, ty); ctx.lineTo(tb, ty); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(ta, ty); ctx.lineTo(TX(st.lp), ty); ctx.stroke(); ctx.restore();
+      for (let e = -3; e <= 2; e++) SB.label(ctx, "10" + sup(e), TX(e), ty - 16, { size: 10, color: P.dim });
+      if (narrow) SB.label(ctx, "손실 σ/ωε", ta - 8, ty - 36, { size: 12, color: P.text, bold: true, align: "left" }); else SB.label(ctx, "손실 σ/ωε", ta - 10, ty, { size: 12, color: P.text, bold: true, align: "right" });
+      handle(ctx, TX(st.lp), ty, P.accent, 12);
+      self._h = [TX(st.lp), ty]; self._t = [ta, tb];
+    }, { aspect: 0.48, minHeight: 330, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      down: (id) => { if (id === "p") st.drag = true; },
+      move: (id, x) => { if (id !== "p") return; const [a, b] = cv._t; st.lp = SB.clamp(-3 + (5 * (x - a)) / (b - a), -3, 2); st.idle = 0; },
+      up: () => { st.drag = false; st.idle = 0; },
+    });
+    SB.loop("hero", (dt) => {
+      dt = Math.min(dt, 0.05); st.T += dt;
+      if (!st.drag) { st.idle += dt; if (st.idle > 4) { st.lp += st.dir * dt * 0.3; if (st.lp > 2) { st.lp = 2; st.dir = -1; } if (st.lp < -3) { st.lp = -3; st.dir = 1; } } }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 드래그 숫자: 유전체 속 평면파 */
+  SB.tangle("tg-wave", (v) => {
+    const n = Math.sqrt(v.er), f = v.f * 1e9, vp = c0 / n, lam = vp / f;
+    return { n: n.toFixed(3), v: sci(vp, 2) + " m/s (" + (1 / n).toFixed(3) + "c)", lam: len(lam), lam0: len(c0 / f), k: ((TAU * f) / vp).toPrecision(3) + " rad/m", eta: (eta0 / n).toFixed(1) + " Ω" };
+  });
+
+  /* ================================================================ 미니: 진행파와 두 탐침 */
+  {
+    const f = 1e9, Z = 0.6, z1 = 0.05;
+    const st = { z2: 0.2, t: 0 };
+    const gE = SB.range("tr-er", (v) => v.toFixed(1), () => cv.redraw());
+    const cv = SB.canvas("cv-travel", (ctx, w, h, self) => {
+      const P = pal(), er = gE(), beta = (TAU * f * Math.sqrt(er)) / c0, lam = TAU / beta, ph = TAU * st.t;
+      const topH = Math.round(h * 0.52), x0 = 30, x1 = w - 14, X = (z) => x0 + (z / Z) * (x1 - x0), y0 = topH / 2 + 6, A = topH * 0.34;
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath();
+      for (let i = 0; i <= 400; i++) { const z = (Z * i) / 400, x = X(z), y = y0 - A * Math.cos(ph - beta * z); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      // 파장 표시
+      const xa = X(0.3), xbb = X(Math.min(Z, 0.3 + lam));
+      if (0.3 + lam < Z) { SB.arrow(ctx, xa, 14, xbb, 14, { color: P.dim, width: 1.4, head: 6 }); SB.arrow(ctx, xbb, 14, xa, 14, { color: P.dim, width: 1.4, head: 6 }); SB.label(ctx, "λ = " + len(lam), (xa + xbb) / 2, 26, { size: 11, color: P.dim }); }
+      const p1 = [X(z1), y0 - A * Math.cos(ph - beta * z1)], p2 = [X(st.z2), y0 - A * Math.cos(ph - beta * st.z2)];
+      SB.dashLine(ctx, p1[0], 8, p1[0], topH, P.dim, [2, 3]); SB.dashLine(ctx, p2[0], 8, p2[0], topH, P.accent2, [2, 3]);
+      ctx.fillStyle = P.dim; ctx.beginPath(); ctx.arc(p1[0], p1[1], 6, 0, TAU); ctx.fill();
+      SB.label(ctx, "P₁", p1[0] + 14, topH - 4, { size: 11, color: P.dim, bold: true });
+      handle(ctx, p2[0], y0, P.accent2, 12);
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(p2[0], p2[1], 5, 0, TAU); ctx.fill();
+      SB.label(ctx, "P₂", p2[0] + 14, topH - 4, { size: 11, color: P.accent2, bold: true });
+      self._h = [p2[0], y0]; self._X = [x0, x1];
+      // 시간 그래프 (최근 2주기)
+      const d1 = [], d2 = [];
+      for (let i = 0; i <= 200; i++) { const tt = st.t - 2 + (2 * i) / 200, pp = TAU * tt; d1.push([tt, Math.cos(pp - beta * z1)]); d2.push([tt, Math.cos(pp - beta * st.z2)]); }
+      SB.chart(ctx, { x: 46, y: topH + 14, w: w - 60, h: h - topH - 60 }, { x: [st.t - 2, st.t], y: [-1.2, 1.2], xFmt: () => "", yTicks: [-1, 0, 1], xLabel: "시간 (최근 두 주기) →", series: [{ data: d1, color: P.dim, width: 2 }, { data: d2, color: P.accent2, width: 2.4 }] });
+      const dph = ((beta * (st.z2 - z1)) * 180) / PI, dt = ((st.z2 - z1) * Math.sqrt(er)) / c0;
+      $("tr-r").textContent = `λ = ${len(lam)} · u_p = ${sci(c0 / Math.sqrt(er), 2)} m/s · Δz = ${len(Math.abs(st.z2 - z1))} → 위상 지연 βΔz = ${(((dph % 360) + 360) % 360).toFixed(0)}° (Δt = ${(dt * 1e9).toFixed(3)} ns)`;
+    }, { aspect: 0.5, minHeight: 250, maxHeight: 320 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p2", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "p2") return; const [a, b] = cv._X; st.z2 = SB.clamp(((x - a) / (b - a)) * Z, z1, Z); },
+    });
+    const loop = SB.loop("mini-travel", (dt) => { st.t += Math.min(dt, 0.05) * 0.5; cv.redraw(); });
+    SB.play("tr-play", loop);
+  }
+
+  /* ================================================================ 시뮬레이터: σ/ωε 탐험기 */
+  {
+    const MATS = { sea: { n: "바닷물", er: 81, s: 4 }, si: { n: "Si 기판(10 Ω·cm)", er: 11.7, s: 10 }, soil: { n: "젖은 흙", er: 20, s: 0.01 }, isi: { n: "진성 Si", er: 11.7, s: 4.4e-4 }, cu: { n: "구리", er: 1, s: 5.96e7 } };
+    const gF = SB.range("md-f", (v) => fstr(Math.pow(10, v)), () => draw());
+    const gM = SB.seg("md-m", () => draw());
+    const gG = SB.seg("md-goal", () => draw());
+    let ph = 0;
+    const aK = (p) => Math.sqrt((Math.sqrt(1 + p * p) - 1) / 2), bK = (p) => Math.sqrt((Math.sqrt(1 + p * p) + 1) / 2);
+    const o = { x: [1e-4, 1e6], y: [1e-5, 1e3], logX: true, logY: true, xLabel: "σ / ωε", yLabel: "α/k, β/k", xTicks: [1e-4, 1e-2, 1, 1e2, 1e4, 1e6], yTicks: [1e-5, 1e-3, 1e-1, 10, 1e3] };
+    const state = () => { const m = MATS[gM()], f = Math.pow(10, gF()); return { m, f, p: m.s / (TAU * f * eps0 * m.er), M: EM.medium(m.er, 1, m.s, f) }; };
+    const cv = SB.canvas("cv-med", (ctx, w, h, self) => {
+      const P = pal(), S = state();
+      const da = [], db = [];
+      for (let i = 0; i <= 200; i++) { const p = Math.pow(10, -4 + (10 * i) / 200); da.push([p, aK(p)]); db.push([p, bK(p)]); }
+      const ch = SB.chart(ctx, { x: 58, y: 34, w: w - 74, h: h - 84 }, Object.assign({}, o, { xFmt: p10, yFmt: p10, bands: [{ x0: 1e-4, x1: 1e-2, color: "rgba(60,110,230,.10)" }, { x0: 1e2, x1: 1e6, color: "rgba(220,60,80,.10)" }], series: [{ data: db, color: P.dim, width: 2 }, { data: da, color: P.accent, width: 2.6 }], vlines: [{ x: 1, color: P.faint, dash: [3, 3] }] }));
+      const pc = SB.clamp(S.p, 1e-4, 1e6), hxp = ch.X(pc), hyp = ch.Y(Math.max(aK(pc), 1e-5));
+      ctx.fillStyle = P.dim; ctx.beginPath(); ctx.arc(hxp, ch.Y(bK(pc)), 5, 0, TAU); ctx.fill();
+      handle(ctx, hxp, hyp, P.accent, 11);
+      if (S.p > 1e6) SB.label(ctx, "→ 눈금 밖(더 도체)", ch.box.x + ch.box.w - 60, ch.box.y + ch.box.h - 14, { size: 11, color: P.bad, bold: true });
+      if (S.p < 1e-4) SB.label(ctx, "← 눈금 밖", ch.box.x + 40, ch.box.y + 14, { size: 11, color: P.bad, bold: true });
+      SB.label(ctx, "β/k", ch.X(3e-4), ch.Y(1) - 10, { size: 11, color: P.dim, bold: true });
+      SB.label(ctx, "α/k", ch.X(3e-3), ch.Y(1.5e-3) - 12, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, `${MATS[gM()].n} · ${fstr(S.f)}`, ch.box.x + ch.box.w - 6, ch.box.y + ch.box.h - 12, { size: 11.5, bold: true, color: P.text, align: "right" });
+      self._h = [hxp, hyp]; self._ch = ch;
+    }, { aspect: 0.9, minHeight: 300, maxHeight: 420 });
+    const cv2 = SB.canvas("cv-med2", (ctx, w, h) => {
+      const P = pal(), S = state(), M = S.M, lam = M.lambda, Zs = 3 * lam;
+      const x0 = 16, x1 = w - 12, y0 = h / 2 + 8, A = h * 0.32, X = (z) => x0 + (z / Zs) * (x1 - x0);
+      const th = cx.arg(M.eta);
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const env = [], envm = [], E = [], H = [];
+      for (let i = 0; i <= 300; i++) { const z = (Zs * i) / 300, a = Math.exp(-M.alpha * z), x = X(z); env.push([x, y0 - A * a]); envm.push([x, y0 + A * a]); E.push([x, y0 - A * a * Math.cos(ph - M.beta * z)]); H.push([x, y0 - A * a * Math.cos(ph - M.beta * z - th)]); }
+      const id = (x, y) => [x, y];
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2; EM.polyline(ctx, env, id); EM.polyline(ctx, envm, id); ctx.restore();
+      ctx.save(); ctx.lineWidth = 2.2; ctx.strokeStyle = P.accent2; EM.polyline(ctx, H, id); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.6; EM.polyline(ctx, E, id); ctx.restore();
+      const dp = 1 / M.alpha;
+      if (dp < Zs) { SB.dashLine(ctx, X(dp), 30, X(dp), h - 20, P.text, [5, 4]); SB.label(ctx, "1/α", X(dp) + 16, 40, { size: 11, bold: true }); }
+      SB.label(ctx, `세 파장 = ${len(Zs)} 구간`, w / 2, h - 10, { size: 11, color: P.dim });
+      SB.label(ctx, `E (빨강) · |η|H (파랑, ${deg(th).toFixed(1)}° 늦음)`, w / 2, 14, { size: 11.5, color: P.text, bold: true });
+    }, { aspect: 0.9, minHeight: 300, maxHeight: 420 });
+    function draw() {
+      cv.redraw(); cv2.redraw();
+      const S = state(), M = S.M, th = deg(cx.arg(M.eta));
+      SB.stat("md-p", sci(S.p, 2));
+      SB.stat("md-a", `${sci(M.alpha, 2)} Np/m<br><small>${sci(8.686 * M.alpha, 2)} dB/m</small>`);
+      SB.stat("md-b", `${sci(M.beta, 2)} rad/m<br><small>λ = ${len(M.lambda)}</small>`);
+      SB.stat("md-eta", `${sci(cx.abs(M.eta), 2)} Ω ∠${th.toFixed(1)}°`);
+      SB.stat("md-d", M.alpha > 0 ? len(1 / M.alpha) : "∞");
+      const g = gG(), m = S.m;
+      let msg;
+      const fFor = (pt) => m.s / (TAU * eps0 * m.er * pt), reach = (pt) => { const ff = fFor(pt); return ff >= 1 && ff <= 1e12; };
+      if ((g === "p1" && !reach(1)) || (g === "t30" && !reach(Math.sqrt(3)))) msg = `이 재료로는 불가 (필요한 f = ${fstr(fFor(g === "p1" ? 1 : Math.sqrt(3)))})`;
+      else if (g === "p1") msg = Math.abs(S.p - 1) <= 0.03 ? `✔ ${fstr(S.f)}에서 σ = ωε` : `지금 ${sci(S.p, 2)}`;
+      else if (g === "t30") msg = Math.abs(th - 30) <= 0.9 ? `✔ θη = ${th.toFixed(1)}° (σ/ωε = ${S.p.toFixed(2)})` : `지금 ${th.toFixed(1)}°`;
+      else {
+        const lo = 1 / EM.medium(m.er, 1, m.s, 1e12).alpha, hi = 1 / EM.medium(m.er, 1, m.s, 1).alpha;
+        if (!(lo <= 1 && hi >= 1)) msg = `이 재료로는 불가 (1/α 범위 ${len(lo)}–${len(hi)})`;
+        else msg = Math.abs(1 / M.alpha - 1) <= 0.03 ? `✔ ${fstr(S.f)}에서 1/α = 1 m` : `지금 ${len(1 / M.alpha)}`;
+      }
+      SB.stat("md-g", msg);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "p" || !cv._ch) return; const p = invX(cv._ch, o, SB.clamp(x, cv._ch.box.x, cv._ch.box.x + cv._ch.box.w)), m = MATS[gM()]; const f = m.s / (TAU * eps0 * m.er * p); gF.set(SB.clamp(Math.log10(f), 0, 12)); },
+    });
+    SB.loop("sim-medium", (dt) => { ph += Math.min(dt, 0.05) * 2.5; cv2.redraw(); });
+    draw();
+  }
+
+  /* ================================================================ 드래그 숫자: 저손실 기판 */
+  SB.tangle("tg-loss", (v) => {
+    const f = v.f * 1e9, a = (PI * Math.sqrt(v.er) * f * v.td) / c0, db = 8.686 * a, d10 = db * 0.1;
+    return { a: a.toPrecision(3) + " Np/m", db: db.toPrecision(3) + " dB/m", dbi: (db * 0.0254).toPrecision(3) + " dB/inch", d10: d10.toPrecision(3) + " dB", frac: (100 * Math.pow(10, -d10 / 10)).toPrecision(3) + "%" };
+  }, { fmt: { td: (x) => x.toFixed(4) } });
+
+  /* ================================================================ 미니: 도체 속 파동 */
+  {
+    const MET = { cu: { s: 5.96e7, n: "Cu" }, al: { s: 3.77e7, n: "Al" }, w: { s: 1.79e7, n: "W" } };
+    const gF = SB.range("cd-f", (v) => fstr(Math.pow(10, v)), () => {});
+    const gM = SB.seg("cd-m", () => {});
+    let ph = 0;
+    const ZM = 7;
+    const cv = SB.canvas("cv-cond", (ctx, w, h) => {
+      const P = pal(), m = MET[gM()], f = Math.pow(10, gF()), d = EM.skinDepth(m.s, f);
+      const x0 = 46, x1 = w - 14, y0 = h / 2 + 10, A = h * 0.3, X = (u) => x0 + (u / ZM) * (x1 - x0);
+      ctx.save(); ctx.fillStyle = P.text; ctx.globalAlpha = 0.07; ctx.fillRect(x0, 34, x1 - x0, h - 72); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x0, 34); ctx.lineTo(x0, h - 38); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "공기", x0 - 22, 44, { size: 11, color: P.dim });
+      SB.label(ctx, `${m.n} 속`, x0 + 30, 44, { size: 11, color: P.dim, bold: true });
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const id = (x, y) => [x, y], env = [], envm = [], E = [], H = [];
+      for (let i = 0; i <= 300; i++) { const u = (ZM * i) / 300, a = Math.exp(-u), x = X(u); env.push([x, y0 - A * a]); envm.push([x, y0 + A * a]); E.push([x, y0 - A * a * Math.cos(ph - u)]); H.push([x, y0 - A * a * Math.cos(ph - u - PI / 4)]); }
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2; EM.polyline(ctx, env, id); EM.polyline(ctx, envm, id); ctx.restore();
+      ctx.save(); ctx.lineWidth = 2.2; ctx.strokeStyle = P.accent2; EM.polyline(ctx, H, id); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.6; EM.polyline(ctx, E, id); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; ctx.font = font(10, true); ctx.textAlign = "center"; ctx.textBaseline = "top";
+      for (let u = 0; u <= ZM; u++) { ctx.fillText(u + "δ", X(u), h - 32); ctx.fillText(u === 0 ? "0" : len(u * d), X(u), 22); }
+      ctx.restore();
+      SB.dashLine(ctx, X(1), 34, X(1), h - 38, P.text, [5, 4]);
+      SB.arrow(ctx, X(0.2), h - 46, X(2 * PI) - 2, h - 46, { color: P.dim, width: 1.3, head: 6 });
+      SB.label(ctx, "도체 속 한 파장 λ = 2πδ", X(PI), h - 56, { size: 11, color: P.dim });
+      $("cd-r").textContent = `δ = ${len(d)} · λ = ${len(TAU * d)} · u_p = ωδ = ${sci(TAU * f * d, 2)} m/s · R_s = ${si(1 / (m.s * d), "Ω")}`;
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 290 });
+    SB.loop("mini-cond", (dt) => { ph += Math.min(dt, 0.05) * 2.2; cv.redraw(); });
+  }
+
+  /* ================================================================ 드래그 숫자: 표피 깊이 */
+  SB.tangle("tg-skin", (v) => {
+    const f = Math.pow(10, v.lf), s = 5.96e7, d = EM.skinDepth(s, f);
+    return { f: fstr(f), d: len(d), rs: si(1 / (s * d), "Ω"), lam: len(TAU * d), vp: sci(TAU * f * d, 2) + " m/s", lam0: len(c0 / f), ratio: (3e-6 / d).toPrecision(3) };
+  });
+
+  /* ================================================================ 시뮬레이터: 둥근 도선의 표피 효과 */
+  {
+    const MET = { cu: { s: 5.96e7, n: "Cu" }, al: { s: 3.77e7, n: "Al" }, w: { s: 1.79e7, n: "W" } };
+    const gM = SB.seg("wr-m", () => draw());
+    const gA = SB.range("wr-a", (v) => len(Math.pow(10, v)), () => draw());
+    const gF = SB.range("wr-f", (v) => fstr(Math.pow(10, v)), () => draw());
+    const gG = SB.seg("wr-goal", () => draw());
+    const NG = 84, NR = 160;
+    let cache = { key: "" }, ph = 0;
+    function prof() {
+      const s = MET[gM()].s, a = Math.pow(10, gA()), f = Math.pow(10, gF()), d = EM.skinDepth(s, f), key = gM() + gA() + gF();
+      if (cache.key === key) return cache;
+      const rad = []; for (let i = 0; i <= NR; i++) { const r = (a * i) / NR; rad.push(jRatio(Math.max(r, a * 1e-4), a, d)); }
+      const grid = new Float64Array(NG * NG);
+      for (let j = 0; j < NG; j++) for (let i = 0; i < NG; i++) { const x = -1 + (2 * (i + 0.5)) / NG, y = -1 + (2 * (j + 0.5)) / NG, r = Math.hypot(x, y); grid[j * NG + i] = r > 1 ? NaN : cx.abs(rad[Math.min(NR, Math.round(r * NR))]); }
+      cache = { key, s, a, f, d, rad, grid };
+      return cache;
+    }
+    const cv = SB.canvas("cv-wire", (ctx, w, h) => {
+      const P = pal(), C = prof();
+      const S = Math.min(w - 40, h * 0.5), ox = w / 2, oy = 14 + S / 2;
+      EM.heatmap(ctx, C.grid, NG, NG, { x: ox - S / 2, y: oy - S / 2, w: S, h: S }, { cmap: "seq", vmin: 0, vmax: 1 });
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ox, oy, S / 2, 0, TAU); ctx.stroke(); ctx.restore();
+      if (C.d < C.a) { ctx.save(); ctx.strokeStyle = "#fff"; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(ox, oy, (S / 2) * (1 - C.d / C.a), 0, TAU); ctx.stroke(); ctx.restore(); }
+      SB.label(ctx, `a = ${len(C.a)}, δ = ${len(C.d)}`, ox, oy + S / 2 + 12, { size: 11, color: P.dim });
+      const env = [], envm = [], ins = [], ex = cx.polar(1, ph);
+      C.rad.forEach((z, i) => { const r = i / NR; env.push([r, cx.abs(z)]); envm.push([r, -cx.abs(z)]); ins.push([r, cx.mul(z, ex).re]); });
+      SB.chart(ctx, { x: 50, y: oy + S / 2 + 30, w: w - 66, h: h - (oy + S / 2 + 30) - 44 }, { x: [0, 1], y: [-1.1, 1.1], yTicks: [-1, 0, 1], xLabel: "ρ / a (0: 중심, 1: 표면)", series: [{ data: env, color: P.dim, width: 1.4, dash: [4, 3] }, { data: envm, color: P.dim, width: 1.4, dash: [4, 3] }, { data: ins, color: P.accent, width: 2.4 }], hlines: [{ y: 0, color: P.faint }] });
+    }, { aspect: 1.15, minHeight: 360, maxHeight: 470 });
+    const o = { x: [1e2, 1e11], y: [0.8, 1e4], logX: true, logY: true, xLabel: "진동수 f (Hz)", yLabel: "R′ac / R′dc", xTicks: [1e2, 1e4, 1e6, 1e8, 1e10], yTicks: [1, 10, 100, 1e3, 1e4] };
+    const cv2 = SB.canvas("cv-wire2", (ctx, w, h, self) => {
+      const P = pal(), C = prof();
+      const d1 = [], d2 = [];
+      for (let i = 0; i <= 180; i++) { const f = Math.pow(10, 2 + (9 * i) / 180); d1.push([f, racRatio(C.s, C.a, f)]); const x = C.a / EM.skinDepth(C.s, f) / 2; if (x > 0.8) d2.push([f, x]); }
+      const tg = Number(gG());
+      const ch = SB.chart(ctx, { x: 58, y: 16, w: w - 74, h: h - 64 }, Object.assign({}, o, { xFmt: p10, yFmt: p10, series: [{ data: d2, color: P.dim, width: 1.4, dash: [5, 4] }, { data: d1, color: P.accent, width: 2.6 }], hlines: [{ y: tg, color: P.warn, dash: [4, 3], label: `목표 ${tg}×` }] }));
+      const r = racRatio(C.s, C.a, C.f), hx = ch.X(C.f), hy = ch.Y(r);
+      handle(ctx, hx, hy, P.accent, 11);
+      self._h = [hx, hy]; self._ch = ch;
+    }, { aspect: 1.15, minHeight: 360, maxHeight: 470 });
+    function draw() {
+      cv.redraw(); cv2.redraw();
+      const C = prof(), r = racRatio(C.s, C.a, C.f), Rdc = 1 / (C.s * PI * C.a * C.a), Rs = 1 / (C.s * C.d);
+      SB.stat("wr-d", `${len(C.d)}<br><small>a/δ = ${sci(C.a / C.d, 2)}</small>`);
+      SB.stat("wr-rdc", si(Rdc, "Ω/m"));
+      SB.stat("wr-rac", `${si(r * Rdc, "Ω/m")}<br><small>${r.toPrecision(3)} × R′dc</small>`);
+      SB.stat("wr-rs", si(Rs / (TAU * C.a), "Ω/m"));
+      const tg = Number(gG());
+      SB.stat("wr-g", Math.abs(r / tg - 1) <= 0.03 ? `✔ ${fstr(C.f)}에서 ${r.toFixed(2)}×` : `지금 ${r.toPrecision(3)}×`);
+    }
+    SB.drag(cv2, {
+      handles: () => (cv2._h ? [{ id: "f", x: cv2._h[0], y: cv2._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "f" || !cv2._ch) return; const f = invX(cv2._ch, o, SB.clamp(x, cv2._ch.box.x, cv2._ch.box.x + cv2._ch.box.w)); gF.set(SB.clamp(Math.log10(f), 2, 11)); },
+    });
+    SB.loop("sim-wire", (dt) => { ph += Math.min(dt, 0.05) * 2; cv.redraw(); });
+    draw();
+  }
+
+  /* ================================================================ 드릴: 표피 깊이와 표면 저항 */
+  SB.drill("drill-skin", () => {
+    const mats = [["구리", 5.96e7], ["알루미늄", 3.77e7], ["금", 4.10e7], ["텅스텐", 1.79e7], ["은", 6.30e7]];
+    const [n, s] = pick(mats), f = pick([1e6, 1e7, 1e8, 1e9, 2.45e9, 5e9, 1e10, 2e10, 28e9]);
+    const d = EM.skinDepth(s, f), Rs = 1 / (s * d);
+    const fs = f >= 1e9 ? f / 1e9 + " GHz" : f / 1e6 + " MHz";
+    return { q: `<p>${n}(\\(\\sigma = ${texSci(s, 2)}\\) S/m)의 ${fs}에서 표피 깊이(µm)와 표면 저항(mΩ)은?</p>`, answer: [d * 1e6, Rs * 1000], label: ["δ =", "R_s ="], unit: ["µm", "mΩ"], tol: "1%", sol: `\\(\\delta = 1/\\sqrt{\\pi f\\mu_0\\sigma} = ${(d * 1e6).toPrecision(3)}\\ \\mu\\text{m}\\), \\(R_s = 1/\\sigma\\delta = ${(Rs * 1000).toPrecision(3)}\\ \\text{m}\\Omega\\)` };
+  });
+
+  /* ================================================================ 미니: 원편광의 나선 */
+  {
+    const gH = SB.seg("hx-h", () => {});
+    let t = 0;
+    const cv = SB.canvas("cv-helix", (ctx, w, h) => {
+      const P = pal(), narrow = w < 520, sgn = gH() === "R" ? 1 : -1;
+      const s = narrow ? Math.min(h * 0.18, 50) : Math.min(h * 0.3, 70), ox = 30 + s * 0.5, oy = h * (narrow ? 0.34 : 0.5), Lz = narrow ? w - 64 - s * 0.5 : w * 0.66 - 40, sz = Lz / 2;
+      const pr = (x, y, z) => [ox + z * sz - y * s * 0.5, oy - x * s + y * s * 0.35];
+      const phase = TAU * 0.4 * t;
+      const tip = (z) => [Math.cos(phase - TAU * z), sgn * Math.sin(phase - TAU * z)];
+      // 축
+      const a0 = pr(0, 0, 0), a1 = pr(0, 0, 2.08);
+      SB.arrow(ctx, a0[0], a0[1], a1[0], a1[1], { color: P.dim, width: 1.4, head: 7 });
+      SB.label(ctx, "z", a1[0] + 10, a1[1] - 8, { size: 12, color: P.dim, bold: true });
+      const ax = pr(1.25, 0, 0), ay = pr(0, 1.3, 0);
+      SB.arrow(ctx, a0[0], a0[1], ax[0], ax[1], { color: P.faint, width: 1.2, head: 6 }); SB.label(ctx, "x", ax[0] + 8, ax[1], { size: 11, color: P.dim });
+      SB.arrow(ctx, a0[0], a0[1], ay[0], ay[1], { color: P.faint, width: 1.2, head: 6 }); SB.label(ctx, "y", ay[0] - 8, ay[1] + 6, { size: 11, color: P.dim });
+      // 벡터와 나선
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.45; ctx.lineWidth = 1.2;
+      for (let i = 0; i <= 40; i++) { const z = (2 * i) / 40, [x, y] = tip(z), b = pr(0, 0, z), e = pr(x, y, z); ctx.beginPath(); ctx.moveTo(b[0], b[1]); ctx.lineTo(e[0], e[1]); ctx.stroke(); }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath();
+      for (let i = 0; i <= 240; i++) { const z = (2 * i) / 240, [x, y] = tip(z), e = pr(x, y, z); i ? ctx.lineTo(e[0], e[1]) : ctx.moveTo(e[0], e[1]); }
+      ctx.stroke(); ctx.restore();
+      // 관측면 z = 2
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]); ctx.beginPath();
+      for (let i = 0; i <= 60; i++) { const q = (TAU * i) / 60, e = pr(Math.cos(q), Math.sin(q), 2); i ? ctx.lineTo(e[0], e[1]) : ctx.moveTo(e[0], e[1]); }
+      ctx.stroke(); ctx.restore();
+      const [tx, ty] = tip(2), b2 = pr(0, 0, 2), e2 = pr(tx, ty, 2);
+      SB.arrow(ctx, b2[0], b2[1], e2[0], e2[1], { color: P.text, width: 3, head: 9 });
+      SB.label(ctx, "관측면", b2[0], pr(-1.3, 0, 2)[1] + 4, { size: 11, color: P.dim });
+      // 뒤에서 본 그림(파가 멀어지는 쪽에서 +z를 바라봄: x 위, y 오른쪽)
+      const ix = narrow ? w - 70 : w * 0.84, iy = narrow ? h - 66 : h * 0.48, ir = narrow ? 30 : Math.min(h * 0.28, 60);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(ix, iy, ir, 0, TAU); ctx.stroke(); ctx.restore();
+      const qx = ix + ty * ir, qy = iy - tx * ir;
+      SB.arrow(ctx, ix, iy, qx, qy, { color: P.text, width: 2.6, head: 8 });
+      const cw = sgn > 0;   // 오른손: 뒤에서 보면 시계 방향
+      const a0r = -PI / 2 - 0.9, a1r = -PI / 2 + 0.9;
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ix, iy, ir + 9, cw ? a0r : a1r, cw ? a1r : a0r, !cw); ctx.stroke(); ctx.restore();
+      const ea = cw ? a1r : a0r, ex = ix + (ir + 9) * Math.cos(ea), ey = iy + (ir + 9) * Math.sin(ea), tg = cw ? [-Math.sin(ea), Math.cos(ea)] : [Math.sin(ea), -Math.cos(ea)];
+      SB.arrow(ctx, ex - 10 * tg[0], ey - 10 * tg[1], ex + 2 * tg[0], ey + 2 * tg[1], { color: P.accent, width: 2, head: 9 });
+      SB.label(ctx, narrow ? "뒤에서 본 관측면" : "+z를 바라본 관측면", ix, iy + ir + 18, { size: 11, color: P.dim });
+      SB.label(ctx, cw ? "시계 방향 = 오른손" : "반시계 = 왼손", ix, iy - ir - 18, { size: 11.5, color: P.accent, bold: true });
+      $("hx-r").textContent = sgn > 0 ? "E_x = cos(ωt − kz), E_y = sin(ωt − kz) · 공간에 얼린 나선은 왼나사" : "E_x = cos(ωt − kz), E_y = −sin(ωt − kz) · 공간에 얼린 나선은 오른나사";
+    }, { aspect: 0.42, minHeight: 300, maxHeight: 330 });
+    const loop = SB.loop("mini-helix", (dt) => { t += Math.min(dt, 0.05); cv.redraw(); });
+    SB.play("hx-play", loop);
+  }
+
+  /* ================================================================ 시뮬레이터: 편광 타원 */
+  {
+    const st = { a: 1, b: 0.6, t: 0 };
+    const gD = SB.range("pl-d", (v) => v.toFixed(0) + "°", () => draw());
+    const gG = SB.seg("pl-goal", () => draw());
+    const info = () => {
+      const a = st.a, b = st.b, d = (gD() * PI) / 180;
+      if (a * a + b * b < 1e-6) return { tilt: 0, AR: Infinity, handed: "linear" };
+      const e = EM.polEllipse(a, b, d);
+      return { tilt: deg(e.tilt), AR: e.axial > 1e-6 ? 1 / e.axial : Infinity, handed: e.handed };
+    };
+    const cv = SB.canvas("cv-pol", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 560, d = (gD() * PI) / 180, wt = TAU * 0.35 * st.t;
+      let S, ox, oy, dial, tr;
+      if (narrow) { S = Math.min(w - 30, h * 0.6); ox = w / 2; oy = 12 + S / 2; const by = 12 + S + 18; dial = { x: 58, y: by + (h - by) / 2 - 6, r: Math.min(40, (h - by) / 2 - 16) }; tr = { x: 130, y: by, w: w - 142, h: h - by - 16 }; }
+      else { S = Math.min(h - 24, w * 0.56); ox = 12 + S / 2; oy = h / 2; const bx = 12 + S + 46; dial = { x: bx + 70, y: h - 82, r: 52 }; tr = { x: bx, y: 40, w: w - bx - 12, h: h - 214 }; }
+      const R = S / 2 - 14, sc = R / 1.05;
+      const toPx = (x, y) => [ox + x * sc, oy - y * sc];
+      // 격자
+      ctx.save(); ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.strokeRect(ox - R, oy - R, 2 * R, 2 * R);
+      ctx.beginPath(); ctx.moveTo(ox - R, oy); ctx.lineTo(ox + R, oy); ctx.moveTo(ox, oy - R); ctx.lineTo(ox, oy + R); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "Ex", ox + R - 10, oy + 26, { size: 11, color: P.accent, bold: true });
+      SB.label(ctx, "Ey", ox - 18, oy - R + 10, { size: 11, color: P.accent2, bold: true });
+      // 타원
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath();
+      for (let i = 0; i <= 120; i++) { const q = (TAU * i) / 120, [x, y] = toPx(st.a * Math.cos(q), st.b * Math.cos(q + d)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      // 자취
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 3; ctx.globalAlpha = 0.5; ctx.beginPath();
+      for (let i = 0; i <= 30; i++) { const q = wt - 1.6 + (1.6 * i) / 30, [x, y] = toPx(st.a * Math.cos(q), st.b * Math.cos(q + d)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      const ex = st.a * Math.cos(wt), ey = st.b * Math.cos(wt + d), [px, py] = toPx(ex, ey);
+      SB.arrow(ctx, ox, oy, toPx(ex, 0)[0], oy, { color: P.accent, width: 2, head: 7 });
+      SB.arrow(ctx, ox, oy, ox, toPx(0, ey)[1], { color: P.accent2, width: 2, head: 7 });
+      SB.arrow(ctx, ox, oy, px, py, { color: P.text, width: 3, head: 10 });
+      const I = info();
+      const kind = I.handed === "linear" || I.AR > 200 ? "직선" : (I.handed === "R" ? "오른손 " : "왼손 ") + (I.AR < 1.03 ? "원" : "타원");
+      SB.label(ctx, kind, ox - R + 8, oy - R + 12, { size: 12, color: P.text, bold: true, align: "left" });
+      // 핸들
+      const ha = toPx(st.a, 0), hb = toPx(0, st.b);
+      handle(ctx, ha[0], ha[1], P.accent, 11); handle(ctx, hb[0], hb[1], P.accent2, 11);
+      // 시간 파형
+      const dx = [], dy = [];
+      for (let i = 0; i <= 160; i++) { const q = wt - 4 * PI + (4 * PI * i) / 160; dx.push([q, st.a * Math.cos(q)]); dy.push([q, st.b * Math.cos(q + d)]); }
+      SB.chart(ctx, tr, { x: [wt - 4 * PI, wt], y: [-1.1, 1.1], xFmt: () => "", yTicks: [-1, 0, 1], series: [{ data: dx, color: P.accent, width: 2.2 }, { data: dy, color: P.accent2, width: 2.2 }] });
+      SB.label(ctx, "Ex(t), Ey(t) · 최근 두 주기", tr.x + tr.w / 2, tr.y - 7, { size: 11, color: P.dim });
+      // 위상 다이얼
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(dial.x, dial.y, dial.r, 0, TAU); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, dial.x, dial.y, dial.x + dial.r, dial.y, P.faint, [2, 3]);
+      const hdx = dial.x + dial.r * Math.cos(d), hdy = dial.y - dial.r * Math.sin(d);
+      SB.arrow(ctx, dial.x, dial.y, hdx, hdy, { color: P.accent2, width: 2, head: 6 });
+      handle(ctx, hdx, hdy, P.warn, 11);
+      SB.label(ctx, `δ = ${gD().toFixed(0)}°`, dial.x, dial.y + dial.r + 14, { size: 11, color: P.text, bold: true });
+      self._h = { a: ha, b: hb, d: [hdx, hdy], o: [ox, oy], sc, dial };
+    }, { aspect: 0.62, minHeight: 400, maxHeight: 470 });
+    function draw() {
+      cv.redraw();
+      const I = info(), dd = gD();
+      SB.stat("pl-ph", `${st.a.toFixed(2)}, ${st.b.toFixed(2)}∠${dd.toFixed(0)}°`);
+      SB.stat("pl-tilt", I.tilt.toFixed(1) + "°");
+      SB.stat("pl-ar", isFinite(I.AR) && I.AR < 200 ? I.AR.toFixed(2) + ` (${(20 * Math.log10(I.AR)).toFixed(1)} dB)` : "∞ (직선)");
+      SB.stat("pl-kind", I.handed === "linear" || I.AR > 200 ? "직선 편광" : `${I.handed === "R" ? "오른손" : "왼손"} ${I.AR < 1.03 ? "원" : "타원"} 편광`);
+      const g = gG(), tmod = (x) => { let y = ((x % 180) + 180) % 180; return y > 90 ? y - 180 : y; };
+      let ok = false;
+      if (g === "rhcp") ok = I.handed === "R" && I.AR <= 1.03;
+      else if (g === "lin") ok = I.AR >= 30 && Math.abs(tmod(I.tilt + 45)) <= 2;
+      else ok = I.handed === "L" && Math.abs(I.AR - 2) <= 0.06 && Math.abs(tmod(I.tilt)) <= 2;
+      SB.stat("pl-g", ok ? "✔ 달성!" : "—");
+    }
+    SB.drag(cv, {
+      handles: () => { const H = cv._h; return H ? [{ id: "a", x: H.a[0], y: H.a[1], r: 14 }, { id: "b", x: H.b[0], y: H.b[1], r: 14 }, { id: "d", x: H.d[0], y: H.d[1], r: 14 }] : []; },
+      move: (id, x, y) => {
+        const H = cv._h; if (!H || !id) return;
+        if (id === "a") st.a = SB.clamp((x - H.o[0]) / H.sc, 0, 1);
+        if (id === "b") st.b = SB.clamp((H.o[1] - y) / H.sc, 0, 1);
+        if (id === "d") { const dg = Math.round(deg(Math.atan2(-(y - H.dial.y), x - H.dial.x))); gD.set(dg <= -180 ? 180 : dg); return; }
+        draw();
+      },
+    });
+    const loop = SB.loop("sim-pol", (dt) => { st.t += Math.min(dt, 0.05); cv.redraw(); });
+    SB.play("pl-play", loop);
+    draw();
+  }
+
+  /* ================================================================ 시뮬레이터: 위상 속도와 군속도 */
+  {
+    const MODES = {
+      vac: { w: (b) => b, dw: () => 1, bmax: 3 },
+      pl: { w: (b) => Math.sqrt(1 + b * b), dw: (b) => b / Math.sqrt(1 + b * b), bmax: 3 },
+      cond: { w: (b) => b * b, dw: (b) => 2 * b, bmax: 1.85 },
+    };
+    const st = { b0: 0.9, t: 0, zc: 0, ze: 0 };
+    const reset = () => { st.t = 0; st.zc = 0; st.ze = 0; };
+    const gM = SB.seg("gp-m", () => { const M = MODES[gM()]; st.b0 = SB.clamp(st.b0, 0.15, M.bmax - 0.1); reset(); draw(); });
+    const gDB = SB.range("gp-db", (v) => v.toFixed(2) + " ω_p/c", () => { reset(); draw(); });
+    const o = { x: [0, 3], y: [0, 3.5], xLabel: "β (ω_p/c 단위)", yLabel: "ω (ω_p 단위)" };
+    const comp = () => { const M = MODES[gM()], db = gDB(), b1 = st.b0 + db / 2, b2 = st.b0 - db / 2, w1 = M.w(b1), w2 = M.w(b2); return { M, db, b1, b2, w1, w2, wbar: (w1 + w2) / 2, vp: M.w(st.b0) / st.b0, vg: M.dw(st.b0), vgb: (w1 - w2) / db }; };
+    const cv = SB.canvas("cv-grp", (ctx, w, h, self) => {
+      const P = pal(), C = comp(), M = C.M, oo = Object.assign({}, o, { x: [0, M.bmax] });
+      const curve = [], light = [];
+      for (let i = 0; i <= 150; i++) { const b = (M.bmax * i) / 150; curve.push([b, M.w(b)]); light.push([b, b]); }
+      const w0 = M.w(st.b0);
+      const tang = [[0, w0 - C.vg * st.b0], [M.bmax, w0 + C.vg * (M.bmax - st.b0)]];
+      const ch = SB.chart(ctx, { x: 52, y: 16, w: w - 66, h: h - 64 }, Object.assign({}, oo, { series: [{ data: light, color: P.faint, width: 1.4, dash: [5, 4] }, { data: tang, color: P.accent2, width: 1.6 }, { data: [[0, 0], [st.b0, w0]], color: P.accent, width: 2 }, { data: curve, color: P.text, width: 2.6 }], hlines: gM() === "pl" ? [{ y: 1, color: P.warn, dash: [3, 3], label: "차단 ω_p" }] : [] }));
+      handle(ctx, ch.X(st.b0), ch.Y(w0), P.accent, 11);
+      SB.label(ctx, "ω = cβ", ch.X(M.bmax * 0.86), ch.Y(Math.min(3.3, M.bmax * 0.86)) - 12, { size: 11, color: P.dim });
+      self._h = [ch.X(st.b0), ch.Y(w0)]; self._ch = ch; self._o = oo;
+    }, { aspect: 0.9, minHeight: 300, maxHeight: 400 });
+    const cv2 = SB.canvas("cv-grp2", (ctx, w, h) => {
+      const P = pal(), C = comp();
+      const Zs = (2.2 * TAU) / C.db, x0 = 10, x1 = w - 10, X = (z) => x0 + (z / Zs) * (x1 - x0), y0 = h / 2 + 4, A = h * 0.2;
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const n = Math.max(500, Math.round(w * 1.5)), sig = [], e1 = [], e2 = [];
+      for (let i = 0; i <= n; i++) { const z = (Zs * i) / n, v = Math.cos(C.w1 * st.t - C.b1 * z) + Math.cos(C.w2 * st.t - C.b2 * z), e = 2 * Math.abs(Math.cos(((C.w1 - C.w2) * st.t - C.db * z) / 2)); sig.push([X(z), y0 - A * v]); e1.push([X(z), y0 - A * e]); e2.push([X(z), y0 + A * e]); }
+      const id = (x, y) => [x, y];
+      ctx.save(); ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.6; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.4; EM.polyline(ctx, e1, id); EM.polyline(ctx, e2, id); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.6; EM.polyline(ctx, sig, id); ctx.restore();
+      // 표시
+      const zc = st.zc, ze = st.ze, vc = Math.cos(C.w1 * st.t - C.b1 * zc) + Math.cos(C.w2 * st.t - C.b2 * zc);
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(X(zc), y0 - A * vc, 7, 0, TAU); ctx.fill();
+      const xe = X(ze), ye = y0 - A * 2 - 12;
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.moveTo(xe, ye - 8); ctx.lineTo(xe + 7, ye); ctx.lineTo(xe, ye + 8); ctx.lineTo(xe - 7, ye); ctx.closePath(); ctx.fill();
+      SB.label(ctx, "z →", x1 - 16, y0 + A * 2 + 14, { size: 11, color: P.dim });
+    }, { aspect: 0.9, minHeight: 300, maxHeight: 400 });
+    function draw() {
+      cv.redraw(); cv2.redraw();
+      const C = comp();
+      SB.stat("gp-vp", C.vp.toFixed(3)); SB.stat("gp-vg", C.vg.toFixed(3)); SB.stat("gp-pr", (C.vp * C.vg).toFixed(3));
+      SB.stat("gp-g", gM() !== "pl" ? "플라스마를 고른다" : Math.abs(C.vg - 0.5) <= 0.01 ? `✔ u_g = ${C.vg.toFixed(3)}c, u_p = ${C.vp.toFixed(3)}c` : `지금 ${C.vg.toFixed(3)}c`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "b", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "b" || !cv._ch) return; const M = MODES[gM()]; st.b0 = SB.clamp(invX(cv._ch, cv._o, x), 0.15, M.bmax - 0.1); reset(); draw(); },
+    });
+    const loop = SB.loop("sim-group", (dt) => {
+      dt = Math.min(dt, 0.05);
+      const C = comp(), w = cv2.w || 400, Zs = (2.2 * TAU) / C.db, pxu = (w - 20) / Zs, s = 70 / (Math.max(C.wbar / st.b0, C.vgb) * pxu);
+      const ds = dt * s; st.t += ds;
+      st.zc += (C.wbar / st.b0) * ds; st.ze += C.vgb * ds;
+      const lc = TAU / st.b0, le = TAU / C.db;
+      while (st.zc > Zs * 0.95) st.zc -= lc * Math.max(1, Math.floor((Zs * 0.75) / lc));
+      while (st.ze > Zs * 0.98) st.ze -= le;
+      cv2.redraw();
+    });
+    SB.play("gp-play", loop);
+    draw();
+  }
+
+  /* ================================================================ 미니: 플라스마 속 펄스 */
+  {
+    const NC = 61, SIG = 0.1, L = 160, Z0 = -18;
+    const gW = SB.range("pk-w", (v) => v.toFixed(2), () => { t = 0; });
+    let t = 0;
+    $("pk-reset").addEventListener("click", () => { t = 0; cv.redraw(); });
+    const cv = SB.canvas("cv-packet", (ctx, w, h) => {
+      const P = pal(), w0 = gW(), b0 = Math.sqrt(w0 * w0 - 1), vg = b0 / w0;
+      const x0 = 12, x1 = w - 12, X = (z) => x0 + ((z - Z0) / (L - Z0)) * (x1 - x0), y0 = h / 2 + 6, A = h * 0.34;
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const ws = [], bs = [], as = []; let asum = 0;
+      for (let k = 0; k < NC; k++) { const wk = w0 + (k - (NC - 1) / 2) * ((6 * SIG) / (NC - 1)); const a = Math.exp(-((wk - w0) ** 2) / (2 * SIG * SIG)); ws.push(wk); bs.push(Math.sqrt(Math.max(0, wk * wk - 1))); as.push(a); asum += a; }
+      const n = Math.max(500, Math.round(w * 1.4)), pts = [], vac = [];
+      for (let i = 0; i <= n; i++) {
+        const z = Z0 + ((L - Z0) * i) / n; let v = 0;
+        for (let k = 0; k < NC; k++) v += as[k] * Math.cos(ws[k] * t - bs[k] * z);
+        pts.push([X(z), y0 - (A * v) / asum]);
+        vac.push([X(z), y0 - A * Math.exp(-0.5 * SIG * SIG * (z - t) * (z - t))]);
+      }
+      const id = (x, y) => [x, y];
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6; EM.polyline(ctx, vac, id); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.8; EM.polyline(ctx, pts, id); ctx.restore();
+      const xg = X(vg * t);
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.moveTo(xg, h - 30); ctx.lineTo(xg - 7, h - 18); ctx.lineTo(xg + 7, h - 18); ctx.closePath(); ctx.fill();
+      SB.label(ctx, "u_g·t", xg, h - 8, { size: 10, color: P.accent2 });
+      SB.label(ctx, "진공 펄스", Math.min(X(t), x1 - 30), y0 - A - 10, { size: 10.5, color: P.dim });
+      $("pk-r").textContent = `u_g = ${vg.toFixed(3)}c · u_p = ${(1 / vg).toFixed(3)}c · 진공보다 ${(t * (1 - vg)).toFixed(0)} c/ω_p 뒤처짐`;
+    }, { aspect: 0.36, minHeight: 210, maxHeight: 260 });
+    const loop = SB.loop("mini-packet", (dt) => { t += Math.min(dt, 0.05) * 14; if (t > L + 20) t = 0; cv.redraw(); });
+    SB.play("pk-play", loop);
+  }
+
+  /* ================================================================ 드래그 숫자: 차단 밀도 */
+  SB.tangle("tg-crit", (v) => {
+    const f = Math.pow(10, v.lf), n = Math.pow(10, v.ln), nc = EM.criticalDensity(f), wp = EM.plasmaOmega(n), w = TAU * f;
+    const verdict = w > wp ? `플라스마를 지나간다(굴절률 ${Math.sqrt(1 - (wp * wp) / (w * w)).toFixed(3)})` : `차단되어 반사된다(장의 침투 깊이 ≈ ${len(c0 / Math.sqrt(wp * wp - w * w))})`;
+    return { f: fstr(f), nc: sci(nc, 2) + " m⁻³", n: sci(n, 1) + " m⁻³", fp: fstr(wp / TAU), verdict };
+  });
+
+  /* ================================================================ 시뮬레이터: 플라스마 층 */
+  {
+    const Z = 0.36, ZS = 0.08, NL = 300;
+    const st = { ln: Math.log10(1.49e17) };
+    let ph = 0, sol = null;
+    const gF = SB.range("ps-f", (v) => fstr(Math.pow(10, v)), () => draw());
+    const gNu = SB.range("ps-nu", (v) => v.toFixed(3), () => draw());
+    const gL = SB.range("ps-L", (v) => v.toFixed(1) + " cm", () => draw());
+    const gG = SB.seg("ps-goal", () => draw());
+    const shape = (u, L) => { const r = Math.min(0.03, L / 3); if (u < 0 || u > L) return 0; const s = Math.min(u, L - u) / r; return s >= 1 ? 1 : Math.sin((PI / 2) * s) ** 2; };
+    function solve() {
+      const f = Math.pow(10, gF()), w = TAU * f, k0 = w / c0, L = gL() / 100, n0 = Math.pow(10, st.ln), nu = gNu() * w, dz = L / NL;
+      let E = cx.of(1, 0), H = cx.of(1, 0);   // 오른쪽 경계: 투과파만, H' = η0H = E
+      const Es = new Array(NL + 1); Es[NL] = E;
+      for (let i = NL - 1; i >= 0; i--) {
+        const n = n0 * shape((i + 0.5) * dz, L), eps = EM.drude(EM.plasmaOmega(n), w, nu); let N = cx.sqrt(eps); if (cx.abs(N) < 1e-9) N = cx.of(1e-9, 0);
+        const phi = cx.scale(N, k0 * dz), C = cx.cos(phi), S = cx.sin(phi);
+        const En = cx.add(cx.mul(C, E), cx.mul(cx.mul(J, cx.div(S, N)), H));
+        const Hn = cx.add(cx.mul(cx.mul(J, cx.mul(N, S)), E), cx.mul(C, H));
+        E = En; H = Hn; Es[i] = E;
+      }
+      const Ei = cx.scale(cx.add(E, H), 0.5), Er = cx.scale(cx.sub(E, H), 0.5);
+      const inv = cx.div(ONE, Ei), r = cx.mul(Er, inv), tt = inv;
+      const En = Es.map((e) => cx.mul(e, inv));
+      const R = cx.abs2(r), T = cx.abs2(tt);
+      sol = { f, w, k0, L, n0, nc: EM.criticalDensity(f), r, t: tt, En, R, T, A: Math.max(0, 1 - R - T), dz };
+    }
+    const fieldAt = (z) => {
+      const S = sol, ze = ZS + S.L;
+      if (z < ZS) return cx.add(cx.polar(1, -S.k0 * (z - ZS)), cx.mul(S.r, cx.polar(1, S.k0 * (z - ZS))));
+      if (z > ze) return cx.mul(S.t, cx.polar(1, -S.k0 * (z - ze)));
+      const u = (z - ZS) / S.dz, i = Math.min(NL - 1, Math.floor(u)), fr = u - i;
+      return cx.add(cx.scale(S.En[i], 1 - fr), cx.scale(S.En[i + 1], fr));
+    };
+    const LOG0 = 14, LOG1 = 19;
+    const cv = SB.canvas("cv-pl", (ctx, w, h, self) => {
+      if (!sol) return;
+      const P = pal(), S = sol, narrow = w < 560;
+      const x0 = 14, x1 = w - (narrow ? 44 : 56), top = 24, bot = h - 40, X = (z) => x0 + (z / Z) * (x1 - x0);
+      const Yn = (lg) => bot - ((lg - LOG0) / (LOG1 - LOG0)) * (bot - top);
+      // 밀도
+      ctx.save(); ctx.fillStyle = P.text; ctx.globalAlpha = 0.12; ctx.beginPath(); ctx.moveTo(X(ZS), bot);
+      for (let i = 0; i <= 200; i++) { const u = (S.L * i) / 200, n = S.n0 * shape(u, S.L); ctx.lineTo(X(ZS + u), n > 0 ? Math.min(bot, Yn(Math.log10(n))) : bot); }
+      ctx.lineTo(X(ZS + S.L), bot); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.dim; ctx.font = font(10, true); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      for (let e = LOG0 + 1; e <= LOG1; e++) { const y = Yn(e); ctx.fillText("10" + sup(e), x1 + 6, y); ctx.fillRect(x1, y, 4, 1); } ctx.restore();
+      const lnc = Math.log10(S.nc);
+      if (lnc > LOG0 && lnc < LOG1) { SB.dashLine(ctx, x0, Yn(lnc), x1, Yn(lnc), P.warn, [6, 4]); SB.label(ctx, "n_c", x0 + 18, Yn(lnc) - 9, { size: 11, color: P.warn, bold: true }); }
+      // 장
+      const n = Math.max(400, Math.round((x1 - x0) * 1.2)), yc = (top + bot) / 2;
+      let mx = 1; const F = [];
+      for (let i = 0; i <= n; i++) { const z = (Z * i) / n, e = fieldAt(z); F.push([z, e]); mx = Math.max(mx, cx.abs(e)); }
+      const A = ((bot - top) * 0.46) / Math.max(2, mx), ex = cx.polar(1, ph), id = (x, y) => [x, y];
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.3;
+      EM.polyline(ctx, F.map(([z, e]) => [X(z), yc - A * cx.abs(e)]), id); EM.polyline(ctx, F.map(([z, e]) => [X(z), yc + A * cx.abs(e)]), id); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.2; EM.polyline(ctx, F.map(([z, e]) => [X(z), yc - A * cx.mul(e, ex).re]), id); ctx.restore();
+      SB.arrow(ctx, X(0.005), top - 8, X(0.045), top - 8, { color: P.text, width: 1.8, head: 7 });
+      SB.label(ctx, "입사", X(0.06), top - 8, { size: 11, color: P.dim, align: "left" });
+      // 핸들
+      const hx = X(ZS + S.L / 2), hy = Yn(st.ln);
+      handle(ctx, hx, hy, P.accent, 12);
+      ctx.save(); ctx.fillStyle = P.dim; ctx.font = font(10, true); ctx.textAlign = "center"; ctx.textBaseline = "top";
+      for (let zc = 0; zc <= 36; zc += 6) ctx.fillText(zc + " cm", X(zc / 100), bot + 8); ctx.restore();
+      self._h = [hx, hy]; self._iy = (y) => LOG0 + ((bot - y) / (bot - top)) * (LOG1 - LOG0);
+    }, { aspect: 0.5, minHeight: 300, maxHeight: 420 });
+    function draw() {
+      solve(); cv.redraw();
+      const S = sol;
+      SB.stat("ps-n", `${sci(S.n0, 2)} m⁻³<br><small>n₀/n_c = ${(S.n0 / S.nc).toFixed(2)}</small>`);
+      SB.stat("ps-fp", fstr(EM.plasmaOmega(S.n0) / TAU));
+      SB.stat("ps-R", (100 * S.R).toFixed(1) + " %"); SB.stat("ps-T", (100 * S.T).toFixed(1) + " %"); SB.stat("ps-A", (100 * S.A).toFixed(1) + " %");
+      const g = gG(), v = g === "T50" ? S.T : S.A;
+      SB.stat("ps-g", Math.abs(v - 0.5) <= 0.015 ? `✔ ${(100 * v).toFixed(1)} % 달성!` : `지금 ${(100 * v).toFixed(1)} %`);
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 15 }] : []),
+      move: (id, x, y) => { if (id !== "n" || !cv._iy) return; st.ln = SB.clamp(cv._iy(y), 15, 18.5); draw(); },
+    });
+    SB.loop("sim-plasma", (dt) => { ph += Math.min(dt, 0.05) * 3; cv.redraw(); });
+    draw();
+  }
+
+  /* ================================================================ 미니: 마이크로파 간섭계 */
+  {
+    const L = 0.3, re = K.e * K.e / (4 * PI * eps0 * K.me * c0 * c0);
+    const gN = SB.range("it-n", (v) => sci(Math.pow(10, v), 1) + " m⁻³", () => cv.redraw());
+    const gF = SB.seg("it-f", () => cv.redraw());
+    const cv = SB.canvas("cv-int", (ctx, w, h) => {
+      const P = pal(), narrow = w < 560, f = Number(gF()) * 1e9, n = Math.pow(10, gN()), nc = EM.criticalDensity(f), k0 = (TAU * f) / c0, lam = c0 / f;
+      const cut = n >= nc, dphi = cut ? NaN : k0 * L * (1 - Math.sqrt(1 - n / nc)), dapp = re * lam * n * L;
+      // 배치도
+      const sw = narrow ? w : w * 0.5, sh = narrow ? h * 0.52 : h;
+      const bx = 14, by = sh * (narrow ? 0.4 : 0.28), ex = sw - 26, ey = sh * 0.78, ccx = (bx + ex) / 2 + 10, cr = Math.min(sh * 0.2, 46);
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.6;
+      ctx.strokeRect(bx, by - 12, 34, 24);
+      ctx.beginPath(); ctx.moveTo(bx + 34, by); ctx.lineTo(ex, by); ctx.lineTo(ex, ey); ctx.moveTo(bx + 52, by); ctx.lineTo(bx + 52, ey); ctx.lineTo(ex, ey); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.accent; ctx.globalAlpha = 0.08 + 0.5 * SB.clamp((gN() - 15) / 4, 0, 1); ctx.beginPath(); ctx.arc(ccx, by, cr, 0, TAU); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ccx, by, cr, 0, TAU); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = cut ? P.bad : P.accent; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx + 34, by); ctx.lineTo(cut ? ccx - cr : ex, by); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "광원", bx + 17, by + 22, { size: 10, color: P.dim });
+      SB.label(ctx, "플라스마 30 cm", ccx, by - cr - 10, { size: 10.5, color: P.text });
+      SB.label(ctx, "기준 경로", (bx + 52 + ex) / 2, ey + 12, { size: 10, color: P.dim });
+      ctx.fillStyle = P.text; ctx.fillRect(ex - 6, ey - 6, 12, 12); SB.label(ctx, "검출", ex - 4, ey + 16, { size: 10, color: P.dim });
+      if (cut) SB.label(ctx, "차단: 빔 반사", ccx, by + cr + 12, { size: 11, color: P.bad, bold: true });
+      // 신호
+      const gx = narrow ? 50 : sw + 40, gy = narrow ? sh + 6 : 16, gw = w - gx - 12, gh = (narrow ? h - sh : h) - 62;
+      const ref = [], pro = [];
+      for (let i = 0; i <= 200; i++) { const q = (4 * PI * i) / 200; ref.push([q, Math.cos(q)]); if (!cut) pro.push([q, Math.cos(q + dphi)]); }
+      SB.chart(ctx, { x: gx, y: gy, w: gw, h: gh }, { x: [0, 4 * PI], y: [-1.2, 1.2], xFmt: () => "", yTicks: [-1, 0, 1], xLabel: "시간 → (두 주기)", series: [{ data: ref, color: P.dim, width: 2, dash: [4, 3] }, { data: pro, color: P.accent, width: 2.4 }] });
+      $("it-r").textContent = cut ? `n̄ ≥ n_c = ${sci(nc, 2)} m⁻³ — 빔이 끊긴다` : `Δφ = ${dphi.toPrecision(3)} rad (${(dphi / TAU).toFixed(2)} 무늬) · 근사 r_eλ₀n̄L = ${dapp.toPrecision(3)} rad · n̄/n_c = ${sci(n / nc, 2)}`;
+    }, { aspect: 0.4, minHeight: 290, maxHeight: 320 });
+  }
+
+  /* ================================================================ 드릴: 플라스마 */
+  SB.drill("drill-plasma", () => {
+    const type = pick(["fp", "nc", "skin"]);
+    if (type === "fp") {
+      const m = rnd(1, 9.9, 0.1), ex = pick([15, 16, 17, 18]), n = m * Math.pow(10, ex), fp = EM.plasmaOmega(n) / TAU / 1e9;
+      return { q: `<p>전자 밀도 \\(${m.toFixed(1)}\\times10^{${ex}}\\) m⁻³인 플라스마의 플라스마 진동수 \\(f_p\\)는 몇 GHz인가?</p>`, answer: fp, label: "f_p =", unit: "GHz", tol: "1%", sol: `\\(f_p = \\frac{1}{2\\pi}\\sqrt{ne^2/\\varepsilon_0m} \\approx 8.98\\sqrt{n} = ${fp.toPrecision(3)}\\) GHz` };
+    }
+    if (type === "nc") {
+      const [fs, f] = pick([["13.56 MHz", 13.56e6], ["27.12 MHz", 27.12e6], ["60 MHz", 60e6], ["162 MHz", 162e6], ["915 MHz", 915e6], ["2.45 GHz", 2.45e9], ["5.8 GHz", 5.8e9], ["35 GHz", 35e9], ["94 GHz", 94e9]]);
+      const nc = EM.criticalDensity(f), ex = Math.floor(Math.log10(nc));
+      return { q: `<p>${fs} 전자기파의 차단 밀도 \\(n_c\\)는? 답은 \\(10^{${ex}}\\) m⁻³ 단위의 수로 쓴다.</p>`, answer: nc / Math.pow(10, ex), label: "n_c =", unit: `×10^${ex} m⁻³`, tol: "1%", sol: `\\(n_c = \\varepsilon_0m(2\\pi f)^2/e^2 \\approx 1.24\\times10^{-2}f^2 = ${texSci(nc, 2)}\\) m⁻³` };
+    }
+    const m = rnd(1, 9.9, 0.1), ex = pick([16, 17, 18]), n = m * Math.pow(10, ex), d = (c0 / EM.plasmaOmega(n)) * 100;
+    return { q: `<p>밀도 \\(${m.toFixed(1)}\\times10^{${ex}}\\) m⁻³인 플라스마에 \\(\\omega \\ll \\omega_p\\)인 RF 장이 들어가는 깊이 \\(c/\\omega_p\\)는 몇 cm인가?</p>`, answer: d, label: "c/ω_p =", unit: "cm", tol: "1%", sol: `\\(\\omega_p = ${texSci(EM.plasmaOmega(n), 3)}\\) rad/s, \\(c/\\omega_p = ${d.toPrecision(3)}\\) cm` };
+  });
+})();
+</script>
+</body>
+</html>
