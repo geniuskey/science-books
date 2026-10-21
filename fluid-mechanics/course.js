@@ -98,8 +98,7 @@ SB.registerCourse({
      "tags": [
       "Π 정리",
       "모형 실험"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -276,9 +275,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "dimensional-analysis": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
   }
  },
- "published": 6,
+ "published": 7,
  "total": 14,
  "url": "https://science.euiyun.com/fluid-mechanics/"
 });
