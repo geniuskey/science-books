@@ -125,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "변위 전류",
       "포인팅 벡터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "plane-waves",
@@ -137,8 +136,7 @@ SB.registerCourse({
      "tags": [
       "표피 깊이",
       "편광"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "reflection",
@@ -149,8 +147,7 @@ SB.registerCourse({
      "tags": [
       "프레넬 식",
       "박막"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -166,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "특성 임피던스",
       "스미스 차트"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "signal-integrity",
@@ -178,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "TDR",
       "누화"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "waveguides",
@@ -190,8 +185,7 @@ SB.registerCourse({
      "tags": [
       "TE·TM 모드",
       "차단 주파수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "radiation",
@@ -202,8 +196,7 @@ SB.registerCourse({
      "tags": [
       "복사 패턴",
       "EMI"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -219,8 +212,7 @@ SB.registerCourse({
      "tags": [
       "FDTD",
       "유한 요소"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -237,8 +229,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "데이터"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -351,9 +342,117 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 3,
    "hero": 1
+  },
+  "maxwell-equations": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "plane-waves": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 5,
+   "figures": 10,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "reflection": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "transmission-lines": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "signal-integrity": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 8,
+   "drills": 2,
+   "minis": 3,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "waveguides": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "radiation": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 10,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "computational-em": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 6,
+   "figures": 13,
+   "drills": 2,
+   "minis": 7,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "formulas-data": {
+   "problems": 12,
+   "examples": 0,
+   "sims": 9,
+   "figures": 0,
+   "drills": 1,
+   "minis": 0,
+   "tangles": 4,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 8,
+ "published": 17,
  "total": 18,
  "url": "https://science.euiyun.com/electromagnetics/"
 });

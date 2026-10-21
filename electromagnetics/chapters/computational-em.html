@@ -1,0 +1,1695 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>수치 전자기학 · 전자기학 · SciBook</title>
+<meta name="description" content="유한 차분법의 수렴 차수와 리처드슨 외삽, 유한 요소법의 약형식과 갤러킨 방법, FDTD의 이 격자·쿠랑 조건·수치 분산·흡수 경계(PML), 모멘트 법의 정전 용량 추출, RCWA를 직접 돌려 보며 TCAD·기생 추출·리소그래피 시뮬레이터의 속을 들여다본다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/electromagnetics/chapters/computational-em.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="수치 전자기학 · 전자기학 · SciBook">
+<meta property="og:description" content="유한 차분법의 수렴 차수와 리처드슨 외삽, 유한 요소법의 약형식과 갤러킨 방법, FDTD의 이 격자·쿠랑 조건·수치 분산·흡수 경계(PML), 모멘트 법의 정전 용량 추출, RCWA를 직접 돌려 보며 TCAD·기생 추출·리소그래피 시뮬레이터의 속을 들여다본다.">
+<meta property="og:url" content="https://science.euiyun.com/electromagnetics/chapters/computational-em.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "수치 전자기학 · 전자기학 · SciBook", "headline": "16 수치 전자기학", "url": "https://science.euiyun.com/electromagnetics/chapters/computational-em.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "유한 차분법의 수렴 차수와 리처드슨 외삽, 유한 요소법의 약형식과 갤러킨 방법, FDTD의 이 격자·쿠랑 조건·수치 분산·흡수 경계(PML), 모멘트 법의 정전 용량 추출, RCWA를 직접 돌려 보며 TCAD·기생 추출·리소그래피 시뮬레이터의 속을 들여다본다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 16, "dateModified": "2026-10-22", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/electromagnetics/#book", "name": "전자기학", "url": "https://science.euiyun.com/electromagnetics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "전자기학", "item": "https://science.euiyun.com/electromagnetics/"}, {"@type": "ListItem", "position": 3, "name": "16 수치 전자기학", "item": "https://science.euiyun.com/electromagnetics/chapters/computational-em.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/em.js"></script>
+<style>
+  .cem-legend { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; color:var(--text-dim); margin-top:4px; }
+  .cem-legend i { display:inline-block; width:14px; height:3px; vertical-align:middle; margin-right:5px; border-radius:2px; }
+</style>
+</head>
+<body data-chapter="computational-em">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="boundary-value maxwell-equations">
+    <div class="eyebrow">Chapter 16</div>
+    <h1>수치 전자기학</h1>
+    <p class="lead">맥스웰 방정식은 네 줄이지만, 손으로 풀리는 문제는 평면·원통·구처럼 대칭이 좋은 경우뿐이다. 트랜지스터 단면의 전위, 배선 묶음의 기생 용량, 포토레지스트 격자에서 튀어나오는 회절광, 이미지 센서 픽셀 속의 빛은 모두 컴퓨터가 푼다. 이 장은 그 컴퓨터 속을 연다. 공간을 격자로 자르는 유한 차분법과 그 오차가 줄어드는 속도, 삼각형 조각으로 복잡한 모양을 덮는 유한 요소법, 시간을 한 걸음씩 밀고 가는 FDTD와 그 안정 조건, 도체 표면의 전하만 미지수로 삼는 모멘트 법, 주기 구조를 푸리에 차수로 푸는 RCWA다. 어떤 방법이든 결과를 믿으려면 "격자를 바꿔도 답이 그대로인가"를 물어야 한다. 먼저 아래 상자에 벽을 칠해 보자. 화면 속 파동은 이 장에서 만들 FDTD가 매 순간 계산한 것이다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">벽을 칠하고, 흰 원(광원)을 끌어 보세요</span></div>
+    <ul class="objectives">
+      <li>잘림 오차와 수렴 차수를 정의하고, 로그–로그 그래프의 기울기와 리처드슨 외삽으로 격자 수렴을 검사한다. 유전율 계면·날카로운 전하·모서리 특이성이 차수를 떨어뜨리는 이유를 설명한다.</li>
+      <li>약형식과 모자 함수로 유한 요소법의 갤러킨 방정식 \(\mathbf K\mathbf V = \mathbf F\)를 세우고, 요소 강성 행렬을 조립하며, 에너지 원리로 정전 용량이 위에서 수렴하는 이유를 말한다.</li>
+      <li>이(Yee) 격자와 도약 개구리 방식으로 FDTD 갱신식을 유도하고, 쿠랑 조건 \(\Delta t \le 1/(c\sqrt{\Delta x^{-2}+\Delta y^{-2}+\Delta z^{-2}})\)과 수치 분산 관계를 계산한다.</li>
+      <li>무르 흡수 경계와 완전 정합층(PML)의 원리를 비교하고, PML 반사 \(R(\theta) = \exp[-2\sigma_{max}d\cos\theta/((m+1)\varepsilon_0c)]\)와 이산화 반사의 맞바꿈을 설명한다.</li>
+      <li>모멘트 법으로 도체 띠의 전하 분포와 정전 용량을 구하고, 가장자리 특이성 때문에 균일 분할이 느리게 수렴하는 이유와 해결책을 말한다.</li>
+      <li>플로케 정리와 격자 방정식으로 회절 차수를 세고, RCWA가 주기 구조의 반사 스펙트럼을 계산하는 과정과 수렴 조건을 설명한다(OCD 산란 계측).</li>
+      <li>FDM·FEM·FDTD·MoM·RCWA의 계산량과 쓰임새를 비교해 문제에 맞는 방법을 고르고, 결과를 검증하는 습관을 익힌다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="fdm">
+    <h2>유한 차분법과 수렴</h2>
+    <p><a href="boundary-value.html">4장</a>에서 라플라스 방정식을 5점 공식으로 바꾸고 SOR로 풀었다. 그때 묻지 않은 질문이 있다. <b>그 답은 얼마나 맞는가?</b> 격자에서 얻은 전위는 연속 방정식의 해가 아니라 "격자판 방정식"의 해다. 두 해의 차이가 <span class="term">이산화 오차</span><span class="en">(discretization error)</span>이고, 그 근원은 미분을 차분으로 바꿀 때 버린 테일러 급수의 꼬리, 곧 <span class="term">잘림 오차</span><span class="en">(truncation error)</span>다.</p>
+    <div class="formula">$$\frac{V_{i+1}-2V_i+V_{i-1}}{h^2} = V''(x_i) + \underbrace{\frac{h^2}{12}V''''(x_i) + O(h^4)}_{\text{잘림 오차}}$$<div class="where">중앙 차분의 잘림 오차는 \(h^2\)에 비례한다. 차분식이 \(h\to0\)에서 원래 방정식으로 돌아가고(일관성), 반복 계산에서 오차가 불어나지 않으면(안정성) 해가 수렴한다 — 선형 문제에서 "일관성 + 안정성 = 수렴"이라는 이 원리를 <span class="term">락스 동치 정리</span><span class="en">(Lax equivalence theorem)</span>라 한다.</div></div>
+    <p>오차가 \(e(h) \approx Kh^p\)로 줄면 \(p\)를 <span class="term">수렴 차수</span><span class="en">(order of convergence)</span>라 한다. 양변에 로그를 취하면 \(\log e = \log K + p\log h\), 곧 로그–로그 그래프에서 기울기 \(p\)인 직선이다. 격자를 반으로 줄이면 2차 방법의 오차는 1/4, 1차 방법은 1/2이 된다. 정확한 답을 모를 때도 세 격자의 결과만으로 차수와 극한값을 어림할 수 있다.</p>
+    <div class="formula">$$p \approx \log_2\frac{u_h - u_{h/2}}{u_{h/2} - u_{h/4}},\qquad u^{*} \approx u_{h/2} + \frac{u_{h/2} - u_{h}}{2^p - 1}$$<div class="where">\(u_h\)는 격자 간격 \(h\)에서 얻은 어떤 값(한 점의 전위, 정전 용량 등). 둘째 식이 <span class="term">리처드슨 외삽</span><span class="en">(Richardson extrapolation)</span>이다. 오차의 첫 항 \(Kh^p\)를 지워 한 단계 높은 정확도를 공짜로 얻는다. 단, 세 격자 모두 오차가 \(Kh^p\)로 줄어드는 "점근 영역"에 들어와 있어야 한다.</div></div>
+    <p>교과서의 2차 수렴은 해가 매끈할 때의 이야기다. 실제 소자에서는 세 가지가 차수를 깎는다. ① 유전율이 뛰는 계면(산화막–실리콘)이 격자점 사이에 떨어질 때, ② 격자보다 좁은 전하 분포(얕은 접합, 반전층)를 아직 해상하지 못할 때, ③ 도체 모서리처럼 장이 무한대로 가는 <span class="term">특이점</span><span class="en">(singularity)</span>이 있을 때다. 아래 실험실에서 세 경우를 차례로 보자.</p>
+    <div class="sim" id="sim-conv">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>격자 수렴 실험실: 기울기를 읽어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-cv-prof"></canvas></div><div style="position:relative"><canvas id="cv-cv-err"></canvas><span class="hint top">흰 원을 끌어 격자 수를 바꾼다</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>문제</span><div class="seg" id="cv-prob"><button data-value="smooth" class="on">매끈한 전하</button><button data-value="iface">유전체 계면</button><button data-value="sharp">얇은 전하층</button></div></div>
+          <div class="ctrl"><span>계면 유전율 처리</span><div class="seg" id="cv-avg"><button data-value="arith" class="on">노드 산술 평균</button><button data-value="harm">셀 조화 평균</button></div></div>
+          <label class="ctrl"><span>칸 수 N <output id="cv-n-out"></output></span><input type="range" id="cv-n" min="2" max="11" step="0.5" value="4"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">h = 1/N</span><span class="v" id="cv-h">—</span></div>
+        <div class="stat"><span class="k">최대 오차</span><span class="v" id="cv-e">—</span></div>
+        <div class="stat"><span class="k">국소 차수 log₂(e<sub>N</sub>/e<sub>2N</sub>)</span><span class="v" id="cv-p">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="cv-goal">—</span></div>
+      </div>
+      <div class="sim-note">1차원 푸아송 문제 \(\frac{d}{dx}(\varepsilon_r\frac{dV}{dx}) = -f(x)\)를 3점 차분으로 풀고 정확한 해와 비교한다. 위: 정확한 해(선)와 격자 해(점). 아래: 격자 간격에 따른 최대 오차, 점선은 기울기 1과 2의 기준선이다. 해볼 것: ① 매끈한 전하에서 기울기가 정확히 2인지 확인하라. ② 유전체 계면(산화막 3.9 | 실리콘 11.7)을 끌어 격자점 사이에 두면 오차가 들쭉날쭉 1차로 떨어진다. 도전: 처리 방식을 바꿔 오차를 10⁻¹⁰ 아래로 만들어라. ③ 얇은 전하층은 h가 층 두께보다 작아질 때까지 오차가 줄지 않다가 그다음에야 2차로 떨어진다.</div>
+    </div>
+    <p>계면 문제에서 조화 평균이 반올림 오차 수준의 답을 내는 것은 우연이 아니다. 전하가 없는 1차원 층에서는 \(D = \varepsilon E\)가 일정하므로, 한 칸 안의 전위차는 두 층의 "직렬 축전기"로 정확히 나뉜다. 셀의 실효 유전율이 두께로 가중한 조화 평균 \(h/(h_1/\varepsilon_1 + h_2/\varepsilon_2)\)이면 차분식이 정확해진다. 2차원·3차원에서는 계면을 격자선에 맞추고(TCAD 격자가 계면을 따라 깔리는 이유), 셀 경계를 지나는 선속을 적분하는 <span class="term">유한 체적법</span><span class="en">(finite volume method)</span>으로 같은 효과를 얻는다.</p>
+    <p>세 번째 적, 모서리 특이점은 격자를 아무리 촘촘히 해도 없어지지 않는다. 도체 바깥에서 쐐기 모양 영역의 바깥각이 \(\beta\)이면 모서리 근처 전위는 다음 꼴이다(<a href="boundary-value.html">4장</a>의 원통 좌표 변수 분리).</p>
+    <div class="formula">$$V \approx A\,r^{\nu}\sin\nu\phi,\qquad \nu = \frac{\pi}{\beta},\qquad |\mathbf E| \propto r^{\nu-1}$$<div class="where">평평한 면(\(\beta = 180°\))은 \(\nu = 1\)로 장이 유한하다. 사각 도체의 모서리(\(\beta = 270°\))는 \(\nu = 2/3\), \(|\mathbf E| \propto r^{-1/3}\)으로 발산하고, 얇은 띠의 끝(\(\beta = 360°\))은 \(r^{-1/2}\)이다. 균일 격자로 정전 용량을 구하면 오차 차수가 2에서 약 \(2\nu\)로 떨어진다(사각 동축선에서 실측 1.35, 이론 4/3).</div></div>
+    <figure class="mini" id="mini-corner">
+      <div class="mini-view"><canvas id="cv-corner"></canvas></div>
+      <div class="mini-ctrl"><label class="check"><input type="checkbox" id="cn-mesh" checked> 적응 격자 보기</label><span class="readout" id="cn-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>회색은 도체, 색은 전위 \(r^{\nu}\sin\nu\phi\), 점선은 등전위선이다. 흰 원을 끌어 도체의 한쪽 면을 돌리면 바깥각 \(\beta\)가 바뀐다. 모서리가 뾰족해질수록(β → 360°) 등전위선이 모서리에 몰리고, 적응 격자는 그곳에 칸을 몰아준다.</figcaption>
+    </figure>
+    <p>해결책은 필요한 곳에만 격자를 촘촘히 까는 것이다. 균일 격자로 모서리 근처를 \(h\)만큼 해상하려면 칸 수가 \((L/h)^d\)로 불어나지만, 모서리 쪽으로 칸을 기하급수적으로 줄이는 격자나 사각형을 넷으로 계속 쪼개는 쿼드트리 격자는 칸 수를 \(\log(L/h)\) 정도만 늘린다. 계산한 해로 칸마다 오차를 어림해(사후 오차 추정) 큰 곳만 다시 쪼개는 것을 <span class="term">적응 격자 세분</span><span class="en">(adaptive mesh refinement)</span>이라 한다.</p>
+    <div class="example" data-title="사각 동축선의 리처드슨 외삽">
+      <p>바깥 도체가 한 변 2, 안쪽 도체가 한 변 1인 사각 동축선의 단위 길이 정전 용량을 5점 차분으로 풀었다. 단위 길이당 칸 수 \(M\) = 32, 64, 128에서 \(C/\varepsilon_0\) = 10.2684, 10.2476, 10.2394를 얻었다. 수렴 차수를 어림하고, 외삽값과 공기 중 정전 용량(pF/m)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 세 격자 공식으로 \(p\)를 구하고 리처드슨 외삽을 한다.</div>
+        <div class="step"><b>풀이</b> 차이는 \(10.2684 - 10.2476 = 0.0208\), \(10.2476 - 10.2394 = 0.0082\). \(p = \log_2(0.0208/0.0082) = \log_2 2.54 = 1.34\). 외삽: \(C^*/\varepsilon_0 = 10.2394 - 0.0082/(2^{1.34} - 1) = 10.2394 - 0.0082/1.53 = 10.234\). \(C = 10.234\times8.854\times10^{-12} = 90.6\) pF/m.</div>
+        <div class="answer">\(p \approx 1.34\), \(C^*/\varepsilon_0 \approx 10.234\), \(C \approx 90.6\) pF/m</div>
+        <div class="step"><b>검토</b> 차수가 2가 아니라 4/3 근처인 것은 안쪽 도체의 네 모서리(\(\beta = 270°\)) 때문이다. 값이 위에서 아래로 줄어드는 것도 눈여겨보라 — 다음 절에서 이것이 에너지 원리의 결과임을 본다. 2를 가정해 외삽했다면 10.2367로 너무 덜 깎았을 것이다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-rich">
+      <p>한 변 <span class="tn" data-var="n0" data-min="10" data-max="200" data-step="10">50</span>칸 격자의 오차가 <span class="tn" data-var="e0" data-min="0.5" data-max="10" data-step="0.5" data-unit="%">1.0</span>일 때, 오차를 <span class="tn" data-var="et" data-min="0.01" data-max="1" data-step="0.01" data-unit="%">0.10</span>로 줄이려면 수렴 차수 <span class="tn" data-var="p" data-min="1" data-max="4" data-step="0.5">2.0</span>인 방법은 한 변 <span class="tn-out" data-out="n"></span>칸이 필요하다. 3차원이면 미지수가 <span class="tn-out" data-out="m3"></span>배(<span class="tn-out" data-out="u3"></span>개), 2차원이면 <span class="tn-out" data-out="m2"></span>배다. 같은 목표를 1차 방법으로 이루려면 3차원 미지수가 <span class="tn-out" data-out="m1"></span>배 늘어야 한다.</p>
+    </div>
+    <p>미지수가 수백만 개가 되면 SOR로도 느리다. 실무 풀이기는 세 갈래다. 행렬 구조를 이용해 채움(fill-in)을 줄인 <b>희소 직접법</b>(띠 LU, 중첩 해부 순서), 대칭 양의 정부호 행렬에 쓰는 <span class="term">켤레 기울기법</span><span class="en">(conjugate gradient, CG)</span>과 그 변형(BiCGSTAB, GMRES)에 전처리(ILU)를 붙인 반복법, 그리고 거친 격자에서 긴 파장 오차를 지우고 고운 격자로 돌아오는 <span class="term">다중 격자법</span><span class="en">(multigrid method)</span>이다. 다중 격자법은 미지수 \(N\)에 비례하는 일만으로 푼다 — 4장의 이완법이 느렸던 원인(긴 파장 오차)을 정면으로 겨냥한 것이다.</p>
+    <div class="callout semi"><strong>TCAD 결과를 믿기 전에: 격자 수렴</strong><p>TCAD 소자 시뮬레이터는 이 절의 푸아송 방정식에 전자·정공 연속 방정식을 묶어, 유한 체적(박스) 이산화와 뉴턴 반복으로 푼다. 접합·게이트 산화막 계면·채널 표면처럼 장과 농도가 급히 변하는 곳은 nm 이하로, 기판 깊은 곳은 µm 단위로 격자를 깐다. 문턱 전압·포화 전류 같은 출력값을 격자를 두 배로 바꿔 다시 계산해 몇 mV·몇 % 안에서 변하지 않는지 확인하는 것이 격자 수렴 검사다. 산화막–실리콘 계면을 격자선에 맞추는 것, 모서리(STI·게이트 끝)에 격자를 몰아주는 것이 이 절의 교훈 그대로다. → <a href="https://semi.euiyun.com/tcad/chapters/mesh.html">TCADBook · 격자와 이산화</a> · <a href="https://semi.euiyun.com/tcad/chapters/equations.html">TCADBook · 기본 방정식: 포아송과 연속 방정식</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fem">
+    <h2>유한 요소법의 생각</h2>
+    <p>유한 차분법은 격자점에서 미분 방정식을 "맞추려" 한다. 그러려면 격자가 사각형이어야 편하고, 휘어진 경계나 비스듬한 계면은 계단으로 근사된다. <span class="term">유한 요소법</span><span class="en">(finite element method, FEM)</span>은 질문을 바꾼다. 영역을 삼각형(3차원은 사면체) <b>요소</b>로 덮고, 해를 각 요소 위에서 간단한 다항식으로 근사한 뒤, 방정식을 점이 아니라 <b>평균의 의미로</b> 만족시킨다.</p>
+    <p>푸아송 방정식 \(-\nabla\cdot(\varepsilon\nabla V) = \rho\)에 경계에서 0이 되는 아무 함수 \(w\)를 곱해 영역 전체에서 적분하고, 부분 적분(발산 정리)으로 미분 하나를 \(w\)로 넘긴다.</p>
+    <div class="formula">$$\int_\Omega \varepsilon\,\nabla V\cdot\nabla w\,dA = \int_\Omega \rho\,w\,dA \qquad \text{모든 } w \text{에 대해}$$<div class="where">이것이 <span class="term">약형식</span><span class="en">(weak form)</span>이고 \(w\)를 <span class="term">시험 함수</span><span class="en">(test function)</span>라 한다. 2계 미분이 1계 미분 두 개로 나뉘었으므로 \(V\)가 꺾여 있어도(조각마다 1차 함수여도) 된다. 경계 적분 \(\oint\varepsilon w\,\partial V/\partial n\)은 노이만 경계에서 저절로 0이 되어 따로 처리할 필요가 없고(자연 경계 조건), 유전율이 뛰는 계면에서 \(D_n\) 연속도 저절로 만족된다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 290" role="img" aria-label="1차원 유한 요소의 모자 함수와 갤러킨 방법">
+        <line x1="60" y1="230" x2="740" y2="230" class="s-axis" stroke="var(--axis)" stroke-width="1.5"/>
+        <g fill="var(--text)"><circle cx="60" cy="230" r="5"/><circle cx="160" cy="230" r="5"/><circle cx="300" cy="230" r="5"/><circle cx="390" cy="230" r="5"/><circle cx="470" cy="230" r="5"/><circle cx="600" cy="230" r="5"/><circle cx="740" cy="230" r="5"/></g>
+        <g class="t-dim" style="font-size:12px" text-anchor="middle"><text x="60" y="252">x₀</text><text x="160" y="252">x₁</text><text x="300" y="252">x₂</text><text x="390" y="252">x₃</text><text x="470" y="252">x₄</text><text x="600" y="252">x₅</text><text x="740" y="252">x₆</text></g>
+        <g class="t-dim" style="font-size:11px" text-anchor="middle"><text x="110" y="272">요소 1</text><text x="230" y="272">요소 2</text><text x="345" y="272">3</text><text x="430" y="272">4</text><text x="535" y="272">요소 5</text><text x="670" y="272">요소 6</text></g>
+        <g data-only="2">
+          <path d="M300,230 L390,90 L470,230" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="3"/>
+          <text x="390" y="78" text-anchor="middle" class="t" style="fill:var(--accent);font-weight:700">φ₃(x)</text>
+          <text x="560" y="110" class="t">x₃에서 1, 다른 노드에서 0</text>
+          <text x="560" y="132" class="t-dim">이웃 두 요소에서만 0이 아니다</text>
+        </g>
+        <g data-step="3">
+          <g fill="none" stroke="var(--accent-2)" stroke-width="1.4" stroke-dasharray="4 3" opacity=".8">
+            <path d="M60,230 L160,170 L300,230"/><path d="M160,230 L300,120 L390,230"/><path d="M300,230 L390,100 L470,230"/><path d="M390,230 L470,140 L600,230"/><path d="M470,230 L600,200 L740,230"/>
+          </g>
+          <path d="M60,230 L160,170 L300,120 L390,100 L470,140 L600,200 L740,230" fill="none" stroke="var(--accent)" stroke-width="3.2"/>
+          <text x="410" y="88" class="t" style="fill:var(--accent);font-weight:700">V<tspan baseline-shift="sub" style="font-size:10px">h</tspan> = Σ V<tspan baseline-shift="sub" style="font-size:10px">j</tspan> φ<tspan baseline-shift="sub" style="font-size:10px">j</tspan>(x)</text>
+          <text x="80" y="100" class="t-dim">점선: 각 모자 함수 × 노드 값</text>
+        </g>
+        <g data-step="4">
+          <rect x="470" y="14" width="310" height="62" rx="6" fill="var(--bg-elev)" stroke="var(--border)"/>
+          <text x="484" y="38" class="t" style="font-weight:700">요소 e 의 강성 행렬 (길이 h<tspan baseline-shift="sub" style="font-size:10px">e</tspan>)</text>
+          <text x="484" y="62" class="t t-mono">(ε/h<tspan baseline-shift="sub" style="font-size:10px">e</tspan>) [ 1  −1 ; −1  1 ]</text>
+          <text x="60" y="30" class="t" style="fill:var(--accent);font-weight:700">w = φ<tspan baseline-shift="sub" style="font-size:10px">i</tspan> 로 시험 → 방정식 i 번째 줄</text>
+          <text x="60" y="52" class="t">요소별 행렬을 노드 번호 자리에 더한다(조립)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>구간을 길이가 제각각인 요소로 나눈다. 필요한 곳(전하가 몰린 곳)은 촘촘히, 나머지는 성기게 둘 수 있다.</li><li>노드 \(x_3\)에서 1이고 다른 노드에서 0인 조각별 1차 함수가 <span class="term">모자 함수</span><span class="en">(hat function)</span> \(\varphi_3\)이다. 모자 함수들이 <span class="term">기저 함수</span><span class="en">(basis function)</span>가 된다.</li><li>근사해 \(V_h = \sum_jV_j\varphi_j\)는 노드 값을 꺾은선으로 이은 것이다. 미지수는 노드 값 \(V_j\)뿐이다.</li><li>시험 함수로 기저 함수 자신 \(w = \varphi_i\)를 쓰는 것이 <span class="term">갤러킨 방법</span><span class="en">(Galerkin method)</span>이다. 요소 하나의 기여는 2×2 행렬이고, 이것들을 노드 자리에 더하면 \(\mathbf K\mathbf V = \mathbf F\)가 된다.</li></ol>
+      <figcaption>1차원 선형 요소. 모자 함수는 이웃 요소에서만 겹치므로 행렬 \(\mathbf K\)는 삼중 대각(2차원에서는 이웃 노드 수만큼만 0이 아닌 희소 행렬)이다.</figcaption>
+    </figure>
+    <div class="formula">$$K_{ij} = \int_\Omega\varepsilon\,\nabla\varphi_i\cdot\nabla\varphi_j\,dA,\qquad F_i = \int_\Omega\rho\,\varphi_i\,dA,\qquad K^{(e)}_{ij} = \frac{\varepsilon}{4A_e}\,(b_ib_j + c_ic_j)$$<div class="where">\(\mathbf K\)를 <span class="term">강성 행렬</span><span class="en">(stiffness matrix)</span>이라 한다(구조 역학에서 온 이름). 마지막 식은 2차원 삼각형 요소(넓이 \(A_e\), 꼭짓점 \((x_k, y_k)\))의 요소 행렬로, \(b_1 = y_2 - y_3\), \(c_1 = x_3 - x_2\)처럼 꼭짓점 번호를 돌려 가며 정한다. 1차원 균일 격자에서 \(\mathbf K\)의 한 줄은 \((\varepsilon/h)(-1, 2, -1)\)로 3점 차분과 똑같다.</div></div>
+    <p>FEM에는 또 하나의 얼굴이 있다. 위 갤러킨 방정식은 정전 에너지 범함수 \(\mathcal W[V] = \int(\tfrac12\varepsilon|\nabla V|^2 - \rho V)\,dA\)를 꺾은선 함수들 가운데서 최소로 만드는 조건과 같다(<span class="term">변분 원리</span><span class="en">(variational principle)</span>). 도체 전위가 정해진 문제에서 참 해는 에너지가 가장 작은 함수이므로, 제한된 함수 공간에서 찾은 FEM 해의 에너지는 참값보다 <b>작아질 수 없다</b>. 따라서 \(C = 2W/V^2\)로 구한 정전 용량은 언제나 참값 이상이고, 격자를 다듬으면 위에서 아래로 수렴한다. 앞 절 사각 동축선의 숫자가 줄어든 것과 같은 이유다.</p>
+    <div class="sim" id="sim-fem1d">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>노드를 옮겨라: 8개 요소로 오차 10% 아래</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-fem1d"></canvas><span class="hint top">아래 흰 원(노드)을 좌우로 끈다</span></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>요소 수</span><div class="seg" id="fe-n"><button data-value="4">4</button><button data-value="8" class="on">8</button><button data-value="16">16</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="fe-uni" type="button">균일 배치</button><button class="btn primary" id="fe-auto" type="button">자동 배치</button></div>
+          <label class="check"><input type="checkbox" id="fe-hat" checked> 모자 함수 × 노드 값 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">에너지 노름 오차</span><span class="v" id="fe-e">—</span></div>
+        <div class="stat"><span class="k">같은 수의 균일 요소</span><span class="v" id="fe-eu">—</span></div>
+        <div class="stat"><span class="k">노드 값 최대 오차</span><span class="v" id="fe-en">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="fe-goal">—</span></div>
+      </div>
+      <div class="sim-note">\(x = 0.3\) 근처에 얇은 전하층이 있는 \(-V'' = \rho/\varepsilon\), 양 끝 접지 문제를 선형 요소로 푼다. 회색 선이 정확한 해, 굵은 선이 FEM 해, 아래 연한 띠가 전하 분포다. 에너지 노름 오차 \(\sqrt{\int(V' - V_h')^2dx\,/\int V'^2dx}\)는 전기장의 오차를 잰다. 해볼 것: ① 노드 값 오차가 늘 거의 0인 것을 확인하라(1차원 선형 요소의 특별한 성질). 그래도 노드 사이의 기울기, 곧 장은 틀린다. ② 도전: 8개 요소로 에너지 오차를 10% 아래로 만들어라(균일 배치는 약 25%). ③ "자동 배치"는 \(\sqrt{|V''|}\)를 고르게 나누도록 노드를 놓는다. 몇 %까지 내려가는가?</div>
+    </div>
+    <p>2차원에서는 삼각형이 진가를 보인다. 아래는 접지면 위 배선 단면을 삼각형 요소로 푼 것이다. 같은 노드 수라도 배선 모서리 쪽으로 요소를 몰아주면 정전 용량이 훨씬 빨리 참값에 다가간다. 두 경우 모두 위에서 내려오는 것을 확인하라.</p>
+    <figure class="mini" id="mini-fem2d">
+      <div class="mini-view"><canvas id="cv-fem2d"></canvas></div>
+      <div class="mini-ctrl"><div class="seg" id="f2-g"><button data-value="0" class="on">균일</button><button data-value="1">모서리 집중</button></div><label class="ctrl"><span>가로 칸 수 <output id="f2-n-out"></output></span><input type="range" id="f2-n" min="8" max="44" step="4" value="16"></label><span class="readout" id="f2-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>SiO₂(\(\varepsilon_r = 3.9\)) 속 폭 100 nm·두께 60 nm 배선이 접지면 위 60 nm에 있다(계산 상자 400 × 300 nm, 옆·위는 노이만). 삼각형마다 전위를 색으로 칠했다. 정전 용량은 \(C = \mathbf V^{\mathsf T}\mathbf K\mathbf V\)(에너지의 두 배)로 구하고, 아주 고운 격자의 외삽값 138.2 aF/µm와 비교한다.</figcaption>
+    </figure>
+    <div class="example" data-title="두 요소로 푸는 MOS 적층">
+      <p>게이트(1 V)–SiO₂ 2 nm(\(\varepsilon_r = 3.9\))–실리콘 10 nm(\(\varepsilon_r = 11.7\))–접지 순서의 1차원 적층을 요소 두 개(층마다 하나)로 푼다. 공간 전하는 무시한다. 계면의 전위, 두 층의 전기장, 단위 넓이 정전 용량을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 노드는 게이트(\(V_0 = 1\)), 계면(\(V_1\)), 바닥(\(V_2 = 0\)). 요소 강성 \(k_e = \varepsilon_e/h_e\)를 조립하면 미지수 하나의 방정식이 된다.</div>
+        <div class="step"><b>풀이</b> \(k_{ox} = 3.9/2 = 1.95\), \(k_{Si} = 11.7/10 = 1.17\) (단위 \(\varepsilon_0\)/nm). 노드 1의 줄: \(k_{ox}(V_1 - V_0) + k_{Si}(V_1 - V_2) = 0\) → \(V_1 = 1.95/(1.95 + 1.17) = 0.625\) V. 장: \(E_{ox} = 0.375/2 = 0.1875\) V/nm, \(E_{Si} = 0.625/10 = 0.0625\) V/nm. \(C = \varepsilon_0/(2/3.9 + 10/11.7)\) nm⁻¹ \(= 6.47\times10^{-3}\ \text{F/m}^2\).</div>
+        <div class="answer">\(V_1 = 0.625\) V, \(E_{ox} = 1.88\) MV/cm, \(E_{Si} = 0.625\) MV/cm, \(C = 6.47\ \text{fF}/\mu\text{m}^2\)</div>
+        <div class="step"><b>검토</b> \(\varepsilon_{ox}E_{ox} = 3.9\times0.1875 = 0.731 = 11.7\times0.0625\) — \(D_n\)이 연속이다. 요소 강성이 "\(\varepsilon/h\)"인 것은 층 하나가 단위 넓이 축전기라는 뜻이고, 조립은 직렬 연결이다. 계면이 노드 위에 있으면 FEM은 조화 평균을 따로 신경 쓸 필요 없이 정확하다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>파동 문제의 FEM: 모서리 요소</strong><p>정전기에서는 스칼라 \(V\)를 노드에 두면 되지만, 시간 조화 맥스웰 방정식 \(\nabla\times\mu^{-1}\nabla\times\mathbf E - \omega^2\varepsilon\mathbf E = -j\omega\mathbf J\)를 노드 기반 벡터 요소로 풀면 물리적이지 않은 "가짜 모드"가 섞인다. 접선 성분만 요소 사이에서 연속인 <span class="term">모서리 요소</span><span class="en">(edge element, Nédélec element)</span>를 쓰면 \(\mathbf E\)의 접선 연속과 \(\nabla\cdot\mathbf D = 0\)이 자연스럽게 맞아 이 문제가 사라진다. 패키지·안테나·도파관 해석용 상용 3D 주파수 영역 해석기가 이 방식이다. 미지수가 요소의 모서리에 산다는 점에서 다음 절 이 격자와 사촌이다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fdtd">
+    <h2>FDTD: 이 격자와 쿠랑 조건</h2>
+    <p>지금까지는 정적인 문제였다. 펄스가 배선을 지나가고 빛이 격자에 부딪히는 과정을 보려면 시간까지 격자로 자른다. <span class="term">유한 차분 시간 영역법</span><span class="en">(finite-difference time-domain, FDTD)</span>은 맥스웰의 두 회전 방정식을 그대로 차분하여, 장을 한 걸음씩 시간 앞으로 밀고 간다. 행렬을 풀 필요가 없다. 1차원(\(x\)로 진행, \(E_z\)·\(H_y\))에서 시작하자.</p>
+    <div class="formula">$$\frac{\partial H_y}{\partial t} = \frac1\mu\frac{\partial E_z}{\partial x},\qquad \frac{\partial E_z}{\partial t} = \frac1\varepsilon\frac{\partial H_y}{\partial x}$$<div class="where">패러데이 법칙 \(\nabla\times\mathbf E = -\mu\,\partial\mathbf H/\partial t\)와 앙페르–맥스웰 법칙 \(\nabla\times\mathbf H = \varepsilon\,\partial\mathbf E/\partial t\)의 \(y\), \(z\) 성분이다(<a href="maxwell-equations.html">9장</a>). \(+x\)로 가는 파동은 \(H_y = -E_z/\eta\)이다.</div></div>
+    <p>핵심 아이디어는 1966년 케인 이(Kane Yee)가 냈다. \(E\)와 \(H\)를 같은 점·같은 시각에 두지 않고, 공간으로 반 칸, 시간으로 반 걸음 엇갈려 놓는다. 그러면 모든 미분이 자동으로 2차 정확도의 중앙 차분이 된다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 290" role="img" aria-label="FDTD 도약 개구리 갱신">
+        <g class="t-dim" style="font-size:12px"><text x="20" y="62">t = (n+1)Δt</text><text x="20" y="152">t = (n+½)Δt</text><text x="20" y="242">t = nΔt</text></g>
+        <g stroke="var(--grid)" stroke-width="1"><line x1="120" y1="58" x2="780" y2="58"/><line x1="120" y1="148" x2="780" y2="148"/><line x1="120" y1="238" x2="780" y2="238"/></g>
+        <g fill="var(--accent)"><circle cx="180" cy="238" r="9"/><circle cx="330" cy="238" r="9"/><circle cx="480" cy="238" r="9"/><circle cx="630" cy="238" r="9"/></g>
+        <g fill="var(--accent-2)"><rect x="246" y="139" width="18" height="18"/><rect x="396" y="139" width="18" height="18"/><rect x="546" y="139" width="18" height="18"/><rect x="696" y="139" width="18" height="18"/></g>
+        <g class="t" style="font-size:13px" text-anchor="middle"><text x="180" y="272">E<tspan baseline-shift="sub" style="font-size:10px">i−1</tspan></text><text x="330" y="272">E<tspan baseline-shift="sub" style="font-size:10px">i</tspan></text><text x="480" y="272">E<tspan baseline-shift="sub" style="font-size:10px">i+1</tspan></text><text x="630" y="272">E<tspan baseline-shift="sub" style="font-size:10px">i+2</tspan></text><text x="255" y="130">H<tspan baseline-shift="sub" style="font-size:10px">i−½</tspan></text><text x="405" y="130">H<tspan baseline-shift="sub" style="font-size:10px">i+½</tspan></text><text x="555" y="130">H<tspan baseline-shift="sub" style="font-size:10px">i+3/2</tspan></text></g>
+        <g data-step="2">
+          <g stroke="var(--accent-2)" stroke-width="2.4" fill="none"><line x1="336" y1="230" x2="398" y2="160"/><line x1="474" y1="230" x2="412" y2="160"/></g>
+          <polygon points="398,160 388,163 395,170" fill="var(--accent-2)"/><polygon points="412,160 415,170 422,163" fill="var(--accent-2)"/>
+          <text x="560" y="196" class="t" style="fill:var(--accent-2);font-weight:700">H 갱신: 양옆 E의 차이(∂E/∂x)</text>
+        </g>
+        <g data-step="3">
+          <g fill="var(--accent)" opacity=".9"><circle cx="330" cy="58" r="9"/><circle cx="480" cy="58" r="9"/></g>
+          <g stroke="var(--accent)" stroke-width="2.4" fill="none"><line x1="260" y1="140" x2="324" y2="68"/><line x1="400" y1="140" x2="336" y2="68"/></g>
+          <polygon points="324,68 314,72 322,78" fill="var(--accent)"/><polygon points="336,68 338,78 346,72" fill="var(--accent)"/>
+          <line x1="330" y1="228" x2="330" y2="70" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <text x="520" y="40" class="t" style="fill:var(--accent);font-weight:700">E 갱신: 옛 E + 양옆 H의 차이</text>
+          <text x="520" y="88" class="t-dim">그다음 다시 H … 서로 뛰어넘는다</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>\(E\)(원)는 정수 격자점·정수 시각에, \(H\)(네모)는 반 칸 떨어진 점·반 걸음 시각에 산다.</li><li>\(H^{n+1/2}_{i+1/2}\)는 옛 값 \(H^{n-1/2}\)에 양옆 \(E^n_{i+1} - E^n_i\)를 더해 구한다. 차분의 중심이 정확히 \(H\)의 자리다.</li><li>\(E^{n+1}_i\)는 옛 값 \(E^n_i\)에 양옆 \(H^{n+1/2}_{i+1/2} - H^{n+1/2}_{i-1/2}\)를 더한다. 두 장이 개구리처럼 서로를 뛰어넘으며 나아간다(<span class="term">도약 개구리 방식</span><span class="en">(leapfrog scheme)</span>).</li></ol>
+      <figcaption>시간–공간 엇갈림. 각 갱신은 이웃 두 값만 쓰므로 계산량은 격자 칸 수 × 걸음 수에 비례하고, 연립 방정식을 풀지 않는다(명시적 방법).</figcaption>
+    </figure>
+    <div class="formula">$$H^{n+\frac12}_{i+\frac12} = H^{n-\frac12}_{i+\frac12} + \frac{\Delta t}{\mu\Delta x}\left(E^n_{i+1} - E^n_i\right),\qquad E^{n+1}_i = E^n_i + \frac{\Delta t}{\varepsilon\Delta x}\left(H^{n+\frac12}_{i+\frac12} - H^{n+\frac12}_{i-\frac12}\right)$$<div class="where">장을 \(\eta_0H\)로 바꿔 쓰면 두 계수가 모두 <span class="term">쿠랑 수</span><span class="en">(Courant number)</span> \(S = c\Delta t/\Delta x\)(유전체 속에서는 \(S/\varepsilon_r\))가 된다. 이 책의 <code>EM.fdtd1d</code>·<code>EM.fdtd2d</code>가 이 꼴이다.</div></div>
+    <p>3차원에서는 정육면체 칸의 모서리 가운데에 \(\mathbf E\)의 세 성분을, 면 가운데에 \(\mathbf H\)의 세 성분을 둔다. 이것이 <span class="term">이 격자</span><span class="en">(Yee lattice)</span>다. 면 하나를 둘러싼 네 \(E\)가 그 면의 \(H\)를 바꾸고(패러데이 법칙의 고리), 모서리 하나를 둘러싼 네 \(H\)가 그 모서리의 \(E\)를 바꾼다(앙페르 법칙의 고리). 적분형 맥스웰 방정식을 칸마다 그대로 옮긴 셈이라 \(\nabla\cdot\mathbf B = 0\)과 (전하가 없으면) \(\nabla\cdot\mathbf D = 0\)이 저절로 지켜진다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="이 격자 단위 칸">
+        <defs><marker id="cem-ah-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker><marker id="cem-ah-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent-2)"/></marker></defs>
+        <g stroke="var(--text-dim)" stroke-width="1.5" fill="none">
+          <path d="M120,240 L270,240 L330,195 L330,45 L180,45 L120,90 Z"/><path d="M120,90 L270,90 L270,240"/><path d="M270,90 L330,45"/>
+          <g stroke-dasharray="5 4" opacity=".7"><path d="M120,240 L180,195 L330,195"/><path d="M180,195 L180,45"/></g>
+        </g>
+        <path d="M120,90 L270,90 L270,240 L120,240 Z" fill="var(--accent-2-soft)" opacity=".5"/>
+        <g stroke="var(--accent)" stroke-width="3" marker-end="url(#cem-ah-e)">
+          <line x1="178" y1="90" x2="214" y2="90"/><line x1="178" y1="240" x2="214" y2="240"/>
+          <line x1="120" y1="182" x2="120" y2="148"/><line x1="270" y1="182" x2="270" y2="148"/>
+          <line x1="290" y1="232" x2="312" y2="216"/><line x1="290" y1="82" x2="312" y2="66"/>
+        </g>
+        <g stroke="var(--accent-2)" stroke-width="3" marker-end="url(#cem-ah-h)">
+          <line x1="185" y1="172" x2="208" y2="155"/><line x1="288" y1="142" x2="320" y2="142"/><line x1="226" y1="78" x2="226" y2="48"/>
+        </g>
+        <g class="t" style="font-size:12px;font-weight:700"><text x="188" y="80" style="fill:var(--accent)">Ex</text><text x="96" y="168" style="fill:var(--accent)">Ez</text><text x="276" y="196" style="fill:var(--accent)">Ez</text><text x="316" y="232" style="fill:var(--accent)">Ey</text><text x="212" y="176" style="fill:var(--accent-2)">Hy</text><text x="324" y="138" style="fill:var(--accent-2)">Hx</text><text x="234" y="42" style="fill:var(--accent-2)">Hz</text></g>
+        <g class="t-dim" style="font-size:11px"><text x="270" y="262">x</text><text x="338" y="200">y</text><text x="102" y="86">z</text></g>
+        <g class="t" style="font-size:13px">
+          <text x="400" y="56" style="font-weight:700">이 격자의 약속</text>
+          <text x="400" y="86"><tspan style="fill:var(--accent);font-weight:700">E</tspan>: 칸 모서리의 가운데, 모서리 방향 성분</text>
+          <text x="400" y="112"><tspan style="fill:var(--accent-2);font-weight:700">H</tspan>: 칸 면의 가운데, 면에 수직인 성분</text>
+          <text x="400" y="146">앞면(색칠)의 Hy ← 둘레 Ex·Ez 네 개의 순환</text>
+          <text x="400" y="172" class="t-dim">= 패러데이 법칙 ∮E·dl = −dΦ/dt 그대로</text>
+          <text x="400" y="206">각 E ← 그 모서리를 감싼 H 네 개의 순환</text>
+          <text x="400" y="232" class="t-dim">= 앙페르–맥스웰 법칙 그대로</text>
+        </g>
+      </svg>
+      <figcaption>이 격자의 단위 칸. 전기장 성분은 모서리에, 자기장 성분은 면 가운데에 있어 서로를 고리처럼 감싼다. 도체 경계는 접선 \(E\)를 0으로 두면 되고, 유전체는 칸마다 \(\varepsilon\)을 바꾸면 된다.</figcaption>
+    </figure>
+    <p>시간 간격은 아무렇게나 잡을 수 없다. 갱신식에 평면파 \(e^{j(\omega n\Delta t - \tilde kx)}\)를 넣으면(폰 노이만 분석) 격자 위 파동의 분산 관계가 나온다.</p>
+    <div class="formula">$$\frac{1}{c\Delta t}\sin\frac{\omega\Delta t}{2} = \frac{1}{\Delta x}\sin\frac{\tilde k\Delta x}{2}\quad\Longrightarrow\quad \sin\frac{\omega\Delta t}{2} = S\sin\frac{\tilde k\Delta x}{2}$$<div class="where">격자가 표현하는 가장 짧은 파동(\(\tilde k\Delta x = \pi\), 한 칸마다 부호가 바뀌는 톱니)에서 우변은 \(S\)다. \(S > 1\)이면 \(\sin(\omega\Delta t/2) > 1\)을 만족하는 \(\omega\)가 복소수가 되고, 그 성분은 걸음마다 \(e^{2\cosh^{-1}S}\)배씩 자란다. 따라서 안정 조건(<span class="term">쿠랑 조건</span><span class="en">(Courant–Friedrichs–Lewy condition)</span>)은 다음과 같다.</div></div>
+    <div class="formula">$$\Delta t \le \frac{1}{c\sqrt{\dfrac{1}{\Delta x^2}+\dfrac{1}{\Delta y^2}+\dfrac{1}{\Delta z^2}}}\qquad(\text{균일 격자: } S = c\Delta t/\Delta \le 1,\ 1/\sqrt2,\ 1/\sqrt3\ \text{(1, 2, 3차원)})$$<div class="where">물리적 의미: 한 걸음 동안 빛이 격자의 "정보 전달 거리"보다 멀리 가면 안 된다. 가장 작은 칸이 시간 간격을 정하므로, 한 곳에 아주 작은 칸이 있으면 전체 계산이 느려진다.</div></div>
+    <div class="predict" data-for="sim-fdtd1d">
+      <p>1차원 FDTD에서 쿠랑 수를 \(S = 0.5\)에서 \(S = 1.02\)로, 안정 한계를 2%만 넘게 올리면 어떻게 될까?</p>
+      <div class="opts"><button class="opt">펄스가 2% 빨리 달릴 뿐 문제없다</button><button class="opt">펄스 모양이 조금씩 뭉개지지만 진폭은 유지된다</button><button class="opt" data-correct>한 칸마다 부호가 바뀌는 톱니 잡음이 몇십 걸음 만에 폭발적으로 자란다</button><button class="opt">펄스가 멈춘다</button></div>
+      <div class="quiz-exp">\(S = 1.02\)이면 가장 짧은 파장 성분이 걸음마다 약 \(e^{2\cosh^{-1}1.02} \approx 1.49\)배 자란다. 반올림 오차 수준(\(10^{-16}\))에서 출발해도 100걸음 안에 화면을 덮는다. 2%든 0.1%든 넘으면 끝이다.</div>
+    </div>
+    <div class="sim" id="sim-fdtd1d">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>1차원 FDTD: 유전체 판의 반사를 재라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-fd1"></canvas><span class="hint top">흰 원: 유전체 판의 양 끝</span></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>쿠랑 수 S <output id="fd-s-out"></output></span><input type="range" id="fd-s" min="0.2" max="1.05" step="0.01" value="0.5"></label>
+          <label class="ctrl"><span>판의 비유전율 ε<sub>r</sub> <output id="fd-er-out"></output></span><input type="range" id="fd-er" min="1" max="12" step="0.1" value="4"></label>
+          <div class="ctrl"><span>펄스 폭</span><div class="seg" id="fd-w"><button data-value="12" class="on">넓게 (12칸)</button><button data-value="4">좁게 (4칸)</button></div></div>
+          <div class="ctrl"><span>양 끝 경계</span><div class="seg" id="fd-bc"><button data-value="mur" class="on">무르 흡수</button><button data-value="pec">완전 도체 벽</button></div></div>
+          <div class="ctrl-row"><button class="btn primary" id="fd-play" type="button"></button><button class="btn" id="fd-fire" type="button">다시 쏘기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">걸음 n</span><span class="v" id="fd-t">—</span></div>
+        <div class="stat"><span class="k">안정성</span><span class="v" id="fd-st">—</span></div>
+        <div class="stat"><span class="k">측정 반사 계수 r</span><span class="v" id="fd-r">—</span></div>
+        <div class="stat"><span class="k">프레넬 (1−n)/(1+n)</span><span class="v" id="fd-rf">—</span></div>
+      </div>
+      <div class="sim-note">400칸 1차원 격자. 빨간 선은 \(E_z\), 파란 선은 \(\eta_0H_y\)다. 펄스는 왼쪽 원천(▼)에서 양쪽으로 나가고, 왼쪽 탐침(◆)이 지나가는 입사 펄스와 판에서 돌아온 반사 펄스를 기록해 진폭의 비를 잰다. 해볼 것: ① 측정한 \(r\)을 프레넬 값과 비교하라. 판 속의 칸당 파장 수가 적을수록(ε<sub>r</sub>가 클수록, 펄스가 좁을수록) 어긋난다. ② \(S\)를 1로 올리면 진공 속 펄스가 전혀 퍼지지 않는다(1차원의 "마법 시간 간격"). ③ \(S\)를 1.01로 올려 발산을 보라. 판 속은 국소 쿠랑 수가 \(S/\sqrt{\varepsilon_r}\)이라 안정하지만 진공이 먼저 터진다. ④ 경계를 완전 도체로 바꾸면 펄스가 갇혀 영원히 오간다.</div>
+    </div>
+    <p>안정 조건 아래에서도 격자 위의 파동은 진공의 빛과 다르게 달린다. 분산 관계에서 위상 속도 \(\tilde v_p = \omega/\tilde k\)를 구하면 \(S < 1\)일 때 언제나 \(c\)보다 느리고, 파장당 칸 수 \(N_\lambda = \lambda/\Delta x\)가 적을수록 더 느리다. 이것이 <span class="term">수치 분산</span><span class="en">(numerical dispersion)</span>이다. 2·3차원에서는 진행 방향에 따라서도 속도가 달라진다(격자 축 방향이 가장 느리고 대각선이 가장 빠르다). 짧은 펄스가 퍼지며 꼬리에 잔물결을 남기는 것, 큰 공진기의 공진 주파수가 조금 낮게 나오는 것이 모두 이 때문이다.</p>
+    <figure class="mini" id="mini-disp">
+      <div class="mini-view"><canvas id="cv-disp"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>쿠랑 수 S <output id="ds-s-out"></output></span><input type="range" id="ds-s" min="0.1" max="1" step="0.01" value="0.5"></label><span class="readout" id="ds-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>격자 위 위상 속도 \(\tilde v_p/c\)를 파장당 칸 수 \(N_\lambda\)에 대해 그렸다. 실선은 1차원(또는 2차원 축 방향), 점선은 2차원 대각선 방향이다. 흰 원을 끌어 \(N_\lambda\)를 고르면 100파장을 달린 뒤 쌓이는 위상 오차가 보인다. 흔한 규칙 "파장당 10–20칸"이 어디서 나오는지 읽어 보라.</figcaption>
+    </figure>
+    <div class="example" data-title="쿠랑 조건과 계산 걸음 수">
+      <p>3차원 FDTD로 이미지 센서 픽셀(공기 중)을 계산한다. 균일 격자 \(\Delta = 10\) nm일 때 허용되는 최대 시간 간격과, 100 fs 동안의 걸음 수를 구하라. 한 변 2 µm 정육면체 영역이면 칸 수와 6개 장 성분(단정밀도 4 B)의 메모리는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 균일 3차원 격자에서 \(\Delta t_{max} = \Delta/(c\sqrt3)\).</div>
+        <div class="step"><b>풀이</b> \(\Delta t_{max} = 10^{-8}/(2.998\times10^8\times1.732) = 1.93\times10^{-17}\) s = 19.3 as. 걸음 수 \(= 10^{-13}/1.926\times10^{-17} = 5.19\times10^3\). 칸 수 \((2000/10)^3 = 8.0\times10^6\), 메모리 \(8\times10^6\times6\times4 = 1.9\times10^8\) B ≈ 192 MB.</div>
+        <div class="answer">\(\Delta t \le 19.3\) as, 약 5200걸음, 800만 칸, 약 0.19 GB</div>
+        <div class="step"><b>검토</b> 100 fs 동안 빛은 30 µm를 가므로 2 µm 영역을 열댓 번 오간다 — 공진이 없는 구조라면 충분하다. 격자를 5 nm로 줄이면 칸 수 8배, 걸음 수 2배로 계산량은 16배가 된다(3차원 FDTD의 계산량 \(\propto\Delta^{-4}\)).</div>
+      </details>
+    </div>
+    <div class="example" data-title="파장당 10칸이면 위상이 얼마나 밀리나">
+      <p>1차원 FDTD에서 \(S = 0.5\), 파장당 10칸(\(N_\lambda = 10\))이다. 격자 위 위상 속도와, 파동이 50파장을 진행했을 때 쌓인 위상 오차(도)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\omega\Delta t = 2\pi S/N_\lambda\)를 분산 관계에 넣어 \(\tilde k\Delta x\)를 구하고, \(\tilde v_p/c = k/\tilde k\).</div>
+        <div class="step"><b>풀이</b> \(\sin(\omega\Delta t/2) = \sin(\pi\times0.5/10) = \sin 0.15708 = 0.15643\). \(\sin(\tilde k\Delta x/2) = 0.15643/0.5 = 0.31287\) → \(\tilde k\Delta x/2 = 0.31819\). 참값 \(k\Delta x/2 = \pi/10 = 0.31416\). \(\tilde v_p/c = 0.31416/0.31819 = 0.9873\). 한 파장마다 위상 오차 \(360°(1/0.9873 - 1) = 4.64°\), 50파장이면 232°.</div>
+        <div class="answer">\(\tilde v_p \approx 0.987c\), 50파장 뒤 위상 오차 약 230°</div>
+        <div class="step"><b>검토</b> 위상 오차는 \(N_\lambda^{-2}\)에 비례한다. 20칸이면 한 파장당 1.12°, 50파장 뒤 56°로 줄어든다. 광학 구조가 수십 파장 크기면 파장당 20칸 이상(고굴절률 매질 속 파장 기준!)이 필요한 이유다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-courant">
+      <p>3차원 균일 격자 간격 <span class="tn" data-var="d" data-min="1" data-max="50" data-step="1" data-unit=" nm">10</span>, 한 변 <span class="tn" data-var="L" data-min="0.5" data-max="20" data-step="0.5" data-unit=" µm">2.0</span>인 영역을 <span class="tn" data-var="T" data-min="10" data-max="1000" data-step="10" data-unit=" fs">100</span> 동안 계산하면 \(\Delta t\) = <span class="tn-out" data-out="dt"></span>, <span class="tn-out" data-out="n"></span>걸음, 칸 <span class="tn-out" data-out="cells"></span>개, 장 메모리 <span class="tn-out" data-out="mem"></span>, 칸·걸음 갱신 <span class="tn-out" data-out="ops"></span>번이다.</p>
+    </div>
+    <p>FDTD의 큰 장점은 넓은 띠의 펄스 하나로 한 번 계산하면, 탐침 기록을 푸리에 변환해 모든 주파수의 응답을 한꺼번에 얻는다는 것이다. 원천은 정해진 칸의 값을 덮어쓰는 "딱딱한 원천"보다, 계산된 값에 더해 주는 "부드러운 원천"을 쓴다(덮어쓰면 그 칸이 반사체가 된다). 금속처럼 유전율이 주파수에 따라 변하는 물질은 드루드·로런츠 모형의 분극 전류를 보조 미분 방정식으로 함께 시간 전진시킨다.</p>
+    <div class="drill" id="drill-courant" data-title="쿠랑 시간 간격 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="abc">
+    <h2>흡수 경계: 열린 공간을 상자에 담기</h2>
+    <p>복사나 산란 문제는 무한 공간에서 일어나지만 컴퓨터의 격자는 유한하다. 계산 영역 가장자리가 그냥 벽이면 나가야 할 파동이 되돌아와 결과를 망친다(위 시뮬레이터에서 완전 도체 벽을 골랐을 때처럼). 나가는 파동을 반사 없이 삼키는 경계가 <span class="term">흡수 경계 조건</span><span class="en">(absorbing boundary condition, ABC)</span>이다.</p>
+    <p>가장 단순한 생각은 경계에서 "파동은 바깥쪽으로만 간다"는 한 방향 파동 방정식 \((\partial_x + c^{-1}\partial_t)E = 0\)을 차분하는 것이다. 왼쪽 경계(바깥이 \(-x\))에서 이를 반 칸·반 걸음 중심으로 차분하면 <span class="term">무르 흡수 경계</span><span class="en">(Mur absorbing boundary)</span>가 된다(무르, 1981).</p>
+    <div class="formula">$$E^{n+1}_0 = E^n_1 + \frac{S-1}{S+1}\left(E^{n+1}_1 - E^n_0\right),\qquad R_{\text{1차}}(\theta) = \frac{\cos\theta - 1}{\cos\theta + 1},\quad R_{\text{2차}}(\theta) = \left(\frac{\cos\theta - 1}{\cos\theta + 1}\right)^2$$<div class="where">1차원에서 \(S = 1\)이면 \(E^{n+1}_0 = E^n_1\), 곧 "한 걸음 전 이웃 값"을 그대로 받아 완벽히 흡수한다. 2·3차원에서는 경계에 비스듬히 오는 파동을 정면으로 오는 것으로 착각하므로 입사각 \(\theta\)에 따라 반사가 남는다. 2차 무르(엥퀴스트–마이다 근사)는 이를 제곱으로 줄인다.</div></div>
+    <figure class="mini" id="mini-mur">
+      <div class="mini-view"><canvas id="cv-mur"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>PML 수직 입사 반사 R(0) <output id="mr-r0-out"></output></span><input type="range" id="mr-r0" min="-120" max="-30" step="5" value="-60"></label><span class="readout" id="mr-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>경계 반사(dB)를 입사각에 대해 그렸다. 흰 원을 끌어 각도를 고르라. 무르 경계는 정면에서만 좋고 스치듯 들어오는 파동(θ → 90°)은 모두 되돌린다. PML도 \(R(\theta) = R(0)^{\cos\theta}\)로 비스듬할수록 나빠지지만, 두께를 늘려 \(R(0)\)를 얼마든지 낮출 수 있다.</figcaption>
+    </figure>
+    <p>1994년 베렝제(J.-P. Berenger)는 경계를 "식"이 아니라 "물질"로 바꿨다. 가장자리에 손실이 있는 층을 두되, 전기 전도도 \(\sigma\)와 함께 가상의 자기 전도도 \(\sigma^*\)를 \(\sigma^*/\mu_0 = \sigma/\varepsilon_0\)로 맞추면, 층의 고유 임피던스가 진공과 같아져 경계면에서 반사가 0이다(주파수와 무관하게). 2·3차원에서는 장을 진행 방향 성분으로 쪼개 그 방향으로만 손실을 주어 모든 입사각에서 정합을 이룬다. 이것이 <span class="term">완전 정합층</span><span class="en">(perfectly matched layer, PML)</span>이다. 층 안에서 파동은 지수적으로 줄고, 뒤의 도체 벽에서 반사해 다시 층을 지나 돌아오므로 왕복 감쇠만큼만 남는다.</p>
+    <div class="formula">$$\sigma(x) = \sigma_{max}\left(\frac{x}{d}\right)^m,\qquad R(\theta) = \exp\!\left[-\frac{2\cos\theta}{\varepsilon_0c}\int_0^d\sigma\,dx\right] = \exp\!\left[-\frac{2\sigma_{max}d\cos\theta}{(m+1)\varepsilon_0c}\right]$$<div class="where">\(d\)는 PML 두께, \(m\)은 손실을 서서히 키우는 다항식 차수(보통 3–4). 연속 이론으로는 \(\sigma_{max}\)를 키우기만 하면 반사가 0으로 가지만, 격자 위에서는 \(\sigma\)가 한 칸 사이에 급히 변하면 그 변화 자체가 반사를 만든다(이산화 반사). 그래서 얇은 PML에 큰 \(\sigma\)를 몰아넣을 수는 없다. 실무에서는 복소 좌표 늘림을 쓰는 CPML이 표준이다.</div></div>
+    <div class="predict" data-for="sim-pml">
+      <p>PML 두께를 4칸으로 고정하고 \(\sigma_{max}\)를 점점 키운다(선형 분포, \(m = 1\)). 측정한 반사는 어떻게 변할까?</p>
+      <div class="opts"><button class="opt">이론식처럼 계속 지수적으로 줄어든다</button><button class="opt" data-correct>처음에는 이론을 따라 줄다가, 어느 값부터는 오히려 커진다</button><button class="opt">\(\sigma_{max}\)와 무관하게 일정하다</button><button class="opt">처음부터 커진다</button></div>
+      <div class="quiz-exp">\(\sigma\)가 작으면 왕복 감쇠가 부족해 뒤의 벽에서 돌아온 파동이 남고(이론식 지배), 너무 크면 PML 입구에서 칸 사이 손실이 급변해 반사가 생긴다(이산화 반사 지배). 그 사이에 최적값이 있다. 아래에서 \(m\)과 두께를 함께 바꿔 바닥을 더 낮춰 보라.</div>
+    </div>
+    <div class="sim" id="sim-pml">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>PML 설계: 10칸 이하로 −60 dB를 만들어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-pml-f"></canvas><span class="hint top">흰 원: 두께(파랑) · σ<sub>max</sub>(검정)</span></div><div><canvas id="cv-pml-t"></canvas></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>손실 분포 차수 m</span><div class="seg" id="pm-m"><button data-value="1">1 (선형)</button><button data-value="2">2</button><button data-value="3" class="on">3</button><button data-value="4">4</button></div></div>
+          <label class="ctrl"><span>PML 두께 <output id="pm-L-out"></output></span><input type="range" id="pm-L" min="1" max="30" step="1" value="6"></label>
+          <label class="ctrl"><span>최대 손실 계수 σ<sub>max</sub>Δt/2ε₀ <output id="pm-a-out"></output></span><input type="range" id="pm-a" min="-2" max="0.3" step="0.02" value="-0.52"></label>
+          <div class="ctrl-row"><button class="btn primary" id="pm-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">측정 반사</span><span class="v" id="pm-R">—</span></div>
+        <div class="stat"><span class="k">연속 이론 R(0)</span><span class="v" id="pm-Rt">—</span></div>
+        <div class="stat"><span class="k">무엇이 지배하나</span><span class="v" id="pm-dom">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="pm-goal">—</span></div>
+      </div>
+      <div class="sim-note">1차원 FDTD(\(S = 0.5\))의 오른쪽 끝에 PML을 두고, 그 뒤는 완전 도체 벽이다. 원천은 150번 칸, 탐침은 200번 칸에 있다. 위: PML 근처를 확대해 펄스가 PML에 들어가 사라지는 모습(손실 분포는 회색 면). 아래: 탐침에서 기록한 \(|E_z|\)를 dB로 그렸다. 첫 봉우리가 입사, 둘째 봉우리가 PML에서 돌아온 반사다. 해볼 것: ① \(m = 1\), 두께 4칸에서 σ를 올리며 반사가 줄다가 다시 커지는 지점을 찾아라. ② 같은 두께에서 \(m\)을 3으로 바꾸면 바닥이 얼마나 내려가는가? ③ 도전: 두께 10칸 이하로 반사를 −60 dB 아래로.</div>
+    </div>
+    <div class="example" data-title="PML의 최대 전도도 정하기">
+      <p>격자 간격 10 nm인 FDTD에서 두께 10칸의 PML을 3차 다항식(\(m = 3\))으로 깔아 수직 입사 반사를 \(10^{-6}\)(−120 dB)로 만들려면 \(\sigma_{max}\)는 얼마여야 하나? 입사각 60°의 반사는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(R(0) = \exp[-2\sigma_{max}d/((m+1)\varepsilon_0c)]\)을 \(\sigma_{max}\)에 대해 푼다.</div>
+        <div class="step"><b>풀이</b> \(\sigma_{max} = -(m+1)\varepsilon_0c\ln R/(2d) = 4\times(8.854\times10^{-12})(2.998\times10^8)(13.82)/(2\times10^{-7}) = 7.33\times10^5\) S/m. 60°에서 \(R = R(0)^{\cos60°} = 10^{-3}\), −60 dB.</div>
+        <div class="answer">\(\sigma_{max} \approx 7.3\times10^5\) S/m, 60°에서 −60 dB</div>
+        <div class="step"><b>검토</b> 무르 1차 경계의 60° 반사는 \(|(\cos60° - 1)/(\cos60° + 1)| = 1/3\), 약 −9.5 dB다. PML은 비스듬한 입사에서도 수십 dB 낫다. 다만 실제 반사는 이산화 반사 때문에 이론보다 높게 나오므로, 두께를 넉넉히 잡고 격자 수렴처럼 PML 두께를 바꿔 결과가 그대로인지 확인한다.</div>
+      </details>
+    </div>
+    <p>모든 경계가 흡수 경계인 것은 아니다. 격자·픽셀 배열처럼 옆으로 주기적인 구조는 한 주기만 계산하고 좌우 경계를 이어 붙인다(<span class="term">주기 경계 조건</span><span class="en">(periodic boundary condition)</span>; 비스듬한 입사에서는 위상차 \(e^{-jk_x\Lambda}\)를 곱하는 블로흐 경계). 평면파를 넣을 때는 영역을 "전체장"과 "산란장" 구역으로 나눠 그 경계에서만 입사파를 더하고 빼는 <span class="term">TF/SF 원천</span><span class="en">(total-field/scattered-field source)</span>을 쓴다. 그러면 산란장 구역에는 물체가 흩뜨린 빛만 남아 PML이 그것만 삼키면 된다.</p>
+    <div class="callout semi"><strong>픽셀·마스크 광학의 FDTD</strong><p>이미지 센서 픽셀(마이크로렌즈–컬러 필터–깊은 트렌치 격리(DTI)–포토다이오드)의 빛 경로, 각도에 따른 감도와 크로스토크는 3D FDTD로 계산한다. 옆은 주기 경계로 픽셀 배열을 흉내 내고, 위아래는 PML로 막고, 평면파는 TF/SF로 넣는다. 실리콘 속 파장이 공기 중의 1/4 이하이므로 격자는 그 짧은 파장 기준으로 잡아야 하고(이 절의 수치 분산), 금속 격자·텅스텐 차광막은 분산 모형이 필요하다. 넓은 띠 펄스 한 번으로 400–700 nm 전체 응답을 얻는 것이 FDTD가 이 분야를 차지한 이유다. → <a href="https://semi.euiyun.com/optics/chapters/rcwa.html">OpticsBook · 전자기 시뮬레이션: RCWA·FDTD</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="mom">
+    <h2>모멘트 법과 정전 용량 추출</h2>
+    <p>유한 차분·유한 요소는 공간 전체를 격자로 채운다. 그런데 균질한 절연막 속 도체들의 정전 용량만 알고 싶다면, 정말 필요한 미지수는 도체 표면의 전하뿐이다. 전하만 알면 쿨롱 적분으로 어디서든 전위를 구할 수 있기 때문이다. 이 생각을 식으로 쓴 것이 표면 전하의 <span class="term">적분 방정식</span><span class="en">(integral equation)</span>이다.</p>
+    <div class="formula">$$V(\mathbf r) = \int_{\text{도체 표면}}G(\mathbf r, \mathbf r')\,\rho_s(\mathbf r')\,dl',\qquad G_{2D} = -\frac{1}{2\pi\varepsilon}\ln|\mathbf r - \mathbf r'|,\quad G_{3D} = \frac{1}{4\pi\varepsilon|\mathbf r - \mathbf r'|}$$<div class="where">\(G\)는 점(선)전하 하나가 만드는 전위, 곧 <span class="term">그린 함수</span><span class="en">(Green's function)</span>다. \(\mathbf r\)이 도체 표면 위에 있으면 좌변은 그 도체의 전위로 알려져 있고, 모르는 것은 \(\rho_s\)다. 접지면은 영상 전하를 \(G\)에 넣어 처리하고, 층이 여럿인 절연막은 층 구조를 반영한 그린 함수를 쓴다.</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 270" role="img" aria-label="모멘트 법의 세 단계">
+        <g stroke="var(--text)" stroke-width="6" stroke-linecap="butt"><line x1="120" y1="200" x2="680" y2="200"/></g>
+        <g stroke="var(--canvas-bg)" stroke-width="2"><line x1="190" y1="192" x2="190" y2="208"/><line x1="260" y1="192" x2="260" y2="208"/><line x1="330" y1="192" x2="330" y2="208"/><line x1="400" y1="192" x2="400" y2="208"/><line x1="470" y1="192" x2="470" y2="208"/><line x1="540" y1="192" x2="540" y2="208"/><line x1="610" y1="192" x2="610" y2="208"/></g>
+        <g class="t-dim" style="font-size:11px" text-anchor="middle"><text x="155" y="228">1</text><text x="225" y="228">2</text><text x="295" y="228">3</text><text x="365" y="228">…</text><text x="645" y="228">N</text></g>
+        <text x="120" y="252" class="t-dim">도체 띠(전위 V)를 N 조각으로 — 조각마다 전하 밀도 σ<tspan baseline-shift="sub" style="font-size:10px">j</tspan> 는 상수(펄스 기저)</text>
+        <g data-only="2">
+          <circle cx="295" cy="200" r="7" fill="var(--accent-2)"/>
+          <path d="M575,192 C520,110 360,110 300,190" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4"/>
+          <polygon points="300,190 298,178 309,183" fill="var(--accent-2)"/>
+          <rect x="540" y="186" width="70" height="28" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text x="420" y="96" class="t" style="font-weight:700">Z<tspan baseline-shift="sub" style="font-size:10px">ij</tspan> = ∫ 조각 j 위 G(r<tspan baseline-shift="sub" style="font-size:10px">i</tspan>, r′) dl′</text>
+          <text x="420" y="120" class="t-dim">조각 j 의 단위 전하가 정합점 i 에 만드는 전위</text>
+          <text x="120" y="60" class="t" style="fill:var(--accent-2);font-weight:700">정합점 i: Σ Z<tspan baseline-shift="sub" style="font-size:10px">ij</tspan> σ<tspan baseline-shift="sub" style="font-size:10px">j</tspan> = V</text>
+        </g>
+        <g data-step="3">
+          <g fill="var(--accent)" opacity=".85"><rect x="122" y="80" width="66" height="110"/><rect x="192" y="138" width="66" height="52"/><rect x="262" y="150" width="66" height="40"/><rect x="332" y="154" width="66" height="36"/><rect x="402" y="154" width="66" height="36"/><rect x="472" y="150" width="66" height="40"/><rect x="542" y="138" width="66" height="52"/><rect x="612" y="80" width="66" height="110"/></g>
+          <text x="400" y="56" text-anchor="middle" class="t" style="font-weight:700">Zσ = V 를 풀면 → 양 끝에 전하가 몰린다</text>
+          <text x="400" y="80" text-anchor="middle" class="t-dim">Q = Σ σ<tspan baseline-shift="sub" style="font-size:10px">j</tspan> Δl<tspan baseline-shift="sub" style="font-size:10px">j</tspan>,  C = Q / V</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>도체 표면을 조각으로 나누고 조각마다 전하 밀도를 상수로 둔다(<span class="term">펄스 기저</span><span class="en">(pulse basis)</span>). 미지수는 \(N\)개다.</li><li>조각마다 가운데 한 점에서 "합친 전위 = 도체 전위"를 요구한다(<span class="term">점 정합</span><span class="en">(point matching, collocation)</span>). 행렬 원소 \(Z_{ij}\)는 조각 \(j\) 위에서 그린 함수를 적분한 것이다.</li><li>\(N\times N\) 연립 방정식을 풀면 전하 분포가 나오고, 더하면 전하·정전 용량이다. 전하는 띠의 양 끝에 크게 몰린다.</li></ol>
+      <figcaption>모멘트 법의 세 단계. 미지수가 표면에만 있으므로 2차원 문제는 1차원, 3차원 문제는 2차원 미지수로 줄어든다. 대신 모든 조각이 모든 조각에 영향을 주므로 행렬이 꽉 차 있다.</figcaption>
+    </figure>
+    <p>일반적으로 해를 기저 함수로 전개하고 방정식의 잔차를 시험 함수들에 대해 0으로 만드는("잔차의 모멘트를 0으로") 방법을 <span class="term">모멘트 법</span><span class="en">(method of moments, MoM)</span>이라 한다. 점 정합은 시험 함수가 델타 함수인 경우이고, 시험 함수를 기저와 같게 고르면 FEM과 같은 갤러킨 방법이 된다. 경계 위의 적분 방정식을 푼다는 뜻에서 <span class="term">경계 요소법</span><span class="en">(boundary element method, BEM)</span>이라고도 부른다.</p>
+    <p>조각을 어떻게 나눌지가 정확도를 좌우한다. 얇은 띠의 끝은 앞 절의 \(\beta = 360°\) 모서리라, 전하 밀도가 끝까지의 거리 \(d\)에 대해 \(\rho_s \propto d^{-1/2}\)로 발산한다. 고립된 띠(폭 \(2a\))의 정확한 분포는 \(\rho_s(x) = Q/(\pi\sqrt{a^2 - x^2})\)이다. 이것을 상수 조각으로 흉내 내면 끝 조각에서 오차가 크다.</p>
+    <figure class="mini" id="mini-edge">
+      <div class="mini-view"><canvas id="cv-edge"></canvas></div>
+      <div class="mini-ctrl"><div class="seg" id="ed-k"><button data-value="0" class="on">균일 분할</button><button data-value="1">코사인 분할</button></div><label class="ctrl"><span>조각 수 N <output id="ed-n-out"></output></span><input type="range" id="ed-n" min="4" max="64" step="2" value="10"></label><span class="readout" id="ed-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>고립된 띠의 모멘트 법 전하(막대)와 정확한 분포 \(1/\sqrt{a^2 - x^2}\)(선). 작은 그래프는 정전 용량 오차를 조각 수에 대해 로그–로그로 그린 것이다. 균일 분할은 기울기 −1(1차), 끝을 촘촘히 하는 코사인 분할 \(x_k = -a\cos(k\pi/N)\)은 기울기 −2다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-mom">
+      <p>같은 평면에 나란한 두 띠(+0.5 V와 −0.5 V)가 있다. 한 띠 위의 전하 밀도는 어떻게 분포할까?</p>
+      <div class="opts"><button class="opt">띠 위에서 고르다</button><button class="opt">상대 띠에 가까운 안쪽 끝에만 몰리고 바깥쪽 끝은 0이다</button><button class="opt" data-correct>양 끝 모두 발산하지만 상대 띠를 마주한 안쪽 끝이 더 크다</button><button class="opt">가운데가 가장 크다</button></div>
+      <div class="quiz-exp">두 끝 모두 \(d^{-1/2}\) 특이성을 갖는다(모서리의 기하로 정해지는 성질). 다만 상대 띠의 반대 전하에 끌려 안쪽 끝의 계수가 더 크다. 간격이 좁을수록 안쪽 끝 쏠림이 심해지고 정전 용량이 커진다.</div>
+    </div>
+    <div class="sim" id="sim-mom">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>모멘트 법 추출기: 50 pF/m를 맞춰라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div style="position:relative"><canvas id="cv-mom"></canvas><span class="hint">흰 원을 끌어 폭·간격(높이)을 바꾼다</span></div><div><canvas id="cv-mom-c"></canvas></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>구조</span><div class="seg" id="mo-cfg"><button data-value="cps" class="on">동일 평면 띠 쌍</button><button data-value="ms">접지면 위 띠</button></div></div>
+          <label class="ctrl"><span>띠 하나의 조각 수 N <output id="mo-n-out"></output></span><input type="range" id="mo-n" min="2" max="48" step="1" value="8"></label>
+          <div class="ctrl"><span>분할</span><div class="seg" id="mo-k"><button data-value="0" class="on">균일</button><button data-value="1">코사인</button></div></div>
+          <label class="ctrl"><span>비유전율 ε<sub>r</sub> <output id="mo-er-out"></output></span><input type="range" id="mo-er" min="1" max="12" step="0.1" value="3.9"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">모멘트 법 C′</span><span class="v" id="mo-c">—</span></div>
+        <div class="stat"><span class="k">기준값</span><span class="v" id="mo-ref">—</span></div>
+        <div class="stat"><span class="k">오차</span><span class="v" id="mo-err">—</span></div>
+        <div class="stat"><span class="k">행렬 크기</span><span class="v" id="mo-sz">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="mo-goal">—</span></div>
+      </div>
+      <div class="sim-note">균질 매질 속 2차원 띠(두께 0)의 단위 길이 정전 용량. 위: 전위(색)와 등전위선, 띠 위 막대는 조각별 전하 밀도. 아래: 조각 수에 따른 오차(빨강 균일, 파랑 코사인). 기준값은 동일 평면 띠 쌍이면 등각 사상의 정확한 해 \(C' = \varepsilon K(k')/K(k)\), \(k = s/(s + 2w)\), 접지면 위 띠면 해머스태드 공식(오차 0.01% 수준)이다. 접지면은 영상 띠로 처리했다. 해볼 것: ① 균일 분할로 1%를 맞추려면 조각이 몇 개 필요한가? 코사인 분할은? ② 간격을 줄이면 안쪽 끝의 전하가 얼마나 커지는가. ③ 도전: ε<sub>r</sub> = 3.9에서 C′ = 50 pF/m ± 1%를 맞춰라.</div>
+    </div>
+    <div class="example" data-title="동일 평면 띠 쌍의 정전 용량">
+      <p>SiO₂(\(\varepsilon_r = 3.9\)) 속에 폭 \(w = 10\) µm인 두 띠가 간격 \(s = 5\) µm로 같은 평면에 나란하다(두께 무시). 단위 길이 정전 용량은? \(K(0.04) = 1.5869\), \(K(0.96) = 3.0161\)을 쓴다(\(K(m)\)은 매개변수 \(m = k^2\)의 제1종 완전 타원 적분).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 등각 사상의 결과 \(C' = \varepsilon K(k')/K(k)\), \(k = s/(s+2w)\), \(k' = \sqrt{1-k^2}\).</div>
+        <div class="step"><b>풀이</b> \(k = 5/25 = 0.2\), \(k^2 = 0.04\), \(k'^2 = 0.96\). \(C'/\varepsilon = 3.0161/1.5869 = 1.9007\). \(C' = 1.9007\times3.9\times8.854\times10^{-12} = 6.56\times10^{-11}\) F/m.</div>
+        <div class="answer">\(C' \approx 65.6\) pF/m (= 65.6 aF/µm)</div>
+        <div class="step"><b>검토</b> 시뮬레이터에서 같은 비율(\(s/w = 0.5\))로 놓고 코사인 분할 16조각이면 0.5% 안, 균일 분할은 같은 정확도에 약 100조각이 든다. 치수를 모두 두 배로 해도 \(k\)가 같으므로 2차원 정전 용량은 그대로다 — 단위 길이 용량은 모양(비율)만의 함수다.</div>
+      </details>
+    </div>
+    <p>모멘트 법의 약점은 꽉 찬 행렬이다. 조각이 \(N\)개면 메모리가 \(N^2\), 가우스 소거가 \(\tfrac23N^3\)이다. 3차원 배선 묶음은 \(N\)이 수십만이라 그대로는 불가능하다. 1991년의 FastCap은 먼 조각들의 영향을 다중극 전개로 묶어 한꺼번에 계산하는 <span class="term">고속 다중극 방법</span><span class="en">(fast multipole method, FMM)</span>으로 행렬–벡터 곱을 \(O(N)\)으로 줄이고 반복법(GMRES)으로 풀었다. 격자 위 FFT로 같은 일을 하는 방법(사전 보정 FFT)도 있다. 상용 기생 추출 도구는 이런 경계 요소법과 함께, 도체 사이를 무작위로 뛰어다니는 입자의 통계로 전하를 어림하는 <b>무작위 보행</b> 방식도 쓴다. 미지수 행렬이 아예 없어 메모리가 거의 들지 않고, 오차는 표본 수의 제곱근에 반비례해 줄어든다.</p>
+    <div class="callout semi"><strong>기생 RC 추출의 필드 솔버</strong><p>칩 배선의 기생 용량은 사인오프 타이밍과 누화 분석의 입력이다. 추출 도구는 공정의 층 두께·유전율로 대표 배선 패턴 수천 개를 정밀 필드 솔버(경계 요소·무작위 보행·FEM)로 미리 풀어 표와 근사식을 만들고, 레이아웃 전체는 패턴을 맞춰 빠르게 읽는다. 임계 넷이나 새 공정의 검증에는 3D 필드 솔버를 직접 돌린다. 이 절의 교훈 — 모서리에 전하가 몰리므로 모서리를 촘촘히 나눠야 하고, 행렬이 꽉 차므로 고속 알고리즘이 필요하다 — 이 그 속에 있다. → <a href="https://semi.euiyun.com/digital/chapters/wire.html">DigitalBook · 배선: 칩 안의 도로</a> · <a href="https://semi.euiyun.com/design/chapters/timing.html">DesignBook · 정적 타이밍 분석</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="rcwa">
+    <h2>RCWA: 주기 구조를 푸리에 차수로</h2>
+    <p>리소그래피 마스크, 레지스트 패턴, OCD 계측 타깃, 회절 격자는 모두 옆으로 주기적이다. 주기 \(\Lambda\)인 구조에 평면파를 비추면 장도 같은 주기성을 띤다. 정확히는 입사파의 위상 기울기 \(e^{-jk_{x0}x}\)를 뺀 나머지가 주기 함수다(<span class="term">플로케 정리</span><span class="en">(Floquet theorem)</span>). 주기 함수는 푸리에 급수이므로, 장은 띄엄띄엄한 가로 파수를 갖는 평면파들의 합이다.</p>
+    <div class="formula">$$E_y(x,z) = \sum_{m=-M}^{M}S_m(z)\,e^{-jk_{xm}x},\qquad k_{xm} = k_0\left(n_{in}\sin\theta_{in} + m\frac{\lambda}{\Lambda}\right)$$<div class="where">각 항이 \(m\)차 <span class="term">회절 차수</span><span class="en">(diffraction order)</span>다. 구조 위·아래 균질 매질(굴절률 \(n\))에서 \(m\)차 파동은 \(k_{zm} = \sqrt{k_0^2n^2 - k_{xm}^2}\)로 진행하거나(실수), 표면에 붙어 사라지는 소산파가 된다(허수). 진행하는 차수의 방향은 <span class="term">격자 방정식</span><span class="en">(grating equation)</span> \(n_{out}\sin\theta_m = n_{in}\sin\theta_{in} + m\lambda/\Lambda\)로 정해진다.</div></div>
+    <figure class="mini" id="mini-orders">
+      <div class="mini-view"><canvas id="cv-orders"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>주기 Λ <output id="or-p-out"></output></span><input type="range" id="or-p" min="100" max="2000" step="10" value="800"></label><label class="ctrl"><span>파장 λ <output id="or-l-out"></output></span><input type="range" id="or-l" min="250" max="800" step="1" value="633"></label><div class="seg" id="or-n"><button data-value="1.46" class="on">유리 1.46</button><button data-value="3.88">Si 3.88</button></div><span class="readout" id="or-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>격자(가운데 선)에 위에서 빛이 들어온다. 흰 원을 끌어 입사각을 바꾸라. 위쪽은 공기로 반사되는 차수, 아래쪽은 기판으로 투과하는 차수다. 주기를 파장보다 작게 줄이면 공기 쪽에는 0차만 남는다 — OCD 타깃이 이 조건으로 설계된다.</figcaption>
+    </figure>
+    <p>격자 영역(높이 \(d\))에서는 유전율 \(\varepsilon(x)\)도 푸리에 급수 \(\sum_h\varepsilon_he^{jhKx}\)(\(K = 2\pi/\Lambda\))로 쓴다. 파동 방정식 \(\partial_x^2E + \partial_z^2E + k_0^2\varepsilon(x)E = 0\)에 넣으면 차수끼리 \(\varepsilon_h\)를 통해 엮인 연립 상미분 방정식이 나온다(TE 편광).</p>
+    <div class="formula">$$\frac{d^2\mathbf S}{dz^2} = k_0^2\,\mathbf A\,\mathbf S,\qquad \mathbf A = \mathbf K_x^2 - \mathbf E,\qquad (\mathbf E)_{mp} = \varepsilon_{p-m},\ (\mathbf K_x)_{mm} = k_{xm}/k_0$$<div class="where">\(\mathbf A\)의 고유값 \(q^2\)와 고유 벡터가 격자 층의 "모드"다. 층 안의 장은 모드마다 \(e^{\mp k_0qz}\)로 위아래로 진행(또는 감쇠)한다. 위·아래 경계에서 \(E_y\)와 \(\partial E_y/\partial z\)(곧 \(H_x\))의 연속을 차수마다 요구하면 반사 진폭 \(R_m\), 투과 진폭 \(T_m\)에 대한 선형 방정식이 된다. 이렇게 근사 없이(차수를 늘리면 참값으로 수렴하게) 푸는 것을 <span class="term">엄밀 결합파 해석</span><span class="en">(rigorous coupled-wave analysis, RCWA)</span>이라 한다(모하람·게이로드, 1981).</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="RCWA의 층 나누기와 푸리에 전개">
+        <rect x="40" y="200" width="330" height="56" fill="var(--surface-2)" stroke="var(--border)"/>
+        <text x="205" y="234" text-anchor="middle" class="t-dim">기판 (균질, 차수별 평면파 T<tspan baseline-shift="sub" style="font-size:10px">m</tspan>)</text>
+        <g fill="var(--accent-2-soft)" stroke="var(--accent-2)" stroke-width="1.5">
+          <path d="M70,200 L92,110 L148,110 L170,200 Z"/><path d="M200,200 L222,110 L278,110 L300,200 Z"/>
+        </g>
+        <g fill="none" stroke="var(--accent)" stroke-width="2.2">
+          <path d="M66,200 V170 H174 V200"/><path d="M74,170 V140 H166 V170"/><path d="M82,140 V110 H158 V140"/>
+          <path d="M196,200 V170 H304 V200"/><path d="M204,170 V140 H296 V170"/><path d="M212,140 V110 H288 V140"/>
+        </g>
+        <g stroke="var(--text-dim)" stroke-dasharray="4 3"><line x1="40" y1="170" x2="370" y2="170"/><line x1="40" y1="140" x2="370" y2="140"/><line x1="40" y1="110" x2="370" y2="110"/></g>
+        <g class="t-dim" style="font-size:11px"><text x="374" y="190">층 1</text><text x="374" y="160">층 2</text><text x="374" y="130">층 3</text></g>
+        <line x1="70" y1="96" x2="200" y2="96" stroke="var(--text-dim)"/><text x="135" y="90" text-anchor="middle" class="t-dim">Λ</text>
+        <line x1="120" y1="20" x2="160" y2="70" stroke="var(--accent)" stroke-width="2.4"/><polygon points="160,70 150,66 157,60" fill="var(--accent)"/>
+        <text x="96" y="20" class="t" style="font-size:12px">입사</text>
+        <g stroke="var(--accent)" stroke-width="1.6" opacity=".8"><line x1="200" y1="70" x2="240" y2="22"/><line x1="200" y1="70" x2="200" y2="20"/><line x1="200" y1="70" x2="150" y2="34"/></g>
+        <text x="246" y="26" class="t" style="font-size:12px">반사 차수 R<tspan baseline-shift="sub" style="font-size:10px">m</tspan></text>
+        <g transform="translate(450,40)">
+          <text x="0" y="0" class="t" style="font-weight:700">한 층의 ε(x) — 계단 함수</text>
+          <path d="M0,70 H60 V30 H170 V70 H230" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+          <path d="M0,70 C20,72 40,66 55,48 C70,28 90,26 115,30 C140,26 160,28 175,48 C190,66 210,72 230,70" fill="none" stroke="var(--accent-2)" stroke-width="1.8" stroke-dasharray="5 3"/>
+          <text x="0" y="100" class="t-dim" style="font-size:12px">점선: 푸리에 급수 2M+1 항으로 자른 근사</text>
+          <text x="0" y="128" class="t" style="font-size:12px">ε<tspan baseline-shift="sub" style="font-size:10px">h</tspan> = (ε<tspan baseline-shift="sub" style="font-size:10px">r</tspan> − ε<tspan baseline-shift="sub" style="font-size:10px">g</tspan>) sin(πhf)/(πh), f = 선폭/Λ</text>
+          <text x="0" y="160" class="t" style="font-size:12px">층마다: 고유값 문제 → 모드 → S 행렬</text>
+          <text x="0" y="184" class="t" style="font-size:12px">층을 S 행렬로 쌓아 위·아래 경계를 잇는다</text>
+          <text x="0" y="214" class="t-dim" style="font-size:12px">경사진 측벽은 얇은 층의 계단으로 근사</text>
+        </g>
+      </svg>
+      <figcaption>RCWA의 기본 그림. 측벽이 기운 선은 \(z\) 방향으로 얇은 층들로 자르고, 각 층의 \(\varepsilon(x)\)를 푸리에 급수로 전개한다. 층마다 고유값 문제를 풀고, 지수 함수가 넘치지 않도록 S 행렬로 층을 이어 붙인다.</figcaption>
+    </figure>
+    <p>잘라 쓴 차수 수 \(2M+1\)이 RCWA의 격자 간격에 해당한다. TE 편광은 \(M\)을 조금만 늘려도 빨리 수렴하지만, TM 편광은 계면을 가로지르는 \(D_x\)가 연속이고 \(E_x\)가 뛰기 때문에 \(\varepsilon\)의 푸리에 급수를 그대로 곱하면(깁스 현상) 매우 느리게 수렴한다. 리펑 리(Lifeng Li, 1996)는 이때 \(1/\varepsilon\)의 급수 행렬의 역행렬을 쓰라는 "역규칙"으로 이를 해결했다. 주기가 파장보다 훨씬 작으면 모든 고차 항이 소산파가 되고, 격자는 \(\varepsilon_{TE} = f\varepsilon_r + (1-f)\)인 균질 막처럼 보인다(<span class="term">유효 매질 근사</span><span class="en">(effective medium approximation)</span>).</p>
+    <div class="sim" id="sim-rcwa">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>RCWA 산란 계측: 숨은 선폭과 높이를 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-rc-x"></canvas><span class="hint">흰 원: 선폭 · 높이</span></div><div style="position:relative"><canvas id="cv-rc-s"></canvas><span class="hint top" id="rc-hint">점: 측정 · 선: 모델 · 점선: 유효 매질</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>보기</span><div class="seg" id="rc-view"><button data-value="spec" class="on">스펙트럼 맞추기</button><button data-value="conv">차수 수렴</button></div></div>
+          <label class="ctrl"><span>차수 M (2M+1개) <output id="rc-m-out"></output></span><input type="range" id="rc-m" min="0" max="15" step="1" value="5"></label>
+          <label class="ctrl"><span>입사각 θ <output id="rc-th-out"></output></span><input type="range" id="rc-th" min="0" max="70" step="1" value="0"></label>
+          <label class="ctrl"><span>주기 Λ <output id="rc-p-out"></output></span><input type="range" id="rc-p" min="100" max="600" step="10" value="200"></label>
+          <div class="ctrl-row"><button class="btn" id="rc-new" type="button">새 시료</button><button class="btn" id="rc-show" type="button">정답 보기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">모델 선폭 · 높이</span><span class="v" id="rc-cd">—</span></div>
+        <div class="stat"><span class="k">잔차 RMS</span><span class="v" id="rc-res">—</span></div>
+        <div class="stat"><span class="k">633 nm 효율 R₀ · ΣR · ΣT</span><span class="v" id="rc-eff">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="rc-goal">—</span></div>
+      </div>
+      <div class="sim-note">실리콘 기판 위 레지스트(\(n = 1.7\)) 선 격자에 TE 편광(전기장이 선과 나란함)을 비춘 0차 반사율 스펙트럼(400–800 nm)을 RCWA로 계산한다. 실리콘의 굴절률은 파장마다 다른 값(흡수 포함)을 쓴다. 점은 숨은 선폭·높이로 계산한 "측정"이다. 해볼 것: ① 도전: 두 흰 원을 끌어 잔차를 0.003 아래로 만들어라 — OCD 장비가 회귀로 하는 일이다. ② 차수 M을 0으로 내리면(유효 매질과 거의 같다) 스펙트럼이 어떻게 틀리는가? ③ "차수 수렴" 보기에서 M에 따라 R₀가 어떻게 안정되는지, 주기를 키우면 몇 차가 필요한지 보라. ΣR + ΣT = 1(레지스트는 흡수 없음, 기판으로 들어간 빛은 T)이 계산의 자체 점검이다.</div>
+    </div>
+    <div class="example" data-title="격자 방정식으로 차수 세기">
+      <p>주기 800 nm인 격자에 633 nm 빛이 공기에서 수직으로 들어온다. 공기 쪽으로 반사되는 차수들의 각도와, 실리콘 기판(\(n = 3.88\)) 속으로 진행하는 투과 차수의 개수를 구하라. 주기가 400 nm라면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n_{out}\sin\theta_m = m\lambda/\Lambda\), 진행 조건 \(|m\lambda/\Lambda| < n_{out}\).</div>
+        <div class="step"><b>풀이</b> \(\lambda/\Lambda = 0.791\). 공기: \(|m| \le 1\), \(\theta_{\pm1} = \pm\sin^{-1}0.791 = \pm52.3°\). 실리콘: \(|m| < 3.88/0.791 = 4.9\) → \(m = -4, \dots, 4\)의 9개(\(\theta_{\pm1} = 11.8°\), \(\theta_{\pm4} = 54.7°\)). \(\Lambda = 400\) nm면 \(\lambda/\Lambda = 1.58 > 1\)이라 공기 쪽은 0차만, 실리콘 쪽은 \(|m| \le 2\)의 5개다.</div>
+        <div class="answer">반사 차수 3개(0, ±52.3°), 투과 차수 9개 / Λ = 400 nm: 반사 1개, 투과 5개</div>
+        <div class="step"><b>검토</b> RCWA는 진행하지 않는 소산 차수도 계산에 넣어야 한다(근처 경계의 장을 표현하므로). 그래서 계산에 쓰는 차수 \(2M+1\)은 진행 차수 수보다 훨씬 많다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>OCD 산란 계측과 마스크 3D 효과</strong><p>OCD 장비는 수십 µm 격자 타깃에 넓은 파장(또는 여러 각도·편광)의 빛을 비춰 0차 반사 스펙트럼을 잰다. 영상은 없다. 선폭·높이·측벽 각·하부 막 두께를 매개변수로 RCWA 스펙트럼 라이브러리를 미리 만들어 두거나 실시간 회귀로 측정과 맞춰 구조를 "역산"한다 — 위 시뮬레이터가 바로 그 일이다. 매개변수끼리 스펙트럼 변화가 닮으면(상관) 값이 하나로 정해지지 않으므로, 여러 입사각과 편광을 함께 쓴다. EUV 마스크처럼 흡수체 두께가 파장의 수 배인 경우에는 얇은 마스크 근사가 깨져 그림자 효과와 초점 이동이 생기므로, 리소그래피 시뮬레이터가 RCWA·FDTD로 마스크 근처장을 엄밀히 계산한다. → <a href="https://semi.euiyun.com/litho/chapters/cd.html">LithoBook · CD 제어와 계측</a> · <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율</a> · <a href="https://semi.euiyun.com/optics/chapters/rcwa.html">OpticsBook · 전자기 시뮬레이션: RCWA·FDTD</a></p></div>
+    <div class="drill" id="drill-grating" data-title="격자 방정식 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="choosing">
+    <h2>방법 고르기와 검증</h2>
+    <p>다섯 방법은 미지수를 어디에 두느냐로 갈린다. 공간 전체(FDM·FEM·FDTD), 표면(MoM), 푸리에 차수(RCWA). 그에 따라 행렬의 모양과 계산량, 잘 맞는 문제가 정해진다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>방법</th><th>미지수</th><th>행렬·계산</th><th>강점</th><th>약점</th><th>반도체 쓰임</th></tr></thead>
+      <tbody>
+        <tr><td>유한 차분(FDM)·유한 체적</td><td>격자점의 \(V\)</td><td>희소, 반복법·다중 격자</td><td>구현이 쉽고 비선형 결합(소자 방정식)에 강함</td><td>휘어진 경계는 계단, 열린 영역은 잘라야 함</td><td>TCAD 소자·공정 시뮬레이션</td></tr>
+        <tr><td>유한 요소(FEM)</td><td>요소 노드(모서리)의 값</td><td>희소, 직접법·CG</td><td>복잡한 모양·재료, 적응 격자, 에너지 경계</td><td>격자 생성이 어렵고 3D 파동 문제는 무거움</td><td>패키지·인덕터 3D 해석, 응력·열</td></tr>
+        <tr><td>FDTD</td><td>이 격자의 \(\mathbf E\), \(\mathbf H\) (매 걸음)</td><td>행렬 없음, 칸 × 걸음</td><td>한 번에 넓은 띠, 비선형·과도 현상</td><td>쿠랑 조건, 수치 분산, 작은 구조에 비싼 격자</td><td>이미지 센서 픽셀, 포토닉스, 근거리장</td></tr>
+        <tr><td>모멘트 법(MoM·BEM)</td><td>도체 표면의 전하·전류</td><td>꽉 찬 \(N\times N\), FMM로 가속</td><td>열린 공간이 자동, 미지수가 적음</td><td>복잡한 불균질 매질에 약함, 밀집 행렬</td><td>기생 용량·인덕턴스 추출, 안테나</td></tr>
+        <tr><td>RCWA</td><td>층별 푸리에 차수의 진폭</td><td>층마다 \((2M+1)^3\) 고유값 문제</td><td>주기·층 구조에 매우 빠르고 정확</td><td>비주기 구조 불가, 금속·TM은 차수 많이 필요</td><td>OCD, 마스크 근거리장, 격자 결합기</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="수치 방법 고르기 흐름도">
+        <g fill="var(--bg-elev)" stroke="var(--border)" stroke-width="1.5">
+          <rect x="300" y="12" width="200" height="40" rx="8"/>
+          <rect x="60" y="100" width="240" height="40" rx="8"/><rect x="500" y="100" width="240" height="40" rx="8"/>
+        </g>
+        <g fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5">
+          <rect x="20" y="200" width="150" height="54" rx="8"/><rect x="190" y="200" width="150" height="54" rx="8"/>
+          <rect x="400" y="200" width="120" height="54" rx="8"/><rect x="535" y="200" width="120" height="54" rx="8"/><rect x="670" y="200" width="120" height="54" rx="8"/>
+        </g>
+        <g class="t" style="font-size:13px" text-anchor="middle">
+          <text x="400" y="37" style="font-weight:700">구조 크기 ≪ 파장?</text>
+          <text x="180" y="125">정적·준정적: 매질이 단순한가?</text>
+          <text x="620" y="125">전파 문제: 구조가 주기적인가?</text>
+          <text x="95" y="224" style="font-weight:700">MoM · BEM</text><text x="95" y="244" class="t-dim" style="font-size:11px">균질 절연막의 C·L</text>
+          <text x="265" y="224" style="font-weight:700">FDM · FEM</text><text x="265" y="244" class="t-dim" style="font-size:11px">TCAD, 복잡한 유전체</text>
+          <text x="460" y="224" style="font-weight:700">RCWA</text><text x="460" y="244" class="t-dim" style="font-size:11px">OCD, 마스크</text>
+          <text x="595" y="224" style="font-weight:700">FDTD</text><text x="595" y="244" class="t-dim" style="font-size:11px">광대역·과도</text>
+          <text x="730" y="224" style="font-weight:700">FEM(주파수)</text><text x="730" y="244" class="t-dim" style="font-size:11px">공진·곡면, 패키지</text>
+        </g>
+        <g stroke="var(--text-dim)" stroke-width="1.5" fill="none">
+          <path d="M360,52 L200,100"/><path d="M440,52 L600,100"/>
+          <path d="M140,140 L95,200"/><path d="M220,140 L265,200"/>
+          <path d="M560,140 L460,200"/><path d="M620,140 L595,200"/><path d="M680,140 L730,200"/>
+        </g>
+        <g class="t-dim" style="font-size:11px"><text x="250" y="72">예</text><text x="530" y="72">아니오</text><text x="96" y="172">예(도체 표면만)</text><text x="250" y="172">아니오</text><text x="470" y="172">예</text><text x="600" y="186">아니오: 시간 영역</text><text x="700" y="172">주파수 영역</text></g>
+        <text x="400" y="284" text-anchor="middle" class="t-dim" style="font-size:12px">실제로는 한 문제에 둘 이상을 섞는다(예: FEM 내부 + 경계 적분으로 열린 영역)</text>
+      </svg>
+      <figcaption>방법 고르기의 첫 질문들. 파장에 비해 구조가 작으면 준정적 해석(라플라스·푸아송)으로 충분하고, 그렇지 않으면 파동 방정식을 풀어야 한다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-cost">
+      <div class="mini-view"><canvas id="cv-cost"></canvas></div>
+      <div class="mini-ctrl"><span class="readout" id="cs-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>미지수 수 \(N\)에 따른 연산 수 어림(로그–로그). 흰 원을 끌어 \(N\)을 고르면 초당 \(10^{11}\)번 연산하는 컴퓨터에서의 시간과 메모리가 보인다. 밀집 직접법(\(\tfrac23N^3\))은 \(N = 10^5\)에서 이미 한 시간을 넘고 80 GB가 든다. 다중 격자·FMM처럼 \(N\)에 거의 비례하는 방법이 대형 문제의 열쇠다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-cost">
+      <p>한 변이 <span class="tn" data-var="n" data-min="10" data-max="400" data-step="10">100</span>칸 해상도인 3차원 배선 묶음의 정전 용량을 구한다. 공간을 채우는 FDM·FEM은 미지수가 약 <span class="tn-out" data-out="nv"></span>개(희소 행렬 메모리 <span class="tn-out" data-out="mv"></span>), 도체 표면만 나누는 MoM은 도체 표면 넓이가 계산 상자 겉넓이(\(6n^2\)칸)의 <span class="tn" data-var="f" data-min="0.5" data-max="10" data-step="0.5" data-unit="배">2.0</span>라면 미지수가 <span class="tn-out" data-out="ns"></span>개로 훨씬 적지만 꽉 찬 행렬 메모리가 <span class="tn-out" data-out="ms"></span>다. 그래서 큰 MoM은 FMM으로 행렬을 만들지 않고 푼다.</p>
+    </div>
+    <p>어떤 방법이든 결과를 그대로 믿으면 안 된다. 검증의 습관은 다음과 같다. ① <b>격자 수렴</b>: 격자(차수, 조각 수, PML 두께)를 바꿔 출력이 수렴하는지, 그 속도가 예상 차수와 맞는지 본다. ② <b>해석적 극한</b>: 평행판·동축선·박막처럼 답을 아는 경우로 줄여 맞춰 본다(RCWA의 선폭 0·100% 극한은 박막 공식과 같아야 한다). ③ <b>보존 법칙</b>: 손실 없는 구조의 \(\sum R + \sum T = 1\), 전하 합, 상반성(\(C_{ij} = C_{ji}\)). ④ <b>다른 방법과 교차 검증</b>: 같은 구조를 FEM과 MoM, RCWA와 FDTD로 풀어 비교한다.</p>
+    <div class="callout warn"><strong>예쁜 그림이 맞는 답은 아니다</strong><p>수치 해석기는 틀린 입력에도 매끈한 그림을 그려 준다. 흔한 함정: 격자보다 얇은 막(게이트 산화막 1 nm를 5 nm 격자로), 흡수 경계가 구조에 너무 가까움(소산파가 PML에 닿음), 쿠랑 한계 근처에서 국소적으로 작은 칸, 주기 경계인데 실제 구조는 고립된 패턴, 단위(µm와 nm) 실수. "격자를 반으로 줄여도 같은가"를 묻는 데 드는 계산 시간은 틀린 결정을 내리는 비용보다 언제나 싸다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>이산화 오차 \(e \approx Kh^p\): 로그–로그 기울기가 수렴 차수다. 세 격자로 \(p = \log_2[(u_h - u_{h/2})/(u_{h/2} - u_{h/4})]\), 리처드슨 외삽 \(u^* \approx u_{h/2} + (u_{h/2} - u_h)/(2^p - 1)\). 격자점 사이 유전율 계면(→ 조화 평균·계면에 격자선), 해상되지 않은 얇은 전하, 모서리 특이점(\(|\mathbf E| \propto r^{\pi/\beta - 1}\), 차수 약 \(2\pi/\beta\))이 2차 수렴을 깎는다.</li>
+      <li>FEM: 약형식 \(\int\varepsilon\nabla V\cdot\nabla w = \int\rho w\), 모자 함수 기저와 갤러킨 시험으로 \(\mathbf K\mathbf V = \mathbf F\). 1D 요소 행렬 \((\varepsilon/h)[1, -1; -1, 1]\), 삼각형 \(\varepsilon(b_ib_j + c_ic_j)/4A\). 에너지 최소 원리 때문에 정전 용량이 위에서 수렴하고, 노이만 경계·\(D_n\) 연속은 자연히 만족된다.</li>
+      <li>FDTD: \(E\)와 \(H\)를 공간 반 칸·시간 반 걸음 엇갈린 이 격자에 두고 도약 개구리로 갱신한다. 쿠랑 조건 \(\Delta t \le 1/(c\sqrt{\sum\Delta_i^{-2}})\)(균일: \(S \le 1/\sqrt D\)), 넘으면 짧은 파장이 \(e^{2\cosh^{-1}S}\)배씩 자란다. 수치 분산 \(\sin(\omega\Delta t/2) = S\sin(\tilde k\Delta x/2)\): 파장당 10–20칸 이상.</li>
+      <li>흡수 경계: 무르 1차 \(R = (\cos\theta - 1)/(\cos\theta + 1)\), 2차는 그 제곱. PML은 \(\sigma^*/\mu_0 = \sigma/\varepsilon_0\)로 임피던스를 맞춘 손실층, \(R(\theta) = \exp[-2\sigma_{max}d\cos\theta/((m+1)\varepsilon_0c)]\). 너무 급한 손실은 이산화 반사를 만든다. 주기·블로흐 경계와 TF/SF 원천.</li>
+      <li>모멘트 법: 표면 전하의 적분 방정식, 펄스 기저·점 정합으로 \(\mathbf Z\boldsymbol\sigma = \mathbf V\)(밀집 행렬). 띠 끝 전하 \(\propto d^{-1/2}\) 때문에 균일 분할은 1차, 끝을 촘촘히(코사인) 하면 2차로 수렴한다. 대형 문제는 FMM·FFT·무작위 보행.</li>
+      <li>RCWA: 플로케 차수 \(k_{xm} = k_0(n\sin\theta + m\lambda/\Lambda)\), 격자 방정식 \(n_{out}\sin\theta_m = n_{in}\sin\theta_{in} + m\lambda/\Lambda\). 층마다 \(\varepsilon(x)\)의 푸리에 행렬로 고유값 문제를 풀고 S 행렬로 잇는다. TE는 빨리, TM은 역규칙이 있어야 수렴한다. OCD는 RCWA 스펙트럼을 측정에 맞춰 선폭·높이를 역산한다.</li>
+      <li>미지수의 자리(공간·표면·차수)가 행렬 모양과 쓰임을 정한다. 결과는 격자 수렴·해석적 극한·보존 법칙·교차 검증으로 확인한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(c = 2.998\times10^8\) m/s, \(\varepsilon_0 = 8.854\times10^{-12}\) F/m. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="수렴 차수" data-answer="1.98" data-tol="0.03" data-label="p =">
+        <div class="prob-q"><p>어떤 유한 차분 풀이의 최대 오차가 격자 간격 \(h\)에서 \(3.2\times10^{-3}\), \(h/2\)에서 \(8.1\times10^{-4}\)였다. 관측된 수렴 차수는?</p></div>
+        <div class="prob-sol"><p>\(p = \log_2(3.2\times10^{-3}/8.1\times10^{-4}) = \log_2 3.95 = 1.98\). 2차 방법이 점근 영역에 들어와 있다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="리처드슨 외삽" data-answer="150.4" data-label="C* =" data-unit="pF/m">
+        <div class="prob-q"><p>매끈한 경계의 2차 정확도 풀이로 정전 용량을 구했더니 격자 \(h\)에서 152.4 pF/m, \(h/2\)에서 150.9 pF/m였다. 리처드슨 외삽값은?</p></div>
+        <div class="prob-sol"><p>\(p = 2\): \(C^* = 150.9 + (150.9 - 152.4)/(2^2 - 1) = 150.9 - 0.5 = 150.4\) pF/m. 남은 오차는 \(h/2\) 결과의 오차(0.5)보다 훨씬 작다고 기대된다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="FEM의 성질">
+        <div class="prob-q"><p>도체 전위가 주어진 정전기 문제를 선형 요소 FEM으로 풀어 정전 용량을 \(C = 2W/V^2\)로 구했다. 격자를 다듬을 때 계산값에 대해 옳은 것은?</p></div>
+        <div class="prob-choices"><button>언제나 참값보다 작고 아래에서 올라간다</button><button data-correct>언제나 참값 이상이고 위에서 내려온다</button><button>참값 주위를 진동하며 수렴한다</button><button>격자에 따라 위아래가 정해지지 않는다</button></div>
+        <div class="prob-sol"><p>참 해는 정전 에너지를 최소로 하는 함수이고, FEM은 그보다 좁은 함수 공간(꺾은선)에서 최소를 찾으므로 \(W_{FEM} \ge W\), 곧 \(C_{FEM} \ge C\). 격자를 다듬으면 함수 공간이 넓어져 단조롭게 내려온다(격자를 포함 관계로 다듬을 때).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="1D FEM 조립" data-answer="1.20" data-label="V₁ =" data-unit="V">
+        <div class="prob-q"><p>1차원 영역 \(0 \le x \le 3\)(단위 nm)에서 \(0 < x < 1\)은 \(\varepsilon_r = 2\), \(1 < x < 3\)은 \(\varepsilon_r = 1\)이다. \(V(0) = 0\), \(V(3) = 6\) V이고 전하는 없다. 노드 \(x = 0, 1, 3\)의 두 요소로 FEM을 세워 \(x = 1\)의 전위를 구하라.</p></div>
+        <div class="prob-hint">요소 강성은 \(\varepsilon/h\): 2/1 = 2, 1/2 = 0.5.</div>
+        <div class="prob-sol"><p>노드 1의 줄: \(2(V_1 - 0) + 0.5(V_1 - 6) = 0\) → \(2.5V_1 = 3\) → \(V_1 = 1.20\) V. 직렬 축전기의 전압 분배(유전율이 큰 층에 전압이 적게 걸린다)와 같고 정확한 해와 일치한다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="쿠랑 조건(2D)" data-answer="47.2" data-label="Δt_max =" data-unit="as">
+        <div class="prob-q"><p>\(\Delta x = \Delta y = 20\) nm인 2차원 FDTD 격자(진공)의 최대 시간 간격은 몇 아토초(as)인가?</p></div>
+        <div class="prob-sol"><p>\(\Delta t \le \Delta/(c\sqrt2) = 2\times10^{-8}/(2.998\times10^8\times1.4142) = 4.72\times10^{-17}\) s = 47.2 as.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="쿠랑 조건(3D 비균일)" data-answer="13.6" data-label="Δt_max =" data-unit="as">
+        <div class="prob-q"><p>얇은 막을 해상하려고 \(\Delta x = \Delta y = 10\) nm, \(\Delta z = 5\) nm로 잡은 3차원 FDTD 격자의 최대 시간 간격은? (진공 기준)</p></div>
+        <div class="prob-sol"><p>\(\sqrt{1/10^2 + 1/10^2 + 1/5^2} = \sqrt{0.06} = 0.2449\ \text{nm}^{-1}\). \(\Delta t \le 1/(c\times0.2449\times10^9) = 1.36\times10^{-17}\) s = 13.6 as. 가장 작은 칸이 시간 간격을 끌어내린다(균일 10 nm면 19.3 as).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수치 분산" data-answer="0.980; 7.45" data-label="ṽ_p/c =; Δφ =" data-unit="; °">
+        <div class="prob-q"><p>1차원 FDTD, \(S = 0.5\)에서 파장당 8칸인 파동의 격자 위 위상 속도 \(\tilde v_p/c\)와, 한 파장 진행할 때마다 생기는 위상 오차(도)는?</p></div>
+        <div class="prob-hint">\(\sin(\tilde k\Delta x/2) = \sin(\pi S/N_\lambda)/S\), \(\tilde v_p/c = (\pi/N_\lambda)/(\tilde k\Delta x/2)\).</div>
+        <div class="prob-sol"><p>\(\sin(\pi\times0.5/8) = \sin 0.19635 = 0.19509\). \(\sin(\tilde k\Delta x/2) = 0.39018\) → \(\tilde k\Delta x/2 = 0.40087\). \(\tilde v_p/c = 0.39270/0.40087 = 0.9797\). 위상 오차 \(360°(1/0.9797 - 1) = 7.45°\)/파장.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="무르 경계" data-answer="-22.9; -9.54" data-tol="0.1" data-label="R(30°) =; R(60°) =" data-unit="dB; dB">
+        <div class="prob-q"><p>1차 무르 흡수 경계에 30°와 60°로 들어오는 평면파의 반사(진폭)는 각각 몇 dB인가? (\(20\log_{10}|R|\))</p></div>
+        <div class="prob-sol"><p>\(|R(30°)| = (1 - 0.8660)/(1 + 0.8660) = 0.0718\) → −22.9 dB. \(|R(60°)| = 0.5/1.5 = 0.333\) → −9.54 dB. 2차 무르는 각각 −45.8 dB, −19.1 dB다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="PML 반사" data-answer="-81.8; -40.9" data-tol="0.3" data-label="R(0) =; R(60°) =" data-unit="dB; dB">
+        <div class="prob-q"><p>격자 간격 5 nm, 두께 10칸, 3차 다항식 분포(\(m = 3\)), \(\sigma_{max} = 1.0\times10^6\) S/m인 PML의 이론 반사를 수직 입사와 60° 입사에 대해 dB로 구하라.</p></div>
+        <div class="prob-sol"><p>\(d = 50\) nm. 지수 \(= 2\sigma_{max}d/((m+1)\varepsilon_0c) = 2(10^6)(5\times10^{-8})/(4\times8.854\times10^{-12}\times2.998\times10^8) = 0.1/0.010618 = 9.418\). \(R(0) = e^{-9.418} = 8.12\times10^{-5}\) → −81.8 dB. 60°: 지수에 \(\cos60° = 0.5\) → −40.9 dB.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="모멘트 법 행렬">
+        <div class="prob-q"><p>정전 용량 추출에서 모멘트 법의 행렬이 유한 차분법의 행렬과 가장 크게 다른 점은?</p></div>
+        <div class="prob-choices"><button>대각 원소가 0이다</button><button>행렬이 비대칭이라 풀 수 없다</button><button data-correct>모든 조각이 서로의 전위에 기여하므로 0이 아닌 원소로 꽉 차 있다</button><button>미지수가 공간 전체의 격자점이다</button></div>
+        <div class="prob-sol"><p>그린 함수는 멀리까지 0이 아니므로 \(Z_{ij}\)가 모두 0이 아니다(밀집 행렬). 대신 미지수는 표면에만 있어 개수가 훨씬 적다. FDM 행렬은 한 줄에 이웃 몇 개만 0이 아닌 희소 행렬이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="가장자리 특이성" data-answer="28.7" data-label="비율 =" data-unit="%">
+        <div class="prob-q"><p>폭 \(2a\)인 고립된 도체 띠의 전하 밀도는 \(\rho_s \propto 1/\sqrt{a^2 - x^2}\)이다. 양 끝에서 각각 폭의 5%(곧 \(0.9a < |x| < a\)) 안에 있는 전하는 전체의 몇 %인가?</p></div>
+        <div class="prob-hint">\(\int dx/\sqrt{a^2 - x^2} = \sin^{-1}(x/a)\).</div>
+        <div class="prob-sol"><p>한쪽 반(\(0 < x < a\))의 전하에 대한 비율: \([\pi/2 - \sin^{-1}0.9]/(\pi/2) = (1.5708 - 1.1198)/1.5708 = 0.287\). 양쪽도 같은 비율이므로 28.7%. 폭의 10%에 전하의 29%가 몰려 있다 — 균일 분할이 끝에서 틀리는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="동일 평면 띠" data-answer="60.6" data-label="C′ =" data-unit="pF/m">
+        <div class="prob-q"><p>SiO₂(\(\varepsilon_r = 3.9\)) 속에 폭 15 µm인 두 띠가 간격 10 µm로 같은 평면에 있다. 단위 길이 정전 용량은? (\(k = s/(s+2w)\), \(K(k^2 = 0.0625) = 1.5962\), \(K(k'^2 = 0.9375) = 2.8012\))</p></div>
+        <div class="prob-sol"><p>\(k = 10/40 = 0.25\). \(C'/\varepsilon = K(k')/K(k) = 2.8012/1.5962 = 1.7549\). \(C' = 1.7549\times3.9\times8.854\times10^{-12} = 6.06\times10^{-11}\) F/m = 60.6 pF/m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="격자 방정식" data-answer="52.3; 9" data-label="θ₁ =; 투과 차수 =" data-unit="°; 개">
+        <div class="prob-q"><p>주기 800 nm 격자에 633 nm 빛이 수직 입사한다. 공기 쪽 +1차 반사각과, 실리콘(\(n = 3.88\)) 기판 속 진행 투과 차수의 개수는?</p></div>
+        <div class="prob-sol"><p>\(\sin\theta_1 = 633/800 = 0.791\) → 52.3°. 기판: \(|m|\times0.791 < 3.88\) → \(|m| \le 4\), 9개.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="OCD 타깃 설계" data-answer="131" data-label="Λ_max =" data-unit="nm">
+        <div class="prob-q"><p>OCD 장비가 파장 250–800 nm, 입사각 65°로 측정한다. 모든 파장에서 공기 쪽으로 0차 반사만 나오게(±1차가 소산되게) 하려면 격자 주기는 최대 몇 nm여야 하나?</p></div>
+        <div class="prob-hint">가장 위험한 것은 가장 짧은 파장의 −1차다: \(|\sin\theta_{in} - \lambda/\Lambda| < 1\)이 깨지면 안 된다.</div>
+        <div class="prob-sol"><p>−1차: \(\sin\theta_{-1} = \sin65° - \lambda/\Lambda\). 소산 조건 \(\lambda/\Lambda - \sin65° > 1\) → \(\Lambda < \lambda/(1 + \sin65°) = 250/1.9063 = 131\) nm. (+1차는 \(\sin65° + \lambda/\Lambda > 1\)로 언제나 소산.)</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="계산량" data-answer="6.67; 80" data-tol="2%" data-label="시간 =; 메모리 =" data-unit="s; GB">
+        <div class="prob-q"><p>모멘트 법 행렬을 가우스 소거(\(\tfrac23N^3\) 번 연산)로 푼다. 초당 \(10^{11}\)번 연산하는 컴퓨터에서 \(N = 10^4\)일 때의 시간(s)과, \(N = 10^5\)일 때 배정밀도(8 B) 행렬의 메모리(GB)는?</p></div>
+        <div class="prob-sol"><p>\(N = 10^4\): \(\tfrac23\times10^{12}/10^{11} = 6.67\) s(메모리 0.8 GB). \(N = 10^5\): 시간은 1000배(약 1.9시간), 메모리 \(8\times10^{10}\) B = 80 GB. FMM 같은 \(O(N)\) 방법이 필요한 이유다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>격자를 반으로 줄였더니 오차가 1/4이 되지 않고 약 0.4배가 되었다. 가장 그럴듯한 원인은?</p><div class="opts">
+        <button class="opt">반복 풀이기가 수렴하지 않았다</button><button class="opt" data-correct>도체 모서리 같은 특이점이 있어 해가 매끈하지 않다</button><button class="opt">2차 차분 공식이 잘못되었다</button><button class="opt">컴퓨터의 반올림 오차 때문이다</button>
+      </div><div class="quiz-exp">0.4배는 차수 \(\log_2 2.5 \approx 1.3\)이다. 270° 모서리의 \(r^{-1/3}\) 특이성이 만드는 4/3 차수와 맞는다. 모서리 쪽으로 격자를 몰아주면 2차를 되찾을 수 있다.</div></div>
+      <div class="quiz-q"><p>FDTD에서 쿠랑 조건을 어기면 무슨 일이 일어나는가?</p><div class="opts">
+        <button class="opt">파동이 조금 빨리 달린다</button><button class="opt">파동이 조금 느리게 달린다</button><button class="opt" data-correct>가장 짧은 파장 성분이 걸음마다 증폭되어 해가 발산한다</button><button class="opt">경계에서 반사가 늘어난다</button>
+      </div><div class="quiz-exp">\(\sin(\omega\Delta t/2) = S\sin(\tilde k\Delta x/2)\)에서 \(S > 1\)이면 일부 \(\tilde k\)에 실수 \(\omega\)가 없어 증폭 인자가 1보다 크다. 명시적 방법의 조건부 안정성이다.</div></div>
+      <div class="quiz-q"><p>PML이 단순한 "손실이 큰 층"보다 나은 결정적 이유는?</p><div class="opts">
+        <button class="opt">손실이 더 크다</button><button class="opt" data-correct>자기 손실을 \(\sigma^*/\mu_0 = \sigma/\varepsilon_0\)로 맞춰 고유 임피던스가 진공과 같아 입구에서 반사가 없다</button><button class="opt">파동의 주파수를 낮춘다</button><button class="opt">격자 칸을 크게 쓸 수 있다</button>
+      </div><div class="quiz-exp">전기 손실만 있는 층은 임피던스가 달라 입구에서 반사한다. 정합된 PML은 연속 이론에서 반사가 0이고, 남는 것은 왕복 감쇠와 이산화 반사뿐이다.</div></div>
+      <div class="quiz-q"><p>얇은 띠의 정전 용량을 모멘트 법으로 구할 때 균일 분할이 1차로 느리게 수렴하는 이유는?</p><div class="opts">
+        <button class="opt">행렬이 꽉 차서</button><button class="opt">그린 함수에 로그가 들어 있어서</button><button class="opt" data-correct>띠 끝의 전하 밀도가 \(d^{-1/2}\)로 발산해 상수 조각이 끝을 잘 흉내 내지 못해서</button><button class="opt">점 정합이 대칭이 아니라서</button>
+      </div><div class="quiz-exp">가장자리 특이성이 원인이다. 끝을 촘촘히 나누는 코사인 분할이나, \(1/\sqrt{a^2 - x^2}\)을 품은 기저를 쓰면 빨라진다.</div></div>
+      <div class="quiz-q"><p>OCD 산란 계측에서 RCWA를 쓰는 것이 FDTD보다 자연스러운 이유는?</p><div class="opts">
+        <button class="opt">RCWA가 비주기 구조에 더 정확해서</button><button class="opt" data-correct>타깃이 주기적인 층 구조라 한 주기를 푸리에 차수 몇 개로 정확히 풀 수 있고, 파장·각도마다 빠르게 계산해 라이브러리를 만들 수 있어서</button><button class="opt">RCWA는 흡수 경계가 필요 없고 시간 영역이라서</button><button class="opt">FDTD는 반사율을 계산할 수 없어서</button>
+      </div><div class="quiz-exp">RCWA는 주파수 영역 방법으로, 주기·층 구조에서 미지수가 차수 수뿐이라 매우 빠르다. 수만 개 스펙트럼의 라이브러리나 실시간 회귀에 알맞다. 비주기·복잡한 3D 구조나 넓은 띠 과도 응답에는 FDTD가 낫다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const K = EM.const, eps0 = K.eps0, c0 = K.c, PI = Math.PI;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sup = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const ex = Math.floor(Math.log10(Math.abs(x))); const m = x / Math.pow(10, ex);
+    if (ex >= -2 && ex <= 3) return String(Number(x.toPrecision(d + 1)));
+    return m.toFixed(d) + "×10" + sup(ex);
+  };
+  const f3 = (x) => String(Number(x.toPrecision(3)));
+  const font = (px, mono, bold) => (bold ? "600 " : "") + px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const view = (w, h, B, pad = 8) => {
+    const s = Math.min((w - 2 * pad) / (B[1] - B[0]), (h - 2 * pad) / (B[3] - B[2]));
+    const ox = (w - s * (B[1] - B[0])) / 2, oy = (h - s * (B[3] - B[2])) / 2;
+    const X = (x) => ox + (x - B[0]) * s, Y = (y) => h - oy - (y - B[2]) * s;
+    return { s, X, Y, ix: (px) => B[0] + (px - ox) / s, iy: (py) => B[2] + (h - oy - py) / s, toPx: (x, y) => [X(x), Y(y)], box: { x: X(B[0]), y: Y(B[3]), w: s * (B[1] - B[0]), h: s * (B[3] - B[2]) } };
+  };
+  const contourDraw = (ctx, cs, toPx, color, dash = [4, 4], width = 1) => { ctx.save(); ctx.setLineDash(dash); ctx.lineWidth = width; EM.drawContours(ctx, cs, toPx, () => color); ctx.restore(); };
+  const line = (ctx, pts, color, width = 2, dash) => { ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let st = false; pts.forEach(([x, y]) => { if (!isFinite(x) || !isFinite(y)) { st = false; return; } if (!st) { ctx.moveTo(x, y); st = true; } else ctx.lineTo(x, y); }); ctx.stroke(); ctx.restore(); };
+  const dB = (x) => 20 * Math.log10(Math.max(1e-300, Math.abs(x)));
+
+  /* ======================================================== 수치 핵심 함수 */
+  /** 1D 유한 차분: d/dx(ε dV/dx) = −f, 양 끝 디리클레. mode 'arith'(노드 산술 평균) | 'harm'(셀 조화 평균) */
+  function fd1d(N, epsFn, f, V0, V1, mode, iface) {
+    const h = 1 / N, n = N + 1, a = new Float64Array(n), b = new Float64Array(n), c = new Float64Array(n), d = new Float64Array(n);
+    const epsCell = (i) => {
+      const xl = (i - 1) * h, xr = i * h;
+      if (mode === "harm") {
+        if (iface !== undefined && iface > xl && iface < xr) { const w1 = (iface - xl) / h; return 1 / (w1 / epsFn(xl + 1e-12) + (1 - w1) / epsFn(xr - 1e-12)); }
+        return epsFn(0.5 * (xl + xr));
+      }
+      return 0.5 * (epsFn(xl) + epsFn(xr));
+    };
+    b[0] = 1; d[0] = V0; b[N] = 1; d[N] = V1;
+    for (let i = 1; i < N; i++) { const em = epsCell(i), ep = epsCell(i + 1); a[i] = em; c[i] = ep; b[i] = -(em + ep); d[i] = -f(i * h) * h * h; }
+    return EM.tridiag(a, b, c, d);
+  }
+  /** 1D 선형 FEM: −V″ = f, V(0) = V(1) = 0, 노드 배열(정렬) */
+  function fem1d(nodes, f) {
+    const n = nodes.length, a = new Float64Array(n), b = new Float64Array(n), c = new Float64Array(n), d = new Float64Array(n);
+    const gp = [-Math.sqrt(0.6), 0, Math.sqrt(0.6)], gw = [5 / 9, 8 / 9, 5 / 9];
+    for (let e = 0; e < n - 1; e++) {
+      const x0 = nodes[e], x1 = nodes[e + 1], he = x1 - x0, k = 1 / he;
+      b[e] += k; b[e + 1] += k; c[e] -= k; a[e + 1] -= k;
+      const ns = 12;
+      for (let s = 0; s < ns; s++) {
+        const s0 = x0 + (he * s) / ns, s1 = x0 + (he * (s + 1)) / ns;
+        for (let q = 0; q < 3; q++) { const x = 0.5 * (s0 + s1) + 0.5 * (s1 - s0) * gp[q], w = 0.5 * (s1 - s0) * gw[q], fx = f(x); d[e] += (w * fx * (x1 - x)) / he; d[e + 1] += (w * fx * (x - x0)) / he; }
+      }
+    }
+    b[0] = 1; c[0] = 0; d[0] = 0; b[n - 1] = 1; a[n - 1] = 0; d[n - 1] = 0;
+    return EM.tridiag(a, b, c, d);
+  }
+  /** 2D P1 FEM(텐서 격자를 삼각형으로): 바닥 V = 0, 도체 사각형 V = 1, 나머지 노이만. 대각 전처리 CG. → {C(단위 ε), V, tris} */
+  function fem2d(xs, ys, cond) {
+    const nx = xs.length, ny = ys.length, N = nx * ny, id = (i, j) => j * nx + i;
+    const fixed = new Uint8Array(N), V = new Float64Array(N);
+    const inC = (x, y) => x >= cond.x0 - 1e-9 && x <= cond.x1 + 1e-9 && y >= cond.y0 - 1e-9 && y <= cond.y1 + 1e-9;
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const k = id(i, j); if (j === 0) fixed[k] = 1; else if (inC(xs[i], ys[j])) { fixed[k] = 1; V[k] = 1; } }
+    const rows = Array.from({ length: N }, () => new Map()), tris = [];
+    const addT = (p, q, r) => {
+      const P = [p, q, r], x = P.map((k) => xs[k % nx]), y = P.map((k) => ys[Math.floor(k / nx)]);
+      if (P.every((k) => fixed[k] && V[k] === 1)) return;
+      const A = Math.abs((x[1] - x[0]) * (y[2] - y[0]) - (x[2] - x[0]) * (y[1] - y[0])) / 2;
+      const bb = [y[1] - y[2], y[2] - y[0], y[0] - y[1]], cc = [x[2] - x[1], x[0] - x[2], x[1] - x[0]];
+      tris.push(P);
+      for (let s = 0; s < 3; s++) for (let t = 0; t < 3; t++) { const m = rows[P[s]]; m.set(P[t], (m.get(P[t]) || 0) + (bb[s] * bb[t] + cc[s] * cc[t]) / (4 * A)); }
+    };
+    for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+      const a = id(i, j), b = id(i + 1, j), c = id(i + 1, j + 1), d = id(i, j + 1);
+      if ((i + j) % 2 === 0) { addT(a, b, c); addT(a, c, d); } else { addT(a, b, d); addT(b, c, d); }
+    }
+    const free = []; for (let k = 0; k < N; k++) if (!fixed[k] && rows[k].size) free.push(k);
+    const bv = new Float64Array(N); for (const k of free) { let s = 0; for (const [m, v] of rows[k]) if (fixed[m]) s -= v * V[m]; bv[k] = s; }
+    const x = new Float64Array(N), r = new Float64Array(N), p = new Float64Array(N), Ap = new Float64Array(N), z = new Float64Array(N), Dg = new Float64Array(N);
+    for (const k of free) { Dg[k] = rows[k].get(k); r[k] = bv[k]; z[k] = r[k] / Dg[k]; p[k] = z[k]; }
+    let rz = 0, b2 = 0; for (const k of free) { rz += r[k] * z[k]; b2 += bv[k] * bv[k]; } b2 = Math.sqrt(b2) || 1;
+    let it = 0;
+    for (; it < 4000; it++) {
+      for (const k of free) { let s = 0; for (const [m, v] of rows[k]) if (!fixed[m]) s += v * p[m]; Ap[k] = s; }
+      let pAp = 0; for (const k of free) pAp += p[k] * Ap[k];
+      const al = rz / pAp; let rr = 0;
+      for (const k of free) { x[k] += al * p[k]; r[k] -= al * Ap[k]; rr += r[k] * r[k]; }
+      if (Math.sqrt(rr) < 1e-10 * b2) break;
+      let rzn = 0; for (const k of free) { z[k] = r[k] / Dg[k]; rzn += r[k] * z[k]; }
+      const be = rzn / rz; rz = rzn; for (const k of free) p[k] = z[k] + be * p[k];
+    }
+    for (const k of free) V[k] = x[k];
+    let W2 = 0; for (let k = 0; k < N; k++) for (const [m, v] of rows[k]) W2 += V[k] * v * V[m];
+    return { C: W2, V, tris, it: it + 1, N, nx };
+  }
+  /** 축 좌표: breaks를 반드시 지나고, graded면 도체 모서리 쪽으로 칸을 몬다 */
+  function axis(L, br, n, graded) {
+    const out = [0];
+    for (let k = 0; k < br.length - 1; k++) {
+      const a = br[k], b = br[k + 1], m = Math.max(1, Math.round((n * (b - a)) / L));
+      for (let q = 1; q <= m; q++) {
+        const u = q / m; let t = u;
+        if (graded) { if (a === 0) t = 1 - Math.pow(1 - u, 1.8); else if (b === L) t = Math.pow(u, 1.8); else t = u - (0.85 * Math.sin(2 * PI * u)) / (2 * PI); }
+        out.push(a + (b - a) * t);
+      }
+    }
+    return out;
+  }
+  /** ∫_A^B ln|P − r′| dl′ (곧은 조각, 정확한 적분) */
+  function lnInt(px, py, ax, ay, bx, by) {
+    const L = Math.hypot(bx - ax, by - ay), tx = (bx - ax) / L, ty = (by - ay) / L;
+    const u0 = (ax - px) * tx + (ay - py) * ty, u1 = u0 + L, dd = Math.abs((ax - px) * ty - (ay - py) * tx);
+    const F = (u) => { const r2 = u * u + dd * dd; return (r2 > 0 ? 0.5 * u * Math.log(r2) : 0) - u + (dd > 1e-14 ? dd * Math.atan(u / dd) : 0); };
+    return F(u1) - F(u0);
+  }
+  /** 2D 모멘트 법(펄스 기저·점 정합): 조각 panels, 도체별 전위 Vs → 조각 전하 밀도(단위 ε) */
+  function momSolve(panels, Vs) {
+    const n = panels.length, A = new Float64Array(n * n), mid = panels.map((p) => [(p.x0 + p.x1) / 2, (p.y0 + p.y1) / 2]);
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const q = panels[j]; A[i * n + j] = -lnInt(mid[i][0], mid[i][1], q.x0, q.y0, q.x1, q.y1) / (2 * PI); }
+    return EM.solve(A, panels.map((p) => Vs[p.cond]));
+  }
+  function split(x0, y0, x1, y1, n, cosine, cond) {
+    const out = [];
+    for (let k = 0; k < n; k++) {
+      const t0 = cosine ? 0.5 * (1 - Math.cos((PI * k) / n)) : k / n, t1 = cosine ? 0.5 * (1 - Math.cos((PI * (k + 1)) / n)) : (k + 1) / n;
+      out.push({ x0: x0 + (x1 - x0) * t0, y0: y0 + (y1 - y0) * t0, x1: x0 + (x1 - x0) * t1, y1: y0 + (y1 - y0) * t1, cond });
+    }
+    return out;
+  }
+  const plen = (p) => Math.hypot(p.x1 - p.x0, p.y1 - p.y0);
+  /** 실대칭 행렬 야코비 고유값 */
+  function jacobiEig(A0, n) {
+    const A = Float64Array.from(A0), V = new Float64Array(n * n); for (let i = 0; i < n; i++) V[i * n + i] = 1;
+    for (let sweep = 0; sweep < 60; sweep++) {
+      let off = 0; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += A[i * n + j] ** 2;
+      if (off < 1e-22) break;
+      for (let p = 0; p < n; p++) for (let r = p + 1; r < n; r++) {
+        const apr = A[p * n + r]; if (Math.abs(apr) < 1e-300) continue;
+        const th = (A[r * n + r] - A[p * n + p]) / (2 * apr), t = (th >= 0 ? 1 : -1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), s = t * c;
+        for (let k = 0; k < n; k++) { const a1 = A[k * n + p], a2 = A[k * n + r]; A[k * n + p] = c * a1 - s * a2; A[k * n + r] = s * a1 + c * a2; }
+        for (let k = 0; k < n; k++) { const a1 = A[p * n + k], a2 = A[r * n + k]; A[p * n + k] = c * a1 - s * a2; A[r * n + k] = s * a1 + c * a2; }
+        for (let k = 0; k < n; k++) { const v1 = V[k * n + p], v2 = V[k * n + r]; V[k * n + p] = c * v1 - s * v2; V[k * n + r] = s * v1 + c * v2; }
+      }
+    }
+    const vals = []; for (let i = 0; i < n; i++) vals.push(A[i * n + i]);
+    return { vals, vecs: V };
+  }
+  /** 복소 연립 방정식(부분 피벗 가우스 소거) */
+  function csolve(Ar, Ai, br, bi, n) {
+    for (let c = 0; c < n; c++) {
+      let p = c, best = -1; for (let r = c; r < n; r++) { const m = Ar[r * n + c] ** 2 + Ai[r * n + c] ** 2; if (m > best) { best = m; p = r; } }
+      if (p !== c) { for (let k = 0; k < n; k++) { let t = Ar[c * n + k]; Ar[c * n + k] = Ar[p * n + k]; Ar[p * n + k] = t; t = Ai[c * n + k]; Ai[c * n + k] = Ai[p * n + k]; Ai[p * n + k] = t; } let t = br[c]; br[c] = br[p]; br[p] = t; t = bi[c]; bi[c] = bi[p]; bi[p] = t; }
+      const pr = Ar[c * n + c], pi = Ai[c * n + c], pd = pr * pr + pi * pi;
+      for (let r = c + 1; r < n; r++) {
+        const ar = Ar[r * n + c], ai = Ai[r * n + c]; if (ar === 0 && ai === 0) continue;
+        const fr = (ar * pr + ai * pi) / pd, fi = (ai * pr - ar * pi) / pd;
+        for (let k = c; k < n; k++) { const xr = Ar[c * n + k], xi = Ai[c * n + k]; Ar[r * n + k] -= fr * xr - fi * xi; Ai[r * n + k] -= fr * xi + fi * xr; }
+        br[r] -= fr * br[c] - fi * bi[c]; bi[r] -= fr * bi[c] + fi * br[c];
+      }
+    }
+    const xr = new Float64Array(n), xi = new Float64Array(n);
+    for (let r = n - 1; r >= 0; r--) {
+      let sr = br[r], si = bi[r];
+      for (let k = r + 1; k < n; k++) { sr -= Ar[r * n + k] * xr[k] - Ai[r * n + k] * xi[k]; si -= Ar[r * n + k] * xi[k] + Ai[r * n + k] * xr[k]; }
+      const pr = Ar[r * n + r], pi = Ai[r * n + r], pd = pr * pr + pi * pi;
+      xr[r] = (sr * pr + si * pi) / pd; xi[r] = (si * pr - sr * pi) / pd;
+    }
+    return { re: xr, im: xi };
+  }
+  /**
+   * RCWA, TE, 가운데 정렬 이진 격자 한 층(공학 관례 e^{jωt}). o = {lam, period, fill, depth, nI, epsR, epsG, epsS{re,im}, th, M}
+   * → {R[], T[] (차수 m = −M…M 효율), kx[]}
+   */
+  function rcwa(o) {
+    const M = o.M, N = 2 * M + 1, k0 = (2 * PI) / o.lam;
+    const kx = new Float64Array(N); for (let i = 0; i < N; i++) kx[i] = o.nI * Math.sin(o.th) + ((i - M) * o.lam) / o.period;
+    const eh = (h) => (h === 0 ? o.fill * o.epsR + (1 - o.fill) * o.epsG : ((o.epsR - o.epsG) * Math.sin(PI * h * o.fill)) / (PI * h));
+    const A = new Float64Array(N * N);
+    for (let i = 0; i < N; i++) for (let p = 0; p < N; p++) A[i * N + p] = (i === p ? kx[i] * kx[i] : 0) - eh(p - i);
+    const { vals, vecs } = jacobiEig(A, N);
+    const q = vals.map((v) => (v >= 0 ? { re: Math.sqrt(v), im: 0 } : { re: 0, im: Math.sqrt(-v) }));
+    const X = q.map((z) => { const m = Math.exp(-k0 * o.depth * z.re), a = -k0 * o.depth * z.im; return { re: m * Math.cos(a), im: m * Math.sin(a) }; });
+    const br = (re, im) => { let z = EM.cx.sqrt({ re, im }); if (z.im > 1e-15 || (Math.abs(z.im) <= 1e-15 && z.re < 0)) z = { re: -z.re, im: -z.im }; return z; };
+    const kzI = [], kzS = [];
+    for (let i = 0; i < N; i++) { kzI.push(br(o.nI * o.nI - kx[i] * kx[i], 0)); kzS.push(br(o.epsS.re - kx[i] * kx[i], o.epsS.im)); }
+    const n4 = 4 * N, Mr = new Float64Array(n4 * n4), Mi = new Float64Array(n4 * n4), Br = new Float64Array(n4), Bi = new Float64Array(n4);
+    const set = (r, c, re, im) => { Mr[r * n4 + c] = re; Mi[r * n4 + c] = im; };
+    const W = (i, m) => vecs[i * N + m], i0 = M;
+    for (let i = 0; i < N; i++) {
+      set(i, i, 1, 0);
+      for (let m = 0; m < N; m++) { const w = W(i, m); set(i, N + m, -w, 0); set(i, 2 * N + m, -w * X[m].re, -w * X[m].im); }
+      if (i === i0) Br[i] = -1;
+      const r2 = N + i; set(r2, i, -kzI[i].im, kzI[i].re);
+      for (let m = 0; m < N; m++) { const w = W(i, m), wr = w * q[m].re, wi = w * q[m].im; set(r2, N + m, wr, wi); set(r2, 2 * N + m, -(wr * X[m].re - wi * X[m].im), -(wr * X[m].im + wi * X[m].re)); }
+      if (i === i0) { Br[r2] = -kzI[i0].im; Bi[r2] = kzI[i0].re; }
+      const r3 = 2 * N + i;
+      for (let m = 0; m < N; m++) { const w = W(i, m); set(r3, N + m, w * X[m].re, w * X[m].im); set(r3, 2 * N + m, w, 0); }
+      set(r3, 3 * N + i, -1, 0);
+      const r4 = 3 * N + i;
+      for (let m = 0; m < N; m++) { const w = W(i, m), wr = w * q[m].re, wi = w * q[m].im; set(r4, N + m, -(wr * X[m].re - wi * X[m].im), -(wr * X[m].im + wi * X[m].re)); set(r4, 2 * N + m, wr, wi); }
+      set(r4, 3 * N + i, -kzS[i].im, kzS[i].re);
+    }
+    const sol = csolve(Mr, Mi, Br, Bi, n4), c0n = o.nI * Math.cos(o.th), R = [], T = [];
+    for (let i = 0; i < N; i++) {
+      R.push(((sol.re[i] ** 2 + sol.im[i] ** 2) * kzI[i].re) / c0n);
+      T.push(((sol.re[3 * N + i] ** 2 + sol.im[3 * N + i] ** 2) * kzS[i].re) / c0n);
+    }
+    return { R, T, kx, M };
+  }
+  /** 공학 관례 실리콘 유전율 ε = (n − jk)² (EM.nk는 n + ik) */
+  const epsSi = (lam) => { const N = EM.nk("Si", lam); return { re: N.re * N.re - N.im * N.im, im: -2 * N.re * N.im }; };
+  const nRes = EM.nk("resist", 633).re;
+
+  /* ---------------------------------------------------------- 머리: 2D FDTD, 벽 칠하기 */
+  {
+    const NX = 150, NY = 84, TB = 40, PER = 28;
+    const F = EM.fdtd2d(NX, NY, { S: 0.5 });
+    const src = { i: 22, j: 42 };
+    const BR = [{ v: "wall", lab: "벽 칠하기" }, { v: "erase", lab: "지우개" }, { v: "mode", lab: "연속파" }, { v: "clear", lab: "모두 지우기" }, { v: "reset", lab: "처음으로" }];
+    let brush = "wall", mode = "cw", act = null, t0 = 0;
+    function preset() {
+      F.reset(); F.pec.fill(0); t0 = 0;
+      for (let j = 1; j < NY - 1; j++) { if ((j >= 34 && j <= 38) || (j >= 46 && j <= 50)) continue; F.pec[j * NX + 58] = 1; F.pec[j * NX + 59] = 1; }
+      src.i = 22; src.j = 42;
+    }
+    preset();
+    const swatches = (w) => { const bw = Math.min(96, (w - 16) / 5 - 6); return BR.map((b, k) => ({ x: 8 + k * (bw + 6), y: 6, w: bw, h: 28 })); };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal();
+      const cs = Math.min((w - 16) / NX, (h - TB - 24) / NY), bw = cs * NX, bh = cs * NY, bx = (w - bw) / 2, by = TB + 2;
+      self._g = { cs, bx, by, bw, bh };
+      EM.heatmap(ctx, F.Ez, NX, NY, { x: bx, y: by, w: bw, h: bh }, { cmap: "div", vmin: -0.28, vmax: 0.28 });
+      ctx.fillStyle = P.text; ctx.globalAlpha = 0.78;
+      for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) if (F.pec[j * NX + i]) ctx.fillRect(bx + i * cs, by + bh - (j + 1) * cs, cs + 0.6, cs + 0.6);
+      ctx.globalAlpha = 1; ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.strokeRect(bx, by, bw, bh);
+      const sx = bx + (src.i + 0.5) * cs, sy = by + bh - (src.j + 0.5) * cs;
+      handle(ctx, sx, sy, P.accent, 10); self._src = [sx, sy];
+      swatches(w).forEach((s, k) => {
+        const b = BR[k], on = b.v === brush;
+        ctx.fillStyle = b.v === "wall" ? P.text : P.surface; ctx.globalAlpha = b.v === "wall" ? 0.8 : 1;
+        ctx.fillRect(s.x, s.y, s.w, s.h); ctx.globalAlpha = 1;
+        ctx.strokeStyle = on ? P.accent : P.border; ctx.lineWidth = on ? 3 : 1; ctx.strokeRect(s.x, s.y, s.w, s.h);
+        ctx.fillStyle = b.v === "wall" ? P.bg : P.text; ctx.font = font(12, false, true); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        const narrow = s.w < 84, lab = b.v === "mode" ? (narrow ? (mode === "cw" ? "연속파" : "펄스") : mode === "cw" ? "연속파 ↔ 펄스" : "펄스 ↔ 연속파") : narrow ? ({ wall: "벽", erase: "지우개", clear: "비우기", reset: "처음" })[b.v] : b.lab;
+        if (narrow) ctx.font = font(11, false, true);
+        ctx.fillText(lab, s.x + s.w / 2, s.y + s.h / 2 + 1);
+      });
+      ctx.fillStyle = P.dim; ctx.font = font(11, true); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      ctx.fillText(w < 600 ? `걸음 ${F.t} · S = 0.5` : `걸음 ${F.t} · S = 0.5 · 파장 14칸 · ${mode === "cw" ? "연속파" : "펄스"} · 가장자리: 무르 흡수 경계`, bx, by + bh + 12);
+    }, { aspect: 0.62, minHeight: 250, maxHeight: 470 });
+    function cellAt(x, y) { const g = cv._g; return g ? [Math.floor((x - g.bx) / g.cs), Math.floor((g.by + g.bh - y) / g.cs)] : [-1, -1]; }
+    function paint(x, y) {
+      const [i0, j0] = cellAt(x, y);
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+        const i = i0 + di, j = j0 + dj; if (i < 1 || j < 1 || i > NX - 2 || j > NY - 2) continue;
+        if (Math.abs(i - src.i) + Math.abs(j - src.j) < 2) continue;
+        const k = j * NX + i; F.pec[k] = brush === "wall" ? 1 : 0; F.Ez[k] = 0;
+      }
+    }
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._src ? [{ id: "src", x: cv._src[0], y: cv._src[1], r: 13 }] : []),
+      down: (id, x, y) => {
+        act = null;
+        if (id === "src") { act = "src"; return; }
+        if (y < TB) {
+          const k = swatches(cv.w).findIndex((s) => x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h);
+          if (k < 0) return;
+          const v = BR[k].v;
+          if (v === "reset") preset(); else if (v === "clear") { F.reset(); F.pec.fill(0); t0 = 0; } else if (v === "mode") { mode = mode === "cw" ? "pulse" : "cw"; t0 = F.t; } else brush = v;
+          return;
+        }
+        act = "paint";
+      },
+      move: (id, x, y) => {
+        if (act === "src") { const [i, j] = cellAt(x, y); src.i = SB.clamp(i, 2, NX - 3); src.j = SB.clamp(j, 2, NY - 3); F.pec[src.j * NX + src.i] = 0; }
+        else if (act === "paint") paint(x, y);
+      },
+      up: () => { act = null; },
+    });
+    SB.loop("hero", () => {
+      for (let s = 0; s < 2; s++) {
+        const t = F.t - t0;
+        const v = mode === "cw" ? 0.5 * Math.sin((2 * PI * t) / PER) * Math.min(1, t / (2 * PER)) : 2.2 * EM.ricker(t % 260, 30, 9);
+        F.step({ i: src.i, j: src.j, value: v });
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 격자 수렴 */
+  {
+    const st = { a: 0.37, x0: 0.4 };
+    const W = 0.01, Asharp = 0.6 / W;
+    const shF = (x) => -Asharp * W * W * Math.log(Math.cosh((x - st.x0) / W));
+    const probs = {
+      smooth: { eps: () => 1, f: (x) => PI * PI * Math.sin(PI * x), V0: 0, V1: 1, ex: (x) => Math.sin(PI * x) + x, y: [-0.05, 1.7] },
+      iface: { eps: (x) => (x < st.a ? 3.9 : 11.7), f: () => 0, V0: 0, V1: 1, ex: (x) => { const D = 1 / (st.a / 3.9 + (1 - st.a) / 11.7); return x < st.a ? (D * x) / 3.9 : (D * st.a) / 3.9 + (D * (x - st.a)) / 11.7; }, y: [-0.05, 1.12] },
+      sharp: { eps: () => 1, f: (x) => Asharp / Math.cosh((x - st.x0) / W) ** 2, V0: 0, V1: 0, ex: (x) => shF(x) - (shF(0) * (1 - x) + shF(1) * x), y: [-0.03, 0.45] },
+    };
+    let gP, gA, gN, cvP = null, cvE = null, cache = null;
+    const Nof = (k) => Math.round(Math.pow(2, k));
+    function err(N) {
+      const p = probs[gP()], md = gP() === "iface" ? gA() : "arith";
+      const V = fd1d(N, p.eps, p.f, p.V0, p.V1, md, st.a);
+      let e = 0; for (let i = 0; i <= N; i++) e = Math.max(e, Math.abs(V[i] - p.ex(i / N)));
+      return { V, e: Math.max(e, 1e-15) };
+    }
+    function recompute() {
+      const ks = []; for (let k = 1; k <= 11.001; k += 0.5) ks.push(k);
+      cache = { pts: ks.map((k) => { const N = Nof(k); return [1 / N, err(N).e]; }) };
+      upd();
+    }
+    function upd() {
+      const N = Nof(gN()), r = err(N), r2 = err(2 * N), p = Math.log2(r.e / r2.e);
+      cache.cur = { N, V: r.V, e: r.e, p };
+      SB.stat("cv-h", "1/" + N);
+      SB.stat("cv-e", sci(r.e, 2));
+      SB.stat("cv-p", isFinite(p) && r.e > 1e-13 ? p.toFixed(2) : "반올림 수준");
+      const pr = gP();
+      let g;
+      if (pr === "iface") g = r.e < 1e-10 ? "✔ 정확! 조화 평균이 직렬 축전기를 맞춘다" : gA() === "arith" ? "들쭉날쭉한 1차 → 처리 방식을 바꿔라" : "…";
+      else if (pr === "smooth") g = Math.abs(p - 2) < 0.05 ? "기울기 2 확인 ✔" : "N을 키워 기울기를 읽어라";
+      else g = 1 / N > W ? "h > 층 두께: 아직 해상 못 함" : `h < 층 두께: 국소 차수 ${p.toFixed(2)}`;
+      SB.stat("cv-goal", g);
+      if (cvP) cvP.redraw(); if (cvE) cvE.redraw();
+    }
+    gP = SB.seg("cv-prob", () => recompute());
+    gA = SB.seg("cv-avg", () => recompute());
+    gN = SB.range("cv-n", (v) => String(Nof(v)), () => upd());
+    cvP = SB.canvas("cv-cv-prof", (ctx, w, h, self) => {
+      if (!cache) return;
+      const P = pal(), pr = gP(), p = probs[pr], c = cache.cur;
+      const xs = Array.from({ length: 401 }, (_, k) => k / 400);
+      const bands = pr === "iface" ? [{ x0: 0, x1: st.a, color: SB.color("accent-2-soft") }] : [];
+      const ch = SB.chart(ctx, { x: 46, y: 10, w: w - 60, h: h - 44 }, {
+        x: [0, 1], y: p.y, xLabel: "", yLabel: "V", bands,
+        series: [{ data: xs.map((x) => [x, p.ex(x)]), color: P.dim, width: 2 }, { data: Array.from(c.V, (v, i) => [i / c.N, v]), color: P.accent, width: c.N > 64 ? 2 : 1.6 }],
+        points: c.N <= 64 ? Array.from(c.V, (v, i) => ({ x: i / c.N, y: v, color: P.accent, r: 3 })) : [],
+      });
+      self._ch = ch;
+      if (pr === "sharp") {
+        const fm = Asharp;
+        line(ctx, xs.map((x) => [ch.X(x), ch.Y(p.y[0]) - (p.f(x) / fm) * 0.25 * ch.box.h]), P.accent2, 1.4);
+        const hx = ch.X(st.x0), hy = ch.Y(p.ex(st.x0)) - 16; handle(ctx, hx, hy, P.accent2, 10); self._h = { id: "x0", x: hx, y: hy };
+        SB.label(ctx, "얇은 전하층(파랑)", ch.X(Math.min(0.82, st.x0 + 0.22)), ch.Y(p.y[0]) - 0.2 * ch.box.h, { color: P.accent2, size: 11 });
+      } else if (pr === "iface") {
+        SB.label(ctx, "SiO₂ 3.9", ch.X(st.a / 2), ch.Y(1.02), { color: P.dim, size: 11, bold: true });
+        SB.label(ctx, "Si 11.7", ch.X((1 + st.a) / 2), ch.Y(0.12), { color: P.dim, size: 11, bold: true });
+        const hx = ch.X(st.a), hy = ch.box.y + 14; handle(ctx, hx, hy, P.accent2, 10); self._h = { id: "a", x: hx, y: hy };
+      } else self._h = null;
+      SB.label(ctx, "x", ch.box.x + ch.box.w - 6, ch.box.y + ch.box.h + 18, { color: P.dim, size: 11 });
+    }, { aspect: 0.55, minHeight: 200, maxHeight: 300 });
+    SB.drag(cvP, {
+      handles: () => (cvP._h ? [{ id: cvP._h.id, x: cvP._h.x, y: cvP._h.y, r: 13 }] : []),
+      move: (id, x) => { const ch = cvP._ch, v = SB.clamp((x - ch.box.x) / ch.box.w, 0.05, 0.95); if (id === "a") st.a = v; if (id === "x0") st.x0 = SB.clamp(v, 0.15, 0.85); recompute(); },
+    });
+    cvE = SB.canvas("cv-cv-err", (ctx, w, h, self) => {
+      if (!cache) return;
+      const P = pal(), c = cache.cur, h0 = 1 / c.N;
+      const ref = (p, k) => [[1 / 2048, k * Math.pow(1 / 2048, p)], [0.5, k * Math.pow(0.5, p)]];
+      const ch = SB.chart(ctx, { x: 58, y: 28, w: w - 72, h: h - 28 - 46 }, {
+        x: [1 / 2048, 0.5], y: [1e-14, 1], logX: true, logY: true, xLabel: "격자 간격 h", yLabel: "최대 오차", yTicks: [1e-14, 1e-12, 1e-10, 1e-8, 1e-6, 1e-4, 1e-2, 1],
+        xFmt: (v) => (v >= 0.1 ? String(v) : "10" + sup(Math.round(Math.log10(v)))), yFmt: (v) => "10" + sup(Math.round(Math.log10(v))),
+        series: [{ data: ref(1, 0.2), color: P.faint, width: 1.2, dash: [5, 4] }, { data: ref(2, 0.5), color: P.faint, width: 1.2, dash: [2, 4] }, { data: cache.pts, color: P.accent, width: 2.2 }],
+        points: cache.pts.map(([x, y]) => ({ x, y, color: P.accent, r: 2.5 })),
+      });
+      self._ch = ch;
+      SB.label(ctx, "기울기 1", ch.X(0.004), ch.Y(0.2 * 0.004) - 10, { color: P.dim, size: 11 });
+      SB.label(ctx, "기울기 2", ch.X(0.02), ch.Y(0.5 * 0.0004) + 12, { color: P.dim, size: 11 });
+      const hx = ch.X(h0), hy = ch.Y(c.e); handle(ctx, hx, hy, P.accent, 10); self._hp = [hx, hy];
+    }, { aspect: 0.62, minHeight: 220, maxHeight: 320 });
+    SB.drag(cvE, {
+      handles: () => (cvE._hp ? [{ id: "n", x: cvE._hp[0], y: cvE._hp[1], r: 13 }] : []),
+      move: (id, x) => { const ch = cvE._ch, t = (x - ch.box.x) / ch.box.w, hh = Math.pow(10, Math.log10(1 / 2048) + t * (Math.log10(0.5) - Math.log10(1 / 2048))); const k = SB.clamp(Math.round(2 * Math.log2(1 / hh)) / 2, 2, 11); if (k !== gN()) gN.set(k); },
+    });
+    recompute();
+  }
+
+  /* ---------------------------------------------------------- 미니: 모서리 특이점 */
+  {
+    const st = { beta: 270 };
+    const NXg = 150, NYg = 96, vals = new Float64Array(NXg * NYg), mask = new Uint8Array(NXg * NYg);
+    $("cn-mesh").addEventListener("change", () => cv.redraw());
+    const cv = SB.canvas("cv-corner", (ctx, w, h, self) => {
+      const P = pal(), b = (st.beta * PI) / 180, nu = PI / b;
+      const cx = w * 0.5, cy = h * 0.55, R = Math.min(w, h) * 0.45;
+      let vmax = 0;
+      for (let j = 0; j < NYg; j++) for (let i = 0; i < NXg; i++) {
+        const x = ((i + 0.5) / NXg) * w - cx, y = cy - (h - ((j + 0.5) / NYg) * h);
+        let ph = Math.atan2(y, x); if (ph < 0) ph += 2 * PI;
+        const k = j * NXg + i, r = Math.hypot(x, y) / R;
+        if (ph > b) { mask[k] = 1; vals[k] = 0; } else { mask[k] = 0; vals[k] = Math.pow(r, nu) * Math.sin(nu * ph); vmax = Math.max(vmax, vals[k]); }
+      }
+      EM.heatmap(ctx, vals, NXg, NYg, { x: 0, y: 0, w, h }, { cmap: "seq", vmin: 0, vmax: vmax * 0.9, alpha: 0.9, mask: (k) => mask[k] === 1 });
+      const toPx = (i, j) => [((i + 0.5) / NXg) * w, h - ((j + 0.5) / NYg) * h];
+      const lv = []; for (let l = 1; l <= 8; l++) lv.push((l * vmax) / 9);
+      contourDraw(ctx, EM.contourGrid(vals, NXg, NYg, lv), toPx, "#fff", [3, 3], 1.1);
+      if ($("cn-mesh").checked) {
+        ctx.save(); ctx.strokeStyle = P.text; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
+        let d = 2.5, s = 2.5; const ds = [];
+        while (d < Math.max(w, h)) { ds.push(d); s *= 1.32; d += s; }
+        ds.forEach((dd) => { [cx - dd, cx + dd].forEach((x) => { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }); [cy - dd, cy + dd].forEach((y) => { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }); });
+        ctx.restore();
+      }
+      ctx.save(); ctx.fillStyle = P.dim; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, 2 * Math.max(w, h), -b, -2 * PI, true); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx + 2 * Math.max(w, h), cy); ctx.lineTo(cx, cy); ctx.lineTo(cx + 2 * Math.max(w, h) * Math.cos(-b), cy + 2 * Math.max(w, h) * Math.sin(-b)); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "도체 (V = 0)", cx + R * 0.6 * Math.cos(-(b + 2 * PI) / 2), cy + R * 0.6 * Math.sin(-(b + 2 * PI) / 2), { color: "#fff", bg: P.dim, size: 12, bold: true });
+      const hx = cx + R * 0.82 * Math.cos(-b), hy = cy + R * 0.82 * Math.sin(-b);
+      handle(ctx, hx, hy, P.accent, 11); self._h = [hx, hy]; self._c = [cx, cy];
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 26, 0, -b, true); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `β = ${st.beta.toFixed(0)}°`, cx + 46 * Math.cos(-b / 2), cy + 46 * Math.sin(-b / 2), { color: P.accent, size: 12, bold: true });
+      const ord = Math.min(2, 2 * nu);
+      $("cn-r").textContent = `ν = π/β = ${nu.toFixed(3)} · |E| ∝ r^${(nu - 1).toFixed(2)} ${nu < 1 ? "(모서리에서 발산)" : "(모서리에서 유한)"} · 균일 격자의 정전 용량 오차 차수 ≈ ${ord.toFixed(2)}`;
+    }, { aspect: 0.6, minHeight: 230, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "b", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { const [cx, cy] = cv._c; let a = Math.atan2(-(y - cy), x - cx); if (a <= 0) a += 2 * PI; st.beta = SB.clamp((a * 180) / PI, 95, 359); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 탱글: 목표 오차와 격자 */
+  SB.tangle("tg-rich", (v) => {
+    const r = v.e0 / v.et, n = v.n0 * Math.pow(r, 1 / v.p), m = (k) => Math.pow(n / v.n0, k);
+    const fm = (x) => (x >= 1e4 ? sci(x, 1) : x >= 100 ? Math.round(x).toLocaleString("ko-KR") : f3(x));
+    return { n: Math.round(n).toLocaleString("ko-KR"), m3: fm(m(3)), m2: fm(m(2)), u3: sci(Math.pow(n, 3), 1), m1: fm(Math.pow(r, 3)) };
+  }, { fmt: { e0: (v) => v.toFixed(1), et: (v) => v.toFixed(2), p: (v) => v.toFixed(1) } });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 1D FEM 노드 옮기기 */
+  {
+    const x0 = 0.3, wq = 0.04, A = 1 / wq;
+    const f = (x) => A / Math.cosh((x - x0) / wq) ** 2;
+    const F = (x) => -A * wq * wq * Math.log(Math.cosh((x - x0) / wq)), Fp = (x) => -A * wq * Math.tanh((x - x0) / wq);
+    const ex = (x) => F(x) - (F(0) * (1 - x) + F(1) * x), exd = (x) => Fp(x) - (F(1) - F(0));
+    let Ee = 0; { const NN = 40000; for (let i = 0; i < NN; i++) Ee += exd((i + 0.5) / NN) ** 2 / NN; }
+    const st = { nodes: [], V: null, eE: 0, eU: 0, en: 0, done: false };
+    const uni = (n) => Array.from({ length: n + 1 }, (_, i) => i / n);
+    function auto(n) {
+      const M = 4000, cum = [0];
+      for (let i = 0; i < M; i++) cum.push(cum[i] + (Math.sqrt(f((i + 0.5) / M)) + 0.15) / M);
+      const out = [0];
+      for (let k = 1; k < n; k++) { const t = (cum[M] * k) / n; let i = 1; while (cum[i] < t) i++; out.push((i - 1 + (t - cum[i - 1]) / (cum[i] - cum[i - 1])) / M); }
+      out.push(1); return out;
+    }
+    const energyErr = (nodes, V) => { let Eh = 0; for (let e = 0; e < nodes.length - 1; e++) Eh += (V[e + 1] - V[e]) ** 2 / (nodes[e + 1] - nodes[e]); return Math.sqrt(Math.max(0, Ee - Eh) / Ee); };
+    function solve() {
+      st.V = fem1d(st.nodes, f); st.eE = energyErr(st.nodes, st.V);
+      const u = uni(st.nodes.length - 1); st.eU = energyErr(u, fem1d(u, f));
+      st.en = 0; st.nodes.forEach((x, i) => (st.en = Math.max(st.en, Math.abs(st.V[i] - ex(x)))));
+      const n = st.nodes.length - 1;
+      SB.stat("fe-e", (100 * st.eE).toFixed(1) + "%");
+      SB.stat("fe-eu", (100 * st.eU).toFixed(1) + "%");
+      SB.stat("fe-en", sci(st.en, 1) + " V");
+      const ok = n === 8 && st.eE < 0.1; if (ok) st.done = true;
+      SB.stat("fe-goal", ok ? "✔ 10% 아래 달성!" : st.done ? "달성함 ✔" : n === 8 ? `지금 ${(100 * st.eE).toFixed(1)}% → 10% 아래로` : "요소 8개에서 도전");
+    }
+    const gN = SB.seg("fe-n", (v) => { st.nodes = uni(+v); solve(); cv.redraw(); });
+    $("fe-uni").addEventListener("click", () => { st.nodes = uni(+gN()); solve(); cv.redraw(); });
+    $("fe-auto").addEventListener("click", () => { st.nodes = auto(+gN()); solve(); cv.redraw(); });
+    $("fe-hat").addEventListener("change", () => cv.redraw());
+    st.nodes = uni(8); solve();
+    const cv = SB.canvas("cv-fem1d", (ctx, w, h, self) => {
+      const P = pal(), xs = Array.from({ length: 501 }, (_, k) => k / 500);
+      const ch = SB.chart(ctx, null, {
+        x: [0, 1], y: [-0.06, 0.5], xLabel: "x", yLabel: "V",
+        series: [{ data: xs.map((x) => [x, ex(x)]), color: P.dim, width: 2 }],
+      });
+      self._ch = ch;
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(-0.06));
+      xs.forEach((x) => ctx.lineTo(ch.X(x), ch.Y(-0.06 + 0.12 * (f(x) / A)))); ctx.lineTo(ch.X(1), ch.Y(-0.06)); ctx.closePath(); ctx.fill(); ctx.restore();
+      if ($("fe-hat").checked) st.nodes.forEach((x, i) => {
+        if (i === 0 || i === st.nodes.length - 1) return;
+        line(ctx, [[ch.X(st.nodes[i - 1]), ch.Y(0)], [ch.X(x), ch.Y(st.V[i])], [ch.X(st.nodes[i + 1]), ch.Y(0)]], P.accent2, 1.2, [4, 3]);
+      });
+      line(ctx, st.nodes.map((x, i) => [ch.X(x), ch.Y(st.V[i])]), P.accent, 3);
+      st.nodes.forEach((x, i) => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(x), ch.Y(st.V[i]), 3.5, 0, 2 * PI); ctx.fill(); });
+      const hy = ch.Y(0) + 0.5; self._hs = [];
+      st.nodes.forEach((x, i) => { if (i === 0 || i === st.nodes.length - 1) return; handle(ctx, ch.X(x), hy, P.accent, 8); self._hs.push({ id: i, x: ch.X(x), y: hy, r: 12 }); });
+      SB.label(ctx, "정확한 해", ch.X(0.62), ch.Y(ex(0.62)) - 14, { color: P.dim, size: 11 });
+      SB.label(ctx, "전하 분포", ch.X(0.42), ch.Y(-0.03), { color: P.accent2, size: 11 });
+    }, { aspect: 0.55, minHeight: 240, maxHeight: 380 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      move: (id, x) => {
+        const ch = cv._ch, i = id, gap = 0.006;
+        st.nodes[i] = SB.clamp((x - ch.box.x) / ch.box.w, st.nodes[i - 1] + gap, st.nodes[i + 1] - gap); solve();
+      },
+    });
+  }
+
+  /* ---------------------------------------------------------- 미니: 2D 삼각형 FEM */
+  {
+    const XL = 400, YL = 300, cond = { x0: 150, x1: 250, y0: 60, y1: 120 }, REF = 4.0027, ER = 3.9;
+    const gG = SB.seg("f2-g", () => run()), gN = SB.range("f2-n", (v) => v.toFixed(0), () => run());
+    let R = null;
+    function run() {
+      const g = gG() === "1", n = gN(), xs = axis(XL, [0, 150, 250, 400], n, g), ys = axis(YL, [0, 60, 120, 300], Math.round(n * 0.75), g);
+      const r = fem2d(xs, ys, cond); R = { r, xs, ys };
+      const C = r.C * ER * eps0 * 1e12, Cref = REF * ER * eps0 * 1e12, e = (r.C / REF - 1) * 100;
+      $("f2-r").textContent = `C′ = ${C.toFixed(1)} aF/µm · 참값(${Cref.toFixed(1)}) 대비 +${e.toFixed(2)}% · 노드 ${xs.length * ys.length}개 · CG ${r.it}회`;
+      if (cv) cv.redraw();
+    }
+    let cv = null;
+    run();
+    cv = SB.canvas("cv-fem2d", (ctx, w, h) => {
+      if (!R) return;
+      const P = pal(), V = view(w, h, [-6, XL + 6, -14, YL + 4], 4), { r, xs } = R, nx = xs.length;
+      const pt = (k) => [V.X(xs[k % nx]), V.Y(R.ys[Math.floor(k / nx)])];
+      ctx.save(); ctx.lineWidth = 0.6; ctx.strokeStyle = SB.isDark() ? "rgba(0,0,0,.35)" : "rgba(255,255,255,.55)";
+      r.tris.forEach((T) => {
+        const a = pt(T[0]), b = pt(T[1]), c = pt(T[2]), v = (r.V[T[0]] + r.V[T[1]] + r.V[T[2]]) / 3;
+        ctx.fillStyle = EM.cmap("seq", v); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.closePath(); ctx.fill(); ctx.stroke();
+      });
+      ctx.restore();
+      ctx.fillStyle = P.accent; ctx.fillRect(V.X(cond.x0), V.Y(cond.y1), (cond.x1 - cond.x0) * V.s, (cond.y1 - cond.y0) * V.s);
+      SB.label(ctx, "1 V", V.X(200), V.Y(90), { color: "#fff", bg: P.accent, size: 12, bold: true });
+      ctx.fillStyle = P.dim; ctx.fillRect(V.X(0), V.Y(0), XL * V.s, 10 * V.s);
+      SB.label(ctx, "접지 0 V", V.X(200), V.Y(-5), { color: "#fff", bg: P.dim, size: 11, bold: true });
+    }, { aspect: 0.72, minHeight: 230, maxHeight: 380 });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 1D FDTD */
+  {
+    const n = 400, SRC = 80, PRB = 40;
+    const st = { sL: 220, sR: 300, F: null, rec: [], r: null, blow: false };
+    let cv = null;
+    const gS = SB.range("fd-s", (v) => v.toFixed(2), () => fire());
+    const gE = SB.range("fd-er", (v) => v.toFixed(1), () => fire());
+    const gW = SB.seg("fd-w", () => fire()), gB = SB.seg("fd-bc", () => fire());
+    function fire() {
+      const er = gE();
+      st.F = EM.fdtd1d(n, { S: gS(), epsr: (i) => (i >= st.sL && i < st.sR ? er : 1), abc: gB() === "mur" });
+      st.rec = []; st.r = null; st.blow = false;
+      if (cv) cv.redraw();
+    }
+    fire();
+    function step() {
+      const F = st.F, S = F.S, w = +gW();
+      F.step({ i: SRC, value: 2 * S * EM.gauss(F.t * S, 4 * w, w) });
+      st.rec.push(F.Ez[PRB]);
+      let mx = 0; for (let i = 0; i < n; i += 3) mx = Math.max(mx, Math.abs(F.Ez[i])); if (!(mx < 1e6)) st.blow = true;
+      const t1 = Math.round((4 * w + (SRC - PRB)) / S), t2 = Math.round((4 * w + 2 * st.sL - SRC - PRB - 1) / S), win = Math.round((2.5 * w) / S);
+      if (!st.r && F.t > t2 + win && st.rec.length > t2 + win) {
+        let a = 0, b = 0; for (let t = t1 - win; t <= t1 + win; t++) if (Math.abs(st.rec[t]) > Math.abs(a)) a = st.rec[t];
+        for (let t = t2 - win; t <= t2 + win; t++) if (Math.abs(st.rec[t]) > Math.abs(b)) b = st.rec[t];
+        st.r = b / a;
+      }
+    }
+    cv = SB.canvas("cv-fd1", (ctx, w, h, self) => {
+      const P = pal(), F = st.F, er = gE();
+      const ch = SB.chart(ctx, null, { x: [0, n - 1], y: [-1.2, 1.2], xLabel: "격자 칸 i", yLabel: "Ez, η₀Hy", bands: [{ x0: st.sL, x1: st.sR, color: SB.color("accent-2-soft") }] });
+      self._ch = ch;
+      const cl = (v) => SB.clamp(v, -1.35, 1.35);
+      line(ctx, Array.from(F.Hy, (v, i) => [ch.X(i + 0.5), ch.Y(cl(v))]), P.accent2, 1.4);
+      line(ctx, Array.from(F.Ez, (v, i) => [ch.X(i), ch.Y(cl(v))]), P.accent, 2.2);
+      SB.label(ctx, `εr = ${er.toFixed(1)}`, ch.X((st.sL + st.sR) / 2), ch.box.y + 12, { color: P.accent2, size: 11, bold: true });
+      ctx.fillStyle = P.text; ctx.font = font(12, false, true); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("▼", ch.X(SRC), ch.box.y + 10); ctx.fillText("◆", ch.X(PRB), ch.box.y + 10);
+      const yc = ch.Y(-0.9);
+      handle(ctx, ch.X(st.sL), yc, P.accent2, 9); handle(ctx, ch.X(st.sR), yc, P.accent2, 9);
+      self._hs = [{ id: "L", x: ch.X(st.sL), y: yc, r: 13 }, { id: "R", x: ch.X(st.sR), y: yc, r: 13 }];
+      if (st.blow) SB.label(ctx, "발산! S > 1 — 쿠랑 조건 위반", ch.box.x + ch.box.w / 2, ch.Y(0.6), { color: P.bad, size: 15, bold: true });
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 360 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      move: (id, x) => {
+        const ch = cv._ch, i = Math.round(((x - ch.box.x) / ch.box.w) * (n - 1));
+        if (id === "L") st.sL = SB.clamp(i, 140, st.sR - 10); else st.sR = SB.clamp(i, st.sL + 10, n - 20);
+      },
+      up: () => fire(),
+    });
+    const loop = SB.loop("sim-fdtd1d", () => {
+      if (!st.blow) for (let k = 0; k < 3; k++) step();
+      cv.redraw();
+      const S = gS(), n2 = Math.sqrt(gE());
+      SB.stat("fd-t", String(st.F.t));
+      SB.stat("fd-st", S <= 1 ? (S === 1 ? "S = 1: 1차원 마법 간격" : "안정 (S ≤ 1)") : st.blow ? "발산 ✗" : "불안정 — 곧 발산");
+      SB.stat("fd-r", st.r === null ? "펄스가 돌아오길 기다리는 중…" : st.r.toFixed(4));
+      SB.stat("fd-rf", ((1 - n2) / (1 + n2)).toFixed(4) + (st.r !== null ? ` (차이 ${(100 * Math.abs(st.r / ((1 - n2) / (1 + n2)) - 1)).toFixed(1)}%)` : ""));
+    });
+    SB.play("fd-play", loop);
+    $("fd-fire").addEventListener("click", () => fire());
+  }
+
+  /* ---------------------------------------------------------- 미니: 수치 분산 */
+  {
+    const st = { N: 10 };
+    const gS = SB.range("ds-s", (v) => v.toFixed(2), () => cv.redraw());
+    const v1 = (N, S) => { const a = Math.sin((PI * S) / N) / S; return a <= 1 ? PI / N / Math.asin(a) : NaN; };
+    const vd = (N, S) => { const a = Math.sin((PI * S) / N) / (Math.SQRT2 * S); return a <= 1 ? (2 * PI) / N / (2 * Math.SQRT2 * Math.asin(a)) : NaN; };
+    const cv = SB.canvas("cv-disp", (ctx, w, h, self) => {
+      const P = pal(), S = gS(), Ns = Array.from({ length: 121 }, (_, k) => 3 * Math.pow(100 / 3, k / 120));
+      const ser = [{ data: Ns.map((N) => [N, v1(N, S)]).filter((p) => isFinite(p[1])), color: P.accent, width: 2.6 }];
+      if (S <= Math.SQRT1_2 + 1e-9) ser.push({ data: Ns.map((N) => [N, vd(N, S)]).filter((p) => isFinite(p[1])), color: P.accent2, width: 2, dash: [6, 4] });
+      const ch = SB.chart(ctx, null, { x: [3, 100], y: [0.8, 1.01], logX: true, xLabel: "파장당 칸 수 Nλ", yLabel: "ṽp / c", xTicks: [3, 5, 10, 20, 50, 100], hlines: [{ y: 1, color: P.faint, dash: [3, 3] }], series: ser });
+      self._ch = ch;
+      const v = v1(st.N, S), hx = ch.X(st.N), hy = ch.Y(isFinite(v) ? v : 0.8);
+      handle(ctx, hx, hy, P.accent, 10); self._h = [hx, hy];
+      SB.label(ctx, "1D·축 방향", ch.X(40), ch.Y(v1(40, S)) + 14, { color: P.accent, size: 11, bold: true });
+      if (S <= Math.SQRT1_2 + 1e-9) SB.label(ctx, "2D 대각선", ch.X(6), ch.Y(Math.min(1.0, vd(6, S) || 1)) - 12, { color: P.accent2, size: 11, bold: true });
+      else SB.label(ctx, "S > 1/√2: 2D는 불안정", ch.X(12), ch.Y(0.84), { color: P.bad, size: 11, bold: true });
+      const per = isFinite(v) ? 360 * (1 / v - 1) : NaN;
+      $("ds-r").textContent = isFinite(v) ? `Nλ = ${st.N.toFixed(1)} · ṽp/c = ${v.toFixed(4)} · 위상 오차 ${per.toFixed(2)}°/파장 · 100파장 뒤 ${(100 * per).toFixed(0)}°` : `Nλ = ${st.N.toFixed(1)}: 이 파장은 격자에서 진행하지 못한다(차단)`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 320 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { const ch = cv._ch, t = (x - ch.box.x) / ch.box.w; st.N = SB.clamp(3 * Math.pow(100 / 3, t), 3, 100); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 탱글: 3D FDTD 비용 */
+  SB.tangle("tg-courant", (v) => {
+    const d = v.d * 1e-9, dt = d / (c0 * Math.sqrt(3)), steps = (v.T * 1e-15) / dt, cells = Math.pow((v.L * 1e-6) / d, 3), mem = cells * 24;
+    const mfmt = mem >= 1e9 ? (mem / 1e9).toFixed(1) + " GB" : (mem / 1e6).toFixed(0) + " MB";
+    return { dt: f3(dt * 1e18) + " as", n: Math.round(steps).toLocaleString("ko-KR"), cells: sci(cells, 1), mem: mfmt, ops: sci(cells * steps, 1) };
+  }, { fmt: { L: (v) => v.toFixed(1) } });
+
+  /* ---------------------------------------------------------- 드릴: 쿠랑 시간 간격 */
+  SB.drill("drill-courant", () => {
+    const D = pick([2, 3]), dx = pick([2, 5, 10, 20, 25]), dy = pick([2, 5, 10, 20]), dz = pick([1, 2, 5, 10]);
+    const s = D === 2 ? 1 / dx ** 2 + 1 / dy ** 2 : 1 / dx ** 2 + 1 / dy ** 2 + 1 / dz ** 2;
+    const dt = 1e18 / (c0 * 1e9 * Math.sqrt(s));
+    const geo = D === 2 ? `\\(\\Delta x = ${dx}\\) nm, \\(\\Delta y = ${dy}\\) nm인 2차원` : `\\(\\Delta x = ${dx}\\) nm, \\(\\Delta y = ${dy}\\) nm, \\(\\Delta z = ${dz}\\) nm인 3차원`;
+    const sumTex = D === 2 ? `1/${dx}^2 + 1/${dy}^2` : `1/${dx}^2 + 1/${dy}^2 + 1/${dz}^2`;
+    return {
+      q: `<p>${geo} FDTD 격자(진공)에서 쿠랑 조건이 허용하는 최대 시간 간격은 몇 아토초(as)인가?</p>`,
+      answer: dt, label: "Δt_max =", unit: "as", tol: "1%",
+      sol: `\\(\\sqrt{${sumTex}} = ${Math.sqrt(s).toFixed(4)}\\ \\text{nm}^{-1}\\), \\(\\Delta t = 1/(c\\times${Math.sqrt(s).toFixed(4)}\\times10^{9}) = ${f3(dt)}\\) as.`,
+    };
+  });
+
+  /* ---------------------------------------------------------- 미니: 무르·PML 반사의 각도 의존 */
+  {
+    const st = { th: 45 };
+    const gR = SB.range("mr-r0", (v) => v + " dB", () => cv.redraw());
+    const r1 = (t) => dB((Math.cos(t) - 1) / (Math.cos(t) + 1));
+    const cv = SB.canvas("cv-mur", (ctx, w, h, self) => {
+      const P = pal(), R0 = gR(), th = Array.from({ length: 179 }, (_, k) => 0.5 + k * 0.5);
+      const rad = (d) => (d * PI) / 180;
+      const ch = SB.chart(ctx, null, {
+        x: [0, 90], y: [-130, 0], xLabel: "입사각 θ (°)", yLabel: "반사 (dB)", xTicks: [0, 15, 30, 45, 60, 75, 90],
+        series: [
+          { data: th.map((d) => [d, Math.max(-130, r1(rad(d)))]), color: P.accent, width: 2.4 },
+          { data: th.map((d) => [d, Math.max(-130, 2 * r1(rad(d)))]), color: P.warn, width: 2.2, dash: [6, 4] },
+          { data: th.map((d) => [d, R0 * Math.cos(rad(d))]), color: P.accent2, width: 2.4 },
+        ],
+      });
+      self._ch = ch;
+      const y = Math.max(-130, r1(rad(st.th))), hx = ch.X(st.th), hy = ch.Y(y);
+      SB.label(ctx, "무르 1차", ch.X(70), ch.Y(r1(rad(70))) - 12, { color: P.accent, size: 11, bold: true });
+      SB.label(ctx, "무르 2차", ch.X(52), ch.Y(2 * r1(rad(52))) + 14, { color: P.warn, size: 11, bold: true });
+      SB.label(ctx, "PML", ch.X(30), ch.Y(R0 * Math.cos(rad(30))) - 12, { color: P.accent2, size: 11, bold: true });
+      handle(ctx, hx, hy, P.accent, 10); self._h = [hx, hy];
+      $("mr-r").textContent = `θ = ${st.th.toFixed(0)}° · 무르 1차 ${r1(rad(st.th)).toFixed(1)} dB · 2차 ${(2 * r1(rad(st.th))).toFixed(1)} dB · PML ${(R0 * Math.cos(rad(st.th))).toFixed(1)} dB`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 320 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { const ch = cv._ch; st.th = SB.clamp(((x - ch.box.x) / ch.box.w) * 90, 0.5, 89.5); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: PML 설계 */
+  {
+    const n = 420, S = 0.5, SRC = 150, PRB = 200, WD = 8, LL = 60, XV = 320;
+    const gM = SB.seg("pm-m", () => run()), gL = SB.range("pm-L", (v) => v + "칸", () => run()), gA = SB.range("pm-a", (v) => f3(Math.pow(10, v)), () => run());
+    const R = { frames: [], rec: [], k: 0, done: false };
+    function run() {
+      const L = gL(), amax = Math.pow(10, gA()), m = +gM(), p0 = n - 1 - L;
+      const Ez = new Float64Array(n), Hy = new Float64Array(n), sE = new Float64Array(n), sH = new Float64Array(n);
+      for (let i = 0; i < n; i++) {
+        if (i > p0) sE[i] = amax * Math.pow((i - p0) / L, m);
+        const xh = i + 0.5; if (xh > p0) sH[i] = amax * Math.pow(Math.min(1, (xh - p0) / L), m);
+        if (i < LL) sE[i] = Math.max(sE[i], 0.5 * Math.pow((LL - i) / LL, 3));
+        if (xh < LL) sH[i] = Math.max(sH[i], 0.5 * Math.pow((LL - xh) / LL, 3));
+      }
+      const steps = Math.ceil((4 * WD + 2 * (n - 1) - SRC - PRB + 6 * WD) / S), wst = WD / S;
+      const rec = new Float64Array(steps), frames = [];
+      for (let t = 0; t < steps; t++) {
+        for (let i = 0; i < n - 1; i++) Hy[i] = ((1 - sH[i]) * Hy[i] + S * (Ez[i + 1] - Ez[i])) / (1 + sH[i]);
+        for (let i = 1; i < n - 1; i++) Ez[i] = ((1 - sE[i]) * Ez[i] + S * (Hy[i] - Hy[i - 1])) / (1 + sE[i]);
+        Ez[0] = 0; Ez[n - 1] = 0;
+        Ez[SRC] += 2 * S * Math.exp(-(((t - 4 * wst) / wst) ** 2));
+        rec[t] = Ez[PRB];
+        if (t % 4 === 0) frames.push(Float32Array.from(Ez.subarray(100)));
+      }
+      const t1 = Math.round((4 * WD + (PRB - SRC)) / S + (3 * WD) / S); let a = 0, b = 0;
+      for (let t = 0; t < steps; t++) { if (t < t1) a = Math.max(a, Math.abs(rec[t])); else b = Math.max(b, Math.abs(rec[t])); }
+      Object.assign(R, { frames, rec, k: 0, sE, L, amax, m, p0, steps, a, Rm: dB(b / a), Rt: dB(Math.exp((-4 * amax * L) / (S * (m + 1)))) });
+      SB.stat("pm-R", R.Rm.toFixed(1) + " dB");
+      SB.stat("pm-Rt", R.Rt < -300 ? "< −300 dB" : R.Rt.toFixed(1) + " dB");
+      SB.stat("pm-dom", R.Rm < -60 ? "충분히 흡수됨" : R.Rm - R.Rt > 6 ? "이산화 반사: 손실이 너무 급하다" : "왕복 감쇠 부족: σ나 두께를 키워라");
+      const ok = L <= 10 && R.Rm <= -60; if (ok) R.won = true;
+      SB.stat("pm-goal", ok ? `✔ ${L}칸으로 ${R.Rm.toFixed(0)} dB!` : R.won ? "달성함 ✔" : L > 10 ? "두께 10칸 이하에서" : `지금 ${R.Rm.toFixed(0)} dB → −60 dB 아래로`);
+      if (cvT) cvT.redraw();
+    }
+    let cvT = null;
+    const amaxY = (ch, a) => ch.Y(0.05 + (0.95 * (Math.log10(a) + 2)) / 2.3);
+    const cvF = SB.canvas("cv-pml-f", (ctx, w, h, self) => {
+      if (!R.frames.length) return;
+      const P = pal(), fr = R.frames[Math.min(R.k, R.frames.length - 1)];
+      const ch = SB.chart(ctx, { x: 58, y: 26, w: w - 76, h: h - 26 - 46 }, { x: [XV, n - 1], y: [-1.1, 1.1], xLabel: "격자 칸 i (PML 근처 확대)", yLabel: "Ez", bands: [{ x0: R.p0, x1: n - 1, color: SB.color("accent-2-soft") }] });
+      self._ch = ch;
+      const top = amaxY(ch, R.amax);
+      ctx.save(); ctx.fillStyle = P.dim; ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(ch.X(R.p0), ch.Y(-1.1));
+      for (let i = R.p0; i < n; i++) ctx.lineTo(ch.X(i), ch.Y(-1.1) - (R.sE[i] / R.amax) * (ch.Y(-1.1) - top));
+      ctx.lineTo(ch.X(n - 1), ch.Y(-1.1)); ctx.closePath(); ctx.fill(); ctx.restore();
+      line(ctx, Array.from(fr, (v, i) => [ch.X(100 + i), ch.Y(SB.clamp(v, -1.1, 1.1))]).slice(XV - 100), P.accent, 2);
+      ctx.fillStyle = P.text; ctx.fillRect(ch.X(n - 1) - 3, ch.box.y, 3, ch.box.h);
+      SB.label(ctx, "PEC", ch.X(n - 1) - 16, ch.box.y + 12, { size: 10, color: P.dim });
+      const hL = [ch.X(R.p0), ch.Y(-1.1) - 2], hA = [ch.X(n - 1) - 12, top];
+      handle(ctx, hL[0], hL[1], P.accent2, 9); handle(ctx, hA[0], hA[1], P.text, 9);
+      self._hs = [{ id: "L", x: hL[0], y: hL[1], r: 13 }, { id: "a", x: hA[0], y: hA[1], r: 13 }];
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 280 });
+    SB.drag(cvF, {
+      handles: () => cvF._hs || [],
+      move: (id, x, y) => {
+        const ch = cvF._ch;
+        if (id === "L") { const i = XV + ((x - ch.box.x) / ch.box.w) * (n - 1 - XV); const L = SB.clamp(Math.round(n - 1 - i), 1, 30); if (L !== gL()) gL.set(L); }
+        if (id === "a") { const fr = (ch.Y(-1.1) - y) / (ch.Y(-1.1) - ch.Y(1.1)); const lg = SB.clamp(Math.round(((fr - 0.05) / 0.95 * 2.3 - 2) * 50) / 50, -2, 0.3); if (Math.abs(lg - gA()) > 1e-9) gA.set(lg); }
+      },
+    });
+    cvT = SB.canvas("cv-pml-t", (ctx, w, h) => {
+      if (!R.rec.length) return;
+      const P = pal(), data = [];
+      for (let t = 0; t < R.steps; t += 2) data.push([t, Math.max(-140, dB(R.rec[t] / R.a))]);
+      const tc = Math.min(R.k * 4, R.steps);
+      const ch = SB.chart(ctx, null, {
+        x: [0, R.steps], y: [-140, 5], xLabel: "시간 걸음", yLabel: "탐침 |Ez| (dB)",
+        hlines: [{ y: -60, color: P.warn, dash: [5, 4], label: "−60 dB" }, { y: R.Rm, color: P.accent2, dash: [2, 3] }],
+        series: [{ data: data.filter((d) => d[0] <= tc), color: P.accent, width: 1.6 }],
+      });
+      SB.label(ctx, `반사 ${R.Rm.toFixed(1)} dB`, ch.X(R.steps * 0.8), ch.Y(R.Rm) - 11, { color: P.accent2, size: 11, bold: true });
+    }, { aspect: 0.3, minHeight: 170, maxHeight: 240 });
+    run();
+    let pause = 0;
+    const loop = SB.loop("sim-pml", () => {
+      if (R.k < R.frames.length - 1) R.k++; else if (++pause > 60) { pause = 0; R.k = 0; }
+      cvF.redraw(); cvT.redraw();
+    });
+    SB.play("pm-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 미니: 띠 끝 전하와 MoM 수렴 */
+  {
+    const Cex = (2 * PI) / Math.log(2);   // 반폭 a = 1, 기준 반지름 1: C = 2π/ln(2/a)
+    const gK = SB.seg("ed-k", () => cv.redraw()), gN = SB.range("ed-n", (v) => v.toFixed(0), () => cv.redraw());
+    const solveN = (N, cos) => { const p = split(-1, 0, 1, 0, N, cos, 0), s = momSolve(p, [1]); let Q = 0; p.forEach((q, i) => (Q += s[i] * plen(q))); return { p, s, Q }; };
+    const Ns = [4, 6, 8, 12, 16, 24, 32, 48, 64];
+    const conv = [false, true].map((c) => Ns.map((N) => [N, Math.abs(solveN(N, c).Q / Cex - 1)]));
+    const cv = SB.canvas("cv-edge", (ctx, w, h) => {
+      const P = pal(), cos = gK() === "1", N = gN(), r = solveN(N, cos);
+      const lw = w < 520 ? w : w * 0.6;
+      const ymax = (3 * Cex) / PI;
+      const ch = SB.chart(ctx, { x: 46, y: 12, w: lw - 60, h: (w < 520 ? h * 0.56 : h) - 50 }, { x: [-1.05, 1.05], y: [0, ymax], xLabel: "x / a", yLabel: "ρs (상대)" });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      r.p.forEach((q, i) => { ctx.fillStyle = P.accent; ctx.globalAlpha = 0.75; const x0 = ch.X(q.x0), x1 = ch.X(q.x1); ctx.fillRect(x0 + 0.5, ch.Y(r.s[i]), Math.max(1, x1 - x0 - 1), ch.Y(0) - ch.Y(r.s[i])); });
+      ctx.restore();
+      const xs = Array.from({ length: 400 }, (_, k) => -0.9995 + (1.999 * k) / 399);
+      line(ctx, xs.map((x) => [ch.X(x), ch.Y(Math.min(ymax * 1.2, Cex / (PI * Math.sqrt(1 - x * x))))]), P.text, 2);
+      let qe = 0; r.p.forEach((q, i) => { const lo = Math.min(q.x0, q.x1), hi = Math.max(q.x0, q.x1); qe += r.s[i] * (Math.max(0, hi - Math.max(lo, 0.9)) + Math.max(0, Math.min(hi, -0.9) - lo)); });
+      const box2 = w < 520 ? { x: 58, y: h * 0.56 + 8, w: w - 76, h: h * 0.44 - 52 } : { x: lw + 46, y: 12, w: w - lw - 58, h: h - 50 };
+      const c2 = SB.chart(ctx, box2, {
+        x: [4, 64], y: [1e-4, 0.3], logX: true, logY: true, xLabel: "조각 수 N", yLabel: "C 오차",
+        xTicks: [4, 8, 16, 32, 64], yFmt: (v) => "10" + sup(Math.round(Math.log10(v))),
+        series: [{ data: conv[0], color: P.accent, width: 2 }, { data: conv[1], color: P.accent2, width: 2 }],
+        points: [{ x: N, y: Math.max(1e-4, Math.abs(r.Q / Cex - 1)), color: cos ? P.accent2 : P.accent, r: 5 }],
+      });
+      $("ed-r").textContent = `C 오차 ${(100 * (r.Q / Cex - 1)).toFixed(2)}% · |x| > 0.9a 구간의 전하 ${(100 * qe / r.Q).toFixed(1)}% (정확히 28.7%)`;
+      SB.label(ctx, "균일", c2.X(10), c2.Y(conv[0][3][1]) - 12, { color: P.accent, size: 11, bold: true });
+      SB.label(ctx, "코사인", c2.X(10), c2.Y(conv[1][3][1]) + 14, { color: P.accent2, size: 11, bold: true });
+    }, { aspect: 0.42, minHeight: 300, maxHeight: 330 });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 모멘트 법 추출기 */
+  {
+    const st = { cps: { w: 10, s: 5 }, ms: { w: 20, h: 10 }, won: false };
+    let frozen = null, dragging = false, cvC = null, R = null;
+    const gC = SB.seg("mo-cfg", () => { frozen = null; run(); }), gN = SB.range("mo-n", (v) => v.toFixed(0), () => run());
+    const gK = SB.seg("mo-k", () => run()), gE = SB.range("mo-er", (v) => v.toFixed(1), () => run());
+    const Kf = (m) => EM.ellipK(m);
+    function geom(N, cos) {
+      if (gC() === "cps") { const { w, s } = st.cps; return [...split(s / 2, 0, s / 2 + w, 0, N, cos, 0), ...split(-s / 2 - w, 0, -s / 2, 0, N, cos, 1)]; }
+      const { w, h } = st.ms; return [...split(-w / 2, h, w / 2, h, N, cos, 0), ...split(-w / 2, -h, w / 2, -h, N, cos, 1)];
+    }
+    function refC() {
+      if (gC() === "cps") { const { w, s } = st.cps, k = s / (s + 2 * w); return Kf(1 - k * k) / Kf(k * k); }
+      const u = st.ms.w / st.ms.h, fu = 6 + (2 * PI - 6) * Math.exp(-Math.pow(30.666 / u, 0.7528));
+      return (2 * PI) / Math.log(fu / u + Math.sqrt(1 + 4 / (u * u)));
+    }
+    function capOf(N, cos) { const p = geom(N, cos), s = momSolve(p, [0.5, -0.5]); let Q = 0; p.forEach((q, i) => { if (q.cond === 0) Q += s[i] * plen(q); }); return { p, s, C: gC() === "cps" ? Q : 2 * Q }; }
+    function run(light) {
+      const N = gN(), cos = gK() === "1", r = capOf(N, cos), ref = refC();
+      const Ns = [2, 3, 4, 6, 8, 12, 16, 24, 32, 48];
+      const conv = light && R ? R.conv : [false, true].map((c) => Ns.map((n) => [n, Math.max(1e-5, Math.abs(capOf(n, c).C / ref - 1))]));
+      // 전위 지도
+      const B = bounds(), nx = light ? 44 : 72, ny = light ? 28 : 46, vals = new Float64Array(nx * ny);
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+        const x = B[0] + ((i + 0.5) * (B[1] - B[0])) / nx, y = B[2] + ((j + 0.5) * (B[3] - B[2])) / ny;
+        let v = 0; r.p.forEach((q, k) => (v -= (r.s[k] * lnInt(x, y, q.x0, q.y0, q.x1, q.y1)) / (2 * PI)));
+        vals[j * nx + i] = gC() === "cps" ? v : 2 * v;
+      }
+      R = { r, ref, conv, vals, nx, ny, B, N, cos };
+      const er = gE(), C = r.C * er * eps0 * 1e12, Cr = ref * er * eps0 * 1e12;
+      SB.stat("mo-c", C.toFixed(2) + " pF/m");
+      SB.stat("mo-ref", Cr.toFixed(2) + " pF/m" + (gC() === "cps" ? " (정확)" : " (해머스태드)"));
+      SB.stat("mo-err", (100 * (r.C / ref - 1)).toFixed(2) + "%");
+      SB.stat("mo-sz", `${2 * N}×${2 * N} = ${(4 * N * N).toLocaleString("ko-KR")}원소(꽉 참)`);
+      const ok = Math.abs(er - 3.9) < 0.051 && Math.abs(C - 50) <= 0.5; if (ok) st.won = true;
+      SB.stat("mo-goal", ok ? "✔ 50 pF/m 달성!" : st.won ? "달성함 ✔" : Math.abs(er - 3.9) > 0.051 ? "ε_r = 3.9로 두고" : `지금 ${C.toFixed(1)} → 50 ± 0.5 pF/m`);
+      if (cv) cv.redraw(); if (cvC) cvC.redraw();
+    }
+    function bounds() {
+      if (frozen) return frozen;
+      if (gC() === "cps") { const { w, s } = st.cps, X = (s / 2 + w) * 1.45; return [-X, X, -X * 0.5, X * 0.5]; }
+      const { w, h } = st.ms, X = Math.max(w * 0.85, 2.2 * h); return [-X, X, -0.08 * X, X * 0.92];
+    }
+    let cv = null;
+    cv = SB.canvas("cv-mom", (ctx, w, h, self) => {
+      if (!R) return;
+      const P = pal(), B = R.B, V = view(w, h, B, 6), cps = gC() === "cps";
+      self._v = V;
+      EM.heatmap(ctx, R.vals, R.nx, R.ny, V.box, { cmap: "div", vmin: -1, vmax: 1, alpha: 0.85 });
+      const toPx = (i, j) => [V.box.x + ((i + 0.5) / R.nx) * V.box.w, V.box.y + V.box.h - ((j + 0.5) / R.ny) * V.box.h];
+      const lv = cps ? [-0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4] : [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+      contourDraw(ctx, EM.contourGrid(R.vals, R.nx, R.ny, lv), toPx, SB.isDark() ? "rgba(0,0,0,.55)" : "rgba(60,60,60,.55)", [3, 3], 1);
+      if (!cps) { ctx.fillStyle = P.dim; ctx.fillRect(V.box.x, V.Y(0), V.box.w, Math.max(4, V.box.y + V.box.h - V.Y(0))); SB.label(ctx, "접지면", V.X(B[1]) - 34, V.Y(0) + 9, { size: 11, color: "#fff", bg: P.dim }); }
+      let smax = 0; R.r.p.forEach((q, i) => { if (cps || q.cond === 0) smax = Math.max(smax, Math.abs(R.r.s[i])); });
+      const bh = Math.min(70, (V.box.h) * 0.32);
+      R.r.p.forEach((q, i) => {
+        if (!cps && q.cond === 1) return;
+        const s = R.r.s[i], x0 = V.X(q.x0), x1 = V.X(q.x1), y = V.Y(q.y0), hh = (Math.abs(s) / smax) * bh;
+        ctx.fillStyle = s > 0 ? P.accent : P.accent2; ctx.globalAlpha = 0.8; ctx.fillRect(Math.min(x0, x1) + 0.5, y - hh - 3, Math.max(1, Math.abs(x1 - x0) - 1), hh); ctx.globalAlpha = 1;
+      });
+      ctx.lineWidth = 5; ctx.lineCap = "butt";
+      R.r.p.forEach((q) => { if (!cps && q.cond === 1) return; ctx.strokeStyle = P.text; ctx.beginPath(); ctx.moveTo(V.X(q.x0), V.Y(q.y0)); ctx.lineTo(V.X(q.x1), V.Y(q.y1)); ctx.stroke(); });
+      let hs;
+      if (cps) { const { w: ww, s } = st.cps; hs = [{ id: "w", x: V.X(s / 2 + ww), y: V.Y(0) }, { id: "s", x: V.X(s / 2), y: V.Y(0) }]; SB.label(ctx, `w = ${ww.toFixed(1)} µm · s = ${s.toFixed(1)} µm`, V.X(0), V.Y(B[2]) - 12, { size: 12, bold: true }); SB.label(ctx, "+0.5 V", V.X(s / 2 + ww / 2), V.Y(0) + 14, { size: 11, color: P.accent, bold: true }); SB.label(ctx, "−0.5 V", V.X(-s / 2 - ww / 2), V.Y(0) + 14, { size: 11, color: P.accent2, bold: true }); }
+      else { const { w: ww, h: hh } = st.ms; hs = [{ id: "w", x: V.X(ww / 2), y: V.Y(hh) }, { id: "h", x: V.X(0), y: V.Y(hh) }]; SB.label(ctx, `w = ${ww.toFixed(1)} µm · h = ${hh.toFixed(1)} µm`, V.X(0), V.Y(B[3]) + 12, { size: 12, bold: true }); }
+      hs.forEach((q, k) => handle(ctx, q.x, q.y, k ? P.accent2 : P.accent, 9));
+      self._hs = hs.map((q) => Object.assign({ r: 13 }, q));
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 330 });
+    SB.drag(cv, {
+      handles: () => cv._hs || [],
+      down: () => { dragging = true; frozen = bounds(); },
+      up: () => { dragging = false; frozen = null; run(); },
+      move: (id, x, y) => {
+        const V = cv._v, wx = V.ix(x), wy = V.iy(y);
+        if (gC() === "cps") { const c = st.cps; if (id === "w") c.w = SB.clamp(Math.round((wx - c.s / 2) * 2) / 2, 1, 60); if (id === "s") { const outer = c.s / 2 + c.w; c.s = SB.clamp(Math.round(wx * 2 * 2) / 2, 0.5, 40); c.w = SB.clamp(outer - c.s / 2, 1, 60); } }
+        else { const c = st.ms; if (id === "w") c.w = SB.clamp(Math.round(wx * 2 * 2) / 2, 1, 100); if (id === "h") c.h = SB.clamp(Math.round(wy * 2) / 2, 1, 50); }
+        run(true);
+      },
+    });
+    cvC = SB.canvas("cv-mom-c", (ctx) => {
+      if (!R) return;
+      const P = pal();
+      SB.chart(ctx, null, {
+        x: [2, 48], y: [1e-5, 0.3], logX: true, logY: true, xLabel: "띠 하나의 조각 수 N", yLabel: "C 오차",
+        xTicks: [2, 4, 8, 16, 32], yFmt: (v) => "10" + sup(Math.round(Math.log10(v))),
+        hbands: [{ y0: 1e-5, y1: 0.01, color: SB.color("accent-2-soft") }],
+        series: [{ data: R.conv[0], color: P.accent, width: 2 }, { data: R.conv[1], color: P.accent2, width: 2 }],
+        points: [{ x: R.N, y: Math.max(1e-5, Math.abs(R.r.C / R.ref - 1)), color: R.cos ? P.accent2 : P.accent, r: 5, label: "지금" }],
+      });
+    }, { aspect: 0.32, minHeight: 180, maxHeight: 240 });
+    run();
+  }
+
+  /* ---------------------------------------------------------- 미니: 회절 차수 */
+  {
+    const st = { th: 20 };
+    const gP = SB.range("or-p", (v) => v + " nm", () => cv.redraw()), gL = SB.range("or-l", (v) => v + " nm", () => cv.redraw()), gS = SB.seg("or-n", () => cv.redraw());
+    const cv = SB.canvas("cv-orders", (ctx, w, h, self) => {
+      const P = pal(), L = gP(), lam = gL(), ns = +gS(), cx = w / 2, cy = h / 2, R = Math.min(w * 0.42, h * 0.44), rad = (st.th * PI) / 180;
+      const col = lam >= 380 && lam <= 780 ? SB.wl2rgb(lam) : P.accent;
+      ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(0, cy, w, h - cy);
+      SB.label(ctx, `기판 n = ${ns}`, 52, h - 14, { color: P.dim, size: 11 });
+      SB.label(ctx, "공기", 30, 14, { color: P.dim, size: 11 });
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+      for (let x = cx - 160; x <= cx + 160; x += 10) { ctx.fillStyle = P.text; ctx.fillRect(x, cy - 4, 5, 4); }
+      const sx = cx - R * Math.sin(rad), sy = cy - R * Math.cos(rad);
+      SB.arrow(ctx, sx, sy, cx - 6 * Math.sin(rad), cy - 6 * Math.cos(rad), { color: col, width: 3 });
+      handle(ctx, sx, sy, P.accent, 10); self._h = [sx, sy]; self._c = [cx, cy];
+      const refl = [], tran = [];
+      for (let m = -12; m <= 12; m++) {
+        const s = Math.sin(rad) + (m * lam) / L;
+        if (Math.abs(s) < 1) { const a = Math.asin(s); refl.push([m, (a * 180) / PI]); SB.arrow(ctx, cx, cy, cx + R * 0.9 * Math.sin(a), cy - R * 0.9 * Math.cos(a), { color: col, width: m === 0 ? 2.6 : 1.8 }); SB.label(ctx, String(m), cx + R * Math.sin(a), cy - R * Math.cos(a), { size: 11, bold: true }); }
+        if (Math.abs(s / ns) < 1) { const a = Math.asin(s / ns); tran.push([m, (a * 180) / PI]); SB.arrow(ctx, cx, cy, cx + R * 0.9 * Math.sin(a), cy + R * 0.9 * Math.cos(a), { color: col, width: m === 0 ? 2.6 : 1.6, dash: [5, 3] }); SB.label(ctx, String(m), cx + R * Math.sin(a), cy + R * Math.cos(a), { size: 10 }); }
+      }
+      const fm = (a) => a.map(([m, d]) => `${m > 0 ? "+" : ""}${m}(${d.toFixed(1)}°)`).join(" ");
+      $("or-r").textContent = `반사 진행 차수 ${refl.length}개: ${fm(refl)} · 투과 ${tran.length}개` + (refl.length === 1 ? " — 0차만 반사(OCD 조건)" : "");
+    }, { aspect: 0.55, minHeight: 250, maxHeight: 380 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "i", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { const [cx, cy] = cv._c; st.th = SB.clamp((Math.atan2(cx - x, cy - y) * 180) / PI, -80, 80); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: RCWA 산란 계측 */
+  {
+    const LAMS = []; for (let l = 400; l <= 800; l += 10) LAMS.push(l);
+    const st = { f: 0.5, h: 150, hid: null, show: false, won: false, dragging: false };
+    const gV = SB.seg("rc-view", () => upd(true)), gM = SB.range("rc-m", (v) => `${v} (${2 * v + 1}개)`, () => upd(true));
+    const gT = SB.range("rc-th", (v) => v + "°", () => { meas(); upd(true); }), gP = SB.range("rc-p", (v) => v + " nm", () => { meas(); upd(true); });
+    let seed = 1;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const R0 = (lam, f, d, M) => { const r = rcwa({ lam, period: gP(), fill: f, depth: d, nI: 1, epsR: nRes * nRes, epsG: 1, epsS: epsSi(lam), th: (gT() * PI) / 180, M }); return r; };
+    function newSample() { st.hid = { f: 0.3 + 0.4 * Math.random(), h: Math.round(80 + 170 * Math.random()) }; seed = 1 + Math.floor(Math.random() * 1e6); st.won = false; st.show = false; meas(); }
+    function meas() { const s0 = seed; st.meas = LAMS.map((l) => [l, R0(l, st.hid.f, st.hid.h, 10).R[10] + 0.0012 * (2 * rnd() - 1)]); seed = s0; }
+    let cvX = null, cvS = null, cache = {};
+    function upd(full) {
+      const M = st.dragging ? Math.min(gM(), 5) : gM();
+      cache.model = LAMS.map((l) => [l, R0(l, st.f, st.h, M).R[M]]);
+      cache.ema = LAMS.map((l) => { const ne = Math.sqrt(st.f * nRes * nRes + (1 - st.f)); return [l, EM.multilayer(1, [{ N: ne, d: st.h }], EM.nk("Si", l), l, (gT() * PI) / 180).Rs]; });
+      let ss = 0; cache.model.forEach((p, i) => (ss += (p[1] - st.meas[i][1]) ** 2)); const rms = Math.sqrt(ss / LAMS.length);
+      const r633 = R0(633, st.f, st.h, gM()), sR = r633.R.reduce((a, b) => a + b, 0), sT = r633.T.reduce((a, b) => a + b, 0);
+      if (gV() === "conv" && (full || !cache.conv)) cache.conv = Array.from({ length: 21 }, (_, m) => [m, R0(633, st.f, st.h, m).R[m]]);
+      const P = gP();
+      SB.stat("rc-cd", `${(st.f * P).toFixed(0)} nm · ${st.h.toFixed(0)} nm`);
+      SB.stat("rc-res", rms.toFixed(4));
+      SB.stat("rc-eff", `${r633.R[gM()].toFixed(4)} · ${sR.toFixed(4)} · ${sT.toFixed(4)} (합 ${(sR + sT).toFixed(6)})`);
+      const ok = rms < 0.003 && !st.dragging; if (ok) st.won = true;
+      SB.stat("rc-goal", st.show ? `정답: 선폭 ${(st.hid.f * P).toFixed(0)} nm, 높이 ${st.hid.h} nm` : ok ? "✔ 맞힘! 잔차 < 0.003" : st.won ? "맞힘 ✔ (새 시료로 다시)" : "잔차 0.003 아래로");
+      $("rc-hint").textContent = gV() === "spec" ? "점: 측정 · 선: 모델 · 점선: 유효 매질" : "M에 따른 633 nm 0차 반사율";
+      if (cvX) cvX.redraw(); if (cvS) cvS.redraw();
+    }
+    newSample();
+    $("rc-new").addEventListener("click", () => { newSample(); upd(true); });
+    $("rc-show").addEventListener("click", () => { st.show = !st.show; upd(); });
+    cvX = SB.canvas("cv-rc-x", (ctx, w, h, self) => {
+      const P = pal(), Pd = gP(), Hmax = 420, Wv = 2.4 * Pd;
+      const V = view(w, h, [-Wv / 2, Wv / 2, -70, Hmax], 6);
+      self._v = V;
+      ctx.fillStyle = P.dim; ctx.fillRect(V.X(-Wv / 2), V.Y(0), Wv * V.s, 70 * V.s);
+      SB.label(ctx, "Si 기판", V.X(0), V.Y(-35), { color: "#fff", bg: P.dim, size: 11, bold: true });
+      const cd = st.f * Pd;
+      for (let k = -2; k <= 2; k++) { const xc = k * Pd; ctx.fillStyle = SB.color("accent-2-soft"); ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.5; const x0 = V.X(Math.max(-Wv / 2, xc - cd / 2)), x1 = V.X(Math.min(Wv / 2, xc + cd / 2)); if (x1 > x0) { ctx.fillRect(x0, V.Y(st.h), x1 - x0, st.h * V.s); ctx.strokeRect(x0, V.Y(st.h), x1 - x0, st.h * V.s); } }
+      const th = (gT() * PI) / 180, L0 = 120;
+      SB.arrow(ctx, V.X(-L0 * Math.sin(th) - Pd * 0.6), V.Y(Hmax - 10), V.X(-Pd * 0.6), V.Y(Hmax - 10 - L0 * Math.cos(th)), { color: P.accent, width: 2.4, label: "TE" });
+      const hc = [V.X(cd / 2), V.Y(st.h / 2)], hh = [V.X(0), V.Y(st.h)];
+      handle(ctx, hc[0], hc[1], P.accent2, 9); handle(ctx, hh[0], hh[1], P.accent, 9);
+      self._hs = [{ id: "cd", x: hc[0], y: hc[1], r: 13 }, { id: "h", x: hh[0], y: hh[1], r: 13 }];
+      SB.label(ctx, `Λ = ${Pd} nm`, V.X(Wv / 2) - 44, V.Y(Hmax) + 10, { color: P.dim, size: 11 });
+    }, { aspect: 0.62, minHeight: 200, maxHeight: 320 });
+    SB.drag(cvX, {
+      handles: () => cvX._hs || [],
+      down: () => { st.dragging = true; },
+      up: () => { st.dragging = false; upd(true); },
+      move: (id, x, y) => { const V = cvX._v; if (id === "cd") st.f = SB.clamp((2 * V.ix(x)) / gP(), 0.1, 0.9); if (id === "h") st.h = SB.clamp(Math.round(V.iy(y)), 20, 400); upd(); },
+    });
+    cvS = SB.canvas("cv-rc-s", (ctx) => {
+      if (!cache.model) return;
+      const P = pal();
+      if (gV() === "spec") {
+        let ym = 0; st.meas.forEach((p) => (ym = Math.max(ym, p[1]))); cache.model.forEach((p) => (ym = Math.max(ym, p[1])));
+        SB.chart(ctx, null, {
+          x: [400, 800], y: [0, Math.ceil(ym * 10 + 0.5) / 10], xLabel: "파장 λ (nm)", yLabel: "0차 반사율 R₀",
+          series: [{ data: cache.ema, color: P.dim, width: 1.5, dash: [5, 4] }, { data: cache.model, color: P.accent, width: 2.4 }],
+          points: st.meas.map(([x, y]) => ({ x, y, color: P.text, r: 2.6 })),
+        });
+      } else {
+        const d = cache.conv || [];
+        let lo = 1, hi = 0; d.forEach((p) => { lo = Math.min(lo, p[1]); hi = Math.max(hi, p[1]); });
+        const pad = Math.max(0.01, (hi - lo) * 0.15);
+        SB.chart(ctx, null, {
+          x: [0, 20], y: [Math.max(0, lo - pad), Math.min(1, hi + pad)], xLabel: "차수 M (2M+1개 고조파)", yLabel: "R₀ (633 nm)",
+          hlines: d.length ? [{ y: d[d.length - 1][1], color: P.faint, dash: [3, 3] }] : [],
+          series: [{ data: d, color: P.accent, width: 2 }],
+          points: d.map(([x, y]) => ({ x, y, color: x === gM() ? P.accent2 : P.accent, r: x === gM() ? 6 : 2.6 })),
+        });
+      }
+    }, { aspect: 0.62, minHeight: 220, maxHeight: 320 });
+    upd(true);
+  }
+
+  /* ---------------------------------------------------------- 드릴: 격자 방정식 */
+  SB.drill("drill-grating", () => {
+    for (let tries = 0; tries < 200; tries++) {
+      const lam = pick([405, 488, 532, 633, 780]), L = pick([600, 800, 1000, 1200, 1500, 2000]), th = pick([0, 10, 20, 30]);
+      const tr = Math.random() < 0.5, n = tr ? 1.5 : 1, m = pick([-2, -1, 1, 2]);
+      const s = (Math.sin((th * PI) / 180) + (m * lam) / L) / n;
+      if (Math.abs(s) > 0.97 || Math.abs(Math.asin(s)) < 0.05) continue;
+      const ang = (Math.asin(s) * 180) / PI;
+      return {
+        q: `<p>주기 \\(\\Lambda = ${L}\\) nm인 격자에 파장 ${lam} nm 빛이 공기에서 입사각 ${th}°로 들어온다. ${tr ? "굴절률 1.5인 기판 속으로 투과하는" : "공기 쪽으로 반사되는"} \\(m = ${m > 0 ? "+" : ""}${m}\\)차의 각도(법선 기준, 입사파의 가로 방향을 +로)는 몇 도인가?</p>`,
+        answer: ang, label: "θ_m =", unit: "°", tol: 0.2,
+        sol: `\\(${tr ? "1.5" : "1"}\\sin\\theta_m = \\sin${th}° + (${m})(${lam}/${L}) = ${(n * s).toFixed(4)}\\) → \\(\\theta_m = ${ang.toFixed(1)}°\\).`,
+      };
+    }
+  });
+
+  /* ---------------------------------------------------------- 미니: 계산량 어림 */
+  {
+    const st = { N: 1e5 };
+    const meth = [
+      { k: "밀집 직접 ⅔N³", f: (N) => (2 / 3) * N ** 3, c: "accent" },
+      { k: "밀집 반복 200N²", f: (N) => 200 * N * N, c: "warn" },
+      { k: "3D FDTD ≈ 700N^{4/3}", f: (N) => 700 * Math.pow(N, 4 / 3), c: "accent2" },
+      { k: "다중 격자·FMM ≈ 300N", f: (N) => 300 * N, c: "ok" },
+    ];
+    const tfmt = (s) => (s < 1e-3 ? "< 1 ms" : s < 1 ? (s * 1e3).toFixed(0) + " ms" : s < 120 ? s.toFixed(1) + " s" : s < 7200 ? (s / 60).toFixed(0) + " 분" : s < 3 * 86400 ? (s / 3600).toFixed(1) + " 시간" : s < 3.15e7 * 2 ? (s / 86400).toFixed(0) + " 일" : sci(s / 3.15e7, 1) + " 년");
+    const cv = SB.canvas("cv-cost", (ctx, w, h, self) => {
+      const P = pal(), Ns = Array.from({ length: 61 }, (_, k) => Math.pow(10, 2 + k / 10));
+      const ch = SB.chart(ctx, null, {
+        x: [1e2, 1e8], y: [1e3, 1e24], logX: true, logY: true, xLabel: "미지수 N", yLabel: "연산 수",
+        xFmt: (v) => "10" + sup(Math.round(Math.log10(v))), yFmt: (v) => (Math.round(Math.log10(v)) % 3 === 0 ? "10" + sup(Math.round(Math.log10(v))) : ""),
+        hlines: [{ y: 1e11 * 3600, color: P.faint, dash: [4, 4], label: "1시간" }],
+        vlines: [{ x: st.N, color: P.faint, dash: [3, 3] }],
+        series: meth.map((m) => ({ data: Ns.map((N) => [N, m.f(N)]), color: P[m.c], width: 2.2 })),
+      });
+      self._ch = ch;
+      meth.forEach((m, i) => SB.label(ctx, m.k.replace("^{4/3}", "⁴ᐟ³"), ch.X([3e3, 3e5, 3e6, 3e6][i]), ch.Y(m.f([3e3, 3e5, 3e6, 3e6][i])) - 12, { color: P[m.c], size: 11, bold: true }));
+      const hx = ch.X(st.N), hy = ch.Y(meth[0].f(st.N) > 1e24 ? 1e24 : meth[0].f(st.N));
+      handle(ctx, hx, hy, P.accent, 10); self._h = [hx, hy];
+      $("cs-r").textContent = `N = ${sci(st.N, 1)} · ` + meth.map((m) => `${m.k.split(" ")[0] + " " + m.k.split(" ")[1]} ${tfmt(m.f(st.N) / 1e11)}`).join(" · ") + ` · 밀집 행렬 메모리 ${(8 * st.N * st.N / 1e9) >= 1 ? (8 * st.N * st.N / 1e9).toFixed(1) + " GB" : (8 * st.N * st.N / 1e6).toFixed(1) + " MB"}`;
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 330 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { const ch = cv._ch, t = (x - ch.box.x) / ch.box.w; st.N = Math.pow(10, SB.clamp(2 + 6 * t, 2, 8)); },
+    });
+  }
+
+  /* ---------------------------------------------------------- 탱글: FDM 대 MoM 미지수 */
+  SB.tangle("tg-cost", (v) => {
+    const nv = v.n ** 3, ns = v.f * 6 * v.n ** 2, mv = nv * 84, ms = ns * ns * 8;
+    const mf = (b) => (b >= 1e12 ? (b / 1e12).toFixed(1) + " TB" : b >= 1e9 ? (b / 1e9).toFixed(1) + " GB" : (b / 1e6).toFixed(0) + " MB");
+    return { nv: sci(nv, 1), mv: mf(mv), ns: sci(ns, 1), ms: mf(ms) };
+  });
+})();
+</script>
+</body>
+</html>
