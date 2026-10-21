@@ -1,0 +1,1571 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>반사와 투과 · 전자기학 · SciBook</title>
+<meta name="description" content="수직 입사의 반사 계수와 정재파, 도체 거울, 스넬 법칙과 프레넬 식, 브루스터 각, 전반사와 소산파, 단일 박막과 반사 방지막, 다층 박막의 전달 행렬과 EUV 거울, 레지스트 정재파와 BARC, 엘립소메트리로 박막 두께를 재는 법까지 직접 끌며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/electromagnetics/chapters/reflection.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="반사와 투과 · 전자기학 · SciBook">
+<meta property="og:description" content="수직 입사의 반사 계수와 정재파, 도체 거울, 스넬 법칙과 프레넬 식, 브루스터 각, 전반사와 소산파, 단일 박막과 반사 방지막, 다층 박막의 전달 행렬과 EUV 거울, 레지스트 정재파와 BARC, 엘립소메트리로 박막 두께를 재는 법까지 직접 끌며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/electromagnetics/chapters/reflection.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "반사와 투과 · 전자기학 · SciBook", "headline": "11 반사와 투과", "url": "https://science.euiyun.com/electromagnetics/chapters/reflection.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "수직 입사의 반사 계수와 정재파, 도체 거울, 스넬 법칙과 프레넬 식, 브루스터 각, 전반사와 소산파, 단일 박막과 반사 방지막, 다층 박막의 전달 행렬과 EUV 거울, 레지스트 정재파와 BARC, 엘립소메트리로 박막 두께를 재는 법까지 직접 끌며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 11, "dateModified": "2026-10-22", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/electromagnetics/#book", "name": "전자기학", "url": "https://science.euiyun.com/electromagnetics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "전자기학", "item": "https://science.euiyun.com/electromagnetics/"}, {"@type": "ListItem", "position": 3, "name": "11 반사와 투과", "item": "https://science.euiyun.com/electromagnetics/chapters/reflection.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/phys.js"></script>
+<script src="../../engine/lib/em.js"></script>
+<style>
+  .swatch-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+</style>
+</head>
+<body data-chapter="reflection">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="plane-waves">
+    <div class="eyebrow">Chapter 11</div>
+    <h1>반사와 투과</h1>
+    <p class="lead">10장의 평면파는 끝없이 균일한 매질 속을 달렸다. 실제 파동은 언젠가 다른 매질을 만난다. 공기에서 유리로, 레지스트에서 실리콘으로, 동축 케이블에서 안테나로. 경계에서 파동의 일부는 되돌아오고 나머지는 건너간다. 얼마나 되돌아오는지는 두 매질의 <em>고유 임피던스</em>가 얼마나 다른지가 정한다. 되돌아온 파동은 들어오는 파동과 겹쳐 정재파를 만들고, 얇은 막 속에서 여러 번 오가는 파동은 서로 간섭해 웨이퍼에 색을 입힌다. 반도체 공장은 이 간섭을 거꾸로 읽어 옹스트롬 단위로 막 두께를 재고(분광 반사계, 엘립소메트리), 노광 때는 바닥 반사를 지우려고 레지스트 밑에 반사 방지막(BARC)을 깐다. 먼저 오른쪽 매질의 임피던스를 바꾸며 경계에서 무슨 일이 일어나는지 보자.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">오른쪽 매질의 흰 원을 위아래로 끈다</span></div>
+    <ul class="objectives">
+      <li>경계 조건(접선 \(\mathbf E\)·\(\mathbf H\) 연속)에서 수직 입사의 반사 계수 \(\Gamma = (\eta_2-\eta_1)/(\eta_2+\eta_1)\)와 투과 계수 \(\tau = 1+\Gamma\)를 유도하고, 반사율·투과율의 에너지 보존을 확인한다.</li>
+      <li>입사파와 반사파가 만드는 정재파의 최대·최소 위치와 정재파비 \(S = (1+|\Gamma|)/(1-|\Gamma|)\)를 계산하고, 완전 도체와 양도체에서의 반사(\(R \approx 1 - 4R_s/\eta_1\))를 다룬다.</li>
+      <li>위상 정합에서 스넬 법칙을 얻고, s(TE)·p(TM) 편광의 프레넬 식으로 반사율과 투과율을 각도의 함수로 계산한다.</li>
+      <li>브루스터 각 \(\tan\theta_B = n_2/n_1\)과 임계각 \(\sin\theta_c = n_2/n_1\)을 구하고, 전반사의 소산파 침투 깊이와 좌절된 전반사를 설명한다.</li>
+      <li>단일 박막의 간섭 공식과 1/4 파장 반사 방지 조건 \(n_1 = \sqrt{n_0n_s}\)을 쓰고, 반사 스펙트럼의 극값 간격에서 막 두께를 구한다.</li>
+      <li>특성 행렬(전달 행렬)로 다층막의 반사율을 계산하고, 1/4 파장 거울과 EUV Mo/Si 거울, 레지스트 정재파와 BARC 설계를 해석한다.</li>
+      <li>엘립소메트리의 \(\rho = r_p/r_s = \tan\psi\,e^{j\Delta}\)를 정의하고, 산화막 두께에 따른 \(\psi\)–\(\Delta\) 궤적과 주기, 측정 감도를 설명한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="normal">
+    <h2>수직 입사: 반사 계수와 정재파</h2>
+    <p>가장 단순한 상황부터 보자. \(z<0\)은 매질 1(\(\varepsilon_1, \mu_1\), 고유 임피던스 \(\eta_1\)), \(z>0\)은 매질 2(\(\eta_2\))이고, \(x\) 방향으로 편광된 균일 평면파가 \(+z\) 방향으로 경계에 수직으로 들어온다. 경계면에서 파동은 둘로 나뉜다: \(-z\)로 되돌아가는 <span class="term">반사파</span><span class="en">(reflected wave)</span>와 매질 2로 들어가는 <span class="term">투과파</span><span class="en">(transmitted wave)</span>. 10장에서 보았듯 평면파의 \(\mathbf E\), \(\mathbf H\), 진행 방향은 오른손 삼각을 이루므로, 진행 방향이 뒤집힌 반사파는 \(\mathbf E\)를 그대로 두면 \(\mathbf H\)의 부호가 바뀐다.</p>
+    <div class="formula">$$\begin{aligned}
+    \tilde{\mathbf E}_i &= \hat{\mathbf x}\,E_0e^{-j\beta_1z}, & \tilde{\mathbf H}_i &= \hat{\mathbf y}\,\frac{E_0}{\eta_1}e^{-j\beta_1z}\\
+    \tilde{\mathbf E}_r &= \hat{\mathbf x}\,\Gamma E_0e^{+j\beta_1z}, & \tilde{\mathbf H}_r &= -\hat{\mathbf y}\,\frac{\Gamma E_0}{\eta_1}e^{+j\beta_1z}\\
+    \tilde{\mathbf E}_t &= \hat{\mathbf x}\,\tau E_0e^{-\gamma_2z}, & \tilde{\mathbf H}_t &= \hat{\mathbf y}\,\frac{\tau E_0}{\eta_2}e^{-\gamma_2z}
+    \end{aligned}$$<div class="where">시간 인자 \(e^{j\omega t}\)(공학 관례). \(\Gamma\)와 \(\tau\)는 아직 모르는 복소 상수다. 매질 2가 손실 매질이면 \(\gamma_2 = \alpha_2 + j\beta_2\), \(\eta_2\)는 복소수다(10장).</div></div>
+    <p>경계면 \(z = 0\)에는 표면 전류가 없으므로 9장의 경계 조건에 따라 접선 성분 \(E_x\)와 \(H_y\)가 연속이다. 두 식에서 두 미지수가 정해진다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="수직 입사에서 입사·반사·투과파의 장 방향과 경계 조건으로 반사 계수를 구하는 세 단계">
+        <defs>
+          <marker id="rf-a1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="rf-a2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+          <marker id="rf-a3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+        </defs>
+        <rect x="400" y="20" width="380" height="240" class="f-acc2-soft" opacity=".5"/>
+        <line x1="400" y1="20" x2="400" y2="260" stroke="var(--text)" stroke-width="2"/>
+        <text class="t" x="200" y="40" text-anchor="middle" style="font-weight:700">매질 1 (η₁)</text>
+        <text class="t" x="590" y="40" text-anchor="middle" style="font-weight:700">매질 2 (η₂)</text>
+        <text class="t t-dim" x="400" y="276" text-anchor="middle">z = 0</text>
+        <g>
+          <text class="t" x="70" y="88">입사</text>
+          <line x1="120" y1="84" x2="210" y2="84" stroke="var(--text-dim)" stroke-width="2" marker-end="url(#rf-a3)"/>
+          <line x1="260" y1="100" x2="260" y2="60" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-a1)"/><text class="t" x="268" y="64" style="fill:var(--accent)">E₀</text>
+          <line x1="260" y1="100" x2="300" y2="100" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#rf-a2)"/><text class="t" x="306" y="104" style="fill:var(--accent-2)">E₀/η₁</text>
+        </g>
+        <g data-step="2">
+          <text class="t" x="70" y="168">반사</text>
+          <line x1="210" y1="164" x2="120" y2="164" stroke="var(--text-dim)" stroke-width="2" marker-end="url(#rf-a3)"/>
+          <line x1="260" y1="180" x2="260" y2="140" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-a1)"/><text class="t" x="268" y="144" style="fill:var(--accent)">ΓE₀</text>
+          <line x1="260" y1="180" x2="220" y2="180" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#rf-a2)"/><text class="t" x="150" y="200" style="fill:var(--accent-2)">−ΓE₀/η₁ (H 뒤집힘)</text>
+          <text class="t" x="460" y="88">투과</text>
+          <line x1="500" y1="84" x2="590" y2="84" stroke="var(--text-dim)" stroke-width="2" marker-end="url(#rf-a3)"/>
+          <line x1="640" y1="100" x2="640" y2="60" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-a1)"/><text class="t" x="648" y="64" style="fill:var(--accent)">τE₀</text>
+          <line x1="640" y1="100" x2="680" y2="100" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#rf-a2)"/><text class="t" x="686" y="104" style="fill:var(--accent-2)">τE₀/η₂</text>
+        </g>
+        <g data-step="3" class="t">
+          <rect x="430" y="140" width="330" height="108" rx="8" class="f-surface" stroke="var(--border)"/>
+          <text x="446" y="166">접선 E 연속:  1 + Γ = τ</text>
+          <text x="446" y="192">접선 H 연속:  (1 − Γ)/η₁ = τ/η₂</text>
+          <text x="446" y="222" style="font-weight:700;fill:var(--accent)">Γ = (η₂ − η₁)/(η₂ + η₁),  τ = 2η₂/(η₂ + η₁)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>입사파: \(\mathbf E\)(\(\hat{\mathbf x}\)), \(\mathbf H\)(\(\hat{\mathbf y}\)), 진행(\(\hat{\mathbf z}\))이 오른손 삼각을 이룬다.</li><li>반사파는 \(-\hat{\mathbf z}\)로 진행하므로 \(\mathbf E\)를 \(\hat{\mathbf x}\)로 잡으면 \(\mathbf H\)는 \(-\hat{\mathbf y}\)가 된다. 투과파는 매질 2의 \(\eta_2\)를 쓴다.</li><li>\(z = 0\)에서 접선 \(E\)와 \(H\)가 연속이라는 두 식을 풀면 \(\Gamma\)와 \(\tau\)가 나온다.</li></ol>
+      <figcaption>수직 입사의 경계값 문제. 반사파의 자기장 부호가 뒤집힌다는 것이 \((1-\Gamma)\)의 마이너스로 들어가고, 이것이 반사 계수 공식의 전부다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k"><span class="term">반사 계수</span><span class="en">(reflection coefficient)</span>와 <span class="term">투과 계수</span><span class="en">(transmission coefficient)</span></span>
+      <p>경계면에서 반사파 전기장과 입사파 전기장의 비 \(\Gamma\), 투과파 전기장과 입사파 전기장의 비 \(\tau\).</p>
+    </div>
+    <div class="formula">$$\Gamma = \frac{\eta_2-\eta_1}{\eta_2+\eta_1}, \qquad \tau = \frac{2\eta_2}{\eta_2+\eta_1} = 1+\Gamma$$<div class="where">비자성 무손실 매질이면 \(\eta = \eta_0/n\)(\(n = \sqrt{\varepsilon_r}\) 굴절률)이므로 \(\Gamma = (n_1-n_2)/(n_1+n_2)\). 빛이 굴절률이 큰 쪽으로 가면 \(\Gamma < 0\): 반사파 전기장의 위상이 180° 뒤집힌다. 12장의 전송선 반사 계수 \(\Gamma = (Z_L - Z_0)/(Z_L + Z_0)\)와 똑같은 꼴이다.</div></div>
+    <p>에너지는 포인팅 벡터로 센다. 무손실 매질에서 시간 평균 전력 밀도는 \(|E|^2/2\eta\)이므로, 반사되는 몫 \(R\)과 건너가는 몫 \(T\)는</p>
+    <div class="formula">$$R = |\Gamma|^2, \qquad T = \frac{\eta_1}{\eta_2}|\tau|^2 = 1 - |\Gamma|^2 \quad(\text{무손실})$$<div class="where">\(R\)은 <span class="term">반사율</span><span class="en">(reflectance)</span>, \(T\)는 <span class="term">투과율</span><span class="en">(transmittance)</span>. \(\tau\)는 1보다 클 수 있지만(\(\eta_2 > \eta_1\)) 전력은 \(\eta_1/\eta_2\)배로 줄어 \(R + T = 1\)이 지켜진다. 매질 2가 손실 매질이면 \(T = \mathrm{Re}(1/\eta_2^*)\,\eta_1|\tau|^2\).</div></div>
+    <div class="tangle" id="tg-gamma">
+      <p>비유전율 <span class="tn" data-var="e1" data-min="1" data-max="16" data-step="0.25">1</span>인 매질에서 비유전율 <span class="tn" data-var="e2" data-min="1" data-max="81" data-step="0.25">4</span>인 매질로 수직 입사하면(비자성 무손실) 고유 임피던스는 <span class="tn-out" data-out="eta"></span>, 반사 계수 \(\Gamma\) = <span class="tn-out" data-out="G"></span>, 투과 계수 \(\tau\) = <span class="tn-out" data-out="t"></span>이다. 전력으로는 <span class="tn-out" data-out="R"></span>가 반사되고 <span class="tn-out" data-out="T"></span>가 건너가서 합이 <span class="tn-out" data-out="sum"></span>이다.</p>
+    </div>
+    <h3>정재파와 정재파비</h3>
+    <p>매질 1에는 입사파와 반사파가 함께 있다. 둘을 더하면</p>
+    <div class="formula">$$\tilde E_1(z) = E_0\left(e^{-j\beta_1z} + \Gamma e^{j\beta_1z}\right), \qquad |\tilde E_1(z)| = E_0\left|1 + \Gamma e^{j2\beta_1z}\right| = E_0\sqrt{1 + |\Gamma|^2 + 2|\Gamma|\cos(2\beta_1z + \theta_\Gamma)}$$<div class="where">\(\Gamma = |\Gamma|e^{j\theta_\Gamma}\). 진폭이 위치에 따라 \(E_0(1-|\Gamma|)\)과 \(E_0(1+|\Gamma|)\) 사이를 \(\lambda_1/2\) 주기로 오르내린다. 최대는 \(2\beta_1z + \theta_\Gamma = -2m\pi\), 최소는 그보다 \(\lambda_1/4\) 떨어진 곳이다.</div></div>
+    <p>부분적으로 움직이지 않는 이 무늬가 <span class="term">정재파</span><span class="en">(standing wave)</span>다. \(|\Gamma| = 1\)이면 마디에서 진폭이 정확히 0인 완전한 정재파, \(\Gamma = 0\)이면 진폭이 일정한 진행파다. 그 사이를 재는 수가 <span class="term">정재파비</span><span class="en">(standing-wave ratio, SWR)</span>다.</p>
+    <div class="formula">$$S = \frac{|E|_{max}}{|E|_{min}} = \frac{1+|\Gamma|}{1-|\Gamma|}, \qquad |\Gamma| = \frac{S-1}{S+1}$$<div class="where">\(1 \le S < \infty\). 실수 \(\Gamma<0\)(\(\eta_2 < \eta_1\))이면 경계면이 전기장 최소, \(\Gamma>0\)이면 최대다. 탐침으로 \(S\)와 최소 위치를 재면 \(\Gamma\)의 크기와 위상, 곧 미지 매질의 임피던스를 알 수 있다 — 슬롯 선로 측정의 원리다.</div></div>
+    <div class="predict" data-for="sim-sw">
+      <p>공기 중의 평면파가 완전 도체 판에 수직으로 부딪힌다. 도체 표면(\(z = 0\))과 그 앞 \(\lambda/4\) 지점에서 전기장 진폭은 입사파 진폭 \(E_0\)의 몇 배일까?</p>
+      <div class="opts"><button class="opt">표면 \(E_0\), \(\lambda/4\) 지점 \(E_0\) — 진행파처럼 고르다</button><button class="opt">표면 \(2E_0\), \(\lambda/4\) 지점 0</button><button class="opt" data-correct>표면 0, \(\lambda/4\) 지점 \(2E_0\)</button><button class="opt">둘 다 0 — 도체가 빛을 모두 흡수한다</button></div>
+      <div class="quiz-exp">완전 도체 안에서는 \(\mathbf E = 0\)이고 접선 \(E\)가 연속이어야 하므로 표면은 전기장의 마디다(\(\Gamma = -1\)). 거기서 \(\lambda/4\) 떨어진 곳에서 입사파와 반사파가 같은 위상으로 만나 \(2E_0\)이 된다. 아래에서 매질 2를 "완전 도체"로 두고 탐침을 끌어 확인해 보라.</div>
+    </div>
+    <div class="sim" id="sim-sw">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>정재파 탐침: 미지 시료 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-sw"></canvas><span class="hint">아래 축의 탐침(흰 원)을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>모드</span><div class="seg" id="sw-mode"><button data-value="set" class="on">직접 설정</button><button data-value="quiz">미지 시료</button></div></div>
+          <label class="ctrl"><span>매질 2 비유전율 ε<sub>r2</sub> <output id="sw-er-out"></output></span><input type="range" id="sw-er" min="1" max="16" step="0.05" value="4"></label>
+          <label class="ctrl"><span>손실 탄젠트 tan δ <output id="sw-tan-out"></output></span><input type="range" id="sw-tan" min="0" max="3" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="sw-pec"> 매질 2 = 완전 도체</label>
+          <div class="ctrl"><span>미지 시료의 정체는?</span><div class="seg" id="sw-ans"><button data-value="2.25">ε<sub>r</sub> 2.25</button><button data-value="4">ε<sub>r</sub> 4</button><button data-value="9">ε<sub>r</sub> 9</button><button data-value="pec">도체</button></div></div>
+          <button class="btn" id="sw-new" type="button">새 시료 · 기록 지우기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">탐침 |E|/E₀</span><span class="v" id="sw-probe">—</span></div>
+        <div class="stat"><span class="k">기록 최대 / 최소</span><span class="v" id="sw-mm">—</span></div>
+        <div class="stat"><span class="k">S = 최대/최소 → |Γ|</span><span class="v" id="sw-S">—</span></div>
+        <div class="stat"><span class="k">Γ = |Γ|∠θ<sub>Γ</sub></span><span class="v" id="sw-G">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="sw-res">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 공기(매질 1), 오른쪽은 매질 2다. 굵은 곡선이 순간 전기장, 점선이 진폭 포락선 \(|\tilde E_1(z)|\)이다. 탐침이 지나간 자리의 진폭은 점으로 남는다. 해볼 것: ① 직접 설정 모드에서 \(\varepsilon_{r2}\)를 키우며 \(S = \sqrt{\varepsilon_{r2}}\)가 되는지 확인하라(공기 → 무손실 유전체). ② 손실 탄젠트를 올리면 최소점이 경계면에서 벗어난다 — \(\Gamma\)가 복소수가 되어 위상 \(\theta_\Gamma\)가 생긴다. ③ 미지 시료 모드: 포락선이 숨겨진다. 탐침으로 최대·최소를 찾아 \(S\)를 재고 시료의 정체를 맞혀라.</div>
+    </div>
+    <div class="example" data-title="공기에서 유전체로">
+      <p>3.0 GHz, 진폭 \(E_0\) = 10 V/m인 평면파가 공기에서 비유전율 4.0인 무손실 비자성 유전체에 수직으로 입사한다. \(\Gamma\), \(\tau\), \(S\), 반사율과 투과율, 공기 쪽 전기장 진폭의 최댓값·최솟값과 그 위치를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\eta_2 = \eta_0/\sqrt{\varepsilon_r}\)로 \(\Gamma\)를 구하고, \(\Gamma\)가 음의 실수이므로 경계면이 최소점이다.</div>
+        <div class="step"><b>풀이</b> \(\eta_2 = 376.7/2 = 188.4\) Ω. \(\Gamma = (188.4-376.7)/(188.4+376.7) = -1/3\), \(\tau = 1+\Gamma = 2/3\). \(S = (1+1/3)/(1-1/3) = 2.0\). \(R = 1/9 = 11.1\%\), \(T = (\eta_1/\eta_2)|\tau|^2 = 2\times4/9 = 88.9\%\). \(\lambda_1 = c/f = 9.99\) cm. \(|E|_{max} = 10(1+1/3) = 13.3\) V/m는 \(z = -\lambda_1/4 = -2.50\) cm(그리고 \(\lambda_1/2\)마다), \(|E|_{min} = 6.67\) V/m는 \(z = 0, -5.00\) cm, ….</div>
+        <div class="answer">\(\Gamma = -0.333\), \(\tau = 0.667\), \(S = 2.0\), \(R = 11.1\%\), \(T = 88.9\%\); 최대 13.3 V/m(\(z = -2.50\) cm), 최소 6.67 V/m(\(z = 0\))</div>
+        <div class="step"><b>검토</b> \(R + T = 1\). 투과파 진폭(6.67 V/m)이 입사파보다 작은데도 전력은 89%가 건너간다 — 유전체의 임피던스가 절반이라 같은 \(E\)에 두 배의 전력이 실린다.</div>
+      </details>
+    </div>
+    <h3>도체 거울</h3>
+    <p>매질 2가 완전 도체이면 \(\eta_2 = 0\)이라 \(\Gamma = -1\), \(\tau = 0\)이다. 매질 1의 장은</p>
+    <div class="formula">$$\tilde{\mathbf E}_1 = -\hat{\mathbf x}\,2jE_0\sin\beta_1z, \qquad \tilde{\mathbf H}_1 = \hat{\mathbf y}\,\frac{2E_0}{\eta_1}\cos\beta_1z$$$$\mathbf E_1(z,t) = \hat{\mathbf x}\,2E_0\sin\beta_1z\,\sin\omega t, \qquad \mathbf H_1(z,t) = \hat{\mathbf y}\,\frac{2E_0}{\eta_1}\cos\beta_1z\,\cos\omega t$$<div class="where">전기장은 표면(\(z = 0\))과 \(z = -m\lambda_1/2\)에서 마디, 자기장은 표면에서 배(최대)다. \(\mathbf E\)와 \(\mathbf H\)는 공간과 시간 모두에서 90° 어긋나 있어 시간 평균 포인팅 벡터가 0이다: 에너지는 마디 사이에서 전기 에너지와 자기 에너지로 바뀌며 출렁일 뿐 흐르지 않는다. 표면에는 표면 전류 \(\mathbf J_s = \hat{\mathbf n}\times\mathbf H = \hat{\mathbf x}\,2E_0/\eta_1\)이 흐른다(\(\hat{\mathbf n} = -\hat{\mathbf z}\)).</div></div>
+    <p>실제 금속은 전도도가 유한하다. 양도체의 고유 임피던스는 10장에서 \(\eta_c = (1+j)R_s\), \(R_s = \sqrt{\pi f\mu/\sigma} = 1/\sigma\delta\)였다. \(|\eta_c| \ll \eta_1\)이므로 \(\Gamma \approx -1 + 2\eta_c/\eta_1\)이고</p>
+    <div class="formula">$$R = |\Gamma|^2 \approx 1 - \frac{4R_s}{\eta_1}$$<div class="where">흡수되는 몫 \(4R_s/\eta_1\)은 표면 전류 \(J_s = 2H_0\)가 표피 깊이 안에서 만드는 줄 열 \(\tfrac12|J_s|^2R_s\)를 입사 전력 \(\tfrac12\eta_1H_0^2\)으로 나눈 것과 같다. 마이크로파 공동과 도파관의 손실(14장)도 이 식으로 계산한다.</div></div>
+    <div class="example" data-title="구리 거울의 흡수">
+      <p>1.0 GHz 평면파가 공기에서 구리(\(\sigma = 5.96\times10^{7}\) S/m) 판에 수직 입사한다. 표피 깊이, 표면 저항, 흡수되는 전력의 비율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\delta = 1/\sqrt{\pi f\mu_0\sigma}\), \(R_s = 1/\sigma\delta\), 흡수율 \(\approx 4R_s/\eta_0\).</div>
+        <div class="step"><b>풀이</b> \(\delta = 1/\sqrt{\pi(10^9)(4\pi\times10^{-7})(5.96\times10^7)} = 2.06\) µm. \(R_s = 1/(5.96\times10^7\times2.06\times10^{-6}) = 8.14\) mΩ. \(1 - R \approx 4(8.14\times10^{-3})/376.7 = 8.64\times10^{-5}\).</div>
+        <div class="answer">\(\delta = 2.06\) µm, \(R_s = 8.14\) mΩ, 흡수 \(8.6\times10^{-5}\)(0.0086%)</div>
+        <div class="step"><b>검토</b> 정확한 \(\Gamma = (\eta_c - \eta_0)/(\eta_c + \eta_0)\)로 계산해도 \(1-|\Gamma|^2 = 8.64\times10^{-5}\)이다. 마이크로파에서 금속은 거의 완벽한 거울이다. 가시광에서는 \(\omega\tau\)가 커지고 플라스마 주파수가 가까워져 이 근사가 깨진다 — 구리가 붉은 이유다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-normal" data-title="수직 입사 반사 계수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="oblique">
+    <h2>사입사: 스넬 법칙과 프레넬 식</h2>
+    <p>이제 파동이 비스듬히 들어온다. 경계면을 \(z = 0\), 입사파의 파수 벡터를 \(xz\) 평면에 두자. 입사파 법선과 경계면 법선이 이루는 평면이 <span class="term">입사면</span><span class="en">(plane of incidence)</span>이다. 입사·반사·투과파의 위상은 각각 \(e^{-j\mathbf k\cdot\mathbf r}\)이다. 경계 조건은 경계면의 <em>모든</em> 점 \(x\)에서 성립해야 하므로 세 파동의 \(x\) 방향 위상 변화율이 같아야 한다. 이것이 <span class="term">위상 정합</span><span class="en">(phase matching)</span>이다.</p>
+    <div class="formula">$$k_1\sin\theta_i = k_1\sin\theta_r = k_2\sin\theta_t \;\Longrightarrow\; \theta_r = \theta_i, \qquad n_1\sin\theta_i = n_2\sin\theta_t$$<div class="where">첫째는 반사 법칙, 둘째는 <span class="term">스넬 법칙</span><span class="en">(Snell's law)</span>이다(\(k = n\omega/c\)). 두 법칙 모두 경계 조건의 <em>세부</em>와 상관없이 위상 정합만으로 나온다. 그래서 편광이나 매질의 손실과 상관없이 같다(손실 매질에서는 \(\sin\theta_t\)가 복소수가 된다).</div></div>
+    <div class="tangle" id="tg-snell">
+      <p>굴절률 <span class="tn" data-var="n1" data-min="1" data-max="4" data-step="0.01">1.00</span>인 매질에서 굴절률 <span class="tn" data-var="n2" data-min="1" data-max="4" data-step="0.01">1.46</span>인 매질로 입사각 <span class="tn" data-var="th" data-min="0" data-max="89" data-step="1" data-unit="°">40</span>로 들어가면 굴절각은 <span class="tn-out" data-out="tt"></span>이다. 경계면을 따라 흐르는 위상의 파수는 \(k_x/k_0 = n_1\sin\theta_i\) = <span class="tn-out" data-out="kx"></span>로 양쪽이 같다. 임계각은 <span class="tn-out" data-out="tc"></span>이다.</p>
+    </div>
+    <p>반사·투과의 <em>세기</em>는 편광에 따라 다르다. 어떤 편광이든 두 가지 기본 편광의 합으로 나눌 수 있다.</p>
+    <div class="compare">
+      <div><h4><span class="term">s 편광</span><span class="en">(s-polarization, TE)</span></h4><p>전기장이 입사면에 수직(\(\hat{\mathbf y}\)). 전기장이 경계면에 평행하므로 "TE(횡전기)", 공학 교재에서는 수직 편광 \(\perp\)라고도 한다. s는 독일어 senkrecht(수직).</p></div>
+      <div><h4><span class="term">p 편광</span><span class="en">(p-polarization, TM)</span></h4><p>전기장이 입사면 안에 놓인다. 자기장이 \(\hat{\mathbf y}\)로 경계면에 평행하므로 "TM(횡자기)", 평행 편광 \(\parallel\)이라고도 한다. p는 parallel.</p></div>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="s 편광과 p 편광의 전기장 방향. s는 입사면에 수직, p는 입사면 안">
+        <defs>
+          <marker id="rf-b1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="rf-b3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+        </defs>
+        <g>
+          <rect x="20" y="160" width="360" height="120" class="f-acc2-soft" opacity=".45"/>
+          <line x1="20" y1="160" x2="380" y2="160" stroke="var(--text)" stroke-width="2"/>
+          <line x1="200" y1="40" x2="200" y2="280" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+          <line x1="80" y1="40" x2="196" y2="156" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <line x1="204" y1="156" x2="320" y2="40" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <line x1="203" y1="164" x2="262" y2="272" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <g fill="var(--accent)"><circle cx="110" cy="70" r="7" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="110" cy="70" r="2.4"/><circle cx="150" cy="110" r="7" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="150" cy="110" r="2.4"/><circle cx="270" cy="90" r="7" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="270" cy="90" r="2.4"/><circle cx="235" cy="226" r="7" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="235" cy="226" r="2.4"/></g>
+          <text class="t" x="200" y="24" text-anchor="middle" style="font-weight:700">s 편광 (TE): E ⊥ 입사면 (⊙)</text>
+          <text class="t t-dim" x="30" y="150">n₁</text><text class="t t-dim" x="30" y="184">n₂</text>
+          <text class="t t-dim" x="92" y="112">θᵢ</text>
+        </g>
+        <g>
+          <rect x="420" y="160" width="360" height="120" class="f-acc2-soft" opacity=".45"/>
+          <line x1="420" y1="160" x2="780" y2="160" stroke="var(--text)" stroke-width="2"/>
+          <line x1="600" y1="40" x2="600" y2="280" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+          <line x1="480" y1="40" x2="596" y2="156" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <line x1="604" y1="156" x2="720" y2="40" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <line x1="603" y1="164" x2="662" y2="272" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-b3)"/>
+          <line x1="526" y1="72" x2="550" y2="48" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/><line x1="526" y1="72" x2="502" y2="96" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/>
+          <line x1="672" y1="92" x2="696" y2="116" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/><line x1="672" y1="92" x2="648" y2="68" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/>
+          <line x1="634" y1="222" x2="662" y2="207" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/><line x1="634" y1="222" x2="606" y2="237" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-b1)"/>
+          <text class="t" x="600" y="24" text-anchor="middle" style="font-weight:700">p 편광 (TM): E가 입사면 안 (↔)</text>
+          <text class="t t-dim" x="430" y="150">n₁</text><text class="t t-dim" x="430" y="184">n₂</text>
+        </g>
+      </svg>
+      <figcaption>입사면(종이 면) 기준의 두 편광. s 편광의 전기장은 종이를 뚫고 나오며 늘 경계면에 평행하다. p 편광의 전기장은 광선에 수직이면서 종이 면 안에 있어, 경계면에 평행한 성분과 수직인 성분을 함께 가진다.</figcaption>
+    </figure>
+    <p>각 편광에 대해 접선 \(E\)·\(H\) 연속 조건을 쓰면(접선 성분에 \(\cos\theta\)가 붙는다) <span class="term">프레넬 식</span><span class="en">(Fresnel equations)</span>을 얻는다. 비자성 매질에서 굴절률로 쓰면</p>
+    <div class="formula">$$r_s = \frac{n_1\cos\theta_i - n_2\cos\theta_t}{n_1\cos\theta_i + n_2\cos\theta_t}, \qquad t_s = \frac{2n_1\cos\theta_i}{n_1\cos\theta_i + n_2\cos\theta_t}$$$$r_p = \frac{n_2\cos\theta_i - n_1\cos\theta_t}{n_2\cos\theta_i + n_1\cos\theta_t}, \qquad t_p = \frac{2n_1\cos\theta_i}{n_2\cos\theta_i + n_1\cos\theta_t}$$<div class="where">임피던스로 쓰면 \(r_s = (\eta_2\cos\theta_i - \eta_1\cos\theta_t)/(\eta_2\cos\theta_i + \eta_1\cos\theta_t)\) — 수직 입사 공식의 \(\eta\)를 TE "파동 임피던스" \(\eta/\cos\theta\)로 바꾼 꼴이고, TM은 \(\eta\cos\theta\)로 바꾼 꼴이다. 수직 입사(\(\theta = 0\))에서 \(r_s = (n_1-n_2)/(n_1+n_2) = \Gamma\).</div></div>
+    <div class="formula">$$R_{s,p} = |r_{s,p}|^2, \qquad T_{s,p} = \frac{n_2\cos\theta_t}{n_1\cos\theta_i}\,|t_{s,p}|^2, \qquad R + T = 1$$<div class="where">투과율의 \(\cos\theta_t/\cos\theta_i\)는 빔의 단면적이 굴절로 바뀌는 효과, \(n_2/n_1\)은 같은 \(|E|\)에 실린 전력 밀도의 비다. 편광되지 않은 빛은 \(R = (R_s + R_p)/2\).</div></div>
+    <div class="callout warn"><strong>\(r_p\)의 부호 약속</strong><p>p 편광은 반사파의 전기장 "양의 방향"을 어떻게 잡느냐에 따라 \(r_p\)의 부호가 교재마다 다르다. 이 장은 광학과 엘립소메트리 표준(헥트, 후지와라, em.js)을 따른다: 위 식에서 수직 입사일 때 \(r_p = -r_s\)다. 울라비 등 공학 교재의 \(\Gamma_\parallel = (\eta_2\cos\theta_t - \eta_1\cos\theta_i)/(\eta_2\cos\theta_t + \eta_1\cos\theta_i)\)는 \(-r_p\)와 같다. 반사율 \(|r_p|^2\)과 브루스터 각은 약속과 상관없이 같지만, 위상(엘립소메트리의 \(\Delta\))을 다룰 때는 어느 약속인지 반드시 확인해야 한다.</p></div>
+    <div class="predict" data-for="sim-fresnel">
+      <p>공기에서 유리(\(n\) = 1.5)로 p 편광 빛을 비춘다. 입사각을 0°에서 90°로 늘리면 반사율 \(R_p\)는 어떻게 변할까?</p>
+      <div class="opts"><button class="opt">0°의 4%에서 90°의 100%까지 꾸준히 늘어난다</button><button class="opt" data-correct>처음에는 줄어 어떤 각도에서 정확히 0이 된 뒤, 90°에서 100%로 치솟는다</button><button class="opt">각도와 상관없이 4%로 일정하다</button><button class="opt">꾸준히 줄어 90°에서 0이 된다</button></div>
+      <div class="quiz-exp">\(r_p\)의 분자 \(n_2\cos\theta_i - n_1\cos\theta_t\)는 어떤 각도에서 0이 된다 — 브루스터 각(\(\arctan1.5 = 56.3°\)). s 편광은 그런 각도가 없이 꾸준히 는다. 시뮬레이터에서 광원을 끌어 두 곡선 위의 점을 따라가 보라.</div>
+    </div>
+    <div class="sim" id="sim-fresnel">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>프레넬 반사: 브루스터 각으로 굴절률 재기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-fr"></canvas><span class="hint">광원(흰 원)을 원을 따라 끈다</span></div><div><canvas id="cv-fr2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>n₁ (위) <output id="fr-n1-out"></output></span><input type="range" id="fr-n1" min="1" max="4" step="0.01" value="1"></label>
+          <label class="ctrl"><span>n₂ (아래) <output id="fr-n2-out"></output></span><input type="range" id="fr-n2" min="1" max="4" step="0.01" value="1.5"></label>
+          <div class="ctrl"><span>입사광 편광</span><div class="seg" id="fr-pol"><button data-value="s">s</button><button data-value="p">p</button><button data-value="u" class="on">비편광</button></div></div>
+          <div class="ctrl"><span>모드</span><div class="seg" id="fr-mode"><button data-value="free" class="on">탐색</button><button data-value="goal">미지의 유리</button></div></div>
+          <button class="btn" id="fr-new" type="button">새 유리</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">θᵢ → θₜ</span><span class="v" id="fr-th">—</span></div>
+        <div class="stat"><span class="k">R<sub>s</sub> / R<sub>p</sub></span><span class="v" id="fr-R">—</span></div>
+        <div class="stat"><span class="k">T<sub>s</sub> / T<sub>p</sub></span><span class="v" id="fr-T">—</span></div>
+        <div class="stat"><span class="k">θ<sub>B</sub> / θ<sub>c</sub></span><span class="v" id="fr-ang">—</span></div>
+        <div class="stat"><span class="k">미지의 유리</span><span class="v" id="fr-goal">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 광선의 굵기와 진하기가 전력에 비례한다(⊙: s 성분, ↔: p 성분). 오른쪽은 \(R_s\)(파랑)와 \(R_p\)(빨강)의 각도 곡선이다. 해볼 것: ① 비편광으로 브루스터 각에 맞추면 반사광에 ⊙만 남는다 — 반사로 만든 편광자. ② \(n_1 > n_2\)로 바꾸면 임계각 너머에서 투과광이 사라지고 \(R_s = R_p = 1\)이 된다. ③ 미지의 유리 모드: 굴절률이 숨겨진 유리에 p 편광을 비추며 반사가 사라지는 각을 찾아라(\(R_p < 10^{-4}\)). 그 각의 탄젠트가 굴절률이다.</div>
+    </div>
+    <h3>브루스터 각</h3>
+    <p>\(r_p = 0\)이 되는 조건 \(n_2\cos\theta_i = n_1\cos\theta_t\)를 스넬 법칙과 함께 풀면</p>
+    <div class="formula">$$\tan\theta_B = \frac{n_2}{n_1}, \qquad \theta_B + \theta_t = 90^\circ$$<div class="where">이 각이 <span class="term">브루스터 각</span><span class="en">(Brewster angle)</span>이다. 비자성 매질에서 s 편광에는 이런 각이 없다(\(r_s = 0\)이려면 \(n_1 = n_2\)). 반사광과 굴절광이 서로 직각이 된다.</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="브루스터 각에서 p 반사가 사라지는 이유: 매질 속 쌍극자는 자기 축 방향으로 복사하지 않는다">
+        <defs>
+          <marker id="rf-c1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="rf-c3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+        </defs>
+        <rect x="20" y="140" width="520" height="130" class="f-acc2-soft" opacity=".45"/>
+        <line x1="20" y1="140" x2="540" y2="140" stroke="var(--text)" stroke-width="2"/>
+        <line x1="280" y1="20" x2="280" y2="270" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <line x1="150" y1="30" x2="277" y2="137" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-c3)"/>
+        <text class="t" x="120" y="30">입사 (p)</text>
+        <line x1="282" y1="143" x2="356" y2="264" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-c3)"/>
+        <text class="t" x="364" y="262">굴절 θₜ</text>
+        <g data-step="2">
+          <line x1="296" y1="214" x2="346" y2="183" stroke="var(--accent)" stroke-width="3" marker-end="url(#rf-c1)"/><line x1="321" y1="198" x2="296" y2="214" stroke="var(--accent)" stroke-width="3"/>
+          <ellipse cx="321" cy="198" rx="8" ry="5" fill="var(--accent)" transform="rotate(-32 321 198)"/>
+          <text class="t" x="356" y="182" style="fill:var(--accent)">유도된 쌍극자 p ∥ Eₜ</text>
+        </g>
+        <g data-step="3">
+          <line x1="283" y1="137" x2="408" y2="30" stroke="var(--text-dim)" stroke-width="2.4" stroke-dasharray="6 5" opacity=".7"/>
+          <text class="t" x="414" y="30" style="fill:var(--accent);font-weight:700">반사 방향 = 쌍극자 축 → 복사 0</text>
+          <text class="t t-dim" x="300" y="122">90°</text>
+        </g>
+        <g class="t">
+          <text x="570" y="60" style="font-weight:700">미시적 그림</text>
+          <text x="570" y="88">반사파는 경계면 근처 매질 2의</text>
+          <text x="570" y="110">원자 쌍극자가 다시 내놓은 빛이다.</text>
+          <text x="570" y="140">쌍극자는 자기 축 방향으로</text>
+          <text x="570" y="162">복사하지 않는다(sin²θ, 15장).</text>
+          <text x="570" y="192">θᵢ + θₜ = 90°이면 반사 방향이</text>
+          <text x="570" y="214">바로 p 쌍극자의 축이다.</text>
+          <text x="570" y="244" class="t-dim">s 쌍극자는 종이에 수직이라</text>
+          <text x="570" y="264" class="t-dim">반사 방향으로 늘 복사한다.</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>p 편광 빛이 들어와 굴절한다.</li><li>굴절된 전기장 \(\mathbf E_t\)가 매질 2의 원자 쌍극자를 \(\mathbf E_t\) 방향(굴절 광선에 수직, 입사면 안)으로 흔든다.</li><li>반사 방향이 굴절 방향과 직각이면, 그 방향은 쌍극자 축과 나란해 복사가 0이다. 이 조건이 \(\theta_B + \theta_t = 90°\)다.</li></ol>
+      <figcaption>브루스터 각의 쌍극자 그림. 프레넬 식의 \(r_p = 0\)이 "쌍극자는 축 방향으로 복사하지 않는다"는 사실과 같은 내용이다.</figcaption>
+    </figure>
+    <p>브루스터 각은 쓸모가 많다. 레이저 공진기의 브루스터 창은 p 편광을 손실 없이 통과시켜 레이저 출력을 저절로 편광시키고, 편광 선글라스는 수면·도로의 브루스터 근처 반사(대부분 s 편광)를 막는다. 굴절률이 큰 실리콘(633 nm에서 \(n\) ≈ 3.88)의 브루스터 각은 75.5°로, 엘립소메트리가 70–75° 입사각을 쓰는 이유가 된다(§11.7).</p>
+    <div class="example" data-title="산화막 표면의 브루스터 각">
+      <p>633 nm에서 굴절률 1.457인 두꺼운 SiO₂ 표면에 공기 중에서 빛을 비춘다. 브루스터 각, 그때의 굴절각, s 편광 반사율, 편광되지 않은 빛의 반사율을 구하라. 반사광의 편광 상태는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\theta_B = \arctan(n_2/n_1)\), \(\theta_t = 90° - \theta_B\), \(R_s = |r_s|^2\), 비편광 \(R = (R_s + 0)/2\).</div>
+        <div class="step"><b>풀이</b> \(\theta_B = \arctan1.457 = 55.5°\), \(\theta_t = 34.5°\). \(r_s = (\cos55.5° - 1.457\cos34.5°)/(\cos55.5° + 1.457\cos34.5°) = (0.5659 - 1.2013)/1.7672 = -0.360\), \(R_s = 0.129\). 비편광: \(R = 0.129/2 = 0.0646\).</div>
+        <div class="answer">\(\theta_B = 55.5°\), \(\theta_t = 34.5°\), \(R_s = 12.9\%\), 비편광 \(R = 6.5\%\); 반사광은 완전한 s 편광</div>
+        <div class="step"><b>검토</b> 반사광이 완전 편광되지만 세기는 입사광의 6.5%뿐이다. 투과광은 p가 모두 남고 s가 조금 빠져 부분 편광이다. 유리판 여러 장을 브루스터 각으로 겹치면 투과광의 편광도를 높일 수 있다(판 더미 편광자).</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="tir">
+    <h2>전반사와 소산파</h2>
+    <p>빛이 굴절률이 큰 쪽에서 작은 쪽으로 갈 때(\(n_1 > n_2\)) 굴절각이 입사각보다 크다. 입사각이 <span class="term">임계각</span><span class="en">(critical angle)</span></p>
+    <div class="formula">$$\sin\theta_c = \frac{n_2}{n_1}$$<div class="where">유리–공기(1.5 → 1) 41.8°, 실리콘–산화막(3.88 → 1.457) 22.1°, 물–공기 48.6°.</div></div>
+    <p>에 이르면 \(\theta_t = 90°\)가 되고, 그 너머에서는 스넬 법칙을 만족하는 실수 \(\theta_t\)가 없다. 그래도 위상 정합 \(k_x = k_1\sin\theta_i\)은 지켜야 하므로 매질 2의 \(z\) 성분 파수가 허수가 된다.</p>
+    <div class="formula">$$k_{2z}^2 = k_2^2 - k_x^2 = k_0^2\left(n_2^2 - n_1^2\sin^2\theta_i\right) < 0 \;\Longrightarrow\; \tilde E_t \propto e^{-jk_xx}\,e^{-\alpha z}, \qquad \alpha = k_0\sqrt{n_1^2\sin^2\theta_i - n_2^2}$$<div class="where">매질 2의 장은 경계면을 따라 \(x\) 방향으로 진행하면서 \(z\) 방향으로는 지수적으로 줄어든다. 이런 파동이 <span class="term">소산파</span><span class="en">(evanescent wave)</span>다. 장이 \(1/e\)로 줄어드는 거리 \(d = 1/\alpha = \lambda_0/(2\pi\sqrt{n_1^2\sin^2\theta_i - n_2^2})\)를 <span class="term">침투 깊이</span><span class="en">(penetration depth)</span>라 한다(세기는 \(d/2\)).</div></div>
+    <p>이때 \(n_2\cos\theta_t = -j\sqrt{n_1^2\sin^2\theta_i - n_2^2}\)를 프레넬 식에 넣으면 분자와 분모가 켤레 복소수가 되어 \(|r_s| = |r_p| = 1\)이다: <span class="term">전반사</span><span class="en">(total internal reflection, TIR)</span>. 매질 2에 장이 있는데도 에너지가 건너가지 않는 것은, 소산파의 \(\mathbf E\)와 \(\mathbf H\)의 \(z\) 방향 성분이 90° 어긋나 시간 평균 포인팅 벡터의 \(z\) 성분이 0이기 때문이다. 대신 반사파는 위상 \(\phi_s = 2\arctan\!\left[\sqrt{n_1^2\sin^2\theta_i - n_2^2}/(n_1\cos\theta_i)\right]\)만큼 밀린다(p는 또 다르다). 이 위상 차이가 광섬유와 실리콘 포토닉스 도파로(14장)의 모드 조건에 들어간다.</p>
+    <figure class="mini" id="mini-evan">
+      <div class="mini-view"><canvas id="cv-ev"></canvas><span class="hint top">흰 원을 끌어 입사각을 바꾼다</span></div>
+      <div class="mini-ctrl"><button class="btn" id="ev-play" type="button"></button><span class="readout" id="ev-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>유리(\(n_1\) = 1.5, 위)에서 공기(\(n_2\) = 1, 아래)로 가는 s 편광의 순간 전기장 \(\mathrm{Re}\,\tilde E_y\)(빨강 +, 파랑 −). 임계각(41.8°) 아래에서는 아래쪽으로 진행파가 빠져나가고, 위에서는 입사파와 반사파가 간섭 무늬를 만든다. 임계각을 넘기면 아래쪽 무늬가 \(x\) 방향으로만 흐르며 \(z\) 방향으로 사라진다 — 소산파. 임계각 바로 위에서 침투 깊이가 길어지는 것을 보라.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-depth">
+      <p>굴절률 <span class="tn" data-var="n1" data-min="1.3" data-max="4" data-step="0.01">1.50</span>인 매질에서 <span class="tn" data-var="n2" data-min="1" data-max="2" data-step="0.01">1.00</span>인 매질로 파장 <span class="tn" data-var="lam" data-min="200" data-max="1600" data-step="1" data-unit=" nm">633</span>의 빛을 <span class="tn" data-var="th" data-min="1" data-max="89" data-step="0.5" data-unit="°">60.0</span>로 입사시키면 임계각은 <span class="tn-out" data-out="tc"></span>이고 결과는 <span class="tn-out" data-out="st"></span>이다. 소산파 장의 침투 깊이는 <span class="tn-out" data-out="d"></span>(세기 <span class="tn-out" data-out="dI"></span>)이다.</p>
+    </div>
+    <p>소산파 영역 안에 굴절률이 큰 세 번째 매질을 가져다 대면 사라지던 장이 그 매질에서 다시 진행파가 되어 에너지가 새어 나간다. 이것이 <span class="term">좌절된 전반사</span><span class="en">(frustrated total internal reflection, FTIR)</span>로, 양자역학의 터널링과 같은 수학이다. 틈이 \(d\)보다 몇 배 넓어지면 투과율은 대략 \(e^{-2g/d}\)로 떨어진다.</p>
+    <figure class="mini" id="mini-ftir">
+      <div class="mini-view"><canvas id="cv-ft"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>공기 틈 g <output id="ft-g-out"></output></span><input type="range" id="ft-g" min="0" max="600" step="5" value="100"></label>
+        <label class="ctrl"><span>입사각 <output id="ft-th-out"></output></span><input type="range" id="ft-th" min="42" max="80" step="0.5" value="60"></label>
+        <span class="readout" id="ft-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>두 유리 프리즘(\(n\) = 1.5) 사이 공기 틈을 지나는 633 nm 빛의 투과율 \(T_s\)(파랑), \(T_p\)(빨강)을 틈 두께의 함수로 그렸다(<code>EM.multilayer</code>). 점선은 \(e^{-2g/d}\) 기울기. 틈이 침투 깊이의 몇 배만 되어도 빛은 거의 다 반사된다. 프리즘 결합기, 빔 분할 큐브, 지문 센서가 이 원리를 쓴다.</figcaption>
+    </figure>
+    <div class="example" data-title="유리–공기 전반사의 침투 깊이">
+      <p>633 nm 빛이 유리(\(n\) = 1.50) 안에서 공기 경계면에 60°로 입사한다. 임계각, 소산파 장의 침투 깊이와 세기 침투 깊이, s 편광 반사파의 위상 이동을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\theta_c = \arcsin(1/1.5)\), \(d = \lambda_0/(2\pi\sqrt{n_1^2\sin^2\theta - n_2^2})\), \(\phi_s = 2\arctan[\sqrt{\cdot}/(n_1\cos\theta)]\).</div>
+        <div class="step"><b>풀이</b> \(\theta_c = 41.8°\) < 60°이므로 전반사. \(\sqrt{2.25\times0.75 - 1} = \sqrt{0.6875} = 0.829\). \(d = 633/(2\pi\times0.829) = 121.5\) nm, 세기는 \(d/2 = 60.8\) nm. \(\phi_s = 2\arctan(0.829/0.75) = 95.7°\).</div>
+        <div class="answer">\(\theta_c = 41.8°\), \(d = 122\) nm(세기 60.8 nm), \(\phi_s = 95.7°\), \(|r_s| = 1\)</div>
+        <div class="step"><b>검토</b> 침투 깊이는 파장의 1/5 정도다. 생물 형광 현미경의 TIRF는 이 얕은 소산파로 세포막 근처 100 nm만 비추고, FTIR 분광의 ATR 결정은 이 깊이만큼만 시료를 읽는다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-angles" data-title="브루스터 각·임계각 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="thinfilm">
+    <h2>박막 하나: 간섭과 반사 방지</h2>
+    <p>두께 \(d\), 굴절률 \(n_1\)인 막이 기판(\(n_s\)) 위에 있고 위는 공기(\(n_0\))다. 막 윗면에서 반사된 빛과, 막 속으로 들어가 아랫면에서 반사된 뒤 다시 나온 빛이 겹친다. 막 속 빛은 아랫면과 윗면 사이를 여러 번 오가므로 반사파는 무한히 많은 부분파의 합이다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 270" role="img" aria-label="박막 속 다중 반사: 부분파들의 합이 에어리 공식이 된다">
+        <defs>
+          <marker id="rf-d3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+          <marker id="rf-d1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+        </defs>
+        <rect x="20" y="120" width="500" height="70" class="f-acc-soft" opacity=".55"/>
+        <rect x="20" y="190" width="500" height="70" class="f-acc2-soft" opacity=".55"/>
+        <text class="t t-dim" x="30" y="108">공기 n₀</text><text class="t" x="30" y="160">막 n₁, 두께 d</text><text class="t t-dim" x="30" y="232">기판 nₛ</text>
+        <line x1="120" y1="30" x2="196" y2="118" stroke="var(--text-dim)" stroke-width="2.4" marker-end="url(#rf-d3)"/>
+        <text class="t" x="96" y="26">입사 1</text>
+        <line x1="200" y1="120" x2="270" y2="40" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#rf-d1)"/>
+        <text class="t" x="276" y="38" style="fill:var(--accent)">r₀₁</text>
+        <g data-step="2">
+          <line x1="200" y1="120" x2="240" y2="188" stroke="var(--text-dim)" stroke-width="2" />
+          <line x1="240" y1="190" x2="280" y2="122" stroke="var(--text-dim)" stroke-width="2"/>
+          <line x1="280" y1="120" x2="350" y2="40" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#rf-d1)" opacity=".8"/>
+          <text class="t" x="356" y="38" style="fill:var(--accent)">t₀₁ r₁₂ t₁₀ e^(−j2δ)</text>
+          <text class="t t-dim" x="226" y="214">r₁₂</text>
+        </g>
+        <g data-step="3">
+          <line x1="280" y1="120" x2="320" y2="188" stroke="var(--text-dim)" stroke-width="1.6" opacity=".7"/>
+          <line x1="320" y1="190" x2="360" y2="122" stroke="var(--text-dim)" stroke-width="1.6" opacity=".7"/>
+          <line x1="360" y1="120" x2="430" y2="40" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-d1)" opacity=".55"/>
+          <line x1="360" y1="120" x2="400" y2="188" stroke="var(--text-dim)" stroke-width="1.2" opacity=".5"/>
+          <line x1="400" y1="190" x2="440" y2="122" stroke="var(--text-dim)" stroke-width="1.2" opacity=".5"/>
+          <line x1="440" y1="120" x2="500" y2="52" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#rf-d1)" opacity=".4"/>
+          <g class="t">
+            <rect x="548" y="70" width="236" height="132" rx="8" class="f-surface"/>
+            <text x="562" y="98" style="font-weight:700">등비급수의 합</text>
+            <text x="562" y="126">공비 r₁₀ r₁₂ e^(−j2δ)</text>
+            <text x="562" y="154">δ = 2π n₁ d cosθ₁ / λ₀</text>
+            <text x="562" y="184" style="fill:var(--accent)">→ 에어리 공식</text>
+          </g>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>윗면에서 곧바로 반사되는 첫 부분파: 진폭 \(r_{01}\).</li><li>막을 한 번 왕복한 부분파: 들어가고(\(t_{01}\)) 아랫면에서 반사되고(\(r_{12}\)) 나오면서(\(t_{10}\)) 왕복 위상 \(2\delta\)를 얻는다.</li><li>막 속을 \(m\)번 왕복한 부분파마다 \(r_{10}r_{12}e^{-j2\delta}\)가 곱해진다. 등비급수를 더하고 \(t_{01}t_{10} = 1 - r_{01}^2\), \(r_{10} = -r_{01}\)을 쓰면 닫힌 꼴이 된다.</li></ol>
+      <figcaption>박막 반사의 다중 부분파 그림. 막의 위상 두께 \(\delta\)가 모든 것을 정한다.</figcaption>
+    </figure>
+    <div class="formula">$$r = \frac{r_{01} + r_{12}e^{-j2\delta}}{1 + r_{01}r_{12}e^{-j2\delta}}, \qquad \delta = \frac{2\pi}{\lambda_0}\,n_1d\cos\theta_1$$<div class="where">\(r_{01}\), \(r_{12}\)는 각 경계면의 프레넬 계수(같은 편광), \(\theta_1\)은 막 속 굴절각, \(\delta\)는 <span class="term">위상 두께</span><span class="en">(phase thickness)</span>. 손실이 있으면 \(n_1\) 대신 복소 굴절률 \(N_1 = n_1 - jk_1\)을 쓴다. 이 식이 박막 광학의 <span class="term">에어리 공식</span><span class="en">(Airy formula)</span>이다.</div></div>
+    <p>\(r\)은 \(\delta\)에 대해 주기 \(\pi\)로 되풀이된다. 수직 입사에서 반사율의 극값은 \(2\delta = m\pi\), 곧 <b>막 속 왕복 광경로 \(2n_1d\)가 반 파장의 정수배</b>일 때 나온다.</p>
+    <ul>
+      <li><b>반 파장 막</b>(\(n_1d = \lambda_0/2\)): \(e^{-j2\delta} = 1\)이라 \(r = (r_{01} + r_{12})/(1 + r_{01}r_{12})\) — 막이 없는 것과 같다(부재층).</li>
+      <li><b>1/4 파장 막</b>(\(n_1d = \lambda_0/4\)): \(e^{-j2\delta} = -1\)이라 두 반사가 반대 위상으로 만난다.</li>
+    </ul>
+    <div class="formula">$$R_{\lambda/4} = \left(\frac{n_0n_s - n_1^2}{n_0n_s + n_1^2}\right)^2 = 0 \quad\Longleftrightarrow\quad n_1 = \sqrt{n_0n_s}, \qquad d = \frac{\lambda_0}{4n_1}$$<div class="where">1/4 파장 <span class="term">반사 방지막</span><span class="en">(anti-reflection coating, ARC)</span>의 조건. 두 경계면의 반사 크기가 같고(\(r_{01} = r_{12}\)) 왕복 위상이 \(\pi\)라 완전히 상쇄된다. 12장의 1/4 파장 변성기 \(Z_{in} = Z_1^2/Z_L\)과 같은 식이다: 1/4 파장 막은 기판의 "어드미턴스" \(n_s\)를 \(n_1^2/n_s\)로 바꾼다.</div></div>
+    <div class="tangle" id="tg-qw">
+      <p>공기에서 굴절률 <span class="tn" data-var="ns" data-min="1.3" data-max="4.5" data-step="0.01">1.52</span>인 기판의 반사를 파장 <span class="tn" data-var="lam" data-min="300" data-max="1600" data-step="5" data-unit=" nm">550</span>에서 없애려면 굴절률 <span class="tn-out" data-out="ni"></span>인 막이 필요하다. 실제로 쓸 수 있는 굴절률 <span class="tn" data-var="n1" data-min="1.2" data-max="2.6" data-step="0.01">1.38</span>인 막을 두께 <span class="tn-out" data-out="d"></span>로 입히면 반사율이 <span class="tn-out" data-out="R0"></span>에서 <span class="tn-out" data-out="R"></span>로 줄어든다.</p>
+    </div>
+    <figure class="mini" id="mini-ar">
+      <div class="mini-view"><canvas id="cv-ar"></canvas><span class="hint top">그래프를 좌우로 끌어 반사 최소를 옮긴다</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>막 굴절률 n₁ <output id="ar-n-out"></output></span><input type="range" id="ar-n" min="1.2" max="3" step="0.01" value="1.46"></label>
+        <label class="ctrl"><span>막 두께 d <output id="ar-d-out"></output></span><input type="range" id="ar-d" min="0" max="250" step="0.5" value="100"></label>
+        <span class="readout" id="ar-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>실리콘(<code>EM.nk('Si')</code>, 분산 포함) 위 단일 반사 방지막의 반사 스펙트럼. 점선은 맨 실리콘(35–49%). 목표: 550 nm에서 \(R < 0.5\%\)를 만들어라 — \(n_1 \approx \sqrt{4.08}\) ≈ 2.0, \(d \approx 550/(4n_1)\). 최소점을 맞춰도 양 끝 파장에서는 반사가 다시 늘어난다: 단일 막은 한 파장 근처에서만 듣는다. 태양 전지가 Si₃N₄(≈ 2.0) 막을 입혀 짙은 남색으로 보이는 이유다.</figcaption>
+    </figure>
+    <div class="example" data-title="실리콘 위 질화막 반사 방지">
+      <p>600 nm에서 실리콘의 굴절률은 3.95, Si₃N₄는 2.04다(흡수 무시). 이상적인 반사 방지막의 굴절률은? Si₃N₄로 600 nm에 맞춘 1/4 파장 두께와 그때 반사율, 막이 없을 때의 반사율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n_1 = \sqrt{n_0n_s}\), \(d = \lambda/4n_1\), \(R_{\lambda/4} = [(n_0n_s - n_1^2)/(n_0n_s + n_1^2)]^2\).</div>
+        <div class="step"><b>풀이</b> 이상값 \(\sqrt{3.95} = 1.99\). \(d = 600/(4\times2.04) = 73.5\) nm. \(R = [(3.95 - 4.162)/(3.95 + 4.162)]^2 = (-0.0261)^2 = 6.8\times10^{-4}\). 맨 실리콘: \(R = (2.95/4.95)^2 = 0.355\).</div>
+        <div class="answer">이상 \(n_1 = 1.99\), \(d = 73.5\) nm, \(R \approx 0.07\%\) (맨 Si 35.5%)</div>
+        <div class="step"><b>검토</b> Si의 작은 흡수(\(k\) = 0.026)를 넣고 전달 행렬로 계산하면 0.08%다. 같은 막이 450 nm에서는 17.7%, 800 nm에서는 7.2%로 다시 커진다(위 미니 실험). 넓은 대역이 필요하면 막을 여러 층 쌓는다(§11.5).</div>
+      </details>
+    </div>
+    <h3>산화막의 색과 분광 반사계</h3>
+    <p>실리콘 위 SiO₂(\(n\) ≈ 1.46)는 반대 상황이다. 공기 → 산화막, 산화막 → 실리콘 모두 굴절률이 커지는 경계라 \(r_{01}\), \(r_{12}\)가 둘 다 음수다. 따라서 왕복 광경로가 파장의 정수배일 때(\(2nd = m\lambda\)) 두 반사가 같은 위상으로 더해져 반사율이 <em>최대</em>, 반정수배일 때 최소다. 흰빛을 비추면 두께에 따라 특정 파장대만 약해져 웨이퍼가 갈색, 보라, 파랑, 금색으로 보인다. 거꾸로, 스펙트럼에서 이웃한 두 최대 \(\lambda_1 > \lambda_2\)를 찾으면(\(2nd = m\lambda_1 = (m+1)\lambda_2\))</p>
+    <div class="formula">$$d = \frac{\lambda_1\lambda_2}{2n(\lambda_1 - \lambda_2)}$$<div class="where">수직 입사, 분산을 무시한 근사. 막이 두꺼울수록 극값이 촘촘해진다. 실제 계측기는 극값만 보지 않고 전체 스펙트럼을 전달 행렬 모형에 맞춰(회귀) 두께와 광학 상수를 함께 구한다.</div></div>
+    <div class="sim" id="sim-oxide">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>분광 반사계: 스펙트럼으로 두께 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-ox"></canvas><span class="hint">막 윗면(흰 원)을 위아래로 끈다</span></div><div><canvas id="cv-ox2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>막 재료</span><div class="seg" id="ox-mat"><button data-value="SiO2" class="on">SiO₂</button><button data-value="Si3N4">Si₃N₄</button></div></div>
+          <label class="ctrl"><span>모형 두께 d <output id="ox-d-out"></output></span><input type="range" id="ox-d" min="0" max="1000" step="0.5" value="100"></label>
+          <div class="ctrl"><span>모드</span><div class="seg" id="ox-mode"><button data-value="free" class="on">탐색</button><button data-value="game">두께 맞히기</button></div></div>
+          <button class="btn" id="ox-new" type="button">새 웨이퍼</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">모형 두께</span><span class="v" id="ox-dv">—</span></div>
+        <div class="stat"><span class="k">반사율 (633 nm)</span><span class="v" id="ox-R">—</span></div>
+        <div class="stat"><span class="k">잔차 RMS</span><span class="v" id="ox-rms">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="ox-res">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 웨이퍼 단면과 흰빛(D65 근사) 아래에서 보이는 색(CIE 1931 색 맞춤 함수로 계산), 오른쪽은 수직 입사 반사 스펙트럼 \(R(\lambda)\)이다(<code>EM.multilayer</code>, Si·SiO₂·Si₃N₄ 분산 포함). 해볼 것: ① SiO₂를 0 → 300 nm로 키우며 색이 회색 → 갈색 → 보라 → 파랑 → 금색으로 바뀌는 것을 보라. ② 두꺼운 막(800 nm 이상)에서 극값이 촘촘해진다. 이웃한 두 최대로 \(d = \lambda_1\lambda_2/2n(\lambda_1 - \lambda_2)\)를 계산해 맞는지 보라. ③ 두께 맞히기: 측정 스펙트럼(점)과 모형(선)의 잔차 RMS가 0.006 아래로 떨어지게 모형 두께를 맞춰라. 극값 수를 먼저 세지 않으면 엉뚱한 차수에 걸린다.</div>
+    </div>
+    <div class="example" data-title="반사 스펙트럼에서 산화막 두께">
+      <p>실리콘 위 SiO₂ 막의 수직 입사 반사 스펙트럼에서 이웃한 두 최대가 600 nm와 500 nm에 있다. \(n\) = 1.46으로 보고 두께와 각 최대의 간섭 차수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 두 경계면 반사가 모두 음수이므로 최대 조건은 \(2nd = m\lambda\). 이웃한 최대는 차수가 1 다르다.</div>
+        <div class="step"><b>풀이</b> \(d = (600)(500)/[2(1.46)(600 - 500)] = 1027\) nm. 차수: \(2nd/\lambda = 2(1.46)(1027)/600 = 5.00\), 500 nm에서 6.00.</div>
+        <div class="answer">\(d \approx 1.03\) µm, 600 nm는 5차, 500 nm는 6차 최대</div>
+        <div class="step"><b>검토</b> 분산을 넣은 전달 행렬 계산으로도 1027 nm 막의 최대는 598 nm, 499.5 nm에 있다. 차수가 정수로 떨어지는지가 좋은 자기 검사다. 0.1 µm 이하의 얇은 막은 극값이 가시광 안에 하나도 없어 이 방법이 통하지 않는다 — 그때는 엘립소메트리를 쓴다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>산화막 색표에서 분광 반사계까지</strong><p>열산화 직후 웨이퍼의 색을 색표와 비교하면 대략 ±10 nm로 두께를 읽을 수 있다. 같은 원리를 정량화한 것이 분광 반사계다: 수직 입사 흰빛의 반사 스펙트럼을 재고, 막 구조(Si/SiO₂/…)와 각 층의 분산 모형을 넣은 전달 행렬 계산과 맞춰 두께를 구한다. 측정이 몇 초면 끝나 CVD·CMP 뒤 두께 지도와 CMP 장비의 실시간 종점 검출에 쓰인다. 수십 nm 이하의 막, 여러 층이 겹친 막, 굴절률을 함께 구해야 하는 막은 엘립소메트리로 넘어간다. → <a href="https://semi.euiyun.com/process/chapters/oxidation.html">ProcessBook · 산화(산화막의 색으로 두께 읽기)</a> · <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율(반사 스펙트럼으로 막 두께 맞히기)</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="tmm">
+    <h2>다층 박막과 전달 행렬</h2>
+    <p>층이 둘, 셋, 마흔이 되면 부분파를 더하는 방법은 감당이 안 된다. 대신 각 층의 위·아래 경계면에서 <em>접선 장</em>을 잇는다. 층 안의 장은 아래로 가는 파와 위로 가는 파의 합이고, 위 경계면의 접선 \((E, H)\)와 아래 경계면의 \((E, H)\)는 2×2 행렬 하나로 이어진다. 접선 성분은 경계면에서 연속이므로 층마다 행렬을 곱하기만 하면 된다.</p>
+    <div class="formula">$$\begin{bmatrix}E_{a}\\ H_{a}\end{bmatrix} = \underbrace{\begin{bmatrix}\cos\delta_j & \dfrac{j\sin\delta_j}{y_j}\\[4pt] jy_j\sin\delta_j & \cos\delta_j\end{bmatrix}}_{M_j}\begin{bmatrix}E_{b}\\ H_{b}\end{bmatrix}, \qquad \delta_j = \frac{2\pi}{\lambda_0}N_jd_j\cos\theta_j$$<div class="where">\(a\)는 층 위, \(b\)는 층 아래 경계면. \(y_j\)는 층의 <span class="term">광학 어드미턴스</span><span class="en">(optical admittance)</span>(자유 공간 어드미턴스 \(1/\eta_0\) 단위): s 편광 \(y = N\cos\theta\), p 편광 \(y = N/\cos\theta\). 손실 층은 \(N = n - jk\)와 복소 \(\cos\theta\)를 그대로 쓴다. 이 행렬이 <span class="term">특성 행렬</span><span class="en">(characteristic matrix)</span>, 흔히 <span class="term">전달 행렬</span><span class="en">(transfer matrix, TMM)</span>이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="다층막의 전달 행렬: 기판에서 시작해 층마다 행렬을 곱해 맨 위의 접선 장을 얻는다">
+        <defs><marker id="rf-e1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <text class="t t-dim" x="40" y="34">입사 매질 y₀</text>
+        <rect x="40" y="46" width="300" height="44" class="f-acc-soft" opacity=".55"/><text class="t" x="56" y="73">층 1: N₁, d₁ → M₁</text>
+        <rect x="40" y="90" width="300" height="34" class="f-acc2-soft" opacity=".55"/><text class="t" x="56" y="112">층 2: N₂, d₂ → M₂</text>
+        <rect x="40" y="124" width="300" height="50" class="f-acc-soft" opacity=".55"/><text class="t" x="56" y="154">층 3: N₃, d₃ → M₃</text>
+        <text class="t t-dim" x="190" y="196" text-anchor="middle">⋮</text>
+        <rect x="40" y="206" width="300" height="70" class="f-surface"/><text class="t" x="56" y="246">기판 yₛ: E = 1, H = yₛ</text>
+        <line x1="360" y1="250" x2="360" y2="56" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#rf-e1)"/>
+        <text class="t" x="370" y="160" style="fill:var(--accent)">곱해 올라간다</text>
+        <g class="t">
+          <text x="470" y="64" style="font-weight:700">계산 순서</text>
+          <text x="470" y="96">[B; C] = M₁ M₂ ⋯ M_L [1; yₛ]</text>
+          <text x="470" y="128">입력 어드미턴스 Y = C / B</text>
+          <text x="470" y="160" style="fill:var(--accent)">r = (y₀ − Y)/(y₀ + Y)</text>
+          <text x="470" y="192">R = |r|²</text>
+          <text x="470" y="224">T = 4 y₀ Re(yₛ) / |y₀B + C|²</text>
+          <text x="470" y="262" class="t-dim">전송선(12장)의 Z_in 변환과 같은 계산</text>
+        </g>
+      </svg>
+      <figcaption>전달 행렬 계산의 순서. 기판의 접선 장 \((1, y_s)\)에서 시작해 위로 행렬을 곱하면 맨 위의 \((B, C)\)가 나오고, 입력 어드미턴스 \(Y = C/B\)가 수직 입사 반사 계수 공식의 "매질 2" 자리에 들어간다.</figcaption>
+    </figure>
+    <div class="formula">$$\begin{bmatrix}B\\ C\end{bmatrix} = \left(\prod_{j=1}^{L}M_j\right)\begin{bmatrix}1\\ y_s\end{bmatrix}, \qquad r = \frac{y_0B - C}{y_0B + C}, \qquad R = |r|^2, \qquad T = \frac{4y_0\,\mathrm{Re}(y_s)}{|y_0B + C|^2}$$<div class="where">이 장의 모든 박막 시뮬레이터는 이 계산(<code>EM.multilayer</code>)을 쓴다. 층 하나(\(L = 1\))에 넣으면 앞 절의 에어리 공식과 정확히 같다. 막 속 깊이 \(z\)의 장도 같은 행렬을 \(d_j\) 대신 \(z\)까지만 곱해 얻는다(§11.6 정재파).</div></div>
+    <h3>1/4 파장 거울</h3>
+    <p>굴절률이 높은 층 H와 낮은 층 L을 모두 1/4 파장 두께로 번갈아 \(N\)쌍 쌓으면, 설계 파장에서 각 1/4 파장 층이 어드미턴스를 \(Y \to n^2/Y\)로 바꾸므로 \(N\)쌍 뒤 입력 어드미턴스가 \((n_H/n_L)^{2N}\)배로 커진다.</p>
+    <div class="formula">$$Y = \left(\frac{n_H}{n_L}\right)^{2N}n_s, \qquad R = \left(\frac{n_0 - Y}{n_0 + Y}\right)^2 \xrightarrow{N\to\infty} 1, \qquad \frac{\Delta\lambda}{\lambda_0} \approx \frac{4}{\pi}\arcsin\frac{n_H - n_L}{n_H + n_L}$$<div class="where">맨 위가 H층인 \((HL)^N\) 구조. 모든 층에서 반사된 부분파가 같은 위상으로 더해지는 것이 핵심이다(브래그 반사). 반사가 높은 파장 대역(저지 대역)의 폭은 굴절률 차이로 정해진다. 흡수가 없으면 쌍을 늘릴수록 \(R\)이 1에 다가간다 — 금속 거울(~95%)보다 좋은 99.99% 거울을 만들 수 있다.</div></div>
+    <div class="tangle" id="tg-bragg">
+      <p>굴절률 <span class="tn" data-var="nH" data-min="1.6" data-max="3.5" data-step="0.01">2.40</span>와 <span class="tn" data-var="nL" data-min="1.2" data-max="2" data-step="0.01">1.46</span>인 1/4 파장 층을 유리(1.52) 위에 <span class="tn" data-var="N" data-min="1" data-max="20" data-step="1">5</span>쌍 쌓으면 입력 어드미턴스 \(Y\) = <span class="tn-out" data-out="Y"></span>, 반사율 <span class="tn-out" data-out="R"></span>(투과 <span class="tn-out" data-out="T"></span>)이고, 저지 대역 폭은 설계 파장의 <span class="tn-out" data-out="bw"></span>다.</p>
+    </div>
+    <p>EUV 노광(13.5 nm)에서는 이 원리가 유일한 선택지다. 13.5 nm에서는 모든 물질의 굴절률이 1에 가깝고(Mo 0.921, Si 0.999) 흡수가 있어 Mo/Si 경계면 하나의 반사율이 0.2% 정도다. Mo와 Si를 주기 약 6.9 nm로 40–50쌍 쌓아 수십 개 경계면의 약한 반사를 같은 위상으로 모은다. 하지만 흡수 때문에 빛이 깊이 들어가지 못해 아래쪽 쌍은 기여하지 못한다.</p>
+    <div class="predict" data-for="sim-bragg">
+      <p>13.5 nm용 Mo/Si 거울의 쌍 수를 10, 40, 100으로 늘린다. 설계 파장의 반사율은?</p>
+      <div class="opts"><button class="opt">쌍 수에 비례해 계속 늘어 100쌍이면 거의 100%</button><button class="opt" data-correct>40쌍 근처에서 약 74%로 포화하고, 그 이상 쌓아도 거의 늘지 않는다</button><button class="opt">10쌍에서 이미 99%에 이른다</button><button class="opt">쌍이 늘면 흡수가 늘어 오히려 줄어든다</button></div>
+      <div class="quiz-exp">흡수(\(k\) ≈ 0.006·0.002)가 있으면 깊이 들어간 빛은 돌아오기 전에 사라진다. 반사율은 흡수가 정하는 유효 깊이(수십 쌍)에서 포화한다. 실제 거울은 Mo/Si 계면의 섞임과 거칠기 때문에 67–70%다. 시뮬레이터에서 쌍 수를 끌어 포화 곡선을 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-bragg">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>다층 거울 쌓기: 가시광 유전체 거울과 EUV Mo/Si</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-bg"></canvas><span class="hint top">맨 위 흰 원을 끌어 쌍을 쌓는다</span></div><div><canvas id="cv-bg2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>거울 종류</span><div class="seg" id="bg-kind"><button data-value="vis" class="on">TiO₂/SiO₂ (550 nm)</button><button data-value="euv">Mo/Si (13.5 nm)</button></div></div>
+          <label class="ctrl"><span>쌍 수 N <output id="bg-N-out"></output></span><input type="range" id="bg-N" min="1" max="60" step="1" value="4"></label>
+          <label class="ctrl"><span>입사각 <output id="bg-th-out"></output></span><input type="range" id="bg-th" min="0" max="30" step="0.5" value="0"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">설계 파장 반사율</span><span class="v" id="bg-R">—</span></div>
+        <div class="stat"><span class="k">최대 반사율 (파장)</span><span class="v" id="bg-pk">—</span></div>
+        <div class="stat"><span class="k">총 두께</span><span class="v" id="bg-t">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="bg-goal">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 쌓은 막(위가 입사 쪽), 오른쪽 위는 반사 스펙트럼 \(R(\lambda)\), 아래는 설계 파장 반사율을 쌍 수의 함수로 그린 포화 곡선이다. TiO₂/SiO₂는 \(n\) = 2.40/1.46(흡수 무시), Mo/Si는 13.5 nm에서 \(N\) = 0.921 − j0.0064 / 0.999 − j0.0018(CXRO 원자 산란 인자 기반 대표값), 주기 6.9 nm, Mo 비율 0.4. 해볼 것: ① 유전체 거울: \(R \ge 99.9\%\)를 가장 적은 쌍으로 만들어라. ② EUV: 쌍을 1에서 60까지 쌓으며 포화를 보라. \(R \ge 70\%\)에 필요한 최소 쌍은? ③ 입사각을 키우면 저지 대역이 짧은 파장 쪽으로 밀린다(\(\cos\theta\) 효과) — EUV 노광기가 주광선 각 6° 근처를 쓰는 이유.</div>
+    </div>
+    <div class="callout semi"><strong>EUV 거울과 마스크는 모두 Mo/Si 다층막</strong><p>EUV 노광기의 조명계와 투영 광학은 렌즈 없이 거울 10여 장으로 이루어지고, 마스크도 Mo/Si 40쌍 위에 흡수체 패턴을 얹은 반사형이다. 거울 한 장이 약 70%를 반사하므로 열 번 반사하면 \(0.7^{10}\) ≈ 3%만 웨이퍼에 닿는다 — 광원 출력이 250 W를 넘어야 하는 이유다. 계면 섞임을 줄이려고 Mo/Si 사이에 B₄C 같은 얇은 확산 방지층을 넣고, 맨 위 Si 층은 산화를 막는 Ru 보호층으로 덮는다. 다층막의 주기가 0.01 nm만 어긋나도 반사 피크 파장이 밀리므로, 거울마다 주기를 위치에 따라 달리 쌓는다(경사 다층막). → <a href="https://semi.euiyun.com/litho/chapters/euv.html">LithoBook · EUV: 13.5 nm의 빛(다층막 거울)</a> · <a href="https://semi.euiyun.com/optics/chapters/thinfilm.html">OpticsBook · 박막 광학과 TMM</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="barc">
+    <h2>레지스트 속 정재파와 BARC</h2>
+    <p>노광 장비는 웨이퍼 위 레지스트(감광막)에 마스크 상을 비춘다. 레지스트 아래가 실리콘이면 경계면 반사가 크다: 193 nm에서 레지스트(\(n\) ≈ 1.70) → 실리콘(\(N\) ≈ 0.88 − j2.78) 경계의 반사율이 약 58%다. 되돌아온 빛은 내려가는 빛과 겹쳐 레지스트 속에 <em>세로 방향 정재파</em>를 만든다. 세기의 마디와 배가 \(\lambda/2n\) 간격(193 nm에서 57 nm)으로 쌓여, 현상 뒤 레지스트 옆벽이 물결 모양이 된다. 또 레지스트 전체가 흡수하는 에너지가 두께에 따라 주기적으로 출렁여, 단차 위아래의 두께 차이가 곧 선폭(CD) 차이가 된다. 이 출렁임 그림이 <span class="term">스윙 곡선</span><span class="en">(swing curve)</span>이다.</p>
+    <div class="formula">$$\text{스윙 주기}\;\; \Delta d = \frac{\lambda_0}{2n_{\text{resist}}}, \qquad \text{스윙 비} \approx 4\sqrt{R_{\text{top}}R_{\text{bottom}}}\;e^{-\alpha d}$$<div class="where">\(R_{\text{top}}\)은 공기/레지스트 경계(약 6.7%), \(R_{\text{bottom}}\)은 레지스트에서 본 바닥 반사율, \(\alpha\)는 레지스트의 흡수 계수. 스윙을 줄이려면 바닥 반사(또는 윗면 반사)를 줄여야 한다.</div></div>
+    <div class="tangle" id="tg-swing">
+      <p>파장 <span class="tn" data-var="lam" data-min="150" data-max="450" data-step="1" data-unit=" nm">193</span>, 레지스트 굴절률 <span class="tn" data-var="n" data-min="1.4" data-max="1.9" data-step="0.01">1.70</span>이면 정재파 마디 간격과 스윙 주기는 <span class="tn-out" data-out="p"></span>다. 바닥 반사율이 <span class="tn" data-var="Rb" data-min="0.1" data-max="70" data-step="0.1" data-unit="%">58.3</span>이면(흡수 무시) 윗면 반사율 <span class="tn-out" data-out="Rt"></span>와 함께 스윙 비는 약 <span class="tn-out" data-out="sw"></span>이다.</p>
+    </div>
+    <p>해결책은 레지스트 밑에 <span class="term">바닥 반사 방지막</span><span class="en">(bottom anti-reflective coating, BARC)</span>을 까는 것이다. BARC는 적당히 흡수하는 유기막(\(N\) ≈ 1.8 − j0.4)으로, 두 가지 방식으로 반사를 줄인다. (1) 흡수: 막을 왕복하는 동안 빛이 \(e^{-4\pi k d/\lambda}\)로 줄어든다. (2) 간섭: 레지스트/BARC 경계의 반사와 BARC/기판 경계의 반사가 반대 위상으로 만나도록 두께를 고른다. 흡수만으로 막으려면 두꺼워야 하고(식각으로 걷어 내기 어렵다), 간섭만으로는 기판과 파장에 너무 민감하다. 그래서 \(k\)와 두께를 함께 최적화해 특정 두께의 최소점을 쓴다.</p>
+    <div class="predict" data-for="sim-barc">
+      <p>193 nm에서 BARC(\(N\) = 1.80 − j0.40) 두께를 0에서 150 nm까지 늘리며 레지스트에서 본 바닥 반사율을 잰다. 어떤 모양일까?</p>
+      <div class="opts"><button class="opt">흡수가 늘어나므로 두께에 따라 꾸준히 줄어 0에 다가간다</button><button class="opt" data-correct>오르내리며 몇 개의 최소를 지나고, 두꺼워지면 레지스트/BARC 경계 반사(약 1.4%) 근처로 수렴한다</button><button class="opt">두께와 상관없이 일정하다</button><button class="opt">두께에 따라 꾸준히 커진다</button></div>
+      <div class="quiz-exp">두꺼운 BARC는 기판을 가려 주지만 레지스트와 BARC 사이의 굴절률 차이(특히 \(k\))가 만드는 윗면 반사 \(|(N_r - N_B)/(N_r + N_B)|^2\) ≈ 1.4%는 남는다. 이보다 낮은 반사는 간섭 최소(이 값에서는 약 81 nm)에서만 얻는다. 아래 시뮬레이터의 오른쪽 아래 그래프를 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-barc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>레지스트 정재파와 BARC 설계</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-bc"></canvas><span class="hint top">흰 원 두 개(레지스트 윗면, BARC 윗면)를 위아래로 끈다</span></div><div><canvas id="cv-bc2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>노광 파장</span><div class="seg" id="bc-lam"><button data-value="193" class="on">ArF 193 nm</button><button data-value="248">KrF 248 nm</button></div></div>
+          <label class="ctrl"><span>레지스트 두께 <output id="bc-dr-out"></output></span><input type="range" id="bc-dr" min="100" max="400" step="0.5" value="200"></label>
+          <label class="ctrl"><span>BARC 두께 <output id="bc-db-out"></output></span><input type="range" id="bc-db" min="0" max="150" step="0.5" value="0"></label>
+          <label class="ctrl"><span>BARC 소광 계수 k <output id="bc-k-out"></output></span><input type="range" id="bc-k" min="0.05" max="0.8" step="0.01" value="0.4"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">바닥 반사율 (레지스트에서 봄)</span><span class="v" id="bc-Rb">—</span></div>
+        <div class="stat"><span class="k">정재파 대비 I<sub>max</sub>/I<sub>min</sub></span><span class="v" id="bc-c">—</span></div>
+        <div class="stat"><span class="k">스윙 비 (최대−최소)/평균</span><span class="v" id="bc-sw">—</span></div>
+        <div class="stat"><span class="k">도전: 바닥 반사 &lt; 0.5%</span><span class="v" id="bc-goal">—</span></div>
+      </div>
+      <div class="sim-note">공기 / 레지스트(\(N\) = 1.70, 흡수 무시) / BARC(\(N\) = 1.80 − j\(k\)) / 실리콘(193 nm 0.883 − j2.778, 248 nm 1.57 − j3.57, 문헌 대표값). 레지스트와 BARC 값은 상용 ArF·KrF 재료의 대표값이다. 왼쪽 단면의 빨간 곡선은 깊이에 따른 세기 \(|E(z)|^2\)(입사 세기 단위, 수직 입사 전달 행렬). 오른쪽 위: 레지스트가 받는 평균 세기를 레지스트 두께의 함수로 그린 스윙 곡선(회색: BARC 없음). 오른쪽 아래: 바닥 반사율을 BARC 두께의 함수로. 해볼 것: ① BARC 0에서 레지스트를 끌며 스윙 주기가 \(\lambda/2n\)인지 확인하라. ② 바닥 반사율을 0.5% 아래로 만드는 BARC 두께를 찾아라 — 첫 최소(≈ 31 nm)로는 안 된다. ③ \(k\)를 바꾸면 최소의 깊이와 위치가 움직인다. 248 nm에서는 두께를 다시 맞춰야 한다.</div>
+    </div>
+    <div class="example" data-title="ArF 레지스트의 바닥 반사와 스윙 주기">
+      <p>193 nm에서 레지스트 \(n\) = 1.70, 실리콘 \(N\) = 0.883 − j2.778이다. (a) 레지스트에서 본 실리콘 경계의 반사율, (b) 정재파 마디 간격, (c) 공기/레지스트 경계 반사율과 흡수를 무시한 스윙 비를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 수직 입사 \(\Gamma = (N_1 - N_2)/(N_1 + N_2)\)를 복소수로 계산한다. 마디 간격 \(\lambda/2n\), 스윙 비 \(4\sqrt{R_{top}R_{bot}}\).</div>
+        <div class="step"><b>풀이</b> (a) \(\Gamma = (1.70 - 0.883 + j2.778)/(1.70 + 0.883 - j2.778) = (0.817 + j2.778)/(2.583 - j2.778)\). \(|\Gamma|^2 = (0.817^2 + 2.778^2)/(2.583^2 + 2.778^2) = 8.385/14.389 = 0.583\). (b) \(193/(2\times1.70) = 56.8\) nm. (c) \(R_{top} = (0.70/2.70)^2 = 0.0672\), 스윙 비 \(\approx 4\sqrt{0.0672\times0.583} = 0.79\).</div>
+        <div class="answer">(a) 58.3% (b) 56.8 nm (c) \(R_{top}\) = 6.7%, 스윙 비 ≈ 0.8</div>
+        <div class="step"><b>검토</b> 스윙 비 0.8은 결합 에너지가 두께 57 nm마다 평균의 ±40% 출렁인다는 뜻이다(근사식이라 크기만 본다). 전달 행렬 계산으로 BARC(1.80 − j0.40)를 81 nm 깔면 바닥 반사율이 0.19%로 떨어져 스윙 비가 약 0.045로 줄어든다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>BARC, TARC, 그리고 하드마스크 스택</strong><p>KrF 시대부터 BARC는 노광 공정의 기본 층이다. 스핀 코팅한 유기 BARC는 레지스트 현상 뒤 플라스마로 걷어 내므로 너무 두꺼우면 식각 부담이 커지고, 최적 두께는 기판(산화막, 질화막, 금속)마다 다시 계산한다. 단차가 있는 곳은 두께가 달라지므로 넓은 두께 범위에서 반사가 낮은 \(n, k\) 조합을 고른다. 윗면 반사를 줄이는 TARC(\(n \approx \sqrt{n_{\text{resist}}}\)인 1/4 파장 막)는 스윙의 다른 쪽 항을 지운다. 액침 ArF처럼 입사각이 큰 경우에는 s·p 편광의 반사가 달라 두 층 BARC나 SiARC/SOC(스핀온 카본) 같은 다층 하드마스크 스택을 전달 행렬로 함께 설계한다. → <a href="https://semi.euiyun.com/litho/chapters/resist.html">LithoBook · 감광막의 화학(정상파: 바닥에서 되돌아온 빛)</a> · <a href="https://semi.euiyun.com/process/chapters/resist.html">ProcessBook · 노광 II: 감광막과 패터닝(정재파와 스윙 곡선)</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="ellipsometry">
+    <h2>엘립소메트리</h2>
+    <p>반사율 하나만 재면 두께 1 nm짜리 막은 거의 보이지 않는다(633 nm 수직 입사에서 맨 실리콘 34.83%, 자연 산화막 2 nm가 덮이면 34.81%). 그러나 반사는 세기뿐 아니라 <em>위상</em>도, 그리고 s와 p를 <em>다르게</em> 바꾼다. 45°로 기운 선편광을 비추면 반사광은 일반적으로 타원 편광이 되고, 그 타원의 모양에 막의 정보가 담긴다. <span class="term">엘립소메트리</span><span class="en">(ellipsometry)</span>는 이 편광 변화를 두 각도 \(\psi\), \(\Delta\)로 잰다.</p>
+    <div class="formula">$$\rho = \frac{r_p}{r_s} = \tan\psi\;e^{j\Delta}$$<div class="where">\(\tan\psi = |r_p|/|r_s|\)는 진폭 비, \(\Delta = \arg r_p - \arg r_s\)는 위상차. 비(ratio)를 재므로 광원 세기의 흔들림과 상관없고, 위상을 재므로 원자층 하나 수준의 막에도 민감하다. 이 장의 \(r_p\) 약속(\(r_p = -r_s\) at 0°)에서 흡수 없는 기판은 브루스터 각 아래에서 \(\Delta = 180°\), 위에서 \(0°\)다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="회전 검광자 엘립소미터의 구성: 광원, 편광자, 시료, 회전 검광자, 검출기">
+        <defs><marker id="rf-f1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <rect x="80" y="210" width="640" height="30" class="f-surface"/>
+        <rect x="80" y="200" width="640" height="10" class="f-acc-soft"/>
+        <text class="t t-dim" x="400" y="232" text-anchor="middle">실리콘 기판 + 박막 (두께 d, 굴절률 n)</text>
+        <line x1="150" y1="60" x2="398" y2="198" stroke="var(--accent)" stroke-width="2.6"/>
+        <line x1="402" y1="198" x2="650" y2="60" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#rf-f1)"/>
+        <rect x="70" y="30" width="80" height="44" rx="6" class="f-surface"/><text class="t" x="110" y="57" text-anchor="middle">광원</text>
+        <rect x="196" y="78" width="16" height="44" rx="3" transform="rotate(-29 204 100)" class="f-acc2-soft"/><text class="t" x="168" y="140">편광자 45°</text>
+        <rect x="588" y="78" width="16" height="44" rx="3" transform="rotate(29 596 100)" class="f-acc2-soft"/><text class="t" x="560" y="150">회전 검광자</text>
+        <rect x="650" y="30" width="90" height="44" rx="6" class="f-surface"/><text class="t" x="695" y="57" text-anchor="middle">검출기</text>
+        <path d="M 340 198 A 58 58 0 0 1 400 140" fill="none" stroke="var(--text-dim)" stroke-width="1.4"/>
+        <line x1="400" y1="200" x2="400" y2="40" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <text class="t t-dim" x="352" y="152">θ ≈ 70°</text>
+        <g class="t"><text x="250" y="34">선편광 (s = p)</text><text x="480" y="34">타원 편광 → ψ, Δ</text></g>
+      </svg>
+      <figcaption>회전 검광자형 엘립소미터. 45° 선편광을 비스듬히 비추고, 반사광이 지나는 검광자를 돌리며 검출기 신호의 푸리에 계수에서 \(\psi\), \(\Delta\)를 얻는다. 분광 엘립소미터는 이를 수백 파장에서 한꺼번에 잰다.</figcaption>
+    </figure>
+    <h3>맨 기판: 측정에서 굴절률로</h3>
+    <p>막이 없으면 \(\rho\) 하나에서 기판의 복소 유전율을 바로 풀 수 있다. 프레넬 식과 스넬 법칙을 정리하면</p>
+    <div class="formula">$$\langle\varepsilon\rangle = \sin^2\theta\left[1 + \tan^2\theta\left(\frac{1-\rho}{1+\rho}\right)^2\right] \qquad(\text{입사 매질 공기})$$<div class="where">이렇게 구한 값을 <span class="term">유사 유전 함수</span><span class="en">(pseudo-dielectric function)</span>라 한다. 표면에 막이 있으면 그 영향이 섞인 "겉보기" 값이 된다. 633 nm, 70°에서 맨 실리콘은 \(\psi\) = 10.56°, \(\Delta\) = 179.23°이고, 이를 넣으면 \(\langle\varepsilon\rangle = 15.05 - j0.147\), 곧 \(N = 3.88 - j0.019\)가 정확히 되돌아온다.</div></div>
+    <figure class="mini" id="mini-principal">
+      <div class="mini-view"><canvas id="cv-pr"></canvas><span class="hint top">그래프를 좌우로 끌어 입사각을 바꾼다</span></div>
+      <div class="mini-ctrl"><div class="seg" id="pr-mat"><button data-value="Si" class="on">Si</button><button data-value="glass">유리 1.5</button><button data-value="Al">Al</button></div><span class="readout" id="pr-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>633 nm에서 맨 기판의 \(\psi(\theta)\)(파랑)와 \(\Delta(\theta)\)(빨강). 유리는 브루스터 각(56.3°)에서 \(\Delta\)가 180° → 0°로 뛰고 \(\psi = 0\)이다. 흡수가 있는 Si는 \(\Delta\)가 75.5° 근처에서 급하지만 연속적으로 떨어지며, \(\Delta = 90°\)인 각을 <b>주각</b>(principal angle)이라 한다. \(\Delta\)가 가장 가파르게 변하는 이 근처에서 막에 대한 감도가 가장 커서, 실리콘 공정용 엘립소미터는 65–75°를 쓴다. 금속(Al, \(N\) ≈ 1.38 − j7.6)은 주각이 80°를 넘는다.</figcaption>
+    </figure>
+    <h3>막이 있을 때: ψ–Δ 궤적</h3>
+    <p>막이 자라면 \(\rho\)는 위상 두께 \(\delta\)를 따라 움직인다. 흡수 없는 막에서 \(\rho\)는 \(e^{-j2\delta}\)의 함수이므로, 두께가</p>
+    <div class="formula">$$D_\psi = \frac{\lambda_0}{2\sqrt{n_1^2 - n_0^2\sin^2\theta_0}}$$<div class="where">만큼 늘면 \((\psi, \Delta)\)가 같은 점으로 돌아온다. 633 nm, 70°에서 SiO₂는 284 nm, Si₃N₄(\(n\) = 2.04)는 175 nm. 한 번의 측정은 \(d\)와 \(d + mD_\psi\)를 구별하지 못하므로, 두꺼운 막은 여러 파장(분광)이나 여러 각도에서 재서 차수를 정한다.</div></div>
+    <div class="tangle" id="tg-ell">
+      <p>633 nm, 70°에서 실리콘 위 SiO₂ 두께가 <span class="tn" data-var="d" data-min="0" data-max="10" data-step="0.1" data-unit=" nm">2.0</span>이면 \(\psi\) = <span class="tn-out" data-out="psi"></span>, \(\Delta\) = <span class="tn-out" data-out="del"></span>로, 맨 실리콘에서 \(\Delta\)가 <span class="tn-out" data-out="dd"></span> 바뀐다. 같은 막의 수직 입사 반사율 변화는 <span class="tn-out" data-out="dR"></span>뿐이다.</p>
+    </div>
+    <div class="predict" data-for="sim-ellip">
+      <p>실리콘 위 SiO₂를 0 nm에서 300 nm까지 키우며 633 nm, 70°에서 \((\psi, \Delta)\)를 찍는다. 점은 어떤 자취를 그릴까?</p>
+      <div class="opts"><button class="opt">\(\psi\)가 꾸준히 늘어나는 직선</button><button class="opt" data-correct>한 바퀴 도는 닫힌 고리 — 약 284 nm에서 출발점(맨 실리콘)으로 돌아온다</button><button class="opt">한 점에서 거의 움직이지 않는다</button><button class="opt">\(\Delta\) = 0으로 수렴하는 나선</button></div>
+      <div class="quiz-exp">흡수 없는 막에서 \(\rho\)는 \(\delta\)에 대해 주기 \(\pi\)인 함수이므로 궤적이 닫힌다. 얇은 막 근처(출발점)에서는 \(\Delta\)가 1 nm마다 약 2.9°씩 빠르게 줄어 감도가 크다. 시뮬레이터에서 궤적 위의 점을 끌어 보라.</div>
+    </div>
+    <div class="sim" id="sim-ellip">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>엘립소미터: ψ–Δ 궤적에서 두께 읽기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-el"></canvas><span class="hint">궤적 위 흰 점을 끈다</span></div><div><canvas id="cv-el2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>막 재료</span><div class="seg" id="el-mat"><button data-value="SiO2" class="on">SiO₂</button><button data-value="Si3N4">Si₃N₄</button></div></div>
+          <label class="ctrl"><span>입사각 <output id="el-th-out"></output></span><input type="range" id="el-th" min="45" max="85" step="0.5" value="70"></label>
+          <label class="ctrl"><span>모형 두께 d <output id="el-d-out"></output></span><input type="range" id="el-d" min="0" max="600" step="0.1" value="100"></label>
+          <div class="ctrl"><span>모드</span><div class="seg" id="el-mode"><button data-value="free" class="on">탐색</button><button data-value="game">측정점 맞히기</button></div></div>
+          <button class="btn" id="el-new" type="button">새 시료</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ψ / Δ</span><span class="v" id="el-pd">—</span></div>
+        <div class="stat"><span class="k">궤적 주기 D<sub>ψ</sub></span><span class="v" id="el-per">—</span></div>
+        <div class="stat"><span class="k">반사광 타원</span><span class="v" id="el-ell">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="el-res">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: \((\psi, \Delta)\) 평면의 궤적(633 nm, 막 두께 0 → \(D_\psi\)). 점선 눈금은 10 nm 간격이다. 오른쪽: 45° 선편광을 비췄을 때 반사광 전기장이 그리는 타원(가로 s, 세로 p 성분, 크기는 정규화). 해볼 것: ① 입사각을 바꾸면 궤적 고리의 모양과 크기가 달라진다. 주각(75.5°) 근처에서는 맨 실리콘 점 자체가 \(\Delta\) = 180°에서 크게 벗어난다. ② Si₃N₄는 고리가 짧은 주기로 닫힌다. ③ 측정점 맞히기: 빨간 십자가 측정값이다. 모형 두께를 바꿔 점을 십자에 맞춰라(\(\psi\) ±0.3°, \(\Delta\) ±0.5°). 맞힌 뒤에도 \(d + mD_\psi\)가 모두 답이라는 메시지를 읽어 보라.</div>
+    </div>
+    <div class="example" data-title="자연 산화막과 엘립소메트리 주기">
+      <p>633 nm, 70°에서 맨 실리콘은 \(\psi\) = 10.56°, \(\Delta\) = 179.23°이다. 2.0 nm 자연 산화막이 생기면 \(\Delta\)는 173.51°가 된다(전달 행렬 계산). (a) 1 nm당 \(\Delta\) 변화, (b) \(\Delta\)를 0.01°까지 재는 장비의 두께 분해능, (c) 이 조건에서 SiO₂(\(n\) = 1.457)의 궤적 주기를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 얇은 막에서 \(\Delta\)는 두께에 거의 비례한다. 주기는 \(D_\psi = \lambda/(2\sqrt{n^2 - \sin^2\theta})\).</div>
+        <div class="step"><b>풀이</b> (a) \((179.23 - 173.51)/2.0 = 2.86\) °/nm. (b) \(0.01/2.86 = 0.0035\) nm = 0.035 Å. (c) \(\sqrt{1.457^2 - \sin^270°} = \sqrt{2.123 - 0.883} = 1.1135\), \(D_\psi = 633/(2\times1.1135) = 284\) nm.</div>
+        <div class="answer">(a) 약 2.9 °/nm (b) 약 0.04 Å (c) 284 nm</div>
+        <div class="step"><b>검토</b> 원자 하나 두께(약 2.5 Å)보다 훨씬 작은 변화가 보인다 — 실제 정밀도는 표면 오염, 계면층, 광학 상수 모형의 불확도가 정한다. 같은 2 nm에서 \(\psi\)는 0.05°만 변하므로 얇은 막은 사실상 \(\Delta\)로 읽는다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>팹의 엘립소미터: 게이트 산화막에서 OCD까지</strong><p>분광 엘립소미터(SE)는 190 nm–1 µm 범위에서 \(\psi(\lambda)\), \(\Delta(\lambda)\)를 재고, 각 층의 두께와 분산 모형(코시, 타우크–로런츠 등)의 변수를 회귀로 맞춘다. 1–2 nm 게이트 산화막과 high-k 막, 다층 하드마스크, 저유전막의 다공도까지 이 방법으로 관리한다. 패턴이 있는 격자 위에서 같은 측정을 하고 RCWA로 계산한 스펙트럼과 맞추면 선폭과 측벽 각까지 구하는 광학 CD(OCD, 산란 계측)가 된다. 장비마다 \(r_p\)의 부호 약속과 \(\Delta\)의 범위(0–360° 또는 −180–180°)가 다를 수 있어, 장비 사이 데이터를 비교할 때 먼저 확인한다. → <a href="https://semi.euiyun.com/process/chapters/metrology.html">ProcessBook · 계측·결함·수율</a> · <a href="https://semi.euiyun.com/optics/chapters/polarization.html">OpticsBook · 편광(편광 타원과 부호 규약)</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>수직 입사: 접선 \(E\)·\(H\) 연속에서 \(\Gamma = (\eta_2-\eta_1)/(\eta_2+\eta_1)\), \(\tau = 1+\Gamma\); 비자성이면 \(\Gamma = (n_1-n_2)/(n_1+n_2)\). \(R = |\Gamma|^2\), \(T = (\eta_1/\eta_2)|\tau|^2\), 무손실이면 \(R+T = 1\).</li>
+      <li>입사파 + 반사파 = 정재파: \(|E| = E_0|1+\Gamma e^{j2\beta z}|\), 최대·최소 간격 \(\lambda/4\), 정재파비 \(S = (1+|\Gamma|)/(1-|\Gamma|)\). 완전 도체는 \(\Gamma = -1\)로 표면이 전기장 마디, \(J_s = 2H_0\). 양도체는 \(R \approx 1 - 4R_s/\eta_1\).</li>
+      <li>사입사: 위상 정합에서 반사 법칙과 스넬 법칙 \(n_1\sin\theta_i = n_2\sin\theta_t\). 프레넬 식 \(r_s = (n_1\cos\theta_i - n_2\cos\theta_t)/(\cdots)\), \(r_p = (n_2\cos\theta_i - n_1\cos\theta_t)/(\cdots)\)(\(r_p\) 부호는 약속에 따라 다르다), \(T = (n_2\cos\theta_t/n_1\cos\theta_i)|t|^2\).</li>
+      <li>브루스터 각 \(\tan\theta_B = n_2/n_1\)에서 \(R_p = 0\), 반사광은 순수 s 편광(\(\theta_B + \theta_t = 90°\), 쌍극자는 축 방향으로 복사하지 않는다). 임계각 \(\sin\theta_c = n_2/n_1\) 너머는 전반사 \(|r| = 1\), 소산파의 장 침투 깊이 \(\lambda_0/(2\pi\sqrt{n_1^2\sin^2\theta - n_2^2})\), 얇은 틈으로 새는 좌절된 전반사.</li>
+      <li>단일 박막: \(r = (r_{01} + r_{12}e^{-j2\delta})/(1 + r_{01}r_{12}e^{-j2\delta})\), \(\delta = 2\pi n_1d\cos\theta_1/\lambda_0\). 1/4 파장 막은 \(n_1 = \sqrt{n_0n_s}\)일 때 반사 0(반사 방지막), 반 파장 막은 부재층. Si 위 SiO₂의 반사 최대 \(2nd = m\lambda\), 이웃 극값에서 \(d = \lambda_1\lambda_2/2n(\lambda_1-\lambda_2)\).</li>
+      <li>전달 행렬: 층마다 \(M_j = [\cos\delta_j,\ j\sin\delta_j/y_j;\ jy_j\sin\delta_j,\ \cos\delta_j]\)를 곱해 \(Y = C/B\), \(r = (y_0 - Y)/(y_0 + Y)\). 1/4 파장 거울 \(Y = (n_H/n_L)^{2N}n_s\); EUV Mo/Si 거울은 흡수 때문에 약 40쌍에서 74%로 포화한다. 레지스트 정재파의 주기는 \(\lambda/2n\)이며, 흡수와 간섭을 함께 쓰는 BARC의 최적 두께에서 바닥 반사를 1% 아래로 줄인다.</li>
+      <li>엘립소메트리 \(\rho = r_p/r_s = \tan\psi\,e^{j\Delta}\): 비와 위상을 재어 서브 옹스트롬 감도(Si 위 SiO₂ 633 nm·70°에서 약 2.9 °/nm)를 얻는다. 맨 기판은 유사 유전 함수로 바로 풀고, 막은 \(\psi\)–\(\Delta\) 궤적(주기 \(\lambda/2\sqrt{n^2 - \sin^2\theta}\))에 회귀로 맞춘다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(\eta_0 = 376.7\) Ω, \(\mu_0 = 4\pi\times10^{-7}\) H/m, \(c = 2.998\times10^{8}\) m/s. 따로 말하지 않으면 매질은 비자성이고 입사 매질은 공기(\(n_0\) = 1)다. 답이 ±1% 이내면 정답이다(각도는 ±0.1°).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="수직 입사" data-answer="-0.8; 64" data-label="Γ =; R =" data-unit="; %" data-tol="0.01; 1%">
+        <div class="prob-q"><p>저주파 전파가 공기에서 잔잔한 호수(\(\varepsilon_r\) = 81, 손실 무시)에 수직 입사한다. 반사 계수와 반사율은?</p></div>
+        <div class="prob-hint">\(\eta_2 = \eta_0/\sqrt{81} = \eta_0/9\).</div>
+        <div class="prob-sol"><p>\(\Gamma = (\eta_0/9 - \eta_0)/(\eta_0/9 + \eta_0) = (1/9 - 1)/(1/9 + 1) = -0.8\). \(R = 0.64\) = 64%. 물의 큰 유전율 때문에 전파의 대부분이 반사된다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="정재파비" data-answer="0.5; 9" data-label="|Γ| =; ε_r =" data-unit="; ">
+        <div class="prob-q"><p>공기 쪽에서 탐침으로 잰 정재파비가 3.0이고 전기장 최소가 경계면에 있다. 매질 2가 무손실 비자성 유전체라면 \(|\Gamma|\)와 비유전율은?</p></div>
+        <div class="prob-hint">경계면이 최소이면 \(\Gamma\)는 음의 실수: \(\eta_2 < \eta_1\).</div>
+        <div class="prob-sol"><p>\(|\Gamma| = (3-1)/(3+1) = 0.5\), \(\Gamma = -0.5\). \(\eta_2/\eta_0 = (1+\Gamma)/(1-\Gamma) = 1/3\)이므로 \(\sqrt{\varepsilon_r} = 3\), \(\varepsilon_r = 9\). (일반적으로 공기 → 무손실 유전체에서 \(S = \sqrt{\varepsilon_r}\).)</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="브루스터 각" data-answer="63.9; 26.1" data-label="θ_B =; θ_t =" data-unit="°; °" data-tol="0.1; 0.1">
+        <div class="prob-q"><p>공기에서 Si₃N₄(\(n\) = 2.04)로 빛이 들어갈 때 브루스터 각과 그때의 굴절각은?</p></div>
+        <div class="prob-sol"><p>\(\theta_B = \arctan2.04 = 63.9°\), \(\theta_t = 90° - 63.9° = 26.1°\). 확인: \(\sin63.9°/2.04 = 0.4404 = \sin26.1°\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="임계각" data-answer="22.1" data-label="θ_c =" data-unit="°" data-tol="0.1">
+        <div class="prob-q"><p>실리콘 도파로(\(n\) = 3.88)를 SiO₂ 클래딩(\(n\) = 1.457)이 감싸고 있다. 실리콘 안에서 경계면에 입사하는 빛의 임계각은?</p></div>
+        <div class="prob-sol"><p>\(\theta_c = \arcsin(1.457/3.88) = 22.1°\). 굴절률 차이가 커서 아주 비스듬하지 않아도 빛이 갇힌다 — 실리콘 포토닉스 도파로를 1 µm 이하로 작게 휠 수 있는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="완전 도체 정재파" data-answer="0.749; 10; 26.5" data-label="첫 최대까지 =; |E|_max =; J_s =" data-unit="cm; V/m; mA/m">
+        <div class="prob-q"><p>진폭 5.0 V/m인 10 GHz 평면파가 공기에서 완전 도체 판에 수직 입사한다. 판에서 가장 가까운 전기장 최대까지의 거리, 그 최댓값, 판 표면 전류 밀도의 진폭은?</p></div>
+        <div class="prob-hint">\(|E| = 2E_0|\sin\beta z|\), 표면의 \(H = 2E_0/\eta_0\).</div>
+        <div class="prob-sol"><p>\(\lambda = 2.998\times10^8/10^{10} = 2.998\) cm, 첫 최대는 \(\lambda/4 = 0.749\) cm. \(|E|_{max} = 2E_0 = 10\) V/m. \(J_s = 2E_0/\eta_0 = 10/376.7 = 26.5\) mA/m.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="양도체 반사" data-answer="0.0324; 3.44e-4" data-label="R_s =; 1 − R =" data-unit="Ω; ">
+        <div class="prob-q"><p>10 GHz에서 알루미늄(\(\sigma = 3.77\times10^{7}\) S/m) 도파관 벽에 평면파가 수직 입사한다고 보고, 표면 저항과 흡수되는 전력 비율을 구하라.</p></div>
+        <div class="prob-sol"><p>\(R_s = \sqrt{\pi f\mu_0/\sigma} = \sqrt{\pi(10^{10})(4\pi\times10^{-7})/(3.77\times10^7)} = 0.0324\) Ω. \(1 - R \approx 4R_s/\eta_0 = 4(0.0324)/376.7 = 3.44\times10^{-4}\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="소산파" data-answer="61.0; 193" data-label="θ_c =; d =" data-unit="°; nm" data-tol="0.1; 1%">
+        <div class="prob-q"><p>유리 프리즘(\(n\) = 1.52) 바닥에 물(\(n\) = 1.33)을 대고 633 nm 빛을 70°로 입사시킨다(전반사 형광 현미경). 임계각과 물속 소산파 장의 침투 깊이는?</p></div>
+        <div class="prob-sol"><p>\(\theta_c = \arcsin(1.33/1.52) = 61.0°\). \(\sqrt{1.52^2\sin^270° - 1.33^2} = \sqrt{2.0402 - 1.7689} = 0.5208\), \(d = 633/(2\pi\times0.5208) = 193\) nm(세기 97 nm).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="반사 방지막" data-answer="1.23; 99.6; 1.26" data-label="이상 n =; d =; R =" data-unit="; nm; %">
+        <div class="prob-q"><p>유리(\(n\) = 1.52) 렌즈의 550 nm 반사를 줄이려 한다. 이상적인 1/4 파장 막의 굴절률은? 실제로 쓰는 MgF₂(\(n\) = 1.38)의 1/4 파장 두께와 그때 반사율은?</p></div>
+        <div class="prob-sol"><p>\(\sqrt{1.52} = 1.23\)(이런 단단한 재료가 없어 MgF₂를 쓴다). \(d = 550/(4\times1.38) = 99.6\) nm. \(R = [(1.52 - 1.38^2)/(1.52 + 1.38^2)]^2 = (-0.3844/3.4244)^2 = 0.0126\) = 1.26%(맨 유리 4.26%).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="분광 반사계" data-answer="1017" data-label="d =" data-unit="nm">
+        <div class="prob-q"><p>실리콘 위 SiO₂(\(n\) = 1.46)의 수직 입사 반사 스펙트럼에서 이웃한 두 <em>최소</em>가 660 nm와 540 nm에 있다. 막 두께는?</p></div>
+        <div class="prob-hint">최소 조건은 \(2nd = (m + \tfrac12)\lambda\)이지만 이웃한 두 최소의 차수 차이는 여전히 1이다.</div>
+        <div class="prob-sol"><p>\(2nd(1/540 - 1/660) = 1\) → \(d = (660)(540)/[2(1.46)(120)] = 1017\) nm. 확인: \(2nd/660 = 4.50\), \(2nd/540 = 5.50\) — 반정수이므로 최소 조건과 맞다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="1/4 파장 거울" data-answer="98.2" data-label="R =" data-unit="%">
+        <div class="prob-q"><p>유리(\(n_s\) = 1.52) 위에 TiO₂(\(n_H\) = 2.40)/SiO₂(\(n_L\) = 1.46) 1/4 파장 쌍 5개를 \((HL)^5\)로 쌓았다(맨 위 H). 설계 파장의 반사율은?</p></div>
+        <div class="prob-hint">기판에서부터 1/4 파장 층마다 \(Y \to n^2/Y\). L 다음 H를 지나면 \((n_H/n_L)^2\)배.</div>
+        <div class="prob-sol"><p>\(Y = (2.40/1.46)^{10}\times1.52 = 219.0\). \(R = [(1 - 219.0)/(1 + 219.0)]^2 = 0.982\) = 98.2%. 쌍을 8개로 늘리면 99.9%를 넘는다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="스윙 주기" data-answer="70.5; 56.8" data-label="Δd(KrF) =; Δd(ArF) =" data-unit="nm; nm">
+        <div class="prob-q"><p>KrF(248 nm) 레지스트의 굴절률이 1.76, ArF(193 nm) 레지스트가 1.70이다. 각 공정의 스윙 주기는? 웨이퍼 단차 때문에 레지스트 두께가 ±20 nm 흔들린다면 어느 공정이 더 위험한가?</p></div>
+        <div class="prob-sol"><p>\(248/(2\times1.76) = 70.5\) nm, \(193/(2\times1.70) = 56.8\) nm. ±20 nm는 ArF 주기의 70%에 해당해 스윙 곡선의 최대와 최소를 모두 건드린다 — 짧은 파장일수록 BARC가 더 필수다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="엘립소메트리" data-answer="16.9; 180" data-label="ψ =; Δ =" data-unit="°; °" data-tol="0.1; 0.5">
+        <div class="prob-q"><p>유리(\(n\) = 1.50)에 45°로 빛을 비출 때 \(r_s\), \(r_p\)를 계산하고 \(\psi\), \(\Delta\)를 구하라(이 장의 \(r_p\) 약속). 덤으로 \(R_p = R_s^2\)임을 확인하라.</p></div>
+        <div class="prob-hint">\(\cos\theta_t = \sqrt{1 - (\sin45°/1.5)^2} = 0.8819\).</div>
+        <div class="prob-sol"><p>\(r_s = (0.7071 - 1.5\times0.8819)/(0.7071 + 1.3229) = -0.3033\), \(r_p = (1.5\times0.7071 - 0.8819)/(1.0607 + 0.8819) = 0.0920\). \(\rho = -0.303\) → \(\psi = \arctan(0.0920/0.3033) = 16.9°\), 부호가 반대라 \(\Delta = 180°\). \(R_s = 0.0920\), \(R_p = 0.00847 = R_s^2\)(45°에서 늘 성립하는 아벨레스 관계).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="엘립소메트리 주기" data-answer="175" data-label="D_ψ =" data-unit="nm">
+        <div class="prob-q"><p>633 nm, 입사각 70°에서 실리콘 위 Si₃N₄(\(n\) = 2.04) 막의 \(\psi\)–\(\Delta\) 궤적 주기는? 측정값이 100 nm 막과 똑같이 나오는 다른 두께 두 개를 들어라.</p></div>
+        <div class="prob-sol"><p>\(D_\psi = 633/(2\sqrt{2.04^2 - \sin^270°}) = 633/(2\times1.8107) = 175\) nm. 275 nm, 450 nm(…)도 같은 \((\psi, \Delta)\)를 준다. 다른 각도나 파장에서는 주기가 달라지므로 다각도·분광 측정으로 구별한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="엘립소미터 입사각">
+        <div class="prob-q"><p>실리콘 공정용 단일 파장 엘립소미터가 입사각을 보통 70° 근처로 고정하는 가장 큰 이유는?</p></div>
+        <div class="prob-choices"><button>그 각도에서 반사율이 가장 커서 신호가 세기 때문</button><button data-correct>실리콘의 브루스터(주)각 75.5° 근처라 \(r_p\)가 작고 \(\Delta\)가 막 두께에 가장 민감하게 변하기 때문</button><button>70°에서 s와 p의 반사율이 같아지기 때문</button><button>수직 입사에서는 엘립소메트리가 원리상 불가능하고, 70°가 기계적으로 가능한 최대 각이기 때문</button></div>
+        <div class="prob-sol"><p>주각 근처에서 \(|r_p|\)가 작아 \(\rho\)가 막의 작은 변화에 크게 흔들린다. 수직 입사(\(\rho = -1\), 모든 시료에서 같음)에서는 정보가 없으므로 비스듬한 입사가 필요한 것은 맞지만, 70°를 고르는 이유는 감도다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="전반사">
+        <div class="prob-q"><p>전반사가 일어날 때 매질 2 속의 소산파에 대한 설명으로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>매질 2에는 장이 전혀 없다</button><button>소산파가 매질 2 속으로 에너지를 계속 실어 나르지만 흡수되어 사라진다</button><button data-correct>장은 경계면에서 지수적으로 줄며 경계면을 따라 진행하고, 경계면을 가로지르는 시간 평균 전력은 0이다</button><button>소산파의 침투 깊이는 입사각과 상관없이 파장과 같다</button></div>
+        <div class="prob-sol"><p>\(E_t \propto e^{-jk_xx}e^{-\alpha z}\). \(z\) 방향 전력 흐름은 반 주기마다 들어갔다 나와 평균 0이다. 그래서 \(|r| = 1\)이고, 세 번째 매질을 소산파 안에 대면(FTIR) 비로소 에너지가 빠져나간다. 침투 깊이는 임계각에서 무한대이고 입사각이 커지면 짧아진다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>공기에서 \(\varepsilon_r\) = 4인 유전체로 수직 입사할 때 \(\tau = 2/3\)이다. 그런데 유전체에서 공기로 나갈 때는 \(\tau = 4/3 > 1\)이다. 이것이 에너지 보존을 어기지 않는 이유는?</p><div class="opts">
+        <button class="opt">반사파가 에너지를 보태 주기 때문</button><button class="opt" data-correct>전력 밀도는 \(|E|^2/2\eta\)라, 임피던스가 큰 공기에서는 같은 전력에 더 큰 \(E\)가 필요하기 때문</button><button class="opt">\(\tau\)는 전력이 아닌 위상만 나타내기 때문</button><button class="opt">실제로는 어기며 근사의 한계다</button>
+      </div><div class="quiz-exp">\(T = (\eta_1/\eta_2)|\tau|^2 = (188.4/376.7)(16/9) = 0.889\), \(R = 1/9\). 합은 1이다.</div></div>
+      <div class="quiz-q"><p>호수 수면에서 반사된 햇빛을 편광 선글라스가 잘 막는 이유는?</p><div class="opts">
+        <button class="opt">반사광은 원편광이라서</button><button class="opt">반사광은 p 편광이 대부분이라서</button><button class="opt" data-correct>브루스터 각(물 53°) 근처의 반사광은 대부분 s 편광(수면에 평행한 진동)이고, 렌즈는 그 방향을 막도록 세로 투과축을 가지기 때문</button><button class="opt">물이 자외선만 반사하기 때문</button>
+      </div><div class="quiz-exp">\(\tan\theta_B = 1.333\) → 53.1°. 그 근처에서 \(R_p \approx 0\)이라 반사광은 거의 수평 진동(s)뿐이다.</div></div>
+      <div class="quiz-q"><p>실리콘 웨이퍼 위 산화막을 같은 장비로 보는데 웨이퍼 중심은 파랑, 가장자리는 금색이다. 가장 그럴듯한 해석은?</p><div class="opts">
+        <button class="opt">가장자리 산화막의 굴절률이 10배 크다</button><button class="opt" data-correct>두께가 위치마다 달라 반사 최소가 걸리는 가시광 파장이 다르다(박막 간섭)</button><button class="opt">가장자리에만 금속 오염이 있다</button><button class="opt">조명의 입사각이 위치마다 크게 달라서다</button>
+      </div><div class="quiz-exp">색은 \(2nd\)가 정하는 반사 스펙트럼에서 나온다. 수십 nm 두께 차이로 색이 바뀌므로 산화·증착의 균일도를 눈으로 볼 수 있다.</div></div>
+      <div class="quiz-q"><p>흡수가 없는 유전체 1/4 파장 거울은 쌍을 늘리면 반사율이 1에 다가가지만, EUV Mo/Si 거울은 약 74%에서 포화한다. 차이를 만드는 것은?</p><div class="opts">
+        <button class="opt">EUV 파장이 짧아 간섭이 일어나지 않는다</button><button class="opt" data-correct>층의 흡수 때문에 빛이 수십 쌍보다 깊이 들어갔다 돌아오지 못한다</button><button class="opt">Mo와 Si의 굴절률 차이가 0이라서</button><button class="opt">EUV는 편광이 없어서</button>
+      </div><div class="quiz-exp">13.5 nm에서도 Mo/Si는 \(\Delta n\) ≈ 0.08로 간섭은 잘 일어난다. 흡수가 유효 침투 깊이를 정해 반사율 상한을 만든다.</div></div>
+      <div class="quiz-q"><p>BARC의 소광 계수 \(k\)를 매우 크게(금속처럼) 만들면 바닥 반사가 오히려 커진다. 이유는?</p><div class="opts">
+        <button class="opt">\(k\)가 크면 BARC가 투명해져서</button><button class="opt">\(k\)가 크면 스윙 주기가 길어져서</button><button class="opt" data-correct>레지스트/BARC 경계 자체의 반사 \(|(N_r - N_B)/(N_r + N_B)|^2\)가 \(k\)에 따라 커져, BARC가 금속 거울처럼 되기 때문</button><button class="opt">BARC가 레지스트와 섞여서</button>
+      </div><div class="quiz-exp">흡수는 기판 반사를 지우지만 윗면 반사를 만든다. 적당한 \(k\)(0.2–0.5)와 간섭 최소 두께의 조합이 최적이다. 시뮬레이터에서 \(k\)를 0.8로 올려 보라.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const K = EM.const, cx = EM.cx, PI = Math.PI, TAU = 2 * Math.PI, DEG = PI / 180;
+  const eta0 = K.eta0;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 10) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const pct = (x, d = 1) => (100 * x).toFixed(d) + "%";
+  const fmtS = (x) => (isFinite(x) && x < 1e3 ? x.toFixed(2) : "∞");
+  /** 공학 관례 복소 굴절률 N = n − jk */
+  const Ne = (n, k = 0) => ({ re: n, im: -k });
+  const J = { re: 0, im: 1 };
+
+  /**
+   * 수직 입사 전달 행렬(공학 관례 e^{jωt}, N = n − jk).
+   * layers: 위→아래 [{N, d}], 기판 Ns, 입사 매질 N0(실수). → {r, R, Ein, prof(nPer)}
+   */
+  function stack(N0, layers, Ns, lam) {
+    let E = cx.of(1), H = cx.from(Ns);
+    const segs = [];
+    for (let i = layers.length - 1; i >= 0; i--) {
+      const L = layers[i]; segs.unshift({ L, E, H });
+      const dl = cx.scale(L.N, (TAU * L.d) / lam), c = cx.cos(dl), s = cx.sin(dl), js = cx.mul(J, s);
+      const E2 = cx.add(cx.mul(c, E), cx.mul(cx.div(js, L.N), H));
+      const H2 = cx.add(cx.mul(cx.mul(js, L.N), E), cx.mul(c, H));
+      E = E2; H = H2;
+    }
+    const y0 = cx.from(N0), Ein = cx.scale(cx.add(E, cx.div(H, y0)), 0.5), Er = cx.scale(cx.sub(E, cx.div(H, y0)), 0.5);
+    const r = cx.div(Er, Ein), I0 = cx.abs2(Ein);
+    /** 깊이별 |E|²/|E_in|² : 각 층마다 n개 표본 [{z(위에서 nm), I, layer}] */
+    function prof(n = 40) {
+      const out = []; let z0 = 0;
+      segs.forEach((sg, li) => {
+        const d = sg.L.d;
+        for (let q = 0; q <= n; q++) {
+          const zz = (d * q) / n, sb = d - zz;   // 층 아래에서 잰 거리
+          const dl = cx.scale(sg.L.N, (TAU * sb) / lam), c = cx.cos(dl), s = cx.sin(dl);
+          const Ez = cx.add(cx.mul(c, sg.E), cx.mul(cx.div(cx.mul(J, s), sg.L.N), sg.H));
+          out.push({ z: z0 + zz, I: cx.abs2(Ez) / I0, li });
+        }
+        z0 += d;
+      });
+      return out;
+    }
+    return { r, R: cx.abs2(r), Ein, prof };
+  }
+
+  /* ================================================================ 장 머리: 경계면의 정재파 */
+  {
+    const st = { u: 0.62, drag: false, idle: 0, t: 0 };
+    const LOG_LO = Math.log(1 / 3), LOG_HI = Math.log(6), PEC_U = 0.94;
+    const nr = () => (st.u >= PEC_U ? Infinity : Math.exp(LOG_LO + (st.u / PEC_U) * (LOG_HI - LOG_LO)));
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), n2 = nr(), pec = !isFinite(n2);
+      const G = pec ? -1 : (1 - n2) / (1 + n2), tau = 1 + G;
+      const xi = Math.round(w * 0.6), x0 = 14, x1 = w - 14, sc = (xi - x0) / 2.4;   // px per λ₁
+      const y0 = h * 0.56, A = Math.min(h * 0.17, 60);
+      const ph = TAU * st.t * 0.55;
+      // 매질 2 배경
+      ctx.save();
+      if (pec) { ctx.fillStyle = P.dim; ctx.globalAlpha = 0.35; }
+      else { ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.05 + 0.2 * Math.min(1, Math.log(n2 * 3) / Math.log(18)); }
+      ctx.fillRect(xi, 0, w - xi, h); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xi, 0); ctx.lineTo(xi, h); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, x0, y0, x1, y0, P.faint, [3, 4]);
+      const zOf = (x) => (x - xi) / sc;
+      // 포락선
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.3; ctx.setLineDash([5, 4]);
+      for (const sg of [1, -1]) {
+        ctx.beginPath();
+        for (let x = x0; x <= xi; x += 2) { const z = zOf(x), m = Math.hypot(1 + G * Math.cos(2 * TAU * z), G * Math.sin(2 * TAU * z)); const y = y0 - sg * A * m; x === x0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+        if (!pec) { ctx.lineTo(xi, y0 - sg * A * Math.abs(tau)); ctx.lineTo(x1, y0 - sg * A * Math.abs(tau)); }
+        ctx.stroke();
+      }
+      ctx.restore();
+      // 입사·반사(가는 선)
+      const wave = (fn, col, wd, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let first = true; for (let x = x0; x <= xi; x += 2) { const y = y0 - A * fn(zOf(x)); first ? ctx.moveTo(x, y) : ctx.lineTo(x, y); first = false; } ctx.stroke(); ctx.restore(); };
+      ctx.save(); ctx.globalAlpha = 0.45;
+      wave((z) => Math.cos(ph - TAU * z), P.accent, 1.4);
+      wave((z) => G * Math.cos(ph + TAU * z), P.accent2, 1.4);
+      ctx.restore();
+      wave((z) => Math.cos(ph - TAU * z) + G * Math.cos(ph + TAU * z), P.text, 2.6);
+      // 투과
+      if (!pec) {
+        ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2.6; ctx.beginPath();
+        for (let x = xi; x <= x1; x += 1.5) { const z = zOf(x), y = y0 - A * tau * Math.cos(ph - TAU * n2 * z); x === xi ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+        ctx.stroke(); ctx.restore();
+      }
+      // 핸들
+      const hx = xi + (w - xi) / 2, hy = 22 + (1 - st.u) * (h - 44);
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, 22); ctx.lineTo(hx, h - 22); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, hx - 12, 22 + (1 - PEC_U) * (h - 44), hx + 12, 22 + (1 - PEC_U) * (h - 44), P.dim, [2, 2]);
+      handle(ctx, hx, hy, P.accent2, 12);
+      self._h = [hx, hy]; self._range = [22, h - 22];
+      const lab = pec ? "완전 도체" : `n₂/n₁ = ${n2.toFixed(2)}`;
+      if (w < 520) SB.label(ctx, lab, x1, hy + (hy > h - 60 ? -24 : 24), { align: "right", size: 12, bold: true, color: P.accent2 });
+      else SB.label(ctx, lab, hx + 16, hy, { align: "left", size: 12, bold: true, color: P.accent2 });
+      SB.label(ctx, "매질 1", x0 + 4, 16, { align: "left", size: 12, color: P.dim });
+      SB.label(ctx, "매질 2", xi + 8, 16, { align: "left", size: 12, color: P.dim });
+      const S = pec ? Infinity : (1 + Math.abs(G)) / (1 - Math.abs(G));
+      const narrow = w < 520;
+      SB.label(ctx, `Γ = ${G.toFixed(3)}   S = ${fmtS(S)}`, x0 + 4, h - 32, { align: "left", size: narrow ? 11 : 12.5, bold: true });
+      SB.label(ctx, `R = ${pct(G * G)}   T = ${pct(1 - G * G)}`, x0 + 4, h - 14, { align: "left", size: narrow ? 11 : 12.5, bold: true, color: P.dim });
+      if (!narrow) {
+        SB.label(ctx, "— 합성 장   — 입사   — 반사   - - 진폭", x0 + 70, 16, { align: "left", size: 11, color: P.dim });
+      }
+    }, { aspect: 0.42, minHeight: 250, maxHeight: 380 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "n", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      down: () => { st.drag = true; },
+      move: (id, x, y) => { if (id !== "n") return; const [a, b] = cv._range; st.u = SB.clamp(1 - (y - a) / (b - a), 0, 1); st.idle = 0; },
+      up: () => { st.drag = false; st.idle = 0; },
+    });
+    let sweepPh = 0;
+    SB.loop("hero", (dt) => {
+      dt = Math.min(dt, 0.05); st.t += dt;
+      if (!st.drag) { st.idle += dt; if (st.idle > 6) { sweepPh += dt * 0.25; st.u = SB.clamp(0.55 + 0.45 * Math.sin(sweepPh), 0, 1); } }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 드래그 숫자: Γ, τ */
+  SB.tangle("tg-gamma", (v) => {
+    const e1 = eta0 / Math.sqrt(v.e1), e2 = eta0 / Math.sqrt(v.e2), G = (e2 - e1) / (e2 + e1), t = 1 + G, R = G * G, T = (e1 / e2) * t * t;
+    return { eta: `η₁ = ${e1.toFixed(1)} Ω, η₂ = ${e2.toFixed(1)} Ω`, G: G.toFixed(3), t: t.toFixed(3), R: pct(R), T: pct(T), sum: (R + T).toFixed(3) };
+  });
+
+  /* ================================================================ 시뮬레이터: 정재파 탐침 */
+  {
+    const Z0 = -1.5, Z1 = 0.5;
+    const st = { zp: -0.6, t: 0, rec: [], hidden: pick(["2.25", "4", "9", "pec"]), answered: null };
+    const gMode = SB.seg("sw-mode", () => { st.rec = []; st.answered = null; sync(); });
+    const gEr = SB.range("sw-er", (v) => v.toFixed(2), () => { st.rec = []; sync(); });
+    const gTan = SB.range("sw-tan", (v) => v.toFixed(2), () => { st.rec = []; sync(); });
+    const pecEl = $("sw-pec"); pecEl.addEventListener("change", () => { st.rec = []; sync(); });
+    const gAns = SB.seg("sw-ans", (v) => { if (gMode() !== "quiz") return; st.answered = v; sync(); });
+    $("sw-new").addEventListener("click", () => { st.rec = []; st.answered = null; if (gMode() === "quiz") { const old = st.hidden; while (st.hidden === old) st.hidden = pick(["2.25", "4", "9", "pec"]); } sync(); });
+    function medium() {
+      if (gMode() === "quiz") return st.hidden === "pec" ? { pec: true } : { pec: false, eps: cx.of(Number(st.hidden)) };
+      if (pecEl.checked) return { pec: true };
+      return { pec: false, eps: cx.of(gEr(), -gEr() * gTan()) };
+    }
+    function gamma(m) {
+      if (m.pec) return { G: cx.of(-1), N: null };
+      const N = cx.sqrt(m.eps);                         // N = n − jκ
+      const er = cx.div(1, N);                          // η₂/η₁
+      return { G: cx.div(cx.sub(er, 1), cx.add(er, 1)), N };
+    }
+    const absE = (G, z) => cx.abs(cx.add(cx.of(Math.cos(-TAU * z), Math.sin(-TAU * z)), cx.mul(G, cx.of(Math.cos(TAU * z), Math.sin(TAU * z)))));
+    const cv = SB.canvas("cv-sw", (ctx, w, h, self) => {
+      const P = pal(), m = medium(), { G, N } = gamma(m), quiz = gMode() === "quiz";
+      const box = { x: 46, y: 22, w: w - 60, h: h - 74 };
+      const X = (z) => box.x + ((z - Z0) / (Z1 - Z0)) * box.w, Y = (v) => box.y + box.h / 2 - (v / 2.2) * (box.h / 2);
+      const xi = X(0);
+      // 매질 2
+      ctx.save();
+      if (quiz) { ctx.fillStyle = P.dim; ctx.globalAlpha = 0.25; }
+      else if (m.pec) { ctx.fillStyle = P.dim; ctx.globalAlpha = 0.4; }
+      else { ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.07 + 0.03 * Math.sqrt(cx.abs(m.eps)); }
+      ctx.fillRect(xi, box.y, X(Z1) - xi, box.h); ctx.restore();
+      SB.label(ctx, quiz ? "미지 시료 ?" : m.pec ? "완전 도체" : `ε_r = ${m.eps.re.toFixed(2)}${gTan() > 0 ? " (손실)" : ""}`, (xi + X(Z1)) / 2, box.y + 12, { size: 12, bold: true, color: quiz ? P.text : P.accent2 });
+      SB.label(ctx, "공기", box.x + 24, box.y + 12, { size: 12, color: P.dim });
+      // 격자
+      ctx.save(); ctx.strokeStyle = P.grid; ctx.lineWidth = 1; ctx.font = font(11, true); ctx.fillStyle = P.dim; ctx.textAlign = "center";
+      for (let z = -1.5; z <= 0.5001; z += 0.25) { const x = X(z); ctx.beginPath(); ctx.moveTo(x, box.y); ctx.lineTo(x, box.y + box.h); ctx.stroke(); ctx.fillText((z === 0 ? "0" : z.toFixed(2)), x, box.y + box.h + 13); }
+      for (const v of [-2, -1, 0, 1, 2]) { const y = Y(v); ctx.beginPath(); ctx.moveTo(box.x, y); ctx.lineTo(box.x + box.w, y); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(String(v), box.x - 6, y + 4); ctx.textAlign = "center"; }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xi, box.y); ctx.lineTo(xi, box.y + box.h); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "z / λ₁", box.x + box.w - 22, box.y + box.h + 28, { size: 11, color: P.dim });
+      SB.label(ctx, "E/E₀", 18, box.y + 8, { size: 11, color: P.dim });
+      const ph = TAU * st.t * 0.5;
+      if (!quiz) {
+        // 포락선
+        ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.3; ctx.setLineDash([5, 4]);
+        for (const sg of [1, -1]) { ctx.beginPath(); for (let i = 0; i <= 300; i++) { const z = Z0 + (i / 300) * (0 - Z0), y = Y(sg * absE(G, z)); i ? ctx.lineTo(X(z), y) : ctx.moveTo(X(z), y); } ctx.stroke(); }
+        ctx.restore();
+        // 순간 장
+        ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath();
+        for (let i = 0; i <= 300; i++) {
+          const z = Z0 + (i / 300) * (0 - Z0);
+          const E = cx.add(cx.of(Math.cos(-TAU * z), Math.sin(-TAU * z)), cx.mul(G, cx.of(Math.cos(TAU * z), Math.sin(TAU * z))));
+          const v = E.re * Math.cos(ph) - E.im * Math.sin(ph); i ? ctx.lineTo(X(z), Y(v)) : ctx.moveTo(X(z), Y(v));
+        }
+        if (N) {
+          const tau = cx.add(1, G);
+          for (let i = 0; i <= 120; i++) {
+            const z = (i / 120) * Z1, ex = cx.exp(cx.scale(cx.mul(J, N), -TAU * z)), E = cx.mul(tau, ex);
+            ctx.lineTo(X(z), Y(E.re * Math.cos(ph) - E.im * Math.sin(ph)));
+          }
+        }
+        ctx.stroke(); ctx.restore();
+      }
+      // 기록 점
+      ctx.save(); ctx.fillStyle = P.warn;
+      for (const [z, v] of st.rec) { ctx.beginPath(); ctx.arc(X(z), Y(v), 2.6, 0, TAU); ctx.fill(); }
+      ctx.restore();
+      // 탐침
+      const ep = absE(G, st.zp), xp = X(st.zp), yb = box.y + box.h + 34;
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.2; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(xp, box.y); ctx.lineTo(xp, yb); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = P.warn; ctx.globalAlpha = 0.85; ctx.fillRect(xp - 4, Y(ep), 8, Y(0) - Y(ep)); ctx.restore();
+      handle(ctx, xp, yb, P.warn, 12);
+      SB.label(ctx, `|E| = ${ep.toFixed(2)} E₀`, SB.clamp(xp, box.x + 50, box.x + box.w - 50), Y(ep) - 12, { size: 12, bold: true, color: P.warn });
+      self._h = [xp, yb]; self._X = X; self._xi = xi;
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    function record() {
+      const { G } = gamma(medium()), v = absE(G, st.zp), zq = Math.round(st.zp * 400) / 400;
+      if (!st.rec.some((p) => p[0] === zq)) st.rec.push([zq, v]);
+      if (st.rec.length > 600) st.rec.shift();
+    }
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "p", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x) => {
+        if (id !== "p" || !cv._X) return;
+        const X0 = cv._X(Z0), Xz = cv._X(0);
+        st.zp = SB.clamp(Z0 + ((x - X0) / (Xz - X0)) * (0 - Z0), Z0, 0);
+        record(); sync();
+      },
+    });
+    function sync() {
+      const quiz = gMode() === "quiz";
+      gEr.el.disabled = quiz; gTan.el.disabled = quiz; pecEl.disabled = quiz;
+      const m = medium(), { G } = gamma(m);
+      SB.stat("sw-probe", absE(G, st.zp).toFixed(3));
+      if (st.rec.length > 1) {
+        let mx = -1, mn = 9, zmn = 0; st.rec.forEach(([z, v]) => { if (v > mx) mx = v; if (v < mn) { mn = v; zmn = z; } });
+        const S = mn > 1e-3 ? mx / mn : Infinity;
+        SB.stat("sw-mm", `${mx.toFixed(2)} / ${mn.toFixed(2)} (최소 z = ${zmn.toFixed(3)}λ)`);
+        SB.stat("sw-S", `${fmtS(S)} → ${isFinite(S) ? ((S - 1) / (S + 1)).toFixed(3) : "1"}`);
+      } else { SB.stat("sw-mm", "탐침을 끌어 기록"); SB.stat("sw-S", "—"); }
+      SB.stat("sw-G", quiz ? "(숨김)" : `${cx.abs(G).toFixed(3)} ∠${(cx.arg(G) / DEG).toFixed(1)}°`);
+      if (!quiz) SB.stat("sw-res", "미지 시료 모드에서 도전");
+      else if (!st.answered) SB.stat("sw-res", st.rec.length < 20 ? "탐침으로 λ/2 이상 훑어 보라" : "오른쪽에서 정체를 고르라");
+      else {
+        const ok = st.answered === st.hidden, name = st.hidden === "pec" ? "완전 도체(S = ∞)" : `ε_r = ${st.hidden} (S = ${Math.sqrt(Number(st.hidden)).toFixed(2)})`;
+        SB.stat("sw-res", ok ? `✔ 정답! ${name}` : `✘ 다시 재 보라 (정답: ${name})`);
+      }
+      cv.redraw();
+    }
+    SB.loop("sim-sw", (dt) => { st.t += Math.min(dt, 0.05); cv.redraw(); });
+    sync();
+  }
+
+  /* ================================================================ 드릴: 수직 입사 */
+  SB.drill("drill-normal", () => {
+    let e1, e2, G;
+    do { e1 = pick([1, 1, 2.25, 4]); e2 = pick([1, 2.25, 2.56, 4, 6.25, 9, 11.7, 16, 25, 81]); G = (Math.sqrt(e1) - Math.sqrt(e2)) / (Math.sqrt(e1) + Math.sqrt(e2)); } while (Math.abs(G) < 0.1);
+    const T = 1 - G * G;
+    return {
+      q: `<p>비유전율 \\(\\varepsilon_{r1} = ${e1}\\)인 매질에서 \\(\\varepsilon_{r2} = ${e2}\\)인 매질로 평면파가 수직 입사한다(비자성, 무손실). 반사 계수 \\(\\Gamma\\)와 투과율 \\(T\\)(%)는?</p>`,
+      answer: [G, T * 100], label: ["Γ =", "T ="], unit: ["", "%"], tol: "2%",
+      sol: `\\(n_1 = ${Math.sqrt(e1).toFixed(3)}\\), \\(n_2 = ${Math.sqrt(e2).toFixed(3)}\\). \\(\\Gamma = (n_1 - n_2)/(n_1 + n_2) = ${G.toFixed(4)}\\), \\(T = 1 - \\Gamma^2 = ${(T * 100).toFixed(2)}\\%\\).`,
+    };
+  });
+  $("sw-ans").querySelectorAll("button").forEach((b) => b.classList.remove("on"));
+
+  /* ================================================================ 드래그 숫자: 스넬 */
+  SB.tangle("tg-snell", (v) => {
+    const s = (v.n1 * Math.sin(v.th * DEG)) / v.n2;
+    const tc = v.n1 > v.n2 ? (Math.asin(v.n2 / v.n1) / DEG).toFixed(1) + "°" : "없음(n₁ ≤ n₂)";
+    return { tt: s <= 1 ? (Math.asin(s) / DEG).toFixed(1) + "°" : "없음(전반사)", kx: (v.n1 * Math.sin(v.th * DEG)).toFixed(3), tc };
+  });
+
+  /* ================================================================ 시뮬레이터: 프레넬 */
+  {
+    const st = { th: 40, trail: [], hidden: 1.4 + Math.random(), solved: false };
+    const gN1 = SB.range("fr-n1", (v) => v.toFixed(2), () => draw());
+    const gN2 = SB.range("fr-n2", (v) => v.toFixed(2), () => draw());
+    const gPol = SB.seg("fr-pol", () => draw());
+    const gMode = SB.seg("fr-mode", () => { st.trail = []; st.solved = false; if (gMode() === "goal") { gN1.set(1, true); gPol.set("p", false); } draw(); });
+    $("fr-new").addEventListener("click", () => { st.hidden = 1.4 + Math.random(); st.trail = []; st.solved = false; draw(); });
+    const n1 = () => (gMode() === "goal" ? 1 : gN1());
+    const n2 = () => (gMode() === "goal" ? st.hidden : gN2());
+    const F = (th) => EM.fresnel(n1(), n2(), th * DEG);
+    const cv = SB.canvas("cv-fr", (ctx, w, h, self) => {
+      const P = pal(), goal = gMode() === "goal", a = n1(), b = n2(), th = st.th * DEG, f = F(st.th), pol = gPol();
+      const ox = w / 2, oy = h / 2, Rr = Math.min(w, h) * 0.42;
+      ctx.save(); ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.04 + 0.05 * (a - 1); ctx.fillRect(0, 0, w, oy); ctx.globalAlpha = 0.04 + 0.05 * (b - 1); ctx.fillRect(0, oy, w, h - oy); ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(w, oy); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, ox, 10, ox, h - 10, P.faint, [4, 4]);
+      SB.label(ctx, `n₁ = ${a.toFixed(2)}`, 10, 16, { align: "left", size: 12, bold: true });
+      SB.label(ctx, goal ? "n₂ = ?" : `n₂ = ${b.toFixed(2)}`, 10, h - 16, { align: "left", size: 12, bold: true });
+      const wS = pol === "p" ? 0 : pol === "s" ? 1 : 0.5, wP = 1 - wS;
+      const Rr_ = wS * f.Rs + wP * f.Rp, T_ = wS * f.Ts + wP * f.Tp;
+      const tir = (a * Math.sin(th)) / b > 1;
+      const S = [ox - Rr * Math.sin(th), oy - Rr * Math.cos(th)], Rp_ = [ox + Rr * Math.sin(th), oy - Rr * Math.cos(th)];
+      const ray = (x1, y1, x2, y2, pw) => { ctx.save(); ctx.globalAlpha = 0.25 + 0.75 * Math.min(1, pw * 1.3); SB.arrow(ctx, x1, y1, x2, y2, { color: P.accent, width: 1 + 7 * pw, head: 10 + 4 * pw }); ctx.restore(); };
+      // 편광 기호
+      const marks = (x1, y1, x2, y2, s, p) => {
+        const L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L;
+        for (const t of [0.3, 0.6]) {
+          const mx = x1 + (x2 - x1) * t, my = y1 + (y2 - y1) * t;
+          if (s > 0.01) { ctx.save(); ctx.globalAlpha = Math.min(1, 0.2 + s); ctx.strokeStyle = P.accent2; ctx.fillStyle = P.accent2; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(mx - uy * 12, my + ux * 12, 5, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(mx - uy * 12, my + ux * 12, 1.8, 0, TAU); ctx.fill(); ctx.restore(); }
+          if (p > 0.01) { ctx.save(); ctx.globalAlpha = Math.min(1, 0.2 + p); const qx = mx + uy * 14, qy = my - ux * 14; SB.arrow(ctx, qx, qy, qx - uy * 9, qy + ux * 9, { color: P.warn, width: 1.6, head: 5 }); SB.arrow(ctx, qx, qy, qx + uy * 9, qy - ux * 9, { color: P.warn, width: 1.6, head: 5 }); ctx.restore(); }
+        }
+      };
+      ray(S[0], S[1], ox, oy, 1); marks(S[0], S[1], ox, oy, wS, wP);
+      ray(ox, oy, Rp_[0], Rp_[1], Rr_); marks(ox, oy, Rp_[0], Rp_[1], wS * f.Rs, wP * f.Rp);
+      if (!tir) {
+        const tt = Math.asin((a * Math.sin(th)) / b), Tp = [ox + Rr * Math.sin(tt), oy + Rr * Math.cos(tt)];
+        ray(ox, oy, Tp[0], Tp[1], T_); marks(ox, oy, Tp[0], Tp[1], wS * f.Ts, wP * f.Tp);
+        SB.label(ctx, `θₜ ${(tt / DEG).toFixed(1)}°`, ox + 64 * Math.sin(tt + 0.35) + 4, oy + 64 * Math.cos(tt + 0.35), { align: "left", size: 12, bold: true, color: P.dim });
+      } else {
+        const g = ctx.createLinearGradient(0, oy, 0, oy + 40); g.addColorStop(0, SB.color("accent-soft")); g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.save(); ctx.fillStyle = g; ctx.fillRect(ox - Rr, oy, 2 * Rr, 40); ctx.restore();
+        SB.label(ctx, "전반사 · 소산파 →", ox + 10, oy + 16, { align: "left", size: 12, bold: true, color: P.accent });
+      }
+      ctx.save(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(ox, oy, 40, -PI / 2 - th, -PI / 2); ctx.stroke(); ctx.restore();
+      SB.label(ctx, `θᵢ ${st.th.toFixed(1)}°`, ox - 64 * Math.sin(Math.min(th + 0.35, 1.5)) - 4, oy - 64 * Math.cos(Math.min(th + 0.35, 1.5)), { align: "right", size: 12, bold: true });
+      ctx.save(); ctx.strokeStyle = P.faint; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(ox, oy, Rr, PI, 1.5 * PI); ctx.stroke(); ctx.restore();
+      handle(ctx, S[0], S[1], P.accent, 12);
+      self._h = S; self._o = [ox, oy];
+    }, { aspect: 0.9, minHeight: 280, maxHeight: 400 });
+    const cv2 = SB.canvas("cv-fr2", (ctx, w, h) => {
+      const P = pal(), goal = gMode() === "goal", a = n1(), b = n2();
+      const s1 = [], s2 = [];
+      if (!goal) for (let i = 0; i <= 180; i++) { const t = i * 0.5, f = F(Math.min(t, 89.99)); s1.push([t, f.Rs]); s2.push([t, f.Rp]); }
+      const vl = [];
+      if (!goal) { vl.push({ x: Math.atan(b / a) / DEG, color: P.accent, label: "θB", dash: [4, 3] }); if (a > b) vl.push({ x: Math.asin(b / a) / DEG, color: P.dim, label: "θc", dash: [4, 3], row: 1 }); }
+      const f = F(st.th);
+      const pts = goal ? st.trail.map(([t, r]) => ({ x: t, y: r, r: 2.5, color: P.accent })) : [];
+      if (!goal) pts.push({ x: st.th, y: f.Rs, color: P.accent2, r: 5 });
+      pts.push({ x: st.th, y: f.Rp, color: P.accent, r: 5 });
+      SB.chart(ctx, { x: 50, y: 30, w: w - 66, h: h - 78 }, { x: [0, 90], y: [0, 1], xLabel: "입사각 θᵢ (°)", yLabel: "반사율", xTicks: [0, 15, 30, 45, 60, 75, 90], series: [{ data: s1, color: P.accent2, width: 2.2 }, { data: s2, color: P.accent, width: 2.2 }], vlines: vl, points: pts });
+      SB.label(ctx, goal ? "측정한 R_p (점) — 0이 되는 각을 찾아라" : "R_s (파랑) · R_p (빨강)", w / 2, 14, { size: 12, bold: true });
+    }, { aspect: 0.9, minHeight: 280, maxHeight: 400 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "s", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => {
+        if (id !== "s" || !cv._o) return;
+        const dx = x - cv._o[0], dy = y - cv._o[1];
+        st.th = SB.clamp(Math.atan2(-dx, -dy) / DEG, 0, 89.5);
+        if (gMode() === "goal") { st.trail.push([st.th, F(st.th).Rp]); if (st.trail.length > 400) st.trail.shift(); }
+        draw();
+      },
+    });
+    function draw() {
+      const a = n1(), b = n2(), f = F(st.th), s = (a * Math.sin(st.th * DEG)) / b;
+      gN1.el.disabled = gN2.el.disabled = gMode() === "goal";
+      cv.redraw(); cv2.redraw();
+      SB.stat("fr-th", `${st.th.toFixed(1)}° → ${s <= 1 ? (Math.asin(s) / DEG).toFixed(1) + "°" : "전반사"}`);
+      SB.stat("fr-R", `${pct(f.Rs, 2)} / ${f.Rp < 1e-3 ? (f.Rp * 100).toExponential(1) + "%" : pct(f.Rp, 2)}`);
+      SB.stat("fr-T", s <= 1 ? `${pct(f.Ts, 1)} / ${pct(f.Tp, 1)}` : "0 / 0");
+      SB.stat("fr-ang", gMode() === "goal" ? "? / ?" : `${(Math.atan(b / a) / DEG).toFixed(1)}° / ${a > b ? (Math.asin(b / a) / DEG).toFixed(1) + "°" : "없음"}`);
+      if (gMode() !== "goal") SB.stat("fr-goal", "—");
+      else {
+        if (f.Rp < 1e-4) st.solved = true;
+        SB.stat("fr-goal", st.solved ? `✔ θ_B ≈ ${st.th.toFixed(1)}° → n₂ = tan θ_B ≈ ${Math.tan(st.th * DEG).toFixed(3)} (참값 ${st.hidden.toFixed(3)})` : `R_p = ${(f.Rp * 100).toFixed(3)}% — 0으로!`);
+      }
+    }
+    draw();
+  }
+
+  /* ================================================================ 미니: 소산파 */
+  {
+    const n1 = 1.5, n2 = 1.0, NX = 120, NY = 72, XR = 3, YT = 2.2, YB = -1.4;
+    const st = { th: 50, t: 0 };
+    let Fr = null, Fi = null, info = null;
+    function build() {
+      Fr = new Float32Array(NX * NY); Fi = new Float32Array(NX * NY);
+      const th = st.th * DEG, k0 = TAU, kx = k0 * n1 * Math.sin(th), k1z = k0 * n1 * Math.cos(th);
+      const q = n2 * n2 - (n1 * Math.sin(th)) ** 2, tir = q < 0;
+      const n2c = tir ? cx.of(0, -Math.sqrt(-q)) : cx.of(Math.sqrt(q));   // n₂cosθₜ
+      const a = cx.of(n1 * Math.cos(th)), G = cx.div(cx.sub(a, n2c), cx.add(a, n2c)), tau = cx.add(1, G);
+      const al = tir ? k0 * Math.sqrt(-q) : 0, k2z = tir ? 0 : k0 * Math.sqrt(q);
+      for (let j = 0; j < NY; j++) {
+        const y = YB + ((j + 0.5) / NY) * (YT - YB);
+        for (let i = 0; i < NX; i++) {
+          const x = -XR + ((i + 0.5) / NX) * 2 * XR; let E;
+          if (y >= 0) E = cx.add(cx.exp(cx.of(0, -(kx * x - k1z * y))), cx.mul(G, cx.exp(cx.of(0, -(kx * x + k1z * y)))));
+          else E = tir ? cx.scale(cx.mul(tau, cx.exp(cx.of(0, -kx * x))), Math.exp(al * y)) : cx.mul(tau, cx.exp(cx.of(0, -(kx * x - k2z * y))));
+          Fr[j * NX + i] = E.re; Fi[j * NX + i] = E.im;
+        }
+      }
+      info = { tir, G, d: tir ? 633 / (TAU * Math.sqrt(-q)) : null, tt: tir ? null : Math.asin((n1 * Math.sin(th)) / n2) / DEG };
+    }
+    build();
+    const vals = new Float32Array(NX * NY);
+    const cv = SB.canvas("cv-ev", (ctx, w, h, self) => {
+      const P = pal(), c = Math.cos(TAU * st.t * 0.6), s = Math.sin(TAU * st.t * 0.6);
+      for (let k = 0; k < vals.length; k++) vals[k] = Fr[k] * c - Fi[k] * s;
+      EM.heatmap(ctx, vals, NX, NY, { x: 0, y: 0, w, h }, { cmap: "div", vmin: -2, vmax: 2 });
+      const Y = (y) => ((YT - y) / (YT - YB)) * h, X = (x) => ((x + XR) / (2 * XR)) * w;
+      ctx.save(); ctx.strokeStyle = "rgba(0,0,0,.65)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(w, Y(0)); ctx.stroke(); ctx.restore();
+      SB.label(ctx, "유리 n₁ = 1.5", 10, 16, { align: "left", size: 12, bold: true });
+      SB.label(ctx, "공기 n₂ = 1", 10, Y(0) + 16, { align: "left", size: 12, bold: true });
+      // 입사 방향 화살표 + 핸들
+      const th = st.th * DEG, R = Math.min(h * 0.42, w * 0.3), ox = X(0), oy = Y(0);
+      const sx = ox - R * Math.sin(th), sy = oy - R * Math.cos(th);
+      SB.arrow(ctx, sx, sy, ox - 0.15 * R * Math.sin(th), oy - 0.15 * R * Math.cos(th), { color: "#111", width: 3 });
+      handle(ctx, sx, sy, "#111", 12);
+      self._h = [sx, sy]; self._o = [ox, oy];
+      if (info.tir) { const yd = Y(-info.d / 633); SB.dashLine(ctx, 0, yd, w, yd, "#111", [5, 4]); SB.label(ctx, "1/e 깊이", w - 8, yd + 12, { align: "right", size: 11, bold: true }); }
+    }, { aspect: 0.55, minHeight: 230, maxHeight: 380 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "a", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "a" || !cv._o) return; st.th = SB.clamp(Math.atan2(-(x - cv._o[0]), -(y - cv._o[1])) / DEG, 0, 85); build(); stat(); },
+    });
+    function stat() {
+      const tc = Math.asin(n2 / n1) / DEG;
+      SB.stat("ev-r", `θ = ${st.th.toFixed(1)}° (θc = ${tc.toFixed(1)}°) · ` + (info.tir ? `전반사, |Γ| = ${cx.abs(info.G).toFixed(3)}, 장 침투 깊이 ${info.d.toFixed(0)} nm (λ = 633 nm)` : `굴절각 ${info.tt.toFixed(1)}°, R = ${pct(cx.abs2(info.G))}`));
+    }
+    stat();
+    const loop = SB.loop("mini-evan", (dt) => { st.t += Math.min(dt, 0.05); cv.redraw(); });
+    SB.play("ev-play", loop);
+  }
+
+  /* ================================================================ 드래그 숫자: 침투 깊이 */
+  SB.tangle("tg-depth", (v) => {
+    const tc = v.n2 < v.n1 ? Math.asin(v.n2 / v.n1) / DEG : NaN, s = v.n1 * Math.sin(v.th * DEG);
+    if (s > v.n2) { const dd = v.lam / (TAU * Math.sqrt(s * s - v.n2 * v.n2)); return { tc: tc.toFixed(1) + "°", st: "전반사", d: dd.toFixed(0) + " nm", dI: (dd / 2).toFixed(0) + " nm" }; }
+    return { tc: isFinite(tc) ? tc.toFixed(1) + "°" : "없음", st: `굴절(θₜ = ${(Math.asin(s / v.n2) / DEG).toFixed(1)}°)`, d: "없음", dI: "—" };
+  });
+
+  /* ================================================================ 미니: 좌절된 전반사 */
+  {
+    const gG = SB.range("ft-g", (v) => v.toFixed(0) + " nm", () => cv.redraw());
+    const gT = SB.range("ft-th", (v) => v.toFixed(1) + "°", () => cv.redraw());
+    const cv = SB.canvas("cv-ft", (ctx, w, h) => {
+      const P = pal(), th = gT() * DEG, g = gG();
+      const q = 1.5 * Math.sin(th), d = 633 / (TAU * Math.sqrt(q * q - 1));
+      const sT = [], pT = [], ref = [];
+      for (let i = 0; i <= 120; i++) { const gg = i * 5, m = EM.multilayer(1.5, [{ N: 1, d: gg }], 1.5, 633, th); sT.push([gg, Math.max(1e-5, m.Ts)]); pT.push([gg, Math.max(1e-5, m.Tp)]); }
+      const mEnd = EM.multilayer(1.5, [{ N: 1, d: 600 }], 1.5, 633, th).Ts;
+      for (let i = 0; i <= 60; i++) { const gg = i * 10; ref.push([gg, mEnd * Math.exp((-2 * (gg - 600)) / d)]); }
+      const m = EM.multilayer(1.5, [{ N: 1, d: g }], 1.5, 633, th);
+      const box = { x: 54, y: 16, w: w - 70, h: h - 62 };
+      SB.chart(ctx, box, { x: [0, 600], y: [1e-4, 1], logY: true, xLabel: "공기 틈 g (nm)", yLabel: "투과율", series: [{ data: ref, color: P.dim, width: 1.2, dash: [4, 4] }, { data: sT, color: P.accent2, width: 2.2 }, { data: pT, color: P.accent, width: 2.2 }], vlines: [{ x: Math.min(600, d), color: P.dim, label: "d", dash: [2, 3] }], points: [{ x: g, y: Math.max(1e-4, m.Ts), color: P.accent2, r: 5 }, { x: g, y: Math.max(1e-4, m.Tp), color: P.accent, r: 5 }] });
+      // 프리즘 그림
+      const ix = box.x + box.w - 120, iy = box.y + 8, gw = Math.max(2, Math.min(18, g / 25));
+      ctx.save(); ctx.fillStyle = SB.color("accent-2-soft"); ctx.strokeStyle = P.dim; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(ix, iy); ctx.lineTo(ix + 50, iy); ctx.lineTo(ix + 50, iy + 50); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ix + 50 + gw, iy); ctx.lineTo(ix + 50 + gw, iy + 50); ctx.lineTo(ix + 100 + gw, iy + 50); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+      SB.label(ctx, `T_s ${pct(m.Ts, 2)} · T_p ${pct(m.Tp, 2)}`, box.x + 8, box.y + box.h - 14, { align: "left", size: 12, bold: true });
+      SB.stat("ft-r", `침투 깊이 d = ${d.toFixed(0)} nm, g/d = ${(g / d).toFixed(2)}`);
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 340 });
+  }
+
+  /* ================================================================ 드릴: 브루스터·임계각 */
+  SB.drill("drill-angles", () => {
+    const n1 = pick([1.45, 1.5, 1.52, 1.7, 2.0, 2.4, 3.42, 3.88]);
+    const n2 = pick([1, 1.33, 1.46].filter((x) => x < n1 - 0.05));
+    const tB = Math.atan(n2 / n1) / DEG, tc = Math.asin(n2 / n1) / DEG;
+    return {
+      q: `<p>굴절률 \\(n_1 = ${n1}\\)인 매질 안에서 \\(n_2 = ${n2}\\)인 매질과의 경계면에 빛이 입사한다. 브루스터 각과 임계각은 각각 몇 도인가?</p>`,
+      answer: [tB, tc], label: ["θ_B =", "θ_c ="], unit: ["°", "°"], tol: "0.2",
+      sol: `\\(\\theta_B = \\arctan(${n2}/${n1}) = ${tB.toFixed(2)}^\\circ\\), \\(\\theta_c = \\arcsin(${n2}/${n1}) = ${tc.toFixed(2)}^\\circ\\). 안쪽에서 보면 늘 \\(\\theta_B < \\theta_c\\)이다.`,
+    };
+  });
+
+  /* ================================================================ 드래그 숫자: 1/4 파장 반사 방지 */
+  SB.tangle("tg-qw", (v) => {
+    const R0 = ((1 - v.ns) / (1 + v.ns)) ** 2, R = ((v.ns - v.n1 * v.n1) / (v.ns + v.n1 * v.n1)) ** 2;
+    return { ni: Math.sqrt(v.ns).toFixed(3), d: (v.lam / (4 * v.n1)).toFixed(1) + " nm", R0: pct(R0, 2), R: pct(R, 2) };
+  });
+
+  /* ================================================================ 미니: 실리콘 위 반사 방지막 */
+  {
+    const LAMS = []; for (let l = 400; l <= 1000; l += 5) LAMS.push(l);
+    const SI = LAMS.map((l) => EM.nk("Si", l));
+    const bare = LAMS.map((l, i) => [l, EM.multilayer(1, [], SI[i], l).R]);
+    const gN = SB.range("ar-n", (v) => v.toFixed(2), () => draw());
+    const gD = SB.range("ar-d", (v) => v.toFixed(1) + " nm", () => draw());
+    const o = { x: [400, 1000], y: [0, 0.6] };
+    let ch = null;
+    const cv = SB.canvas("cv-ar", (ctx, w, h) => {
+      const P = pal(), n = gN(), d = gD();
+      const R = LAMS.map((l, i) => [l, EM.multilayer(1, [{ N: n, d }], SI[i], l).R]);
+      const r550 = EM.multilayer(1, [{ N: n, d }], EM.nk("Si", 550), 550).R;
+      ch = SB.chart(ctx, { x: 56, y: 30, w: w - 72, h: h - 76 }, Object.assign({}, o, { xLabel: "파장 λ (nm)", yLabel: "반사율 R", hbands: [{ y0: 0, y1: 0.005, color: "rgba(40,170,90,.18)" }], series: [{ data: bare, color: P.dim, width: 1.4, dash: [5, 4] }, { data: R, color: P.accent, width: 2.4 }], vlines: [{ x: 550, color: P.ok, label: "550 nm", dash: [3, 3] }], points: [{ x: 550, y: r550, color: r550 < 0.005 ? P.ok : P.accent, r: 5 }] }));
+      SB.stat("ar-r", `R(550 nm) = ${pct(r550, 2)} ${r550 < 0.005 ? "✔ 목표 달성!" : "(목표 < 0.5%)"} · 1/4 파장 최소 ≈ ${(4 * n * d).toFixed(0)} nm`);
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 340 });
+    function draw() { cv.redraw(); }
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      move: (id, x) => { if (!ch) return; const t = (x - ch.box.x) / ch.box.w, lam = SB.clamp(o.x[0] + t * (o.x[1] - o.x[0]), 400, 1000); gD.set(Math.min(250, lam / (4 * gN())), true); },
+    });
+  }
+
+  /* ================================================================ 시뮬레이터: 분광 반사계 */
+  {
+    const LAMS = []; for (let l = 400; l <= 1000; l += 4) LAMS.push(l);
+    const MEAS = []; for (let l = 400; l <= 1000; l += 10) MEAS.push(l);
+    const nkCache = {};
+    const nkArr = (mat, arr) => (nkCache[mat + arr.length] ||= arr.map((l) => EM.nk(mat, l)));
+    const spec = (mat, d, arr) => { const Nf = nkArr(mat, arr), Ns = nkArr("Si", arr); return arr.map((l, i) => EM.multilayer(1, d > 0 ? [{ N: Nf[i], d }] : [], Ns[i], l).R); };
+    // CIE 1931 색 맞춤 함수(와이먼 2013 다중 가우스 근사), D65 근사(6504 K 흑체)
+    const gs = (l, m, a, b) => Math.exp(-0.5 * ((l - m) / (l < m ? a : b)) ** 2);
+    const xb = (l) => 1.056 * gs(l, 599.8, 37.9, 31) + 0.362 * gs(l, 442, 16, 26.7) - 0.065 * gs(l, 501.1, 20.4, 26.2);
+    const yb = (l) => 0.821 * gs(l, 568.8, 46.9, 40.5) + 0.286 * gs(l, 530.9, 16.3, 31.1);
+    const zb = (l) => 1.217 * gs(l, 437, 11.8, 36) + 0.681 * gs(l, 459, 26, 13.8);
+    const ill = (l) => { const L = l * 1e-9; return 1 / (L ** 5 * (Math.exp(1.4388e-2 / (L * 6504)) - 1)); };
+    const CL = []; for (let l = 380; l <= 780; l += 5) CL.push(l);
+    const CW = CL.map((l) => { const S = ill(l); return [S * xb(l), S * yb(l), S * zb(l)]; }), YW = CW.reduce((a, c) => a + c[1], 0);
+    function color(mat, d) {
+      const Rr = spec(mat, d, CL); let X = 0, Y = 0, Z = 0;
+      CL.forEach((l, i) => { X += Rr[i] * CW[i][0]; Y += Rr[i] * CW[i][1]; Z += Rr[i] * CW[i][2]; });
+      X /= YW; Y /= YW; Z /= YW;
+      let c = [3.2406 * X - 1.5372 * Y - 0.4986 * Z, -0.9689 * X + 1.8758 * Y + 0.0415 * Z, 0.0557 * X - 0.204 * Y + 1.057 * Z].map((v) => Math.max(0, v));
+      const m = Math.max(...c); if (m > 1) c = c.map((v) => v / m);
+      c = c.map((v) => Math.round(255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055)));
+      return `rgb(${c[0]},${c[1]},${c[2]})`;
+    }
+    const st = { hidden: 0, meas: null, colH: null, solved: false };
+    const gMat = SB.seg("ox-mat", () => { if (gMode() === "game") newWafer(); else update(); });
+    const gD = SB.range("ox-d", (v) => v.toFixed(1) + " nm", () => update());
+    const gMode = SB.seg("ox-mode", () => { if (gMode() === "game") newWafer(); else update(); });
+    $("ox-new").addEventListener("click", () => { if (gMode() !== "game") gMode.set("game", false); newWafer(); });
+    function newWafer() {
+      st.hidden = Math.round(30 + Math.random() * 900); st.solved = false;
+      st.meas = spec(gMat(), st.hidden, MEAS).map((r) => r + 0.003 * SB.randn());
+      st.colH = color(gMat(), st.hidden);
+      update();
+    }
+    let cur = { R: null, col: null, rms: null };
+    const cv = SB.canvas("cv-ox", (ctx, w, h, self) => {
+      const P = pal(), d = gD(), game = gMode() === "game";
+      const top = 92, siH = 46, maxH = h - top - siH - 14, fh = (d / 1000) * maxH;
+      const x0 = 18, x1 = w - 18, yS = h - siH - 6;
+      // 색 견본
+      const sw = (x, y, ww, c, lab) => { ctx.save(); ctx.fillStyle = c; ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, ww, 40, 8) : ctx.rect(x, y, ww, 40); ctx.fill(); ctx.stroke(); ctx.restore(); SB.label(ctx, lab, x + ww / 2, y + 52, { size: 11, color: P.dim }); };
+      if (game) { const ww = (x1 - x0 - 12) / 2; sw(x0, 14, ww, st.colH, "측정 웨이퍼"); sw(x0 + ww + 12, 14, ww, cur.col, "모형"); }
+      else sw(x0, 14, x1 - x0, cur.col, `흰빛 아래 보이는 색 (${gMat() === "SiO2" ? "SiO₂" : "Si₃N₄"} ${d.toFixed(0)} nm)`);
+      // 단면
+      ctx.save(); ctx.fillStyle = P.dim; ctx.globalAlpha = 0.45; ctx.fillRect(x0, yS, x1 - x0, siH); ctx.restore();
+      SB.label(ctx, "Si 기판", x0 + 8, yS + siH / 2, { align: "left", size: 12, bold: true });
+      ctx.save(); ctx.fillStyle = cur.col; ctx.globalAlpha = 0.9; ctx.fillRect(x0, yS - fh, x1 - x0, fh); ctx.strokeStyle = P.border; ctx.strokeRect(x0, yS - fh, x1 - x0, fh); ctx.restore();
+      const hx = (x0 + x1) / 2, hy = yS - fh;
+      SB.dashLine(ctx, x0, yS - maxH, x1, yS - maxH, P.faint, [2, 4]);
+      SB.label(ctx, "1000 nm", x1 - 4, yS - maxH - 9, { align: "right", size: 10, color: P.dim });
+      handle(ctx, hx, hy, P.accent, 12);
+      SB.label(ctx, `d = ${d.toFixed(1)} nm`, hx + 18, hy - 12, { align: "left", size: 12, bold: true });
+      self._h = [hx, hy]; self._y = [yS, maxH];
+    }, { aspect: 1, minHeight: 300, maxHeight: 400 });
+    const cv2 = SB.canvas("cv-ox2", (ctx, w, h) => {
+      const P = pal(), game = gMode() === "game", d = gD();
+      const R = spec(gMat(), d, LAMS), bare = spec(gMat(), 0, LAMS);
+      const ser = [{ data: LAMS.map((l, i) => [l, bare[i]]), color: P.faint, width: 1.2, dash: [4, 4] }, { data: LAMS.map((l, i) => [l, R[i]]), color: P.accent, width: 2.2 }];
+      const pts = game && st.meas ? MEAS.map((l, i) => ({ x: l, y: st.meas[i], color: P.accent2, r: 3 })) : [];
+      SB.chart(ctx, { x: 52, y: 26, w: w - 66, h: h - 72 }, { x: [400, 1000], y: [0, 0.6], xLabel: "파장 λ (nm)", yLabel: "반사율 R", series: ser, points: pts, xTicks: [400, 500, 600, 700, 800, 900, 1000] });
+      SB.label(ctx, game ? "점: 측정 · 선: 모형" : "선: 모형 · 점선: 맨 Si", w / 2, 12, { size: 12, bold: true });
+    }, { aspect: 1, minHeight: 300, maxHeight: 400 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "d", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "d" || !cv._y) return; const [yS, maxH] = cv._y; gD.set(SB.clamp(Math.round(((yS - y) / maxH) * 1000 * 2) / 2, 0, 1000), true); update(); },
+    });
+    function update() {
+      const d = gD(), game = gMode() === "game";
+      if (game && !st.meas) { newWafer(); return; }
+      cur.col = color(gMat(), d);
+      cur.R = EM.multilayer(1, d > 0 ? [{ N: EM.nk(gMat(), 633), d }] : [], EM.nk("Si", 633), 633).R;
+      SB.stat("ox-dv", d.toFixed(1) + " nm"); SB.stat("ox-R", pct(cur.R, 2));
+      if (game) {
+        const R = spec(gMat(), d, MEAS); let s = 0; R.forEach((r, i) => (s += (r - st.meas[i]) ** 2));
+        const rms = Math.sqrt(s / R.length); SB.stat("ox-rms", rms.toFixed(4));
+        if (rms < 0.006) st.solved = true;
+        SB.stat("ox-res", st.solved ? `✔ 맞혔다! 참값 ${st.hidden} nm` : "잔차를 0.006 아래로");
+      } else { SB.stat("ox-rms", "—"); SB.stat("ox-res", "모드를 '두께 맞히기'로"); }
+      cv.redraw(); cv2.redraw();
+    }
+    update();
+  }
+
+  /* ================================================================ 드래그 숫자: 1/4 파장 거울 */
+  SB.tangle("tg-bragg", (v) => {
+    const Y = Math.pow(v.nH / v.nL, 2 * v.N) * 1.52, R = ((1 - Y) / (1 + Y)) ** 2, bw = (4 / PI) * Math.asin((v.nH - v.nL) / (v.nH + v.nL));
+    const rs = R > 0.999 ? (100 * R).toFixed(4) + "%" : pct(R, 2);
+    return { Y: Y < 1e4 ? Y.toFixed(1) : Y.toExponential(2), R: rs, T: T_fmt(1 - R), bw: pct(bw, 1) };
+  });
+  function T_fmt(t) { return t < 1e-3 ? (t * 100).toExponential(1) + "%" : pct(t, 2); }
+
+  /* ================================================================ 시뮬레이터: 다층 거울 */
+  {
+    const KIND = {
+      vis: { lam0: 550, range: [380, 800], H: { N: 2.4, d: 550 / (4 * 2.4) }, L: { N: 1.46, d: 550 / (4 * 1.46) }, sub: 1.52, Nmax: 20, goal: 0.999, unit: "nm", nameH: "TiO₂", nameL: "SiO₂" },
+      euv: { lam0: 13.5, range: [12.6, 14.4], H: { N: { re: 0.999, im: 0.0018 }, d: 4.14 }, L: { N: { re: 0.921, im: 0.0064 }, d: 2.76 }, sub: { re: 0.999, im: 0.0018 }, Nmax: 60, goal: 0.7, unit: "nm", nameH: "Si", nameL: "Mo" },
+    };
+    const gK = SB.seg("bg-kind", () => { const k = KIND[gK()]; gN.el.max = k.Nmax; gN.set(Math.min(gN(), k.Nmax), true); rebuild(); });
+    const gN = SB.range("bg-N", (v) => String(v), () => update());
+    const gTh = SB.range("bg-th", (v) => v.toFixed(1) + "°", () => rebuild());
+    gN.el.max = KIND.vis.Nmax;
+    const layers = (k, N) => { const L = []; for (let i = 0; i < N; i++) { L.push(k.H); L.push(k.L); } return L; };
+    const R = (k, N, lam) => EM.multilayer(1, layers(k, N), k.sub, lam, gTh() * DEG).R;
+    let curve = [], nmin = null;
+    function rebuild() {
+      const k = KIND[gK()]; curve = []; nmin = null;
+      for (let N = 1; N <= k.Nmax; N++) { const r = R(k, N, k.lam0); curve.push([N, r]); if (nmin === null && r >= k.goal) nmin = N; }
+      update();
+    }
+    const cv = SB.canvas("cv-bg", (ctx, w, h, self) => {
+      const P = pal(), k = KIND[gK()], N = gN();
+      const top = 34, bot = h - 40, cw = Math.min(140, w * 0.45), cx0 = (w - cw) / 2;
+      const ph = (bot - top) / k.Nmax, colH = SB.color("accent-soft"), colL = SB.color("accent-2-soft");
+      ctx.save(); ctx.fillStyle = P.dim; ctx.globalAlpha = 0.4; ctx.fillRect(cx0 - 10, bot, cw + 20, 26); ctx.restore();
+      SB.label(ctx, "기판", w / 2, bot + 13, { size: 11, bold: true });
+      for (let i = 0; i < N; i++) {
+        const yb = bot - i * ph, fr = k.L.d / (k.L.d + k.H.d);
+        ctx.fillStyle = colL; ctx.fillRect(cx0, yb - ph * fr, cw, ph * fr);
+        ctx.fillStyle = colH; ctx.fillRect(cx0, yb - ph, cw, ph * (1 - fr));
+      }
+      ctx.save(); ctx.strokeStyle = P.border; ctx.strokeRect(cx0, bot - N * ph, cw, N * ph); ctx.restore();
+      const hy = bot - N * ph;
+      SB.arrow(ctx, cx0 - 40, top - 22, cx0 + cw * 0.3, hy - 4, { color: P.accent, width: 2.2 });
+      handle(ctx, cx0 + cw / 2, hy, P.accent, 12);
+      SB.label(ctx, `${N}쌍`, cx0 + cw + 10, hy, { align: "left", size: 12, bold: true });
+      SB.label(ctx, `${k.nameH}`, cx0 + cw + 10, bot - 14, { align: "left", size: 11, color: P.accent });
+      SB.label(ctx, `${k.nameL}`, cx0 - 10, bot - 14, { align: "right", size: 11, color: P.accent2 });
+      self._h = [cx0 + cw / 2, hy]; self._g = [bot, ph, k.Nmax];
+    }, { aspect: 1.1, minHeight: 300, maxHeight: 420 });
+    const cv2 = SB.canvas("cv-bg2", (ctx, w, h) => {
+      const P = pal(), k = KIND[gK()], N = gN(), th = gTh() * DEG;
+      const L = layers(k, N), sp = [], n = 160;
+      for (let i = 0; i <= n; i++) { const l = k.range[0] + ((k.range[1] - k.range[0]) * i) / n; sp.push([l, EM.multilayer(1, L, k.sub, l, th).R]); }
+      const hh = (h - 30) / 2;
+      SB.chart(ctx, { x: 50, y: 22, w: w - 64, h: hh - 44 }, { x: k.range, y: [0, 1], series: [{ data: sp, color: P.accent, width: 2.2 }], vlines: [{ x: k.lam0, color: P.dim, dash: [3, 3] }] });
+      SB.label(ctx, "반사 스펙트럼 R(λ) · λ (nm)", w / 2, 10, { size: 12, bold: true });
+      const rc = curve.find((p) => p[0] === N);
+      SB.chart(ctx, { x: 50, y: hh + 30, w: w - 64, h: hh - 44 }, { x: [1, k.Nmax], y: [0, 1], xLabel: "쌍 수 N", series: [{ data: curve, color: P.accent2, width: 2.2 }], hlines: [{ y: k.goal, color: P.ok, dash: [4, 3], label: pct(k.goal, 1) }], points: rc ? [{ x: N, y: rc[1], color: P.accent, r: 5 }] : [] });
+      SB.label(ctx, `설계 파장 ${k.lam0} nm의 R(N)`, w / 2, hh + 18, { size: 12, bold: true });
+    }, { aspect: 1.1, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 16 }] : []),
+      move: (id, x, y) => { if (id !== "t" || !cv._g) return; const [bot, ph, Nm] = cv._g; gN.set(SB.clamp(Math.round((bot - y) / ph), 1, Nm), true); update(); },
+    });
+    function update() {
+      const k = KIND[gK()], N = gN(), th = gTh() * DEG, L = layers(k, N);
+      const r0 = EM.multilayer(1, L, k.sub, k.lam0, th).R;
+      let pk = [0, 0]; for (let i = 0; i <= 300; i++) { const l = k.range[0] + ((k.range[1] - k.range[0]) * i) / 300, r = EM.multilayer(1, L, k.sub, l, th).R; if (r > pk[1]) pk = [l, r]; }
+      SB.stat("bg-R", r0 > 0.999 ? (100 * r0).toFixed(3) + "%" : pct(r0, 1));
+      SB.stat("bg-pk", `${pct(pk[1], 1)} (${pk[0].toFixed(gK() === "euv" ? 2 : 0)} nm)`);
+      const tt = N * (k.H.d + k.L.d); SB.stat("bg-t", `${tt.toFixed(0)} nm`);
+      const gl = pct(k.goal, 1);
+      SB.stat("bg-goal", nmin === null ? `이 각도로는 ${gl}에 못 미친다` : r0 >= k.goal ? (N === nmin ? `✔ 최소 ${N}쌍으로 ${gl} 달성!` : `${gl} 넘음 — 더 적게? (최소 ${nmin}쌍)`) : `R ≥ ${gl}를 최소 쌍으로`);
+      cv.redraw(); cv2.redraw();
+    }
+    rebuild();
+  }
+
+  /* ================================================================ 드래그 숫자: 스윙 */
+  SB.tangle("tg-swing", (v) => {
+    const Rt = ((v.n - 1) / (v.n + 1)) ** 2, sw = 4 * Math.sqrt(Rt * v.Rb / 100);
+    return { p: (v.lam / (2 * v.n)).toFixed(1) + " nm", sw: sw.toFixed(2), Rt: pct(Rt, 1) };
+  });
+
+  /* ================================================================ 시뮬레이터: BARC */
+  {
+    const NR = Ne(1.7), NSI = { 193: Ne(0.883, 2.778), 248: Ne(1.57, 3.57) };
+    const gL = SB.seg("bc-lam", () => rebuild());
+    const gDr = SB.range("bc-dr", (v) => v.toFixed(1) + " nm", () => update());
+    const gDb = SB.range("bc-db", (v) => v.toFixed(1) + " nm", () => rebuild());
+    const gK = SB.range("bc-k", (v) => v.toFixed(2), () => rebuild());
+    const lam = () => Number(gL());
+    const NB = () => Ne(1.8, gK());
+    const meanI = (dr, db) => { const S = stack(1, db > 0 ? [{ N: NR, d: dr }, { N: NB(), d: db }] : [{ N: NR, d: dr }], NSI[lam()], lam()); const pr = S.prof(30).filter((p) => p.li === 0); return pr.reduce((a, p) => a + p.I, 0) / pr.length; };
+    let swing = [], swing0 = [], rbCurve = [];
+    function rebuild() {
+      const db = gDb(); swing = []; swing0 = []; rbCurve = [];
+      for (let d = 100; d <= 400; d += 2) { swing.push([d, meanI(d, db)]); swing0.push([d, meanI(d, 0)]); }
+      for (let d = 0; d <= 150; d += 1) rbCurve.push([d, Math.max(1e-3, stack(1.7, d > 0 ? [{ N: NB(), d }] : [], NSI[lam()], lam()).R)]);
+      update();
+    }
+    const cv = SB.canvas("cv-bc", (ctx, w, h, self) => {
+      const P = pal(), dr = gDr(), db = gDb();
+      const top = 34, bot = h - 40, sc = (bot - top) / 560;
+      const yR = bot - sc * (dr + db), yB = bot - sc * db;
+      const S = stack(1, db > 0 ? [{ N: NR, d: dr }, { N: NB(), d: db }] : [{ N: NR, d: dr }], NSI[lam()], lam());
+      const pr = S.prof(80);
+      ctx.save(); ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(10, yR, w - 20, sc * dr); ctx.restore();
+      if (db > 0) { ctx.save(); ctx.fillStyle = P.warn; ctx.globalAlpha = 0.35; ctx.fillRect(10, yB, w - 20, sc * db); ctx.restore(); }
+      ctx.save(); ctx.fillStyle = P.dim; ctx.globalAlpha = 0.5; ctx.fillRect(10, bot, w - 20, 30); ctx.restore();
+      SB.label(ctx, "Si", 26, bot + 14, { size: 12, bold: true });
+      SB.label(ctx, "레지스트", 14, yR + 12, { align: "left", size: 11, bold: true });
+      if (db > 8) SB.label(ctx, "BARC", 14, (yB + bot) / 2, { align: "left", size: 11, bold: true });
+      SB.label(ctx, "공기 ↓", 14, yR - 14, { align: "left", size: 11, color: P.dim });
+      // |E|² 곡선
+      const x0 = 80, xs = (w - 120) / 3;
+      SB.dashLine(ctx, x0, top, x0, bot, P.faint, [2, 3]);
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.2; ctx.beginPath();
+      pr.forEach((p, i) => { const x = x0 + Math.min(3, p.I) * xs, y = yR + p.z * sc; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke(); ctx.restore();
+      for (const v of [1, 2, 3]) { SB.dashLine(ctx, x0 + v * xs, yR - 8, x0 + v * xs, bot, P.faint, [1, 4]); SB.label(ctx, String(v), x0 + v * xs, yR - 14, { size: 10, color: P.dim }); }
+      SB.label(ctx, "|E|² (입사 = 1)", x0 + 1.5 * xs, yR - 34, { size: 11, color: P.accent, bold: true });
+      handle(ctx, w - 44, yR, P.accent2, 12); handle(ctx, w - 18 - 50, yB, P.warn, 12);
+      self._h = { r: [w - 44, yR], b: [w - 68, yB], bot, sc };
+    }, { aspect: 1.15, minHeight: 320, maxHeight: 440 });
+    const cv2 = SB.canvas("cv-bc2", (ctx, w, h) => {
+      const P = pal(), dr = gDr(), db = gDb(), hh = (h - 20) / 2;
+      const cur = meanI(dr, db);
+      const ys = Math.max(...swing.map((p) => p[1]), ...swing0.map((p) => p[1])) * 1.1;
+      SB.chart(ctx, { x: 50, y: 22, w: w - 64, h: hh - 50 }, { x: [100, 400], y: [0, ys], series: [{ data: swing0, color: P.faint, width: 1.6 }, { data: swing, color: P.accent2, width: 2.4 }], points: [{ x: dr, y: cur, color: P.accent2, r: 5 }] });
+      SB.label(ctx, "스윙: 레지스트 평균 |E|² · 레지스트 두께 (nm)", w / 2, 10, { size: 12, bold: true });
+      const rb = stack(1.7, db > 0 ? [{ N: NB(), d: db }] : [], NSI[lam()], lam()).R;
+      SB.chart(ctx, { x: 50, y: hh + 32, w: w - 64, h: hh - 52 }, { x: [0, 150], y: [1e-3, 1], logY: true, xLabel: "BARC 두께 (nm)", hbands: [{ y0: 1e-3, y1: 5e-3, color: "rgba(40,170,90,.18)" }], series: [{ data: rbCurve, color: P.warn, width: 2.4 }], points: [{ x: db, y: Math.max(1e-3, rb), color: P.warn, r: 5 }] });
+      SB.label(ctx, "바닥 반사율 (로그)", w / 2, hh + 20, { size: 12, bold: true });
+    }, { aspect: 1.15, minHeight: 320, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "r", x: cv._h.r[0], y: cv._h.r[1], r: 16 }, { id: "b", x: cv._h.b[0], y: cv._h.b[1], r: 16 }] : []),
+      move: (id, x, y) => {
+        const H = cv._h; if (!H) return;
+        if (id === "b") { gDb.set(SB.clamp(Math.round(((H.bot - y) / H.sc) * 2) / 2, 0, 150), true); rebuild(); }
+        if (id === "r") { gDr.set(SB.clamp(Math.round(((H.bot - y) / H.sc - gDb()) * 2) / 2, 100, 400), true); update(); }
+      },
+    });
+    function update() {
+      const dr = gDr(), db = gDb();
+      const rb = stack(1.7, db > 0 ? [{ N: NB(), d: db }] : [], NSI[lam()], lam()).R;
+      const S = stack(1, db > 0 ? [{ N: NR, d: dr }, { N: NB(), d: db }] : [{ N: NR, d: dr }], NSI[lam()], lam());
+      const pr = S.prof(80).filter((p) => p.li === 0 && p.z > 0.15 * dr && p.z < 0.85 * dr);
+      const Im = Math.max(...pr.map((p) => p.I)), In = Math.min(...pr.map((p) => p.I));
+      const vals = swing.map((p) => p[1]), mx = Math.max(...vals), mn = Math.min(...vals), av = vals.reduce((a, b) => a + b, 0) / vals.length;
+      SB.stat("bc-Rb", pct(rb, 2));
+      SB.stat("bc-c", (Im / In).toFixed(2));
+      SB.stat("bc-sw", ((mx - mn) / av).toFixed(3));
+      SB.stat("bc-goal", rb < 0.005 ? `✔ ${pct(rb, 2)} — BARC ${db.toFixed(1)} nm` : "BARC 두께와 k를 조절");
+      cv.redraw(); cv2.redraw();
+    }
+    rebuild();
+  }
+
+  /* ================================================================ 미니: 맨 기판의 ψ, Δ */
+  {
+    const MAT = { Si: EM.nk("Si", 633), glass: { re: 1.5, im: 0 }, Al: EM.nk("Al", 633) };
+    const st = { th: 70 };
+    const gM = SB.seg("pr-mat", () => { rebuild(); });
+    let cur = [], pa = null;
+    function rebuild() {
+      cur = []; pa = null; let prev = null;
+      for (let t = 40; t <= 89.5; t += 0.25) { const m = EM.multilayer(1, [], MAT[gM()], 633, t * DEG); cur.push([t, m.psi, m.delta > 270 ? m.delta - 360 : m.delta]); if (prev !== null && prev >= 90 && m.delta < 90 && pa === null) { let lo = t - 0.25, hi = t; for (let it = 0; it < 30; it++) { const mid = (lo + hi) / 2; if (EM.multilayer(1, [], MAT[gM()], 633, mid * DEG).delta >= 90) lo = mid; else hi = mid; } pa = (lo + hi) / 2; } prev = m.delta; }
+      cv.redraw();
+    }
+    let boxes = null;
+    const cv = SB.canvas("cv-pr", (ctx, w, h) => {
+      const P = pal(), hh = (h - 10) / 2, m = EM.multilayer(1, [], MAT[gM()], 633, st.th * DEG);
+      const dl = m.delta > 270 ? m.delta - 360 : m.delta;
+      const b1 = { x: 52, y: 22, w: w - 68, h: hh - 44 }, b2 = { x: 52, y: hh + 22, w: w - 68, h: hh - 52 };
+      const vl = [{ x: st.th, color: P.text, dash: [2, 2] }]; if (pa) vl.push({ x: pa, color: P.dim, label: "주각", dash: [4, 3] });
+      SB.chart(ctx, b1, { x: [40, 90], y: [0, 180], yTicks: [0, 45, 90, 135, 180], series: [{ data: cur.map((p) => [p[0], p[2]]), color: P.accent, width: 2.2 }], hlines: [{ y: 90, color: P.faint }], vlines: vl, points: [{ x: st.th, y: dl, color: P.accent, r: 5 }] });
+      SB.label(ctx, "Δ (°)", 26, b1.y + 8, { size: 11, color: P.accent, bold: true });
+      SB.chart(ctx, b2, { x: [40, 90], y: [0, 45], xLabel: "입사각 θ (°)", yTicks: [0, 15, 30, 45], series: [{ data: cur.map((p) => [p[0], p[1]]), color: P.accent2, width: 2.2 }], vlines: [{ x: st.th, color: P.text, dash: [2, 2] }], points: [{ x: st.th, y: m.psi, color: P.accent2, r: 5 }] });
+      SB.label(ctx, "ψ (°)", 26, b2.y + 8, { size: 11, color: P.accent2, bold: true });
+      boxes = b1;
+      SB.stat("pr-r", `θ = ${st.th.toFixed(1)}° · ψ = ${m.psi.toFixed(2)}° · Δ = ${m.delta.toFixed(2)}° · R_s ${pct(m.Rs, 1)}, R_p ${pct(m.Rp, 2)}${pa ? ` · 주각 ≈ ${pa.toFixed(1)}°` : ""}`);
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x) => { if (!boxes) return; st.th = SB.clamp(40 + ((x - boxes.x) / boxes.w) * 50, 40, 89.5); cv.redraw(); } });
+    rebuild();
+  }
+
+  /* ================================================================ 드래그 숫자: 얇은 산화막 감도 */
+  {
+    const bare = EM.multilayer(1, [], EM.nk("Si", 633), 633, 70 * DEG), R0 = EM.multilayer(1, [], EM.nk("Si", 633), 633).R;
+    SB.tangle("tg-ell", (v) => {
+      const L = v.d > 0 ? [{ N: EM.nk("SiO2", 633), d: v.d }] : [];
+      const m = EM.multilayer(1, L, EM.nk("Si", 633), 633, 70 * DEG), R = EM.multilayer(1, L, EM.nk("Si", 633), 633).R;
+      return { psi: m.psi.toFixed(3) + "°", del: m.delta.toFixed(2) + "°", dd: (m.delta - bare.delta).toFixed(2) + "°", dR: ((R - R0) * 100).toFixed(3) + "%p" };
+    });
+  }
+
+  /* ================================================================ 시뮬레이터: 엘립소미터 */
+  {
+    const LAM = 633, NS = EM.nk("Si", LAM);
+    const st = { hidden: 100, meas: null, solved: false, t: 0 };
+    const gMat = SB.seg("el-mat", () => { if (gMode() === "game") newSample(); else rebuild(); });
+    const gTh = SB.range("el-th", (v) => v.toFixed(1) + "°", () => { if (gMode() === "game") measure(); rebuild(); });
+    const gD = SB.range("el-d", (v) => v.toFixed(1) + " nm", () => update());
+    const gMode = SB.seg("el-mode", () => { if (gMode() === "game") newSample(); else update(); });
+    $("el-new").addEventListener("click", () => { if (gMode() !== "game") gMode.set("game", false); newSample(); });
+    const ell = (d) => EM.multilayer(1, d > 0 ? [{ N: EM.nk(gMat(), LAM), d }] : [], NS, LAM, gTh() * DEG);
+    const period = () => { const n = EM.nk(gMat(), LAM).re, s = Math.sin(gTh() * DEG); return LAM / (2 * Math.sqrt(n * n - s * s)); };
+    function measure() { const m = ell(st.hidden); st.meas = [m.psi + 0.05 * SB.randn(), m.delta + 0.1 * SB.randn()]; }
+    function newSample() { st.hidden = Math.round((5 + Math.random() * 585) * 10) / 10; st.solved = false; measure(); rebuild(); }
+    let traj = [], ticks = [];
+    function rebuild() {
+      const D = period(); traj = []; ticks = [];
+      for (let i = 0; i <= 360; i++) { const d = (D * i) / 360, m = ell(d); traj.push([m.psi, m.delta, d]); }
+      for (let d = 0; d < D; d += 10) { const m = ell(d); ticks.push([m.psi, m.delta]); }
+      update();
+    }
+    let ch = null;
+    const cv = SB.canvas("cv-el", (ctx, w, h) => {
+      const P = pal(), m = ell(gD()), game = gMode() === "game";
+      // Δ 0/360 경계에서 선을 끊는다
+      const segs = []; let cur = [];
+      traj.forEach((p, i) => { if (i && Math.abs(p[1] - traj[i - 1][1]) > 180) { segs.push(cur); cur = []; } cur.push([p[0], p[1]]); });
+      segs.push(cur);
+      const pts = ticks.map(([a, b]) => ({ x: a, y: b, color: P.faint, r: 2 }));
+      pts.push({ x: m.psi, y: m.delta, color: P.accent, r: 6 });
+      ch = SB.chart(ctx, { x: 50, y: 22, w: w - 66, h: h - 68 }, { x: [0, 90], y: [0, 360], xLabel: "ψ (°)", yLabel: "Δ (°)", xTicks: [0, 15, 30, 45, 60, 75, 90], yTicks: [0, 90, 180, 270, 360], series: segs.map((s) => ({ data: s, color: P.accent2, width: 2 })), points: pts });
+      const bare = traj[0];
+      if (bare) SB.label(ctx, "맨 Si", ch.X(bare[0]) + 26, ch.Y(bare[1]) - 10, { size: 11, color: P.dim, bold: true });
+      if (game && st.meas) {
+        const x = ch.X(st.meas[0]), y = ch.Y(st.meas[1]);
+        ctx.save(); ctx.strokeStyle = P.bad || P.accent; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(x - 9, y - 9); ctx.lineTo(x + 9, y + 9); ctx.moveTo(x + 9, y - 9); ctx.lineTo(x - 9, y + 9); ctx.stroke(); ctx.restore();
+      }
+      handle(ctx, ch.X(m.psi), ch.Y(m.delta), P.accent, 11);
+    }, { aspect: 1, minHeight: 300, maxHeight: 420 });
+    const cv2 = SB.canvas("cv-el2", (ctx, w, h) => {
+      const P = pal(), m = ell(gD());
+      const rs = cx.abs(m.rs), rp = cx.abs(m.rp), M = Math.max(rs, rp), a = rs / M, b = rp / M, De = m.delta * DEG;
+      const R = Math.min(w, h) * 0.36, ox = w / 2, oy = h / 2 + 6;
+      SB.dashLine(ctx, ox - R - 14, oy, ox + R + 14, oy, P.faint, [3, 3]); SB.dashLine(ctx, ox, oy - R - 14, ox, oy + R + 14, P.faint, [3, 3]);
+      SB.label(ctx, "s", ox + R + 22, oy, { size: 12, bold: true, color: P.accent2 }); SB.label(ctx, "p", ox, oy - R - 22, { size: 12, bold: true, color: P.accent });
+      ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath();
+      for (let i = 0; i <= 200; i++) { const t = (TAU * i) / 200, x = ox + R * a * Math.cos(t), y = oy - R * b * Math.cos(t + De); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.restore();
+      const t = TAU * st.t * 0.5;
+      ctx.save(); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ox + R * a * Math.cos(t), oy - R * b * Math.cos(t + De), 5, 0, TAU); ctx.fill(); ctx.restore();
+      SB.label(ctx, "반사광의 전기장 궤적", w / 2, 12, { size: 12, bold: true });
+    }, { aspect: 1, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      move: (id, x, y) => {
+        if (!ch || !traj.length) return;
+        let best = null, bd = Infinity;
+        traj.forEach((p) => { const dd = Math.hypot(ch.X(p[0]) - x, ch.Y(p[1]) - y); if (dd < bd) { bd = dd; best = p; } });
+        if (!best || bd > 40) return;
+        const D = period(), k = Math.floor(gD() / D);
+        gD.set(SB.clamp(Math.round((k * D + best[2]) * 10) / 10, 0, 600), true); update();
+      },
+    });
+    function update() {
+      const m = ell(gD()), D = period(), game = gMode() === "game";
+      const e = EM.polEllipse(cx.abs(m.rs), cx.abs(m.rp), m.delta * DEG);
+      SB.stat("el-pd", `${m.psi.toFixed(2)}° / ${m.delta.toFixed(2)}°`);
+      SB.stat("el-per", D.toFixed(1) + " nm");
+      SB.stat("el-ell", `축비 ${e.axial.toFixed(3)}, 기울기 ${(e.tilt / DEG).toFixed(1)}°`);
+      if (game && st.meas) {
+        let dD = Math.abs(m.delta - st.meas[1]); dD = Math.min(dD, 360 - dD);
+        if (Math.abs(m.psi - st.meas[0]) < 0.3 && dD < 0.5) st.solved = true;
+        SB.stat("el-res", st.solved ? `✔ 측정점 일치! 참값 ${st.hidden.toFixed(1)} nm — d ± ${D.toFixed(0)}·m도 같은 점을 준다` : `측정 ψ ${st.meas[0].toFixed(2)}°, Δ ${st.meas[1].toFixed(2)}°`);
+      } else SB.stat("el-res", "모드를 '측정점 맞히기'로");
+      cv.redraw(); cv2.redraw();
+    }
+    SB.loop("sim-ellip", (dt) => { st.t += Math.min(dt, 0.05); cv2.redraw(); });
+    rebuild();
+  }
+})();
+</script>
+</body>
+</html>
