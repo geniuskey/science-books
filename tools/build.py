@@ -207,6 +207,19 @@ for entry in catalog["courses"]:
                             sent = sent[:sent.rfind(o_)].rstrip() + "…"
                     terms[key] = {"ko": ko, "en": strip_tags(m.group(2) or ""), "def": sent, "slug": ch["slug"], "num": ch["num"],
                                   "title": ch["title"], "sec": sec[-1].group(1) if sec else ""}
+        # 선택: <과목>/glossary-defs.json 으로 자동 추출한 정의를 다듬는다.
+        #   {"용어": "정의" | null(목록에서 뺌, 중복 표기 정리용) | {"def": "…", "en": "…"}}
+        dpath = cdir / "glossary-defs.json"
+        if dpath.exists():
+            for k, v in json.loads(dpath.read_text(encoding="utf-8")).items():
+                key = k.replace(" ", "")
+                if key not in terms:
+                    warnings.append(f"{dpath.relative_to(ROOT)}: 본문에 없는 용어 '{k}'")
+                elif v is None:
+                    del terms[key]
+                else:
+                    v = {"def": v} if isinstance(v, str) else v
+                    terms[key].update({f: v[f] for f in ("def", "en") if f in v})
         CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
         def initial(w):
             c = w[0]
