@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>띠 구조 · 고체물리 · SciBook</title>
+<meta name="description" content="거의 자유 전자 모형의 띠 간격과 영역 접기, 2차원·그래핀 강결합 띠, 의사퍼텐셜로 계산한 Si·Ge·GaAs 띠 구조, 골짜기와 유효 질량 텐서, 변형에 따른 골짜기 분리를 직접 계산하고 끌며 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/solid-state/chapters/band-structure.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="띠 구조 · 고체물리 · SciBook">
+<meta property="og:description" content="거의 자유 전자 모형의 띠 간격과 영역 접기, 2차원·그래핀 강결합 띠, 의사퍼텐셜로 계산한 Si·Ge·GaAs 띠 구조, 골짜기와 유효 질량 텐서, 변형에 따른 골짜기 분리를 직접 계산하고 끌며 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/solid-state/chapters/band-structure.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "띠 구조 · 고체물리 · SciBook", "headline": "08 띠 구조", "url": "https://science.euiyun.com/solid-state/chapters/band-structure.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "거의 자유 전자 모형의 띠 간격과 영역 접기, 2차원·그래핀 강결합 띠, 의사퍼텐셜로 계산한 Si·Ge·GaAs 띠 구조, 골짜기와 유효 질량 텐서, 변형에 따른 골짜기 분리를 직접 계산하고 끌며 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 8, "dateModified": "2026-10-21", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/solid-state/#book", "name": "고체물리", "url": "https://science.euiyun.com/solid-state/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "고체물리", "item": "https://science.euiyun.com/solid-state/"}, {"@type": "ListItem", "position": 3, "name": "08 띠 구조", "item": "https://science.euiyun.com/solid-state/chapters/band-structure.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/quantum.js"></script>
+<script src="../../engine/lib/solid.js"></script>
+<style>
+  .bs-busy { color: var(--text-dim); font-size: 0.9em; }
+</style>
+</head>
+<body data-chapter="band-structure">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="free-electron reciprocal-diffraction">
+    <div class="eyebrow">Chapter 08</div>
+    <h1>띠 구조</h1>
+    <p class="lead">7장의 자유 전자는 에너지가 \(\hbar^2k^2/2m\) 하나뿐인 포물선이었다. 여기에 결정의 주기 퍼텐셜을 아주 조금만 켜면, 포물선은 브릴루앙 영역 경계마다 끊어지고 그 틈이 <strong>띠 간격</strong>이 된다. 현대물리학 12장에서 1차원 사슬로 본 이 그림을 이 장은 3차원 실제 결정까지 끌고 간다 — 2차원 격자의 페르미 면, 그래핀의 디랙 원뿔, 그리고 의사퍼텐셜로 직접 계산한 실리콘·저마늄·GaAs의 띠 구조와 골짜기, 유효 질량 텐서, 변형이 골짜기를 갈라 이동도를 높이는 원리까지. 아래 그림에서 퍼텐셜 세기가 저절로 오르내린다. 위아래로 끌어 직접 바꿔 보라.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">위아래로 끌어 퍼텐셜 세기 U를 바꾼다</span></div>
+    <ul class="objectives">
+      <li>두 평면파 축퇴 섭동으로 영역 경계의 간격 \(E_g = 2|U_G|\)를 유도하고, 확장·축소·반복 영역 그림 사이를 오가며 빈 격자 띠를 접는다.</li>
+      <li>2차원 정사각 격자의 강결합 띠 \(E = -2t(\cos k_xa + \cos k_ya)\)로 등에너지선, 상태 밀도, 반 채움 페르미 면을 구한다.</li>
+      <li>그래핀의 두 부격자 강결합 모형에서 디랙점과 선형 분산 \(E = \pm\hbar v_F|\vec q|\), \(v_F = 3ta/2\hbar\)를 얻는다.</li>
+      <li>fcc 브릴루앙 영역의 Γ·X·L·K와 경험적 의사퍼텐셜 띠 구조에서 Si·Ge·GaAs의 간격 종류, 골짜기 위치, 정공 띠를 읽는다.</li>
+      <li>유효 질량 텐서 \((1/m^*)_{ij} = \hbar^{-2}\partial^2E/\partial k_i\partial k_j\)와 회전 타원체 등에너지면으로 상태 밀도 질량·전도도 질량을 계산한다.</li>
+      <li>2축 변형이 Si의 Δ₂·Δ₄ 골짜기를 가르는 크기를 변형 퍼텐셜로 어림하고, 변형 실리콘·SiGe 채널의 이동도 향상과 연결한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="nfe">
+    <h2>거의 자유 전자 모형과 띠 간격</h2>
+    <p>현대물리학 12장 <a href="../../modern-physics/chapters/energy-bands.html">결정 속 전자와 에너지 띠</a>에서 세 가지를 보았다. ① 주기 퍼텐셜 속 고유 상태는 <span class="term">블로흐 함수</span><span class="en">(Bloch function)</span> \(\psi_{n\vec k}(\vec r) = u_{n\vec k}(\vec r)e^{i\vec k\cdot\vec r}\)이고 \(\vec k\)는 제1 브릴루앙 영역 안에서만 의미가 있다. ② 영역 경계에서 진행파가 브래그 반사되어 두 정상파가 되고, 둘이 퍼텐셜을 다르게 느껴 간격이 열린다. ③ 강결합 그림에서는 원자 준위가 폭 \(4t\)의 띠로 넓어진다. 이 절은 ②를 정량적인 계산으로 바꾼다. 이번에는 정상파를 짐작하지 않고, 슈뢰딩거 방정식을 평면파로 전개해 <em>행렬 문제</em>로 푼다 — 뒤에서 실리콘 띠 구조를 계산하는 방법과 똑같은 틀이다.</p>
+    <h3>평면파 전개: 슈뢰딩거 방정식이 행렬이 된다</h3>
+    <p>주기 퍼텐셜은 역격자 벡터 \(\vec G\)(2장)로 푸리에 전개된다. 블로흐 정리에 따라 파동함수도 같은 \(\vec G\)만큼 다른 평면파들의 합이다.</p>
+    <div class="formula">$$U(\vec r) = \sum_{\vec G} U_{\vec G}\,e^{i\vec G\cdot\vec r}, \qquad \psi_{\vec k}(\vec r) = \sum_{\vec G} C_{\vec k - \vec G}\,e^{i(\vec k - \vec G)\cdot\vec r}$$<div class="where">\(U_{\vec G}\): 퍼텐셜의 푸리에 성분(<span class="term">퍼텐셜 푸리에 성분</span><span class="en">(Fourier component of the potential)</span>). 실수 퍼텐셜이면 \(U_{-\vec G} = U_{\vec G}^*\). 평균값 \(U_0\)은 에너지 기준점에 넣어 0으로 둔다.</div></div>
+    <p>이것을 슈뢰딩거 방정식에 넣고 \(e^{i(\vec k - \vec G)\cdot\vec r}\)의 계수를 모으면, 평면파 계수들이 만족하는 <span class="term">중심 방정식</span><span class="en">(central equation)</span>이 나온다.</p>
+    <div class="formula">$$\big(\varepsilon_{\vec k - \vec G} - E\big)\,C_{\vec k - \vec G} + \sum_{\vec G'} U_{\vec G' - \vec G}\,C_{\vec k - \vec G'} = 0, \qquad \varepsilon_{\vec q} = \frac{\hbar^2 q^2}{2m}$$<div class="where">\(\vec G\)마다 식이 하나씩 — 무한 차원 행렬 고윳값 문제다. 실제로는 \(|\vec k - \vec G|\)가 작은 평면파 몇 개~수백 개만 남겨 대각화한다. 퍼텐셜이 0이면 행렬이 대각이 되어 \(E = \varepsilon_{\vec k - \vec G}\): 자유 전자 포물선을 \(\vec G\)만큼 옮겨 놓은 것들(<em>빈 격자</em>, 다음 절)이다.</div></div>
+    <h3>두 평면파만 남기기: 간격 2|U<sub>G</sub>|의 유도</h3>
+    <p>퍼텐셜이 약하면 \(C_{\vec k - \vec G}\)는 대부분 작다. 큰 것은 운동 에너지가 \(E\)에 가까운 평면파뿐이다. 1차원 영역 경계 \(k \approx G/2 = \pi/a\)에서는 \(e^{ikx}\)와 \(e^{i(k-G)x}\)의 운동 에너지 \(\varepsilon_k\), \(\varepsilon_{k-G}\)가 거의 같으므로, 이 둘만 남기면 중심 방정식은 2×2가 된다(<span class="term">축퇴 섭동 이론</span><span class="en">(degenerate perturbation theory)</span>).</p>
+    <div class="formula">$$\begin{vmatrix} \varepsilon_k - E & U_G^* \\ U_G & \varepsilon_{k-G} - E \end{vmatrix} = 0 \quad\Rightarrow\quad E_\pm = \frac{\varepsilon_k + \varepsilon_{k-G}}{2} \pm \sqrt{\left(\frac{\varepsilon_k - \varepsilon_{k-G}}{2}\right)^2 + |U_G|^2}$$<div class="where">경계 \(k = \pi/a\)에서는 \(\varepsilon_k = \varepsilon_{k-G} = \varepsilon_0\)이라 \(E_\pm = \varepsilon_0 \pm |U_G|\), 간격 \(E_g = 2|U_G|\). 첫째 경계의 간격은 \(G = 2\pi/a\) 성분 \(U_1\)이, 둘째 경계(\(k = 2\pi/a\))의 간격은 \(G = 4\pi/a\) 성분 \(U_2\)가 연다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 330" role="img" aria-label="영역 경계 근처에서 두 자유 전자 준위가 섞여 서로 밀어내며 간격 2|U_G|가 열리는 그림">
+        <defs><marker id="bs-ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <line x1="60" y1="305" x2="395" y2="305" class="s-axis"/><line x1="60" y1="305" x2="60" y2="25" class="s-axis"/>
+        <text class="t-dim" x="395" y="322" text-anchor="end">k</text><text class="t-dim" x="52" y="30" text-anchor="end">E</text>
+        <line x1="225.0" y1="25" x2="225.0" y2="305" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <text class="t" x="225.0" y="322" text-anchor="middle">π/a</text>
+        <path d="M60.0,298.7 L66.9,296.1 L73.8,293.2 L80.6,290.3 L87.5,287.1 L94.4,283.8 L101.2,280.4 L108.1,276.8 L115.0,273.0 L121.9,269.1 L128.8,265.0 L135.6,260.7 L142.5,256.3 L149.4,251.7 L156.3,247.0 L163.1,242.1 L170.0,237.0 L176.9,231.8 L183.8,226.4 L190.6,220.8 L197.5,215.1 L204.4,209.3 L211.3,203.2 L218.1,197.1 L225.0,190.7 L231.9,184.2 L238.8,177.5 L245.6,170.7 L252.5,163.7 L259.4,156.6 L266.2,149.2 L273.1,141.8 L280.0,134.1 L286.9,126.3 L293.8,118.4 L300.6,110.3 L307.5,102.0 L314.4,93.6 L321.2,85.0 L328.1,76.2 L335.0,67.3 L341.9,58.2 L348.8,49.0 L355.6,39.6" fill="none" stroke="var(--text-faint)" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <path d="M87.5,30.0 L94.4,39.6 L101.2,49.0 L108.1,58.2 L115.0,67.3 L121.9,76.2 L128.8,85.0 L135.6,93.6 L142.5,102.0 L149.4,110.3 L156.3,118.4 L163.1,126.3 L170.0,134.1 L176.9,141.8 L183.8,149.3 L190.6,156.6 L197.5,163.7 L204.4,170.7 L211.3,177.5 L218.1,184.2 L225.0,190.7 L231.9,197.1 L238.8,203.2 L245.6,209.3 L252.5,215.1 L259.4,220.8 L266.2,226.4 L273.1,231.8 L280.0,237.0 L286.9,242.1 L293.8,247.0 L300.6,251.7 L307.5,256.3 L314.4,260.7 L321.2,265.0 L328.1,269.1 L335.0,273.0 L341.9,276.8 L348.8,280.4 L355.6,283.8 L362.5,287.1 L369.4,290.3 L376.3,293.3 L383.1,296.1 L390.0,298.7" fill="none" stroke="var(--text-faint)" stroke-width="1.6" stroke-dasharray="6 4"/>
+        <path d="M66.9,298.3 L73.8,295.6 L80.6,292.7 L87.5,289.7 L94.4,286.5 L101.2,283.2 L108.1,279.8 L115.0,276.2 L121.9,272.4 L128.8,268.6 L135.6,264.6 L142.5,260.5 L149.4,256.2 L156.3,251.9 L163.1,247.5 L170.0,243.1 L176.9,238.6 L183.8,234.2 L190.6,229.9 L197.5,225.8 L204.4,222.1 L211.3,219.1 L218.1,217.1 L225.0,216.4 L231.9,217.1 L238.8,219.1 L245.6,222.1 L252.5,225.8 L259.4,229.9 L266.2,234.2 L273.1,238.6 L280.0,243.1 L286.9,247.5 L293.8,251.9 L300.6,256.2 L307.5,260.5 L314.4,264.6 L321.2,268.6 L328.1,272.4 L335.0,276.2 L341.9,279.8 L348.8,283.2 L355.6,286.5 L362.5,289.7 L369.4,292.7 L376.3,295.6 L383.1,298.3" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <path d="M94.4,36.9 L101.2,46.1 L108.1,55.2 L115.0,64.1 L121.9,72.8 L128.8,81.4 L135.6,89.7 L142.5,97.8 L149.4,105.7 L156.3,113.4 L163.1,120.9 L170.0,128.1 L176.9,134.9 L183.8,141.5 L190.6,147.5 L197.5,153.1 L204.4,157.8 L211.3,161.6 L218.1,164.1 L225.0,165.0 L231.9,164.1 L238.8,161.6 L245.6,157.8 L252.5,153.1 L259.4,147.5 L266.2,141.5 L273.1,134.9 L280.0,128.1 L286.9,120.9 L293.8,113.4 L300.6,105.7 L307.5,97.8 L314.4,89.7 L321.2,81.4 L328.1,72.8 L335.0,64.1 L341.9,55.2 L348.8,46.1 L355.6,36.9" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+        <rect x="60" y="165.0" width="335" height="51.4" fill="var(--accent-2-soft)" opacity=".55"/>
+        <line x1="273.0" y1="165.0" x2="273.0" y2="216.4" class="s-axis" marker-start="url(#bs-ar)" marker-end="url(#bs-ar)"/>
+        <text class="t" x="281.0" y="195.7">2|U<tspan baseline-shift="sub" font-size="10">G</tspan>|</text>
+        <text class="t-dim" x="101.2" y="239.6">ε(k)</text>
+        <text class="t-dim" x="329.5" y="248.6">ε(k − G)</text>
+        <text class="t-acc" x="142.5" y="287.1">E₋</text>
+        <text class="t" x="293.8" y="94.3" fill="var(--accent-2)">E₊</text>
+        <g class="t">
+          <text x="440" y="52" style="font-weight:700">두 평면파만 남긴 2×2 문제</text>
+          <text x="440" y="86">| ε(k) − E        U<tspan baseline-shift="sub" font-size="10">G</tspan>*         |</text>
+          <text x="440" y="112">| U<tspan baseline-shift="sub" font-size="10">G</tspan>          ε(k−G) − E | = 0</text>
+          <text x="440" y="152">E<tspan baseline-shift="sub" font-size="10">±</tspan> = ½(ε₁ + ε₂) ± √[ ¼(ε₁ − ε₂)² + |U<tspan baseline-shift="sub" font-size="10">G</tspan>|² ]</text>
+          <text x="440" y="190" class="t-dim">경계(ε₁ = ε₂)에서: E<tspan baseline-shift="sub" font-size="10">±</tspan> = ε₀ ± |U<tspan baseline-shift="sub" font-size="10">G</tspan>|</text>
+          <text x="440" y="214" class="t-dim">경계에서 멀면: E ≈ ε₁ − |U<tspan baseline-shift="sub" font-size="10">G</tspan>|²/(ε₂ − ε₁)</text>
+          <text x="440" y="252">점선: 퍼텐셜이 없을 때(빈 격자)</text>
+          <text x="440" y="276">실선: 섞인 상태 — 교차가 "회피"된다</text>
+        </g>
+      </svg>
+      <figcaption>영역 경계 \(k = \pi/a\)에서는 \(e^{ikx}\)와 \(e^{i(k-G)x}\)의 운동 에너지가 같아(점선이 교차) 약한 퍼텐셜도 둘을 완전히 섞는다. 섞인 두 상태는 서로 밀어내 간격 \(2|U_G|\)를 연다. 경계에서 멀어지면 두 준위의 차가 커져 섞임이 \(|U_G|^2\)에 비례하는 작은 보정으로 줄어든다.</figcaption>
+    </figure>
+    <p>경계 바로 근처(\(k = \pi/a + \delta\))에서 전개하면 \(E_\pm \approx \varepsilon_0 \pm |U_G| + \dfrac{\hbar^2\delta^2}{2m}\left(1 \pm \dfrac{2\varepsilon_0}{|U_G|}\right)\)이다. 간격 위 띠의 바닥은 곡률이 \(1 + 2\varepsilon_0/|U_G|\)배로 커져 유효 질량이 \(m^* \approx m\,|U_G|/2\varepsilon_0\)로 가벼워지고, 간격 아래 띠의 꼭대기는 음의 질량을 가진다. <strong>간격이 작을수록 띠 끝의 전자가 가볍다</strong> — 작은 간격의 InSb(\(E_g = 0.17\) eV)의 전자 질량이 \(0.014\,m_e\)에 불과한 이유가 여기 있다(뒤의 \(k\cdot p\) 이야기).</p>
+    <div class="tangle" id="tg-gap">
+      <p>격자 상수 <span class="tn" data-var="a" data-min="0.2" data-max="0.8" data-step="0.01" data-unit=" nm">0.50</span>인 1차원 결정의 퍼텐셜 푸리에 성분이 \(|U_1| =\) <span class="tn" data-var="u" data-min="0.02" data-max="1.5" data-step="0.01" data-unit=" eV">0.20</span>이면, 경계의 자유 전자 에너지 \(\varepsilon_0 = \hbar^2(\pi/a)^2/2m\)은 <span class="tn-out" data-out="e0"></span>이고 두 정상파의 에너지는 <span class="tn-out" data-out="pm"></span>, 간격은 <span class="tn-out" data-out="eg"></span>이다. 간격 위 띠 바닥의 유효 질량은 어림으로 \(m^*/m \approx |U|/2\varepsilon_0 =\) <span class="tn-out" data-out="ms"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="경계 근처의 두 준위와 섞임">
+      <p>\(a = 0.500\) nm인 1차원 결정에서 \(G = 2\pi/a\) 성분이 \(U_G = 0.200\) eV이다. 두 평면파 근사로 \(k = 0.9\,\pi/a\)의 두 에너지를 구하고, 아래 상태에 \(e^{i(k-G)x}\) 성분이 얼마나 섞여 있는지(\(|C_{k-G}|^2\)) 구하라. \(\hbar^2/2m_e = 0.0381\) eV·nm².</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\varepsilon_1 = \varepsilon_k\), \(\varepsilon_2 = \varepsilon_{k-G}\)를 구해 2×2 공식에 넣는다. 고유 벡터는 \((\varepsilon_1 - E)C_1 + U C_2 = 0\)에서 \(C_2/C_1 = (E - \varepsilon_1)/U\).</div>
+        <div class="step"><b>풀이</b> \(k = 0.9\pi/0.5 = 5.655\) nm⁻¹, \(k - G = -1.1\pi/0.5 = -6.912\) nm⁻¹. \(\varepsilon_1 = 0.0381\times5.655^2 = 1.218\) eV, \(\varepsilon_2 = 0.0381\times6.912^2 = 1.820\) eV. 평균 1.519, 반차 −0.301 → \(E_\pm = 1.519 \pm\sqrt{0.301^2 + 0.200^2} = 1.519 \pm 0.361\). 아래 상태 \(E_- = 1.158\) eV에서 \(C_2/C_1 = (1.158 - 1.218)/0.200 = -0.302\), \(|C_2|^2 = 0.302^2/(1 + 0.302^2) = 0.084\).</div>
+        <div class="answer">E₋ = 1.16 eV, E₊ = 1.88 eV; 아래 상태의 \(e^{i(k-G)x}\) 성분 8.4 %</div>
+        <div class="step"><b>검토</b> 경계에서 \(0.1\pi/a\)만 떨어졌는데도 섞임이 8 %로 줄었다. 경계(50 %:50 %, 정상파)에서 멀어지면 블로흐 상태는 빠르게 하나의 평면파로 돌아간다 — 그래서 띠의 대부분은 자유 전자 포물선과 거의 같다.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-nfe">
+      <p>\(U_2 = 0\)으로 두고 \(U_1\)만 켰다. 둘째 경계 \(k = 2\pi/a\)(축소 영역에서는 Γ의 둘째·셋째 띠 사이)의 간격은?</p>
+      <div class="opts"><button class="opt">정확히 0 — \(U_2\)가 없으니까</button><button class="opt" data-correct>열리지만 아주 작다(\(U_1^2\)에 비례)</button><button class="opt">첫째 간격과 같은 \(2|U_1|\)</button><button class="opt">첫째 간격의 두 배</button></div>
+      <div class="quiz-exp">\(e^{iGx}\)와 \(e^{-iGx}\)는 \(U_2\)로 직접 이어지지 않아도 \(U_1\)을 두 번 거쳐(가운데 \(e^{i0x}\)를 경유) 이어진다. 2차 섭동 결합은 \(U_1^2/\varepsilon_G\)이고 간격은 \(2|U_2 + U_1^2/\varepsilon_G|\) 정도다. 아래에서 U₁ = 0.5 eV로 두면 둘째 간격이 0.08 eV쯤 나온다.</div>
+    </div>
+    <div class="sim" id="sim-nfe">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>거의 자유 전자 실험대: 간격을 끌어 열어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-nfe"></canvas><span class="hint top">흰 원(간격 위 끝)을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>U₁ (G = 2π/a) <output id="nf-u1-out"></output></span><input type="range" id="nf-u1" min="0" max="1.2" step="0.01" value="0.30"></label>
+          <label class="ctrl"><span>U₂ (G = 4π/a) <output id="nf-u2-out"></output></span><input type="range" id="nf-u2" min="0" max="1.2" step="0.01" value="0.15"></label>
+          <div class="ctrl"><span>영역 그림</span><div class="seg" id="nf-zone"><button data-value="ext" class="on">확장</button><button data-value="red">축소</button><button data-value="rep">반복</button></div></div>
+          <label class="check"><input type="checkbox" id="nf-free" checked> 빈 격자(자유 전자) 점선</label>
+          <label class="check"><input type="checkbox" id="nf-goal"> 도전: 목표 간격 맞히기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">첫째 간격 (k = π/a)</span><span class="v" id="nf-g1">—</span></div>
+        <div class="stat"><span class="k">2|U₁|</span><span class="v" id="nf-g1t">—</span></div>
+        <div class="stat"><span class="k">둘째 간격 (k = 2π/a)</span><span class="v" id="nf-g2">—</span></div>
+        <div class="stat"><span class="k">2|U₂ + U₁²/ε<sub>G</sub>|</span><span class="v" id="nf-g2t">—</span></div>
+      </div>
+      <div class="sim-note">\(a = 0.5\) nm, \(V(x) = 2U_1\cos Gx + 2U_2\cos 2Gx\), 평면파 9개로 정확히 푼 띠. 색칠한 가로 띠가 금지 에너지다. 해볼 것: ① U₁을 0.1, 0.4, 0.8 eV로 바꾸며 첫째 간격이 \(2U_1\)과 얼마나 맞는지 보라(크면 어긋나기 시작한다). ② 예측 문제대로 U₂ = 0에서 둘째 간격을 읽어라. ③ 영역 그림을 '축소'로 바꾸면 둘째 경계의 간격이 Γ(k = 0)로 옮겨 간다. <b>도전:</b> 체크하면 목표 간격 두 개(점선)가 나온다. 흰 원을 끌어 둘 다 ±0.02 eV 안으로 맞혀라.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="zones">
+    <h2>영역 그림과 빈 격자</h2>
+    <p>\(\psi_k\)와 \(\psi_{k+G}\)는 같은 상태이므로 \(E(k)\)를 어떤 \(k\) 범위에 그릴지는 우리의 선택이다. 세 가지 관습이 있다. 자유 전자 포물선을 그대로 펼치고 \(n\)번째 띠를 \(n\)번째 브릴루앙 영역에 두는 <span class="term">확장 영역 그림</span><span class="en">(extended zone scheme)</span>, 모든 띠를 \(\vec G\)만큼 옮겨 제1 영역 안에 겹쳐 쌓는 <span class="term">축소 영역 그림</span><span class="en">(reduced zone scheme)</span>, 그리고 축소 영역의 그림을 모든 영역에 주기적으로 되풀이한 <span class="term">반복 영역 그림</span><span class="en">(repeated zone scheme)</span>이다. 확장 그림에서 축소 그림으로 옮기는 조작을 <span class="term">영역 접기</span><span class="en">(zone folding)</span>라 한다.</p>
+    <figure class="diagram steps" data-steps="4" id="fig-fold">
+      <canvas id="cv-fold"></canvas>
+      <ol class="steps-cap"><li>확장 영역: 자유 전자 포물선이 경계 ±π/a, ±2π/a, ±3π/a에서 끊긴다. 띠 n은 n번째 영역에 산다.</li><li>접기 시작: 둘째 영역의 조각을 ±G(= 2π/a)만큼, 셋째 영역의 조각을 ±2G만큼 옮긴다.</li><li>축소 영역: 모든 띠가 −π/a…π/a 안에 쌓였다. 같은 k에 띠 번호 n = 1, 2, 3이 붙는다. 간격은 경계(±π/a)와 중심(Γ)에 번갈아 있다.</li><li>반복 영역: 축소 그림을 G마다 되풀이한다. 어느 띠든 k의 주기 함수임이 드러난다 — 띠 위를 계속 가면 다시 제자리.</li></ol>
+      <figcaption>같은 1차원 띠(U₁ = 0.3, U₂ = 0.15 eV)를 세 방식으로 그린 것. 접을 때 띠 조각이 이동하는 모습을 단계별로 보라. 3차원 반도체의 띠 구조도는 언제나 축소 영역 그림이다.</figcaption>
+    </figure>
+    <p>퍼텐셜을 완전히 0으로 두고 격자의 주기성만 남긴 것이 <span class="term">빈 격자 모형</span><span class="en">(empty lattice model)</span>이다. 에너지는 \(E_{\vec G}(\vec k) = \hbar^2|\vec k - \vec G|^2/2m\) — 자유 전자 포물면을 역격자 벡터마다 하나씩 세워 제1 영역 안에서 본 것이다. 3차원 결정의 복잡한 띠 구조도 첫 근사로는 이 접힌 포물면들이고, 퍼텐셜은 교차점마다 간격을 연다. 그래서 빈 격자는 실제 띠 구조를 읽는 지도다: 어디에 띠가 몇 개 겹쳐 있는지(축퇴), 어디서 간격이 열릴지를 미리 알려 준다.</p>
+    <p>2차원 정사각 격자(격자 상수 \(a\))의 역격자 벡터는 \(\vec G = (2\pi/a)(n_1, n_2)\)다. 영역 중심 Γ = (0, 0), 변의 중심 X = (π/a, 0), 꼭짓점 M = (π/a, π/a)를 잇는 경로에서 빈 격자 띠를 보자. M에서는 \(\vec G = 0, (1,0), (0,1), (1,1)\)(\(2\pi/a\) 단위)의 네 평면파가 모두 \(|\vec k - \vec G| = \sqrt2\pi/a\)로 같은 에너지를 가져 4중 축퇴다.</p>
+    <figure class="mini" id="mini-el">
+      <div class="mini-view"><canvas id="cv-el"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>퍼텐셜 U<sub>10</sub> <output id="el-u-out"></output></span><input type="range" id="el-u" min="0" max="1.2" step="0.02" value="0"></label>
+        <label class="check"><input type="checkbox" id="el-lab" checked> 띠마다 G 표시</label>
+        <span class="readout" id="el-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>2차원 정사각 격자(\(a = 0.4\) nm)의 띠를 Γ–X–M–Γ를 따라 그렸다(평면파 25개). U = 0이면 빈 격자: 각 곡선은 \(\vec G\) 하나의 포물선 조각이다. \(U_{10}\)(가장 짧은 G 성분, \(U_{11} = U_{10}/2\)로 둠)을 키우면 교차점마다 간격이 열린다. X의 첫 간격과 M의 4중 축퇴가 어떻게 갈라지는지 보라.</figcaption>
+    </figure>
+    <div class="example" data-title="2차원 빈 격자의 대칭점 에너지">
+      <p>\(a = 0.400\) nm인 2차원 정사각 격자의 빈 격자 모형에서 (a) X점의 가장 낮은 에너지와 그 축퇴도, (b) M점의 가장 낮은 에너지와 축퇴도, (c) Γ점에서 0 다음으로 낮은 에너지와 축퇴도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E = (\hbar^2/2m)|\vec k - \vec G|^2\)에서 \(|\vec k - \vec G|\)가 가장 작은 \(\vec G\)들을 센다. \(\varepsilon_X = (\hbar^2/2m)(\pi/a)^2\)로 두면 편하다.</div>
+        <div class="step"><b>풀이</b> \(\pi/a = 7.854\) nm⁻¹, \(\varepsilon_X = 0.0381\times7.854^2 = 2.350\) eV. (a) X = (π/a, 0): \(\vec G = 0\)과 \((2\pi/a, 0)\)이 같은 거리 \(\pi/a\) → 2.35 eV, 2중. (b) M: 네 \(\vec G\)가 거리 \(\sqrt2\pi/a\) → \(2\varepsilon_X = 4.70\) eV, 4중. (c) Γ: \(\vec G = (\pm1,0), (0,\pm1)\)의 네 평면파가 거리 \(2\pi/a\) → \(4\varepsilon_X = 9.40\) eV, 4중.</div>
+        <div class="answer">X: 2.35 eV(2중) · M: 4.70 eV(4중) · Γ: 9.40 eV(4중)</div>
+        <div class="step"><b>검토</b> 위 미니 실험에서 U = 0일 때 읽은 값과 같다. 퍼텐셜을 켜면 이 축퇴가 대칭이 허락하는 만큼 갈라진다 — 3차원에서 Si 가전자대 꼭대기의 3중 축퇴(Γ)도 같은 이유로 생긴다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-nfe" data-title="영역 경계 에너지와 두 평면파 간격 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="tight-binding">
+    <h2>강결합 띠: 1차원에서 2차원으로</h2>
+    <p>강결합 모형은 반대쪽에서 출발한다. 원자 오비탈 \(\phi\) 하나에 에너지 \(E_0\), 최근접 이웃 오비탈 사이의 겹침 적분 \(-t\)(<span class="term">호핑 적분</span><span class="en">(hopping integral)</span>)만 남기면, 블로흐 합 \(\psi_{\vec k} = N^{-1/2}\sum_{\vec R} e^{i\vec k\cdot\vec R}\phi(\vec r - \vec R)\)의 에너지는</p>
+    <div class="formula">$$E(\vec k) = E_0 - t\sum_{\vec\delta} e^{i\vec k\cdot\vec\delta}, \qquad \text{1D: } E = E_0 - 2t\cos ka, \qquad \text{2D 정사각: } E = E_0 - 2t(\cos k_xa + \cos k_ya)$$<div class="where">\(\vec\delta\): 최근접 이웃을 가리키는 벡터. 1차원은 \(\pm a\) 두 개(띠 폭 \(4t\)), 2차원 정사각 격자는 \((\pm a, 0), (0, \pm a)\) 네 개(띠 폭 \(8t\)). 3차원 단순 입방은 여섯 개로 폭 \(12t\). 이웃 수 \(z\)에 대해 폭 \(= 2zt\).</div></div>
+    <p>1차원 띠는 현대물리학 12장에서 다뤘다(바닥 근처 유효 질량 \(m^* = \hbar^2/2ta^2\), 꼭대기는 음수). 2차원에서 새로 생기는 것은 <span class="term">등에너지선</span><span class="en">(constant-energy contour)</span>의 모양이다. 띠 바닥(\(\vec k \approx 0\)) 근처에서는 \(E \approx E_0 - 4t + ta^2(k_x^2 + k_y^2)\)라 등에너지선이 원 — 자유 전자와 같다. 그러나 \(E = E_0\)(띠 한가운데)에서는 \(\cos k_xa = -\cos k_ya\), 즉 \(|k_x| + |k_y| = \pi/a\)로 원이 <em>마름모(45° 돌린 정사각형)</em>가 된다. 이 등에너지선은 X점들을 지나며, X는 \(\nabla_k E = 0\)인 <em>안장점</em>이다. 안장점에서는 등에너지선 사이 간격이 무한히 벌어져 상태 밀도가 로그 발산한다 — <span class="term">판호버 특이점</span><span class="en">(van Hove singularity)</span>.</p>
+    <p>셀당 전자 수(스핀 포함)가 \(n\)이면 \(E_F\) 아래 영역 넓이가 영역 전체의 \(n/2\)이다. 셀당 전자가 1개, 즉 <span class="term">반 채움</span><span class="en">(half filling)</span>이면 \(E_F = E_0\)이고 페르미 면(2차원에서는 선)이 정확히 마름모다. 마름모의 마주 보는 변은 같은 벡터 \((\pi/a, \pi/a)\)로 서로 포개진다 — 이런 <span class="term">페르미 면 포개짐</span><span class="en">(Fermi-surface nesting)</span>은 전하 밀도파나 반강자성 같은 불안정성을 부른다(15장). 구리 산화물 고온 초전도체의 CuO₂ 평면이 이 모형의 대표 예다.</p>
+    <div class="predict" data-for="sim-tb2d">
+      <p>2차원 정사각 격자 강결합 띠에 전자를 셀당 0.2개에서 1개(반 채움)까지 채워 간다. 페르미 선의 모양은?</p>
+      <div class="opts"><button class="opt">줄곧 원이고 반지름만 커진다</button><button class="opt" data-correct>처음엔 원, 반 채움에서는 X점을 지나는 마름모</button><button class="opt">처음부터 정사각형이고 영역 경계와 나란하다</button><button class="opt">반 채움에서 영역 전체를 채운다</button></div>
+      <div class="quiz-exp">적게 채우면 바닥 근처 포물선이라 원이다. \(E_F\)가 띠 중심에 다가갈수록 원이 X점 쪽으로 부풀어 반 채움에서 \(|k_x| + |k_y| = \pi/a\)의 마름모가 된다. 그 순간 상태 밀도도 판호버 특이점으로 치솟는다.</div>
+    </div>
+    <div class="sim" id="sim-tb2d">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>2차원 강결합 지도: 전자를 채워 페르미 면을 그려라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-tbm"></canvas><span class="hint top">지도 위를 눌러 끌면 그 점이 페르미 선 위에 온다</span></div><div><canvas id="cv-tbd"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>셀당 전자 수 n <output id="tb-n-out"></output></span><input type="range" id="tb-n" min="0.02" max="1.98" step="0.01" value="0.30"></label>
+          <label class="ctrl"><span>다음 이웃 호핑 t′/t <output id="tb-tp-out"></output></span><input type="range" id="tb-tp" min="-0.4" max="0.4" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="tb-iso" checked> 등에너지선 표시</label>
+          <button class="btn" id="tb-half" type="button">도전 다시 시작</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">E<sub>F</sub> (t 단위)</span><span class="v" id="tb-ef">—</span></div>
+        <div class="stat"><span class="k">채운 넓이 / 영역</span><span class="v" id="tb-area">—</span></div>
+        <div class="stat"><span class="k">페르미 선 모양</span><span class="v" id="tb-shape">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="tb-goal">반 채움을 찾아라</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 제1 브릴루앙 영역 \(-\pi/a < k_x, k_y \le \pi/a\). 색칠한 곳이 채운 상태, 굵은 선이 페르미 선. 오른쪽: 상태 밀도 \(g(E)\)(셀당, 스핀 포함)와 채운 부분. <b>도전:</b> 슬라이더를 쓰지 말고 지도 위의 점을 끌어서만 반 채움(n = 1.00 ± 0.01)을 만들어라 — 어디를 누르면 될까? 해볼 것: ① n이 작을 때 페르미 선이 원인지 확인. ② 반 채움에서 상태 밀도 그래프의 뾰족한 봉우리(판호버 특이점) 위치. ③ t′을 넣으면 반 채움 페르미 선이 휘고 특이점이 E = 4t′로 옮겨 간다(구리 산화물의 실제 페르미 면).</div>
+    </div>
+    <div class="tangle" id="tg-tb">
+      <p>격자 상수 <span class="tn" data-var="a" data-min="0.2" data-max="0.6" data-step="0.01" data-unit=" nm">0.38</span>, 호핑 \(t =\) <span class="tn" data-var="t" data-min="0.05" data-max="3" data-step="0.05" data-unit=" eV">0.40</span>인 2차원 정사각 격자의 띠 폭은 \(8t =\) <span class="tn-out" data-out="w"></span>이고, 띠 바닥의 유효 질량은 \(m^* = \hbar^2/2ta^2 =\) <span class="tn-out" data-out="m"></span>이다. 반 채움 페르미 선은 [11] 방향으로 \(k_F = \pi/\sqrt2a =\) <span class="tn-out" data-out="k11"></span>, [10] 방향으로 \(\pi/a =\) <span class="tn-out" data-out="k10"></span>까지 뻗는다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="2차원 강결합 띠의 질량과 페르미 선">
+      <p>\(a = 0.300\) nm, \(t = 1.00\) eV인 2차원 정사각 격자 강결합 띠가 있다. (a) 띠 폭, (b) 띠 바닥의 유효 질량, (c) 반 채움일 때 Γ에서 [11] 방향과 [10] 방향으로 잰 페르미 파수를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 바닥 근처 \(\cos x \approx 1 - x^2/2\)로 전개해 \(\hbar^2k^2/2m^*\)과 비교한다. 반 채움 페르미 선은 \(|k_x| + |k_y| = \pi/a\).</div>
+        <div class="step"><b>풀이</b> (a) \(W = 8t = 8.00\) eV. (b) \(E \approx -4t + ta^2k^2\) → \(\hbar^2/2m^* = ta^2\) → \(m^*/m_e = 0.0381/(1.00\times0.0900) = 0.423\). (c) [11]: \(k_x = k_y = \pi/2a\) → \(|k| = \pi/\sqrt2a = 7.40\) nm⁻¹. [10]: \(k_x = \pi/a = 10.47\) nm⁻¹(X점).</div>
+        <div class="answer">W = 8.00 eV, m* = 0.423 mₑ, k<sub>F</sub>[11] = 7.40 nm⁻¹, k<sub>F</sub>[10] = 10.5 nm⁻¹</div>
+        <div class="step"><b>검토</b> 페르미 선이 원이라면 반지름이 하나였을 것이다. 두 방향의 비가 \(\sqrt2\)인 것이 마름모의 표시다. 같은 넓이의 원이면 \(\pi k^2 = (2\pi/a)^2/2\)에서 \(k = 8.86\) nm⁻¹로 그 사이 값이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="graphene">
+    <h2>그래핀: 띠가 한 점에서 만나는 결정</h2>
+    <p>그래핀은 탄소 원자 한 층이 벌집 모양으로 늘어선 2차원 결정이다. 탄소의 s, pₓ, p<sub>y</sub> 오비탈은 sp² 혼성으로 평면 안 σ 결합을 이루고, 평면에 수직인 p<sub>z</sub> 오비탈 하나가 전기 전도를 맡는 π 띠를 만든다. 벌집은 브라베 격자가 아니다. <span class="term">벌집 격자</span><span class="en">(honeycomb lattice)</span>는 삼각 격자에 원자 두 개(A, B)를 기저로 붙인 것이고, A끼리·B끼리 모은 것을 <span class="term">부격자</span><span class="en">(sublattice)</span>라 한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 335" role="img" aria-label="그래핀의 벌집 격자(두 부격자 A, B와 격자 벡터)와 육각형 브릴루앙 영역의 K, K′ 점">
+        <defs><marker id="bs-ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text)"/></marker></defs>
+        <g stroke="var(--text-faint)" stroke-width="2"><line x1="37.0" y1="86.7" x2="71.0" y2="86.7"/><line x1="88.0" y1="57.2" x2="122.0" y2="57.2"/><line x1="88.0" y1="57.2" x2="71.0" y2="86.7"/><line x1="37.0" y1="145.6" x2="71.0" y2="145.6"/><line x1="88.0" y1="116.1" x2="122.0" y2="116.1"/><line x1="88.0" y1="116.1" x2="71.0" y2="86.7"/><line x1="88.0" y1="116.1" x2="71.0" y2="145.6"/><line x1="139.0" y1="86.7" x2="173.0" y2="86.7"/><line x1="139.0" y1="86.7" x2="122.0" y2="57.2"/><line x1="139.0" y1="86.7" x2="122.0" y2="116.1"/><line x1="190.0" y1="57.2" x2="224.0" y2="57.2"/><line x1="190.0" y1="57.2" x2="173.0" y2="86.7"/><line x1="37.0" y1="204.4" x2="71.0" y2="204.4"/><line x1="88.0" y1="175.0" x2="122.0" y2="175.0"/><line x1="88.0" y1="175.0" x2="71.0" y2="145.6"/><line x1="88.0" y1="175.0" x2="71.0" y2="204.4"/><line x1="139.0" y1="145.6" x2="173.0" y2="145.6"/><line x1="139.0" y1="145.6" x2="122.0" y2="116.1"/><line x1="139.0" y1="145.6" x2="122.0" y2="175.0"/><line x1="190.0" y1="116.1" x2="224.0" y2="116.1"/><line x1="190.0" y1="116.1" x2="173.0" y2="86.7"/><line x1="190.0" y1="116.1" x2="173.0" y2="145.6"/><line x1="241.0" y1="86.7" x2="275.0" y2="86.7"/><line x1="241.0" y1="86.7" x2="224.0" y2="57.2"/><line x1="241.0" y1="86.7" x2="224.0" y2="116.1"/><line x1="292.0" y1="57.2" x2="326.0" y2="57.2"/><line x1="292.0" y1="57.2" x2="275.0" y2="86.7"/><line x1="37.0" y1="263.3" x2="71.0" y2="263.3"/><line x1="88.0" y1="233.9" x2="122.0" y2="233.9"/><line x1="88.0" y1="233.9" x2="71.0" y2="204.4"/><line x1="88.0" y1="233.9" x2="71.0" y2="263.3"/><line x1="139.0" y1="204.4" x2="173.0" y2="204.4"/><line x1="139.0" y1="204.4" x2="122.0" y2="175.0"/><line x1="139.0" y1="204.4" x2="122.0" y2="233.9"/><line x1="190.0" y1="175.0" x2="224.0" y2="175.0"/><line x1="190.0" y1="175.0" x2="173.0" y2="145.6"/><line x1="190.0" y1="175.0" x2="173.0" y2="204.4"/><line x1="241.0" y1="145.6" x2="275.0" y2="145.6"/><line x1="241.0" y1="145.6" x2="224.0" y2="116.1"/><line x1="241.0" y1="145.6" x2="224.0" y2="175.0"/><line x1="292.0" y1="116.1" x2="326.0" y2="116.1"/><line x1="292.0" y1="116.1" x2="275.0" y2="86.7"/><line x1="292.0" y1="116.1" x2="275.0" y2="145.6"/><line x1="343.0" y1="86.7" x2="326.0" y2="57.2"/><line x1="343.0" y1="86.7" x2="326.0" y2="116.1"/><line x1="88.0" y1="292.8" x2="122.0" y2="292.8"/><line x1="88.0" y1="292.8" x2="71.0" y2="263.3"/><line x1="139.0" y1="263.3" x2="173.0" y2="263.3"/><line x1="139.0" y1="263.3" x2="122.0" y2="233.9"/><line x1="139.0" y1="263.3" x2="122.0" y2="292.8"/><line x1="190.0" y1="233.9" x2="224.0" y2="233.9"/><line x1="190.0" y1="233.9" x2="173.0" y2="204.4"/><line x1="190.0" y1="233.9" x2="173.0" y2="263.3"/><line x1="241.0" y1="204.4" x2="275.0" y2="204.4"/><line x1="241.0" y1="204.4" x2="224.0" y2="175.0"/><line x1="241.0" y1="204.4" x2="224.0" y2="233.9"/><line x1="292.0" y1="175.0" x2="326.0" y2="175.0"/><line x1="292.0" y1="175.0" x2="275.0" y2="145.6"/><line x1="292.0" y1="175.0" x2="275.0" y2="204.4"/><line x1="343.0" y1="145.6" x2="326.0" y2="116.1"/><line x1="343.0" y1="145.6" x2="326.0" y2="175.0"/><line x1="190.0" y1="292.8" x2="224.0" y2="292.8"/><line x1="190.0" y1="292.8" x2="173.0" y2="263.3"/><line x1="241.0" y1="263.3" x2="275.0" y2="263.3"/><line x1="241.0" y1="263.3" x2="224.0" y2="233.9"/><line x1="241.0" y1="263.3" x2="224.0" y2="292.8"/><line x1="292.0" y1="233.9" x2="326.0" y2="233.9"/><line x1="292.0" y1="233.9" x2="275.0" y2="204.4"/><line x1="292.0" y1="233.9" x2="275.0" y2="263.3"/><line x1="343.0" y1="204.4" x2="326.0" y2="175.0"/><line x1="343.0" y1="204.4" x2="326.0" y2="233.9"/><line x1="292.0" y1="292.8" x2="326.0" y2="292.8"/><line x1="292.0" y1="292.8" x2="275.0" y2="263.3"/><line x1="343.0" y1="263.3" x2="326.0" y2="233.9"/><line x1="343.0" y1="263.3" x2="326.0" y2="292.8"/></g><g fill="var(--accent)"><circle cx="37.0" cy="86.7" r="6"/><circle cx="88.0" cy="57.2" r="6"/><circle cx="37.0" cy="145.6" r="6"/><circle cx="88.0" cy="116.1" r="6"/><circle cx="139.0" cy="86.7" r="6"/><circle cx="190.0" cy="57.2" r="6"/><circle cx="37.0" cy="204.4" r="6"/><circle cx="88.0" cy="175.0" r="6"/><circle cx="139.0" cy="145.6" r="6"/><circle cx="190.0" cy="116.1" r="6"/><circle cx="241.0" cy="86.7" r="6"/><circle cx="292.0" cy="57.2" r="6"/><circle cx="37.0" cy="263.3" r="6"/><circle cx="88.0" cy="233.9" r="6"/><circle cx="139.0" cy="204.4" r="6"/><circle cx="190.0" cy="175.0" r="6"/><circle cx="241.0" cy="145.6" r="6"/><circle cx="292.0" cy="116.1" r="6"/><circle cx="343.0" cy="86.7" r="6"/><circle cx="88.0" cy="292.8" r="6"/><circle cx="139.0" cy="263.3" r="6"/><circle cx="190.0" cy="233.9" r="6"/><circle cx="241.0" cy="204.4" r="6"/><circle cx="292.0" cy="175.0" r="6"/><circle cx="343.0" cy="145.6" r="6"/><circle cx="190.0" cy="292.8" r="6"/><circle cx="241.0" cy="263.3" r="6"/><circle cx="292.0" cy="233.9" r="6"/><circle cx="343.0" cy="204.4" r="6"/><circle cx="292.0" cy="292.8" r="6"/><circle cx="343.0" cy="263.3" r="6"/></g><g fill="var(--accent-2)"><circle cx="71.0" cy="86.7" r="6"/><circle cx="122.0" cy="57.2" r="6"/><circle cx="71.0" cy="145.6" r="6"/><circle cx="122.0" cy="116.1" r="6"/><circle cx="173.0" cy="86.7" r="6"/><circle cx="224.0" cy="57.2" r="6"/><circle cx="71.0" cy="204.4" r="6"/><circle cx="122.0" cy="175.0" r="6"/><circle cx="173.0" cy="145.6" r="6"/><circle cx="224.0" cy="116.1" r="6"/><circle cx="275.0" cy="86.7" r="6"/><circle cx="326.0" cy="57.2" r="6"/><circle cx="71.0" cy="263.3" r="6"/><circle cx="122.0" cy="233.9" r="6"/><circle cx="173.0" cy="204.4" r="6"/><circle cx="224.0" cy="175.0" r="6"/><circle cx="275.0" cy="145.6" r="6"/><circle cx="326.0" cy="116.1" r="6"/><circle cx="122.0" cy="292.8" r="6"/><circle cx="173.0" cy="263.3" r="6"/><circle cx="224.0" cy="233.9" r="6"/><circle cx="275.0" cy="204.4" r="6"/><circle cx="326.0" cy="175.0" r="6"/><circle cx="224.0" cy="292.8" r="6"/><circle cx="275.0" cy="263.3" r="6"/><circle cx="326.0" cy="233.9" r="6"/><circle cx="326.0" cy="292.8" r="6"/></g><line x1="190" y1="175" x2="241.0" y2="145.6" stroke="var(--text)" stroke-width="2.2" marker-end="url(#bs-ar2)"/><line x1="190" y1="175" x2="241.0" y2="204.4" stroke="var(--text)" stroke-width="2.2" marker-end="url(#bs-ar2)"/><text class="t" x="245.0" y="137.6" style="font-weight:700">a₁</text><text class="t" x="245.0" y="222.4" style="font-weight:700">a₂</text><polygon points="696.6,120.0 610.0,70.0 523.4,120.0 523.4,220.0 610.0,270.0 696.6,220.0" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><circle cx="696.6" cy="120.0" r="5" fill="var(--accent-2)"/><text class="t" x="713.9" y="115.0" text-anchor="middle" style="font-weight:700">K</text><circle cx="610.0" cy="70.0" r="5" fill="var(--accent-2)"/><text class="t" x="610.0" y="55.0" text-anchor="middle" style="font-weight:700">K′</text><circle cx="523.4" cy="120.0" r="5" fill="var(--accent-2)"/><text class="t" x="506.1" y="115.0" text-anchor="middle" style="font-weight:700">K</text><circle cx="523.4" cy="220.0" r="5" fill="var(--accent-2)"/><text class="t" x="506.1" y="235.0" text-anchor="middle" style="font-weight:700">K′</text><circle cx="610.0" cy="270.0" r="5" fill="var(--accent-2)"/><text class="t" x="610.0" y="295.0" text-anchor="middle" style="font-weight:700">K</text><circle cx="696.6" cy="220.0" r="5" fill="var(--accent-2)"/><text class="t" x="713.9" y="235.0" text-anchor="middle" style="font-weight:700">K′</text><circle cx="610" cy="170" r="4" fill="var(--text)"/><text class="t" x="604" y="190" text-anchor="middle">Γ</text><circle cx="696.6" cy="170.0" r="4" fill="var(--text)"/><text class="t" x="682.6" y="175.0" text-anchor="end">M</text><text class="t" x="610" y="305" text-anchor="middle">브릴루앙 영역: 정육각형, 꼭짓점 K·K′ = 디랙점</text><text class="t" x="190" y="325" text-anchor="middle">벌집 격자 = 삼각 격자 + 기저 2개(A <tspan fill="var(--accent)">●</tspan>, B <tspan fill="var(--accent-2)">●</tspan>)</text>
+      </svg>
+      <figcaption>왼쪽: 그래핀의 벌집 격자. 탄소 원자는 서로 다른 두 부격자 A·B에 앉고, A 원자의 최근접 이웃 셋은 모두 B다. C–C 거리 \(a = 0.142\) nm, 격자 상수 \(\sqrt3 a = 0.246\) nm. 오른쪽: 역격자 공간의 육각형 브릴루앙 영역. 여섯 꼭짓점 가운데 서로 역격자 벡터로 이어지지 않는 두 종류 K, K′에서 두 띠가 한 점으로 만난다.</figcaption>
+    </figure>
+    <p>A 원자의 최근접 이웃 셋은 모두 B이므로, 블로흐 합을 부격자마다 하나씩(\(\psi_A, \psi_B\)) 만들면 해밀토니언은 2×2가 된다. 대각은 \(E_0 = 0\), 비대각은 B 이웃 셋의 위상 합이다.</p>
+    <div class="formula">$$H(\vec k) = \begin{pmatrix} 0 & -t f(\vec k) \\ -t f^*(\vec k) & 0 \end{pmatrix}, \quad f(\vec k) = \sum_{j=1}^{3} e^{i\vec k\cdot\vec\delta_j} \quad\Rightarrow\quad E_\pm(\vec k) = \pm t\,|f(\vec k)|$$<div class="where">\(\vec\delta_1 = a(1, 0)\), \(\vec\delta_{2,3} = a(-\tfrac12, \pm\tfrac{\sqrt3}{2})\), \(|f|^2 = 3 + 2\cos(\sqrt3k_ya) + 4\cos(\tfrac{\sqrt3}{2}k_ya)\cos(\tfrac32k_xa)\). \(t \approx 2.7\) eV, \(a = 0.142\) nm. 띠는 \(-3t\)에서 \(+3t\)까지이고, 원자당 π 전자가 1개라 아래 띠(\(E_-\))만 꽉 찬다.</div></div>
+    <p>세 위상 \(e^{i\vec k\cdot\vec\delta_j}\)가 120°씩 벌어져 합이 0이 되는 점에서 \(f = 0\)이다. 그런 점이 영역 꼭짓점 K, K′이고, 거기서 두 띠가 에너지 0(\(= E_F\))에서 만난다 — 간격이 0인 반도체, 또는 페르미 면이 점인 금속이다. K에서 \(\vec q\)만큼 벗어나 \(f\)를 1차까지 전개하면 \(|f| \approx \tfrac32 a|\vec q|\)이므로</p>
+    <div class="formula">$$E_\pm(\vec K + \vec q) \approx \pm\hbar v_F|\vec q|, \qquad v_F = \frac{3ta}{2\hbar} \approx 0.87\times10^6\ \text{m/s}\ (t = 2.7\ \text{eV})$$<div class="where">에너지가 \(|\vec q|\)에 정비례하는 원뿔: <span class="term">디랙 원뿔</span><span class="en">(Dirac cone)</span>, 꼭짓점은 <span class="term">디랙점</span><span class="en">(Dirac point)</span>. 질량 없는 상대론적 입자 \(E = pc\)와 같은 꼴이고 빛의 속도 자리에 \(v_F \approx c/300\)이 들어간다. 측정값은 약 \(1.0\times10^6\) m/s로, \(t \approx 3\) eV에 해당한다.</div></div>
+    <p>디랙 원뿔에서는 띠 곡률이 0이라 \(m^* = \hbar^2/(d^2E/dk^2)\)이 정의되지 않고, 속력이 에너지와 무관하게 \(v_F\)로 일정하다(<span class="term">페르미 속도</span><span class="en">(Fermi velocity)</span>). 상온 이동도가 \(10^5\) cm²/(V·s)에 이르는 깨끗한 그래핀도 있지만, 간격이 없어 트랜지스터를 끌 수 없다는 것이 논리 소자에서의 약점이다. 간격을 열려면 A·B 대칭을 깨야 한다 — h-BN(질화 붕소)처럼 두 자리가 다른 원자면 대각에 \(\pm\Delta/2\)가 생겨 간격 \(\Delta\)가 열린다(섬아연석의 반대칭 퍼텐셜 \(V_A\)와 같은 원리, 아래 GaAs 참고).</p>
+    <div class="sim" id="sim-gr">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>그래핀 띠 단면: 자르는 선을 끌어 디랙점을 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-grm"></canvas><span class="hint top">흰 원을 끌어 단면 위치를 옮긴다</span></div><div><canvas id="cv-grb"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>단면 방향 θ <output id="gr-th-out"></output></span><input type="range" id="gr-th" min="0" max="180" step="1" value="0"></label>
+          <label class="ctrl"><span>호핑 t <output id="gr-t-out"></output></span><input type="range" id="gr-t" min="2" max="3.2" step="0.05" value="2.7"></label>
+          <label class="ctrl"><span>부격자 에너지 차 Δ <output id="gr-d-out"></output></span><input type="range" id="gr-d" min="0" max="2" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="gr-zoom"> 디랙점 확대 (±0.5 eV)</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">흰 원의 E<sub>±</sub></span><span class="v" id="gr-e">—</span></div>
+        <div class="stat"><span class="k">가장 가까운 K까지 q</span><span class="v" id="gr-q">—</span></div>
+        <div class="stat"><span class="k">ħv<sub>F</sub>q (선형 근사)</span><span class="v" id="gr-lin">—</span></div>
+        <div class="stat"><span class="k">단면의 최소 간격</span><span class="v" id="gr-gap">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 육각형 브릴루앙 영역 위의 \(|E_\pm|\) 지도(밝을수록 0에 가까움)와 단면 선. 오른쪽: 그 선을 따라 잰 두 띠. 해볼 것: ① 흰 원을 K점(꼭짓점)에 놓고 θ를 돌려 보라 — 어느 방향으로 잘라도 단면이 X자(원뿔)다. ② '디랙점 확대'를 켜고 흰 원을 K에서 조금씩 떼며 \(E_\pm\)와 \(\hbar v_Fq\)를 비교하라. 0.3 eV 넘게 벗어나면 원뿔이 삼각형으로 일그러진다(삼각 뒤틀림). ③ Δ를 켜면 원뿔 꼭짓점에 간격 Δ가 열린다(h-BN, 기판 효과).</div>
+    </div>
+    <div class="tangle" id="tg-gr">
+      <p>호핑 \(t =\) <span class="tn" data-var="t" data-min="2" data-max="3.2" data-step="0.05" data-unit=" eV">2.70</span>, C–C 거리 0.142 nm인 그래핀의 페르미 속도는 \(v_F = 3ta/2\hbar =\) <span class="tn-out" data-out="v"></span>이다. 게이트로 페르미 준위를 디랙점 위 <span class="tn" data-var="e" data-min="0.01" data-max="0.5" data-step="0.01" data-unit=" eV">0.10</span>로 올리면 페르미 원의 반지름은 \(k_F = E_F/\hbar v_F =\) <span class="tn-out" data-out="k"></span>이고, 스핀 2 × 골짜기(K, K′) 2를 넣은 전자 면밀도는 \(n = k_F^2/\pi =\) <span class="tn-out" data-out="n"></span>이다.</p>
+    </div>
+    <div class="example" data-title="그래핀의 페르미 속도와 디랙점 근처 에너지">
+      <p>\(t = 2.70\) eV, \(a = 0.142\) nm일 때 (a) 페르미 속도, (b) K점에서 \(q = 0.100\) nm⁻¹ 떨어진 상태의 에너지, (c) 같은 \(q\)에서 자유 전자(\(m_e\))의 운동 에너지를 구하라. \(\hbar = 6.582\times10^{-16}\) eV·s.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\hbar v_F = 3ta/2\)는 eV·nm 단위로 바로 계산된다. 자유 전자는 \(\hbar^2q^2/2m_e = 0.0381q^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(\hbar v_F = 1.5\times2.70\times0.142 = 0.5751\) eV·nm → \(v_F = 0.5751\times10^{-9}/6.582\times10^{-16} = 8.74\times10^5\) m/s. (b) \(E = 0.5751\times0.100 = 0.0575\) eV. (c) \(0.0381\times0.01 = 3.81\times10^{-4}\) eV.</div>
+        <div class="answer">v<sub>F</sub> = 8.74 × 10⁵ m/s, E = 57.5 meV, 자유 전자는 0.38 meV</div>
+        <div class="step"><b>검토</b> 같은 작은 \(q\)에서 디랙 전자의 에너지가 자유 전자보다 150배 크다. 선형 분산은 \(q \to 0\)에서 포물선보다 훨씬 가파르다 — 그래서 상태 밀도가 \(g(E) \propto |E|\)로 디랙점에서 0이 된다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="semiconductors">
+    <h2>실제 반도체의 띠 구조</h2>
+    <h3>fcc 브릴루앙 영역과 대칭점</h3>
+    <p>Si, Ge, GaAs는 모두 fcc 브라베 격자에 원자 두 개의 기저를 붙인 다이아몬드·섬아연석 구조다(1장). fcc의 역격자는 bcc이고, 그 위그너–자이츠 셀인 제1 브릴루앙 영역은 <em>깎은 팔면체</em>(정사각형 면 6개, 정육각형 면 8개)다(2장). 띠 구조도는 \(E_n(\vec k)\)를 영역 안의 몇몇 고대칭 선을 따라 그린 것이고, 그 끝점들을 <span class="term">대칭점</span><span class="en">(high-symmetry point)</span>이라 부른다(좌표는 \(2\pi/a\) 단위).</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>점</th><th>좌표 (2π/a)</th><th>위치</th><th>개수(동등한 점)</th></tr></thead>
+      <tbody>
+        <tr><td>Γ</td><td>(0, 0, 0)</td><td>영역 중심</td><td class="num">1</td></tr>
+        <tr><td>X</td><td>(1, 0, 0)</td><td>정사각형 면의 중심, [100] 방향</td><td class="num">6 (면 하나를 두 영역이 나눠 3)</td></tr>
+        <tr><td>L</td><td>(½, ½, ½)</td><td>육각형 면의 중심, [111] 방향</td><td class="num">8 (나눠 가져 4)</td></tr>
+        <tr><td>K</td><td>(¾, ¾, 0)</td><td>두 육각형 면이 만나는 모서리의 중점, [110] 방향</td><td class="num">12</td></tr>
+        <tr><td>U</td><td>(1, ¼, ¼)</td><td>정사각형과 육각형이 만나는 모서리의 중점(K와 동등)</td><td class="num">—</td></tr>
+        <tr><td>W</td><td>(1, ½, 0)</td><td>꼭짓점</td><td class="num">24</td></tr>
+      </tbody>
+    </table></div>
+    <p>Γ–X 선을 Δ, Γ–L 선을 Λ, Γ–K 선을 Σ라 부른다. 전도대 바닥 근처의 에너지 극소 영역을 <span class="term">골짜기</span><span class="en">(valley)</span>라 하는데, 실리콘 전도대 골짜기를 "Δ 골짜기"라 하는 이유가 이것이다. 아래 모형을 끌어 돌려 보며, 띠 구조도의 가로축 L–Γ–X–U,K–Γ가 영역 속 어떤 길인지 확인하라.</p>
+    <figure class="mini" id="mini-bz">
+      <div class="mini-view"><canvas id="cv-bz"></canvas><span class="hint">끌어서 돌린다</span></div>
+      <div class="mini-ctrl">
+        <label class="check"><input type="checkbox" id="bz-path" checked> 띠 구조 경로 L–Γ–X–U,K–Γ</label>
+        <label class="check"><input type="checkbox" id="bz-val"> Si 전도대 골짜기(0.85X) 위치</label>
+        <span class="readout" id="bz-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>fcc 결정의 제1 브릴루앙 영역(깎은 팔면체). 경로의 Γ→X는 [100], Γ→L은 [111], K→Γ는 [110] 방향이다. U와 K는 역격자 벡터만큼 떨어진 같은 점이라 띠 구조도에서 한 눈금 "U,K"로 붙여 그린다.</figcaption>
+    </figure>
+    <h3>경험적 의사퍼텐셜: 적은 숫자로 띠 전체를</h3>
+    <p>원자핵 근처의 퍼텐셜은 엄청나게 깊어서 거의 자유 전자 모형이 통할 것 같지 않다. 그런데 원자가 전자는 내각 전자 오비탈과 직교해야 하므로 핵 근처에서 빠르게 진동하고, 이 운동 에너지가 깊은 인력을 상당 부분 상쇄한다. 그 결과 원자가 전자가 실제로 느끼는 유효 퍼텐셜 — <span class="term">의사퍼텐셜</span><span class="en">(pseudopotential)</span> — 은 약하고 매끄럽다. 그래서 1절의 평면파 전개가 수백 개의 평면파로 수렴한다. 의사퍼텐셜의 푸리에 성분 몇 개를 실험(띠 간격, 광학 스펙트럼)에 맞춰 정하는 것이 <span class="term">경험적 의사퍼텐셜 방법</span><span class="en">(empirical pseudopotential method, EPM)</span>이다(코언–버그스트레서, 1966).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 320" role="img" aria-label="경험적 의사퍼텐셜 방법: 실리콘의 형상 인자 세 개와 평면파 해밀토니언을 만드는 순서">
+        <line x1="60" y1="170.0" x2="370" y2="170.0" class="s-axis"/><line x1="60" y1="30" x2="60" y2="300" class="s-axis"/><path d="M96.7,299.6 L101.3,293.1 L105.9,286.4 L110.5,279.5 L115.0,272.5 L119.6,265.7 L124.2,259.1 L128.8,252.8 L133.3,246.8 L137.9,240.6 L142.5,234.2 L147.1,227.7 L151.7,221.1 L156.2,214.6 L160.8,208.2 L165.4,201.9 L170.0,196.0 L174.5,190.3 L179.1,185.1 L183.7,180.3 L188.3,176.2 L192.8,172.5 L197.4,169.2 L202.0,166.2 L206.6,163.6 L211.2,161.3 L215.7,159.3 L220.3,157.5 L224.9,155.8 L229.5,154.3 L234.0,152.9 L238.6,151.5 L243.2,150.2 L247.8,149.1 L252.3,148.1 L256.9,147.2 L261.5,146.4 L266.1,145.8 L270.7,145.2 L275.2,144.7 L279.8,144.3 L284.4,144.0 L289.0,143.8 L293.5,143.6 L298.1,143.5 L302.7,143.4 L307.3,143.4 L311.8,143.4 L316.4,143.6 L321.0,144.3 L325.6,145.5 L330.2,146.8 L334.7,148.3 L339.3,149.7 L343.9,150.9 L348.5,151.7" fill="none" stroke="var(--text-faint)" stroke-width="2" stroke-dasharray="6 4"/><line x1="129.2" y1="170.0" x2="129.2" y2="252.2" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><circle cx="129.2" cy="252.2" r="6" fill="var(--accent)"/><text class="t-mono" x="129.2" y="274.2" text-anchor="middle">-3.05 eV</text><text class="t-dim" x="129.2" y="160.0" text-anchor="middle">√3</text><line x1="244.6" y1="170.0" x2="244.6" y2="149.8" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><circle cx="244.6" cy="149.8" r="6" fill="var(--accent)"/><text class="t-mono" x="244.6" y="137.8" text-anchor="middle">0.75 eV</text><text class="t-dim" x="244.6" y="188.0" text-anchor="middle">√8</text><line x1="313.8" y1="170.0" x2="313.8" y2="143.5" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><circle cx="313.8" cy="143.5" r="6" fill="var(--accent)"/><text class="t-mono" x="313.8" y="131.5" text-anchor="middle">0.99 eV</text><text class="t-dim" x="313.8" y="188.0" text-anchor="middle">√11</text><text class="t-dim" x="370" y="204.0" text-anchor="end">|G| (2π/a 단위)</text><text class="t-dim" x="66" y="40">V<tspan baseline-shift="sub" font-size="10">S</tspan>(|G|) — Si 대칭 형상 인자</text><text class="t-dim" x="66" y="292">점선: 원자 의사퍼텐셜 v(q)의 모양(개략)</text><text class="t" x="410" y="58" xml:space="preserve">① 평면파 기저 |k + G⟩, |G|² ≤ 21 (2π/a)² → 113개</text><text class="t" x="410" y="90" xml:space="preserve">② 대각: ħ²|k + G|²/2m (자유 전자 운동 에너지)</text><text class="t" x="410" y="122" xml:space="preserve">③ 비대각: V(G − G′) = V<tspan baseline-shift="sub" font-size="10">S</tspan> cos(ΔG·τ) + i V<tspan baseline-shift="sub" font-size="10">A</tspan> sin(ΔG·τ)</text><text class="t" x="410" y="154" xml:space="preserve">     τ = (a/8)(1,1,1): 두 원자의 위치(기저)</text><text class="t" x="410" y="186" xml:space="preserve">④ 113 × 113 행렬을 대각화 → E<tspan baseline-shift="sub" font-size="10">n</tspan>(k), n = 1, 2, …</text><text class="t" x="410" y="218" xml:space="preserve">⑤ 대칭점 경로 L–Γ–X–U,K–Γ를 따라 반복</text><text class="t-dim" x="410" y="250" xml:space="preserve">Si·Ge: V<tspan baseline-shift="sub" font-size="10">A</tspan> = 0 (같은 원자)</text><text class="t-dim" x="410" y="282" xml:space="preserve">GaAs: V<tspan baseline-shift="sub" font-size="10">A</tspan> ≠ 0 (Ga ≠ As) → Γ–X 간격이 바뀜</text>
+      </svg>
+      <figcaption>경험적 의사퍼텐셜 방법의 전부. 왼쪽: 실리콘 띠 구조 전체를 정하는 숫자는 \(|G|^2 = 3, 8, 11\) (단위 \((2\pi/a)^2\))에서의 대칭 형상 인자 세 개뿐이다(이 책의 Si 값은 띠 간격을 맞추도록 조금 보정했다). 그보다 큰 \(G\)에서는 의사퍼텐셜이 거의 0이라 잘라 낸다. 오른쪽: 이 숫자로 평면파 해밀토니언을 만들고 대각화하는 순서. 1장의 섬아연석 구조에서 두 원자가 다르면 반대칭 성분 \(V_A\)가 생긴다.</figcaption>
+    </figure>
+    <p>다이아몬드 구조에는 원자 두 개가 \(\pm\vec\tau\), \(\vec\tau = (a/8)(1,1,1)\)에 있으므로 결정 퍼텐셜의 푸리에 성분은 <span class="term">구조 인자</span><span class="en">(structure factor)</span>와 원자 <span class="term">형상 인자</span><span class="en">(form factor)</span>의 곱이다(2장의 X선 구조 인자와 같은 계산).</p>
+    <div class="formula">$$V(\vec G) = V_S(|\vec G|)\cos(\vec G\cdot\vec\tau) + i\,V_A(|\vec G|)\sin(\vec G\cdot\vec\tau), \qquad V_{S,A} = \tfrac12(v_1 \pm v_2)$$<div class="where">\(v_1, v_2\): 두 원자의 의사퍼텐셜. Si·Ge는 두 원자가 같아 \(V_A = 0\). GaAs는 \(V_A \ne 0\)이고, 이 반대칭 성분이 Γ의 간격을 키우고 X·L의 간격을 바꿔 GaAs를 직접 간격으로 만든다. \(|\vec G|^2 = 4\) (단위 \((2\pi/a)^2\))에서는 \(\cos(\vec G\cdot\vec\tau) = 0\)이라 \(V_S\)가 사라지고 \(V_A\)만 남는다.</div></div>
+    <p>원자가 전자는 Si 원자당 4개, 기본 셀(원자 2개)당 8개다. 띠 하나에 셀당 2개(스핀)가 들어가므로 아래 띠 4개가 꽉 찬 가전자대, 5번째부터가 전도대다. 이 책의 의사퍼텐셜 계산은 에너지 기준을 따로 정하지 않으므로, Γ의 4번째 띠(가전자대 꼭대기)를 0으로 옮겨 그린다.</p>
+    <div class="predict" data-for="sim-bands">
+      <p>의사퍼텐셜로 계산한 실리콘 띠 구조에서 전도대(5번째 띠)의 가장 낮은 점은 어디일까?</p>
+      <div class="opts"><button class="opt">Γ — 가전자대 꼭대기 바로 위</button><button class="opt">X점 (1, 0, 0)</button><button class="opt" data-correct>Γ–X 선 위, X까지의 85 % 지점</button><button class="opt">L점 (½, ½, ½)</button></div>
+      <div class="quiz-exp">Si 전도대는 X 근처 Δ 선 위 0.85X에서 가장 낮다. 같은 점이 ±x, ±y, ±z 여섯 방향에 있어 골짜기가 6개다. 아래 뷰어에서 흰 원을 끌어 직접 찾아라.</div>
+    </div>
+    <div class="sim" id="sim-bands">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>반도체 띠 구조 뷰어: 전도대 바닥을 끌어 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-bands"></canvas><span class="hint top">흰 원을 좌우로 끈다 · 띠를 누르면 그 띠로</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>물질</span><div class="seg" id="bd-mat"><button data-value="Si" class="on">Si</button><button data-value="Ge">Ge</button><button data-value="GaAs">GaAs</button></div></div>
+          <div class="ctrl"><span>에너지 범위</span><div class="seg" id="bd-range"><button data-value="gap" class="on">간격 근처</button><button data-value="all">전체</button></div></div>
+          <label class="check"><input type="checkbox" id="bd-exp" checked> 실측 간격(300 K) 점 표시</label>
+          <label class="check"><input type="checkbox" id="bd-so"> 스핀–궤도 분리 띠 위치(모형 밖)</label>
+          <button class="btn" id="bd-reset" type="button">도전 다시 시작</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">흰 원의 위치</span><span class="v" id="bd-k">—</span></div>
+        <div class="stat"><span class="k">그 띠의 에너지</span><span class="v" id="bd-e">—</span></div>
+        <div class="stat"><span class="k">모형의 띠 간격</span><span class="v" id="bd-gap">—</span></div>
+        <div class="stat"><span class="k">도전</span><span class="v" id="bd-goal">전도대 최저점을 찾아라</span></div>
+      </div>
+      <div class="sim-note">경험적 의사퍼텐셜(평면파 113개, 스핀–궤도 결합 없음)로 k점 130여 개를 계산했다. 가전자대 꼭대기 = 0. <b>도전:</b> 흰 원은 처음에 전도대(5번째 띠)에 있다. 좌우로 끌어 전도대의 가장 낮은 점을 찾고 놓아라 — 맞히면 간격 종류가 판정된다. 해볼 것: ① Si에서 Γ의 전도대(직접 간격 3.4 eV)와 0.85X의 최저점(1.07 eV)을 비교. ② Ge로 바꾸면 최저점이 L로 옮겨 간다. 모형 값 0.95 eV는 실측 0.66 eV보다 크다. ③ GaAs는 Γ에서 가장 낮고, L(1.68)·X(1.77)가 0.3 eV 남짓 위에 있다.</div>
+    </div>
+    <p>세 물질의 띠 구조에서 소자 엔지니어가 읽어야 할 것은 다음과 같다.</p>
+    <ul>
+      <li><b>가전자대 꼭대기는 셋 다 Γ</b>다. 결합 p 오비탈에서 나온 세 띠가 Γ에서 겹친다(모형에서는 3중 축퇴). 곡률이 작은 <span class="term">무거운 정공</span><span class="en">(heavy hole)</span> 띠와 곡률이 큰 <span class="term">가벼운 정공</span><span class="en">(light hole)</span> 띠가 Γ에서 만나고, 실제 결정에서는 <span class="term">스핀–궤도 결합</span><span class="en">(spin–orbit coupling)</span>이 셋째 띠를 \(\Delta_{so}\)만큼 끌어내린다: <span class="term">분리 띠</span><span class="en">(split-off band)</span>. \(\Delta_{so}\)는 Si 0.044, Ge 0.29, GaAs 0.34 eV로 무거운 원자일수록 크다. 이 장의 계산에는 스핀–궤도 결합이 없어 분리 띠가 따로 나타나지 않는다.</li>
+      <li><b>전도대 최저점</b>은 Si가 Δ 선 위 0.85X(골짜기 6개), Ge가 L점(영역 면 위의 반쪽 골짜기 8개 = 온전한 골짜기 4개), GaAs가 Γ(1개)다. 가전자대 꼭대기와 \(\vec k\)가 같으면 <span class="term">직접 띠 간격</span><span class="en">(direct band gap)</span>, 다르면 <span class="term">간접 띠 간격</span><span class="en">(indirect band gap)</span>이다.</li>
+      <li><b>위쪽 골짜기</b>도 중요하다. GaAs의 L 골짜기는 Γ보다 약 0.29 eV 위에 있고 훨씬 무겁다. 센 전기장에서 뜨거워진 전자가 L로 옮겨 가면 느려진다(건 효과, 11장).</li>
+    </ul>
+    <div class="table-wrap"><table>
+      <thead><tr><th>물질</th><th>간격</th><th>최저 전도대</th><th class="num">모형 Γ</th><th class="num">모형 L</th><th class="num">모형 X(Δ)</th><th class="num">실측(300 K)</th></tr></thead>
+      <tbody>
+        <tr><td>Si</td><td>간접</td><td>0.85X, 6개</td><td class="num">3.37</td><td class="num">2.10</td><td class="num">1.07</td><td class="num">E<sub>g</sub> 1.12 (Δ), Γ ≈ 3.4, L ≈ 2.0</td></tr>
+        <tr><td>Ge</td><td>간접</td><td>L, 4개(반쪽 8개)</td><td class="num">1.22</td><td class="num">0.95</td><td class="num">1.02</td><td class="num">E<sub>g</sub> 0.66 (L), Γ 0.80, Δ ≈ 0.85</td></tr>
+        <tr><td>GaAs</td><td>직접</td><td>Γ, 1개</td><td class="num">1.43</td><td class="num">1.68</td><td class="num">1.77</td><td class="num">E<sub>g</sub> 1.42 (Γ), L 1.71, X 1.90</td></tr>
+      </tbody>
+    </table></div>
+    <p>모형은 Si와 GaAs를 잘 맞히지만 Ge의 간격은 0.3 eV쯤 크게 준다. 형상 인자 세 개의 국소 의사퍼텐셜, 그리고 스핀–궤도 결합이 없는 한계다(Ge의 Γ 전도대는 \(\Delta_{so}\)와 비국소 보정에 특히 민감하다). 골짜기의 순서와 위치 — 소자에 정말 중요한 정성적 사실 — 는 제대로 나온다. 연구용 계산은 비국소 의사퍼텐셜에 스핀–궤도를 넣은 EPM, 강결합(sp³s*, sp³d⁵s*), \(k\cdot p\), 또는 밀도 범함수 이론(DFT)을 쓴다. 표준 DFT(LDA)는 반대로 간격을 크게 과소평가해 Si 간격이 약 0.5 eV로 나오므로, 간격이 중요한 소자 계산에는 보정된 방법이 필요하다.</p>
+    <div class="example" data-title="GaAs의 L 골짜기에 사는 전자의 비율">
+      <p>GaAs의 L 골짜기는 Γ보다 \(\Delta E = 0.29\) eV 위에 있다. Γ 골짜기는 \(m^* = 0.067\,m_e\)의 등방 골짜기 1개, L은 \(m_l = 1.9\), \(m_t = 0.075\,m_e\)인 골짜기 4개다. 비축퇴 평형(300 K, \(kT = 0.02585\) eV)에서 \(n_L/n_\Gamma\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 볼츠만 근사에서 골짜기의 전자 수는 \(g_v\,m_d^{3/2}e^{-(E_c - E_F)/kT}\)에 비례한다. 골짜기 하나의 상태 밀도 질량은 \(m_d = (m_lm_t^2)^{1/3}\).</div>
+        <div class="step"><b>풀이</b> \(m_{d,L} = (1.9\times0.075^2)^{1/3} = 0.2203\). \(n_L/n_\Gamma = 4\,(0.2203/0.067)^{3/2}\,e^{-0.29/0.02585} = 4\times5.96\times1.34\times10^{-5} = 3.2\times10^{-4}\).</div>
+        <div class="answer">n<sub>L</sub>/n<sub>Γ</sub> ≈ 3.2 × 10⁻⁴ — 거의 모두 Γ에 있다</div>
+        <div class="step"><b>검토</b> 상태 밀도는 L이 24배 크지만 0.29 eV(약 11 kT)의 볼츠만 인자 \(10^{-5}\)를 이기지 못한다. 그러나 수 kV/cm의 전기장으로 전자 온도가 수천 K로 오르면 \(kT_e\)가 0.29 eV에 다가가 L로 대거 옮겨 간다 — 음의 미분 저항(건 다이오드)의 원리다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>실리콘으로 LED를 만들지 못하는 띠 구조의 이유</strong> 전도대 바닥(0.85X)과 가전자대 꼭대기(Γ)의 결정 운동량 차는 \(0.85\times2\pi/a = 9.8\) nm⁻¹로, 띠 간격 광자 파수(\(5.7\times10^{-3}\) nm⁻¹)의 1700배다. 광자만으로는 운동량을 맞출 수 없어 발광에 포논이 꼭 끼어야 하고, 복사 재결합 계수가 GaAs보다 10⁵배쯤 작다(12장). 그래서 광원은 직접 간격 화합물(GaAs, InP, GaN)로 만들고, Si는 흡수 쪽(포토다이오드, 이미지 센서)에서 활약한다. 실리콘 포토닉스가 광원만은 InP 칩을 붙여 쓰는 이유이기도 하다. → <a href="https://semi.euiyun.com/device/chapters/opto.html">DeviceBook · 광전자 소자</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="valleys">
+    <h2>골짜기, 등에너지면, 유효 질량 텐서</h2>
+    <p>띠의 극값 \(\vec k_0\) 근처에서 \(E(\vec k)\)를 테일러 전개하면 1차 항은 0이고 2차 항이 남는다. 1차원의 \(1/m^* = \hbar^{-2}d^2E/dk^2\)를 3차원으로 늘린 것이 <span class="term">유효 질량 텐서</span><span class="en">(effective mass tensor)</span>다.</p>
+    <div class="formula">$$\left(\frac{1}{m^*}\right)_{ij} = \frac{1}{\hbar^2}\frac{\partial^2E}{\partial k_i\,\partial k_j}\bigg|_{\vec k_0}, \qquad E(\vec k) \approx E_c + \frac{\hbar^2}{2}\sum_{ij}(k - k_0)_i\left(\frac{1}{m^*}\right)_{ij}(k - k_0)_j$$<div class="where">대칭 텐서이므로 주축을 잡으면 대각이 된다. 주축 방향의 질량 \(m_1, m_2, m_3\)로 \(E - E_c = \sum_i \hbar^2q_i^2/2m_i\) — 등에너지면은 반축 \(q_i = \sqrt{2m_i(E - E_c)}/\hbar\)인 타원체다.</div></div>
+    <p>Si의 골짜기는 \(\langle100\rangle\) 축 위에 있으므로 축 방향이 주축 하나이고, 축에 수직인 두 방향은 대칭으로 같다. 그래서 등에너지면은 <span class="term">회전 타원체</span><span class="en">(ellipsoid of revolution)</span>이고, 축 방향 질량을 <span class="term">종 질량</span><span class="en">(longitudinal mass)</span> \(m_l\), 수직 방향 질량을 <span class="term">횡 질량</span><span class="en">(transverse mass)</span> \(m_t\)라 한다. Si: \(m_l = 0.98\), \(m_t = 0.19\,m_e\) — 반축 비 \(\sqrt{m_l/m_t} = 2.3\)인 길쭉한 시가 모양이다. Ge의 L 골짜기는 \(\langle111\rangle\) 축의 회전 타원체(\(m_l = 1.64\), \(m_t = 0.082\)), GaAs의 Γ 골짜기는 구(\(0.067\))다. 이 숫자들은 사이클로트론 공명(9장)으로 잰다.</p>
+    <figure class="mini" id="mini-mass">
+      <div class="mini-view"><canvas id="cv-mass"></canvas><span class="hint top">흰 원을 좌우로 끌어 극값에서 벗어나 본다</span></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>극값과 방향</span><select id="ms-sel">
+          <option value="0">Si 전도대 0.85X — 종 방향 [100]</option>
+          <option value="1">Si 전도대 0.85X — 횡 방향 [010]</option>
+          <option value="2">Ge 전도대 L — 종 방향 [111]</option>
+          <option value="3">Ge 전도대 L — 횡 방향 [1̄10]</option>
+          <option value="4">GaAs 전도대 Γ — [100]</option>
+          <option value="5">Si 가전자대 Γ — 무거운 정공 [111]</option>
+          <option value="6">Si 가전자대 Γ — 가벼운 정공 [111]</option>
+          <option value="7">Ge 가전자대 Γ — 가벼운 정공 [111]</option>
+        </select></label>
+        <span class="readout" id="ms-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>의사퍼텐셜 띠(실선)를 극값 근처에서 직접 계산하고, 극값에서의 곡률로 정한 포물선 \(\hbar^2q^2/2m^*\)(점선)과 겹쳐 그렸다. 극값에서 멀어질수록 실제 띠가 포물선보다 낮아진다 — 비포물선성(\(E(1 + \alpha E) = \hbar^2q^2/2m^*\)). 곡률로 잰 질량을 실측값과 비교하라. 정공 띠는 방향마다 질량이 다른 "뒤틀린" 띠다.</figcaption>
+    </figure>
+    <p>질량이 텐서이면 힘과 가속도가 나란하지 않다. 준고전 운동 방정식 \(\hbar\,d\vec k/dt = \vec F\)(9장)와 \(\vec v = \hbar^{-1}\nabla_kE\)에서 \(d\vec v/dt = (1/m^*)\cdot\vec F\) — 가속도는 힘에 역질량 텐서를 곱한 것이다. 가벼운 방향으로는 잘 가속되고 무거운 방향으로는 덜 가속되므로, 가속도는 가벼운 축 쪽으로 기운다.</p>
+    <figure class="mini" id="mini-force">
+      <div class="mini-view"><canvas id="cv-force"></canvas><span class="hint top">힘 화살표 끝(흰 원)을 끌어 방향을 돌린다</span></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>골짜기</span><div class="seg" id="fo-v"><button data-value="si" class="on">Si (0.98/0.19)</button><button data-value="ge">Ge L (1.64/0.082)</button><button data-value="gaas">GaAs Γ</button></div></div>
+        <span class="readout" id="fo-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>골짜기 축(가로)과 수직 축(세로)이 만드는 단면. 타원은 등에너지선, 주황 화살표는 힘 \(\vec F\), 청록 화살표는 가속도 \(\vec a = (1/m^*)\cdot\vec F\)다. 힘이 축과 나란하거나 수직일 때만 둘이 나란하다. 그 사이에서는 가속도가 가벼운(수직) 방향으로 크게 꺾인다 — Ge에서 특히 심하다.</figcaption>
+    </figure>
+    <h3>여러 골짜기의 평균: 상태 밀도 질량과 전도도 질량</h3>
+    <p>골짜기가 여러 개이고 방향마다 질량이 다르면 질량 하나로 요약하는 방법이 목적마다 다르다. 먼저 상태 수를 세자. 골짜기 하나에서 \(E - E_c\) 아래 상태 수는 타원체 부피 \(\tfrac{4\pi}{3}q_1q_2q_3 \propto (m_1m_2m_3)^{1/2}(E - E_c)^{3/2}\)에 비례하므로, 질량 \((m_lm_t^2)^{1/3}\)인 구 하나와 같다. 골짜기 \(g_v\)개를 합치면 \(g_v(m_lm_t^2)^{1/2} = m_{dn}^{3/2}\)이 되도록</p>
+    <div class="formula">$$m_{dn} = g_v^{2/3}\,(m_lm_t^2)^{1/3} \qquad (\text{Si: } 6^{2/3}(0.98\times0.19^2)^{1/3} = 1.08\,m_e)$$<div class="where"><span class="term">상태 밀도 유효 질량</span><span class="en">(density-of-states effective mass)</span>. 유효 상태 밀도 \(N_c = 2(2\pi m_{dn}kT/h^2)^{3/2}\)과 진성 농도(10장)에 들어간다.</div></div>
+    <p>다음은 전류다. 전기장 \(\vec F\) 속 골짜기 \(v\)의 전류 밀도는 \(\vec J_v = n_vq^2\tau\,(1/m^*)_v\cdot\vec{\mathcal E}\). 여섯 골짜기의 역질량 텐서를 더하면 x 골짜기 두 개는 \(\mathrm{diag}(1/m_l, 1/m_t, 1/m_t)\), y·z 골짜기는 축이 바뀐 같은 꼴이라, 합은 방향과 무관한 \(\tfrac13(1/m_l + 2/m_t)\)의 등방 텐서다. 입방 결정의 전도도는 골짜기가 이방적이어도 등방이다.</p>
+    <div class="formula">$$\frac{1}{m_{c}} = \frac13\left(\frac{1}{m_l} + \frac{2}{m_t}\right) \qquad (\text{Si: } m_c = 0.26\,m_e), \qquad \mu = \frac{q\tau}{m_c}$$<div class="where"><span class="term">전도도 유효 질량</span><span class="en">(conductivity effective mass)</span>. 무거운 \(m_l\)은 상태 밀도를 키우고, 가벼운 \(m_t\)는 전류를 주도한다. 두 평균이 4배나 차이 나는 이유다.</div></div>
+    <div class="tangle" id="tg-mass">
+      <p>종 질량 \(m_l =\) <span class="tn" data-var="ml" data-min="0.1" data-max="2" data-step="0.01" data-unit=" mₑ">0.98</span>, 횡 질량 \(m_t =\) <span class="tn" data-var="mt" data-min="0.02" data-max="1" data-step="0.01" data-unit=" mₑ">0.19</span>인 골짜기가 <span class="tn" data-var="g" data-min="1" data-max="8" data-step="1" data-unit="개">6</span> 있으면 상태 밀도 질량은 \(m_{dn} =\) <span class="tn-out" data-out="md"></span>, 전도도 질량은 \(m_c =\) <span class="tn-out" data-out="mc"></span>이다. 300 K의 유효 상태 밀도는 \(N_c =\) <span class="tn-out" data-out="nc"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="Ge L 골짜기의 유효 질량 텐서">
+      <p>Ge의 [111] 골짜기(\(m_l = 1.64\), \(m_t = 0.082\,m_e\))의 역질량 텐서를 입방 축(x, y, z)으로 쓰라. 이 골짜기 전자에게 [100] 방향 힘을 주면 가속도는 힘과 몇 도를 이루는가? [100] 방향의 유효 질량은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 축 단위 벡터 \(\hat n = (1,1,1)/\sqrt3\)에 대해 회전 타원체의 역질량 텐서는 \((1/m)_{ij} = \delta_{ij}/m_t + (1/m_l - 1/m_t)\,n_in_j\).</div>
+        <div class="step"><b>풀이</b> \(1/m_t = 12.195\), \(1/m_l = 0.610\), \((1/m_l - 1/m_t)/3 = -3.862\). 대각 성분 \(12.195 - 3.862 = 8.333\), 비대각 성분 \(-3.862\) (단위 \(1/m_e\)). \(\vec F = F\hat x\)이면 \(\vec a \propto (8.333, -3.862, -3.862)\). \(\cos\theta = 8.333/\sqrt{8.333^2 + 2\times3.862^2} = 0.836\) → \(\theta = 33.2^\circ\). [100] 방향 질량 \(1/8.333 = 0.120\,m_e\).</div>
+        <div class="answer">대각 8.33, 비대각 −3.86 (mₑ⁻¹); 가속도는 힘에서 33° 기운다; m<sub>[100]</sub> = 0.120 mₑ</div>
+        <div class="step"><b>검토</b> [100]은 네 L 골짜기 축과 모두 같은 각(54.7°)을 이루므로 네 골짜기 모두 [100] 질량이 0.120이다. 이것이 Ge의 전도도 질량 \(3/(1/m_l + 2/m_t) = 0.120\)과 같은 것은 우연이 아니다 — 대칭이 평균을 강제한다. 비대각 성분은 네 골짜기에서 부호가 달라 합하면 상쇄된다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-mass" data-title="상태 밀도 질량 · 전도도 질량 · 방향 질량 반복 연습"></div>
+    <div class="callout semi"><strong>두 질량이 소자 모델의 두 상수가 된다</strong> 소자 시뮬레이터와 교과서의 표에 나오는 Si 전자 질량이 1.08일 때도 있고 0.26일 때도 있는 이유가 이것이다. 1.08(상태 밀도 질량)은 \(N_c = 2.8\times10^{19}\) cm⁻³과 \(n_i\)를 거쳐 문턱 전압·누설 전류에, 0.26(전도도 질량)은 이동도·포화 속도·탄도 주입 속도에 들어간다. 둘을 섞어 쓰면 결과가 수 배 틀린다. 정공은 무거운·가벼운 정공 띠가 섞이고 뒤틀려 있어 \(m_{dp} \approx 0.81\)(300 K, 비포물선성 포함)처럼 측정에서 거꾸로 맞춘 값을 쓴다. → <a href="https://semi.euiyun.com/device/chapters/carriers.html">DeviceBook · 캐리어 통계</a> · <a href="https://semi.euiyun.com/device/chapters/transport.html">DeviceBook · 캐리어 수송</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="strain">
+    <h2>변형이 띠를 바꾼다</h2>
+    <p>결정을 늘이거나 누르면 원자 간격이 바뀌고, 퍼텐셜의 푸리에 성분과 호핑이 바뀌어 띠가 움직인다. 띠 끝의 이동은 작은 변형에 대해 변형 텐서 \(\varepsilon_{ij}\)(3장)에 비례하고, 그 비례 상수를 <span class="term">변형 퍼텐셜</span><span class="en">(deformation potential)</span>이라 한다(단위 eV). 부피만 바뀌는 등방 변형은 모든 골짜기를 함께 움직여 간격만 바꾼다. 소자에서 중요한 것은 대칭을 깨는 변형이다 — 동등했던 골짜기들이 서로 다르게 움직여 <span class="term">골짜기 분리</span><span class="en">(valley splitting)</span>가 생긴다.</p>
+    <p>Si 골짜기 \(i\)(축 \(\hat a_i\))의 전도대 바닥 이동은 헤링–보그트 식으로 쓴다.</p>
+    <div class="formula">$$\Delta E_c^{(i)} = \Xi_d\,(\varepsilon_{xx} + \varepsilon_{yy} + \varepsilon_{zz}) + \Xi_u\,\hat a_i\cdot\overleftrightarrow{\varepsilon}\cdot\hat a_i, \qquad \Xi_u \approx 9.2\ \text{eV}$$<div class="where">\(\Xi_d\): 팽창 변형 퍼텐셜(모든 골짜기 공통), \(\Xi_u\): 단축 변형 퍼텐셜. z 골짜기는 \(\varepsilon_{zz}\)를, x 골짜기는 \(\varepsilon_{xx}\)를 느낀다. 늘어난 방향의 골짜기가 올라가고, 줄어든 방향의 골짜기가 내려간다.</div></div>
+    <p>(001) 웨이퍼 위에 Si를 Si₁₋ₓGeₓ 완화층 위에 키우면 면내로 늘어난다(<span class="term">2축 변형</span><span class="en">(biaxial strain)</span>, \(\varepsilon_{xx} = \varepsilon_{yy} = \varepsilon_\parallel > 0\)). 면에 수직 방향은 푸아송 효과로 줄어든다: \(\varepsilon_{zz} = \varepsilon_\perp = -2(C_{12}/C_{11})\varepsilon_\parallel = -0.77\varepsilon_\parallel\). 그러면 면에 수직인 두 골짜기(±z, <b>Δ₂</b>)는 내려가고 면내 네 골짜기(±x, ±y, <b>Δ₄</b>)는 올라간다.</p>
+    <div class="formula">$$E_{\Delta_4} - E_{\Delta_2} = \Xi_u(\varepsilon_\parallel - \varepsilon_\perp) = \Xi_u\left(1 + \frac{2C_{12}}{C_{11}}\right)\varepsilon_\parallel \approx 0.16\ \text{eV}\times\frac{\varepsilon_\parallel}{1\,\%}$$<div class="where">Si 위에 키운 층의 면내 변형은 \(\varepsilon_\parallel = (a_{\text{SiGe}} - a_{\text{Si}})/a_{\text{Si}} \approx 0.038x\)(\(x \approx 0.2\) 근처, 2장의 SiGe 격자 상수). Ge 20 %의 가상 기판이면 \(\varepsilon_\parallel \approx 0.75\,\%\), 분리 약 0.12 eV — kT의 4.7배다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 330" role="img" aria-label="변형과 양자 구속에 따른 실리콘 골짜기와 정공 띠의 에너지 분리 단계 그림">
+        <g class="t" style="font-weight:700"><text x="100" y="28" text-anchor="middle">① 변형 없음</text></g>
+        <line x1="40" y1="170" x2="160" y2="170" stroke="var(--accent)" stroke-width="4"/>
+        <text class="t" x="100" y="160" text-anchor="middle">Δ₆ (6개)</text>
+        <text class="t-dim" x="100" y="196" text-anchor="middle">m<tspan baseline-shift="sub" font-size="10">c</tspan> = 0.26 (모든 방향)</text>
+        <g transform="translate(100,250)"><ellipse cx="-30" cy="0" rx="16" ry="7" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/><ellipse cx="30" cy="0" rx="16" ry="7" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/><ellipse cx="0" cy="-26" rx="7" ry="16" fill="var(--accent-soft)" stroke="var(--accent)"/><ellipse cx="0" cy="26" rx="7" ry="16" fill="var(--accent-soft)" stroke="var(--accent)"/><circle cx="0" cy="0" r="5" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/></g>
+        <g data-step="2">
+          <text class="t" x="300" y="28" text-anchor="middle" style="font-weight:700">② 2축 인장 ε∥ &gt; 0</text>
+          <line x1="240" y1="170" x2="360" y2="170" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+          <line x1="240" y1="140" x2="360" y2="140" stroke="var(--accent-2)" stroke-width="4"/>
+          <line x1="240" y1="230" x2="360" y2="230" stroke="var(--accent)" stroke-width="4"/>
+          <text class="t" x="300" y="130" text-anchor="middle" fill="var(--accent-2)">Δ₄ (면내 4개) +⅓ΔE</text>
+          <text class="t" x="300" y="254" text-anchor="middle" fill="var(--accent)">Δ₂ (수직 2개) −⅔ΔE</text>
+          <text class="t-dim" x="300" y="290" text-anchor="middle">면내 질량 m<tspan baseline-shift="sub" font-size="10">t</tspan> = 0.19만 남는다</text>
+          <path d="M370,140 L370,230" stroke="var(--text-dim)" stroke-width="1.5" marker-start="url(#bs-ar)" marker-end="url(#bs-ar)"/>
+          <text class="t" x="378" y="190">ΔE</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="510" y="28" text-anchor="middle" style="font-weight:700">③ (100) 반전층 구속</text>
+          <path d="M440,70 L440,290 L585,70" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+          <line x1="442" y1="240" x2="527" y2="240" stroke="var(--accent)" stroke-width="3"/>
+          <line x1="442" y1="200" x2="553" y2="200" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 3"/>
+          <line x1="442" y1="215" x2="543" y2="215" stroke="var(--accent-2)" stroke-width="3"/>
+          <text class="t" x="560" y="250" fill="var(--accent)">Δ₂: E₀ (m<tspan baseline-shift="sub" font-size="10">z</tspan> = m<tspan baseline-shift="sub" font-size="10">l</tspan>)</text>
+          <text class="t" x="560" y="222" fill="var(--accent-2)">Δ₄: E₀′ (m<tspan baseline-shift="sub" font-size="10">z</tspan> = m<tspan baseline-shift="sub" font-size="10">t</tspan>)</text>
+          <text class="t-dim" x="565" y="196">Δ₂: E₁</text>
+          <text class="t-dim" x="510" y="312" text-anchor="middle">무거운 구속 질량이 낮은 부띠</text>
+        </g>
+        <g data-step="4">
+          <text class="t" x="700" y="28" text-anchor="middle" style="font-weight:700">④ 정공: 압축 변형</text>
+          <path d="M640,90 Q700,150 760,90" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+          <path d="M650,90 Q700,230 750,90" fill="none" stroke="var(--accent)" stroke-width="3" transform="translate(0,28)"/>
+          <text class="t" x="700" y="84" text-anchor="middle" fill="var(--accent-2)">위 띠: 면내 가벼움</text>
+          <text class="t" x="700" y="230" text-anchor="middle" fill="var(--accent)">아래 띠</text>
+          <text class="t-dim" x="700" y="262" text-anchor="middle">Γ의 겹침이 풀려</text>
+          <text class="t-dim" x="700" y="282" text-anchor="middle">띠 사이 산란도 준다</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>변형이 없으면 여섯 골짜기가 같은 에너지에 있고, 전자는 골고루 나뉘어 평균 질량 0.26으로 움직인다.</li><li>면내 2축 인장: 면에 수직인 Δ₂가 내려가고 면내 Δ₄가 올라간다. 전자가 Δ₂로 모이면 면내 운동 질량은 가벼운 m<sub>t</sub> = 0.19뿐이고, 골짜기 간 산란도 줄어든다.</li><li>(100) 웨이퍼 nMOS의 반전층은 변형 없이도 골짜기를 가른다. 수직 방향 질량이 무거운 Δ₂(m<sub>z</sub> = 0.98)의 바닥 부띠가 Δ₄(m<sub>z</sub> = 0.19)보다 낮다. 2축 인장은 이 분리를 더 키운다.</li><li>정공: Γ에서 겹쳐 있던 무거운·가벼운 정공 띠가 변형으로 갈라진다. 압축 변형(SiGe 채널)에서는 위로 올라온 띠의 면내 질량이 가벼워져 정공 이동도가 오른다.</li></ol>
+      <figcaption>변형과 구속이 띠 끝을 가르는 네 장면. 에너지 축은 개략이다. 정량은 아래 시뮬레이터와 예제에서 계산한다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-valley">
+      <p>(001) Si를 면내로 1 % 늘였다(2축 인장). 전자가 모이는 골짜기와, 그 골짜기 전자가 채널(면내) 방향으로 움직일 때의 질량은?</p>
+      <div class="opts"><button class="opt">면내 Δ₄ 골짜기, 질량 0.98</button><button class="opt">면내 Δ₄ 골짜기, 질량 0.19</button><button class="opt" data-correct>수직 Δ₂ 골짜기, 질량 0.19</button><button class="opt">수직 Δ₂ 골짜기, 질량 0.98</button></div>
+      <div class="quiz-exp">면에 수직인 방향이 줄어들므로(\(\varepsilon_\perp < 0\)) 그 방향 골짜기가 내려간다. ±z 골짜기의 긴 축은 면에 수직이라, 면내 두 방향 모두 가벼운 \(m_t\)로 움직인다. 아래 3D 그림에서 변형을 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-valley">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>골짜기 3D: 등에너지면을 돌리고 변형으로 갈라라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-valley"></canvas><span class="hint">끌어서 돌린다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>물질</span><div class="seg" id="vl-mat"><button data-value="Si" class="on">Si</button><button data-value="Ge">Ge</button><button data-value="GaAs">GaAs</button></div></div>
+          <label class="ctrl"><span>등에너지면 E − E<sub>c</sub> <output id="vl-e-out"></output></span><input type="range" id="vl-e" min="10" max="150" step="5" value="60"></label>
+          <label class="ctrl"><span>Si 2축 변형 ε∥ <output id="vl-s-out"></output></span><input type="range" id="vl-s" min="-1" max="1.5" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="vl-rot" checked> 천천히 돌리기</label>
+          <label class="check"><input type="checkbox" id="vl-bz" checked> 브릴루앙 영역</label>
+          <label class="check"><input type="checkbox" id="vl-mag" checked> 등에너지면 3배 확대</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Δ₂ / Δ₄ 이동</span><span class="v" id="vl-shift">—</span></div>
+        <div class="stat"><span class="k">Δ₂에 있는 전자</span><span class="v" id="vl-pop">—</span></div>
+        <div class="stat"><span class="k">면내 전도도 질량</span><span class="v" id="vl-mc">—</span></div>
+        <div class="stat"><span class="k">질량만으로 본 이동도 비</span><span class="v" id="vl-mu">—</span></div>
+      </div>
+      <div class="sim-note">\(E\)는 변형 없는 전도대 바닥에서 잰 에너지이고, 같은 \(E\)의 등에너지면을 그렸다(기본은 3배 확대, 끄면 브릴루앙 영역에 대한 실제 크기). 변형은 \(\Xi_u = 9.16\) eV, \(C_{12}/C_{11} = 0.386\)의 헤링–보그트 식, 전자 분포는 300 K 볼츠만 근사다. 해볼 것: ① Si에서 ε∥ = +0.75 %(Ge 20 % 가상 기판) — Δ₂(청록)가 커지고 Δ₄(주황)가 작아진다. 면내 질량이 0.19로 다가간다. ② 압축(−)으로 바꾸면 반대로 Δ₄가 내려가 면내 질량이 오히려 무거워진다. ③ Ge로 바꾸면 L점 8개의 반쪽 타원체, GaAs는 Γ의 작은 구 하나다.</div>
+    </div>
+    <div class="tangle" id="tg-strain">
+      <p>Si를 Ge 비율 <span class="tn" data-var="x" data-min="0" data-max="0.5" data-step="0.01">0.20</span>인 완화된 Si₁₋ₓGeₓ 위에 키우면 면내 변형은 \(\varepsilon_\parallel =\) <span class="tn-out" data-out="ep"></span>, 수직 변형은 \(\varepsilon_\perp =\) <span class="tn-out" data-out="ez"></span>이다. 골짜기 분리 \(\Xi_u(\varepsilon_\parallel - \varepsilon_\perp) =\) <span class="tn-out" data-out="de"></span>이고, 300 K에서 전자의 <span class="tn-out" data-out="f2"></span>가 Δ₂ 골짜기에 모인다. 면내 전도도 질량은 0.260 → <span class="tn-out" data-out="mc"></span>(질량만의 이동도 이득 <span class="tn-out" data-out="gain"></span>). <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="Si₀.₈Ge₀.₂ 위 변형 실리콘의 골짜기 분리">
+      <p>완화된 Si₀.₈Ge₀.₂ 가상 기판 위에 키운 얇은 Si 층의 (a) 면내·수직 변형, (b) Δ₄–Δ₂ 분리, (c) 300 K에서 Δ₄ 골짜기의 전자 비율, (d) 면내 전도도 질량을 구하라. \(a_{\text{SiGe}}(x) = 0.5431 + 0.01992x + 0.002733x^2\) nm, \(C_{12}/C_{11} = 0.386\), \(\Xi_u = 9.16\) eV, \(m_l = 0.98\), \(m_t = 0.19\).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> Si 층은 기판의 면내 격자 상수를 따라 늘어난다. 분리는 헤링–보그트 식, 분포는 골짜기마다 같은 상태 밀도(같은 \(m_lm_t^2\))라 볼츠만 인자만 다르다. 면내 역질량: Δ₂는 \(1/m_t\), Δ₄는 \(\tfrac12(1/m_l + 1/m_t)\).</div>
+        <div class="step"><b>풀이</b> (a) \(a = 0.54719\) nm → \(\varepsilon_\parallel = 0.00754\), \(\varepsilon_\perp = -0.772\times0.00754 = -0.00582\). (b) \(\Delta E = 9.16\times(0.00754 + 0.00582) = 0.122\) eV. (c) \(n_4/n_2 = (4/2)e^{-0.122/0.02585} = 2\times0.00881 = 0.0176\) → Δ₄ 비율 \(0.0176/1.0176 = 1.73\,\%\). (d) \(1/m_\parallel = 0.9827\times5.263 + 0.0173\times\tfrac12(1.020 + 5.263) = 5.172 + 0.054 = 5.226\) → \(m_\parallel = 0.191\).</div>
+        <div class="answer">ε∥ = +0.75 %, ε⊥ = −0.58 %; ΔE = 0.122 eV; Δ₄에 1.7 %; m<sub>∥</sub> = 0.191 mₑ</div>
+        <div class="step"><b>검토</b> 질량만으로는 이동도가 0.260/0.191 = 1.36배다. 실측 향상(장채널 전자 약 1.6–1.8배)이 더 큰 것은 Δ₂–Δ₄ 사이 골짜기 간 포논 산란이 분리로 막혀 \(\tau\)도 길어지기 때문이다. 변형 퍼텐셜 값은 문헌마다 8.6–9.3 eV로 흩어져 있어 분리는 ±5 % 정도 불확실하다.</div>
+      </details>
+    </div>
+    <h3>(100) 반전층의 Δ₂ 골짜기와 정공 띠</h3>
+    <p>변형이 없어도 (100) 웨이퍼 nMOS 채널에서는 골짜기가 갈린다. 반전층은 폭 수 nm의 삼각 우물이고, 수직(z) 방향 양자화 에너지는 구속 방향의 질량 \(m_z\)에 반비례한다(16장). Δ₂는 \(m_z = m_l = 0.98\)이라 바닥 부띠가 낮고, Δ₄는 \(m_z = m_t = 0.19\)라 높다(<span class="term">부띠</span><span class="en">(subband)</span>의 두 사다리). 반전층 전자 대부분이 면내 질량이 가벼운 Δ₂에 있는 것이 (100) 웨이퍼가 nMOS에 유리한 띠 구조상의 이유다. 반대로 정공 이동도는 (110) 웨이퍼·⟨110⟩ 채널에서 더 크다 — 뒤틀린 무거운 정공 띠의 질량이 방향마다 다르기 때문이다.</p>
+    <p>정공 쪽에서는 Γ의 무거운·가벼운 정공 겹침이 열쇠다. 변형이 없으면 두 띠가 Γ에서 겹쳐 띠 사이 산란이 잦다. 압축 변형은 이 겹침을 풀고, 위로 올라온 띠의 채널 방향 질량을 가볍게 만든다. Ge는 아예 가벼운 정공 질량이 0.043으로 Si(0.16)의 4분의 1이고 정공 이동도가 약 1900 cm²/(V·s)로 Si(약 450)의 4배다. 그래서 pMOS는 압축 변형 SiGe 소스·드레인, SiGe 채널, 나아가 Ge 채널로 진화해 왔다.</p>
+    <div class="callout semi"><strong>변형 실리콘: 90 nm부터 모든 CMOS에 들어간 띠 구조 공학</strong> 2003년 90 nm 노드부터 트랜지스터는 의도적으로 변형된 채널을 쓴다. nMOS에는 인장 응력 SiN 덮개막(CESL)이나 응력 기억 기법으로 채널 방향 인장을, pMOS에는 소스·드레인 자리를 파내고 SiGe를 에피로 채워(eSiGe) 채널 방향 압축을 건다. 1–2 GPa 응력이면 변형은 0.5–1 % 수준이고, 이 절의 계산대로 골짜기·정공 띠가 수십–백 meV 갈라져 구동 전류가 수십 % 오른다. 공정 후 응력은 라만 분광(5장)으로 잰다. FinFET·나노시트에서도 채널 응력은 핵심 손잡이로 남아 있다. → <a href="https://semi.euiyun.com/device/chapters/scaling.html">DeviceBook · 스케일링과 단채널 효과</a></div>
+    <div class="callout semi"><strong>(100) nMOS 반전층의 Δ₂ 사다리</strong> 게이트 전기장 0.5–1 MV/cm의 반전층에서 Δ₂ 바닥 부띠는 전도대 바닥보다 0.1–0.17 eV 위에 뜨고, Δ₄ 부띠는 그보다 0.08–0.12 eV 더 위다(삼각 우물 근사). 이 양자화 때문에 문턱 전압이 고전 계산보다 수십 mV 오르고, 반전층 전하의 중심이 계면에서 1 nm쯤 떨어져 유효 산화막이 두꺼워진다(양자 효과의 EOT 증가). 나노시트처럼 채널 두께가 5 nm 이하로 얇아지면 구조적 구속이 이 분리를 더 키운다. → <a href="https://semi.euiyun.com/device/chapters/mosfet.html">DeviceBook · MOSFET</a></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>주기 퍼텐셜을 평면파로 전개하면 슈뢰딩거 방정식이 중심 방정식(행렬)이 된다. 영역 경계에서 두 평면파만 남긴 2×2 문제가 \(E_\pm = \varepsilon_0 \pm |U_G|\), 간격 \(E_g = 2|U_G|\)를 주고, 간격 근처 띠 끝은 가볍다(\(m^*/m \approx |U_G|/2\varepsilon_0\)).</li>
+      <li>같은 띠를 확장·축소·반복 영역 그림으로 그릴 수 있다. 빈 격자 띠 \(\hbar^2|\vec k - \vec G|^2/2m\)를 제1 영역으로 접으면 실제 띠 구조의 뼈대와 축퇴가 보이고, 퍼텐셜은 교차점마다 간격을 연다.</li>
+      <li>2차원 정사각 격자 강결합 띠 \(E = -2t(\cos k_xa + \cos k_ya)\)는 폭 \(8t\), 바닥 질량 \(\hbar^2/2ta^2\)이다. 페르미 선은 적게 채우면 원, 반 채움에서 \(|k_x| + |k_y| = \pi/a\)의 마름모이고, X의 안장점에서 판호버 특이점이 생긴다.</li>
+      <li>그래핀의 두 부격자 모형 \(E_\pm = \pm t|f(\vec k)|\)는 K·K′에서 띠가 만나는 디랙 원뿔 \(E = \pm\hbar v_F|\vec q|\), \(v_F = 3ta/2\hbar \approx 10^6\) m/s를 준다. A·B 대칭을 깨면 간격이 열린다.</li>
+      <li>fcc 영역의 Γ·X·L·K에서 의사퍼텐셜 띠 구조를 읽으면: 가전자대 꼭대기는 모두 Γ(무거운·가벼운 정공, 스핀–궤도 분리 띠), 전도대 바닥은 Si 0.85X(6개, 간접), Ge L(4개, 간접), GaAs Γ(직접). 단순 모형은 Ge 간격을 0.3 eV 크게 준다.</li>
+      <li>유효 질량 텐서 \((1/m^*)_{ij} = \hbar^{-2}\partial^2E/\partial k_i\partial k_j\). 등에너지면은 회전 타원체(Si \(m_l = 0.98\), \(m_t = 0.19\)), 가속도는 힘과 나란하지 않다. 상태 밀도 질량 \(g_v^{2/3}(m_lm_t^2)^{1/3} = 1.08\)과 전도도 질량 \(3/(1/m_l + 2/m_t) = 0.26\)을 구분해 쓴다.</li>
+      <li>2축 인장은 Si의 Δ₂를 낮추고 Δ₄를 올린다: 분리 \(\Xi_u(1 + 2C_{12}/C_{11})\varepsilon_\parallel \approx 0.16\) eV/%. 전자가 면내 질량 0.19인 Δ₂로 모이고 골짜기 간 산란이 줄어 이동도가 오른다. 정공은 압축 변형과 Ge의 가벼운 정공으로 빨라진다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(\hbar^2/2m_e = 0.0381\) eV·nm², \(\hbar = 6.582\times10^{-16}\) eV·s, \(kT(300\ \text{K}) = 0.02585\) eV. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="퍼텐셜 푸리에 성분과 간격" data-answer="0.6; 0.2" data-label="E<sub>g1</sub> =; E<sub>g2</sub> =" data-unit="eV; eV">
+        <div class="prob-q"><p>1차원 결정의 퍼텐셜이 \(V(x) = V_1\cos(2\pi x/a) + V_2\cos(4\pi x/a)\), \(V_1 = 0.60\) eV, \(V_2 = 0.20\) eV이다. 거의 자유 전자 모형(1차)으로 첫째 경계 \(k = \pi/a\)와 둘째 경계 \(k = 2\pi/a\)의 간격을 구하라.</p></div>
+        <div class="prob-hint">\(V_1\cos Gx = \tfrac{V_1}{2}(e^{iGx} + e^{-iGx})\)이므로 \(U_G = V_1/2\)다.</div>
+        <div class="prob-sol"><p>\(U_{2\pi/a} = 0.30\) eV, \(U_{4\pi/a} = 0.10\) eV. 간격 \(2|U|\): \(E_{g1} = 0.60\) eV, \(E_{g2} = 0.20\) eV. 곧 코사인 진폭이 바로 간격이다. (2차 보정 \(U_1^2/\varepsilon_G\)는 둘째 간격을 조금 더 키운다.)</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="2차원 빈 격자" data-answer="6.14" data-label="E(M) =" data-unit="eV">
+        <div class="prob-q"><p>격자 상수 0.350 nm인 2차원 정사각 격자의 빈 격자 모형에서 M점(영역 꼭짓점)의 가장 낮은 에너지는?</p></div>
+        <div class="prob-sol"><p>M = (π/a, π/a), \(|\vec k| = \sqrt2\pi/a\). \(E = 0.0381\times2\times(\pi/0.350)^2 = 0.0381\times2\times80.57 = 6.14\) eV (4중 축퇴).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="두 평면파 근사" data-answer="2.01" data-label="E₋ =" data-unit="eV">
+        <div class="prob-q"><p>\(a = 0.400\) nm, \(U_G = 0.250\) eV인 1차원 결정에서 두 평면파 근사로 \(k = 0.95\,\pi/a\)의 아래 띠 에너지 \(E_-\)를 구하라.</p></div>
+        <div class="prob-hint">\(\varepsilon_1 = 0.0381k^2\), \(\varepsilon_2 = 0.0381(k - 2\pi/a)^2\)를 먼저 구한다.</div>
+        <div class="prob-sol"><p>\(k = 7.461\), \(k - G = -8.247\) nm⁻¹. \(\varepsilon_1 = 2.121\), \(\varepsilon_2 = 2.592\) eV. 평균 2.356, 반차 0.235. \(E_- = 2.356 - \sqrt{0.235^2 + 0.250^2} = 2.356 - 0.343 = 2.01\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="2차원 강결합 띠 폭" data-answer="6.4" data-label="W =" data-unit="eV">
+        <div class="prob-q"><p>호핑 \(t = 0.80\) eV인 2차원 정사각 격자 최근접 강결합 띠의 폭은?</p></div>
+        <div class="prob-sol"><p>\(E\)는 Γ에서 \(-4t\), M에서 \(+4t\). \(W = 8t = 6.4\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="강결합 유효 질량" data-answer="0.476" data-label="m*/mₑ =">
+        <div class="prob-q"><p>\(a = 0.400\) nm, \(t = 0.500\) eV인 2차원 정사각 격자 강결합 띠의 바닥 근처 유효 질량은?</p></div>
+        <div class="prob-sol"><p>\(E \approx -4t + ta^2k^2\) → \(m^*/m_e = 0.0381/(ta^2) = 0.0381/(0.500\times0.160) = 0.476\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="반 채움 페르미 선" data-answer="5.55" data-label="k<sub>F</sub> =" data-unit="nm⁻¹">
+        <div class="prob-q"><p>\(a = 0.400\) nm인 2차원 정사각 격자 강결합 띠가 반 채움이다. Γ에서 [11] 방향으로 잰 페르미 파수는?</p></div>
+        <div class="prob-sol"><p>페르미 선 \(|k_x| + |k_y| = \pi/a\)와 [11] 직선의 교점은 \(k_x = k_y = \pi/2a\). \(|k| = \pi/(\sqrt2a) = 5.55\) nm⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="그래핀 페르미 속도" data-answer="9.71e5" data-label="v<sub>F</sub> =" data-unit="m/s">
+        <div class="prob-q"><p>호핑을 \(t = 3.00\) eV로 잡으면 그래핀(\(a = 0.142\) nm)의 페르미 속도는?</p></div>
+        <div class="prob-sol"><p>\(\hbar v_F = 3ta/2 = 1.5\times3.00\times0.142 = 0.639\) eV·nm. \(v_F = 0.639\times10^{-9}/6.582\times10^{-16} = 9.71\times10^5\) m/s — 측정값 \(\approx 1.0\times10^6\)에 가깝다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="그래핀 전자 밀도" data-answer="9.62e11" data-label="n =" data-unit="cm⁻²">
+        <div class="prob-q"><p>그래핀(\(t = 2.70\) eV, \(a = 0.142\) nm)의 페르미 준위를 게이트로 디랙점 위 0.100 eV까지 올렸다. 스핀과 골짜기(K, K′) 축퇴를 모두 넣어 전자 면밀도를 구하라.</p></div>
+        <div class="prob-hint">페르미 원 하나의 상태 수는 \(\pi k_F^2/(2\pi)^2\) (단위 넓이당). 축퇴도 4를 곱한다.</div>
+        <div class="prob-sol"><p>\(\hbar v_F = 0.5751\) eV·nm → \(k_F = 0.100/0.5751 = 0.1739\) nm⁻¹. \(n = 4\pi k_F^2/(2\pi)^2 = k_F^2/\pi = 9.62\times10^{-3}\) nm⁻² \(= 9.62\times10^{11}\) cm⁻².</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="전도대 골짜기">
+        <div class="prob-q"><p>저마늄 전도대 최저점의 위치와 (온전한) 골짜기 수로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>Γ, 1개</button><button>Γ–X 선의 0.85 지점, 6개</button><button data-correct>L점, 4개(영역 면 위의 반쪽 골짜기 8개)</button><button>X점, 3개</button></div>
+        <div class="prob-sol"><p>Ge는 ⟨111⟩ 방향 영역 경계(육각형 면 중심) L에 바닥이 있다. L점 8개는 각각 이웃 영역과 반씩 나눠 가지므로 온전한 골짜기는 4개다. 간접 간격 0.66 eV(300 K), 직접(Γ) 간격은 0.80 eV로 바로 위에 있다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="상태 밀도·전도도 질량" data-answer="0.561; 0.120" data-label="m<sub>dn</sub> =; m<sub>c</sub> =" data-unit="mₑ; mₑ">
+        <div class="prob-q"><p>Ge 전도대(\(m_l = 1.64\), \(m_t = 0.082\,m_e\), 골짜기 4개)의 상태 밀도 유효 질량과 전도도 유효 질량을 구하라.</p></div>
+        <div class="prob-sol"><p>\(m_{dn} = 4^{2/3}(1.64\times0.082^2)^{1/3} = 2.520\times0.2226 = 0.561\). \(m_c = 3/(1/1.64 + 2/0.082) = 3/(0.610 + 24.39) = 0.120\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="방향 질량" data-answer="0.318" data-label="m<sub>[110]</sub> =" data-unit="mₑ">
+        <div class="prob-q"><p>Si의 +x 골짜기(축 [100], \(m_l = 0.98\), \(m_t = 0.19\))에 있는 전자가 [110] 방향으로 움직일 때의 유효 질량 \(m_{\hat u} = 1/(\hat u\cdot(1/m^*)\cdot\hat u)\)을 구하라.</p></div>
+        <div class="prob-hint">\(\hat u = (1, 1, 0)/\sqrt2\), 역질량 텐서는 \(\mathrm{diag}(1/m_l, 1/m_t, 1/m_t)\).</div>
+        <div class="prob-sol"><p>\(\hat u\cdot M^{-1}\cdot\hat u = \tfrac12(1/0.98 + 1/0.19) = \tfrac12(1.020 + 5.263) = 3.142\) → \(m = 0.318\,m_e\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="2축 변형과 골짜기 분리" data-answer="0.186" data-label="ΔE =" data-unit="eV">
+        <div class="prob-q"><p>완화된 Si₀.₇Ge₀.₃ 위에 키운 Si 층의 Δ₄–Δ₂ 골짜기 분리를 구하라. \(a_{\text{SiGe}}(x) = 0.5431 + 0.01992x + 0.002733x^2\) nm, \(C_{12}/C_{11} = 0.386\), \(\Xi_u = 9.16\) eV.</p></div>
+        <div class="prob-sol"><p>\(a(0.3) = 0.54932\) nm → \(\varepsilon_\parallel = 0.01146\), \(\varepsilon_\perp = -0.772\times0.01146 = -0.00884\). \(\Delta E = 9.16\times(0.01146 + 0.00884) = 0.186\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="골짜기 분포" data-answer="96.0" data-label="Δ₂ 비율 =" data-unit="%">
+        <div class="prob-q"><p>2축 인장으로 Δ₂ 골짜기가 Δ₄보다 0.100 eV 낮아졌다. 300 K 비축퇴 평형에서 전자의 몇 %가 Δ₂ 골짜기(2개)에 있는가? 골짜기마다 상태 밀도는 같다.</p></div>
+        <div class="prob-sol"><p>\(n_2 : n_4 = 2 : 4e^{-0.100/0.02585} = 2 : 4\times0.02089 = 2 : 0.0836\). 비율 \(2/2.0836 = 96.0\,\%\).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="반전층 부띠" data-answer="0.0776" data-label="E₀′ − E₀ =" data-unit="eV">
+        <div class="prob-q"><p>(100) Si nMOS 반전층을 전기장 \(\mathcal E = 0.50\) MV/cm의 삼각 우물로 보고, 바닥 부띠 \(E_0 = (\hbar^2/2m_z)^{1/3}\big[\tfrac{3\pi}{2}q\mathcal E\cdot\tfrac34\big]^{2/3}\)를 Δ₂(\(m_z = 0.98\))와 Δ₄(\(m_z = 0.19\))에 대해 구해 차이를 답하라.</p></div>
+        <div class="prob-hint">\(q\mathcal E = 0.050\) eV/nm로 두면 \(\hbar^2/2m_z\)(eV·nm²)와 단위가 맞는다.</div>
+        <div class="prob-sol"><p>\([\tfrac{3\pi}{2}\times0.050\times0.75]^{2/3} = (0.1767)^{2/3} = 0.3149\). Δ₂: \((0.0381/0.98)^{1/3} = 0.3388\) → \(E_0 = 0.1067\) eV. Δ₄: \((0.0381/0.19)^{1/3} = 0.5853\) → \(E_0' = 0.1843\) eV. 차이 0.0776 eV(약 3kT).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="Ge 정공">
+        <div class="prob-q"><p>Ge 채널 pMOS가 Si pMOS보다 정공 이동도가 큰 띠 구조상의 주된 이유는?</p></div>
+        <div class="prob-choices"><button>Ge의 띠 간격이 작아 정공이 더 많아서</button><button data-correct>Ge의 가벼운 정공 질량(약 0.043 mₑ)이 Si(0.16)보다 훨씬 작고, 스핀–궤도 분리가 커서 띠 사이 산란이 적어서</button><button>Ge는 직접 간격 반도체라서</button><button>Ge의 격자 상수가 커서 산란 단면적이 작아서</button></div>
+        <div class="prob-sol"><p>이동도 \(\mu = q\tau/m\)의 \(m\)이 작다. Ge의 가벼운 정공 질량은 Si의 약 4분의 1이고, 분리 띠가 0.29 eV 아래에 있어(Si는 0.044 eV) 정공이 섞일 띠가 적다. 띠 간격 크기는 캐리어 수에 영향을 줄 뿐 이동도와는 무관하며, Ge도 간접 간격이다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>거의 자유 전자 모형에서 \(k = \pi/a\)의 띠 간격을 정하는 것은?</p><div class="opts">
+        <button class="opt">퍼텐셜의 평균값 \(U_0\)</button><button class="opt" data-correct>퍼텐셜의 \(G = 2\pi/a\) 푸리에 성분 \(U_G\) (간격 \(2|U_G|\))</button><button class="opt">퍼텐셜의 최댓값과 최솟값의 차</button><button class="opt">\(G = \pi/a\) 성분</button>
+      </div><div class="quiz-exp">경계에서 축퇴한 \(e^{ikx}\)와 \(e^{i(k-G)x}\)를 잇는 행렬 원소가 \(U_G\)다. 평균값은 모든 띠를 함께 올릴 뿐이다.</div></div>
+      <div class="quiz-q"><p>1차원 띠를 축소 영역 그림으로 그리면 둘째 띠와 셋째 띠 사이의 간격은 어디에 있는가?</p><div class="opts">
+        <button class="opt">\(k = \pm\pi/a\)</button><button class="opt" data-correct>\(k = 0\) (Γ)</button><button class="opt">\(k = \pm\pi/2a\)</button><button class="opt">축소 영역에서는 간격이 사라진다</button>
+      </div><div class="quiz-exp">확장 영역의 \(k = \pm2\pi/a\) 경계는 \(G = 2\pi/a\)만큼 옮기면 \(k = 0\)이 된다. 간격은 경계와 중심에 번갈아 나타난다.</div></div>
+      <div class="quiz-q"><p>그래핀의 두 π 띠가 K점에서 간격 없이 만나는 이유는?</p><div class="opts">
+        <button class="opt">탄소 원자가 가벼워서</button><button class="opt">K점에서 호핑 \(t\)가 0이 되어서</button><button class="opt" data-correct>두 부격자가 동등하고, K에서 세 이웃의 위상 합 \(f(\vec k)\)가 0이 되어서</button><button class="opt">그래핀이 금속이라 페르미 면이 커서</button>
+      </div><div class="quiz-exp">세 위상이 120°씩 벌어져 합이 0이면 비대각 원소가 사라지고, A·B 대각 에너지가 같으니 두 고윳값이 같다. A·B 에너지가 다르면(h-BN) 간격 Δ가 열린다.</div></div>
+      <div class="quiz-q"><p>Si의 골짜기는 이방적(\(m_l \ne m_t\))인데 변형 없는 Si 결정의 전기 전도도는 방향과 무관하다. 왜인가?</p><div class="opts">
+        <button class="opt">전자가 산란 때문에 방향을 잊어서</button><button class="opt" data-correct>입방 대칭으로 배치된 여섯 골짜기의 역질량 텐서를 더하면 등방 텐서가 되므로</button><button class="opt">실제로는 \(m_l = m_t\)이므로</button><button class="opt">정공이 반대 방향 이방성을 상쇄해서</button>
+      </div><div class="quiz-exp">x·y·z 골짜기가 같은 수만큼 있어 합 \(\tfrac{n}{3}(1/m_l + 2/m_t)\mathbb 1\)이 된다. 변형으로 대칭을 깨면 이 상쇄가 깨져 전도도가 이방적이 된다 — 변형 실리콘에서 쓰는 효과다.</div></div>
+      <div class="quiz-q"><p>(001) Si에 면내 2축 인장을 주면 전자 이동도(면내)가 오르는 띠 구조상의 이유를 가장 잘 말한 것은?</p><div class="opts">
+        <button class="opt">띠 간격이 커져 전자가 많아진다.</button><button class="opt" data-correct>Δ₂ 골짜기가 내려가 전자가 면내 질량 \(m_t = 0.19\)인 골짜기로 모이고, Δ₂–Δ₄ 골짜기 간 산란이 줄어든다.</button><button class="opt">Δ₄ 골짜기가 내려가 종 질량 0.98이 면내 방향을 맡는다.</button><button class="opt">전도대가 직접 간격으로 바뀐다.</button>
+      </div><div class="quiz-exp">면에 수직 방향이 줄어드는 Δ₂ 골짜기가 내려간다. ±z 골짜기의 긴 축은 면에 수직이라 면내 운동은 가벼운 \(m_t\)만 본다. 분리가 kT보다 크면 골짜기 간 포논 산란도 억제된다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const C0 = Q.const.C;                       // ħ²/2mₑ = 0.0381 eV·nm²
+  const HBS = 6.582119569e-16;                 // ħ (eV·s)
+  const KT = 8.617333262e-5 * 300;             // kT(300 K) eV
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  const sci = (x, d = 2) => { if (!isFinite(x)) return "—"; if (x === 0) return "0"; const e = Math.floor(Math.log10(Math.abs(x))); const m = x / Math.pow(10, e); if (e >= -2 && e <= 3) return x.toPrecision(d + 1); return m.toFixed(d) + "×10" + String(e).split("").map((c) => SUP[c]).join(""); };
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const inv = (ch, opts, px, py) => [opts.x[0] + ((px - ch.box.x) / ch.box.w) * (opts.x[1] - opts.x[0]), opts.y[0] + ((ch.box.y + ch.box.h - py) / ch.box.h) * (opts.y[1] - opts.y[0])];
+  const line = (ctx, ch, pts, col, w = 2, dash) => { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(ch.X(x), ch.Y(y)) : ctx.moveTo(ch.X(x), ch.Y(y)))); ctx.stroke(); ctx.restore(); };
+  const clipBox = (ctx, ch) => { ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip(); };
+  const BC = (P, n) => [P.accent, P.accent2, P.ok, P.bad, P.dim][n % 5];   // 띠 번호별 색
+
+  /* ---------------------------------------------------------- 1차원 거의 자유 전자: 확장 영역 띠 */
+  // 축소 k(π/a 단위, 0..1)의 n번째 띠를 확장 영역 k로: n 홀수 → kr − (n+1), n 짝수 → kr + n (양의 쪽), 음의 쪽은 거울상
+  const kExt = (kr, n) => (n % 2 ? kr - (n + 1) : kr + n);
+  /** 1차원 띠: kr = 0..1 (π/a), 반환 bands[n] = [[kr, E]] */
+  function nfeBands(a, U1, U2, nb = 4, N = 60) {
+    const out = Array.from({ length: nb }, () => []);
+    for (let i = 0; i <= N; i++) {
+      const kr = i / N, E = Solid.nfe1D((kr * Math.PI) / a, a, [U1, U2], 9);
+      for (let n = 0; n < nb; n++) out[n].push([kr, E[n]]);
+    }
+    return out;
+  }
+  /** 확장 영역 조각들: 띠 n마다 양·음 두 조각 [[k, E]] */
+  function extPieces(B) {
+    const P = [];
+    B.forEach((d, n) => {
+      P.push({ n, pts: d.map(([kr, E]) => [kExt(kr, n), E]) });
+      P.push({ n, pts: d.map(([kr, E]) => [-kExt(kr, n), E]) });
+    });
+    return P;
+  }
+
+  /* ---------------------------------------------------------- 머리 애니메이션 */
+  {
+    const a = 0.5, st = { U: 0.4, auto: true, t: 0, idle: 0 };
+    const opts = { x: [-2.2, 2.2], y: [-0.6, 7.6] };
+    const free = []; for (let i = 0; i <= 160; i++) { const k = -2.2 + (4.4 * i) / 160; free.push([k, C0 * ((k * Math.PI) / a) ** 2]); }
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), U1 = st.U, U2 = 0.6 * st.U;
+      const B = nfeBands(a, U1, U2, 3, 44), pieces = extPieces(B);
+      const narrow = w < 560;
+      const ch = SB.chart(ctx, { x: 46, y: 30, w: w - 60, h: h - 76 }, { x: opts.x, y: opts.y, xLabel: "k (π/a) — 확장 영역", yLabel: "E (eV)", xTicks: [-2, -1, 0, 1, 2] });
+      ctx.save(); clipBox(ctx, ch);
+      // 간격(금지 에너지) 띠
+      const gaps = [[B[0][B[0].length - 1][1], B[1][B[1].length - 1][1], 1], [B[1][0][1], B[2][0][1], 2]];
+      gaps.forEach(([lo, hi]) => { ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(ch.box.x, ch.Y(hi), ch.box.w, ch.Y(lo) - ch.Y(hi)); });
+      [-2, -1, 1, 2].forEach((k) => SB.dashLine(ctx, ch.X(k), ch.box.y, ch.X(k), ch.box.y + ch.box.h, P.faint));
+      line(ctx, ch, free, P.faint, 1.4, [6, 4]);
+      pieces.forEach((p) => line(ctx, ch, p.pts, BC(P, p.n), 3));
+      ctx.restore();
+      const g1 = gaps[0][1] - gaps[0][0], g2 = gaps[1][1] - gaps[1][0];
+      SB.label(ctx, `첫째 간격 ${g1.toFixed(2)} eV`, narrow ? ch.X(1) - 8 : ch.X(1) + 8, ch.Y((gaps[0][0] + gaps[0][1]) / 2), { align: narrow ? "right" : "left", size: 12, color: P.text });
+      SB.label(ctx, `둘째 간격 ${g2.toFixed(2)} eV`, ch.X(narrow ? -0.6 : 0.6), ch.Y((gaps[1][0] + gaps[1][1]) / 2), { align: "left", size: 12, color: P.text });
+      SB.label(ctx, `U₁ = ${U1.toFixed(2)} eV,  U₂ = ${U2.toFixed(2)} eV`, ch.box.x + 8, ch.box.y + 12, { align: "left", size: 12, color: P.dim });
+      // 퍼텐셜 세기 막대(오른쪽 위)
+      const bx = w - 26, by0 = ch.box.y + 24, bh = Math.min(120, ch.box.h * 0.45);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(bx, by0); ctx.lineTo(bx, by0 + bh); ctx.stroke(); ctx.restore();
+      const hy = by0 + bh * (1 - st.U / 1.2); handle(ctx, bx, hy, P.accent, 9); self._bar = [bx, by0, bh];
+    }, { aspect: 0.42, minHeight: 280, maxHeight: 380 });
+    SB.drag(cv, { free: true,
+      down: () => { st.auto = false; st.idle = 0; },
+      move: (id, x, y) => { if (!cv._bar) return; const [, by0, bh] = cv._bar; st.U = SB.clamp(1.2 * (1 - (y - by0) / bh), 0, 1.2); st.idle = 0; } });
+    SB.loop("hero", (dt) => {
+      if (st.auto) { st.t += dt; st.U = 0.6 * (1 - Math.cos(st.t * 0.7)); cv.redraw(); }
+      else { st.idle += dt; if (st.idle > 6) { st.auto = true; st.t = Math.acos(SB.clamp(1 - st.U / 0.6, -1, 1)) / 0.7; } }
+    });
+  }
+
+  /* ---------------------------------------------------------- tangle: 경계 간격 */
+  SB.tangle("tg-gap", (v) => {
+    const e0 = C0 * (Math.PI / v.a) ** 2, r = v.u / e0;
+    return { e0: e0.toFixed(3) + " eV", pm: `${(e0 - v.u).toFixed(3)} eV, ${(e0 + v.u).toFixed(3)} eV`, eg: (2 * v.u).toFixed(2) + " eV", ms: (v.u / (2 * e0)).toFixed(3),
+      msg: r > 0.35 ? "U가 ε₀의 35 %를 넘었다 — 더 많은 평면파가 섞여 두 평면파 근사와 어림 질량이 어긋나기 시작한다." : a2msg(v.a) };
+  });
+  function a2msg(a) { return a < 0.35 ? "격자가 촘촘할수록 ε₀가 커서 같은 U라도 '거의 자유'에 가깝다." : "격자 상수가 크면 ε₀가 작아져 같은 U가 상대적으로 세진다."; }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 거의 자유 전자 실험대 */
+  {
+    const a = 0.5, e01 = C0 * (Math.PI / a) ** 2, eG = C0 * ((2 * Math.PI) / a) ** 2;
+    let B = null, cv = null;
+    const goalG = [0.8, 0.3];
+    const solve = () => { B = nfeBands(a, gU1(), gU2(), 4, 60); };
+    const redraw = () => { solve(); cv && cv.redraw(); };
+    const gU1 = SB.range("nf-u1", (v) => v.toFixed(2) + " eV", redraw);
+    const gU2 = SB.range("nf-u2", (v) => v.toFixed(2) + " eV", redraw);
+    const zone = SB.seg("nf-zone", () => cv.redraw());
+    $("nf-free").addEventListener("change", () => cv.redraw());
+    $("nf-goal").addEventListener("change", () => cv.redraw());
+    solve();
+    const free = (x0, x1) => { const d = []; for (let i = 0; i <= 160; i++) { const k = x0 + ((x1 - x0) * i) / 160; d.push([k, C0 * ((k * Math.PI) / a) ** 2]); } return d; };
+    cv = SB.canvas("cv-nfe", (ctx, w, h, self) => {
+      const P = pal(), z = zone();
+      const opts = { x: z === "red" ? [-1, 1] : [-2.5, 2.5], y: [-0.5, 10] };
+      const ch = SB.chart(ctx, { x: 50, y: 30, w: w - 64, h: h - 76 }, { x: opts.x, y: opts.y, xLabel: z === "red" ? "k (π/a) — 축소 영역" : z === "ext" ? "k (π/a) — 확장 영역" : "k (π/a) — 반복 영역", yLabel: "E (eV)", xTicks: z === "red" ? [-1, -0.5, 0, 0.5, 1] : [-2, -1, 0, 1, 2] });
+      self._ch = ch; self._opts = opts;
+      const g1lo = B[0][60][1], g1hi = B[1][60][1], g2lo = B[1][0][1], g2hi = B[2][0][1];
+      ctx.save(); clipBox(ctx, ch);
+      [[g1lo, g1hi], [g2lo, g2hi], [B[2][60][1], B[3][60][1]]].forEach(([lo, hi]) => { ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(ch.box.x, ch.Y(hi), ch.box.w, ch.Y(lo) - ch.Y(hi)); });
+      const bnd = z === "red" ? [-1, 1] : [-2, -1, 1, 2];
+      bnd.forEach((k) => SB.dashLine(ctx, ch.X(k), ch.box.y, ch.X(k), ch.box.y + ch.box.h, P.faint));
+      const col = (n) => BC(P, n);
+      if (z === "ext") {
+        if ($("nf-free").checked) line(ctx, ch, free(-2.5, 2.5), P.faint, 1.4, [6, 4]);
+        extPieces(B).forEach((p) => line(ctx, ch, p.pts, col(p.n), 2.8));
+      } else {
+        const shifts = z === "red" ? [0] : [-2, 0, 2];
+        if ($("nf-free").checked) for (let m = -3; m <= 3; m++) { const d = []; for (let i = 0; i <= 80; i++) { const k = -1 + (2 * i) / 80; d.push([k, C0 * (((k + 2 * m) * Math.PI) / a) ** 2]); } shifts.forEach((s) => line(ctx, ch, d.map(([k, E]) => [k + s, E]), P.faint, 1.2, [6, 4])); }
+        shifts.forEach((s) => B.forEach((d, n) => { const pos = d.map(([kr, E]) => [kr + s, E]), neg = d.map(([kr, E]) => [-kr + s, E]); const wgt = s === 0 ? 2.8 : 1.8; line(ctx, ch, pos, col(n), wgt); line(ctx, ch, neg, col(n), wgt); }));
+      }
+      // 목표
+      const goal = $("nf-goal").checked;
+      const k1 = 1, k2 = z === "ext" ? 2 : 0;
+      if (goal) {
+        const c1 = (g1lo + g1hi) / 2, c2 = (g2lo + g2hi) / 2;
+        [[k1, c1, goalG[0]], [k2, c2, goalG[1]]].forEach(([k, c, g]) => { ctx.save(); ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); [c - g / 2, c + g / 2].forEach((E) => { ctx.beginPath(); ctx.moveTo(ch.X(k) - 30, ch.Y(E)); ctx.lineTo(ch.X(k) + 30, ch.Y(E)); ctx.stroke(); }); ctx.restore(); });
+      }
+      ctx.restore();
+      const h1 = [ch.X(k1), ch.Y(g1hi)], h2 = [ch.X(k2), ch.Y(g2hi)];
+      handle(ctx, h1[0], h1[1], P.accent); handle(ctx, h2[0], h2[1], P.accent);
+      SB.label(ctx, "U₁", h1[0] + (h1[0] > ch.box.x + ch.box.w - 30 ? -18 : 16), h1[1] - 12, { size: 12, color: P.accent, bold: true });
+      SB.label(ctx, "U₂", h2[0] + 16, h2[1] - 12, { size: 12, color: P.accent, bold: true });
+      self._h = [h1, h2];
+      const G1 = g1hi - g1lo, G2 = g2hi - g2lo;
+      SB.stat("nf-g1", G1.toFixed(3) + " eV"); SB.stat("nf-g1t", (2 * gU1()).toFixed(3) + " eV");
+      SB.stat("nf-g2", G2.toFixed(3) + " eV"); SB.stat("nf-g2t", (2 * Math.abs(gU2() + (gU1() * gU1()) / eG)).toFixed(3) + " eV");
+      if (goal) {
+        const ok = Math.abs(G1 - goalG[0]) <= 0.02 && Math.abs(G2 - goalG[1]) <= 0.02;
+        SB.label(ctx, ok ? "목표 달성! 두 간격이 모두 과녁 안" : `목표: 첫째 간격 ${goalG[0].toFixed(2)} eV, 둘째 간격 ${goalG[1].toFixed(2)} eV`, ch.box.x + 4, 14, { align: "left", size: 12, color: ok ? P.ok : P.warn, bold: ok });
+      }
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "u1", x: cv._h[0][0], y: cv._h[0][1], r: 14 }, { id: "u2", x: cv._h[1][0], y: cv._h[1][1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (!cv._ch) return;
+        const [, E] = inv(cv._ch, cv._opts, x, y);
+        if (id === "u1") gU1.set(Math.round(SB.clamp(E - e01, 0, 1.2) * 100) / 100);
+        if (id === "u2") gU2.set(Math.round(SB.clamp(E - eG - (gU1() * gU1()) / eG, 0, 1.2) * 100) / 100);
+      } });
+  }
+
+  /* ---------------------------------------------------------- steps: 영역 접기 */
+  {
+    const a = 0.5, B = nfeBands(a, 0.3, 0.15, 3, 50);
+    // 조각: 띠 n, 부호 s → 확장 좌표와 축소 좌표
+    const pieces = [];
+    B.forEach((d, n) => [1, -1].forEach((s) => pieces.push({ n, ext: d.map(([kr, E]) => [s * kExt(kr, n), E]), red: d.map(([kr, E]) => [s * kr, E]) })));
+    const st = { step: 1, p: 0, target: 0 };   // p: 0 확장 → 1 축소
+    const fig = $("fig-fold");
+    const opts = { x: [-3, 3], y: [-0.4, 14] };
+    const cv = SB.canvas("cv-fold", (ctx, w, h) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 46, y: 22, w: w - 60, h: h - 66 }, { x: opts.x, y: opts.y, xLabel: "k (π/a)", yLabel: "E (eV)", xTicks: [-3, -2, -1, 0, 1, 2, 3] });
+      ctx.save(); clipBox(ctx, ch);
+      // 제1 영역 표시
+      ctx.fillStyle = SB.color("accent-soft"); ctx.globalAlpha = st.step >= 3 ? 0.7 : 0.35; ctx.fillRect(ch.X(-1), ch.box.y, ch.X(1) - ch.X(-1), ch.box.h); ctx.globalAlpha = 1;
+      [-3, -2, -1, 1, 2, 3].forEach((k) => SB.dashLine(ctx, ch.X(k), ch.box.y, ch.X(k), ch.box.y + ch.box.h, P.faint));
+      const ease = (x) => x * x * (3 - 2 * x), p = ease(SB.clamp(st.p, 0, 1));
+      if (st.step === 4) pieces.forEach((pc) => [-2, 2].forEach((s) => line(ctx, ch, pc.red.map(([k, E]) => [k + s, E]), BC(P, pc.n), 1.6, [5, 3])));
+      pieces.forEach((pc) => {
+        const pts = pc.ext.map(([ke, E], i) => [ke + (pc.red[i][0] - ke) * p, E]);
+        line(ctx, ch, pts, BC(P, pc.n), 2.8);
+      });
+      ctx.restore();
+      if (st.step >= 3) [0, 1, 2].forEach((n) => SB.label(ctx, `띠 ${n + 1}`, ch.X(0.55), ch.Y(B[n][28][1] + 1.0), { size: 12, color: BC(P, n), bold: true }));
+      SB.label(ctx, "제1 브릴루앙 영역", ch.X(0), ch.box.y + 10, { size: 11, color: P.dim });
+      if (st.step === 1) { SB.label(ctx, "1영역", ch.X(0), ch.box.y + 26, { size: 11, color: P.dim }); [[-1.5, "2영역"], [1.5, "2영역"], [-2.5, "3영역"], [2.5, "3영역"]].forEach(([k, t]) => SB.label(ctx, t, ch.X(k), ch.box.y + 26, { size: 11, color: P.dim })); }
+    }, { aspect: 0.48, minHeight: 260, maxHeight: 380 });
+    const loop = SB.loop(fig, (dt) => { if (Math.abs(st.p - st.target) > 1e-3) { st.p += Math.sign(st.target - st.p) * Math.min(Math.abs(st.target - st.p), dt / 1.4); cv.redraw(); } });
+    fig.addEventListener("step", (e) => {
+      st.step = e.detail.step;
+      st.target = st.step >= 2 ? 1 : 0;
+      if (st.step !== 2) st.p = st.target;
+      else st.p = 0;
+      cv.redraw();
+    });
+    void loop;
+  }
+
+  /* ---------------------------------------------------------- mini: 2차원 빈 격자 */
+  {
+    const a = 0.4, ka = Math.PI / a, Gs = [];
+    for (let n = -2; n <= 2; n++) for (let m = -2; m <= 2; m++) Gs.push([n, m]);
+    const NG = Gs.length;
+    // 경로 Γ(0,0)→X(1,0)→M(1,1)→Γ, k는 π/a 단위
+    const path = [], ticks = [];
+    const segs = [[[0, 0], [1, 0], "Γ", "X", 30], [[1, 0], [1, 1], "X", "M", 30], [[1, 1], [0, 0], "M", "Γ", 42]];
+    let acc = 0;
+    segs.forEach(([A, Bv, la, , n], si) => { const L = Math.hypot(Bv[0] - A[0], Bv[1] - A[1]); ticks.push({ x: acc, label: la }); for (let i = si ? 1 : 0; i <= n; i++) { const t = i / n; path.push({ x: acc + t * L, k: [A[0] + (Bv[0] - A[0]) * t, A[1] + (Bv[1] - A[1]) * t] }); } acc += L; });
+    ticks.push({ x: acc, label: "Γ" });
+    const xmax = acc, NB = 7, Emax = 12;
+    let bands = null, pending = false;
+    const gU = SB.range("el-u", (v) => v.toFixed(2) + " eV", () => schedule());
+    $("el-lab").addEventListener("change", () => cv.redraw());
+    function solve() {
+      const U = gU(), H = new Float64Array(NG * NG);
+      bands = Array.from({ length: NB }, () => []);
+      for (const p of path) {
+        for (let i = 0; i < NG; i++) for (let j = 0; j < NG; j++) {
+          if (i === j) { const qx = (p.k[0] - 2 * Gs[i][0]) * ka, qy = (p.k[1] - 2 * Gs[i][1]) * ka; H[i * NG + j] = C0 * (qx * qx + qy * qy); continue; }
+          const dx = Math.abs(Gs[i][0] - Gs[j][0]), dy = Math.abs(Gs[i][1] - Gs[j][1]);
+          H[i * NG + j] = dx + dy === 1 ? U : dx === 1 && dy === 1 ? U / 2 : 0;
+        }
+        const E = Solid.eigSym(H, NG);
+        for (let b = 0; b < NB; b++) bands[b].push([p.x, E[b]]);
+      }
+    }
+    function schedule() { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; solve(); cv.redraw(); }); }
+    solve();
+    // 자유 전자 조각(라벨용)
+    const freeCurves = Gs.map((G) => ({ G, d: path.map((p) => [p.x, C0 * (((p.k[0] - 2 * G[0]) * ka) ** 2 + ((p.k[1] - 2 * G[1]) * ka) ** 2)]) })).filter((c) => Math.min(...c.d.map((q) => q[1])) < Emax);
+    const cv = SB.canvas("cv-el", (ctx, w, h) => {
+      const P = pal(), U = gU();
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 58, h: h - 58 }, { x: [0, xmax], y: [0, Emax], yLabel: "E (eV)", xTicks: ticks.map((t) => t.x), xFmt: (v) => (ticks.find((t) => Math.abs(t.x - v) < 1e-6) || {}).label || "" });
+      ctx.save(); clipBox(ctx, ch);
+      ticks.forEach((t) => SB.dashLine(ctx, ch.X(t.x), ch.box.y, ch.X(t.x), ch.box.y + ch.box.h, P.faint));
+      bands.forEach((d, b) => line(ctx, ch, d, BC(P, b), 2.4));
+      ctx.restore();
+      if ($("el-lab").checked && U < 0.05) {
+        const used = [];
+        freeCurves.forEach((c) => {
+          let im = 0; c.d.forEach((q, i) => { if (q[1] < c.d[im][1]) im = i; });
+          let i = im; if (c.d[i][1] > Emax - 0.5) return;
+          const px = ch.X(c.d[i][0]), py = ch.Y(c.d[i][1]) - 10;
+          if (used.some(([ux, uy]) => Math.abs(ux - px) < 34 && Math.abs(uy - py) < 14)) return;
+          used.push([px, py]);
+          SB.label(ctx, `(${c.G[0]},${c.G[1]})`, SB.clamp(px, ch.box.x + 18, ch.box.x + ch.box.w - 18), SB.clamp(py, ch.box.y + 8, ch.box.y + ch.box.h - 8), { size: 10, color: P.dim, mono: true });
+        });
+      }
+      const iX = 30, iM = 60;
+      const gX = bands[1][iX][1] - bands[0][iX][1], sM = bands[3][iM][1] - bands[0][iM][1];
+      $("el-r").textContent = `X의 첫 간격 ${gX.toFixed(2)} eV · M의 네 준위 폭 ${sM.toFixed(2)} eV`;
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 340 });
+  }
+
+  /* ---------------------------------------------------------- drill: 경계 에너지 */
+  SB.drill("drill-nfe", () => {
+    const type = Math.random() < 0.6 ? 0 : 1;
+    if (type === 0) {
+      const a = Math.round((0.25 + Math.random() * 0.4) * 100) / 100, U = Math.round((0.05 + Math.random() * 0.45) * 100) / 100;
+      const e0 = C0 * (Math.PI / a) ** 2;
+      return { q: `<p>격자 상수 \\(a = ${a.toFixed(2)}\\) nm인 1차원 결정의 \\(G = 2\\pi/a\\) 푸리에 성분이 \\(|U_G| = ${U.toFixed(2)}\\) eV이다. 거의 자유 전자 모형으로 \\(k = \\pi/a\\)의 두 에너지를 구하라. \\(\\hbar^2/2m_e = 0.0381\\) eV·nm².</p>`,
+        answer: [e0 - U, e0 + U], label: ["E₋ =", "E₊ ="], unit: ["eV", "eV"], tol: "1%",
+        sol: `\\(\\varepsilon_0 = 0.0381\\times(\\pi/${a.toFixed(2)})^2 = ${e0.toFixed(3)}\\) eV, \\(E_\\pm = \\varepsilon_0 \\pm |U_G| = ${(e0 - U).toFixed(3)},\\ ${(e0 + U).toFixed(3)}\\) eV (간격 \\(${(2 * U).toFixed(2)}\\) eV).` };
+    }
+    const a = Math.round((0.25 + Math.random() * 0.35) * 100) / 100, which = Math.floor(Math.random() * 3);
+    const ex = C0 * (Math.PI / a) ** 2, val = [ex, 2 * ex, 4 * ex][which], nm = ["X점", "M점", "Γ점(0 다음)"][which];
+    return { q: `<p>격자 상수 \\(a = ${a.toFixed(2)}\\) nm인 2차원 정사각 격자의 빈 격자 모형에서 ${nm}의 가장 낮은 에너지는? \\(\\hbar^2/2m_e = 0.0381\\) eV·nm².</p>`,
+      answer: val, label: "E =", unit: "eV", tol: "1%",
+      sol: `\\(\\varepsilon_X = 0.0381(\\pi/a)^2 = ${ex.toFixed(3)}\\) eV. X는 \\(\\varepsilon_X\\)(2중), M은 \\(2\\varepsilon_X\\)(4중), Γ의 다음 준위는 \\(|\\vec G| = 2\\pi/a\\)라 \\(4\\varepsilon_X\\)(4중) → ${val.toFixed(3)} eV.` };
+  });
+
+  /* ---------------------------------------------------------- 등고선(마칭 스퀘어) */
+  /** F: (N+1)² 격자 값, 반환 격자 좌표 선분 [[x1,y1,x2,y2]] */
+  function contour(F, N, L) {
+    const segs = [], v = (i, j) => F[j * (N + 1) + i];
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const a = v(i, j), b = v(i + 1, j), c = v(i + 1, j + 1), d = v(i, j + 1);
+      const A = a > L, Bb = b > L, Cc = c > L, D = d > L;
+      if (A === Bb && Bb === Cc && Cc === D) continue;
+      const e = [];
+      e[0] = A !== Bb ? [i + (L - a) / (b - a), j] : null;
+      e[1] = Bb !== Cc ? [i + 1, j + (L - b) / (c - b)] : null;
+      e[2] = D !== Cc ? [i + (L - d) / (c - d), j + 1] : null;
+      e[3] = A !== D ? [i, j + (L - a) / (d - a)] : null;
+      const on = e.filter(Boolean);
+      if (on.length === 2) segs.push([...on[0], ...on[1]]);
+      else if (on.length === 4) {
+        const ctr = (a + b + c + d) / 4 > L;
+        if (ctr === A) { segs.push([...e[0], ...e[1]]); segs.push([...e[2], ...e[3]]); }
+        else { segs.push([...e[3], ...e[0]]); segs.push([...e[1], ...e[2]]); }
+      }
+    }
+    return segs;
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 2차원 강결합 지도 */
+  {
+    const NG = 72;                      // 지도 격자
+    const NS = 400;                     // 상태 밀도 표본 격자
+    let tp = 0, sorted = null, Emin = -4, Emax = 4, dos = null, F = null;
+    const st = { EF: 0, n: 0.3, usedSlider: false, done: false };
+    const Ek = (x, y) => -2 * (Math.cos(x) + Math.cos(y)) - 4 * tp * Math.cos(x) * Math.cos(y);   // t = 1, x = k_x a
+    function prepare() {
+      const M = NS * NS, arr = new Float64Array(M);
+      for (let j = 0; j < NS; j++) for (let i = 0; i < NS; i++) arr[j * NS + i] = Ek(-Math.PI + (2 * Math.PI * (i + 0.5)) / NS, -Math.PI + (2 * Math.PI * (j + 0.5)) / NS);
+      sorted = arr.sort(); Emin = sorted[0]; Emax = sorted[M - 1];
+      const nb = 100, h = new Float64Array(nb), dE = (Emax - Emin) / nb;
+      for (let k = 0; k < M; k++) h[Math.min(nb - 1, Math.floor((sorted[k] - Emin) / dE))]++;
+      const hs = Array.from(h, (c, k) => (k > 0 && k < nb - 1 ? 0.25 * h[k - 1] + 0.5 * c + 0.25 * h[k + 1] : c));
+      dos = hs.map((c, k) => [Emin + (k + 0.5) * dE, (2 * c) / (M * dE)]);   // 셀당, 스핀 포함(3점 평활)
+      F = new Float64Array((NG + 1) * (NG + 1));
+      for (let j = 0; j <= NG; j++) for (let i = 0; i <= NG; i++) F[j * (NG + 1) + i] = Ek(-Math.PI + (2 * Math.PI * i) / NG, -Math.PI + (2 * Math.PI * j) / NG);
+    }
+    const nOf = (EF) => { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < EF) lo = m + 1; else hi = m; } return (2 * lo) / sorted.length; };
+    const EFof = (n) => sorted[SB.clamp(Math.round((n / 2) * sorted.length), 0, sorted.length - 1)];
+    prepare();
+    const gN = SB.range("tb-n", (v) => v.toFixed(2), (v) => { st.usedSlider = true; st.n = v; st.EF = EFof(v); redraw(); });
+    const gT = SB.range("tb-tp", (v) => v.toFixed(2), (v) => { tp = v; prepare(); st.EF = EFof(st.n); redraw(); });
+    $("tb-iso").addEventListener("change", () => redraw());
+    $("tb-half").addEventListener("click", () => { st.usedSlider = false; st.done = false; st.n = 0.3; gN.set(0.3, true); st.EF = EFof(0.3); redraw(); });
+    st.EF = EFof(st.n);
+    let A = null, Bc = null;
+    function redraw() { A && A.redraw(); Bc && Bc.redraw(); report(); }
+    function report() {
+      const n = nOf(st.EF), EX = 4 * tp;
+      SB.stat("tb-ef", (st.EF >= 0 ? "+" : "") + st.EF.toFixed(3) + " t");
+      SB.stat("tb-area", (n / 2).toFixed(3));
+      let shape;
+      if (Math.abs(st.EF - EX) < 0.04) shape = tp === 0 ? "마름모 — X점 통과" : "X점을 지나는 선";
+      else if (st.EF < EX) shape = n < 0.35 ? "거의 원 (Γ 둘레)" : "Γ 둘레 닫힌 선 (전자형)";
+      else shape = n > 1.65 ? "M 둘레 작은 원 (정공형)" : "M 둘레 닫힌 선 (정공형)";
+      SB.stat("tb-shape", shape);
+      st.done = Math.abs(n - 1) <= 0.01 && !st.usedSlider;
+      SB.stat("tb-goal", st.done ? "성공! 반 채움 = 마름모의 어느 점을 눌러도 된다" : st.usedSlider ? "슬라이더를 썼다 — '도전 다시 시작'" : `n = ${n.toFixed(3)} (목표 1.00 ± 0.01)`);
+    }
+    A = SB.canvas("cv-tbm", (ctx, w, h, self) => {
+      const P = pal(), S = Math.min(w - 40, h - 40), x0 = (w - S) / 2, y0 = (h - S) / 2 + 6;
+      self._g = { x0, y0, S };
+      const cell = S / NG;
+      ctx.fillStyle = SB.color("accent-soft");
+      for (let j = 0; j < NG; j++) for (let i = 0; i < NG; i++) { const kx = -Math.PI + (2 * Math.PI * (i + 0.5)) / NG, ky = -Math.PI + (2 * Math.PI * (j + 0.5)) / NG; if (Ek(kx, ky) < st.EF) ctx.fillRect(x0 + i * cell, y0 + S - (j + 1) * cell, cell + 0.6, cell + 0.6); }
+      const toPx = ([gx, gy]) => [x0 + (gx / NG) * S, y0 + S - (gy / NG) * S];
+      const drawLevel = (L, col, wd) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath(); contour(F, NG, L).forEach(([a1, b1, a2, b2]) => { const p = toPx([a1, b1]), q = toPx([a2, b2]); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); }); ctx.stroke(); ctx.restore(); };
+      if ($("tb-iso").checked) for (let L = -3.5; L <= 3.6; L += 1) drawLevel(L, P.faint, 1);
+      drawLevel(st.EF, P.accent, 2.6);
+      ctx.save(); ctx.strokeStyle = P.axis; ctx.lineWidth = 1.2; ctx.strokeRect(x0, y0, S, S); ctx.restore();
+      SB.dashLine(ctx, x0 + S / 2, y0, x0 + S / 2, y0 + S, P.faint); SB.dashLine(ctx, x0, y0 + S / 2, x0 + S, y0 + S / 2, P.faint);
+      [["Γ", 0.5, 0.5], ["X", 1, 0.5], ["M", 1, 1], ["Y", 0.5, 1]].forEach(([t, fx, fy]) => SB.label(ctx, t, x0 + fx * S - (fx === 1 ? 9 : -9), y0 + S - fy * S + (fy === 1 ? 10 : -10), { size: 12, bold: true, color: P.text }));
+      SB.label(ctx, "kₓ →", x0 + S - 22, y0 + S + 10, { size: 11, color: P.dim });
+      if (st.pt) handle(ctx, st.pt[0], st.pt[1], P.accent, 8);
+    }, { aspect: 1, minHeight: 240, maxHeight: 340 });
+    SB.drag(A, { free: true, move: (id, x, y) => {
+      const g = A._g; if (!g) return;
+      const fx = SB.clamp((x - g.x0) / g.S, 0, 1), fy = SB.clamp(1 - (y - g.y0) / g.S, 0, 1);
+      st.pt = [g.x0 + fx * g.S, g.y0 + (1 - fy) * g.S];
+      st.EF = Ek(-Math.PI + 2 * Math.PI * fx, -Math.PI + 2 * Math.PI * fy);
+      st.n = nOf(st.EF); gN.set(Math.round(SB.clamp(st.n, 0.02, 1.98) * 100) / 100, true);
+      redraw();
+    } });
+    Bc = SB.canvas("cv-tbd", (ctx, w, h) => {
+      const P = pal(), gmax = Math.min(1.2, Math.max(...dos.map((d) => d[1])) * 1.1);
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 58, h: h - 58 }, { x: [Emin - 0.2, Emax + 0.2], y: [0, gmax], xLabel: "E (t 단위)", yLabel: "g(E) (셀당)", xTicks: [-4, -2, 0, 2, 4] });
+      ctx.save(); clipBox(ctx, ch);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.beginPath(); ctx.moveTo(ch.X(dos[0][0]), ch.Y(0));
+      dos.forEach(([E, g]) => { if (E <= st.EF) ctx.lineTo(ch.X(E), ch.Y(Math.min(g, gmax))); });
+      ctx.lineTo(ch.X(Math.min(st.EF, dos[dos.length - 1][0])), ch.Y(0)); ctx.closePath(); ctx.fill();
+      line(ctx, ch, dos.map(([E, g]) => [E, Math.min(g, gmax)]), P.accent, 2);
+      ctx.restore();
+      SB.dashLine(ctx, ch.X(st.EF), ch.box.y, ch.X(st.EF), ch.box.y + ch.box.h, P.accent2, [5, 3]);
+      SB.label(ctx, "EF", ch.X(st.EF) + 14, ch.box.y + ch.box.h - 12, { size: 12, color: P.accent2, bold: true });
+      SB.label(ctx, "판호버 특이점", ch.X(4 * tp), ch.Y(gmax * 0.94), { size: 11, color: P.dim });
+    }, { aspect: 1, minHeight: 240, maxHeight: 340 });
+    report();
+    void gT;
+  }
+
+  /* ---------------------------------------------------------- tangle: 2차원 강결합 */
+  SB.tangle("tg-tb", (v) => {
+    const m = C0 / (v.t * v.a * v.a);
+    return { w: (8 * v.t).toFixed(2) + " eV", m: m.toFixed(3) + " mₑ", k11: (Math.PI / (Math.SQRT2 * v.a)).toFixed(2) + " nm⁻¹", k10: (Math.PI / v.a).toFixed(2) + " nm⁻¹",
+      msg: m > 2 ? "호핑이 작아 띠가 좁고 전자가 무겁다 — 전이 금속 d 띠나 좁은 띠 산화물에 가깝다." : m < 0.3 ? "호핑이 커서 띠가 넓고 가볍다 — s·p 띠의 금속에 가깝다." : "띠 폭과 유효 질량은 반비례한다: 폭 × 질량 × a² = 일정." };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 그래핀 단면 */
+  {
+    const S3 = Math.sqrt(3), RK = (4 * Math.PI) / (3 * S3);            // K까지의 거리(1/a 단위, a = C–C)
+    const Kpts = Array.from({ length: 6 }, (_, n) => { const t = ((30 + 60 * n) * Math.PI) / 180; return [RK * Math.cos(t), RK * Math.sin(t), n % 2 ? "K′" : "K"]; });
+    const st = { P: [0.8, RK / 2] };   // 단면이 K와 K′을 지나도록 시작
+    const gTh = SB.range("gr-th", (v) => v.toFixed(0) + "°", () => redraw());
+    const gT = SB.range("gr-t", (v) => v.toFixed(2) + " eV", () => redraw());
+    const gD = SB.range("gr-d", (v) => v.toFixed(2) + " eV", () => redraw());
+    $("gr-zoom").addEventListener("change", () => redraw());
+    const Ep = (x, y) => Math.sqrt((gD() / 2) ** 2 + (gT() * Solid.grapheneF(x, y, 1)) ** 2);
+    const R = 3.1;
+    let A = null, Bv = null;
+    function redraw() { A && A.redraw(); Bv && Bv.redraw(); }
+    function nearestK(p) { let best = null, bd = 1e9; Kpts.forEach((k) => { const d = Math.hypot(p[0] - k[0], p[1] - k[1]); if (d < bd) { bd = d; best = k; } }); return { k: best, d: bd }; }
+    A = SB.canvas("cv-grm", (ctx, w, h, self) => {
+      const P = pal(), S = Math.min(w - 24, h - 30), cx = w / 2, cy = h / 2 + 6, sc = S / (2 * R);
+      self._m = { cx, cy, sc };
+      const X = (x) => cx + x * sc, Y = (y) => cy - y * sc;
+      const N = 70, cell = (2 * R) / N, t = gT();
+      ctx.save(); ctx.fillStyle = P.accent;
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const x = -R + (i + 0.5) * cell, y = -R + (j + 0.5) * cell, e = Ep(x, y) / (3 * t);
+        const al = Math.pow(Math.max(0, 1 - e), 6) * 0.85; if (al < 0.02) continue;
+        ctx.globalAlpha = al; ctx.fillRect(X(x - cell / 2), Y(y + cell / 2), cell * sc + 0.6, cell * sc + 0.6);
+      }
+      ctx.restore();
+      ctx.save(); ctx.strokeStyle = P.text; ctx.lineWidth = 1.6; ctx.beginPath();
+      Kpts.forEach((k, i) => (i ? ctx.lineTo(X(k[0]), Y(k[1])) : ctx.moveTo(X(k[0]), Y(k[1])))); ctx.closePath(); ctx.stroke(); ctx.restore();
+      Kpts.forEach((k) => { ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(X(k[0]), Y(k[1]), 4, 0, 7); ctx.fill(); SB.label(ctx, k[2], X(k[0] * 1.14), Y(k[1] * 1.14), { size: 12, bold: true, color: P.accent2 }); });
+      SB.label(ctx, "Γ", X(0) - 10, Y(0) + 12, { size: 12, bold: true });
+      // 단면 선
+      const th = (gTh() * Math.PI) / 180, d = [Math.cos(th), Math.sin(th)], L = 2 * R;
+      ctx.save(); ctx.beginPath(); ctx.rect(X(-R), Y(R), 2 * R * sc, 2 * R * sc); ctx.clip();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(X(st.P[0] - L * d[0]), Y(st.P[1] - L * d[1])); ctx.lineTo(X(st.P[0] + L * d[0]), Y(st.P[1] + L * d[1])); ctx.stroke(); ctx.restore();
+      SB.arrow(ctx, X(st.P[0]), Y(st.P[1]), X(st.P[0] + 0.7 * d[0]), Y(st.P[1] + 0.7 * d[1]), { color: P.text, width: 2 });
+      handle(ctx, X(st.P[0]), Y(st.P[1]), P.accent, 9);
+      SB.label(ctx, "k 평면 (단위 1/a)", 10, 12, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 1, minHeight: 240, maxHeight: 340 });
+    SB.drag(A, { handles: () => (A._m ? [{ id: "p", x: A._m.cx + st.P[0] * A._m.sc, y: A._m.cy - st.P[1] * A._m.sc, r: 14 }] : []),
+      move: (id, x, y) => { const m = A._m; let px = (x - m.cx) / m.sc, py = (m.cy - y) / m.sc; const r = Math.hypot(px, py); if (r > 2.9) { px *= 2.9 / r; py *= 2.9 / r; } st.P = [px, py]; Bv && Bv.redraw(); } });
+    Bv = SB.canvas("cv-grb", (ctx, w, h) => {
+      const P = pal(), t = gT(), zoom = $("gr-zoom").checked;
+      const th = (gTh() * Math.PI) / 180, d = [Math.cos(th), Math.sin(th)];
+      const nk = nearestK(st.P), K = nk.k;
+      const sStar = (K[0] - st.P[0]) * d[0] + (K[1] - st.P[1]) * d[1];     // 단면 위 K에 가장 가까운 점
+      const xr = zoom ? [sStar - 0.15, sStar + 0.15] : [-R, R];
+      let ezMin = 1e9; if (zoom) for (let i = 0; i <= 60; i++) { const s = xr[0] + ((xr[1] - xr[0]) * i) / 60; ezMin = Math.min(ezMin, Ep(st.P[0] + s * d[0], st.P[1] + s * d[1])); }
+      const yz = Math.max(0.5, 1.3 * ezMin), yr = zoom ? [-yz, yz] : [-3.1 * t, 3.1 * t];
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 62, h: h - 58 }, { x: xr, y: yr, xLabel: "단면 위 거리 s (1/a)", yLabel: "E (eV)" });
+      const up = [], dn = []; let gmin = 1e9;
+      for (let i = 0; i <= 400; i++) { const s = xr[0] + ((xr[1] - xr[0]) * i) / 400, e = Ep(st.P[0] + s * d[0], st.P[1] + s * d[1]); up.push([s, e]); dn.push([s, -e]); gmin = Math.min(gmin, 2 * e); }
+      // 전체 단면에서 최소 간격
+      let gAll = 1e9; for (let i = 0; i <= 600; i++) { const s = -R + (2 * R * i) / 600; gAll = Math.min(gAll, 2 * Ep(st.P[0] + s * d[0], st.P[1] + s * d[1])); }
+      ctx.save(); clipBox(ctx, ch);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.beginPath(); ctx.moveTo(ch.X(xr[0]), ch.Y(yr[0])); dn.forEach(([s, e]) => ctx.lineTo(ch.X(s), ch.Y(e))); ctx.lineTo(ch.X(xr[1]), ch.Y(yr[0])); ctx.closePath(); ctx.fill();
+      if (zoom) { const lin = (s) => Math.sqrt((gD() / 2) ** 2 + (1.5 * t * Math.hypot(st.P[0] + s * d[0] - K[0], st.P[1] + s * d[1] - K[1])) ** 2); const L1 = [], L2 = []; for (let i = 0; i <= 100; i++) { const s = xr[0] + ((xr[1] - xr[0]) * i) / 100; L1.push([s, lin(s)]); L2.push([s, -lin(s)]); } line(ctx, ch, L1, P.dim, 1.4, [5, 4]); line(ctx, ch, L2, P.dim, 1.4, [5, 4]); }
+      line(ctx, ch, up, P.accent2, 2.6); line(ctx, ch, dn, P.accent, 2.6);
+      SB.dashLine(ctx, ch.box.x, ch.Y(0), ch.box.x + ch.box.w, ch.Y(0), P.faint);
+      ctx.restore();
+      const e0 = Ep(st.P[0], st.P[1]);
+      if (0 >= xr[0] && 0 <= xr[1]) { [e0, -e0].forEach((e) => { if (e >= yr[0] && e <= yr[1]) { ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(ch.X(0), ch.Y(e), 4.5, 0, 7); ctx.fill(); } }); }
+      SB.label(ctx, "EF (디랙점)", ch.box.x + ch.box.w - 4, ch.Y(0) - 10, { align: "right", size: 11, color: P.dim });
+      if (zoom && ezMin > 0.4) SB.label(ctx, "단면이 K에서 멀다 — 범위를 넓혔다", ch.box.x + 6, ch.box.y + 10, { align: "left", size: 11, color: P.warn });
+      const q = nk.d;
+      SB.stat("gr-e", "±" + e0.toFixed(3) + " eV");
+      SB.stat("gr-q", (q / 0.142).toFixed(2) + " nm⁻¹ (" + nk.k[2] + ")");
+      SB.stat("gr-lin", (1.5 * t * q).toFixed(3) + " eV");
+      SB.stat("gr-gap", gAll < 0.005 ? "0 — 디랙점을 지난다" : gAll.toFixed(3) + " eV");
+    }, { aspect: 1, minHeight: 240, maxHeight: 340 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 그래핀 */
+  SB.tangle("tg-gr", (v) => {
+    const hv = 1.5 * v.t * 0.142, vf = (hv * 1e-9) / HBS, k = v.e / hv, n = (k * k) / Math.PI * 1e14;
+    return { v: sci(vf, 2) + " m/s", k: k.toFixed(3) + " nm⁻¹", n: sci(n, 2) + " cm⁻²" };
+  });
+
+  /* ---------------------------------------------------------- 경험적 의사퍼텐셜: 공용 계산 대기열 */
+  const EPMS = {};
+  const epmOf = (m) => EPMS[m] || (EPMS[m] = Solid.epm(m));
+  const TOP = {};
+  const topOf = (m) => (TOP[m] !== undefined ? TOP[m] : (TOP[m] = epmOf(m).bands([0, 0, 0])[3]));
+  /** 여러 k점을 나눠 계산: jobs = [{m, k}], 끝나면 done(E 배열들) */
+  const queue = [];
+  let busy = false;
+  function runQueue() {
+    if (busy || !queue.length) return;
+    busy = true;
+    const job = queue[0];
+    const t0 = performance.now();
+    while (job.i < job.ks.length && performance.now() - t0 < 24) { const top = topOf(job.m); job.out.push(epmOf(job.m).bands(job.ks[job.i]).slice(0, 8).map((E) => E - top)); job.i++; }
+    if (job.prog) job.prog(job.i / job.ks.length);
+    if (job.i >= job.ks.length) { queue.shift(); job.done(job.out); }
+    busy = false;
+    if (queue.length) setTimeout(runQueue, 0);
+  }
+  function compute(m, ks, done, prog, front) { const job = { m, ks, i: 0, out: [], done, prog }; if (front) queue.splice(queue.length ? 1 : 0, 0, job); else queue.push(job); setTimeout(runQueue, 0); }
+  const SO = { Si: 0.044, Ge: 0.29, GaAs: 0.34 };
+
+  /* ---------------------------------------------------------- 브릴루앙 영역 기하 (fcc, 2π/a 단위) */
+  const BZV = [];
+  {
+    const perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+    perms.forEach((p) => [-1, 1].forEach((s1) => [-1, 1].forEach((s2) => { const v = [0, 0, 0]; v[p[0]] = 0; v[p[1]] = 0.5 * s1; v[p[2]] = 1 * s2; if (!BZV.some((u) => Math.hypot(u[0] - v[0], u[1] - v[1], u[2] - v[2]) < 1e-9)) BZV.push(v); })));
+  }
+  const BZE = [];
+  for (let i = 0; i < BZV.length; i++) for (let j = i + 1; j < BZV.length; j++) { const d = Math.hypot(BZV[i][0] - BZV[j][0], BZV[i][1] - BZV[j][1], BZV[i][2] - BZV[j][2]); if (Math.abs(d - Math.SQRT1_2) < 1e-6) BZE.push([BZV[i], BZV[j]]); }
+  function drawBZ(ctx, cam, P, alpha = 1) {
+    const zs = BZV.map((v) => cam.project(v).z), zmin = Math.min(...zs), zmax = Math.max(...zs);
+    ctx.save(); ctx.lineWidth = 1.2;
+    BZE.forEach(([a, b]) => { const A = cam.project(a), B = cam.project(b), dep = ((A.z + B.z) / 2 - zmin) / (zmax - zmin || 1); ctx.strokeStyle = P.dim; ctx.globalAlpha = alpha * (0.18 + 0.55 * dep); ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); });
+    ctx.restore();
+  }
+  function drawAxes(ctx, cam, P, len = 1.25) {
+    const O = cam.project([0, 0, 0]);
+    [["kx", [len, 0, 0]], ["ky", [0, len, 0]], ["kz", [0, 0, len]]].forEach(([t, v]) => { const A = cam.project(v), B = cam.project(v.map((x) => x * 1.12)); SB.dashLine(ctx, O.x, O.y, A.x, A.y, P.faint, [3, 4]); SB.label(ctx, t, B.x, B.y, { size: 11, color: P.dim }); });
+  }
+
+  /* ---------------------------------------------------------- mini: fcc 브릴루앙 영역 */
+  {
+    const st = { yaw: 0.55, pitch: 0.32, dragged: false };
+    const pts = { "Γ": [0, 0, 0], X: [1, 0, 0], L: [0.5, 0.5, 0.5], K: [0.75, 0.75, 0], U: [1, 0.25, 0.25], W: [1, 0.5, 0] };
+    const cv = SB.canvas("cv-bz", (ctx, w, h) => {
+      const P = pal(), sc = Math.min(w, h) * 0.36;
+      const cam = Solid.camera({ yaw: st.yaw, pitch: st.pitch, scale: sc, cx: w / 2, cy: h / 2 + 4 });
+      drawBZ(ctx, cam, P);
+      drawAxes(ctx, cam, P);
+      if ($("bz-path").checked) {
+        const seg = (a, b) => { const A = cam.project(pts[a]), B = cam.project(pts[b]); ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); };
+        ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = 3; ctx.lineCap = "round"; seg("L", "Γ"); seg("Γ", "X"); seg("X", "U"); ctx.setLineDash([7, 4]); seg("K", "Γ"); ctx.restore();
+      }
+      if ($("bz-val").checked) {
+        [[0.85, 0, 0], [-0.85, 0, 0], [0, 0.85, 0], [0, -0.85, 0], [0, 0, 0.85], [0, 0, -0.85]].forEach((v) => { const A = cam.project(v); ctx.fillStyle = SB.color("accent-2-soft"); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(A.x, A.y, 7, 0, 7); ctx.fill(); ctx.stroke(); });
+      }
+      Object.entries(pts).forEach(([t, v]) => { const A = cam.project(v); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(A.x, A.y, 3.5, 0, 7); ctx.fill(); SB.label(ctx, t, A.x + 11, A.y - 9, { size: 13, bold: true, color: P.text }); });
+      $("bz-r").textContent = "점: Γ(0,0,0) X(1,0,0) L(½,½,½) K(¾,¾,0) U(1,¼,¼) W(1,½,0)";
+    }, { aspect: 0.62, minHeight: 250, maxHeight: 340 });
+    Solid.orbit(cv, st, () => cv.redraw());
+    ["bz-path", "bz-val"].forEach((id) => $(id).addEventListener("change", () => cv.redraw()));
+    SB.loop("mini-bz", (dt) => { if (!st.dragged) { st.yaw += dt * 0.3; cv.redraw(); } });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 반도체 띠 구조 뷰어 */
+  {
+    const KP = Solid.kpoints, nm = (l) => (l === "G" ? "Γ" : l);
+    const SEG = [["L", "G", "L→Γ (Λ)"], ["G", "X", "Γ→X (Δ)"], ["X", "U", "X→U"], ["K", "G", "K→Γ (Σ)"]];
+    const path = [], ticks = [];
+    let acc = 0;
+    SEG.forEach(([A, B], si) => {
+      const pa = KP[A], pb = KP[B], L = Math.hypot(pb[0] - pa[0], pb[1] - pa[1], pb[2] - pa[2]), n = si === 1 ? 40 : Math.max(8, Math.round(L * 40));
+      if (si < 3) ticks.push({ x: acc, label: nm(A) });
+      for (let i = si === 0 ? 0 : 1; i <= n; i++) { const t = i / n; path.push({ x: acc + t * L, k: [pa[0] + (pb[0] - pa[0]) * t, pa[1] + (pb[1] - pa[1]) * t, pa[2] + (pb[2] - pa[2]) * t], seg: si, t }); }
+      acc += L;
+    });
+    ticks.splice(3, 0, { x: ticks[2].x + Math.hypot(0, 0.25, 0.25), label: "U,K" });
+    ticks.push({ x: acc, label: "Γ" });
+    const XMAX = acc, xG = ticks[1].x, xX = ticks[2].x, xs = path.map((p) => p.x);
+    const DATA = {}, PROG = {};
+    const EXP = {
+      Si: [[xG + 0.85, 1.12, "1.12"], [xG, 3.4, "≈3.4"], [0, 2.0, "≈2.0"]],
+      Ge: [[0, 0.66, "0.66"], [xG, 0.8, "0.80"]],
+      GaAs: [[xG, 1.42, "1.42"], [0, 1.71, "1.71"], [xX, 1.9, "1.90"]],
+    };
+    const st = { band: 4, x: xG + 0.3, msg: "", ok: false };
+    const mat = SB.seg("bd-mat", () => { st.ok = false; st.msg = ""; ensure(mat()); cv.redraw(); });
+    const rng = SB.seg("bd-range", () => cv.redraw());
+    ["bd-exp", "bd-so"].forEach((id) => $(id).addEventListener("change", () => cv.redraw()));
+    $("bd-reset").addEventListener("click", () => { st.band = 4; st.x = xG + 0.3; st.ok = false; st.msg = ""; cv.redraw(); });
+    function ensure(m, front = true) {
+      if (DATA[m] || PROG[m] !== undefined) return;
+      PROG[m] = 0;
+      compute(m, path.map((p) => p.k), (E) => { DATA[m] = E; delete PROG[m]; if (m === mat()) cv.redraw(); }, (f) => { PROG[m] = f; if (m === mat()) cv.redraw(); }, front);
+    }
+    const Eat = (E, b, x) => { let i = 1; while (i < xs.length - 1 && xs[i] < x) i++; const t = (x - xs[i - 1]) / (xs[i] - xs[i - 1] || 1); return E[i - 1][b] + (E[i][b] - E[i - 1][b]) * SB.clamp(t, 0, 1); };
+    function info(E) {
+      let iv = 0, ic = 0;
+      E.forEach((r, i) => { if (r[3] > E[iv][3]) iv = i; if (r[4] < E[ic][4]) ic = i; });
+      const Ev = E[iv][3], Ec = E[ic][4];
+      const isG = (i) => Math.hypot(...path[i].k) < 1e-9;
+      return { iv, ic, gap: Ec - Ev, direct: isG(ic) && isG(iv) };
+    }
+    const where = (x) => { let i = 0; while (i < path.length - 1 && path[i].x < x - 1e-9) i++; const p = path[i]; if (Math.abs(x - xG) < 0.012 || Math.abs(x - XMAX) < 0.012) return "Γ"; if (Math.abs(x) < 0.012) return "L"; if (Math.abs(x - xX) < 0.012) return "X"; return `${SEG[p.seg][2]} ${p.t.toFixed(2)}`; };
+    const cv = SB.canvas("cv-bands", (ctx, w, h, self) => {
+      const P = pal(), m = mat(), E = DATA[m];
+      const yr = rng() === "all" ? [-13, 6.5] : [-4.5, 5.5];
+      const opts = { x: [0, XMAX], y: yr };
+      const ch = SB.chart(ctx, { x: 50, y: 30, w: w - 62, h: h - 72 }, { x: opts.x, y: opts.y, yLabel: "E − Ev (eV)", xTicks: ticks.map((t) => t.x), xFmt: (v) => (ticks.find((t) => Math.abs(t.x - v) < 1e-6) || {}).label || "" });
+      self._ch = ch; self._opts = opts;
+      ctx.save(); clipBox(ctx, ch);
+      ticks.forEach((t) => SB.dashLine(ctx, ch.X(t.x), ch.box.y, ch.X(t.x), ch.box.y + ch.box.h, P.faint));
+      if (!E) {
+        ctx.restore();
+        SB.label(ctx, `${m} 띠 계산 중… ${Math.round((PROG[m] || 0) * 100)} %`, ch.box.x + ch.box.w / 2, ch.box.y + ch.box.h / 2, { size: 14, color: P.dim });
+        self._h = null; return;
+      }
+      const I = info(E);
+      ctx.fillStyle = SB.color("accent-2-soft"); ctx.fillRect(ch.box.x, ch.Y(I.gap), ch.box.w, ch.Y(0) - ch.Y(I.gap));
+      for (let b = 0; b < 8; b++) line(ctx, ch, E.map((r, i) => [xs[i], r[b]]), b === st.band ? P.text : b < 4 ? P.accent : P.accent2, b === st.band ? 3 : 2);
+      if ($("bd-so").checked) [xG, XMAX].forEach((x) => { const y = ch.Y(-SO[m]); ctx.strokeStyle = P.warn; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(x) - 16, y); ctx.lineTo(ch.X(x) + 16, y); ctx.stroke(); });
+      if ($("bd-exp").checked) EXP[m].forEach(([x, e]) => { ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.fillStyle = SB.color("canvas-bg"); ctx.beginPath(); ctx.arc(ch.X(x), ch.Y(e), 5.5, 0, 7); ctx.fill(); ctx.stroke(); });
+      ctx.restore();
+      if ($("bd-exp").checked) EXP[m].forEach(([x, e, t]) => SB.label(ctx, t, ch.X(x) + (x === 0 ? 22 : -22), ch.Y(e) - 10, { size: 11, color: P.warn }));
+      if ($("bd-so").checked) SB.label(ctx, `분리 띠 −${SO[m]} eV`, ch.X(xG) + 22, ch.Y(-SO[m]) + 12, { align: "left", size: 11, color: P.warn });
+      if (w >= 560) SB.label(ctx, `${m}  ·  모형 간격 = ${I.gap.toFixed(2)} eV`, ch.box.x + 6, 14, { align: "left", size: 12, color: P.text, bold: true });
+      const hx = SB.clamp(st.x, 0, XMAX), he = Eat(E, st.band, hx);
+      const py = ch.Y(SB.clamp(he, yr[0], yr[1]));
+      handle(ctx, ch.X(hx), py, P.accent2, 9);
+      self._h = [ch.X(hx), py];
+      SB.stat("bd-k", where(hx));
+      SB.stat("bd-e", `${he.toFixed(3)} eV · ${st.band < 4 ? "가전자대 " + (st.band + 1) + "번" : "전도대 " + (st.band - 3) + "번"}`);
+      SB.stat("bd-gap", `${I.gap.toFixed(3)} eV ${I.direct ? "직접" : "간접"} (${where(xs[I.ic])})`);
+      SB.stat("bd-goal", st.msg || "전도대 최저점을 찾아라");
+      if (st.ok) SB.label(ctx, "찾았다!", ch.X(hx), py - 22, { size: 13, bold: true, color: P.ok });
+    }, { aspect: 0.66, minHeight: 320, maxHeight: 460 });
+    SB.drag(cv, { free: true, handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      down: (id, x, y) => {
+        const E = DATA[mat()]; if (!E || !cv._ch || id) return;
+        const [kx, e] = inv(cv._ch, cv._opts, x, y), xx = SB.clamp(kx, 0, XMAX);
+        let best = 0; for (let b = 0; b < 8; b++) if (Math.abs(Eat(E, b, xx) - e) < Math.abs(Eat(E, best, xx) - e)) best = b;
+        st.band = best;
+      },
+      move: (id, x) => { if (!cv._ch) return; const [kx] = inv(cv._ch, cv._opts, x, 0); st.x = SB.clamp(kx, 0, XMAX); st.ok = false; },
+      up: () => {
+        const m = mat(), E = DATA[m]; if (!E) return;
+        const I = info(E);
+        if (st.band !== 4) { st.msg = "전도대의 가장 아래 띠(5번째)에서 찾아라"; st.ok = false; }
+        else {
+          const ok = Math.abs(st.x - xs[I.ic]) < 0.035 || (m === "GaAs" && (Math.abs(st.x - xG) < 0.035 || Math.abs(st.x - XMAX) < 0.035));
+          st.ok = ok;
+          st.msg = ok ? `${m}: ${I.direct ? "직접" : "간접"} 간격 ${I.gap.toFixed(2)} eV (${where(xs[I.ic])})` : `여기는 ${Eat(E, 4, st.x).toFixed(2)} eV — 더 낮은 곳이 있다`;
+        }
+        cv.redraw();
+      } });
+    setTimeout(() => { ensure("Si"); ensure("Ge", false); ensure("GaAs", false); }, 200);
+  }
+
+  /* ---------------------------------------------------------- mini: 곡률로 잰 유효 질량 */
+  {
+    const n3 = 1 / Math.sqrt(3), n2 = 1 / Math.SQRT2;
+    const OPT = [
+      { m: "Si", k0: [0.85, 0, 0], d: [1, 0, 0], b: 4, exp: 0.98, nm: "종 질량 mₗ" },
+      { m: "Si", k0: [0.85, 0, 0], d: [0, 1, 0], b: 4, exp: 0.19, nm: "횡 질량 mₜ" },
+      { m: "Ge", k0: [0.5, 0.5, 0.5], d: [n3, n3, n3], b: 4, exp: 1.64, nm: "종 질량 mₗ" },
+      { m: "Ge", k0: [0.5, 0.5, 0.5], d: [-n2, n2, 0], b: 4, exp: 0.082, nm: "횡 질량 mₜ" },
+      { m: "GaAs", k0: [0, 0, 0], d: [1, 0, 0], b: 4, exp: 0.067, nm: "전자 m*" },
+      { m: "Si", k0: [0, 0, 0], d: [n3, n3, n3], b: 3, exp: 0.49, nm: "무거운 정공 [111]", note: ", 방향 평균" },
+      { m: "Si", k0: [0, 0, 0], d: [n3, n3, n3], b: 1, exp: 0.16, nm: "가벼운 정공 [111]", note: ", 방향 평균" },
+      { m: "Ge", k0: [0, 0, 0], d: [n3, n3, n3], b: 1, exp: 0.043, nm: "가벼운 정공 [111]" },
+    ];
+    const S = []; for (let i = -12; i <= 12; i++) S.push(i * 0.01);
+    const CACHE = {};
+    const st = { s: 0.06 };
+    const sel = $("ms-sel");
+    const cur = () => OPT[Number(sel.value)];
+    function need() {
+      const i = Number(sel.value), o = OPT[i];
+      if (CACHE[i]) return CACHE[i];
+      CACHE[i] = { pending: true, p: 0 };
+      compute(o.m, S.map((s) => [o.k0[0] + s * o.d[0], o.k0[1] + s * o.d[1], o.k0[2] + s * o.d[2]]), (E) => { CACHE[i] = { E: E.map((r) => r[o.b]) }; cv.redraw(); }, (f) => { CACHE[i].p = f; cv.redraw(); }, true);
+      return CACHE[i];
+    }
+    sel.addEventListener("change", () => { need(); cv.redraw(); });
+    const cv = SB.canvas("cv-mass", (ctx, w, h, self) => {
+      const P = pal(), o = cur(), c = need(), a = Solid.epmParams[o.m].a, kq = (2 * Math.PI) / a;
+      if (!c.E) { SB.label(ctx, `의사퍼텐셜 계산 중… ${Math.round((c.p || 0) * 100)} %`, w / 2, h / 2, { size: 13, color: P.dim }); self._h = null; return; }
+      const E = c.E, i0 = 12, E0 = E[i0], d2 = (E[i0 + 1] - 2 * E0 + E[i0 - 1]) / (0.01 * kq) ** 2, mass = (2 * C0) / d2, sign = Math.sign(d2);
+      const qs = S.map((s) => s * kq), dE = E.map((e) => (e - E0) * 1000);
+      const par = qs.map((q) => ((C0 / mass) * q * q) * 1000);
+      const all = dE.concat(par), ymin = Math.min(0, ...all), ymax = Math.max(0, ...all), pad = (ymax - ymin) * 0.08 || 1;
+      const opts = { x: [qs[0], qs[qs.length - 1]], y: [ymin - pad, ymax + pad] };
+      const ch = SB.chart(ctx, { x: 58, y: 26, w: w - 70, h: h - 70 }, { x: opts.x, y: opts.y, xLabel: "극값에서 벗어난 거리 q (nm⁻¹)", yLabel: "E − E₀ (meV)" });
+      self._ch = ch; self._opts = opts; self._kq = kq;
+      ctx.save(); clipBox(ctx, ch);
+      line(ctx, ch, qs.map((q, i) => [q, par[i]]), P.dim, 1.6, [6, 4]);
+      line(ctx, ch, qs.map((q, i) => [q, dE[i]]), sign > 0 ? P.accent2 : P.accent, 2.8);
+      ctx.restore();
+      const js = SB.clamp(Math.round(st.s / 0.01) + 12, 0, 24), qh = qs[js];
+      const px = ch.X(qh), py = ch.Y(dE[js]);
+      handle(ctx, px, py, P.accent2, 9); self._h = [px, py];
+      const am = Math.abs(mass), pv = par[js], ev = dE[js];
+      if (w >= 560) SB.label(ctx, `${o.m}  ${o.nm}`, ch.box.x + 6, 12, { align: "left", size: 12, bold: true, color: P.text });
+      $("ms-r").textContent = `곡률 질량 |m*| = ${am.toFixed(3)} mₑ (실측 ${o.exp}${o.note || ""}) · q = ${qh.toFixed(2)} nm⁻¹에서 띠 ${ev.toFixed(1)} meV, 포물선 ${pv.toFixed(1)} meV`;
+    }, { aspect: 0.52, minHeight: 240, maxHeight: 330 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (!cv._ch) return; const [q] = inv(cv._ch, cv._opts, x, 0); st.s = SB.clamp(q / cv._kq, -0.12, 0.12); } });
+  }
+
+  /* ---------------------------------------------------------- mini: 힘과 가속도 */
+  {
+    const V = { si: [0.98, 0.19, "Si Δ 골짜기"], ge: [1.64, 0.082, "Ge L 골짜기"], gaas: [0.067, 0.067, "GaAs Γ"] };
+    const st = { phi: (35 * Math.PI) / 180 };
+    const val = SB.seg("fo-v", () => cv.redraw());
+    const cv = SB.canvas("cv-force", (ctx, w, h, self) => {
+      const P = pal(), [ml, mt, nmv] = V[val()], cx = w / 2, cy = h / 2 + 14, R = Math.min(w * 0.36, h * 0.34);
+      // 등에너지선: 반축 ∝ √m
+      const sl = Math.sqrt(ml), stt = Math.sqrt(mt), sc = (R * 0.8) / Math.max(sl, stt);
+      ctx.save(); ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(cx, cy, Math.max(4, sl * sc), Math.max(4, stt * sc), 0, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+      SB.dashLine(ctx, cx - R * 1.15, cy, cx + R * 1.15, cy, P.faint); SB.dashLine(ctx, cx, cy - R * 1.1, cx, cy + R * 1.1, P.faint);
+      SB.label(ctx, "골짜기 축 (mₗ)", cx + R * 1.05, cy + 14, { align: "right", size: 11, color: P.dim });
+      SB.label(ctx, "수직 (mₜ)", cx + 8, cy - R * 1.02, { align: "left", size: 11, color: P.dim });
+      const F = [Math.cos(st.phi), Math.sin(st.phi)], a = [F[0] / ml, F[1] / mt], am = Math.hypot(a[0], a[1]), amax = 1 / Math.min(ml, mt);
+      const fx = cx + R * F[0], fy = cy - R * F[1];
+      SB.arrow(ctx, cx, cy, fx, fy, { color: P.accent2, width: 3, label: "F" });
+      const La = R * (0.25 + 0.75 * am / amax);
+      SB.arrow(ctx, cx, cy, cx + (La * a[0]) / am, cy - (La * a[1]) / am, { color: P.accent, width: 3, label: "a" });
+      handle(ctx, fx, fy, P.accent2, 9); self._h = [fx, fy]; self._c = [cx, cy];
+      const ang = (Math.acos(SB.clamp((F[0] * a[0] + F[1] * a[1]) / am, -1, 1)) * 180) / Math.PI, mF = 1 / (F[0] * F[0] / ml + F[1] * F[1] / mt);
+      if (w >= 560) SB.label(ctx, nmv, 10, 12, { align: "left", size: 12, bold: true, color: P.text });
+      $("fo-r").textContent = `F와 a의 각 ${ang.toFixed(1)}° · F 방향 질량 ${mF.toFixed(3)} mₑ · 힘의 각 ${((st.phi * 180) / Math.PI).toFixed(0)}°`;
+    }, { aspect: 0.55, minHeight: 260, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "f", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const [cx, cy] = cv._c; st.phi = Math.atan2(cy - y, x - cx); } });
+  }
+
+  /* ---------------------------------------------------------- tangle: 상태 밀도·전도도 질량 */
+  const NC1 = 2 * Math.pow((2 * Math.PI * Solid.const.me * Solid.const.kB * 300) / (Solid.const.h * Solid.const.h), 1.5) * 1e-6;   // m = mₑ, cm⁻³
+  SB.tangle("tg-mass", (v) => {
+    const md = Solid.mDOS(v.ml, v.mt, v.g), mc = Solid.mCond(v.ml, v.mt);
+    return { md: md.toFixed(3) + " mₑ", mc: mc.toFixed(3) + " mₑ", nc: sci(NC1 * Math.pow(md, 1.5), 2) + " cm⁻³",
+      msg: v.ml === 0.98 && v.mt === 0.19 && v.g === 6 ? "Si 전도대다. 표준값 N<sub>c</sub> ≈ 2.8×10¹⁹ cm⁻³, m<sub>c</sub> = 0.26과 맞는다." : v.g === 4 && Math.abs(v.ml - 1.64) < 0.005 && Math.abs(v.mt - 0.08) < 0.0051 ? "Ge 전도대(L 골짜기 4개)에 가깝다." : `두 질량의 비 m<sub>dn</sub>/m<sub>c</sub> = ${(md / mc).toFixed(2)} — 골짜기가 많고 길쭉할수록 커진다.` };
+  });
+
+  /* ---------------------------------------------------------- drill: 질량 */
+  SB.drill("drill-mass", () => {
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const ml = r2(0.6 + Math.random() * 1.2), mt = r2(0.06 + Math.random() * 0.2), type = Math.floor(Math.random() * 3);
+    if (type === 0) { const g = [4, 6, 8][Math.floor(Math.random() * 3)], v = Solid.mDOS(ml, mt, g); return { q: `<p>\\(m_l = ${ml}\\), \\(m_t = ${mt}\\,m_e\\)인 회전 타원체 골짜기가 ${g}개 있다. 상태 밀도 유효 질량 \\(m_{dn}\\)은?</p>`, answer: v, label: "m<sub>dn</sub> =", unit: "mₑ", tol: "1%", sol: `\\(m_{dn} = ${g}^{2/3}(${ml}\\times${mt}^2)^{1/3} = ${Math.pow(g, 2 / 3).toFixed(3)}\\times${Math.cbrt(ml * mt * mt).toFixed(4)} = ${v.toFixed(3)}\\,m_e\\)` }; }
+    if (type === 1) { const v = Solid.mCond(ml, mt); return { q: `<p>입방 대칭으로 놓인 회전 타원체 골짜기들(\\(m_l = ${ml}\\), \\(m_t = ${mt}\\,m_e\\))의 전도도 유효 질량 \\(m_c\\)는?</p>`, answer: v, label: "m<sub>c</sub> =", unit: "mₑ", tol: "1%", sol: `\\(1/m_c = \\tfrac13(1/${ml} + 2/${mt}) = ${((1 / ml + 2 / mt) / 3).toFixed(3)}\\) → \\(m_c = ${v.toFixed(3)}\\,m_e\\)` }; }
+    const ang = [30, 45, 60][Math.floor(Math.random() * 3)], c2 = Math.cos((ang * Math.PI) / 180) ** 2, v = 1 / (c2 / ml + (1 - c2) / mt);
+    return { q: `<p>골짜기 축과 \\(${ang}^\\circ\\)를 이루는 방향으로 움직이는 전자의 유효 질량 \\(m = 1/(\\hat u\\cdot M^{-1}\\cdot\\hat u)\\)은? \\(m_l = ${ml}\\), \\(m_t = ${mt}\\,m_e\\).</p>`, answer: v, label: "m =", unit: "mₑ", tol: "1%", sol: `\\(1/m = \\cos^2\\theta/m_l + \\sin^2\\theta/m_t = ${(c2 / ml).toFixed(3)} + ${((1 - c2) / mt).toFixed(3)}\\) → \\(m = ${v.toFixed(3)}\\,m_e\\)` };
+  });
+
+  /* ---------------------------------------------------------- 변형: 공용 계산 */
+  const XIU = 9.16, C12C11 = 0.386;
+  function strainSi(eps) {      // eps: 면내 변형(분수)
+    const ez = -2 * C12C11 * eps, S = XIU * (eps - ez);
+    const s2 = (-2 / 3) * S, s4 = S / 3, w2 = 2 * Math.exp(-s2 / KT), w4 = 4 * Math.exp(-s4 / KT), f2 = w2 / (w2 + w4);
+    const inv_ = f2 / 0.19 + (1 - f2) * 0.5 * (1 / 0.98 + 1 / 0.19);
+    return { ez, S, s2, s4, f2, mpar: 1 / inv_ };
+  }
+  SB.tangle("tg-strain", (v) => {
+    const ep = (Solid.aSiGe(v.x) - 0.5431) / 0.5431, r = strainSi(ep);
+    return { ep: (ep * 100).toFixed(2) + " %", ez: (r.ez * 100).toFixed(2) + " %", de: (r.S * 1000).toFixed(0) + " meV", f2: (r.f2 * 100).toFixed(1) + " %", mc: r.mpar.toFixed(3) + " mₑ", gain: "×" + (Solid.mCond(0.98, 0.19) / r.mpar).toFixed(2),
+      msg: v.x === 0 ? "변형이 없으면 여섯 골짜기에 1/3씩(Δ₂에 33 %) 나뉜다." : r.S > 0.1 ? "분리가 4kT를 넘으면 전자가 거의 다 Δ₂에 모여 질량 이득이 포화한다. 남은 이득은 골짜기 간 산란 억제에서 온다." : "분리가 kT의 몇 배가 되기 전에는 전자가 Δ₄에도 많이 남는다." };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 골짜기 3D */
+  {
+    const st = { yaw: 0.7, pitch: 0.38, dragged: false };
+    const mat = SB.seg("vl-mat", () => { const si = mat() === "Si"; gS.el.disabled = !si; cv.redraw(); });
+    const gE = SB.range("vl-e", (v) => v.toFixed(0) + " meV", () => cv.redraw());
+    const gS = SB.range("vl-s", (v) => (v > 0 ? "+" : "") + v.toFixed(2) + " %", () => cv.redraw());
+    ["vl-bz", "vl-mag"].forEach((id) => $(id).addEventListener("change", () => cv.redraw()));
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]); return [a[0] / l, a[1] / l, a[2] / l]; };
+    function hull(pts) {
+      const p = pts.slice().sort((A, B) => A[0] - B[0] || A[1] - B[1]);
+      const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+      const lo = [], up = [];
+      for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+      for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+      return lo.slice(0, -1).concat(up.slice(0, -1));
+    }
+    /** 회전 타원체 표면 표본: 중심 c, 축 n, 반축 ql(축)·qt(수직). half이면 n 반대쪽 절반만 */
+    function ellipsoid(c, n, ql, qt, half) {
+      const u = norm(Math.abs(n[0]) < 0.9 ? cross(n, [1, 0, 0]) : cross(n, [0, 1, 0])), v = cross(n, u), out = [], rim = [];
+      const NT = 14, NP = 24;
+      for (let i = 0; i <= NT; i++) {
+        const th = half ? Math.PI / 2 + (Math.PI / 2) * (i / NT) : (Math.PI * i) / NT, ct = Math.cos(th), s = Math.sin(th);
+        for (let j = 0; j < NP; j++) { const ph = (2 * Math.PI * j) / NP, cp = Math.cos(ph), sp = Math.sin(ph); const p = [0, 1, 2].map((k) => c[k] + ql * ct * n[k] + qt * s * (cp * u[k] + sp * v[k])); out.push(p); if (half && i === 0) rim.push(p); }
+      }
+      return { pts: out, rim };
+    }
+    const cv = SB.canvas("cv-valley", (ctx, w, h) => {
+      const P = pal(), m = mat(), sc = Math.min(w, h) * 0.31, cam = Solid.camera({ yaw: st.yaw, pitch: st.pitch, scale: sc, cx: w / 2, cy: h / 2 + 6 });
+      if ($("vl-bz").checked) drawBZ(ctx, cam, P, 0.9);
+      drawAxes(ctx, cam, P, 1.2);
+      const E = gE() / 1000, mag = $("vl-mag").checked ? 3 : 1, a = Solid.epmParams[m].a, kq = (2 * Math.PI) / a;
+      const qOf = (mm, e) => (e > 0 ? (Math.sqrt((mm * e) / C0) / kq) * mag : 0);
+      const items = [];
+      let sh = null;
+      if (m === "Si") {
+        sh = strainSi(gS() / 100);
+        [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach((n) => {
+          const z = Math.abs(n[2]) === 1, e = E - (z ? sh.s2 : sh.s4);
+          items.push({ c: n.map((x) => 0.85 * x), n, ql: qOf(0.98, e), qt: qOf(0.19, e), col: z ? P.accent : P.accent2, soft: z ? "accent-soft" : "accent-2-soft", half: false });
+        });
+      } else if (m === "Ge") {
+        [[1, 1, 1], [1, 1, -1], [1, -1, 1], [-1, 1, 1], [-1, -1, -1], [-1, -1, 1], [-1, 1, -1], [1, -1, -1]].forEach((s) => {
+          const n = norm(s);
+          items.push({ c: s.map((x) => 0.5 * x), n, ql: qOf(1.64, E), qt: qOf(0.082, E), col: P.accent2, soft: "accent-2-soft", half: true });
+        });
+      } else items.push({ c: [0, 0, 0], n: [0, 0, 1], ql: qOf(0.067, E), qt: qOf(0.067, E), col: P.accent, soft: "accent-soft", half: false });
+      items.forEach((it) => (it.z = cam.project(it.c).z));
+      items.sort((A, B) => A.z - B.z);
+      const zs = items.map((it) => it.z), zmin = Math.min(...zs), zmax = Math.max(...zs);
+      items.forEach((it) => {
+        const dep = (it.z - zmin) / (zmax - zmin || 1), C = cam.project(it.c);
+        if (it.ql <= 0) { ctx.save(); ctx.strokeStyle = it.col; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.arc(C.x, C.y, 5, 0, 7); ctx.stroke(); ctx.restore(); return; }
+        const S = ellipsoid(it.c, it.n, it.ql, it.qt, it.half), H = hull(S.pts.map((p) => { const q = cam.project(p); return [q.x, q.y]; }));
+        ctx.save(); ctx.globalAlpha = 0.55 + 0.45 * dep; ctx.fillStyle = SB.color(it.soft); ctx.strokeStyle = it.col; ctx.lineWidth = 2;
+        ctx.beginPath(); H.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]))); ctx.closePath(); ctx.fill(); ctx.stroke();
+        if (it.half && S.rim.length) { ctx.lineWidth = 1.4; ctx.setLineDash([3, 2]); ctx.beginPath(); S.rim.forEach((p, i) => { const q = cam.project(p); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); }); ctx.closePath(); ctx.stroke(); }
+        ctx.restore();
+      });
+      const O = cam.project([0, 0, 0]); ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(O.x, O.y, 3, 0, 7); ctx.fill(); SB.label(ctx, "Γ", O.x + 10, O.y + 10, { size: 12, bold: true });
+      if (m === "Si") {
+        SB.label(ctx, "청록: Δ₂ (±z)   주황: Δ₄ (±x, ±y)", 10, 14, { align: "left", size: 12, color: P.text });
+        const sg = (x) => { const r = Math.round(x * 1000); return r === 0 ? "0" : (r > 0 ? "+" : "−") + Math.abs(r); };
+        SB.stat("vl-shift", `${sg(sh.s2)} / ${sg(sh.s4)} meV`);
+        SB.stat("vl-pop", (sh.f2 * 100).toFixed(1) + " %");
+        SB.stat("vl-mc", sh.mpar.toFixed(3) + " mₑ");
+        SB.stat("vl-mu", "×" + (Solid.mCond(0.98, 0.19) / sh.mpar).toFixed(2));
+      } else if (m === "Ge") {
+        SB.label(ctx, "L점 8개의 반쪽 골짜기 (점선: 영역 면에서 잘린 단면)", 10, 14, { align: "left", size: 12, color: P.text });
+        SB.stat("vl-shift", "변형은 Si만 계산"); SB.stat("vl-pop", "L 골짜기 4개 (반쪽 8개)"); SB.stat("vl-mc", Solid.mCond(1.64, 0.082).toFixed(3) + " mₑ"); SB.stat("vl-mu", "m<sub>dn</sub> = " + Solid.mDOS(1.64, 0.082, 4).toFixed(2));
+      } else {
+        SB.label(ctx, "Γ의 등방 골짜기 하나 — 작다 = 가볍다", 10, 14, { align: "left", size: 12, color: P.text });
+        SB.stat("vl-shift", "변형은 Si만 계산"); SB.stat("vl-pop", "Γ 골짜기 1개"); SB.stat("vl-mc", "0.067 mₑ"); SB.stat("vl-mu", "m<sub>dn</sub> = 0.067");
+      }
+    }, { aspect: 0.72, minHeight: 300, maxHeight: 440 });
+    Solid.orbit(cv, st, () => cv.redraw());
+    SB.loop("sim-valley", (dt) => { if ($("vl-rot").checked && !st.dragged) { st.yaw += dt * 0.25; cv.redraw(); } });
+    (cv.canvas || $("cv-valley")).addEventListener("pointerup", () => { if (st.dragged) $("vl-rot").checked = false; st.dragged = false; });
+  }
+})();
+</script>
+</body>
+</html>
