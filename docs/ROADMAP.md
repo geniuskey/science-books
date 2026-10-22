@@ -13,7 +13,7 @@
 | 4 | 현대물리학 `modern-physics` | 물리 | 2 | phys, quantum(신규) | 완료 |
 | 5 | 고체물리 `solid-state` | 물리 | 3 | quantum, solid(신규) | 완료 |
 | 6 | 전자기학 `electromagnetics` | 물리 | 2–3 | phys, em(신규) | 완료 |
-| 7 | 열·통계물리와 물리화학 `thermal-physics` | 물리/화학 | 2–3 | thermo(신규) | 집필 중 |
+| 7 | 열·통계물리와 물리화학 `thermal-physics` | 물리/화학 | 2–3 | thermo(신규) | 완료 |
 | 8 | 재료과학 `materials-science` | 재료 | 2 | elements, chem | 예정(반도체 우선) |
 | 9 | 공학수학·수치해석 `engineering-math` | 수학 | 2 | — | 예정(반도체 우선) |
 | 10 | 확률과 통계 `probability-statistics` | 수학 | 1–2 | stat(신규) | 완료 |

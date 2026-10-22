@@ -193,7 +193,7 @@ SB.registerCatalog({
    "id": "thermal-physics",
    "code": "TP",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "thermal-physics/course.json",
    "title": "열·통계물리와 물리화학",
    "en": "Thermal Physics and Physical Chemistry",
