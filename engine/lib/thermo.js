@@ -837,28 +837,41 @@
       return [x0 + s.r + R() * (x1 - x0 - 2 * s.r), s.r + R() * (G.H - 2 * s.r)];
     }
     G.add = function (s, kT, xr) {
+      const k = kT == null ? opt.T || 1 : kT, sd = sqrt(k / s.m), grp = [];
       for (let i = 0; i < s.n; i++) {
-        const [x, y] = place(s, xr || s.region), sd = sqrt((kT == null ? opt.T || 1 : kT) / s.m);
-        G.p.push({ x, y, vx: sd * R.normal(), vy: sd * R.normal(), m: s.m, r: s.r, tag: s.tag == null ? 0 : s.tag });
+        const [x, y] = place(s, xr || s.region);
+        const q = { x, y, vx: sd * R.normal(), vy: sd * R.normal(), m: s.m, r: s.r, tag: s.tag == null ? 0 : s.tag };
+        if (G.partition) q.side = x < G.partition.x ? 0 : 1;
+        G.p.push(q); grp.push(q);
+      }
+      // 처음 온도를 정확히 kT로(표본 요동 제거): 평균 운동량 0, ⟨½mv²⟩ = kT
+      if (grp.length > 1) {
+        let px = 0, py = 0, M = 0; for (const q of grp) { px += q.m * q.vx; py += q.m * q.vy; M += q.m; }
+        for (const q of grp) { q.vx -= px / M; q.vy -= py / M; }
+        let e = 0; for (const q of grp) e += 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy);
+        const f = e > 0 ? sqrt((k * grp.length) / e) : 1; for (const q of grp) { q.vx *= f; q.vy *= f; }
       }
     };
     for (const s of specs) G.add(s, s.T, s.region);
     const sideOf = (q) => (G.partition ? (q.x < G.partition.x ? 0 : 1) : 0);
+    // 칸막이: 각 분자가 어느 칸에 있었는지(q.side) 기억하고, 구멍이 아닌 곳으로 넘어가거나
+    // 칸막이에 걸치면 되돌려 반사한다(충돌로 밀려 넘어가는 경우도 막는다).
+    function wallPartition() {
+      if (!G.partition) return;
+      const X = G.partition.x, gap = G.partition.gap;
+      for (const q of G.p) {
+        if (q.side == null) q.side = q.x < X ? 0 : 1;
+        const inGap = gap && q.y > gap[0] + q.r && q.y < gap[1] - q.r;
+        if (inGap) { q.side = q.x < X ? 0 : 1; continue; }
+        if (q.side === 0 && q.x + q.r > X) { q.x = Math.min(q.x, 2 * (X - q.r) - q.x, X - q.r); if (q.vx > 0) q.vx = -q.vx; }
+        else if (q.side === 1 && q.x - q.r < X) { q.x = Math.max(q.x, 2 * (X + q.r) - q.x, X + q.r); if (q.vx < 0) q.vx = -q.vx; }
+      }
+    }
     G.step = function (dt) {
       const P = G.p, n = P.length, Wr = G.piston ? G.piston.x : G.W;
       // 이동
       for (const q of P) { q.x += q.vx * dt; q.y += q.vy * dt; }
-      // 칸막이
-      if (G.partition) {
-        const X = G.partition.x, gap = G.partition.gap;
-        for (const q of P) {
-          const inGap = gap && q.y > gap[0] + q.r && q.y < gap[1] - q.r;
-          if (inGap) continue;
-          const prev = q.x - q.vx * dt;
-          if (prev < X && q.x + q.r > X && q.vx > 0 && prev + q.r <= X + 1e-9) { q.x = 2 * (X - q.r) - q.x; q.vx = -q.vx; }
-          else if (prev > X && q.x - q.r < X && q.vx < 0 && prev - q.r >= X - 1e-9) { q.x = 2 * (X + q.r) - q.x; q.vx = -q.vx; }
-        }
-      }
+      wallPartition();
       // 벽
       const thermal = (q, wall, nx, ny) => {
         const w = G.walls[wall];
@@ -904,7 +917,7 @@
             if (j <= i) continue;
             const b = P[j], dx = b.x - a.x, dy = b.y - a.y, rr = a.r + b.r, d2 = dx * dx + dy * dy;
             if (d2 >= rr * rr || d2 === 0) continue;
-            if (G.partition && sideOf(a) !== sideOf(b)) continue;
+            if (G.partition && a.side !== b.side) continue;
             const d = sqrt(d2), nx = dx / d, ny = dy / d, vrel = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
             const ov = (rr - d) / 2; a.x -= nx * ov; a.y -= ny * ov; b.x += nx * ov; b.y += ny * ov;
             if (vrel >= 0) continue;
@@ -915,6 +928,7 @@
           }
         }
       }
+      wallPartition();
       G.t += dt; G.impT += dt;
       return G;
     };
