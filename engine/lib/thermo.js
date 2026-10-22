@@ -607,8 +607,15 @@
   };
   /** 공정점 {x, T} */
   T.eutectic = function (A, B, WL = 0) {
-    const x = T.bisect((x) => T.liquidusA(x, A, WL) - T.liquidusB(x, B, WL), 1e-6, 1 - 1e-6);
-    return { x, T: T.liquidusA(x, A, WL) };
+    // 두 액상선이 만나는 곳: 조성을 훑어 부호가 바뀌는 구간을 찾은 뒤 이분법(강한 음의 ΩL에서도 안정)
+    const d = (x) => T.liquidusA(x, A, WL) - T.liquidusB(x, B, WL);
+    let x0 = 1e-6, d0 = d(x0);
+    for (let i = 1; i <= 400; i++) {
+      const x1 = i === 400 ? 1 - 1e-6 : i / 400, d1 = d(x1);
+      if (isFinite(d0) && isFinite(d1) && d0 * d1 <= 0) { const x = T.bisect(d, x0, x1, 1e-13); return { x, T: T.liquidusA(x, A, WL) }; }
+      x0 = x1; d0 = d1;
+    }
+    return { x: NaN, T: NaN };
   };
   /** 지렛대 규칙: 전체 조성 x0, 두 상 조성 xa < xb → {fa, fb} */
   T.lever = (x0, xa, xb) => { const fb = (x0 - xa) / (xb - xa); return { fa: 1 - fb, fb }; };
