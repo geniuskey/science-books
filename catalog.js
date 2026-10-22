@@ -90,7 +90,7 @@ SB.registerCatalog({
   {
    "id": "solid-state",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "solid-state/course.json",
    "code": "SS",
    "title": "고체물리",
@@ -108,7 +108,7 @@ SB.registerCatalog({
   {
    "id": "electromagnetics",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "electromagnetics/course.json",
    "code": "EM",
    "title": "전자기학",
@@ -175,7 +175,7 @@ SB.registerCatalog({
    "id": "probability-statistics",
    "code": "PS",
    "field": "math",
-   "status": "writing",
+   "status": "published",
    "manifest": "probability-statistics/course.json",
    "title": "확률과 통계",
    "en": "Probability and Statistics",
