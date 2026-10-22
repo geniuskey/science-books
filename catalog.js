@@ -182,12 +182,12 @@ SB.registerCatalog({
    "level": "대학 1–2학년 · 반도체 기초",
    "description": "자료 요약과 확률의 기초에서 출발해 조건부 확률과 베이즈 정리, 이산·연속 분포, 중심 극한 정리, 표본 분포와 추정, 가설 검정, 회귀와 분산 분석, 실험 계획, 확률 과정, 통계적 공정 관리, 신뢰성과 수율까지 — 동전을 던지고 공을 떨어뜨리고 표본을 수천 번 다시 뽑으며 눈으로 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/probability-statistics/",
-   "published": 0,
+   "published": 9,
    "total": 19,
    "color": "#15803d",
    "colorDark": "#4ade80",
-   "sims": 0,
-   "problems": 0
+   "sims": 78,
+   "problems": 144
   }
  ]
 });

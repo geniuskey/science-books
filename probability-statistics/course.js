@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "히스토그램",
       "표준 편차"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "probability",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "표본 공간",
       "조합"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "conditional",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "베이즈 정리",
       "독립"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -68,8 +65,7 @@ SB.registerCourse({
      "tags": [
       "이항 분포",
       "포아송 분포"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "continuous",
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "정규 분포",
       "지수 분포"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "joint",
@@ -92,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "공분산",
       "오차 전파"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "limit-theorems",
@@ -104,8 +98,7 @@ SB.registerCourse({
      "tags": [
       "중심 극한 정리",
       "몬테카를로"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +114,7 @@ SB.registerCourse({
      "tags": [
       "표준 오차",
       "t 분포"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "estimation",
@@ -133,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "최대 가능도",
       "불편 추정"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "confidence",
@@ -275,8 +266,117 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "descriptive": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 17,
+   "drills": 4,
+   "minis": 10,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "probability": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 15,
+   "drills": 3,
+   "minis": 9,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 8,
+   "hero": 1
+  },
+  "conditional": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "discrete": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 17,
+   "drills": 4,
+   "minis": 10,
+   "tangles": 7,
+   "steps": 4,
+   "predicts": 7,
+   "hero": 1
+  },
+  "continuous": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 10,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "joint": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 14,
+   "drills": 5,
+   "minis": 8,
+   "tangles": 8,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "limit-theorems": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 15,
+   "drills": 4,
+   "minis": 8,
+   "tangles": 6,
+   "steps": 4,
+   "predicts": 7,
+   "hero": 1
+  },
+  "sampling": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 11,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "estimation": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 10,
+   "figures": 13,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 8,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  }
+ },
+ "published": 9,
  "total": 19,
  "url": "https://science.euiyun.com/probability-statistics/"
 });
