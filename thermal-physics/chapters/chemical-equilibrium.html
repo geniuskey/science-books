@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>화학 평형 · 열·통계물리와 물리화학 · SciBook</title>
+<meta name="description" content="반응 진행도와 깁스 에너지 최소, ΔG° = −RT ln K, Kp·Kc, 반트호프 식, 르샤틀리에 원리, Si–Cl–H 다중 평형, 엘링엄 도표와 선택 산화, SiH₄·SiHCl₃·WF₆ CVD 반응의 열역학을 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/thermal-physics/chapters/chemical-equilibrium.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="화학 평형 · 열·통계물리와 물리화학 · SciBook">
+<meta property="og:description" content="반응 진행도와 깁스 에너지 최소, ΔG° = −RT ln K, Kp·Kc, 반트호프 식, 르샤틀리에 원리, Si–Cl–H 다중 평형, 엘링엄 도표와 선택 산화, SiH₄·SiHCl₃·WF₆ CVD 반응의 열역학을 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/thermal-physics/chapters/chemical-equilibrium.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "화학 평형 · 열·통계물리와 물리화학 · SciBook", "headline": "12 화학 평형", "url": "https://science.euiyun.com/thermal-physics/chapters/chemical-equilibrium.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "반응 진행도와 깁스 에너지 최소, ΔG° = −RT ln K, Kp·Kc, 반트호프 식, 르샤틀리에 원리, Si–Cl–H 다중 평형, 엘링엄 도표와 선택 산화, SiH₄·SiHCl₃·WF₆ CVD 반응의 열역학을 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 12, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/thermal-physics/#book", "name": "열·통계물리와 물리화학", "url": "https://science.euiyun.com/thermal-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "열·통계물리와 물리화학", "item": "https://science.euiyun.com/thermal-physics/"}, {"@type": "ListItem", "position": 3, "name": "12 화학 평형", "item": "https://science.euiyun.com/thermal-physics/chapters/chemical-equilibrium.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/thermo.js"></script>
+<style>
+  .ce-out { white-space: normal; }
+  .ce-svg text { font-size: 14px; }
+</style>
+</head>
+<body data-chapter="chemical-equilibrium">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="free-energy solutions">
+    <div class="eyebrow">Chapter 12</div>
+    <h1>화학 평형</h1>
+    <p class="lead">반응은 끝까지 가지 않는다. 실레인을 흘려 폴리실리콘을 입히든, 트라이클로로실레인과 수소로 에피층을 기르든, 반응기 출구에는 언제나 반응물과 생성물이 정해진 비율로 섞여 나온다. 아래 두 상자에서 분자 BC는 저절로 B와 C로 쪼개지고, B와 C는 만나면 다시 붙는다. 왼쪽은 BC만, 오른쪽은 B와 C만으로 시작했지만 두 상자의 비 \(Q = N_\mathrm{B}N_\mathrm{C}/(N_\mathrm{BC}V)\)는 같은 값으로 모인다. 그 값이 평형 상수 \(K\)이고, 열역학은 그것이 \(K = e^{-\Delta_\mathrm rG^\circ/RT}\)임을 말해 준다. 이 장은 그 수 하나로 공정 반응기의 조성, 온도·압력의 효과, 금속이 산화될지 환원될지까지 읽는 법을 다룬다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">상자를 누르면 BC 분자를 더 넣는다</span></div>
+    <ul class="objectives">
+      <li>반응 진행도 \(\xi\)로 깁스 에너지 \(G(\xi)\)를 쓰고, 최솟값 조건 \(\Delta_\mathrm rG = 0\)에서 \(\Delta_\mathrm rG^\circ = -RT\ln K\)를 유도한다.</li>
+      <li>무차원 평형 상수 \(K\)와 \(K_P\), \(K_c\), \(K_x\)를 서로 바꾸고, 해리도와 불균일 평형(고체 활동도 1)을 계산한다.</li>
+      <li>반트호프 식 \(d\ln K/d(1/T) = -\Delta H^\circ/R\)으로 \(K(T)\)를 옮기고, \(\Delta C_P\) 일정 근사와 엘링엄 근사(\(\Delta C_P = 0\))의 차이를 안다.</li>
+      <li>압력·온도·비활성 기체·원료 주입이 평형을 어느 쪽으로 미는지 르샤틀리에 원리와 정량 계산으로 판단한다.</li>
+      <li>독립 반응의 수를 세고, 원소 퍼텐셜(깁스 최소화)로 Si–Cl–H 계 같은 다중 평형의 조성과 증착 수율을 구한다.</li>
+      <li>엘링엄 도표에서 산화물의 안정성 순서, 평형 산소 분압, H₂O/H₂·CO₂/CO 비를 읽고 high-k 계면층, 선택 산화, 포밍 가스 환원에 적용한다.</li>
+      <li>SiH₄·SiH₂Cl₂·SiHCl₃·WF₆·Si₃N₄ CVD 반응의 \(\Delta_\mathrm rG^\circ(T)\)와 평형 전환율을 계산하고, 열역학 한계와 속도론 한계를 구별한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="extent">
+    <h2>반응 진행도와 깁스 에너지 최소</h2>
+    <p>4장에서 \(\ce{A <=> B}\) 한 가지 반응의 깁스 에너지 지형을 보았다. 이제 일반적인 반응 \(\sum_i \nu_i\mathrm A_i = 0\)(반응물의 화학량론 계수 \(\nu_i\)는 음수, 생성물은 양수)으로 넓히자. 반응이 \(d\xi\)만큼 진행하면 모든 물질의 몰수가 같은 비율로 바뀐다: \(dn_i = \nu_i\,d\xi\). 이것이 반응 진행도 \(\xi\)의 정의다. 일정 \(T, P\)에서 깁스 에너지의 변화는</p>
+    <div class="formula">$$dG = \sum_i\mu_i\,dn_i = \Big(\sum_i\nu_i\mu_i\Big)d\xi\qquad\Rightarrow\qquad \Delta_\mathrm rG \equiv \Big(\frac{\partial G}{\partial\xi}\Big)_{T,P} = \sum_i\nu_i\mu_i$$<div class="where">\(\Delta_\mathrm rG\)는 "지금 조성에서" 반응이 조금 더 진행할 때 \(G\)가 얼마나 바뀌는지를 몰당으로 잰 기울기다. 이름에 \(\Delta\)가 붙었지만 두 상태의 차이가 아니라 미분이다.</div></div>
+    <p>화학 퍼텐셜을 활동도 \(a_i\)로 쓰면 \(\mu_i = \mu_i^\circ + RT\ln a_i\)다. 이상 기체는 \(a_i = P_i/P^\circ\)(\(P^\circ = 1\) bar), 순수한 고체·액체는 \(a_i = 1\), 묽은 용액의 용질은 10장에서 본 대로 \(a_i\approx c_i/c^\circ\)다. 넣으면</p>
+    <div class="formula">$$\Delta_\mathrm rG = \Delta_\mathrm rG^\circ + RT\ln Q,\qquad Q = \prod_i a_i^{\nu_i},\qquad \Delta_\mathrm rG^\circ = \sum_i\nu_i\mu_i^\circ = \sum_i\nu_i\Delta_\mathrm fG_i^\circ$$</div>
+    <p>\(G\)가 최소인 곳에서 기울기는 0이다. 그 조성의 \(Q\)를 \(K\)라 쓰면 열역학이 화학에 준 가장 쓸모 있는 식이 나온다.</p>
+    <div class="def"><span class="def-k">평형 상수</span>
+      <p>$$\Delta_\mathrm rG^\circ = -RT\ln K,\qquad K = \prod_i a_{i,\mathrm{eq}}^{\nu_i} = \exp\!\Big(-\frac{\Delta_\mathrm rG^\circ}{RT}\Big)$$
+      <span class="term">평형 상수</span><span class="en">(equilibrium constant)</span> \(K\)는 평형에서의 활동도 곱이다. 활동도는 무차원이라 \(K\)도 무차원이며, 표준 상태(\(P^\circ\))와 반응식의 계수를 정해야 값이 정해진다. 반응식을 2배 하면 \(K\)는 제곱, 뒤집으면 역수가 된다. 지금 조성의 활동도 곱 \(Q\)는 <span class="term">반응 지수</span><span class="en">(reaction quotient)</span>이고, \(\Delta_\mathrm rG = RT\ln(Q/K)\)이므로 \(Q<K\)이면 정반응, \(Q>K\)이면 역반응이 저절로 일어난다.</p>
+    </div>
+    <p>왜 반응이 중간에서 멈추는가? 대표적인 예 \(\ce{N2O4(g) <=> 2NO2(g)}\)로 \(G(\xi)\)를 직접 지어 보자(처음 N₂O₄ 1 mol, 전체 압력 \(P\)). 몰수는 \(n_{\mathrm{N_2O_4}} = 1-\xi\), \(n_{\mathrm{NO_2}} = 2\xi\), 합 \(n = 1+\xi\)이다.</p>
+    <div class="formula">$$G(\xi) = \underbrace{(1-\xi)\mu^\circ_{\mathrm{N_2O_4}} + 2\xi\,\mu^\circ_{\mathrm{NO_2}}}_{\text{순수 물질 직선}} + \underbrace{(1+\xi)RT\ln\frac{P}{P^\circ}}_{\text{압력 항}} + \underbrace{RT\Big[(1-\xi)\ln y_{\mathrm{N_2O_4}} + 2\xi\ln y_{\mathrm{NO_2}}\Big]}_{\text{혼합 항}\ (<0)}$$<div class="where">몰분율 \(y_{\mathrm{N_2O_4}} = (1-\xi)/(1+\xi)\), \(y_{\mathrm{NO_2}} = 2\xi/(1+\xi)\). 혼합 항의 기울기는 \(\xi\to0\)에서 \(-\infty\)라서 순수한 반응물(또는 생성물)은 결코 평형이 아니다. 기체 몰수가 늘어나는 반응(\(\Delta n = +1\))이라 압력 항의 기울기 \(RT\ln(P/P^\circ)\)가 압력을 올릴수록 평형을 왼쪽으로 민다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg class="ce-svg" viewBox="0 0 800 320" role="img" aria-label="순수 물질 직선, 혼합 항, 합친 곡선과 최솟값으로 G(ξ)를 짓는 네 단계">
+        <line x1="70" y1="280" x2="520" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="280" x2="70" y2="24" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="520" y="302" text-anchor="end">ξ (0 → 1)</text>
+        <text class="t t-dim" x="60" y="36" text-anchor="end">G</text>
+        <text class="t t-dim" x="70" y="302" text-anchor="middle">N₂O₄</text>
+        <text class="t t-dim" x="500" y="302" text-anchor="middle">2NO₂</text>
+        <line x1="70" y1="120" x2="500" y2="150" stroke="var(--text-faint)" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <text class="t t-dim" x="300" y="122">순수 물질 직선 (기울기 Δ<tspan baseline-shift="sub" font-size="10">r</tspan>G°)</text>
+        <g data-step="2">
+          <path d="M70 120 C 80 230, 160 262, 285 262 C 410 262, 490 230, 500 150" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="3 4" transform="translate(0,0)"/>
+          <text class="t" x="290" y="250" fill="var(--accent-2)" text-anchor="middle">+ 혼합 항 RT Σ n ln y</text>
+        </g>
+        <g data-step="3">
+          <path d="M70 120 C 76 200, 120 226, 190 226 C 290 226, 420 205, 500 150" fill="none" stroke="var(--accent)" stroke-width="3.2"/>
+          <text class="t" x="420" y="196" fill="var(--accent)" style="font-weight:700">G(ξ)</text>
+        </g>
+        <g data-step="4">
+          <circle cx="188" cy="226" r="8" fill="var(--ok)"/>
+          <line x1="128" y1="226" x2="250" y2="226" stroke="var(--ok)" stroke-width="2.4"/>
+          <line x1="188" y1="226" x2="188" y2="280" stroke="var(--ok)" stroke-dasharray="4 4"/>
+          <text class="t" x="188" y="272" fill="var(--ok)" text-anchor="middle" dx="34">ξ_eq</text>
+        </g>
+        <g class="t">
+          <g data-only="1"><text x="560" y="64" style="font-weight:700">1. 섞이지 않는다면</text><text x="560" y="94">두 기체를 칸막이로 나눠 두면</text><text x="560" y="118">G는 ξ에 대해 직선이다.</text><text x="560" y="142">기울기 ΔrG°가 양수면</text><text x="560" y="166">반응은 한 발짝도 안 간다.</text></g>
+          <g data-only="2"><text x="560" y="64" style="font-weight:700">2. 섞이면 내려간다</text><text x="560" y="94">혼합 엔트로피 때문에</text><text x="560" y="118">RT Σ nᵢ ln yᵢ &lt; 0.</text><text x="560" y="142">양 끝의 기울기는 −∞.</text></g>
+          <g data-only="3"><text x="560" y="64" style="font-weight:700">3. 둘을 더한 G(ξ)</text><text x="560" y="94">직선 + 볼록한 골 = 골짜기.</text><text x="560" y="118">ΔrG° &gt; 0이어도 바닥은</text><text x="560" y="142">ξ = 0이 아닌 곳에 있다.</text></g>
+          <g data-only="4"><text x="560" y="64" style="font-weight:700">4. 바닥 = 평형</text><text x="560" y="94">기울기 ΔrG = ΔrG° + RT ln Q = 0</text><text x="560" y="118">이므로 Q = K = e^(−ΔrG°/RT).</text><text x="560" y="150" class="t-dim">어느 쪽에서 출발해도</text><text x="560" y="174" class="t-dim">같은 바닥으로 굴러간다.</text></g>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>칸막이로 나눈 순수 기체들의 \(G\)는 \(\xi\)에 대해 직선이다.</li><li>섞이면 혼합 항이 \(G\)를 끌어내리고, 양 끝 기울기는 \(-\infty\)다.</li><li>둘을 더하면 골짜기가 생긴다.</li><li>골짜기 바닥에서 \(\Delta_\mathrm rG = 0\), 곧 \(Q = K\)다.</li></ol>
+      <figcaption>\(G(\xi)\)는 순수 물질 직선과 혼합 항의 합이다. 혼합 항이 없으면 반응은 "전부 아니면 전무"였을 것이다. 평형이 중간에 있는 것은 엔트로피 때문이다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-xi">
+      <p>330 K에서 N₂O₄ 1 mol을 1 bar로 두면 평형 진행도는 \(\xi_\mathrm{eq}\approx0.50\)이다. 피스톤을 눌러 전체 압력을 10 bar로 올리면 골짜기 바닥은 어디로 갈까?</p>
+      <div class="opts"><button class="opt">그대로 0.50 — \(K\)는 압력과 무관하므로</button><button class="opt" data-correct>왼쪽(약 0.18) — 기체 몰수가 적은 쪽으로</button><button class="opt">오른쪽 — 압력이 높으면 분자가 더 자주 부딪혀 쪼개진다</button></div>
+      <div class="quiz-exp">\(K = \frac{y_{\mathrm{NO_2}}^2}{y_{\mathrm{N_2O_4}}}\frac{P}{P^\circ} = \frac{4\xi^2}{1-\xi^2}\frac{P}{P^\circ}\)에서 \(K\)는 그대로(1.35)지만 \(P\)가 10배가 되면 몰분율의 비가 10분의 1로 줄어야 한다. \(\xi = \sqrt{K/(K+4P/P^\circ)} = 0.18\). 시뮬레이터에서 압력을 올리며 바닥이 왼쪽으로 미끄러지는지 보라.</div>
+    </div>
+    <div class="sim" id="sim-xi">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>N₂O₄ ⇌ 2NO₂의 깁스 에너지 골짜기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-xi"></canvas><span class="hint top">공을 끌어 놓으면 골짜기로 굴러간다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="xi-t-out"></output></span><input type="range" id="xi-t" min="250" max="450" step="1" value="330"></label>
+          <label class="ctrl"><span>전체 압력 P <output id="xi-p-out"></output></span><input type="range" id="xi-p" min="-2" max="1.5" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="xi-mix"> 혼합 항 끄기</label>
+          <div class="ctrl"><span>출발점</span><div class="seg" id="xi-start"><button data-value="0.02">N₂O₄만</button><button data-value="0.98">NO₂만</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">진행도 ξ</span><span class="v" id="xi-xi">—</span></div>
+        <div class="stat"><span class="k">기울기 Δ<sub>r</sub>G = RT ln(Q/K)</span><span class="v" id="xi-slope">—</span></div>
+        <div class="stat"><span class="k">K (T에서)</span><span class="v" id="xi-k">—</span></div>
+        <div class="stat"><span class="k">평형 ξ<sub>eq</sub></span><span class="v" id="xi-eq">—</span></div>
+      </div>
+      <div class="sim-note">굵은 선은 \(G(\xi) - G(0)\)(kJ), 점선은 혼합 항을 뺀 값이다. 공 옆의 짧은 선분이 접선이고 그 기울기가 \(\Delta_\mathrm rG\)다. 열화학 자료는 NIST-JANAF 대표값(N₂O₄ \(\Delta_\mathrm fH^\circ = 9.16\) kJ/mol, \(S^\circ = 304.29\); NO₂ 33.18, 240.06)이고 \(\Delta C_P\) 일정 근사다. 해볼 것: ① NO₂만으로 시작해도 같은 바닥으로 오는지 본다. ② 압력을 0.01 bar로 낮추면 거의 다 해리한다. ③ 혼합 항을 끄면 골짜기가 사라지고 공은 한쪽 끝으로 간다.</div>
+    </div>
+    <p>평형 상수는 \(\Delta_\mathrm rG^\circ\)에 지수적으로 민감하다. 상온에서 \(RT\ln10 = 5.71\) kJ/mol이므로, \(\Delta_\mathrm rG^\circ\)가 5.7 kJ 바뀔 때마다 \(K\)는 한 자릿수씩 바뀐다. 결합 하나의 에너지(수백 kJ)에 비하면 아주 작은 차이가 평형을 완전히 뒤집는다.</p>
+    <div class="tangle" id="tg-k">
+      <p>\(\Delta_\mathrm rG^\circ\) = <span class="tn" data-var="g" data-min="-60" data-max="60" data-step="1" data-unit=" kJ/mol">10</span>인 반응을 <span class="tn" data-var="T" data-min="200" data-max="1600" data-step="10" data-unit=" K">300</span>에서 보면 \(RT\) = <span class="tn-out" data-out="rt"></span>이고 \(K = e^{-\Delta_\mathrm rG^\circ/RT}\) = <span class="tn-out" data-out="K"></span>다. \(\ce{A <=> B}\)(\(\Delta n = 0\))라면 평형에서 B의 몰분율은 \(K/(1+K)\) = <span class="tn-out" data-out="x"></span>다.</p>
+    </div>
+    <div class="example" data-title="N₂O₄의 해리 평형">
+      <p>부록 A·NIST 대표값(\(\Delta_\mathrm fH^\circ\): N₂O₄ 9.16, NO₂ 33.18 kJ/mol; \(S^\circ\): 304.29, 240.06 J/(mol·K))으로 298.15 K에서 \(\ce{N2O4(g) <=> 2NO2(g)}\)의 \(\Delta_\mathrm rG^\circ\)와 \(K\)를 구하고, 전체 압력 1.00 bar와 0.100 bar에서의 해리도 \(\alpha\)(쪼개진 N₂O₄의 비율)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta_\mathrm rG^\circ = \Delta H^\circ - T\Delta S^\circ\) → \(K\). N₂O₄ 1 mol에서 \(\alpha\)만큼 쪼개지면 몰수 \(1-\alpha\), \(2\alpha\), 합 \(1+\alpha\)이므로 \(K = \frac{(2\alpha)^2}{(1-\alpha)(1+\alpha)}\frac{P}{P^\circ}\).</div>
+        <div class="step"><b>풀이</b> \(\Delta H^\circ = 2(33.18) - 9.16 = 57.20\) kJ, \(\Delta S^\circ = 2(240.06) - 304.29 = 175.83\) J/K. \(\Delta_\mathrm rG^\circ = 57.20 - 298.15\times0.17583 = 4.78\) kJ, \(K = e^{-4776/(8.314\times298.15)} = 0.146\). \(\alpha = \sqrt{K/(K + 4P/P^\circ)}\): 1 bar에서 \(\sqrt{0.146/4.146} = 0.187\), 0.1 bar에서 \(\sqrt{0.146/0.546} = 0.517\).</div>
+        <div class="answer">\(\Delta_\mathrm rG^\circ = +4.78\) kJ/mol, \(K = 0.146\), \(\alpha = 0.187\)(1 bar), \(0.517\)(0.1 bar)</div>
+        <div class="step"><b>검토</b> \(\Delta_\mathrm rG^\circ>0\)인데도 1 bar에서 19 %가 쪼개진다. 표준 값의 부호는 "평형이 어느 쪽에 치우쳤는가"를 말할 뿐이다. 압력을 낮추면 몰수가 늘어나는 쪽(해리)으로 간다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="constants">
+    <h2>평형 상수의 여러 얼굴: K, K<sub>P</sub>, K<sub>c</sub>와 분자 그림</h2>
+    <p>평형 상수는 거시 열역학에서 나왔지만, 분자 수준에서도 똑같은 수가 나온다. 머리 그림의 반응 \(\ce{BC <=> B + C}\)에서 BC 하나가 단위 시간에 쪼개질 확률을 \(k_\mathrm f\), 부피 \(V\) 안에서 B 하나와 C 하나가 만나 붙을 빈도를 \(k_\mathrm b/V\)라 하자. 평형에서는 쪼개지는 사건과 붙는 사건의 수가 같다.</p>
+    <div class="formula">$$k_\mathrm f N_\mathrm{BC} = \frac{k_\mathrm b}{V}N_\mathrm BN_\mathrm C\qquad\Rightarrow\qquad \frac{N_\mathrm BN_\mathrm C}{N_\mathrm{BC}V} = \frac{k_\mathrm f}{k_\mathrm b} = K_c$$<div class="where">정반응 속도와 역반응 속도가 같다는 이 조건을 <span class="term">상세 균형</span><span class="en">(detailed balance)</span>이라 한다. 평형에서 반응이 멈춘 것이 아니라 양방향 사건이 같은 빈도로 계속 일어난다. 평형 농도의 곱이 일정하다는 결과는 19세기에 굴베르와 보게가 실험에서 찾은 <span class="term">질량 작용 법칙</span><span class="en">(law of mass action)</span>이다.</div></div>
+    <p>열역학의 \(K\)는 무차원이지만, 실험실에서는 분압이나 농도로 쓴 상수를 많이 쓴다. 이상 기체에서 \(a_i = P_i/P^\circ = y_iP/P^\circ = c_iRT/P^\circ\)이므로, 기체 몰수 변화 \(\Delta n = \sum_{\text{기체}}\nu_i\)에 따라 다음과 같이 바뀐다.</p>
+    <div class="formula">$$K = K_P\,(P^\circ)^{-\Delta n} = K_c\Big(\frac{c^\circ RT}{P^\circ}\Big)^{\Delta n} = K_x\Big(\frac{P}{P^\circ}\Big)^{\Delta n}$$<div class="where">\(K_P = \prod P_i^{\nu_i}\)(bar\(^{\Delta n}\)), \(K_c = \prod c_i^{\nu_i}\)(\(c^\circ = 1\) mol/L 기준), \(K_x = \prod y_i^{\nu_i}\). \(K\)와 \(K_c\)는 \(T\)만의 함수지만 \(K_x\)는 압력에 따라 바뀐다. \(\Delta n = 0\)이면 넷이 모두 같다. \(c^\circ RT/P^\circ\)는 \(T\)[K]\(\times0.08314\)다.</div></div>
+    <div class="sim" id="sim-box">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>분자 상자에서 재는 평형 상수</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-box"></canvas><span class="hint top">오른쪽 벽의 흰 원을 끌어 부피 바꾸기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="box-t-out"></output></span><input type="range" id="box-t" min="340" max="480" step="5" value="400"></label>
+          <div class="ctrl"><span>다시 시작</span><div class="seg" id="box-start"><button data-value="A" class="on">BC만</button><button data-value="BC">B + C만</button></div></div>
+          <button class="btn" id="box-play" type="button"></button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">N<sub>BC</sub> · N<sub>B</sub> · N<sub>C</sub></span><span class="v" id="box-n">—</span></div>
+        <div class="stat"><span class="k">Q<sub>c</sub> (순간 / 10 s 평균)</span><span class="v" id="box-q">—</span></div>
+        <div class="stat"><span class="k">K<sub>c</sub> = k<sub>f</sub>/k<sub>b</sub></span><span class="v" id="box-k">—</span></div>
+        <div class="stat"><span class="k">해리도 α (측정 / 이론)</span><span class="v" id="box-a">—</span></div>
+      </div>
+      <div class="sim-note">BC 120개(분자 수는 보존: \(N_\mathrm{BC} + N_\mathrm B = 120\))를 넣은 2차원 상자다. 매 순간 BC는 확률 \(k_\mathrm f\,dt\)로 쪼개지고, B–C 쌍은 \(k_\mathrm b\,dt/V\)로 붙는다(\(k_\mathrm b\)는 고정, \(k_\mathrm f\)는 해리 엔탈피 40 kJ/mol의 아레니우스 인자). 부피 \(V\)는 처음 상자를 1로 둔 상대값이다. 해볼 것: ① 벽을 끌어 부피를 줄이면 해리도가 줄지만 \(Q_c\)의 평균은 \(K_c\)로 돌아온다. ② 온도를 올리면 \(K_c\)가 커진다(흡열 해리, 3절). ③ 오른쪽 아래 그래프의 \(\ln Q_c\) 요동이 분자 수가 적을수록 크다는 것을 확인한다(5장).</div>
+    </div>
+    <figure class="mini" id="mini-alpha">
+      <div class="mini-view" style="position:relative"><canvas id="cv-alpha"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>온도 T <output id="al-t-out"></output></span><input type="range" id="al-t" min="270" max="420" step="1" value="330"></label><label class="ctrl"><span>압력 P <output id="al-p-out"></output></span><input type="range" id="al-p" min="-2" max="2" step="0.05" value="0"></label><span class="readout" id="al-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>N₂O₄의 해리도 \(\alpha = \sqrt{K/(K + 4P/P^\circ)}\)를 압력(로그축)에 대해 그렸다. 곡선 위의 점이 지금 조건이다. \(K\)는 온도로만 정해지는데 \(\alpha\)는 압력에 따라 0에서 1까지 움직인다. 평형 상수가 그대로여도 조성은 얼마든지 바뀔 수 있다는 것이 \(K_x = K(P/P^\circ)^{-\Delta n}\)의 뜻이다.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <svg class="ce-svg" viewBox="0 0 800 260" role="img" aria-label="ln Q 수직선 위에 ln K 표시, Q가 K보다 작으면 정반응, 크면 역반응">
+        <line x1="60" y1="130" x2="740" y2="130" stroke="var(--text-dim)" stroke-width="2"/>
+        <text class="t t-dim" x="745" y="135">ln Q</text>
+        <rect x="60" y="112" width="340" height="36" fill="var(--ok-soft)"/>
+        <rect x="400" y="112" width="340" height="36" fill="var(--bad-soft)"/>
+        <line x1="400" y1="80" x2="400" y2="180" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t" x="400" y="70" text-anchor="middle" style="font-weight:700" fill="var(--accent)">ln K = −ΔrG°/RT</text>
+        <path d="M200 130 H360" stroke="var(--ok)" stroke-width="3" marker-end="url(#ce-ar1)"/>
+        <path d="M600 130 H440" stroke="var(--bad)" stroke-width="3" marker-end="url(#ce-ar2)"/>
+        <text class="t" x="230" y="100" text-anchor="middle">Q &lt; K</text>
+        <text class="t" x="570" y="100" text-anchor="middle">Q &gt; K</text>
+        <text class="t" x="230" y="176" text-anchor="middle">ΔrG = RT ln(Q/K) &lt; 0</text>
+        <text class="t" x="570" y="176" text-anchor="middle">ΔrG &gt; 0</text>
+        <text class="t t-dim" x="230" y="200" text-anchor="middle">정반응 → 생성물이 늘며 Q가 커진다</text>
+        <text class="t t-dim" x="570" y="200" text-anchor="middle">역반응 ← 반응물이 늘며 Q가 작아진다</text>
+        <text class="t t-dim" x="400" y="232" text-anchor="middle">Q가 K에 닿으면 정·역 사건의 빈도가 같아지고(상세 균형) 조성은 더 바뀌지 않는다</text>
+        <defs>
+          <marker id="ce-ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--ok)"/></marker>
+          <marker id="ce-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--bad)"/></marker>
+        </defs>
+      </svg>
+      <figcaption>반응 지수 \(Q\)와 평형 상수 \(K\)의 비교. \(\Delta_\mathrm rG = RT\ln(Q/K)\)이므로 \(Q\)는 늘 \(K\) 쪽으로 움직인다. 머리 그림의 두 상자가 위아래에서 같은 선으로 모이는 것이 이 그림이다.</figcaption>
+    </figure>
+    <p>고체나 액체가 기체와 함께 반응하는 <span class="term">불균일 평형</span><span class="en">(heterogeneous equilibrium)</span>에서는 순수한 응축상의 활동도가 1이라 \(K\)에 나타나지 않는다. 예를 들어 \(\ce{WO3(s) + 3H2(g) <=> W(s) + 3H2O(g)}\)의 평형 상수는 \(K = (P_{\mathrm{H_2O}}/P_{\mathrm{H_2}})^3\)이다. 고체가 얼마나 있든(있기만 하면) 평형 기체 조성은 같다. 그래서 산화·환원의 평형은 산소 분압이나 H₂O/H₂ 비 하나로 정해지고(6절), 이것이 엘링엄 도표의 바탕이다. 반대로 고체가 다 소모되면 그 반응은 더는 평형이 아니다(\(\Delta_\mathrm rG\ne0\)인 채로 멈춘다).</p>
+    <div class="tangle" id="tg-kc">
+      <p>\(\Delta n\) = <span class="tn" data-var="dn" data-min="-3" data-max="3" data-step="1">-2</span>인 기체 반응이 <span class="tn" data-var="T" data-min="300" data-max="1500" data-step="10" data-unit=" K">700</span>에서 \(\log_{10}K\) = <span class="tn" data-var="lk" data-min="-8" data-max="4" data-step="0.1">-4.2</span>라면, \(K_P\) = <span class="tn-out ce-out" data-out="kp"></span>, \(K_c = K(c^\circ RT/P^\circ)^{-\Delta n}\) = <span class="tn-out ce-out" data-out="kc"></span>, 100 bar에서 \(K_x\) = <span class="tn-out ce-out" data-out="kx"></span>다.</p>
+    </div>
+    <div class="example" data-title="암모니아 합성의 K, K_P, K_c">
+      <p>\(\ce{N2(g) + 3H2(g) <=> 2NH3(g)}\)의 700 K 평형 상수는 \(\Delta C_P\) 일정 근사로 \(K = 6.88\times10^{-5}\)이다. \(K_P\)(bar 단위)와 \(K_c\)(mol/L 단위)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta n = 2 - 4 = -2\). \(K_P = K(P^\circ)^{\Delta n}\), \(K_c = K(c^\circ RT/P^\circ)^{-\Delta n}\).</div>
+        <div class="step"><b>풀이</b> \(K_P = 6.88\times10^{-5}\) bar\(^{-2}\). \(c^\circ RT/P^\circ = 0.08314\times700 = 58.2\)이므로 \(K_c = 6.88\times10^{-5}\times58.2^2 = 0.233\) (mol/L)\(^{-2}\).</div>
+        <div class="answer">\(K_P = 6.88\times10^{-5}\) bar⁻², \(K_c = 0.233\) L²/mol²</div>
+        <div class="step"><b>검토</b> 기체 몰수가 줄어드는 반응이라 농도 단위로 쓰면 \(K_c > K\)다. 농도 1 mol/L는 700 K에서 58 bar에 해당하기 때문이다. 단위가 붙은 상수를 \(-RT\ln\)에 넣을 때는 반드시 무차원 \(K\)로 바꾼 뒤 넣는다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-k" data-title="ΔG°와 K, K_P와 K_c"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="vanthoff">
+    <h2>반트호프 식: 온도가 K를 옮긴다</h2>
+    <p>4장의 깁스–헬름홀츠 식 \(\partial(\Delta G^\circ/T)/\partial(1/T) = \Delta H^\circ\)에 \(\Delta_\mathrm rG^\circ = -RT\ln K\)를 넣으면, 평형 상수의 온도 의존성이 반응 엔탈피 하나로 정해진다.</p>
+    <div class="def"><span class="def-k">반트호프 식</span>
+      <p>$$\frac{d\ln K}{dT} = \frac{\Delta_\mathrm rH^\circ}{RT^2}\qquad\Longleftrightarrow\qquad \frac{d\ln K}{d(1/T)} = -\frac{\Delta_\mathrm rH^\circ}{R}$$
+      <span class="term">반트호프 식</span><span class="en">(van 't Hoff equation)</span>. 흡열 반응(\(\Delta H^\circ>0\))은 온도가 오르면 \(K\)가 커지고, 발열 반응은 작아진다. \(\ln K\)를 \(1/T\)에 대해 그리면 기울기가 \(-\Delta H^\circ/R\)인 직선(반트호프 그림)이 되고, 절편은 \(\Delta S^\circ/R\)이다.</p>
+    </div>
+    <p>\(\Delta H^\circ\)가 일정하다고 두고 적분하면 클라우지우스–클라페이롱 식(9장)과 똑같은 꼴이 된다. 증기압은 증발 반응 \(\ce{A(l) <=> A(g)}\)의 평형 상수 \(K = P_\text{vap}/P^\circ\)이므로 당연하다.</p>
+    <div class="formula">$$\ln\frac{K_2}{K_1} = -\frac{\Delta_\mathrm rH^\circ}{R}\Big(\frac1{T_2} - \frac1{T_1}\Big)\qquad(\Delta H^\circ\ \text{일정, 곧 }\Delta C_P = 0)$$<div class="where">넓은 온도 범위에서는 \(\Delta H^\circ\) 자체가 키르히호프 법칙(2장) \(d\Delta H^\circ/dT = \Delta C_P^\circ\)로 바뀐다. 이 책의 계산기(<code>Thermo.rxnAt</code>)는 \(\Delta C_P\)를 298 K 값으로 고정한 근사를 쓴다: \(\Delta H^\circ(T) = \Delta H^\circ_{298} + \Delta C_P(T - 298)\), \(\Delta S^\circ(T) = \Delta S^\circ_{298} + \Delta C_P\ln(T/298)\). 실제 \(C_P\)는 온도에 따라 커지므로 1000 K 위에서는 이 근사의 \(K\)가 문헌값과 수십 % 다를 수 있다. \(\Delta C_P = 0\)으로 두는 더 거친 근사가 6절의 엘링엄 근사다.</div></div>
+    <p>분자 그림으로도 같은 식이 나온다. 2절의 \(K_c = k_\mathrm f/k_\mathrm b\)에서 정·역반응의 속도 상수가 각각 아레니우스 꼴(13장) \(k = A e^{-E_a/RT}\)이면 \(K_c\propto e^{-(E_{a,\mathrm f} - E_{a,\mathrm b})/RT}\)이고, 두 활성화 에너지의 차이가 곧 반응 엔탈피(정확히는 내부 에너지)다. 분자 상자 시뮬레이터의 온도 슬라이더는 이 관계로 \(k_\mathrm f\)를 바꾼다.</p>
+    <div class="predict" data-for="sim-vh">
+      <p>암모니아 합성(\(\Delta H^\circ = -91.8\) kJ/mol)의 \(K\)는 298 K에서 \(5.4\times10^5\)이다. 700 K(하버 공정의 온도)에서는 대략 얼마일까?</p>
+      <div class="opts"><button class="opt">더 커진다 — 온도가 높으면 반응이 빨라지므로</button><button class="opt">거의 같다 — \(K\)는 온도에 약하게만 의존한다</button><button class="opt" data-correct>열 자릿수쯤 작아진다(약 \(10^{-4}\))</button></div>
+      <div class="quiz-exp">발열 반응이라 \(\ln K\)는 \(1/T\)가 줄면(온도가 오르면) 직선적으로 내려간다. \(\Delta C_P\) 일정 근사로 700 K의 \(K = 6.9\times10^{-5}\), 엘링엄 근사로는 \(3.2\times10^{-4}\)이다. 하버 공정이 고온을 쓰는 것은 평형 때문이 아니라 속도(촉매) 때문이고, 낮아진 \(K\)를 고압(4절)으로 메운다. "빨라진다"는 속도론의 이야기이지 평형의 이야기가 아니다.</div>
+    </div>
+    <div class="sim" id="sim-vh">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>반트호프 그림에서 ΔH 읽기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-vh"></canvas><span class="hint top">곡선 위 두 흰 원을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>반응</span><select id="vh-rx"></select></label>
+          <label class="check"><input type="checkbox" id="vh-flat" checked> 엘링엄 근사(ΔC<sub>P</sub> = 0) 직선 함께</label>
+          <label class="check"><input type="checkbox" id="vh-tan"> 두 점 사이 할선 대신 접선</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T₁ · T₂</span><span class="v" id="vh-t">—</span></div>
+        <div class="stat"><span class="k">K(T₁) · K(T₂)</span><span class="v" id="vh-k">—</span></div>
+        <div class="stat"><span class="k">기울기에서 ΔH</span><span class="v" id="vh-h">—</span></div>
+        <div class="stat"><span class="k">K = 1인 온도</span><span class="v" id="vh-ts">—</span></div>
+      </div>
+      <div class="sim-note">가로축은 \(1000/T\)(오른쪽이 저온), 세로축은 \(\ln K\)다. 주황 곡선은 \(\Delta C_P\) 일정 근사, 파란 점선은 \(\Delta C_P = 0\)인 직선이다. 두 흰 원을 이은 할선의 기울기 \(\times(-R)\)가 그 온도 구간의 평균 \(\Delta H^\circ\)다. 해볼 것: ① TCS 증착(흡열)은 오른쪽 아래로, 암모니아 합성(발열)은 오른쪽 위로 간다. ② 두 점을 멀리 벌리면 \(\Delta C_P\)가 큰 반응(암모니아, 실레인)에서 할선의 \(\Delta H\)가 298 K 값과 달라진다. ③ 수성 가스 전환은 약 1000 K에서 \(K = 1\)을 지난다.</div>
+    </div>
+    <figure class="mini" id="mini-cp">
+      <div class="mini-view" style="position:relative"><canvas id="cv-cp"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>반응</span><select id="cp-rx"></select></label><label class="ctrl"><span>온도 T <output id="cp-t-out"></output></span><input type="range" id="cp-t" min="300" max="1800" step="10" value="1200"></label><span class="readout" id="cp-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 298 K 자료에서 출발한 두 근사의 \(\log_{10}K(T)\). 주황은 \(\Delta C_P\) 일정, 파랑 점선은 \(\Delta C_P = 0\)(엘링엄 근사)이다. 두 근사의 차이는 대략 \(\frac{\Delta C_P}{R}\big[\ln\frac{T}{T_0} + \frac{T_0}{T} - 1\big]\)만큼 \(\ln K\)에서 벌어진다. \(\Delta C_P\)가 작은 TCS 반응은 1500 K에서도 몇 십 %, 크게 변하는 Si₃N₄ 반응은 자릿수가 다르다. 정밀한 고온 계산에는 온도별 열화학 표(NIST-JANAF)를 쓴다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-vh">
+      <p>\(\Delta_\mathrm rH^\circ\) = <span class="tn" data-var="h" data-min="-300" data-max="300" data-step="5" data-unit=" kJ/mol">100</span>인 반응을 <span class="tn" data-var="t1" data-min="250" data-max="1500" data-step="10" data-unit=" K">300</span>에서 <span class="tn" data-var="t2" data-min="250" data-max="1500" data-step="10" data-unit=" K">400</span>로 옮기면 \(K_2/K_1\) = <span class="tn-out ce-out" data-out="r"></span>이다. \(\ln K\)로는 <span class="tn-out ce-out" data-out="d"></span>만큼 바뀐다.</p>
+    </div>
+    <div class="example" data-title="TCS 증착 반응의 K를 고온으로 옮기기">
+      <p>\(\ce{SiHCl3(g) + H2(g) <=> Si(s) + 3HCl(g)}\)의 298 K 자료는 \(\Delta H^\circ = +219.3\) kJ, \(\Delta S^\circ = +135.1\) J/K, \(\Delta C_P = +2.78\) J/K다. \(\Delta C_P\) 일정 근사로 1000 K의 \(K = 4.77\times10^{-5}\)이다. (a) \(\Delta H^\circ\)를 일정하게 둔 반트호프 식으로 1400 K의 \(K\)를 구하라. (b) \(\Delta C_P\) 일정 근사의 직접 계산값 \(9.72\times10^{-2}\)과 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\ln(K_2/K_1) = -(\Delta H^\circ/R)(1/T_2 - 1/T_1)\).</div>
+        <div class="step"><b>풀이</b> \(-\frac{219{,}270}{8.314}\Big(\frac1{1400} - \frac1{1000}\Big) = -26{,}374\times(-2.857\times10^{-4}) = 7.535\). \(K_{1400} = 4.77\times10^{-5}\times e^{7.535} = 4.77\times10^{-5}\times1873 = 8.94\times10^{-2}\).</div>
+        <div class="answer">(a) \(K_{1400}\approx8.9\times10^{-2}\) (b) 직접 계산값보다 8 % 작다</div>
+        <div class="step"><b>검토</b> \(\Delta C_P>0\)이라 실제 \(\Delta H^\circ\)는 고온에서 조금 커지고(1200 K에서 221.8 kJ), 298 K 값을 쓴 반트호프 식은 \(K\)를 약간 작게 준다. 400 K 올리는 동안 \(K\)가 1900배 커졌다. 흡열 증착 반응은 고온에서만 열역학적으로 쓸 만해진다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-vh" data-title="반트호프 식 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="lechatelier">
+    <h2>르샤틀리에 원리: 평형을 흔들면</h2>
+    <p>평형에 있는 계의 조건을 바꾸면 계는 그 변화를 일부 상쇄하는 쪽으로 새 평형을 찾는다. 압력을 올리면 기체 몰수가 줄어드는 쪽으로, 온도를 올리면 열을 흡수하는(흡열) 쪽으로, 물질을 넣으면 그 물질을 소비하는 쪽으로 간다. 이것이 <span class="term">르샤틀리에 원리</span><span class="en">(Le Chatelier's principle)</span>다. 말로 된 원리는 편리하지만 가끔 틀린다. 정확한 판단은 늘 \(Q\)와 \(K\)의 비교다.</p>
+    <div class="formula">$$\Big(\frac{\partial\ln K}{\partial T}\Big)_P = \frac{\Delta H^\circ}{RT^2},\qquad K_x = K\Big(\frac{P}{P^\circ}\Big)^{-\Delta n}\ \Rightarrow\ \Big(\frac{\partial\ln K_x}{\partial\ln P}\Big)_T = -\Delta n$$<div class="where">온도는 \(K\) 자체를 바꾸고, 압력은 \(K\)를 그대로 둔 채 몰분율로 쓴 \(K_x\)를 바꾼다. 비활성 기체를 넣으면 일정 부피에서는 분압이 모두 그대로라 \(Q\)가 바뀌지 않고(이동 없음), 일정 압력에서는 반응 기체가 묽어져 압력을 낮춘 것과 같다(\(\Delta n>0\) 쪽으로).</div></div>
+    <div class="compare">
+      <div><h4>K를 바꾸는 것</h4><p>온도뿐이다. 흡열 반응은 고온, 발열 반응은 저온에서 \(K\)가 크다. 촉매는 \(K\)를 바꾸지 않고 평형에 닿는 시간만 줄인다.</p></div>
+      <div><h4>Q를 바꾸는 것</h4><p>압력·부피(\(\Delta n\ne0\)일 때), 원료 주입, 생성물 제거, 일정 압력에서의 희석. \(Q\)가 \(K\)에서 벗어난 만큼 반응이 진행해 다시 \(Q = K\)로 돌아온다.</p></div>
+    </div>
+    <div class="predict" data-for="sim-lec">
+      <p>700 K, 100 bar 근처에서 평형인 암모니아 합성 혼합 기체가 피스톤으로 막힌 실린더에 들어 있다. 피스톤을 고정한 채(일정 부피) 아르곤을 같은 몰수만큼 밀어 넣으면?</p>
+      <div class="opts"><button class="opt">압력이 오르니 NH₃ 쪽으로 이동한다</button><button class="opt" data-correct>이동하지 않는다 — 반응 기체의 분압이 그대로다</button><button class="opt">묽어지니 N₂ + H₂ 쪽으로 이동한다</button></div>
+      <div class="quiz-exp">일정 부피에서 아르곤을 넣으면 전체 압력은 오르지만 \(P_i = n_iRT/V\)는 그대로이고 \(Q = K\)도 그대로다. 같은 아르곤을 일정 압력에서(피스톤이 밀려나도록) 넣으면 반응 기체가 묽어져 \(\Delta n<0\)인 합성 반응은 왼쪽으로 간다. 시뮬레이터의 두 버튼으로 비교해 보라.</div>
+    </div>
+    <div class="sim" id="sim-lec">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>피스톤 실린더 속 평형 흔들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-lec"></canvas><span class="hint top">피스톤의 흰 원을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>반응</span><div class="seg" id="lec-rx"><button data-value="nh3" class="on">NH₃ 합성</button><button data-value="no2">N₂O₄ 해리</button><button data-value="wgs">수성 가스</button></div></div>
+          <label class="ctrl"><span>온도 T <output id="lec-t-out"></output></span><input type="range" id="lec-t" min="500" max="900" step="5" value="700"></label>
+          <div class="ctrl"><span>흔들기</span><div class="btn-row" style="display:flex;flex-wrap:wrap;gap:6px">
+            <button class="btn" id="lec-addr" type="button">반응물 주입</button>
+            <button class="btn" id="lec-rmp" type="button">생성물 제거</button>
+            <button class="btn" id="lec-arv" type="button">Ar 주입 (V 일정)</button>
+            <button class="btn" id="lec-arp" type="button">Ar 주입 (P 일정)</button>
+            <button class="btn" id="lec-reset" type="button">처음으로</button>
+          </div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">압력 P · 부피 V</span><span class="v" id="lec-pv">—</span></div>
+        <div class="stat"><span class="k">ln(Q/K)</span><span class="v" id="lec-q">—</span></div>
+        <div class="stat"><span class="k">생성물 몰분율</span><span class="v" id="lec-y">—</span></div>
+        <div class="stat"><span class="k">방금 일어난 이동</span><span class="v" id="lec-msg">—</span></div>
+      </div>
+      <div class="sim-note">실린더 안의 점 하나는 0.05 mol이다. 피스톤을 끌면 부피가 바뀌고(온도 일정), 그 순간 \(Q\)가 \(K\)에서 벗어났다가 반응이 진행하며 \(\ln(Q/K)\to0\)으로 돌아온다(오른쪽 위 그래프). 평형은 일정 \(T, V\)에서 이상 기체 \(Q = \prod(n_iRT/VP^\circ)^{\nu_i}\)로 푼다. 해볼 것: ① 암모니아 혼합물을 반으로 압축하면 압력이 2배보다 덜 오른다. 계가 몰수를 줄여 "압력을 일부 상쇄"한 것이다. ② 수성 가스 전환(\(\Delta n = 0\))은 피스톤을 아무리 움직여도 조성이 그대로다. ③ 온도를 올리면 발열인 두 반응(NH₃, 수성 가스)은 왼쪽, 흡열인 N₂O₄ 해리는 오른쪽으로 간다. 온도 범위는 반응마다 쓸 만한 구간으로 바뀐다.</div>
+    </div>
+    <p>원료 주입은 대개 직관대로 움직이지만 예외가 있다. 일정 \(T, P\)에서 암모니아 합성 혼합물에 N₂를 더 넣으면 \(Q = \frac{y_{\mathrm{NH_3}}^2}{y_{\mathrm{N_2}}y_{\mathrm{H_2}}^3}(P/P^\circ)^{-2}\)의 분모에서 \(y_{\mathrm{N_2}}\)는 커지지만 \(y_{\mathrm{H_2}}\)와 \(y_{\mathrm{NH_3}}\)는 작아진다. 계산하면 N₂ 몰분율이 0.5보다 크면 \(Q\)가 오히려 커져 반응이 <b>역방향</b>으로 간다. "넣은 물질을 소비하는 쪽"이라는 말만 믿으면 틀린다.</p>
+    <figure class="mini" id="mini-inert">
+      <div class="mini-view" style="position:relative"><canvas id="cv-inert"></canvas></div>
+      <div class="mini-ctrl"><div class="seg" id="in-rx"><button data-value="nh3" class="on">NH₃ 합성 (Δn = −2)</button><button data-value="no2">N₂O₄ 해리 (Δn = +1)</button></div><label class="ctrl"><span>비활성 기체 비율 <output id="in-f-out"></output></span><input type="range" id="in-f" min="0" max="0.95" step="0.01" value="0.5"></label><span class="readout" id="in-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>전체 압력을 일정하게(NH₃: 700 K, 100 bar / N₂O₄: 330 K, 1 bar) 두고 처음 기체에 Ar을 섞을 때 평형 진행도(<code>Thermo.equilibrium</code>의 <code>inert</code>)를 그렸다. 비활성 기체는 반응 기체의 분압을 낮추므로 기체 몰수가 늘어나는 쪽(N₂O₄ 해리)은 도와주고, 줄어드는 쪽(NH₃ 합성)은 방해한다. 공정 가스를 N₂나 Ar로 희석하는 것이 평형까지 바꾸는 이유다.</figcaption>
+    </figure>
+    <div class="example" data-title="압력으로 암모니아 수율 끌어올리기">
+      <p>700 K에서 \(\ce{N2 + 3H2 <=> 2NH3}\)의 \(K = 6.88\times10^{-5}\)이다. N₂ : H₂ = 1 : 3으로 넣었을 때 전체 압력 1.00 bar와 100 bar에서 평형 NH₃ 몰분율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 진행도 \(\xi\)(N₂ 1 mol 기준)로 몰수는 \(1-\xi\), \(3-3\xi\), \(2\xi\), 합 \(4-2\xi\). \(K = \frac{(2\xi)^2(4-2\xi)^2}{(1-\xi)(3-3\xi)^3}\Big(\frac{P}{P^\circ}\Big)^{-2}\)를 \(\xi\)에 대해 수치로 푼다(이분법).</div>
+        <div class="step"><b>풀이</b> 1 bar: \(\xi = 0.00535\), \(y_{\mathrm{NH_3}} = 2\xi/(4-2\xi) = 0.00268\). 100 bar: 오른쪽이 \(10^{-4}\)배가 되므로 \(\xi\)가 훨씬 커서 \(\xi = 0.306\), \(y_{\mathrm{NH_3}} = 0.181\).</div>
+        <div class="answer">1 bar: 0.27 %, 100 bar: 18.1 %</div>
+        <div class="step"><b>검토</b> 근사로 보면 \(\xi\ll1\)일 때 \(y_{\mathrm{NH_3}}\propto P\)이므로 100배가 되어야 하지만 실제로는 68배다. \(\xi\)가 커지면 반응물이 줄어 효과가 포화된다. 같은 100 bar에서 Ar을 반만큼 섞으면 진행도는 0.187로 떨어진다(미니 실험).</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="multiple">
+    <h2>다중 평형과 평형 조성: Si–Cl–H 계</h2>
+    <p>실제 반응기에서는 반응 하나만 일어나지 않는다. 트라이클로로실레인(TCS)과 수소를 1100 °C의 실리콘 위로 흘리면 출구에서 H₂, HCl, SiHCl₃, SiH₂Cl₂, SiCl₄, SiCl₂, 미량의 SiH₄가 함께 나온다. 이 조성을 구하려면 먼저 반응식이 몇 개 필요한지 세야 한다. 물질이 \(S\)가지(응축상 포함)이고 원소가 \(E\)가지라면, 원소 보존이 만드는 행렬(물질 × 원소 조성)의 계수(rank)가 보통 \(E\)이므로</p>
+    <div class="formula">$$\text{독립 반응의 수} = S - \operatorname{rank}(A)\ \ (\text{보통 } S - E)$$<div class="where"><span class="term">독립 반응</span><span class="en">(independent reactions)</span>은 서로의 선형 결합으로 만들 수 없는 반응식들이다. Si–Cl–H 계는 기체 7가지 + Si(s) = 8가지, 원소 3가지이므로 5개다. 어떤 5개를 고르든 결과 조성은 같다. 나머지 반응의 \(K\)는 고른 반응들의 \(K\)를 곱하고 나눠 얻는다(헤스 법칙의 평형판).</div></div>
+    <p>독립 반응마다 \(K_j = \prod_i a_i^{\nu_{ij}}\)를 쓰고 원소 보존식과 \(\sum P_i = P\)를 더하면 미지수와 식의 수가 맞는다. 그러나 비선형 연립 방정식을 직접 풀기보다 더 깔끔한 길이 있다. 평형은 원소 보존 조건 아래 \(G = \sum_i n_i\mu_i\)의 최소이므로, 라그랑주 승수 \(\lambda_j\)(원소마다 하나)를 쓰면</p>
+    <div class="formula">$$\mu_i = \sum_j a_{ij}\lambda_j\qquad\Rightarrow\qquad \ln\frac{P_i}{P^\circ} = \frac{1}{RT}\Big(\sum_j a_{ij}\lambda_j - \mu_i^\circ\Big)\quad(\text{기체}),\qquad \mu^\circ_{\mathrm{Si(s)}} = \lambda_\mathrm{Si}\ (\text{고체가 있으면})$$<div class="where">\(a_{ij}\)는 물질 \(i\) 한 분자 속 원소 \(j\)의 원자 수. \(\lambda_j\)는 원소 \(j\) 원자 1 mol의 화학 퍼텐셜로, <span class="term">원소 퍼텐셜</span><span class="en">(element potential)</span>이라 부른다. 물질이 몇 가지든 미지수는 원소 수만큼뿐이다. 실리콘 기판이 있으면 \(\lambda_\mathrm{Si}\)는 고체 실리콘이 정하고, 남은 \(\lambda_\mathrm H\), \(\lambda_\mathrm{Cl}\)를 "분압의 합 = \(P\)"와 "기체 속 H/Cl 원자 비 = 원료의 H/Cl 비" 두 식으로 정한다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg class="ce-svg" viewBox="0 0 800 300" role="img" aria-label="다중 평형을 푸는 네 단계: 물질 목록, 원소 행렬, 독립 반응과 K, 원소 퍼텐셜로 풀기">
+        <g>
+          <rect x="20" y="30" width="170" height="230" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text class="t" x="105" y="56" text-anchor="middle" style="font-weight:700">1. 물질 목록</text>
+          <text class="t t-mono" x="40" y="86">H₂  HCl  SiH₄</text>
+          <text class="t t-mono" x="40" y="110">SiH₂Cl₂  SiHCl₃</text>
+          <text class="t t-mono" x="40" y="134">SiCl₄  SiCl₂</text>
+          <text class="t t-mono" x="40" y="158">Si(s) (기판)</text>
+          <text class="t t-dim" x="40" y="196">S = 8 (기체 7 + 고체 1)</text>
+          <text class="t t-dim" x="40" y="220">원료: SiHCl₃ 1 + H₂ r</text>
+        </g>
+        <g data-step="2">
+          <rect x="210" y="30" width="180" height="230" rx="10" fill="var(--surface)" stroke="var(--border)"/>
+          <text class="t" x="300" y="56" text-anchor="middle" style="font-weight:700">2. 원소 행렬</text>
+          <text class="t t-mono" x="226" y="86">      Si  H  Cl</text>
+          <text class="t t-mono" x="226" y="108">HCl    0  1  1</text>
+          <text class="t t-mono" x="226" y="130">SiHCl₃ 1  1  3</text>
+          <text class="t t-mono" x="226" y="152">SiCl₄  1  0  4</text>
+          <text class="t t-mono" x="226" y="174">  ⋯</text>
+          <text class="t t-dim" x="226" y="208">rank = E = 3</text>
+          <text class="t" x="226" y="236" fill="var(--accent)">독립 반응 8 − 3 = 5</text>
+        </g>
+        <g data-step="3">
+          <rect x="410" y="30" width="180" height="230" rx="10" fill="var(--surface)" stroke="var(--border)"/>
+          <text class="t" x="500" y="56" text-anchor="middle" style="font-weight:700">3. 반응마다 K</text>
+          <text class="t" x="424" y="86" style="font-size:12px">SiHCl₃ + H₂ ⇌ Si + 3HCl</text>
+          <text class="t" x="424" y="110" style="font-size:12px">SiHCl₃ + HCl ⇌ SiCl₄ + H₂</text>
+          <text class="t" x="424" y="134" style="font-size:12px">SiH₂Cl₂ + HCl ⇌ SiHCl₃ + H₂</text>
+          <text class="t" x="424" y="158" style="font-size:12px">Si + 2HCl ⇌ SiCl₂ + H₂</text>
+          <text class="t" x="424" y="182" style="font-size:12px">SiH₄ + 2HCl ⇌ SiH₂Cl₂ + 2H₂</text>
+          <text class="t t-dim" x="424" y="216">+ H/Cl 보존, ΣPᵢ = P</text>
+          <text class="t t-dim" x="424" y="238">→ 비선형 연립 7식</text>
+        </g>
+        <g data-step="4">
+          <rect x="610" y="30" width="170" height="230" rx="10" fill="var(--ok-soft)" stroke="var(--ok)"/>
+          <text class="t" x="695" y="56" text-anchor="middle" style="font-weight:700">4. 원소 퍼텐셜</text>
+          <text class="t" x="624" y="86">μᵢ = Σ aᵢⱼ λⱼ</text>
+          <text class="t" x="624" y="110">λ_Si = μ°(Si 고체)</text>
+          <text class="t" x="624" y="134">미지수: λ_H, λ_Cl</text>
+          <text class="t" x="624" y="158">ΣPᵢ = P 와</text>
+          <text class="t" x="624" y="182">H/Cl = 원료 비</text>
+          <text class="t t-dim" x="624" y="216">2차원 이분법으로</text>
+          <text class="t t-dim" x="624" y="238">언제나 수렴</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>반응기 안에 있을 수 있는 물질을 모두 적는다(열역학 자료가 있는 것만).</li><li>원소 조성 행렬의 계수로 독립 반응의 수를 센다.</li><li>독립 반응 다섯 개와 그 \(K\), 보존식을 쓰면 식과 미지수가 맞는다.</li><li>같은 문제를 깁스 최소화로 쓰면 미지수가 원소 퍼텐셜 두 개로 줄어든다.</li></ol>
+      <figcaption>다중 평형을 푸는 두 길. 화학량론 방식(반응마다 \(K\))과 깁스 최소화(원소 퍼텐셜)는 같은 답을 준다. 물질이 수십 가지인 상용 평형 계산 프로그램은 대부분 두 번째 방식을 쓴다.</figcaption>
+    </figure>
+    <figure class="diagram">
+      <svg class="ce-svg" viewBox="0 0 800 280" role="img" aria-label="TCS와 수소가 뜨거운 실리콘 위에서 반응해 Si가 쌓이고 HCl, SiCl4 등이 배출되는 반응기 개념도">
+        <rect x="150" y="40" width="500" height="170" rx="16" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+        <rect x="250" y="168" width="300" height="26" rx="4" fill="var(--accent)" opacity="0.85"/>
+        <text class="t" x="400" y="186" text-anchor="middle" fill="#fff" style="font-weight:700">Si 기판 1100 °C (활동도 1)</text>
+        <rect x="250" y="156" width="300" height="12" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <text class="t t-dim" x="560" y="166">새로 쌓인 Si</text>
+        <path d="M30 100 H146" stroke="var(--accent-2)" stroke-width="3" marker-end="url(#ce-ar3)"/>
+        <text class="t" x="30" y="86">SiHCl₃ 1 mol</text>
+        <text class="t" x="30" y="124">H₂ r mol</text>
+        <path d="M654 100 H770" stroke="var(--text-dim)" stroke-width="3" marker-end="url(#ce-ar4)"/>
+        <text class="t" x="664" y="78">H₂, HCl</text>
+        <text class="t" x="664" y="124">SiCl₄, SiCl₂</text>
+        <text class="t" x="664" y="146">SiHCl₃, SiH₂Cl₂</text>
+        <text class="t" x="400" y="72" text-anchor="middle">SiHCl₃ + H₂ ⇌ Si + 3HCl (증착)</text>
+        <text class="t" x="400" y="98" text-anchor="middle">4SiHCl₃ ⇌ Si + 3SiCl₄ + 2H₂ (불균등화)</text>
+        <text class="t" x="400" y="124" text-anchor="middle">Si + 2HCl ⇌ SiCl₂ + H₂ (고온 식각)</text>
+        <text class="t t-dim" x="400" y="244" text-anchor="middle">증착 수율 = (넣은 Si − 기체로 나간 Si) / 넣은 Si</text>
+        <text class="t t-dim" x="400" y="266" text-anchor="middle">음수면 기판이 깎인다(식각)</text>
+        <defs>
+          <marker id="ce-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent-2)"/></marker>
+          <marker id="ce-ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--text-dim)"/></marker>
+        </defs>
+      </svg>
+      <figcaption>TCS 증착 반응기의 열역학적 그림. Si 원자는 고체로 남거나 염화실레인으로 빠져나간다. 출구가 평형에 가깝다면 수율은 온도, 압력, H₂/TCS 비만으로 정해진다. 한 분자가 다른 분자보다 Cl을 더 갖고 덜 갖는 <span class="term">불균등화</span><span class="en">(disproportionation)</span> 반응 때문에 저온에서도 수율이 0이 아니다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-sicl">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>Si–Cl–H 평형 조성과 증착 수율</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-sicl"></canvas><span class="hint top">흰 원을 좌우로 끌어 온도 바꾸기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>H₂/SiHCl₃ 몰비 r <output id="sc-r-out"></output></span><input type="range" id="sc-r" min="1" max="40" step="0.5" value="10"></label>
+          <label class="ctrl"><span>전체 압력 P <output id="sc-p-out"></output></span><input type="range" id="sc-p" min="-2" max="0" step="0.05" value="0"></label>
+          <label class="check"><input type="checkbox" id="sc-sicl2" checked> SiCl₂ 포함(대표값)</label>
+          <button class="btn primary" id="sc-game" type="button">도전: 목표 수율 맞히기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">온도</span><span class="v" id="sc-t">—</span></div>
+        <div class="stat"><span class="k">Si 증착 수율</span><span class="v" id="sc-y">—</span></div>
+        <div class="stat"><span class="k">SiHCl₃ 전환율</span><span class="v" id="sc-x">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="sc-goal">—</span></div>
+      </div>
+      <div class="sim-note">위는 평형 몰분율(로그축), 아래는 Si 증착 수율이다. Si(s)가 늘 있다고 두고 원소 퍼텐셜로 푼다(이 장의 지역 계산기, 열화학 자료는 부록 A + SiCl₂ 대표값 \(\Delta_\mathrm fH^\circ = -168.6\) kJ/mol, \(S^\circ = 281.3\), \(\Delta C_P\) 일정 근사). 해볼 것: ① SiCl₂를 끄면 수율이 온도와 함께 계속 오르지만, 켜면 1350–1450 K 근처에서 최대가 된다. 고온에서는 Si가 SiCl₂로 다시 깎여 나간다. ② r을 키우면(수소를 많이) 수율이 오른다. HCl이 묽어져 역반응이 약해진다. ③ 압력을 낮추면 기체 몰수가 많은 SiCl₂ 쪽이 유리해져 최대 수율 온도가 내려간다. 과제: "도전"을 눌러 목표 수율을 ±1 %p 안으로 맞춰라(T는 1100–1500 K).</div>
+    </div>
+    <div class="example" data-title="두 반응이 묶인 평형: SiCl₄/SiHCl₃ 비">
+      <p>1400 K의 Si–Cl–H 혼합 기체에서 \(P_{\mathrm{HCl}}/P_{\mathrm{H_2}} = 0.100\)이다. \(\ce{SiHCl3 + HCl <=> SiCl4 + H2}\)의 \(K_{1400} = 19.6\)(\(\Delta C_P\) 일정 근사)일 때 \(P_{\mathrm{SiCl_4}}/P_{\mathrm{SiHCl_3}}\)는? 이 계에서 SiH₄를 빼고 SiCl₂를 넣은 물질 목록(H₂, HCl, SiH₂Cl₂, SiHCl₃, SiCl₄, SiCl₂, Si(s))의 독립 반응 수도 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta n = 0\)이라 \(K = \frac{P_{\mathrm{SiCl_4}}P_{\mathrm{H_2}}}{P_{\mathrm{SiHCl_3}}P_{\mathrm{HCl}}}\). 독립 반응 수는 \(S - E\).</div>
+        <div class="step"><b>풀이</b> \(P_{\mathrm{SiCl_4}}/P_{\mathrm{SiHCl_3}} = K\times(P_{\mathrm{HCl}}/P_{\mathrm{H_2}}) = 19.6\times0.100 = 1.96\). 물질 7가지, 원소 3가지이므로 독립 반응은 4개.</div>
+        <div class="answer">\(P_{\mathrm{SiCl_4}}/P_{\mathrm{SiHCl_3}}\approx1.96\), 독립 반응 4개</div>
+        <div class="step"><b>검토</b> 다중 평형에서는 한 반응의 \(K\)만으로 조성이 정해지지 않지만, 공통 물질(여기서는 HCl/H₂ 비)을 알면 나머지 비율이 줄줄이 정해진다. 원소 퍼텐셜 방식은 바로 이 연쇄를 \(\lambda_\mathrm H, \lambda_\mathrm{Cl}\) 두 수로 요약한 것이다: \(\ln(P_{\mathrm{SiCl_4}}/P_{\mathrm{SiHCl_3}}) = (\lambda_\mathrm{Cl} - \lambda_\mathrm H - \mu^\circ_{\mathrm{SiCl_4}} + \mu^\circ_{\mathrm{SiHCl_3}})/RT\). 엘링엄 근사로 하면 \(K = 5.4\)라 비가 0.54가 된다. 고온 다중 평형은 \(\Delta C_P\) 처리에 민감하다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>폴리실리콘 정제와 실리콘 에피의 염소 화학</strong><p>태양광·반도체용 다결정 실리콘은 지멘스 반응기에서 1100 °C 안팎의 실리콘 막대 위로 TCS와 H₂를 흘려 만든다. 평형 수율이 20–30 %에 그치므로 출구의 SiCl₄·SiHCl₃·HCl을 분리해 되돌리는 순환 공정이 핵심이고, SiCl₄는 다시 수소화해 TCS로 바꾼다. 에피택시 반응기에서도 같은 평형이 작동한다. Cl/H 비를 높이거나(HCl 첨가) 온도를 올리면 수율이 0 아래로 내려가 기판이 깎이므로, 에피 직전의 HCl 인시투 식각과 선택적 에피(산화막 위에는 핵이 생기지 않게 HCl을 섞는다)가 모두 이 경계를 이용한다. SiH₂Cl₂(DCS)는 Cl이 적어 같은 수율을 더 낮은 온도에서 얻는다(7절). → <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="ellingham">
+    <h2>엘링엄 도표와 금속의 산화·환원</h2>
+    <p>금속 M이 산화물이 되는 반응을 산소 1 mol 기준으로 쓰면 \(\frac{2x}{y}\ce{M} + \ce{O2} \to \frac2y\ce{M_xO_y}\)이다. 금속과 산화물이 순수한 고체라면 \(K = 1/P_{\mathrm{O_2}}\)이므로 \(\Delta_\mathrm rG^\circ = RT\ln P_{\mathrm{O_2,eq}}\)이다. 이 \(\Delta_\mathrm rG^\circ\)를 온도에 대해 여러 금속을 한 그림에 그린 것이 <span class="term">엘링엄 도표</span><span class="en">(Ellingham diagram)</span>다.</p>
+    <div class="formula">$$\Delta_\mathrm rG^\circ(T) \approx \Delta_\mathrm rH^\circ - T\Delta_\mathrm rS^\circ\ (\text{직선}),\qquad P_{\mathrm{O_2,eq}} = \exp\!\Big(\frac{\Delta_\mathrm rG^\circ}{RT}\Big)$$<div class="where">\(P_{\mathrm{O_2,eq}}\)(bar)는 <span class="term">평형 산소 분압</span><span class="en">(equilibrium oxygen partial pressure)</span>이다. 분위기의 산소 분압이 이보다 높으면 금속이 산화되고 낮으면 산화물이 환원된다. \(\Delta C_P = 0\)으로 두면(엘링엄 근사) 선은 직선이고, 기울기 \(-\Delta S^\circ\)는 기체 O₂ 1 mol이 고체 속으로 사라지는 엔트로피라 거의 모든 금속에서 +170–200 J/(mol·K)로 비슷하다. 그래서 선들이 거의 나란하다. 녹는점·끓는점에서는 기울기가 꺾이는데, 이 장의 도표는 그 꺾임을 무시한다.</div></div>
+    <p>읽는 규칙은 단순하다. <b>아래에 있는 선일수록 산화물이 안정하다.</b> 같은 온도에서 선 A가 선 B보다 아래면, 금속 A는 산화물 B를 환원한다(B의 산소를 빼앗는다). 두 반응을 빼면 \(\Delta G^\circ = G_A^\circ - G_B^\circ < 0\)이기 때문이다. 탄소의 선 \(\ce{2C + O2 -> 2CO}\)만 기울기가 음수(기체 1 mol이 2 mol이 됨)라 고온으로 갈수록 내려가고, 1909 K(엘링엄 근사)에서 SiO₂ 선과 엇갈린다. 아크로에서 규석을 탄소로 환원해 금속 실리콘을 만드는 온도가 2000 °C 안팎인 이유다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg class="ce-svg" viewBox="0 0 800 300" role="img" aria-label="엘링엄 도표 노모그래프: O점에서 선 위의 점을 지나 오른쪽 pO2 눈금을 읽는 방법">
+        <line x1="70" y1="20" x2="70" y2="270" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="40" x2="480" y2="40" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="480" y1="40" x2="480" y2="270" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="60" y="44" text-anchor="end">0</text>
+        <text class="t t-dim" x="64" y="290" text-anchor="middle">0 K</text>
+        <text class="t t-dim" x="480" y="290" text-anchor="middle">T</text>
+        <circle cx="70" cy="40" r="6" fill="var(--text)"/><text class="t" x="80" y="30" style="font-weight:700">O</text>
+        <line x1="70" y1="250" x2="480" y2="150" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t" x="330" y="176" fill="var(--accent)">2Si + O₂ → 2SiO₂ … (산소 1 mol)</text>
+        <g data-step="2">
+          <circle cx="310" cy="191" r="7" fill="var(--accent)"/>
+          <line x1="310" y1="40" x2="310" y2="270" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+          <text class="t t-dim" x="316" y="262">T₁</text>
+          <line x1="70" y1="40" x2="480" y2="290" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+          <text class="t" x="150" y="116" fill="var(--accent-2)">O에서 그은 선: RT ln pO₂ = 일정 비</text>
+        </g>
+        <g data-step="3">
+          <g stroke="var(--text-dim)"><line x1="480" y1="80" x2="490" y2="80"/><line x1="480" y1="140" x2="490" y2="140"/><line x1="480" y1="200" x2="490" y2="200"/><line x1="480" y1="260" x2="490" y2="260"/></g>
+          <text class="t t-mono" x="494" y="84" style="font-size:12px">10⁻¹⁰</text><text class="t t-mono" x="494" y="144" style="font-size:12px">10⁻²⁰</text><text class="t t-mono" x="494" y="204" style="font-size:12px">10⁻³⁰</text><text class="t t-mono" x="494" y="264" style="font-size:12px">10⁻⁴⁰</text>
+          <circle cx="480" cy="284" r="5" fill="var(--accent-2)"/>
+        </g>
+        <g class="t">
+          <g data-only="1"><text x="560" y="70" style="font-weight:700">1. 산화물 선</text><text x="560" y="98">ΔG° = ΔH° − TΔS°</text><text x="560" y="122">절편(0 K) = ΔH°</text><text x="560" y="146">기울기 = −ΔS° ≈ +180 J/K</text></g>
+          <g data-only="2"><text x="560" y="70" style="font-weight:700">2. 온도에서 점 찍기</text><text x="560" y="98">O점(0 K, ΔG = 0)에서</text><text x="560" y="122">그 점을 지나는 직선은</text><text x="560" y="146">ΔG = RT ln pO₂ 인 선,</text><text x="560" y="170">곧 pO₂가 일정한 선이다.</text></g>
+          <g data-only="3"><text x="560" y="70" style="font-weight:700">3. 눈금 읽기</text><text x="560" y="98">그 선을 늘려 오른쪽(또는</text><text x="560" y="122">아래) 테두리의 pO₂ 눈금과</text><text x="560" y="146">만나는 곳이 평형 산소 분압.</text><text x="560" y="178" class="t-dim">H점·C점에서 그으면</text><text x="560" y="200" class="t-dim">H₂O/H₂, CO₂/CO 비를 읽는다.</text></g>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>산소 1 mol 기준의 산화물 선. 0 K 절편이 \(\Delta H^\circ\), 기울기가 \(-\Delta S^\circ\)다.</li><li>원하는 온도에서 선 위의 점을 찍고 O점(0 K, 0)과 잇는다. 이 선 위에서는 \(RT\ln P_{\mathrm{O_2}}\)가 \(T\)에 비례하므로 \(P_{\mathrm{O_2}}\)가 일정하다.</li><li>그 선이 테두리 눈금과 만나는 곳이 평형 산소 분압이다.</li></ol>
+      <figcaption>엘링엄 노모그래프. 계산기 없이 자로 \(P_{\mathrm{O_2,eq}}\)를 읽던 방법이다. 같은 원리로 \(\ce{2H2 + O2 -> 2H2O}\)의 0 K 절편(H점)에서 그으면 H₂O/H₂ 비, \(\ce{2CO + O2 -> 2CO2}\)의 절편(C점)에서 그으면 CO₂/CO 비 눈금을 읽는다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-ell">
+      <p>SiO₂ 위에 알루미늄을 입히고 500 °C 넘게 가열하면 열역학적으로 어떤 일이 일어날 수 있을까?</p>
+      <div class="opts"><button class="opt">아무 일도 없다 — SiO₂는 가장 안정한 산화물이다</button><button class="opt" data-correct>Al이 SiO₂를 환원해 Al₂O₃와 Si가 생긴다</button><button class="opt">Si가 Al₂O₃를 환원한다</button></div>
+      <div class="quiz-exp">Al₂O₃ 선(산소 1 mol당 1273 K에서 −851 kJ)이 SiO₂ 선(−678 kJ)보다 한참 아래다. 따라서 \(\ce{4Al + 3SiO2 -> 2Al2O3 + 3Si}\)는 \(\Delta G^\circ\ll0\)이다. 예전 알루미늄 배선 공정에서 콘택 아래 Si가 녹아 들어가는 스파이킹과 Al–SiO₂ 계면 반응이 이 열역학 때문에 생긴다(속도는 온도가 정한다). 시뮬레이터에서 두 선의 위치를 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-ell">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>엘링엄 도표와 노모그래프</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ell"></canvas><span class="hint top">흰 원: 온도 · 선 누르기: 산화물</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>산화물</span><select id="ell-ox"></select></label>
+          <div class="ctrl"><span>눈금</span><div class="seg" id="ell-scale"><button data-value="o2" class="on">p<sub>O₂</sub></button><button data-value="h2">H₂O/H₂</button><button data-value="co">CO₂/CO</button></div></div>
+          <label class="check"><input type="checkbox" id="ell-red" checked> H₂O·CO 선 보이기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T</span><span class="v" id="ell-t">—</span></div>
+        <div class="stat"><span class="k">Δ<sub>r</sub>G° (O₂ 1 mol)</span><span class="v" id="ell-g">—</span></div>
+        <div class="stat"><span class="k">평형 p<sub>O₂</sub></span><span class="v" id="ell-p">—</span></div>
+        <div class="stat"><span class="k">평형 H₂O/H₂ · CO₂/CO</span><span class="v" id="ell-r">—</span></div>
+      </div>
+      <div class="sim-note">엘링엄 근사(\(\Delta C_P = 0\), 부록 A의 298 K 자료)로 그린 산소 1 mol 기준 \(\Delta_\mathrm rG^\circ\)다. 녹는점(Al 933 K, Cu 1358 K 등)의 꺾임은 무시했다. WO₂는 NIST 대표값(\(\Delta_\mathrm fH^\circ = -589.7\) kJ/mol, \(S^\circ = 50.5\))이다. 고른 선과 온도선이 만나는 점에서 O·H·C 점을 잇는 선을 오른쪽·아래 테두리까지 늘려 눈금을 읽는다. 해볼 것: ① HfO₂, ZrO₂, Al₂O₃는 SiO₂보다 아래, Ta₂O₅는 위다. ② Cu₂O 선은 H₂O 선보다 한참 위라 수소가 조금만 있어도 환원된다. SiO₂는 H₂O 선보다 아래라 수소로는 환원되지 않는다. ③ 온도를 올리면 모든 \(P_{\mathrm{O_2,eq}}\)가 수십 자릿수씩 커진다.</div>
+    </div>
+    <div class="tangle" id="tg-cu">
+      <p>구리 배선을 <span class="tn" data-var="t" data-min="25" data-max="800" data-step="5" data-unit=" °C">300</span>에서 어닐한다. 엘링엄 근사로 \(\ce{4Cu + O2 -> 2Cu2O}\)의 \(\Delta_\mathrm rG^\circ\) = <span class="tn-out ce-out" data-out="g"></span>이므로 구리가 산화되지 않으려면 산소 분압이 <span class="tn-out ce-out" data-out="p"></span>보다 낮아야 한다. 순도 <span class="tn" data-var="ppm" data-min="0.1" data-max="100" data-step="0.1" data-unit=" ppm">1</span>의 산소가 섞인 1 bar 질소는 \(P_{\mathrm{O_2}} = \) <span class="tn-out ce-out" data-out="po"></span>이니 <span class="tn-out ce-out" data-out="v"></span>.</p>
+    </div>
+    <p>산소 분압이 \(10^{-20}\) bar라는 조건은 진공 펌프로 만들 수 없다(초고진공 \(10^{-12}\) bar에서도 한참 높다). 실제 공정은 수소나 일산화 탄소의 "산소 완충"을 쓴다. \(\ce{2H2 + O2 <=> 2H2O}\)가 평형이면 \(P_{\mathrm{O_2}} = (P_{\mathrm{H_2O}}/P_{\mathrm{H_2}})^2/K_w\)이므로, H₂O/H₂ 비를 \(10^{-6}\)–\(10^{1}\) 범위에서 조절하면 \(P_{\mathrm{O_2}}\)를 수십 자릿수에 걸쳐 정밀하게 고정할 수 있다. 같은 계산을 금속 산화 반응에 직접 쓰면 \(\ce{M + H2O <=> MO + H2}\) 꼴의 평형이 되고, 금속마다 산화되기 시작하는 H₂O/H₂ 비가 다르다. 이 차이를 이용해 한 웨이퍼 위에서 실리콘만 산화하고 금속은 그대로 두는 것이 <span class="term">선택 산화</span><span class="en">(selective oxidation)</span>다.</p>
+    <div class="sim" id="sim-sel">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>선택 산화 창 찾기: Si는 산화, 게이트 금속은 그대로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-sel"></canvas><span class="hint top">흰 원을 끌어 온도와 H₂O/H₂ 비 정하기</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>게이트 금속</span><div class="seg" id="sel-m"><button data-value="W" class="on">W</button><button data-value="Ta">Ta</button><button data-value="Ti">Ti</button><button data-value="Cu">Cu</button></div></div>
+          <button class="btn primary" id="sel-game" type="button">도전: 빠르고 안전한 조건</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">조건</span><span class="v" id="sel-c">—</span></div>
+        <div class="stat"><span class="k">Si → SiO₂</span><span class="v" id="sel-si">—</span></div>
+        <div class="stat"><span class="k">게이트 금속</span><span class="v" id="sel-me">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="sel-goal">—</span></div>
+      </div>
+      <div class="sim-note">세로축은 \(\log_{10}(P_{\mathrm{H_2O}}/P_{\mathrm{H_2}})\)다. 아래 파란 선 위쪽에서 \(\ce{Si + 2H2O -> SiO2 + 2H2}\)가 자발, 주황 선 위쪽에서 금속도 산화된다(W → WO₂, Ta → Ta₂O₅, Ti → TiO₂, Cu → Cu₂O, 엘링엄 근사). 두 선 사이 초록 띠가 선택 산화 창이다. 해볼 것: ① W는 창이 \(10^{-7}\)에서 1 근처까지 일곱 자릿수나 된다. ② Ti는 금속선이 Si선보다 아래라 창이 없다. ③ Cu는 이 범위 어디서도 산화되지 않는다(포밍 가스 환원). 과제: "도전"을 누르면 목표 온도가 주어진다. 산화를 빠르게 하려면 수증기가 많을수록 좋지만, W 경계에서 2배 이상 여유를 두고 경계의 10분의 1보다는 습하게(\(\log\) 경계 −1.3 … −0.3) 맞춰라.</div>
+    </div>
+    <figure class="diagram">
+      <svg class="ce-svg" viewBox="0 0 800 300" role="img" aria-label="high-k 메탈 게이트 적층: Si 기판, SiO2 계면층, HfO2, TiN 금속, 산소 이동과 스캐빈징 화살표">
+        <rect x="80" y="230" width="380" height="50" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/>
+        <text class="t" x="270" y="260" text-anchor="middle" style="font-weight:700">Si 기판</text>
+        <rect x="80" y="214" width="380" height="16" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="470" y="227">SiO₂ 계면층 0.5–1 nm</text>
+        <rect x="80" y="160" width="380" height="54" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <text class="t" x="270" y="192" text-anchor="middle" style="font-weight:700">HfO₂ (high-k) 1.5–2 nm</text>
+        <rect x="80" y="100" width="380" height="60" fill="var(--surface)" stroke="var(--border)"/>
+        <text class="t" x="270" y="134" text-anchor="middle">TiN (일함수 금속, 산소 제거층)</text>
+        <rect x="80" y="40" width="380" height="60" fill="var(--surface)" stroke="var(--border)"/>
+        <text class="t" x="270" y="74" text-anchor="middle">W (게이트 충전)</text>
+        <path d="M150 150 V218" stroke="var(--bad)" stroke-width="2.4" marker-end="url(#ce-ar5)"/>
+        <text class="t" x="156" y="176" fill="var(--bad)" style="font-size:12px">O 확산</text>
+        <path d="M380 220 V120" stroke="var(--ok)" stroke-width="2.4" marker-end="url(#ce-ar6)"/>
+        <text class="t" x="386" y="150" fill="var(--ok)" style="font-size:12px">스캐빈징</text>
+        <g class="t">
+          <text x="520" y="60" style="font-weight:700">엘링엄 순서 (1273 K, O₂ 1 mol)</text>
+          <text x="520" y="90">Ta₂O₅  −588 kJ  → Si가 환원 ✗</text>
+          <text x="520" y="114">SiO₂   −678 kJ  (기준)</text>
+          <text x="520" y="138">TiO₂   −708 kJ  (실리사이드로 불안정)</text>
+          <text x="520" y="162">Al₂O₃  −851 kJ  안정</text>
+          <text x="520" y="186">ZrO₂   −854 kJ  안정</text>
+          <text x="520" y="210">HfO₂   −904 kJ  안정</text>
+          <text x="520" y="246" class="t-dim">SiO₂보다 아래 = Si와 닿아도</text>
+          <text x="520" y="268" class="t-dim">산소를 빼앗기지 않는다</text>
+        </g>
+        <defs>
+          <marker id="ce-ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--bad)"/></marker>
+          <marker id="ce-ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--ok)"/></marker>
+        </defs>
+      </svg>
+      <figcaption>high-k 메탈 게이트 적층과 엘링엄 순서. HfO₂는 SiO₂보다 안정해 실리콘과 직접 반응하지 않지만, 산소 이온을 잘 통과시켜 공정 중 들어온 산소가 계면에서 SiO₂ 층을 키운다. 반대로 산화물 선이 더 아래인 금속(Ti, Hf)을 위에 두면 계면층의 산소를 빨아들여 얇게 만든다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>high-k 절연막이 실리콘 위에서 버티는 조건과 계면층</strong><p>SiO₂를 HfO₂로 바꾼 것은 유전율 때문이지만, 아무 high-k나 쓸 수 있는 것은 아니다. 실리콘과 닿은 산화물 MOₓ가 \(\ce{Si + MO_x -> SiO2 + M}\)(또는 실리사이드)로 반응하면 원하지 않는 SiO₂·실리사이드 층이 생긴다. 엘링엄 도표에서 SiO₂보다 아래에 있는 HfO₂, ZrO₂, Al₂O₃는 열역학적으로 안정하고, 위에 있는 Ta₂O₅는 불안정하다. 그래도 실제 HKMG에는 0.5–1 nm의 SiO₂ <span class="term">계면층</span><span class="en">(interfacial layer)</span>이 생긴다. HfO₂ 속을 지나온 산소가 계면에서 Si를 산화하기 때문이다. 이 층은 EOT를 늘리므로, 게이트 쪽에 산소 친화력이 큰 금속을 두어 계면층의 산소를 끌어가는 <span class="term">산소 스캐빈징</span><span class="en">(oxygen scavenging)</span>으로 줄인다. 이것도 엘링엄 선의 위아래 문제다. → <a href="https://semi.euiyun.com/process/chapters/advanced.html">ProcessBook · 첨단 소자 공정</a>, <a href="https://semi.euiyun.com/device/chapters/mos.html">DeviceBook · MOS 커패시터</a></p></div>
+    <div class="example" data-title="SiO₂의 평형 산소 분압과 H₂O/H₂ 비">
+      <p>엘링엄 근사로 1273 K(1000 °C)에서 \(\ce{Si + O2 -> SiO2}\)(\(\Delta H^\circ = -910.7\) kJ, \(\Delta S^\circ = -182.5\) J/K)의 \(\Delta_\mathrm rG^\circ\), 평형 산소 분압, 그리고 SiO₂와 Si가 공존하는 H₂O/H₂ 비를 구하라. \(\ce{2H2 + O2 -> 2H2O(g)}\)는 \(\Delta H^\circ = -483.66\) kJ, \(\Delta S^\circ = -88.83\) J/K다.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(P_{\mathrm{O_2,eq}} = e^{\Delta G^\circ/RT}\). H₂O/H₂ 비는 \(\ce{Si + 2H2O -> SiO2 + 2H2}\)(두 반응의 차)의 평형에서: \(\Delta G^\circ_\text{ox} - \Delta G^\circ_w = 2RT\ln(P_{\mathrm{H_2O}}/P_{\mathrm{H_2}})\).</div>
+        <div class="step"><b>풀이</b> \(\Delta_\mathrm rG^\circ = -910.7 + 1273\times0.1825 = -678.4\) kJ. \(P_{\mathrm{O_2,eq}} = \exp(-678{,}400/(8.314\times1273)) = 1.46\times10^{-28}\) bar. \(\Delta G^\circ_w = -483.66 + 1273\times0.08883 = -370.6\) kJ. 비 \(= \exp[(-678.4 + 370.6)\times10^3/(2\times8.314\times1273)] = e^{-14.54} = 4.8\times10^{-7}\).</div>
+        <div class="answer">\(\Delta_\mathrm rG^\circ = -678\) kJ, \(P_{\mathrm{O_2,eq}}\approx1.5\times10^{-28}\) bar, \(P_{\mathrm{H_2O}}/P_{\mathrm{H_2}}\approx4.8\times10^{-7}\)</div>
+        <div class="step"><b>검토</b> 수소 속 수분이 0.5 ppm만 넘어도 1000 °C의 실리콘은 산화된다. 반대로 SiO₂를 수소로 환원하려면 수분을 그보다 더 빼야 하는데, 이 조건은 에피 전 수소 베이크(자연 산화막 제거)에서 실제로 쓰인다. 고온·저압일수록, 수분이 적을수록 쉽다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="high-k 산화물은 실리콘 위에서 안정한가">
+      <p>엘링엄 근사로 1273 K에서 다음 반응의 \(\Delta G^\circ\)를 구하고 실리콘 위에서의 안정성을 판단하라. (a) \(\ce{Si + HfO2 -> SiO2 + Hf}\) (b) \(\ce{5Si + 2Ta2O5 -> 5SiO2 + 4Ta}\). 자료(kJ/mol, J/(mol·K)): \(\Delta_\mathrm fH^\circ\) HfO₂ −1144.7, Ta₂O₅ −2046.0, SiO₂ −910.7; \(S^\circ\) Si 18.81, SiO₂ 41.46, Hf 43.56, HfO₂ 59.33, Ta 41.51, Ta₂O₅ 143.09.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta H^\circ\), \(\Delta S^\circ\)를 구해 \(\Delta G^\circ = \Delta H^\circ - T\Delta S^\circ\). 산소 원자 수를 맞춘 두 엘링엄 선의 차이와 같다.</div>
+        <div class="step"><b>풀이</b> (a) \(\Delta H^\circ = -910.7 + 1144.7 = +234.0\) kJ, \(\Delta S^\circ = 41.46 + 43.56 - 18.81 - 59.33 = +6.88\) J/K, \(\Delta G^\circ = 234.0 - 1273\times0.00688 = +225\) kJ. (b) \(\Delta H^\circ = 5(-910.7) - 2(-2046.0) = -461.5\) kJ, \(\Delta S^\circ = 5(41.46) + 4(41.51) - 5(18.81) - 2(143.09) = -6.89\) J/K, \(\Delta G^\circ = -461.5 + 1273\times0.00689 = -453\) kJ.</div>
+        <div class="answer">(a) \(+225\) kJ → HfO₂는 안정 (b) \(-453\) kJ → Ta₂O₅는 Si에 환원된다</div>
+        <div class="step"><b>검토</b> 고체끼리의 반응이라 \(\Delta S^\circ\)가 작고 \(\Delta G^\circ\approx\Delta H^\circ\)이므로 온도에 거의 무관하다. 엘링엄 도표에서 HfO₂ 선은 SiO₂보다 산소 1 mol당 225 kJ 아래, Ta₂O₅는 91 kJ 위에 있다(1273 K). 1990년대 Ta₂O₅ 게이트 절연막 연구가 계면 SiO₂ 성장에 부딪힌 이유다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>W 게이트의 선택 산화와 구리의 포밍 가스 환원</strong><p>폴리실리콘 위에 텅스텐을 올린 게이트(W/폴리-Si)나 W 워드선을 쓰는 메모리 공정에서는, 게이트 식각 손상을 되살리는 재산화(re-oxidation)가 필요하지만 보통의 건식·습식 산화는 W를 WO₃로 만들어 부풀리고 날려 보낸다. 그래서 H₂ 속에 수증기를 조금 섞은 분위기에서 H₂O/H₂ 비를 W 경계 아래, Si 경계 위로 맞춘 "선택 산화"를 쓴다(위 시뮬레이터). 같은 원리로 구리 배선은 산화 구리 선이 물 선보다 한참 위라, N₂–H₂ 포밍 가스(H₂ 수 %)에서 수분이 조금 있어도 환원된다. 반대로 Ti, Ta 배리어는 선이 아래라 수소로 환원되지 않으므로 산소·수분 관리가 더 엄격하다. → <a href="https://semi.euiyun.com/process/chapters/oxidation.html">ProcessBook · 열산화</a>, <a href="https://semi.euiyun.com/process/chapters/anneal.html">ProcessBook · 확산과 열처리</a></p></div>
+    <div class="drill" id="drill-ell" data-title="엘링엄 계산: 평형 산소 분압과 H₂O/H₂ 비"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="cvd">
+    <h2>CVD 반응의 열역학</h2>
+    <p>화학 기상 증착(CVD)은 기체 전구체가 표면에서 반응해 고체를 남기는 과정이다. 열역학은 두 가지를 말해 준다. 첫째, 주어진 온도·조성에서 증착이 가능한가: 증착 반응의 \(\Delta_\mathrm rG = RT\ln(Q/K)\)가 음수여야 한다. \(K/Q\)를 <span class="term">과포화도</span><span class="en">(supersaturation ratio)</span>라 부르면 증착의 구동력은 \(RT\ln(K/Q)\)이고, 이것이 14장 핵생성의 \(\Delta G_v\)가 된다. 둘째, 평형에 닿았을 때 원료의 몇 %가 막이 되는가: 평형 전환율, 곧 <span class="term">증착 수율</span><span class="en">(deposition yield)</span>의 상한이다. 실제 성장 속도와 균일도는 표면 반응 속도와 기체 수송이 정하므로(14장), 열역학은 "가능한가"와 "최대 얼마인가"까지만 답한다.</p>
+    <div class="rxn">$$\ce{SiH4(g) -> Si(s) + 2H2(g)}\quad \Delta H^\circ = -34.3\ \text{kJ},\ \Delta S^\circ = +75.5\ \text{J/K}$$</div>
+    <p>실레인 분해는 발열이면서 기체 몰수가 늘어 모든 온도에서 \(K\gg1\)이다(900 K에서 \(5\times10^6\)). 평형만 보면 실레인은 상온에서도 실리콘과 수소로 쪼개져야 하지만 Si–H 결합을 끊는 장벽 때문에 실린더 안에서 수년간 버틴다. LPCVD 폴리실리콘의 580–650 °C는 열역학이 아니라 속도가 정한 온도다. 반면 염소가 붙은 전구체는 흡열이라 고온이 필요하고, 염소가 많을수록 더 높은 온도에서야 \(K\)가 1을 넘는다. 생성되는 HCl이 역반응(식각)을 일으키기 때문이다.</p>
+    <figure class="mini" id="mini-si">
+      <div class="mini-view" style="position:relative"><canvas id="cv-si"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>온도 T <output id="si-t-out"></output></span><input type="range" id="si-t" min="400" max="1700" step="10" value="1100"></label><span class="readout" id="si-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>Si 1 mol을 쌓는 네 전구체 반응의 \(\Delta_\mathrm rG^\circ(T)\)(\(\Delta C_P\) 일정 근사): \(\ce{SiH4 -> Si + 2H2}\), \(\ce{SiH2Cl2 -> Si + 2HCl}\), \(\ce{SiHCl3 + H2 -> Si + 3HCl}\), \(\ce{SiCl4 + 2H2 -> Si + 4HCl}\). 0보다 아래가 표준 상태에서 증착 쪽이다. 염소 원자 하나가 늘 때마다 선이 위로 올라가, 같은 \(K\)를 얻는 온도가 수백 K씩 높아진다. 실제 공정 온도(실레인 600 °C, DCS 700–1000 °C, TCS 1000–1150 °C, SiCl₄ 1150–1250 °C)가 이 순서를 따른다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-cvd">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>CVD 반응의 평형 전환율</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-cvd"></canvas><span class="hint top">흰 원을 좌우로 끌어 온도 바꾸기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>반응</span><select id="cvd-rx"></select></label>
+          <label class="ctrl"><span><span id="cvd-r-lab">공반응물/전구체 몰비</span> <output id="cvd-r-out"></output></span><input type="range" id="cvd-r" min="0" max="2" step="0.05" value="1"></label>
+          <label class="ctrl"><span>전체 압력 P <output id="cvd-p-out"></output></span><input type="range" id="cvd-p" min="-3" max="0" step="0.05" value="0"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T</span><span class="v" id="cvd-t">—</span></div>
+        <div class="stat"><span class="k">Δ<sub>r</sub>G° · K</span><span class="v" id="cvd-g">—</span></div>
+        <div class="stat"><span class="k">평형 전환율</span><span class="v" id="cvd-x">—</span></div>
+        <div class="stat"><span class="k">남는 전구체 분율</span><span class="v" id="cvd-res">—</span></div>
+      </div>
+      <div class="sim-note">반응 하나만 있다고 보고 <code>Thermo.equilibrium</code>(고체 활동도 1, \(\Delta C_P\) 일정 근사)으로 푼 전구체의 평형 전환율이다. 몰비는 로그 슬라이더(\(10^{0}\)–\(10^{2}\))이고, 공반응물이 없는 반응에서는 운반 기체(H₂ 또는 N₂, 반응에 따라)의 비다. 해볼 것: ① SiH₄와 WF₆ + H₂는 어느 온도에서나 거의 100 %다. ② TCS를 1300 K, 몰비 10으로 두면 38 %다. 5절의 다중 평형 수율(SiCl₄·SiCl₂까지 고려하면 32 %)보다 크다. 반응 하나만 보면 부반응으로 새는 실리콘을 놓친다. ③ 압력을 낮추면 기체 몰수가 늘어나는 DCS·TCS 증착이 유리해진다.</div>
+    </div>
+    <p>텅스텐 CVD는 육플루오린화 텅스텐을 두 가지 길로 환원한다. 수소 환원 \(\ce{WF6 + 3H2 -> W + 6HF}\)는 흡열(\(\Delta H^\circ = +81.9\) kJ)이지만 기체 4 mol이 6 mol이 되어 \(\Delta S^\circ = +342\) J/K로 엔트로피가 크게 이겨, 300 °C에서도 \(K\approx2\times10^{10}\)이다. 실리콘 환원 \(\ce{2WF6 + 3Si -> 2W + 3SiF4}\)는 SiF₄가 아주 안정해 W 1 mol당 \(\Delta G^\circ\approx-750\) kJ로 압도적이다. 이 반응이 노출된 Si 표면에서 먼저 일어나 W 핵을 만들고, Si가 덮이면 멈춘다(자기 제한). 그다음 W 표면에서 H₂가 해리해 수소 환원이 이어진다. 산화막 위에는 W가 거의 자라지 않는데, 이것은 열역학이 아니다. 표의 값으로 \(\ce{2WF6 + 3SiO2 -> 2WO3 + 3SiF4}\)를 계산해도 \(\Delta G^\circ_{573}\approx-466\) kJ로 내리막이다. SiO₂ 표면에는 H₂를 해리하고 WF₆를 붙잡을 자리가 없어 반응이 시작되지 못할 뿐이다. 선택적 W CVD의 선택성은 속도론(핵생성)이 만든다.</p>
+    <figure class="diagram">
+      <svg class="ce-svg" viewBox="0 0 800 270" role="img" aria-label="콘택 홀 바닥의 Si에서만 W가 자라고 SiO2 위에서는 자라지 않는 선택적 W CVD">
+        <rect x="40" y="200" width="720" height="50" fill="var(--accent-2-soft)" stroke="var(--accent-2)"/>
+        <text class="t" x="400" y="232" text-anchor="middle" style="font-weight:700">Si (소스·드레인)</text>
+        <rect x="40" y="90" width="270" height="110" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <rect x="490" y="90" width="270" height="110" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="175" y="150" text-anchor="middle">SiO₂</text>
+        <text class="t t-dim" x="625" y="150" text-anchor="middle">SiO₂</text>
+        <rect x="310" y="150" width="180" height="50" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+        <text class="t" x="400" y="180" text-anchor="middle" fill="var(--accent)" style="font-weight:700">W 플러그</text>
+        <text class="t" x="400" y="60" text-anchor="middle">WF₆ + H₂</text>
+        <path d="M400 70 V140" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#ce-ar7)"/>
+        <path d="M175 50 V84" stroke="var(--text-faint)" stroke-width="2" stroke-dasharray="4 3"/>
+        <text class="t" x="175" y="40" text-anchor="middle" fill="var(--text-dim)">H₂ 해리 자리 없음 → 핵생성 안 됨</text>
+        <g class="t">
+          <text x="520" y="30" style="font-size:12px">① 2WF₆ + 3Si → 2W + 3SiF₄ (자기 제한)</text>
+          <text x="520" y="50" style="font-size:12px">② WF₆ + 3H₂ → W + 6HF (W 위에서)</text>
+          <text x="520" y="70" style="font-size:12px" fill="var(--bad)">SiO₂ + WF₆: ΔG° &lt; 0 이지만 느림</text>
+        </g>
+        <defs><marker id="ce-ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs>
+      </svg>
+      <figcaption>선택적 W CVD. 열역학은 Si 위, W 위, 심지어 SiO₂ 위의 반응까지 모두 "가능"하다고 말한다. 실제로 Si 위에서만 자라는 것은 표면의 반응 경로(H₂ 해리, 핵생성)의 차이 때문이다. 열역학적으로 불가능한 반응은 결코 일어나지 않지만, 가능한 반응이 반드시 일어나는 것은 아니다.</figcaption>
+    </figure>
+    <p>질화 규소 LPCVD \(\ce{3SiH2Cl2 + 4NH3 -> Si3N4 + 6HCl + 6H2}\)는 750 °C에서 \(\Delta G^\circ\approx-550\) kJ(엘링엄 근사), \(K\approx10^{28}\)로 평형상 완전히 진행한다. 막의 조성(Si/N 비)과 수소 함량, 성장 속도는 NH₃/DCS 비와 온도에 따른 표면 반응 속도가 정한다. 이 반응이 만드는 HCl이 NH₃와 만나 염화 암모늄(NH₄Cl)으로 배기관에 쌓이는 것은 저온에서 평형이 바뀌는 또 하나의 예다.</p>
+    <div class="example" data-title="WF₆의 수소 환원: 평형은 어디쯤인가">
+      <p>300 °C(573 K)에서 \(\ce{WF6(g) + 3H2(g) -> W(s) + 6HF(g)}\)의 \(\Delta_\mathrm rG^\circ\)와 \(K\)를 \(\Delta C_P\) 일정 근사로 구하라(\(\Delta H^\circ = +81.90\) kJ, \(\Delta S^\circ = +342.18\) J/K, \(\Delta C_P = -6.41\) J/K). H₂/WF₆ = 10, 전체 압력 0.0100 bar(7.6 Torr)로 넣어 평형에 닿으면 남는 WF₆ 분압은 대략 얼마인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta H(T) = \Delta H^\circ + \Delta C_P(T - 298.15)\), \(\Delta S(T) = \Delta S^\circ + \Delta C_P\ln(T/298.15)\). \(K\)가 매우 크면 WF₆가 거의 다 반응했다고 보고, 생성된 기체 조성으로 남은 WF₆를 \(K\)에서 역산한다.</div>
+        <div class="step"><b>풀이</b> \(\Delta H = 81.90 - 0.00641\times274.85 = 80.14\) kJ, \(\Delta S = 342.18 - 6.41\ln(1.922) = 337.99\) J/K, \(\Delta_\mathrm rG^\circ = 80.14 - 573\times0.33799 = -113.5\) kJ, \(K = e^{113{,}530/(8.314\times573)} = 2.2\times10^{10}\). WF₆ 1, H₂ 10에서 다 반응하면 H₂ 7, HF 6(합 13) → \(P_{\mathrm{HF}} = 4.6\times10^{-3}\), \(P_{\mathrm{H_2}} = 5.4\times10^{-3}\) bar. \(P_{\mathrm{WF_6}} = P_{\mathrm{HF}}^6/(KP_{\mathrm{H_2}}^3) = 9.6\times10^{-15}/(2.2\times10^{10}\times1.6\times10^{-7})\approx3\times10^{-18}\) bar.</div>
+        <div class="answer">\(\Delta_\mathrm rG^\circ = -114\) kJ/mol, \(K = 2.2\times10^{10}\), 남는 WF₆ \(\sim10^{-18}\) bar(사실상 0)</div>
+        <div class="step"><b>검토</b> 흡열 반응인데 \(K\)가 큰 것은 엔트로피 때문이다. 공정은 평형과 거리가 먼 곳(원료가 계속 들어오고 HF가 빠져나가는)에서 돌고, 성장 속도는 표면 반응이 정한다. 압력을 낮출수록 \(Q\)가 작아져 구동력이 더 커진다(\(\Delta n = +2\)).</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>콘택 플러그와 폴리실리콘의 공정 온도는 누가 정하나</strong><p>CVD 공정표의 온도는 대부분 열역학의 하한(\(K\gtrsim1\))보다 훨씬 높고, 속도론의 상한(기상 핵생성, 결정립, 열 예산)보다 낮은 창에서 고른다. 실레인 폴리실리콘은 열역학적으로 상온부터 가능하지만 표면 반응이 쓸 만해지는 580 °C 위에서, 비정질/다결정 전이를 보며 정한다. W 플러그의 핵생성 단계는 SiH₄나 B₂H₆로 WF₆를 환원해 얇은 씨앗층을 만들고, 그 위를 H₂ 환원으로 채운다. 이때 Si와 WF₆의 직접 반응(웜홀, 접합 침식)을 막으려고 TiN 배리어를 깐다. 모두 \(\Delta G^\circ\)가 매우 음수인 반응을 속도로 다스리는 예다. → <a href="https://semi.euiyun.com/process/chapters/integration.html">ProcessBook · CMOS 공정 통합</a>, <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>깁스 최소</b>: 반응 진행도 \(dn_i = \nu_i\,d\xi\)로 \(\Delta_\mathrm rG = (\partial G/\partial\xi)_{T,P} = \sum\nu_i\mu_i = \Delta_\mathrm rG^\circ + RT\ln Q\). 혼합 항 때문에 \(G(\xi)\)는 중간에 바닥이 있고, 바닥에서 \(\Delta_\mathrm rG^\circ = -RT\ln K\). \(Q<K\)이면 정반응, \(Q>K\)이면 역반응.</li>
+      <li><b>평형 상수의 단위</b>: \(K\)는 무차원(활동도: 기체 \(P_i/P^\circ\), 순수 고체·액체 1). \(K = K_P(P^\circ)^{-\Delta n} = K_c(c^\circ RT/P^\circ)^{\Delta n} = K_x(P/P^\circ)^{\Delta n}\). 분자 그림에서 \(K_c = k_\mathrm f/k_\mathrm b\)(상세 균형).</li>
+      <li><b>반트호프 식</b> \(d\ln K/d(1/T) = -\Delta H^\circ/R\): 흡열은 고온, 발열은 저온에서 \(K\)가 크다. 넓은 온도 범위에서는 \(\Delta C_P\)가 직선을 휘게 한다(\(\Delta C_P\) 일정 근사 \(\ne\) 엘링엄 근사, 고온에서 수십 % 이상 차이).</li>
+      <li><b>르샤틀리에</b>: 온도만 \(K\)를 바꾸고, 압력·주입·제거·희석은 \(Q\)를 바꾼다. 압력↑ → 기체 몰수 감소 쪽(\(\partial\ln K_x/\partial\ln P = -\Delta n\)), 일정 부피의 비활성 기체는 영향 없음, 일정 압력의 희석은 몰수 증가 쪽. 예외(N₂ 과량에서 N₂ 주입)는 \(Q\)로 판단한다.</li>
+      <li><b>다중 평형</b>: 독립 반응 수 = 물질 수 − 원소 수. 원소 퍼텐셜 \(\mu_i = \sum_j a_{ij}\lambda_j\)로 풀면 미지수가 원소 수로 준다. Si–Cl–H 계의 Si 수율은 H₂/TCS 비와 함께 오르고, SiCl₂ 때문에 1350–1450 K 근처에서 최대(평형 20–40 %)다.</li>
+      <li><b>엘링엄 도표</b>: 산소 1 mol당 \(\Delta G^\circ = RT\ln P_{\mathrm{O_2,eq}}\). 아래 선의 금속이 위 선의 산화물을 환원한다. HfO₂·ZrO₂·Al₂O₃는 SiO₂보다 아래(실리콘 위에서 안정), Ta₂O₅는 위. H₂O/H₂·CO₂/CO 비가 산소 분압을 정하고, W는 \(10^{-7}\lesssim P_{\mathrm{H_2O}}/P_{\mathrm{H_2}}\lesssim1\)에서 Si만 산화하는 선택 산화가 가능하다(900 °C, 엘링엄 근사).</li>
+      <li><b>CVD 열역학</b>: SiH₄ 분해는 모든 온도에서 \(K\gg1\)(속도가 온도를 정함), 염화실레인은 흡열이라 Cl이 많을수록 고온 필요. WF₆ 수소 환원은 엔트로피가 이기는 흡열 반응, Si 환원은 자기 제한 핵생성. 열역학은 가능성과 수율 상한만 말하고, 선택성·속도는 속도론(13·14장)이 정한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>열화학 자료는 부록 A(298.15 K, 1 bar)를 쓴다. \(R = 8.314\) J/(mol·K), \(P^\circ = 1\) bar, \(c^\circ = 1\) mol/L. 문제에 "엘링엄 근사"라고 하면 \(\Delta H^\circ, \Delta S^\circ\)를 298 K 값으로 고정한다. 따로 말이 없으면 답이 ±1 % 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="ΔG°와 K" data-answer="0.0902" data-label="K =">
+        <div class="prob-q"><p>1000 K에서 \(\Delta_\mathrm rG^\circ = +20.0\) kJ/mol인 반응의 평형 상수는?</p></div>
+        <div class="prob-sol"><p>\(K = \exp(-20{,}000/(8.314\times1000)) = e^{-2.406} = 0.0902\). \(\Delta_\mathrm rG^\circ>0\)이어도 \(K\)는 0이 아니다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="K에서 ΔG°" data-answer="45.9" data-label="Δ_rG° =" data-unit="kJ/mol">
+        <div class="prob-q"><p>800 K에서 측정한 평형 상수가 \(K = 1.0\times10^{-3}\)이다. \(\Delta_\mathrm rG^\circ\)는?</p></div>
+        <div class="prob-sol"><p>\(\Delta_\mathrm rG^\circ = -RT\ln K = -8.314\times800\times\ln(10^{-3}) = +45.9\) kJ/mol.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="비활성 기체">
+        <div class="prob-q"><p>일정 부피·일정 온도의 용기에서 평형인 \(\ce{N2 + 3H2 <=> 2NH3}\) 혼합물에 아르곤을 넣어 전체 압력을 2배로 만들었다. 평형은?</p></div>
+        <div class="prob-choices"><button>NH₃ 쪽으로 이동한다(압력이 올랐으므로)</button><button>N₂ + H₂ 쪽으로 이동한다(묽어졌으므로)</button><button data-correct>이동하지 않는다</button><button>\(K\)가 2배가 된다</button></div>
+        <div class="prob-sol"><p>반응 기체의 분압 \(P_i = n_iRT/V\)가 그대로라 \(Q = K\)가 유지된다. 비활성 기체는 일정 압력에서 넣을 때만(부피가 늘어 분압이 줄 때) 평형을 옮긴다. \(K\)는 온도만의 함수다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="K와 K_c" data-answer="0.152" data-label="K_c =" data-unit="mol/L">
+        <div class="prob-q"><p>350 K에서 \(\ce{N2O4(g) <=> 2NO2(g)}\)의 \(K = 4.43\)이다. \(K_c\)(mol/L 단위)는?</p></div>
+        <div class="prob-sol"><p>\(\Delta n = +1\)이므로 \(K_c = K(c^\circ RT/P^\circ)^{-1} = 4.43/(0.08314\times350) = 4.43/29.10 = 0.152\) mol/L.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="반트호프 식" data-answer="53.6" data-label="ΔH° =" data-unit="kJ/mol">
+        <div class="prob-q"><p>어떤 반응의 평형 상수가 300 K에서 310 K로 올리자 정확히 2배가 되었다. \(\Delta H^\circ\)가 일정하다고 보고 \(\Delta H^\circ\)를 구하라. (생화학의 "10 도에 2배" 규칙이 평형에 적용된다면 어떤 엔탈피에 해당하는가?)</p></div>
+        <div class="prob-hint">\(\ln2 = -(\Delta H^\circ/R)(1/310 - 1/300)\).</div>
+        <div class="prob-sol"><p>\(\Delta H^\circ = R\ln2/(1/300 - 1/310) = 8.314\times0.6931/(1.0753\times10^{-4}) = 53.6\) kJ/mol.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="해리도" data-answer="0.597" data-label="α =">
+        <div class="prob-q"><p>350 K, 전체 압력 2.00 bar에서 N₂O₄의 해리도 \(\alpha\)는? (\(K = 4.43\))</p></div>
+        <div class="prob-sol"><p>\(K = \frac{4\alpha^2}{1-\alpha^2}\frac{P}{P^\circ}\) → \(\alpha = \sqrt{K/(K + 4P/P^\circ)} = \sqrt{4.43/12.43} = 0.597\). 1 bar에서는 0.725였으니 압력을 2배로 하면 해리가 줄어든다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="수성 가스 전환" data-answer="0.512" data-label="CO 전환율 =">
+        <div class="prob-q"><p>1000 K에서 \(\ce{CO + H2O <=> CO2 + H2}\)의 \(K = 1.10\)이다. CO와 H₂O를 1 mol씩 넣었을 때 평형에서 반응한 CO의 비율은?</p></div>
+        <div class="prob-sol"><p>\(\Delta n = 0\)이라 압력과 무관하다. \(K = \xi^2/(1-\xi)^2\) → \(\xi = \sqrt K/(1 + \sqrt K) = 1.0488/2.0488 = 0.512\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="엘링엄: Cu₂O" data-answer="-21.4" data-tol="0.05" data-label="log₁₀ p_O₂ =">
+        <div class="prob-q"><p>엘링엄 근사로 600 K에서 \(\ce{4Cu + O2 -> 2Cu2O}\)(\(\Delta H^\circ = -337.2\) kJ, \(\Delta S^\circ = -151.47\) J/K)의 평형 산소 분압(bar)의 상용로그를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\Delta_\mathrm rG^\circ = -337.2 + 600\times0.15147 = -246.3\) kJ. \(\log_{10}P_{\mathrm{O_2}} = \Delta G^\circ/(RT\ln10) = -246{,}318/(8.314\times600\times2.3026) = -21.4\). 질소 속 산소 1 ppm(\(10^{-6}\) bar)도 이보다 15자릿수 높으니, 불활성 기체만으로는 구리 산화를 막을 수 없다(포밍 가스가 필요한 이유).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="NiO의 수소 환원" data-answer="566" data-label="(p_H₂O/p_H₂)max =" data-tol="2%">
+        <div class="prob-q"><p>\(\ce{NiO(s) + H2(g) <=> Ni(s) + H2O(g)}\)의 \(\Delta H^\circ = -2.13\) kJ, \(\Delta S^\circ = +50.04\) J/K다. 엘링엄 근사로 800 K에서 NiO가 환원되는 \(P_{\mathrm{H_2O}}/P_{\mathrm{H_2}}\)의 최댓값은?</p></div>
+        <div class="prob-sol"><p>\(\Delta G^\circ = -2.13 - 800\times0.05004 = -42.16\) kJ, \(K = e^{42{,}162/(8.314\times800)} = 566\). 불균일 평형이라 \(K = P_{\mathrm{H_2O}}/P_{\mathrm{H_2}}\)이고, 비가 566보다 작으면 환원된다. 수증기가 수소보다 수백 배 많아도 니켈은 금속으로 남는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="독립 반응의 수" data-answer="4" data-tol="0.01" data-label="독립 반응 수 =">
+        <div class="prob-q"><p>H₂, HCl, SiH₄, SiH₂Cl₂, SiHCl₃, SiCl₄, Si(s)로 이루어진 계(SiCl₂는 무시)의 독립 반응은 몇 개인가?</p></div>
+        <div class="prob-sol"><p>물질 7가지, 원소 3가지(Si, H, Cl), 원소 행렬의 계수 3이므로 \(7 - 3 = 4\)개.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="압력과 암모니아 수율" data-answer="0.0256; 0.107" data-label="y(10 bar) =; y(50 bar) =" data-tol="2%">
+        <div class="prob-q"><p>700 K에서 \(\ce{N2 + 3H2 <=> 2NH3}\)의 \(K = 6.88\times10^{-5}\)이다. N₂ : H₂ = 1 : 3으로 넣었을 때 전체 압력 10.0 bar와 50.0 bar에서 평형 NH₃ 몰분율을 구하라.</p></div>
+        <div class="prob-hint">\(\xi\)로 몰수를 쓰고 \(K = \frac{(2\xi)^2(4-2\xi)^2}{(1-\xi)(3-3\xi)^3}(P/P^\circ)^{-2}\)를 수치로 푼다.</div>
+        <div class="prob-sol"><p>10 bar: \(\xi = 0.0499\), \(y = 2\xi/(4-2\xi) = 0.0256\). 50 bar: \(\xi = 0.194\), \(y = 0.107\). 압력이 5배일 때 수율이 4.2배로, 비례보다 약간 덜 오른다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="TCS 증착 평형" data-answer="0.383" data-label="전환율 =" data-tol="2%">
+        <div class="prob-q"><p>1300 K, 전체 압력 1.00 bar에서 SiHCl₃ 1 mol과 H₂ 10 mol을 넣는다. 반응 \(\ce{SiHCl3 + H2 <=> Si(s) + 3HCl}\) 하나만 일어난다고 보고(\(K_{1300} = 0.0224\)) 평형에서 반응한 SiHCl₃의 비율을 구하라.</p></div>
+        <div class="prob-hint">기체 몰수: \(1-\xi\), \(10-\xi\), \(3\xi\), 합 \(11 + \xi\). \(K = \frac{(3\xi)^3}{(1-\xi)(10-\xi)(11+\xi)}\frac{P}{P^\circ}\).</div>
+        <div class="prob-sol"><p>이분법으로 풀면 \(\xi = 0.383\). 실제로는 SiCl₄·SiCl₂로 실리콘이 새어 나가 다중 평형의 Si 수율은 약 32 %다(5절 시뮬레이터).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="선택 산화 창" data-answer="8.68e-8; 1.62" data-label="Si 경계 =; W 경계 =" data-tol="3%">
+        <div class="prob-q"><p>900 °C(1173 K)에서 H₂–H₂O 분위기로 Si만 산화하고 W는 금속으로 두려 한다. 엘링엄 근사로 \(\ce{Si + 2H2O -> SiO2 + 2H2}\)(\(\Delta H^\circ = -427.04\) kJ, \(\Delta S^\circ = -93.67\) J/K)와 \(\ce{W + 2H2O -> WO2 + 2H2}\)(\(\Delta H^\circ = -106.03\) kJ, \(\Delta S^\circ = -98.42\) J/K)의 평형 \(P_{\mathrm{H_2O}}/P_{\mathrm{H_2}}\)를 각각 구하라.</p></div>
+        <div class="prob-hint">\(K = (P_{\mathrm{H_2}}/P_{\mathrm{H_2O}})^2\)이므로 경계의 비는 \(K^{-1/2}\).</div>
+        <div class="prob-sol"><p>Si: \(\Delta G^\circ = -427.04 + 1173\times0.09367 = -317.17\) kJ, \(K = 1.33\times10^{14}\), 비 \(= K^{-1/2} = 8.68\times10^{-8}\). W: \(\Delta G^\circ = -106.03 + 1173\times0.09842 = +9.42\) kJ, \(K = 0.381\), 비 \(= 1.62\). 따라서 \(8.7\times10^{-8} < P_{\mathrm{H_2O}}/P_{\mathrm{H_2}} < 1.6\)이 선택 산화 창이다(\(\Delta C_P\)를 넣으면 W 경계는 0.70으로 내려간다).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="Si₃N₄ LPCVD" data-answer="-550; 28.1" data-label="Δ_rG° =; log₁₀ K =" data-unit="kJ; " data-tol="1%; 0.1">
+        <div class="prob-q"><p>엘링엄 근사로 750 °C(1023 K)에서 \(\ce{3SiH2Cl2(g) + 4NH3(g) -> Si3N4(s) + 6HCl(g) + 6H2(g)}\)의 \(\Delta_\mathrm rG^\circ\)와 \(\log_{10}K\)를 구하라. \(\Delta_\mathrm fH^\circ\)(kJ/mol): SiH₂Cl₂ −320.5, NH₃ −45.9, Si₃N₄ −744.8, HCl −92.31. \(S^\circ\)(J/(mol·K)): SiH₂Cl₂ 286.7, NH₃ 192.77, Si₃N₄ 113.0, HCl 186.90, H₂ 130.68.</p></div>
+        <div class="prob-hint">\(\Delta H^\circ = -153.56\) kJ, \(\Delta S^\circ = +387.30\) J/K.</div>
+        <div class="prob-sol"><p>\(\Delta H^\circ = -744.8 + 6(-92.31) - 3(-320.5) - 4(-45.9) = -153.56\) kJ. \(\Delta S^\circ = 113.0 + 6(186.90) + 6(130.68) - 3(286.7) - 4(192.77) = 387.30\) J/K. \(\Delta G^\circ = -153.56 - 1023\times0.3873 = -549.8\) kJ, \(\log_{10}K = 549{,}768/(8.314\times1023\times2.3026) = 28.1\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="high-k 안정성">
+        <div class="prob-q"><p>엘링엄 도표(산소 1 mol 기준)에서 1000 °C의 선 위치가 Ta₂O₅ −588, SiO₂ −678, Al₂O₃ −851, HfO₂ −904 kJ이다. 실리콘 위에 직접 올렸을 때 열역학적으로 실리콘에 환원되는 것은?</p></div>
+        <div class="prob-choices"><button>HfO₂</button><button>Al₂O₃</button><button data-correct>Ta₂O₅</button><button>셋 다 안정하다</button></div>
+        <div class="prob-sol"><p>SiO₂ 선보다 위에 있는 산화물은 Si에 산소를 빼앗긴다: \(\ce{5Si + 2Ta2O5 -> 5SiO2 + 4Ta}\), \(\Delta G^\circ\approx-453\) kJ. HfO₂와 Al₂O₃는 SiO₂보다 아래라 안정하다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="탄소 열환원 온도" data-answer="1909" data-label="T =" data-unit="K">
+        <div class="prob-q"><p>엘링엄 근사에서 \(\ce{Si + O2 -> SiO2}\)(\(\Delta H^\circ = -910.7\) kJ, \(\Delta S^\circ = -182.5\) J/K)와 \(\ce{2C + O2 -> 2CO}\)(\(\Delta H^\circ = -221.06\) kJ, \(\Delta S^\circ = +178.69\) J/K)의 선이 만나는 온도는? 이 온도 위에서 탄소가 SiO₂를 환원한다(CO 1 bar).</p></div>
+        <div class="prob-sol"><p>두 선이 같으려면 \(-910.7 + 0.1825T = -221.06 - 0.17869T\) → \(T = 689.64/0.36119 = 1909\) K(약 1640 °C). 실제 아크로는 CO를 빼내고 2000 °C 근처에서 돌린다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>반응기에 촉매를 넣으면 평형에 대해 무엇이 바뀌나?</p><div class="opts">
+        <button class="opt">\(K\)가 커진다</button><button class="opt">평형 조성이 생성물 쪽으로 옮겨 간다</button><button class="opt" data-correct>평형에 닿는 시간만 짧아진다</button><button class="opt">\(\Delta_\mathrm rG^\circ\)가 작아진다</button>
+      </div><div class="quiz-exp">촉매는 정반응과 역반응을 같은 비율로 빠르게 한다(\(K = k_\mathrm f/k_\mathrm b\)는 그대로). \(\Delta_\mathrm rG^\circ\)는 상태 함수의 차이라 경로와 무관하다.</div></div>
+      <div class="quiz-q"><p>\(\ce{N2 + 3H2 <=> 2NH3}\)의 평형 상수가 \(K\)일 때, \(\ce{NH3 <=> 1/2N2 + 3/2H2}\)의 평형 상수는?</p><div class="opts">
+        <button class="opt">\(K/2\)</button><button class="opt">\(-K/2\)</button><button class="opt" data-correct>\(K^{-1/2}\)</button><button class="opt">\(\sqrt K\)</button>
+      </div><div class="quiz-exp">뒤집으면 역수, 계수를 ½배 하면 ½제곱이다. \(\Delta_\mathrm rG^\circ\)가 \(-\frac12\)배가 되기 때문이다.</div></div>
+      <div class="quiz-q"><p>엘링엄 도표에서 거의 모든 금속 산화물 선이 오른쪽 위로 올라가는(기울기가 양수인) 이유는?</p><div class="opts">
+        <button class="opt">고온에서 산화 반응이 더 발열이 되므로</button><button class="opt" data-correct>기체 O₂가 고체 속으로 들어가 엔트로피가 줄어서(\(\Delta S^\circ<0\))</button><button class="opt">금속이 고온에서 녹으므로</button><button class="opt">\(\Delta C_P\)가 양수이므로</button>
+      </div><div class="quiz-exp">기울기는 \(-\Delta S^\circ\)다. 기체 1 mol이 사라지는 엔트로피 손실(약 180 J/K)이 금속에 상관없이 비슷해 선들이 나란하다. 탄소가 CO가 되는 반응만 기체가 늘어나 기울기가 음수다.</div></div>
+      <div class="quiz-q"><p>600 °C에서 SiH₄ 분해 반응의 \(K\)는 \(10^6\)보다 크다. 그런데 LPCVD에서 온도를 550 °C에서 620 °C로 올리면 증착 속도가 몇 배 빨라진다. 이것은 무엇을 뜻하나?</p><div class="opts">
+        <button class="opt">\(K\)가 크게 늘어서 증착이 빨라진다</button><button class="opt" data-correct>평형과 무관하게 표면 반응 속도가 온도에 지수적으로 민감하다</button><button class="opt">르샤틀리에 원리에 따라 생성물 쪽으로 이동했다</button><button class="opt">실레인이 발열 분해하므로 온도를 올리면 느려져야 하는데 측정이 틀렸다</button>
+      </div><div class="quiz-exp">\(K\)가 이미 엄청나게 커서 평형은 완전히 생성물 쪽이다(발열이라 \(K\)는 오히려 조금 줄어든다). 증착 속도는 아레니우스형 표면 반응(13·14장)이 정한다. 열역학은 방향과 상한, 속도론은 빠르기를 말한다.</div></div>
+      <div class="quiz-q"><p>\(\ce{CO + H2O <=> CO2 + H2}\) 평형 혼합물의 전체 압력을 10배로 올리면?</p><div class="opts">
+        <button class="opt">CO₂ + H₂ 쪽으로 간다</button><button class="opt">CO + H₂O 쪽으로 간다</button><button class="opt" data-correct>몰분율이 그대로다</button><button class="opt">\(K\)가 10배가 된다</button>
+      </div><div class="quiz-exp">\(\Delta n = 0\)이므로 \(K_x = K(P/P^\circ)^{0} = K\)로 압력과 무관하다(이상 기체). 르샤틀리에 시뮬레이터에서 피스톤을 움직여도 조성이 그대로인 것을 확인할 수 있다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, RG = Thermo.C.R, LN10 = Math.LN10, RL = 0.0831446; // RL: L·bar/(mol·K)
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono, bold) => (bold ? "600 " : "") + px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const sg = (x, d = 1) => (isFinite(x) ? (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d) : "—");
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  const clip = (ctx, B, fn) => { ctx.save(); ctx.beginPath(); ctx.rect(B.x, B.y - 1, B.w + 1, B.h + 2); ctx.clip(); fn(); ctx.restore(); };
+  const bx = (x, y, w, h) => ({ x, y, w: Math.max(20, w), h: Math.max(20, h) });
+  const frame = (B, x0, x1, y0, y1) => ({ box: B, x0, x1, y0, y1, X: (v) => B.x + ((v - x0) / (x1 - x0)) * B.w, Y: (v) => B.y + B.h - ((v - y0) / (y1 - y0)) * B.h, ix: (px) => x0 + ((px - B.x) / B.w) * (x1 - x0), iy: (py) => y0 + ((B.y + B.h - py) / B.h) * (y1 - y0) });
+  function axes(ctx, F, o = {}) {
+    const P = pal(), B = F.box;
+    ctx.save(); ctx.lineWidth = 1; ctx.font = font(11, true); ctx.fillStyle = P.dim;
+    if (o.xt) { ctx.textAlign = "center"; ctx.textBaseline = "top"; o.xt.forEach((v) => { const x = F.X(v); if (x < B.x - 1 || x > B.x + B.w + 1) return; ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(x, B.y); ctx.lineTo(x, B.y + B.h); ctx.stroke(); ctx.fillText(o.xf ? o.xf(v) : String(v), x, B.y + B.h + 4); }); }
+    if (o.yt) { ctx.textAlign = "right"; ctx.textBaseline = "middle"; o.yt.forEach((v) => { const y = F.Y(v); if (y < B.y - 1 || y > B.y + B.h + 1) return; ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(B.x, y); ctx.lineTo(B.x + B.w, y); ctx.stroke(); ctx.fillText(o.yf ? o.yf(v) : String(v), B.x - 5, y); }); }
+    ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(B.x, B.y); ctx.lineTo(B.x, B.y + B.h); ctx.lineTo(B.x + B.w, B.y + B.h); ctx.stroke();
+    ctx.font = font(12); ctx.fillStyle = P.dim;
+    if (o.xl) { ctx.textAlign = "right"; ctx.textBaseline = "top"; ctx.fillText(o.xl, B.x + B.w, B.y + B.h + 19); }
+    if (o.yl) { ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.fillText(o.yl, B.x + 4, B.y - 4); }
+    ctx.restore();
+  }
+  function line(ctx, pts, col, w = 2, dash) { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineJoin = "round"; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let on = false; pts.forEach(([x, y]) => { if (!isFinite(x) || !isFinite(y)) { on = false; return; } on ? ctx.lineTo(x, y) : ctx.moveTo(x, y); on = true; }); ctx.stroke(); ctx.restore(); }
+  const curve = (F, f, a, b, n = 200) => { const out = []; for (let i = 0; i <= n; i++) { const x = a + ((b - a) * i) / n; out.push([F.X(x), F.Y(f(x))]); } return out; };
+  const dot = (ctx, x, y, r, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); };
+  const narrowOf = (w) => w < 560;
+  const niceTicks = (a, b, n = 5) => { const span = b - a, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw))); const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => span / s <= n + 0.5) || raw; const out = []; for (let v = Math.ceil(a / step - 1e-9) * step; v <= b + step * 1e-6; v += step) out.push(Math.abs(v) < step * 1e-9 ? 0 : Number(v.toPrecision(6))); return out; };
+  const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  /** 과학 표기 "1.46×10⁻²⁸" */
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—"; if (x === 0) return "0";
+    const e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return e >= 2 ? x.toFixed(0) : x.toPrecision(d + 1);
+    const m = x / Math.pow(10, e);
+    return m.toFixed(d) + "×10" + String(e).split("").map((c) => SUP[c]).join("");
+  };
+  const sciTex = (x, d = 2) => { const e = Math.floor(Math.log10(Math.abs(x))); if (e >= -2 && e <= 3) return e >= 2 ? x.toFixed(0) : x.toPrecision(d + 1); return (x / Math.pow(10, e)).toFixed(d) + "\\times10^{" + e + "}"; };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const randn = (R) => R.normal();
+
+  /* ================================================================ 열화학: 부록 A + 이 장의 대표값 */
+  const LOCAL = {
+    "N2O4(g)": { ko: "사산화 이질소", H: 9.16, S: 304.29, Cp: 77.28, phase: "g" },
+    "NO2(g)": { ko: "이산화 질소", H: 33.18, S: 240.06, Cp: 37.20, phase: "g" },
+    "WO2(s)": { ko: "이산화 텅스텐", H: -589.69, S: 50.54, Cp: 56.11, phase: "s" },
+    "SiCl2(g)": { ko: "이염화 규소", H: -168.6, S: 281.3, Cp: 50.9, phase: "g" },
+  };
+  const SPX = Object.assign({}, Thermo.species, LOCAL);
+  const T0 = 298.15;
+  /** 물질 하나의 G°(T) [J/mol] — Thermo.rxnAt과 같은 ΔCp 일정(또는 0) 근사 */
+  const g0 = (k, TK, cp = true) => { const s = SPX[k], c = cp ? s.Cp : 0; return s.H * 1e3 + c * (TK - T0) - TK * (s.S + c * Math.log(TK / T0)); };
+  const rxnG = (nu, TK, cp = true) => { let g = 0; for (const k in nu) g += nu[k] * g0(k, TK, cp); return g; };
+  const rxnHS = (nu) => { let H = 0, S = 0, Cp = 0; for (const k in nu) { H += nu[k] * SPX[k].H; S += nu[k] * SPX[k].S; Cp += nu[k] * SPX[k].Cp; } return { H, S, Cp }; };
+  const Kof = (nu, TK, cp = true) => Math.exp(-rxnG(nu, TK, cp) / (RG * TK));
+  const phaseOf = (k) => SPX[k].phase;
+
+  const RX = {
+    tcs: { name: "TCS 증착: SiHCl₃ + H₂ → Si + 3HCl", nu: { "SiHCl3(g)": -1, "H2(g)": -1, "Si(s)": 1, "HCl(g)": 3 } },
+    nh3: { name: "암모니아 합성: N₂ + 3H₂ → 2NH₃", nu: { "N2(g)": -1, "H2(g)": -3, "NH3(g)": 2 } },
+    n2o4: { name: "N₂O₄ → 2NO₂", nu: { "N2O4(g)": -1, "NO2(g)": 2 } },
+    wgs: { name: "수성 가스 전환: CO + H₂O → CO₂ + H₂", nu: { "CO(g)": -1, "H2O(g)": -1, "CO2(g)": 1, "H2(g)": 1 } },
+    sih4: { name: "실레인 분해: SiH₄ → Si + 2H₂", nu: { "SiH4(g)": -1, "Si(s)": 1, "H2(g)": 2 } },
+    wo3: { name: "WO₃ + 3H₂ → W + 3H₂O", nu: { "WO3(s)": -1, "H2(g)": -3, "W(s)": 1, "H2O(g)": 3 } },
+    dcs: { name: "DCS 증착: SiH₂Cl₂ → Si + 2HCl", nu: { "SiH2Cl2(g)": -1, "Si(s)": 1, "HCl(g)": 2 } },
+    sicl4: { name: "SiCl₄ + 2H₂ → Si + 4HCl", nu: { "SiCl4(g)": -1, "H2(g)": -2, "Si(s)": 1, "HCl(g)": 4 } },
+    sin: { name: "Si₃N₄: 3SiH₂Cl₂ + 4NH₃ → Si₃N₄ + 6HCl + 6H₂", nu: { "SiH2Cl2(g)": -3, "NH3(g)": -4, "Si3N4(s)": 1, "HCl(g)": 6, "H2(g)": 6 } },
+    wf6h: { name: "WF₆ + 3H₂ → W + 6HF", nu: { "WF6(g)": -1, "H2(g)": -3, "W(s)": 1, "HF(g)": 6 } },
+    wf6si: { name: "2WF₆ + 3Si → 2W + 3SiF₄", nu: { "WF6(g)": -2, "Si(s)": -3, "W(s)": 2, "SiF4(g)": 3 } },
+  };
+  for (const k in RX) { const d = rxnHS(RX[k].nu); RX[k].H = d.H; RX[k].S = d.S; RX[k].Cp = d.Cp; }
+
+  /* ================================================================ 분자 상자 (머리 그림·2절 공용) */
+  /** BC ⇌ B + C 확률 사건 시뮬레이터. 위치는 [0, wFrac] × [0, 1] */
+  function makeBox(seed, N0, startDiss) {
+    const R = Thermo.rng(seed), m = [];
+    const add = (type, x, y) => { const a = 2 * PI * R(), s = 0.12 + 0.08 * R(); m.push({ t: type, x, y, vx: s * Math.cos(a), vy: s * Math.sin(a) }); };
+    for (let i = 0; i < N0; i++) { if (startDiss) { add(1, R(), R()); add(2, R(), R()); } else add(0, R(), R()); }
+    return { R, m, add, wFrac: 1 };
+  }
+  const counts = (B) => { let a = 0, b = 0, c = 0; B.m.forEach((q) => (q.t === 0 ? a++ : q.t === 1 ? b++ : c++)); return [a, b, c]; };
+  const poisson = (R, lam) => { if (lam <= 0) return 0; if (lam > 30) return Math.max(0, Math.round(lam + Math.sqrt(lam) * R.normal())); const L = Math.exp(-lam); let k = 0, p = 1; do { k++; p *= R(); } while (p > L); return k - 1; };
+  function stepBox(B, dt, kf, kb) {
+    const R = B.R, W = B.wFrac;
+    // 움직임: 무작위로 방향이 바뀌는 걸음
+    B.m.forEach((q) => {
+      q.vx += 0.25 * Math.sqrt(dt) * R.normal(); q.vy += 0.25 * Math.sqrt(dt) * R.normal();
+      const s = Math.hypot(q.vx, q.vy), vt = q.t === 0 ? 0.12 : 0.17; q.vx *= vt / Math.max(s, 1e-6); q.vy *= vt / Math.max(s, 1e-6);
+      q.x += q.vx * dt; q.y += q.vy * dt;
+      if (q.x < 0) { q.x = -q.x; q.vx = Math.abs(q.vx); } if (q.x > W) { q.x = 2 * W - q.x; q.vx = -Math.abs(q.vx); if (q.x < 0) q.x = W * R(); }
+      if (q.y < 0) { q.y = -q.y; q.vy = Math.abs(q.vy); } if (q.y > 1) { q.y = 2 - q.y; q.vy = -Math.abs(q.vy); }
+    });
+    const [na, nb, nc] = counts(B), V = W;
+    const nf = Math.min(na, poisson(R, kf * na * dt)), nr = Math.min(nb, nc, poisson(R, (kb * nb * nc * dt) / V));
+    for (let k = 0; k < nf; k++) {
+      const idx = B.m.map((q, i) => (q.t === 0 ? i : -1)).filter((i) => i >= 0); if (!idx.length) break;
+      const q = B.m[idx[Math.floor(R() * idx.length)]], a = 2 * PI * R();
+      q.t = 1; const s = 0.17; q.vx = s * Math.cos(a); q.vy = s * Math.sin(a);
+      B.m.push({ t: 2, x: Math.min(W, Math.max(0, q.x + 0.01 * Math.cos(a + PI))), y: Math.min(1, Math.max(0, q.y + 0.01 * Math.sin(a + PI))), vx: -q.vx, vy: -q.vy });
+    }
+    for (let k = 0; k < nr; k++) {
+      const bs = B.m.filter((q) => q.t === 1), cs = B.m.filter((q) => q.t === 2); if (!bs.length || !cs.length) break;
+      const b = bs[Math.floor(R() * bs.length)]; let best = cs[0], bd = Infinity;
+      cs.forEach((c) => { const d = (c.x - b.x) ** 2 + (c.y - b.y) ** 2; if (d < bd) { bd = d; best = c; } });
+      b.t = 0; b.x = (b.x + best.x) / 2; b.y = (b.y + best.y) / 2; B.m.splice(B.m.indexOf(best), 1);
+    }
+    return nf + nr;
+  }
+  function drawMolecules(ctx, B, rect, r) {
+    const P = pal(), sx = rect.w;
+    B.m.forEach((q) => {
+      const x = rect.x + q.x * sx, y = rect.y + q.y * rect.h;
+      if (q.t === 0) { dot(ctx, x - r * 0.55, y, r * 0.85, P.accent2); dot(ctx, x + r * 0.55, y, r * 0.85, P.accent); }
+      else dot(ctx, x, y, r * 0.8, q.t === 1 ? P.accent2 : P.accent);
+    });
+  }
+
+  /* ================================================================ 머리: 양쪽에서 같은 K로 */
+  {
+    const N0 = 100, KC = 50, KB = 0.005, KF = KC * KB;
+    const st = { A: null, Bx: null, hist: [], t: 0 };
+    const reset = () => { st.A = makeBox(7, N0, false); st.Bx = makeBox(11, N0, true); st.hist = []; st.t = 0; };
+    reset();
+    const qOf = (B) => { const [a, b, c] = counts(B); return a === 0 ? Infinity : (b * c) / (a * B.wFrac); };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), gap = 12;
+      const bw = (w - 3 * gap) / 2, bh = Math.min(narrow ? h * 0.44 : h * 0.56, bw * (narrow ? 1 : 0.62));
+      const L = bx(gap, 50, bw, bh), Rr = bx(2 * gap + bw, 50, bw, bh);
+      self._L = L; self._R = Rr;
+      [[L, st.A, "BC만으로 시작"], [Rr, st.Bx, "B + C만으로 시작"]].forEach(([rc, B, lab], i) => {
+        ctx.fillStyle = SB.color("surface"); ctx.fillRect(rc.x, rc.y, rc.w, rc.h);
+        ctx.strokeStyle = i ? P.accent2 : P.accent; ctx.lineWidth = 2; ctx.strokeRect(rc.x, rc.y, rc.w, rc.h);
+        drawMolecules(ctx, B, bx(rc.x + 4, rc.y + 4, rc.w - 8, rc.h - 8), narrow ? 3 : 3.6);
+        const [a, b] = counts(B);
+        SB.label(ctx, `${lab} · BC ${a}, B ${b}`, rc.x + rc.w / 2, rc.y - 12, { size: narrow ? 11 : 12, bold: true, color: i ? P.accent2 : P.accent });
+      });
+      // log Q 그래프
+      const G = bx(52, L.y + L.h + 34, w - 66, h - (L.y + L.h + 34) - 36);
+      const lk = Math.log10(KC), F = frame(G, 0, 40, lk - 2, lk + 2);
+      axes(ctx, F, { xt: [0, 10, 20, 30, 40], yt: [lk - 2, lk - 1, lk, lk + 1, lk + 2], yf: (v) => (v - lk === 0 ? "K" : (v - lk > 0 ? "+" : "−") + Math.abs(v - lk)), xl: "시간 (s)", yl: "log₁₀ Q (K 기준 자릿수)" });
+      ctx.strokeStyle = P.ok; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(G.x, F.Y(lk)); ctx.lineTo(G.x + G.w, F.Y(lk)); ctx.stroke(); ctx.setLineDash([]);
+      const t0 = Math.max(0, st.t - 40);
+      clip(ctx, G, () => {
+        [0, 1].forEach((j) => line(ctx, st.hist.map(([t, qa, qb]) => { const q = j ? qb : qa; const v = q === 0 ? lk - 3 : !isFinite(q) ? lk + 3 : Math.log10(q); return [F.X(t - t0), F.Y(Math.max(lk - 2.2, Math.min(lk + 2.2, v)))]; }), j ? P.accent2 : P.accent, 2.2));
+      });
+      SB.label(ctx, `K = ${KC}`, G.x + G.w - 30, F.Y(lk) - 11, { size: 11, color: P.ok, bold: true });
+    }, { get aspect() { const e = document.getElementById("cv-hero"); return e && e.parentElement.clientWidth < 560 ? 1.15 : 0.5; }, minHeight: 320, maxHeight: 460 });
+    let acc = 0;
+    SB.loop("cv-hero", (dt) => {
+      st.t += dt;
+      stepBox(st.A, dt, KF, KB); stepBox(st.Bx, dt, KF, KB);
+      acc += dt; if (acc > 0.1) { acc = 0; st.hist.push([st.t, qOf(st.A), qOf(st.Bx)]); while (st.hist.length && st.hist[0][0] < st.t - 40) st.hist.shift(); }
+      if (st.t > 75) reset();
+      cv.redraw();
+    });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => {
+      const inR = (r) => r && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
+      const B = inR(cv._L) ? st.A : inR(cv._R) ? st.Bx : null; if (!B) return;
+      const n = counts(B); if (n[0] + n[1] > 170) return;
+      for (let k = 0; k < 15; k++) B.add(0, B.R(), B.R());
+    } });
+  }
+
+  /* ================================================================ 1절: N₂O₄ 깁스 골짜기 */
+  {
+    const nu = RX.n2o4.nu;
+    const st = { T: 330, lp: 0, mix: true, xi: 0.02, v: 0, drag: false };
+    const gA = () => g0("N2O4(g)", st.T), gB = () => g0("NO2(g)", st.T), RT = () => RG * st.T;
+    const P = () => Math.pow(10, st.lp);
+    const xlx = (n, y) => (n > 0 ? n * Math.log(y) : 0);
+    const Gf = (x) => { const yA = (1 - x) / (1 + x), yB = (2 * x) / (1 + x); return (1 - x) * gA() + 2 * x * gB() + (1 + x) * RT() * Math.log(P()) + (st.mix ? RT() * (xlx(1 - x, yA) + xlx(2 * x, yB)) : 0); };
+    const dGf = (x) => { const d = 2 * gB() - gA() + RT() * Math.log(P()); if (!st.mix) return d; const yA = (1 - x) / (1 + x), yB = (2 * x) / (1 + x); return d + RT() * Math.log((yB * yB) / yA); };
+    const K = () => Kof(nu, st.T);
+    const xeq = () => (st.mix ? Math.sqrt(K() / (K() + 4 * P())) : dGf(0.5) < 0 ? 1 : 0);
+    let range = [0, 1];
+    const yr = () => { const g0v = Gf(1e-6); let lo = Infinity, hi = -Infinity; for (let i = 0; i <= 200; i++) { const g = (Gf(Math.min(1 - 1e-6, Math.max(1e-6, i / 200))) - g0v) / 1000; lo = Math.min(lo, g); hi = Math.max(hi, g); } const pad = Math.max(0.5, (hi - lo) * 0.15); range = [lo - pad, hi + pad]; };
+    yr();
+    const cv = SB.canvas("cv-xi", (ctx, w, h, self) => {
+      const Pp = pal(), B = bx(58, 24, w - 76, h - 24 - 44), F = frame(B, 0, 1, range[0], range[1]), base = Gf(1e-6);
+      self._F = F;
+      const Gr = (x) => (Gf(Math.min(1 - 1e-6, Math.max(1e-6, x))) - base) / 1000;
+      axes(ctx, F, { xt: [0, 0.25, 0.5, 0.75, 1], yt: niceTicks(range[0], range[1], 5), xl: "반응 진행도 ξ", yl: "G(ξ) − G(0) (kJ)" });
+      clip(ctx, B, () => {
+        if (st.mix) { const keep = st.mix; st.mix = false; const b2 = Gf(0); line(ctx, curve(F, (x) => (Gf(x) - b2) / 1000, 0, 1, 50), Pp.faint, 1.6, [6, 4]); st.mix = keep; }
+        line(ctx, curve(F, Gr, 0.0005, 0.9995, 300), Pp.accent2, 3);
+        const xe = xeq();
+        ctx.strokeStyle = Pp.ok; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(F.X(xe), B.y); ctx.lineTo(F.X(xe), B.y + B.h); ctx.stroke(); ctx.setLineDash([]);
+        SB.label(ctx, "평형", SB.clamp(F.X(xe), B.x + 18, B.x + B.w - 18), B.y + 10, { size: 11, color: Pp.ok, bold: true });
+      });
+      const xi = st.xi, px = F.X(xi), py = F.Y(Gr(xi)), sl = dGf(xi) / 1000, dx = 0.07;
+      const x1 = Math.max(0, xi - dx), x2 = Math.min(1, xi + dx);
+      clip(ctx, B, () => line(ctx, [[F.X(x1), F.Y(Gr(xi) + sl * (x1 - xi))], [F.X(x2), F.Y(Gr(xi) + sl * (x2 - xi))]], Pp.accent, 2.4));
+      ctx.fillStyle = Pp.accent; ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(px, py - 11, 11, 0, 2 * PI); ctx.fill(); ctx.stroke();
+      self._ball = [px, py - 11];
+      SB.label(ctx, "N₂O₄", B.x + 22, B.y + B.h - 12, { size: 11, bold: true, color: Pp.dim });
+      SB.label(ctx, "2NO₂", B.x + B.w - 22, B.y + B.h - 12, { size: 11, bold: true, color: Pp.dim });
+      SB.stat("xi-xi", xi.toFixed(3));
+      SB.stat("xi-slope", `${sg(sl, 2)} kJ/mol ${Math.abs(sl) < 0.05 ? "(평형)" : sl < 0 ? "→" : "←"}`);
+      SB.stat("xi-k", K() >= 100 || K() < 0.01 ? sci(K()) : K().toFixed(3));
+      SB.stat("xi-eq", xeq().toFixed(3));
+    }, { aspect: 0.5, minHeight: 280, maxHeight: 400 });
+    SB.range("xi-t", (v) => v + " K", (v) => { st.T = v; yr(); cv.redraw(); });
+    SB.range("xi-p", (v) => sci(Math.pow(10, v)) + " bar", (v) => { st.lp = v; yr(); cv.redraw(); });
+    $("xi-mix").addEventListener("change", (e) => { st.mix = !e.target.checked; yr(); cv.redraw(); });
+    SB.seg("xi-start", (v) => { st.xi = Number(v); st.v = 0; cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._ball ? [{ id: "b", x: cv._ball[0], y: cv._ball[1], r: 14 }] : []), down: () => { st.drag = true; }, up: () => { st.drag = false; }, move: (id, x) => { if (!cv._F) return; st.xi = SB.clamp(cv._F.ix(x), 0.001, 0.999); st.v = 0; } });
+    SB.loop("cv-xi", (dt) => {
+      if (st.drag) return;
+      const span = (range[1] - range[0]) * 1000, n = 6, hh = dt / n;
+      for (let k = 0; k < n; k++) { const a = (-5 * dGf(SB.clamp(st.xi, 1e-4, 1 - 1e-4))) / span - 2.4 * st.v; st.v += a * hh; st.xi += st.v * hh; if (st.xi < 5e-4) { st.xi = 5e-4; st.v = 0; } if (st.xi > 1 - 5e-4) { st.xi = 1 - 5e-4; st.v = 0; } }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절 tangle: ΔG° → K */
+  SB.tangle("tg-k", (v) => { const rt = (RG * v.T) / 1000, K = Math.exp(-v.g / rt); return { rt: rt.toFixed(2) + " kJ/mol", K: sci(K), x: (K / (1 + K)).toFixed(4) }; });
+
+  /* ================================================================ 2절: 분자 상자와 피스톤 */
+  {
+    const N0 = 120, KB = 0.004, T0b = 400, DH = 40e3, KC0 = 60;
+    const st = { T: 400, start: "A", box: null, q: [], qavg: NaN, t: 0, drag: false };
+    const Kc = () => KC0 * Math.exp((-DH / RG) * (1 / st.T - 1 / T0b));
+    const reset = () => { st.box = makeBox(21, N0, st.start !== "A"); st.q = []; st.qavg = NaN; st.t = 0; };
+    reset();
+    const alphaTh = () => { const kv = Kc() * st.box.wFrac; return (-kv + Math.sqrt(kv * kv + 4 * N0 * kv)) / (2 * N0); };
+    const cv = SB.canvas("cv-box", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w);
+      const outer = narrow ? bx(12, 28, w - 24, h * 0.5 - 30) : bx(12, 28, w * 0.55 - 18, h - 40);
+      const Gb = narrow ? bx(56, outer.y + outer.h + 34, w - 70, h - (outer.y + outer.h + 34) - 38) : bx(outer.x + outer.w + 58, 50, w - (outer.x + outer.w + 58) - 14, h - 50 - 44);
+      self._outer = outer;
+      const B = st.box, wallX = outer.x + outer.w * B.wFrac;
+      ctx.fillStyle = SB.color("surface"); ctx.fillRect(outer.x, outer.y, outer.w * B.wFrac, outer.h);
+      withA(ctx, 0.35, () => { ctx.strokeStyle = P.faint; ctx.setLineDash([4, 4]); ctx.strokeRect(outer.x, outer.y, outer.w, outer.h); ctx.setLineDash([]); });
+      ctx.strokeStyle = P.border; ctx.lineWidth = 2; ctx.strokeRect(outer.x, outer.y, outer.w * B.wFrac, outer.h);
+      drawMolecules(ctx, B, bx(outer.x + 4, outer.y + 4, outer.w - 8, outer.h - 8), narrow ? 3.2 : 3.8);
+      ctx.fillStyle = P.text; ctx.fillRect(wallX - 3, outer.y - 4, 6, outer.h + 8);
+      handle(ctx, wallX, outer.y + outer.h / 2, P.accent, 10);
+      self._wall = [wallX, outer.y + outer.h / 2];
+      SB.label(ctx, `V = ${B.wFrac.toFixed(2)}`, SB.clamp(wallX - 34, outer.x + 34, outer.x + outer.w - 34), outer.y - 13, { size: 12, bold: true });
+      // 그래프
+      const lk = Math.log10(Kc()), F = frame(Gb, 0, 40, 0, 4);
+      axes(ctx, F, { xt: [0, 10, 20, 30, 40], yt: [0, 1, 2, 3, 4], xl: "시간 (s)", yl: "log₁₀ Q_c" });
+      clip(ctx, Gb, () => {
+        ctx.strokeStyle = P.ok; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(Gb.x, F.Y(lk)); ctx.lineTo(Gb.x + Gb.w, F.Y(lk)); ctx.stroke(); ctx.setLineDash([]);
+        const t0 = Math.max(0, st.t - 40);
+        line(ctx, st.q.map(([t, q]) => [F.X(t - t0), F.Y(q === 0 ? -1 : !isFinite(q) ? 5 : Math.log10(q))]), P.accent, 1.8);
+        if (isFinite(st.qavg)) line(ctx, [[Gb.x, F.Y(Math.log10(st.qavg))], [Gb.x + Gb.w, F.Y(Math.log10(st.qavg))]], P.accent2, 1.6, [2, 3]);
+      });
+      SB.label(ctx, "K_c", Gb.x + Gb.w - 16, SB.clamp(F.Y(lk) - 11, Gb.y + 8, Gb.y + Gb.h - 8), { size: 11, color: P.ok, bold: true });
+      const [a, b, c] = counts(B), q = a ? (b * c) / (a * B.wFrac) : Infinity;
+      SB.stat("box-n", `${a} · ${b} · ${c}`);
+      SB.stat("box-q", `${isFinite(q) ? q.toFixed(0) : "∞"} / ${isFinite(st.qavg) ? st.qavg.toFixed(0) : "—"}`);
+      SB.stat("box-k", Kc().toFixed(0));
+      SB.stat("box-a", `${(b / N0).toFixed(2)} / ${alphaTh().toFixed(2)}`);
+    }, { get aspect() { const e = document.getElementById("cv-box"); return e && e.parentElement.clientWidth < 560 ? 1.2 : 0.5; }, minHeight: 300, maxHeight: 460 });
+    let acc = 0;
+    const loop = SB.loop("cv-box", (dt) => {
+      st.t += dt;
+      stepBox(st.box, dt, Kc() * KB, KB);
+      acc += dt;
+      if (acc > 0.1) {
+        acc = 0; const [a, b, c] = counts(st.box), q = a ? (b * c) / (a * st.box.wFrac) : Infinity;
+        st.q.push([st.t, q]); while (st.q.length && st.q[0][0] < st.t - 40) st.q.shift();
+        if (isFinite(q) && q > 0) st.qavg = isFinite(st.qavg) ? st.qavg * Math.exp(-0.01) + q * (1 - Math.exp(-0.01)) : q;
+      }
+      cv.redraw();
+    });
+    SB.play("box-play", loop);
+    SB.range("box-t", (v) => v + " K", (v) => { st.T = v; cv.redraw(); });
+    SB.seg("box-start", (v) => { st.start = v; reset(); cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._wall ? [{ id: "w", x: cv._wall[0], y: cv._wall[1], r: 16 }] : []), move: (id, x) => {
+      const o = cv._outer; if (!o) return; const f = SB.clamp((x - o.x) / o.w, 0.3, 1);
+      st.box.wFrac = f; st.box.m.forEach((q) => { if (q.x > f) q.x = f * (0.85 + 0.15 * st.box.R()); });
+      st.qavg = NaN;
+    } });
+  }
+
+  /* ================================================================ 2절 미니: 해리도 대 압력 */
+  {
+    let cv = null;
+    const getT = SB.range("al-t", (v) => v + " K", () => cv && cv.redraw());
+    const getP = SB.range("al-p", (v) => sci(Math.pow(10, v)) + " bar", () => cv && cv.redraw());
+    const al = (K, P) => Math.sqrt(K / (K + 4 * P));
+    cv = SB.canvas("cv-alpha", (ctx, w, h) => {
+      const P = pal(), T = getT(), lp = getP(), K = Kof(RX.n2o4.nu, T), B = bx(52, 22, w - 68, h - 22 - 42), F = frame(B, -2, 2, 0, 1);
+      axes(ctx, F, { xt: [-2, -1, 0, 1, 2], xf: (v) => (v === 0 ? "1" : "10" + (v < 0 ? "⁻" : "") + SUP[String(Math.abs(v))]), yt: [0, 0.25, 0.5, 0.75, 1], xl: "전체 압력 P (bar, 로그)", yl: "해리도 α" });
+      clip(ctx, B, () => {
+        [[T - 40, 0.35], [T + 40, 0.35]].forEach(([t, a]) => withA(ctx, a, () => line(ctx, curve(F, (x) => al(Kof(RX.n2o4.nu, t), Math.pow(10, x)), -2, 2, 120), P.faint, 1.5, [4, 4])));
+        line(ctx, curve(F, (x) => al(K, Math.pow(10, x)), -2, 2, 160), P.accent, 3);
+      });
+      const a = al(K, Math.pow(10, lp));
+      dot(ctx, F.X(lp), F.Y(a), 6.5, P.accent2);
+      SB.label(ctx, `T ± 40 K`, B.x + B.w - 40, B.y + 10, { size: 10, color: P.dim });
+      $("al-r").textContent = `K = ${sci(K)} · α = ${a.toFixed(3)} · K_x = ${sci(K / Math.pow(10, lp))}`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ================================================================ 2절 tangle: K, K_P, K_c, K_x */
+  SB.tangle("tg-kc", (v) => {
+    const K = Math.pow(10, v.lk), kc = K * Math.pow(RL * v.T, -v.dn), kx = K * Math.pow(100, -v.dn);
+    const u = v.dn === 0 ? "" : ` bar${v.dn === 1 ? "" : String(v.dn).split("").map((c) => SUP[c]).join("")}`;
+    const uc = v.dn === 0 ? "" : ` (mol/L)${v.dn === 1 ? "" : String(v.dn).split("").map((c) => SUP[c]).join("")}`;
+    return { kp: sci(K) + u, kc: sci(kc) + uc, kx: sci(kx) };
+  });
+
+  /* ================================================================ 2절 드릴 */
+  SB.drill("drill-k", () => {
+    if (Math.random() < 0.5) {
+      const g = Math.round((Math.random() * 120 - 60) * 10) / 10, T = 300 + 50 * Math.floor(Math.random() * 25);
+      const lk = -g * 1000 / (RG * T * LN10);
+      return { q: `<p>\\(T = ${T}\\) K에서 \\(\\Delta_\\mathrm rG^\\circ = ${g.toFixed(1)}\\) kJ/mol인 반응의 \\(\\log_{10}K\\)는?</p>`, answer: lk, label: "log₁₀ K =", tol: 0.02,
+        sol: `\\(\\log_{10}K = -\\Delta_\\mathrm rG^\\circ/(RT\\ln10) = -${(g * 1000).toFixed(0)}/(8.314\\times${T}\\times2.3026) = ${lk.toFixed(3)}\\)` };
+    }
+    const dn = pick([-2, -1, 1, 2]), T = 400 + 100 * Math.floor(Math.random() * 11), K = Number((Math.pow(10, Math.random() * 4 - 2)).toPrecision(3));
+    const kc = K * Math.pow(RL * T, -dn);
+    return { q: `<p>기체 반응(\\(\\Delta n = ${dn}\\))의 무차원 평형 상수가 \\(T = ${T}\\) K에서 \\(K = ${sciTex(K)}\\)이다. \\(K_c\\)(\\(c^\\circ = 1\\) mol/L 기준의 수치)는?</p>`, answer: kc, label: "K_c =", tol: "2%",
+      sol: `\\(K_c = K(c^\\circ RT/P^\\circ)^{-\\Delta n} = ${sciTex(K)}\\times(0.08314\\times${T})^{${-dn}} = ${sciTex(kc, 3)}\\)` };
+  });
+
+  /* ================================================================ 3절: 반트호프 그림 */
+  {
+    const IDS = ["tcs", "nh3", "n2o4", "wgs", "sih4", "wo3", "dcs"];
+    const sel = $("vh-rx"); sel.innerHTML = IDS.map((k) => `<option value="${k}">${RX[k].name}</option>`).join("");
+    const st = { rx: "tcs", u1: 1.0, u2: 0.75, flat: true, tan: false };
+    const lnK = (u, cp = true) => Math.log(Kof(RX[st.rx].nu, 1000 / u, cp));
+    const U0 = 0.5, U1 = 3.4;
+    const yr = () => { let lo = Infinity, hi = -Infinity; for (let i = 0; i <= 80; i++) { const u = U0 + ((U1 - U0) * i) / 80; [true, false].forEach((cp) => { const v = lnK(u, cp); lo = Math.min(lo, v); hi = Math.max(hi, v); }); } const pad = (hi - lo) * 0.08 + 1; return [lo - pad, hi + pad]; };
+    let range = yr();
+    const cv = SB.canvas("cv-vh", (ctx, w, h, self) => {
+      const P = pal(), B = bx(58, 24, w - 74, h - 24 - 44), F = frame(B, U0, U1, range[0], range[1]);
+      self._F = F;
+      axes(ctx, F, { xt: [0.5, 1, 1.5, 2, 2.5, 3], yt: niceTicks(range[0], range[1], 5), xl: "1000/T (K⁻¹)", yl: "ln K" });
+      clip(ctx, B, () => {
+        if (range[0] < 0 && range[1] > 0) { ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(B.x, F.Y(0)); ctx.lineTo(B.x + B.w, F.Y(0)); ctx.stroke(); }
+        if (st.flat) line(ctx, curve(F, (u) => lnK(u, false), U0, U1, 60), P.accent2, 2, [6, 4]);
+        line(ctx, curve(F, (u) => lnK(u), U0, U1, 200), P.accent, 3);
+        const a = st.u1, b = st.u2, ya = lnK(a), yb = lnK(b);
+        let s;
+        if (st.tan) { const d = 1e-4; s = (lnK(a + d) - lnK(a - d)) / (2 * d); line(ctx, [[F.X(U0), F.Y(ya + s * (U0 - a))], [F.X(U1), F.Y(ya + s * (U1 - a))]], P.text, 1.6, [3, 3]); }
+        else { s = (yb - ya) / (b - a); line(ctx, [[F.X(U0), F.Y(ya + s * (U0 - a))], [F.X(U1), F.Y(ya + s * (U1 - a))]], P.text, 1.6, [3, 3]); }
+        self._s = s;
+      });
+      handle(ctx, F.X(st.u1), F.Y(lnK(st.u1)), P.accent, 9);
+      if (!st.tan) handle(ctx, F.X(st.u2), F.Y(lnK(st.u2)), P.accent2, 9);
+      SB.label(ctx, "T₁", F.X(st.u1) + 16, F.Y(lnK(st.u1)) - 14, { size: 11, bold: true });
+      if (!st.tan) SB.label(ctx, "T₂", F.X(st.u2) + 16, F.Y(lnK(st.u2)) - 14, { size: 11, bold: true });
+      SB.label(ctx, "고온 ←", B.x + 30, B.y + B.h - 12, { size: 11, color: P.dim });
+      SB.label(ctx, "→ 저온", B.x + B.w - 30, B.y + B.h - 12, { size: 11, color: P.dim });
+      const T1 = 1000 / st.u1, T2 = 1000 / st.u2, r = RX[st.rx];
+      SB.stat("vh-t", st.tan ? `${T1.toFixed(0)} K` : `${T1.toFixed(0)} K · ${T2.toFixed(0)} K`);
+      SB.stat("vh-k", st.tan ? sci(Math.exp(lnK(st.u1))) : `${sci(Math.exp(lnK(st.u1)))} · ${sci(Math.exp(lnK(st.u2)))}`);
+      const dH = (-RG * self._s * 1000) / 1000, dHT = r.H + (r.Cp * ((st.tan ? T1 : (T1 + T2) / 2) - T0)) / 1000;
+      SB.stat("vh-h", `${sg(dH, 1)} kJ <small>(298 K: ${sg(r.H, 1)}, ΔC<sub>P</sub> 보정 ${sg(dHT, 1)})</small>`);
+      let ts = "범위 밖";
+      for (let i = 0; i < 400; i++) { const ua = U0 + ((U1 - U0) * i) / 400, ub = U0 + ((U1 - U0) * (i + 1)) / 400; if (lnK(ua) * lnK(ub) <= 0) { const u = Thermo.bisect((x) => lnK(x), ua, ub); ts = `${(1000 / u).toFixed(0)} K`; break; } }
+      SB.stat("vh-ts", ts);
+    }, { aspect: 0.52, minHeight: 280, maxHeight: 420 });
+    sel.addEventListener("change", () => { st.rx = sel.value; range = yr(); cv.redraw(); });
+    $("vh-flat").addEventListener("change", (e) => { st.flat = e.target.checked; cv.redraw(); });
+    $("vh-tan").addEventListener("change", (e) => { st.tan = e.target.checked; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const F = cv._F; if (!F) return []; const hs = [{ id: "1", x: F.X(st.u1), y: F.Y(lnK(st.u1)), r: 14 }]; if (!st.tan) hs.push({ id: "2", x: F.X(st.u2), y: F.Y(lnK(st.u2)), r: 14 }); return hs; },
+      move: (id, x) => { const F = cv._F; if (!F) return; const u = SB.clamp(F.ix(x), U0 + 0.02, U1 - 0.02); if (id === "1") { st.u1 = Math.abs(u - st.u2) < 0.03 && !st.tan ? st.u1 : u; } else if (id === "2") { st.u2 = Math.abs(u - st.u1) < 0.03 ? st.u2 : u; } },
+    });
+  }
+
+  /* ================================================================ 3절 미니: ΔCp 근사 비교 */
+  {
+    const IDS = ["tcs", "nh3", "sih4", "sin", "wgs", "dcs"];
+    const sel = $("cp-rx"); sel.innerHTML = IDS.map((k) => `<option value="${k}">${RX[k].name}</option>`).join("");
+    let cv = null;
+    const getT = SB.range("cp-t", (v) => v + " K", () => cv && cv.redraw());
+    sel.addEventListener("change", () => cv && cv.redraw());
+    cv = SB.canvas("cv-cp", (ctx, w, h) => {
+      const P = pal(), nu = RX[sel.value].nu, T = getT(), lk = (t, cp) => -rxnG(nu, t, cp) / (RG * t * LN10);
+      let lo = Infinity, hi = -Infinity; for (let t = 300; t <= 1800; t += 25) [true, false].forEach((cp) => { const v = lk(t, cp); lo = Math.min(lo, v); hi = Math.max(hi, v); });
+      const pad = (hi - lo) * 0.08 + 0.5, B = bx(52, 22, w - 68, h - 22 - 42), F = frame(B, 300, 1800, lo - pad, hi + pad);
+      axes(ctx, F, { xt: [300, 600, 900, 1200, 1500, 1800], yt: niceTicks(lo - pad, hi + pad, 5), xl: "T (K)", yl: "log₁₀ K" });
+      clip(ctx, B, () => { line(ctx, curve(F, (t) => lk(t, false), 300, 1800, 80), P.accent2, 2, [6, 4]); line(ctx, curve(F, (t) => lk(t, true), 300, 1800, 160), P.accent, 3); });
+      const a = lk(T, true), b = lk(T, false);
+      dot(ctx, F.X(T), F.Y(a), 5.5, P.accent); dot(ctx, F.X(T), F.Y(b), 5.5, P.accent2);
+      $("cp-r").textContent = `ΔC_P = ${sg(RX[sel.value].Cp, 1)} J/K · K(ΔC_P 일정)/K(엘링엄) = ${sci(Math.pow(10, a - b))}`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ================================================================ 3절 tangle + 드릴 */
+  SB.tangle("tg-vh", (v) => { const d = (-v.h * 1000 / RG) * (1 / v.t2 - 1 / v.t1); return { r: sci(Math.exp(d)), d: sg(d, 2) }; });
+  SB.drill("drill-vh", () => {
+    const H = pick([-180, -120, -92, -60, -40, 35, 57, 80, 120, 220]), T1 = 300 + 50 * Math.floor(Math.random() * 13), T2 = T1 + 50 * (1 + Math.floor(Math.random() * 10));
+    const K1 = Number(Math.pow(10, Math.random() * 6 - 3).toPrecision(3)), K2 = K1 * Math.exp((-H * 1000 / RG) * (1 / T2 - 1 / T1));
+    return { q: `<p>\\(\\Delta_\\mathrm rH^\\circ = ${H}\\) kJ/mol(일정)인 반응의 평형 상수가 ${T1} K에서 \\(${sciTex(K1)}\\)이다. ${T2} K의 \\(K\\)는?</p>`, answer: K2, label: "K₂ =", tol: "2%",
+      sol: `\\(\\ln(K_2/K_1) = -\\frac{${H * 1000}}{8.314}\\Big(\\frac1{${T2}}-\\frac1{${T1}}\\Big) = ${Math.log(K2 / K1).toFixed(3)}\\), \\(K_2 = ${sciTex(K2, 3)}\\)` };
+  });
+
+  /* ================================================================ 4절: 르샤틀리에 피스톤 */
+  {
+    const CFG = {
+      nh3: { nu: RX.nh3.nu, init: { "N2(g)": 1, "H2(g)": 3, "NH3(g)": 0 }, V0: 2.33, V: [0.4, 60], T: [500, 900, 700], add: { "N2(g)": 0.5, "H2(g)": 1.5 }, prod: "NH3(g)", ar: 2, lab: { "N2(g)": "N₂", "H2(g)": "H₂", "NH3(g)": "NH₃" } },
+      no2: { nu: RX.n2o4.nu, init: { "N2O4(g)": 1, "NO2(g)": 0 }, V0: 27.4, V: [2, 400], T: [280, 420, 330], add: { "N2O4(g)": 0.5 }, prod: "NO2(g)", ar: 1, lab: { "N2O4(g)": "N₂O₄", "NO2(g)": "NO₂" } },
+      wgs: { nu: RX.wgs.nu, init: { "CO(g)": 1, "H2O(g)": 1, "CO2(g)": 0, "H2(g)": 0 }, V0: 166, V: [10, 2000], T: [700, 1300, 1000], add: { "CO(g)": 0.5, "H2O(g)": 0.5 }, prod: "CO2(g)", ar: 2, lab: { "CO(g)": "CO", "H2O(g)": "H₂O", "CO2(g)": "CO₂", "H2(g)": "H₂" } },
+    };
+    const st = { rx: "nh3", n: {}, ar: 0, V: 2.33, T: 700, hist: [], t: 0, msg: "—", drag: false };
+    const c = () => CFG[st.rx];
+    const K = () => Kof(c().nu, st.T);
+    const ntot = () => Object.values(st.n).reduce((a, b) => a + b, 0) + st.ar;
+    const Ptot = () => (ntot() * RL * st.T) / st.V;
+    const lnQ = (n) => { let s = 0; for (const k in c().nu) s += c().nu[k] * Math.log(Math.max(n[k], 1e-300) * RL * st.T / st.V); return s; };
+    const xiEq = () => { const nu = c().nu; let lo = -Infinity, hi = Infinity; for (const k in nu) { if (nu[k] < 0) hi = Math.min(hi, st.n[k] / -nu[k]); else lo = Math.max(lo, -st.n[k] / nu[k]); } const lk = Math.log(K()), f = (x) => { const m = {}; for (const k in nu) m[k] = st.n[k] + nu[k] * x; return lnQ(m) - lk; }; const e = 1e-12 * (hi - lo); if (f(hi - e) < 0) return hi - e; if (f(lo + e) > 0) return lo + e; return Thermo.bisect(f, lo + e, hi - e, 1e-13); };
+    const equilibrate = () => { const x = xiEq(); for (const k in c().nu) st.n[k] += c().nu[k] * x; };
+    const reset = () => { st.n = Object.assign({}, c().init); st.ar = 0; st.V = c().V0; st.T = c().T[2]; equilibrate(); st.hist = []; st.msg = "—"; };
+    reset();
+    const lqk = () => lnQ(st.n) - Math.log(K());
+    const note = (what) => { const d = lqk(); st.msg = `${what}: ${Math.abs(d) < 0.02 ? "Q = K, 이동 없음" : d < 0 ? "Q < K → 정반응(→)" : "Q > K → 역반응(←)"}`; };
+    const tSlider = SB.range("lec-t", (v) => v + " K", (v) => { st.T = v; note("온도 변경"); cv.redraw(); });
+    const syncT = () => { const el = tSlider.el; el.min = c().T[0]; el.max = c().T[1]; tSlider.set(st.T, true); };
+    syncT();
+    const lv = (V) => Math.log(V);
+    const cv = SB.canvas("cv-lec", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), cfg = c();
+      const cyl = narrow ? bx(w * 0.3, 30, w * 0.4, h * 0.42) : bx(20, 30, w * 0.3, h - 50);
+      const G1 = narrow ? bx(56, cyl.y + cyl.h + 30, w - 70, (h - cyl.y - cyl.h - 30) * 0.5 - 30) : bx(cyl.x + cyl.w + 64, 44, w - (cyl.x + cyl.w + 64) - 14, (h - 44) * 0.5 - 40);
+      const G2 = bx(G1.x, G1.y + G1.h + 62, G1.w, (narrow ? h - (G1.y + G1.h + 62) - 14 : h - (G1.y + G1.h + 62) - 16));
+      // 실린더: 피스톤 높이 ∝ log V
+      const f = (lv(st.V) - lv(cfg.V[0])) / (lv(cfg.V[1]) - lv(cfg.V[0])), py = cyl.y + cyl.h - 14 - f * (cyl.h - 24);
+      self._cyl = cyl;
+      ctx.strokeStyle = P.border; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cyl.x, cyl.y); ctx.lineTo(cyl.x, cyl.y + cyl.h); ctx.lineTo(cyl.x + cyl.w, cyl.y + cyl.h); ctx.lineTo(cyl.x + cyl.w, cyl.y); ctx.stroke();
+      ctx.fillStyle = SB.color("surface"); ctx.fillRect(cyl.x + 2, py, cyl.w - 4, cyl.y + cyl.h - py - 2);
+      ctx.fillStyle = P.dim; ctx.fillRect(cyl.x + 2, py - 8, cyl.w - 4, 8); ctx.fillRect(cyl.x + cyl.w / 2 - 3, cyl.y - 18, 6, py - 8 - (cyl.y - 18));
+      handle(ctx, cyl.x + cyl.w / 2, py - 4, P.accent, 10);
+      self._pist = [cyl.x + cyl.w / 2, py - 4];
+      // 분자 점
+      const keys = Object.keys(cfg.nu), cols = [P.accent2, P.warn, P.accent, P.ok];
+      const R = Thermo.rng(5); let idx = 0;
+      const gas = bx(cyl.x + 6, py + 4, cyl.w - 12, cyl.y + cyl.h - py - 10);
+      [...keys, "Ar"].forEach((k, j) => { const n = k === "Ar" ? st.ar : st.n[k], nd = Math.min(200, Math.round(n / 0.05)); for (let i = 0; i < nd; i++) { const x = gas.x + R() * gas.w, y = gas.y + R() * gas.h; idx++; dot(ctx, x, y, narrow ? 2.2 : 2.6, k === "Ar" ? P.faint : cols[j % 4]); } });
+      SB.label(ctx, `${Ptot() >= 100 ? Ptot().toFixed(0) : Ptot().toPrecision(3)} bar`, cyl.x + cyl.w / 2, cyl.y + cyl.h + 12, { size: 12, bold: true });
+      // ln(Q/K) 기록
+      const F1 = frame(G1, 0, 20, -2, 2), t0 = Math.max(0, st.t - 20);
+      axes(ctx, F1, { xt: [0, 5, 10, 15, 20], yt: [-2, -1, 0, 1, 2], xl: "시간 (s)", yl: "ln(Q/K)" });
+      clip(ctx, G1, () => { ctx.fillStyle = SB.color("ok-soft"); ctx.fillRect(G1.x, F1.Y(0.05), G1.w, F1.Y(-0.05) - F1.Y(0.05)); line(ctx, st.hist.map(([t, d]) => [F1.X(t - t0), F1.Y(SB.clamp(d, -2.4, 2.4))]), P.accent, 2.2); });
+      // 몰분율 막대
+      const nt = ntot(), items = [...keys.map((k, j) => [cfg.lab[k], st.n[k] / nt, cols[j % 4]]), ["Ar", st.ar / nt, P.faint]];
+      const F2 = frame(G2, 0, 1, 0, items.length);
+      ctx.font = font(12); ctx.textBaseline = "middle";
+      items.forEach(([lab, y, col], i) => { const yy = G2.y + (i + 0.5) * (G2.h / items.length), hh = Math.min(16, G2.h / items.length - 6); ctx.fillStyle = col; ctx.fillRect(G2.x, yy - hh / 2, Math.max(1, y * G2.w), hh); ctx.fillStyle = P.text; ctx.textAlign = "right"; ctx.fillText(lab, G2.x - 6, yy); ctx.textAlign = "left"; SB.label(ctx, (100 * y).toFixed(1) + " %", G2.x + Math.min(G2.w - 30, y * G2.w + 30), yy, { size: 11 }); });
+      SB.label(ctx, "몰분율", G2.x + G2.w - 26, G2.y - 10, { size: 11, color: P.dim });
+      SB.stat("lec-pv", `${Ptot().toPrecision(3)} bar · ${st.V.toPrecision(3)} L`);
+      SB.stat("lec-q", sg(lqk(), 3));
+      SB.stat("lec-y", `${cfg.lab[cfg.prod]} ${(100 * st.n[cfg.prod] / nt).toFixed(2)} %`);
+      SB.stat("lec-msg", st.msg);
+    }, { get aspect() { const e = document.getElementById("cv-lec"); return e && e.parentElement.clientWidth < 560 ? 1.3 : 0.56; }, minHeight: 330, maxHeight: 480 });
+    let acc = 0;
+    SB.loop("cv-lec", (dt) => {
+      st.t += dt;
+      const x = xiEq(), fr = 1 - Math.exp(-dt / 0.7);
+      for (const k in c().nu) st.n[k] += c().nu[k] * x * fr;
+      acc += dt; if (acc > 0.05) { acc = 0; st.hist.push([st.t, lqk()]); while (st.hist.length && st.hist[0][0] < st.t - 20) st.hist.shift(); }
+      cv.redraw();
+    });
+    SB.drag(cv, { handles: () => (cv._pist ? [{ id: "p", x: cv._pist[0], y: cv._pist[1], r: 16 }] : []), up: () => note("부피 변경"), move: (id, x, y) => {
+      const cyl = cv._cyl, cfg = c(); if (!cyl) return; const f = SB.clamp((cyl.y + cyl.h - 14 - (y + 4)) / (cyl.h - 24), 0, 1);
+      st.V = Math.exp(lv(cfg.V[0]) + f * (lv(cfg.V[1]) - lv(cfg.V[0])));
+    } });
+    SB.seg("lec-rx", (v) => { st.rx = v; reset(); syncT(); cv.redraw(); });
+    $("lec-addr").addEventListener("click", () => { for (const k in c().add) st.n[k] += c().add[k]; note("반응물 주입"); });
+    $("lec-rmp").addEventListener("click", () => { for (const k in c().nu) if (c().nu[k] > 0) st.n[k] *= 0.3; note("생성물 70 % 제거"); });
+    $("lec-arv").addEventListener("click", () => { st.ar += c().ar; note("Ar 주입(V 일정)"); });
+    $("lec-arp").addEventListener("click", () => { const P0 = Ptot(); st.ar += c().ar; st.V = Math.min(c().V[1], (ntot() * RL * st.T) / P0); note("Ar 주입(P 일정)"); });
+    $("lec-reset").addEventListener("click", () => { reset(); syncT(); cv.redraw(); });
+  }
+
+  /* ================================================================ 4절 미니: 일정 압력에서 비활성 기체 희석 */
+  {
+    let cv = null;
+    const seg = SB.seg("in-rx", () => cv && cv.redraw());
+    const getF = SB.range("in-f", (v) => (100 * v).toFixed(0) + " %", () => cv && cv.redraw());
+    const solve = (rx, f) => {
+      if (rx === "nh3") { const n0 = { "N2(g)": 1, "H2(g)": 3 }; return Thermo.equilibrium({ nu: RX.nh3.nu, K: Kof(RX.nh3.nu, 700), n0, P: 100, inert: (4 * f) / (1 - f) }).xi; }
+      return Thermo.equilibrium({ nu: RX.n2o4.nu, K: Kof(RX.n2o4.nu, 330), n0: { "N2O4(g)": 1 }, P: 1, inert: f / (1 - f) }).xi;
+    };
+    cv = SB.canvas("cv-inert", (ctx, w, h) => {
+      const P = pal(), rx = seg(), f = getF(), pts = [];
+      for (let i = 0; i <= 60; i++) { const ff = (0.95 * i) / 60; pts.push([ff, solve(rx, ff)]); }
+      const B = bx(52, 22, w - 68, h - 22 - 42), F = frame(B, 0, 0.95, 0, 1);
+      axes(ctx, F, { xt: [0, 0.2, 0.4, 0.6, 0.8], xf: (v) => (100 * v).toFixed(0) + "%", yt: [0, 0.25, 0.5, 0.75, 1], xl: "처음 기체 중 Ar 비율", yl: rx === "nh3" ? "진행도 ξ (N₂ 1 mol당)" : "해리도 α" });
+      clip(ctx, B, () => line(ctx, pts.map(([a, b]) => [F.X(a), F.Y(b)]), rx === "nh3" ? P.accent2 : P.accent, 3));
+      const x = solve(rx, f); dot(ctx, F.X(f), F.Y(x), 6.5, P.text);
+      $("in-r").textContent = rx === "nh3" ? `700 K, 100 bar: ξ = ${x.toFixed(3)} (희석 없을 때 ${solve(rx, 0).toFixed(3)})` : `330 K, 1 bar: α = ${x.toFixed(3)} (희석 없을 때 ${solve(rx, 0).toFixed(3)})`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ================================================================ 5절: Si–Cl–H 원소 퍼텐셜 계산기 */
+  const GS = [["H2(g)", 0, 2, 0, "H₂"], ["HCl(g)", 0, 1, 1, "HCl"], ["SiH4(g)", 1, 4, 0, "SiH₄"], ["SiH2Cl2(g)", 1, 2, 2, "SiH₂Cl₂"], ["SiHCl3(g)", 1, 1, 3, "SiHCl₃"], ["SiCl4(g)", 1, 0, 4, "SiCl₄"], ["SiCl2(g)", 1, 0, 2, "SiCl₂"]];
+  /** Si(s)가 있는 Si–Cl–H 평형. feed {Si, H, Cl}(기체로 넣은 원자 몰수) → {y, yield, conv, ng} */
+  function siclSolve(TK, P, feed, withSiCl2) {
+    const sp = GS.filter((s) => withSiCl2 || s[0] !== "SiCl2(g)");
+    const lSi = g0("Si(s)", TK) / (RG * TK), gi = sp.map((s) => g0(s[0], TK) / (RG * TK)), lnP = Math.log(P);
+    const ly = (lH, lC) => sp.map((s, i) => -gi[i] + s[1] * lSi + s[2] * lH + s[3] * lC - lnP);
+    const lse = (a, wt) => { let m = -Infinity; a.forEach((v, i) => { if ((!wt || wt[i] > 0) && v > m) m = v; }); let t = 0; a.forEach((v, i) => { if (!wt || wt[i] > 0) t += (wt ? wt[i] : 1) * Math.exp(v - m); }); return m + Math.log(t); };
+    const wH = sp.map((s) => s[2]), wC = sp.map((s) => s[3]);
+    const lHof = (lC) => Thermo.bisect((lH) => lse(ly(lH, lC)), -2000, 2000, 1e-12);
+    const ratio = (lC) => { const lH = lHof(lC); if (!isFinite(lH)) return -1e9; const l = ly(lH, lC); return lse(l, wH) - lse(l, wC) - Math.log(feed.H / feed.Cl); };
+    const lC = Thermo.bisect(ratio, -150, 150, 1e-11), lH = lHof(lC), yy = ly(lH, lC).map(Math.exp);
+    let c = 0, si = 0; sp.forEach((s, i) => { c += s[3] * yy[i]; si += s[1] * yy[i]; });
+    const ng = feed.Cl / c, y = {}; sp.forEach((s, i) => (y[s[0]] = yy[i]));
+    return { y, ng, yield: (feed.Si - ng * si) / feed.Si, conv: 1 - (ng * (y["SiHCl3(g)"] || 0)) / feed.Si };
+  }
+  {
+    const st = { T: 1373, r: 10, lp: 0, sicl2: true, curves: null, game: null, wins: 0 };
+    const TA = 900, TB = 1700;
+    const feed = () => ({ Si: 1, H: 1 + 2 * st.r, Cl: 3 });
+    const recompute = () => { const out = []; for (let T = TA; T <= TB + 1e-9; T += 10) out.push([T, siclSolve(T, Math.pow(10, st.lp), feed(), st.sicl2)]); st.curves = out; };
+    recompute();
+    const cv = SB.canvas("cv-sicl", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), cols = { "H2(g)": P.faint, "HCl(g)": P.accent2, "SiH4(g)": P.dim, "SiH2Cl2(g)": P.ok, "SiHCl3(g)": P.accent, "SiCl4(g)": P.warn, "SiCl2(g)": P.bad };
+      const G1 = bx(58, narrow ? 72 : 52, w - 74, (h - 52) * 0.56 - 40), G2 = bx(58, G1.y + G1.h + 34, w - 74, h - (G1.y + G1.h + 34) - 40);
+      const F1 = frame(G1, TA, TB, -5, 0);
+      const ys = st.curves.map(([, s]) => 100 * s.yield), ymin = Math.min(0, ...ys) - 5, ymax = Math.max(...ys) + 8;
+      const F2 = frame(G2, TA, TB, ymin, ymax);
+      self._F = F1; self._G1 = G1;
+      axes(ctx, F1, { xt: [900, 1100, 1300, 1500, 1700], yt: [-5, -4, -3, -2, -1, 0], yf: (v) => (v === 0 ? "1" : "10" + "⁻" + SUP[String(-v)]) });
+      axes(ctx, F2, { xt: [900, 1100, 1300, 1500, 1700], yt: niceTicks(ymin, ymax, 4), xl: "T (K)", yl: "Si 증착 수율 (%)" });
+      clip(ctx, G1, () => GS.forEach(([k]) => { if (!st.sicl2 && k === "SiCl2(g)") return; line(ctx, st.curves.map(([T, s]) => [F1.X(T), F1.Y(Math.log10(Math.max(s.y[k], 1e-9)))]), cols[k], k === "H2(g)" ? 1.6 : 2.4, k === "H2(g)" ? [5, 4] : null); }));
+      clip(ctx, G2, () => {
+        if (ymin < 0) { ctx.fillStyle = SB.color("bad-soft"); ctx.fillRect(G2.x, F2.Y(0), G2.w, F2.Y(ymin) - F2.Y(0)); }
+        if (st.game) { ctx.fillStyle = SB.color("ok-soft"); ctx.fillRect(F2.X(1100), F2.Y(st.game + 1), F2.X(1500) - F2.X(1100), F2.Y(st.game - 1) - F2.Y(st.game + 1)); }
+        line(ctx, st.curves.map(([T, s]) => [F2.X(T), F2.Y(100 * s.yield)]), P.text, 3);
+      });
+      // 범례
+      ctx.font = font(11); ctx.textBaseline = "middle"; ctx.textAlign = "left";
+      let lx = G1.x + 6, ly = G1.y - (narrow ? 40 : 14);
+      GS.forEach(([k, , , , lab]) => { if (!st.sicl2 && k === "SiCl2(g)") return; const tw = ctx.measureText(lab).width + 22; if (lx + tw > G1.x + G1.w) { lx = G1.x + 6; ly += 14; } ctx.fillStyle = cols[k]; ctx.fillRect(lx, ly - 2, 12, 4); ctx.fillStyle = P.text; ctx.fillText(lab, lx + 15, ly); lx += tw; });
+      // 온도선
+      const s = siclSolve(st.T, Math.pow(10, st.lp), feed(), st.sicl2), x = F1.X(st.T);
+      ctx.strokeStyle = P.text; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, G1.y); ctx.lineTo(x, G2.y + G2.h); ctx.stroke(); ctx.setLineDash([]);
+      dot(ctx, x, F2.Y(100 * s.yield), 6, P.accent);
+      handle(ctx, x, G1.y + G1.h - 12, P.accent, 9);
+      self._hx = [x, G1.y + G1.h - 12];
+      SB.stat("sc-t", `${st.T.toFixed(0)} K (${(st.T - 273.15).toFixed(0)} °C)`);
+      SB.stat("sc-y", `${(100 * s.yield).toFixed(1)} %`);
+      SB.stat("sc-x", `${(100 * s.conv).toFixed(1)} %`);
+      if (st.game) { const ok = Math.abs(100 * s.yield - st.game) <= 1 && st.T >= 1100 && st.T <= 1500; SB.stat("sc-goal", `목표 ${st.game} % · ${ok ? "<b style='color:var(--ok)'>성공!</b>" : "조절 중"} · 성공 ${st.wins}회`); if (ok && !st._won) { st.wins++; st._won = true; SB.stat("sc-goal", `목표 ${st.game} % · <b style='color:var(--ok)'>성공!</b> · 성공 ${st.wins}회`); } }
+      else SB.stat("sc-goal", "‘도전’을 누르세요");
+    }, { get aspect() { const e = document.getElementById("cv-sicl"); return e && e.parentElement.clientWidth < 560 ? 1.25 : 0.62; }, minHeight: 360, maxHeight: 520 });
+    SB.range("sc-r", (v) => v.toFixed(1), (v) => { st.r = v; recompute(); cv.redraw(); });
+    SB.range("sc-p", (v) => sci(Math.pow(10, v)) + " bar", (v) => { st.lp = v; recompute(); cv.redraw(); });
+    $("sc-sicl2").addEventListener("change", (e) => { st.sicl2 = e.target.checked; recompute(); cv.redraw(); });
+    $("sc-game").addEventListener("click", () => { let g; do { g = pick([22, 25, 28, 30, 33, 36]); } while (g === st.game); st.game = g; st._won = false; cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._hx ? [{ id: "t", x: cv._hx[0], y: cv._hx[1], r: 14 }] : []), move: (id, x) => { const F = cv._F; if (!F) return; st.T = Math.round(SB.clamp(F.ix(x), TA, TB) / 5) * 5; } });
+  }
+
+  /* ================================================================ 6절: 엘링엄 도표 */
+  const OX = [
+    { id: "Ag2O", lab: "Ag₂O", nu: { "Ag(s)": -4, "O2(g)": -1, "Ag2O(s)": 2 } },
+    { id: "Cu2O", lab: "Cu₂O", nu: { "Cu(s)": -4, "O2(g)": -1, "Cu2O(s)": 2 } },
+    { id: "NiO", lab: "NiO", nu: { "Ni(s)": -2, "O2(g)": -1, "NiO(s)": 2 } },
+    { id: "WO2", lab: "WO₂", nu: { "W(s)": -1, "O2(g)": -1, "WO2(s)": 1 } },
+    { id: "Fe2O3", lab: "Fe₂O₃", nu: { "Fe(s)": -4 / 3, "O2(g)": -1, "Fe2O3(s)": 2 / 3 } },
+    { id: "GeO2", lab: "GeO₂", nu: { "Ge(s)": -1, "O2(g)": -1, "GeO2(s)": 1 } },
+    { id: "Ta2O5", lab: "Ta₂O₅", nu: { "Ta(s)": -4 / 5, "O2(g)": -1, "Ta2O5(s)": 2 / 5 } },
+    { id: "SiO2", lab: "SiO₂", nu: { "Si(s)": -1, "O2(g)": -1, "SiO2(s)": 1 } },
+    { id: "TiO2", lab: "TiO₂", nu: { "Ti(s)": -1, "O2(g)": -1, "TiO2(s)": 1 } },
+    { id: "Al2O3", lab: "Al₂O₃", nu: { "Al(s)": -4 / 3, "O2(g)": -1, "Al2O3(s)": 2 / 3 } },
+    { id: "ZrO2", lab: "ZrO₂", nu: { "Zr(s)": -1, "O2(g)": -1, "ZrO2(s)": 1 } },
+    { id: "HfO2", lab: "HfO₂", nu: { "Hf(s)": -1, "O2(g)": -1, "HfO2(s)": 1 } },
+    { id: "MgO", lab: "MgO", nu: { "Mg(s)": -2, "O2(g)": -1, "MgO(s)": 2 } },
+    { id: "CaO", lab: "CaO", nu: { "Ca(s)": -2, "O2(g)": -1, "CaO(s)": 2 } },
+  ];
+  const RED = [
+    { id: "H2O", lab: "2H₂ + O₂ → 2H₂O", nu: { "H2(g)": -2, "O2(g)": -1, "H2O(g)": 2 } },
+    { id: "CO2", lab: "2CO + O₂ → 2CO₂", nu: { "CO(g)": -2, "O2(g)": -1, "CO2(g)": 2 } },
+    { id: "CO", lab: "2C + O₂ → 2CO", nu: { "C(s)": -2, "O2(g)": -1, "CO(g)": 2 } },
+  ];
+  [...OX, ...RED].forEach((o) => { const d = rxnHS(o.nu); o.H = d.H; o.S = d.S; });
+  const ellG = (o, TK) => o.H - (TK * o.S) / 1000; // kJ, ΔCp = 0
+  const W_ = RED[0], C_ = RED[1];
+  {
+    const sel = $("ell-ox"); sel.innerHTML = OX.map((o) => `<option value="${o.id}">${o.lab}</option>`).join(""); sel.value = "SiO2";
+    const st = { T: 1273, ox: "SiO2", scale: "o2", red: true };
+    const XA = 0, XB = 2000, YA = -1200, YB = 100;
+    const cv = SB.canvas("cv-ell", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), B = bx(52, 48, w - 52 - (narrow ? 50 : 64), h - 48 - 44), F = frame(B, XA, XB, YA, YB);
+      self._F = F;
+      axes(ctx, F, { xt: [0, 500, 1000, 1500, 2000], yt: [-1200, -1000, -800, -600, -400, -200, 0], xl: "T (K)", yl: "Δ_rG° (kJ / mol O₂)" });
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(B.x, F.Y(0)); ctx.lineTo(B.x + B.w, F.Y(0)); ctx.stroke();
+      const cur = OX.find((o) => o.id === st.ox);
+      clip(ctx, B, () => {
+        if (st.red) RED.forEach((o, i) => { line(ctx, [[F.X(298), F.Y(ellG(o, 298))], [F.X(XB), F.Y(ellG(o, XB))]], P.accent2, 1.8, [6, 4]); });
+        OX.forEach((o) => { const on = o.id === st.ox; withA(ctx, on ? 1 : 0.55, () => line(ctx, [[F.X(298), F.Y(ellG(o, 298))], [F.X(XB), F.Y(ellG(o, XB))]], on ? P.accent : P.dim, on ? 3.2 : 1.5)); });
+        withA(ctx, 0.5, () => line(ctx, [[F.X(0), F.Y(cur.H)], [F.X(298), F.Y(ellG(cur, 298))]], P.accent, 1.4, [2, 3]));
+      });
+      // 선 이름(오른쪽 끝)
+      const used = [];
+      [...OX, ...(st.red ? RED : [])].forEach((o) => {
+        let y = F.Y(ellG(o, 1900)); if (y < B.y + 6 || y > B.y + B.h - 6) return;
+        if (used.some((u) => Math.abs(u - y) < 11)) return; used.push(y);
+        SB.label(ctx, RED.includes(o) ? o.id === "H2O" ? "H₂O" : o.id === "CO2" ? "CO₂" : "CO" : o.lab, F.X(1900), y, { size: 10, color: o.id === st.ox ? P.accent : RED.includes(o) ? P.accent2 : P.dim, bold: o.id === st.ox });
+      });
+      // 노모그래프
+      const g = ellG(cur, st.T), pt = [F.X(st.T), F.Y(g)];
+      const piv = st.scale === "o2" ? { y: 0, lab: "O" } : st.scale === "h2" ? { y: W_.H, lab: "H" } : { y: C_.H, lab: "C" };
+      const slope = (g - piv.y) / st.T; // kJ/K
+      let ex = XB, ey = piv.y + slope * XB; if (ey < YA) { ex = (YA - piv.y) / slope; ey = YA; } if (ey > YB) { ex = (YB - piv.y) / slope; ey = YB; }
+      line(ctx, [[F.X(0), F.Y(piv.y)], [F.X(ex), F.Y(ey)]], P.text, 1.6, [5, 4]);
+      dot(ctx, F.X(0), F.Y(piv.y), 5, P.text); SB.label(ctx, piv.lab, F.X(0) + 12, F.Y(piv.y) - 10, { size: 12, bold: true });
+      // 눈금
+      ctx.font = font(10, true); ctx.fillStyle = P.dim; ctx.strokeStyle = P.dim;
+      const valAt = (k) => { // k = log10 비 → 오른쪽 끝 y 또는 아래 끝 x
+        const s = st.scale === "o2" ? (RG * LN10 * k) / 1000 : st.scale === "h2" ? (2 * RG * LN10 * k - W_.S) / 1000 : (2 * RG * LN10 * k - C_.S) / 1000;
+        const y = piv.y + s * XB; if (y >= YA && y <= YB) return { side: "r", v: y }; const x = (YA - piv.y) / s; if (s < 0 && x > 0 && x <= XB) return { side: "b", v: x }; return null;
+      };
+      const ks = []; for (let k = -220; k <= 6; k++) ks.push(k);
+      const BL = [-40, -50, -60, -80, -100, -150];
+      let lastR = -1e9, lastB = -1e9;
+      ks.forEach((k) => {
+        const p = valAt(k); if (!p) return;
+        if (p.side === "r") { const y = F.Y(p.v); ctx.beginPath(); ctx.moveTo(B.x + B.w, y); ctx.lineTo(B.x + B.w + 5, y); ctx.stroke(); if (Math.abs(y - lastR) > 15) { ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(k === 0 ? "1" : "10" + String(k).split("").map((c) => SUP[c]).join(""), B.x + B.w + 7, y); lastR = y; } }
+        else { if (k % 10 && k > -40) return; if (k < -40 && !BL.includes(k)) return; const x = F.X(p.v); ctx.beginPath(); ctx.moveTo(x, B.y + B.h); ctx.lineTo(x, B.y + B.h - 5); ctx.stroke(); if (Math.abs(x - lastB) > 34 && x < B.x + B.w - 20 && x > B.x + 20) { ctx.textAlign = "center"; ctx.textBaseline = "bottom"; ctx.fillText("10" + String(k).split("").map((c) => SUP[c]).join(""), x, B.y + B.h - 7); lastB = x; } }
+      });
+      SB.label(ctx, st.scale === "o2" ? "p_O₂ (bar)" : st.scale === "h2" ? "H₂O/H₂" : "CO₂/CO", B.x + B.w + (narrow ? 22 : 30), B.y - 12, { size: 11, bold: true, color: P.dim });
+      // 온도선과 점
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(pt[0], B.y); ctx.lineTo(pt[0], B.y + B.h); ctx.stroke(); ctx.setLineDash([]);
+      dot(ctx, pt[0], pt[1], 6, P.accent);
+      handle(ctx, pt[0], B.y + 10, P.accent, 9); self._h = [pt[0], B.y + 10];
+      const TK = st.T, gJ = g * 1000, po = Math.exp(gJ / (RG * TK));
+      const rw = Math.exp((gJ - ellG(W_, TK) * 1000) / (2 * RG * TK)), rc = Math.exp((gJ - ellG(C_, TK) * 1000) / (2 * RG * TK));
+      SB.stat("ell-t", `${TK.toFixed(0)} K (${(TK - 273.15).toFixed(0)} °C)`);
+      SB.stat("ell-g", `${g.toFixed(1)} kJ`);
+      SB.stat("ell-p", `${sci(po)} bar`);
+      SB.stat("ell-r", `${sci(rw)} · ${sci(rc)}`);
+    }, { get aspect() { const e = document.getElementById("cv-ell"); return e && e.parentElement.clientWidth < 560 ? 1.2 : 0.62; }, minHeight: 340, maxHeight: 540 });
+    sel.addEventListener("change", () => { st.ox = sel.value; cv.redraw(); });
+    SB.seg("ell-scale", (v) => { st.scale = v; cv.redraw(); });
+    $("ell-red").addEventListener("change", (e) => { st.red = e.target.checked; cv.redraw(); });
+    let dragging = false;
+    SB.drag(cv, {
+      free: true,
+      handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      down: (id, x, y) => { dragging = id === "t"; if (id == null && cv._F) { const F = cv._F, Tc = F.ix(x); if (Tc < 300 || Tc > 2000) return; let best = null, bd = 14; OX.forEach((o) => { const d = Math.abs(F.Y(ellG(o, Tc)) - y); if (d < bd) { bd = d; best = o; } }); if (best) { st.ox = best.id; sel.value = best.id; } } },
+      up: () => { dragging = false; },
+      move: (id, x) => { if (!dragging || !cv._F) return; st.T = Math.round(SB.clamp(cv._F.ix(x), 300, 2000) / 5) * 5; },
+    });
+  }
+
+  /* ================================================================ 6절 tangle: 구리 산화 */
+  SB.tangle("tg-cu", (v) => {
+    const o = OX.find((q) => q.id === "Cu2O"), T = v.t + 273.15, g = ellG(o, T), p = Math.exp((g * 1000) / (RG * T)), po = v.ppm * 1e-6;
+    return { g: g.toFixed(1) + " kJ", p: sci(p) + " bar", po: sci(po) + " bar", v: po > p ? "<b style='color:var(--bad)'>구리는 산화된다</b>" : "<b style='color:var(--ok)'>구리는 그대로다</b>" };
+  });
+
+  /* ================================================================ 6절: 선택 산화 창 */
+  {
+    const MET = {
+      W: { lab: "W → WO₂", nu: { "W(s)": -1, "H2O(g)": -2, "WO2(s)": 1, "H2(g)": 2 }, n: 2 },
+      Ta: { lab: "Ta → Ta₂O₅", nu: { "Ta(s)": -2, "H2O(g)": -5, "Ta2O5(s)": 1, "H2(g)": 5 }, n: 5 },
+      Ti: { lab: "Ti → TiO₂", nu: { "Ti(s)": -1, "H2O(g)": -2, "TiO2(s)": 1, "H2(g)": 2 }, n: 2 },
+      Cu: { lab: "Cu → Cu₂O", nu: { "Cu(s)": -2, "H2O(g)": -1, "Cu2O(s)": 1, "H2(g)": 1 }, n: 1 },
+    };
+    const SI = { nu: { "Si(s)": -1, "H2O(g)": -2, "SiO2(s)": 1, "H2(g)": 2 }, n: 2 };
+    const st = { m: "W", t: 900, lr: -2, game: null, wins: 0 };
+    /** 경계 log10(H2O/H2): ΔG° − nRT ln r = 0 */
+    const bound = (o, TK) => rxnG(o.nu, TK, false) / (o.n * RG * TK * LN10);
+    const XA = 600, XB = 1200, YA = -10, YB = 2;
+    const cv = SB.canvas("cv-sel", (ctx, w, h, self) => {
+      const P = pal(), B = bx(58, 22, w - 74, h - 22 - 44), F = frame(B, XA, XB, YA, YB), M = MET[st.m];
+      self._F = F;
+      const si = (t) => bound(SI, t + 273.15), me = (t) => bound(M, t + 273.15);
+      clip(ctx, B, () => {
+        const top = [], mid = [];
+        for (let i = 0; i <= 60; i++) { const t = XA + ((XB - XA) * i) / 60; top.push([F.X(t), F.Y(me(t))]); }
+        // 금속 산화(위)
+        ctx.fillStyle = SB.color("bad-soft"); ctx.beginPath(); ctx.moveTo(B.x, B.y); top.forEach(([x, y]) => ctx.lineTo(x, y)); ctx.lineTo(B.x + B.w, B.y); ctx.closePath(); ctx.fill();
+        // 창(Si 선과 금속선 사이)
+        ctx.fillStyle = SB.color("ok-soft"); ctx.beginPath();
+        for (let i = 0; i <= 60; i++) { const t = XA + ((XB - XA) * i) / 60; ctx[i ? "lineTo" : "moveTo"](F.X(t), F.Y(Math.max(si(t), Math.min(me(t), YB + 1)))); }
+        for (let i = 60; i >= 0; i--) { const t = XA + ((XB - XA) * i) / 60; ctx.lineTo(F.X(t), F.Y(Math.min(si(t), YB + 1))); }
+        ctx.closePath(); ctx.fill();
+        line(ctx, curve(F, si, XA, XB, 60), P.accent2, 2.6);
+        line(ctx, curve(F, me, XA, XB, 60), P.accent, 2.6);
+        if (st.game) { ctx.fillStyle = SB.color("accent-soft"); const x0 = F.X(st.game - 15), x1 = F.X(st.game + 15); ctx.fillRect(x0, B.y, x1 - x0, B.h); }
+      });
+      axes(ctx, F, { xt: [600, 700, 800, 900, 1000, 1100, 1200], yt: [-10, -8, -6, -4, -2, 0, 2], yf: (v) => (v === 0 ? "1" : "10" + String(v).split("").map((c) => SUP[c]).join("")), xl: "t (°C)", yl: "p_H₂O / p_H₂" });
+      const lab = (txt, t, f, col, dy) => { const y = F.Y(f(t)); if (y > B.y + 8 && y < B.y + B.h - 8) SB.label(ctx, txt, F.X(t), y + dy, { size: 11, bold: true, color: col }); };
+      lab("Si/SiO₂", 660, si, P.accent2, -12); lab(M.lab, 1130, me, P.accent, -12);
+      const px = F.X(st.t), py = F.Y(st.lr); handle(ctx, px, py, P.text, 10); self._p = [px, py];
+      const TK = st.t + 273.15, r = Math.pow(10, st.lr);
+      const dSi = (rxnG(SI.nu, TK, false) - SI.n * RG * TK * Math.log(r)) / 1000, dMe = (rxnG(M.nu, TK, false) - M.n * RG * TK * Math.log(r)) / 1000;
+      SB.stat("sel-c", `${st.t.toFixed(0)} °C · H₂O/H₂ = ${sci(r)}`);
+      SB.stat("sel-si", dSi < 0 ? `<b style="color:var(--ok)">산화됨</b> (Δ<sub>r</sub>G = ${dSi.toFixed(0)} kJ)` : `산화 안 됨 (Δ<sub>r</sub>G = +${dSi.toFixed(0)} kJ)`);
+      SB.stat("sel-me", dMe < 0 ? `<b style="color:var(--bad)">산화됨</b> (Δ<sub>r</sub>G = ${dMe.toFixed(1)} kJ)` : `<b style="color:var(--ok)">금속 유지</b> (+${dMe.toFixed(1)} kJ)`);
+      if (st.game) {
+        const lw = me(st.t), ok = st.m === "W" && Math.abs(st.t - st.game) <= 15 && st.lr <= lw - 0.3 && st.lr >= lw - 1.3;
+        if (ok && !st._won) { st.wins++; st._won = true; }
+        SB.stat("sel-goal", `${st.game} °C ± 15 · ${st.m !== "W" ? "W를 고르세요" : ok ? "<b style='color:var(--ok)'>성공!</b>" : "W 경계 아래 0.3–1.3 자릿수"} · 성공 ${st.wins}회`);
+      } else SB.stat("sel-goal", "‘도전’을 누르세요");
+    }, { aspect: 0.55, minHeight: 300, maxHeight: 440 });
+    SB.seg("sel-m", (v) => { st.m = v; cv.redraw(); });
+    $("sel-game").addEventListener("click", () => { let g; do { g = pick([800, 850, 900, 950, 1000, 1050]); } while (g === st.game); st.game = g; st._won = false; cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._p ? [{ id: "p", x: cv._p[0], y: cv._p[1], r: 16 }] : []), move: (id, x, y) => { const F = cv._F; if (!F) return; st.t = Math.round(SB.clamp(F.ix(x), XA, XB) / 5) * 5; st.lr = Math.round(SB.clamp(F.iy(y), YA, YB) * 20) / 20; } });
+  }
+
+  /* ================================================================ 6절 드릴: 엘링엄 */
+  SB.drill("drill-ell", () => {
+    const o = pick(OX.filter((q) => ["SiO2", "Al2O3", "HfO2", "TiO2", "Cu2O", "NiO", "ZrO2"].includes(q.id))), T = 800 + 50 * Math.floor(Math.random() * 15);
+    const g = ellG(o, T), lp = (g * 1000) / (RG * T * LN10);
+    if (Math.random() < 0.5) return { q: `<p>엘링엄 근사로 ${T} K에서 ${o.lab} 생성(O₂ 1 mol 기준, \\(\\Delta H^\\circ = ${o.H.toFixed(1)}\\) kJ, \\(\\Delta S^\\circ = ${o.S.toFixed(2)}\\) J/K)의 평형 산소 분압의 상용로그는?</p>`, answer: lp, label: "log₁₀ p_O₂ =", tol: 0.05,
+      sol: `\\(\\Delta G^\\circ = ${o.H.toFixed(1)} - ${T}\\times(${(o.S / 1000).toFixed(5)}) = ${g.toFixed(1)}\\) kJ, \\(\\log_{10}p = \\Delta G^\\circ/(RT\\ln10) = ${lp.toFixed(2)}\\)` };
+    const gw = ellG(W_, T), lr = ((g - gw) * 1000) / (2 * RG * T * LN10);
+    return { q: `<p>엘링엄 근사로 ${T} K에서 ${o.lab}와 금속이 공존하는 \\(P_{\\mathrm{H_2O}}/P_{\\mathrm{H_2}}\\)의 상용로그는? (O₂ 1 mol 기준 \\(\\Delta G^\\circ_\\text{ox} = ${g.toFixed(1)}\\) kJ, \\(\\ce{2H2 + O2 -> 2H2O}\\)의 \\(\\Delta G^\\circ = ${gw.toFixed(1)}\\) kJ)</p>`, answer: lr, label: "log₁₀(H₂O/H₂) =", tol: 0.05,
+      sol: `\\(\\log_{10}(P_{\\mathrm{H_2O}}/P_{\\mathrm{H_2}}) = (\\Delta G^\\circ_\\text{ox} - \\Delta G^\\circ_w)/(2RT\\ln10) = (${g.toFixed(1)} - (${gw.toFixed(1)}))\\times10^3/(2\\times8.314\\times${T}\\times2.3026) = ${lr.toFixed(2)}\\)` };
+  });
+
+  /* ================================================================ 7절 미니: 전구체별 ΔG°(T) */
+  {
+    const L = [["SiH₄", RX.sih4.nu], ["SiH₂Cl₂", RX.dcs.nu], ["SiHCl₃ + H₂", RX.tcs.nu], ["SiCl₄ + 2H₂", RX.sicl4.nu]];
+    let cv = null;
+    const getT = SB.range("si-t", (v) => v + " K", () => cv && cv.redraw());
+    cv = SB.canvas("cv-si", (ctx, w, h) => {
+      const P = pal(), T = getT(), cols = [P.accent2, P.ok, P.accent, P.warn], B = bx(52, 22, w - 68, h - 22 - 42), F = frame(B, 400, 1700, -150, 300);
+      axes(ctx, F, { xt: [400, 700, 1000, 1300, 1600], yt: [-100, 0, 100, 200, 300], xl: "T (K)", yl: "Δ_rG° (kJ / mol Si)" });
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(B.x, F.Y(0)); ctx.lineTo(B.x + B.w, F.Y(0)); ctx.stroke();
+      const parts = [];
+      L.forEach(([lab, nu], i) => { clip(ctx, B, () => line(ctx, curve(F, (t) => rxnG(nu, t) / 1000, 400, 1700, 80), cols[i], 2.6)); const g = rxnG(nu, T) / 1000; dot(ctx, F.X(T), F.Y(g), 5, cols[i]); SB.label(ctx, lab, F.X(430) + 34, F.Y(rxnG(nu, 430) / 1000) - 10, { size: 10, color: cols[i], align: "left" }); parts.push(`${lab} ${sci(Math.exp(-g * 1000 / (RG * T)))}`); });
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(F.X(T), B.y); ctx.lineTo(F.X(T), B.y + B.h); ctx.stroke(); ctx.setLineDash([]);
+      $("si-r").textContent = `K: ${parts.join(" · ")}`;
+    }, { aspect: 0.45, minHeight: 240, maxHeight: 340 });
+  }
+
+  /* ================================================================ 7절: CVD 평형 전환율 */
+  {
+    const CV = {
+      sih4: { rx: RX.sih4, p: "SiH4(g)", co: "H2(g)", lab: "H₂/SiH₄", n0: (r) => ({ "SiH4(g)": 1, "H2(g)": r }) },
+      dcs: { rx: RX.dcs, p: "SiH2Cl2(g)", lab: "H₂(운반)/DCS", n0: (r) => ({ "SiH2Cl2(g)": 1 }), inert: (r) => r },
+      tcs: { rx: RX.tcs, p: "SiHCl3(g)", lab: "H₂/SiHCl₃", n0: (r) => ({ "SiHCl3(g)": 1, "H2(g)": r }) },
+      sicl4: { rx: RX.sicl4, p: "SiCl4(g)", lab: "H₂/SiCl₄", n0: (r) => ({ "SiCl4(g)": 1, "H2(g)": r }) },
+      wf6h: { rx: RX.wf6h, p: "WF6(g)", lab: "H₂/WF₆", n0: (r) => ({ "WF6(g)": 1, "H2(g)": r }) },
+      wf6si: { rx: RX.wf6si, p: "WF6(g)", lab: "Ar(운반)/WF₆", n0: (r) => ({ "WF6(g)": 1, "Si(s)": 1e3 }), inert: (r) => r },
+      sin: { rx: RX.sin, p: "SiH2Cl2(g)", lab: "NH₃/DCS", n0: (r) => ({ "SiH2Cl2(g)": 1, "NH3(g)": r }) },
+    };
+    const sel = $("cvd-rx"); sel.innerHTML = Object.keys(CV).map((k) => `<option value="${k}">${CV[k].rx.name}</option>`).join(""); sel.value = "tcs";
+    const st = { k: "tcs", lr: 1, lp: 0, T: 1300, curve: [] };
+    const conv = (T) => {
+      const c = CV[st.k], r = Math.pow(10, st.lr), n0 = c.n0(r), nu = c.rx.nu;
+      const e = Thermo.equilibrium({ nu, K: Kof(nu, T), n0, P: Math.pow(10, st.lp), inert: c.inert ? c.inert(r) : 0 });
+      const X = (-nu[c.p] * e.xi) / n0[c.p];
+      return { X, res: Math.max(0, e.n[c.p]) / n0[c.p] };
+    };
+    const recompute = () => { st.curve = []; for (let T = 400; T <= 1700; T += 10) st.curve.push([T, conv(T).X]); };
+    recompute();
+    const cv = SB.canvas("cv-cvd", (ctx, w, h, self) => {
+      const P = pal(), B = bx(58, 24, w - 74, h - 24 - 44), F = frame(B, 400, 1700, 0, 100);
+      self._F = F;
+      axes(ctx, F, { xt: [400, 700, 1000, 1300, 1600], yt: [0, 20, 40, 60, 80, 100], xl: "T (K)", yl: "평형 전환율 (%)" });
+      clip(ctx, B, () => line(ctx, st.curve.map(([T, X]) => [F.X(T), F.Y(100 * X)]), P.accent, 3));
+      const c = conv(st.T), x = F.X(st.T);
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x, B.y); ctx.lineTo(x, B.y + B.h); ctx.stroke(); ctx.setLineDash([]);
+      dot(ctx, x, F.Y(100 * c.X), 6, P.accent2);
+      handle(ctx, x, B.y + 10, P.accent, 9); self._h = [x, B.y + 10];
+      const nu = CV[st.k].rx.nu, g = rxnG(nu, st.T) / 1000, K = Math.exp(-g * 1000 / (RG * st.T));
+      SB.stat("cvd-t", `${st.T} K (${(st.T - 273.15).toFixed(0)} °C)`);
+      SB.stat("cvd-g", `${g.toFixed(1)} kJ · ${sci(K)}`);
+      SB.stat("cvd-x", `${(100 * c.X).toFixed(1)} %`);
+      SB.stat("cvd-res", c.res > 0 ? sci(c.res) : "&lt; 10⁻¹²");
+    }, { aspect: 0.5, minHeight: 280, maxHeight: 420 });
+    const rr = SB.range("cvd-r", (v) => Math.pow(10, v).toPrecision(3), (v) => { st.lr = v; recompute(); cv.redraw(); });
+    SB.range("cvd-p", (v) => sci(Math.pow(10, v)) + " bar", (v) => { st.lp = v; recompute(); cv.redraw(); });
+    const syncLab = () => { $("cvd-r-lab").textContent = CV[st.k].lab + " 몰비 "; };
+    syncLab();
+    sel.addEventListener("change", () => { st.k = sel.value; syncLab(); recompute(); cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x) => { const F = cv._F; if (!F) return; st.T = Math.round(SB.clamp(F.ix(x), 400, 1700) / 10) * 10; } });
+  }
+})();
+</script>
+</body>
+</html>
