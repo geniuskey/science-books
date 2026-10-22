@@ -453,7 +453,16 @@
     for (let i = 0; i <= N; i++) { const x = a + i * h, wt = i === 0 || i === N ? 1 : i % 2 ? 4 : 2; s += wt * Math.exp(lf(x)) * prange(q * x); }
     return Math.min(1, (s * h) / 3);
   };
-  Stat.qtukey = (p, k, df = Infinity) => { let a = 0, b = 20; while (Stat.ptukey(b, k, df) < p && b < 1e4) { a = b; b *= 2; } for (let i = 0; i < 60; i++) { const m = (a + b) / 2; if (Stat.ptukey(m, k, df) < p) a = m; else b = m; } return (a + b) / 2; };
+  Stat.qtukey = (p, k, df = Infinity) => { let a = 0, b = 20; while (Stat.ptukey(b, k, df) < p && b < 1e4) { a = b; b *= 2; } // 할선법 + 괄호 유지(보통 6–10회 평가)
+    let fa = Stat.ptukey(a, k, df) - p, fb = Stat.ptukey(b, k, df) - p;
+    for (let i = 0; i < 40 && b - a > 1e-6 * b; i++) {
+      let m = a - (fa * (b - a)) / (fb - fa);
+      if (!(m > a && m < b) || i % 3 === 2) m = (a + b) / 2;
+      const fm = Stat.ptukey(m, k, df) - p;
+      if (Math.abs(fm) < 1e-10) return m;
+      if (fm < 0) { a = m; fa = fm; } else { b = m; fb = fm; }
+    }
+    return (a + b) / 2; };
 
   /* ------------------------------------------------------------ 기술 통계 */
   Stat.sum = (x) => { let s = 0; for (const v of x) s += v; return s; };
