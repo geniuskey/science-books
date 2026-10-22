@@ -109,8 +109,7 @@ SB.registerCourse({
      "tags": [
       "평균 자유 행로",
       "컨덕턴스"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -126,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "증기압",
       "이징 모형"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "solutions",
@@ -288,7 +286,7 @@ SB.registerCourse({
    "figures": 12,
    "drills": 4,
    "minis": 6,
-   "tangles": 6,
+   "tangles": 7,
    "steps": 3,
    "predicts": 4,
    "hero": 1
@@ -352,9 +350,33 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "kinetic-theory-vacuum": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "phase-transitions": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
   }
  },
- "published": 7,
+ "published": 9,
  "total": 19,
  "url": "https://science.euiyun.com/thermal-physics/"
 });
