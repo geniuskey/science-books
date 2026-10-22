@@ -136,8 +136,7 @@ SB.registerCourse({
      "tags": [
       "신뢰 구간",
       "부트스트랩"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "hypothesis",
@@ -148,8 +147,7 @@ SB.registerCourse({
      "tags": [
       "p 값",
       "검정력"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -165,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "카이제곱 검정",
       "순위 검정"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "regression",
@@ -177,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "최소 제곱",
       "결정 계수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "anova-doe",
@@ -189,8 +185,7 @@ SB.registerCourse({
      "tags": [
       "분산 분석",
       "요인 실험"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -206,8 +201,7 @@ SB.registerCourse({
      "tags": [
       "마르코프 연쇄",
       "포아송 과정"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "spc",
@@ -230,8 +224,7 @@ SB.registerCourse({
      "tags": [
       "와이블",
       "수율 모형"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -248,8 +241,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "분포표"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -374,9 +366,105 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "confidence": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 12,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "hypothesis": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 10,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "categorical": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 11,
+   "figures": 15,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 5,
+   "predicts": 6,
+   "hero": 1
+  },
+  "regression": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 12,
+   "figures": 14,
+   "drills": 3,
+   "minis": 8,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "anova-doe": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "stochastic": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 11,
+   "figures": 14,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "reliability-yield": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 10,
+   "figures": 13,
+   "drills": 4,
+   "minis": 8,
+   "tangles": 7,
+   "steps": 2,
+   "predicts": 6,
+   "hero": 1
+  },
+  "tables": {
+   "problems": 14,
+   "examples": 0,
+   "sims": 8,
+   "figures": 1,
+   "drills": 2,
+   "minis": 0,
+   "tangles": 4,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 9,
+ "published": 17,
  "total": 19,
  "url": "https://science.euiyun.com/probability-statistics/"
 });
