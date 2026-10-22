@@ -16,7 +16,7 @@
 | 7 | 열·통계물리와 물리화학 `thermal-physics` | 물리/화학 | 2–3 | quantum, chem | 예정(반도체 우선) |
 | 8 | 재료과학 `materials-science` | 재료 | 2 | elements, chem | 예정(반도체 우선) |
 | 9 | 공학수학·수치해석 `engineering-math` | 수학 | 2 | — | 예정(반도체 우선) |
-| 10 | 확률과 통계 `probability-statistics` | 수학 | 1–2 | stat(신규) | 집필 중 |
+| 10 | 확률과 통계 `probability-statistics` | 수학 | 1–2 | stat(신규) | 완료 |
 | – | 유기화학 · 정역학 · 동역학 | | 2 | | 보류(반도체 관련성 낮음) |
 
 ## 공유 라이브러리 계획
