@@ -1,0 +1,1863 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>열전달과 비평형 현상 · 열·통계물리와 물리화학 · SciBook</title>
+<meta name="description" content="푸리에 법칙과 열전도도, 열저항 회로와 칩 접합 온도, 열 확산 방정식과 열 시간 상수, 대류·복사 냉각, 줄 가열과 자기 가열, 제베크·펠티에 효과와 열전 냉각, 엔트로피 생성과 온사거 상반 관계, 요동–소산 정리와 존슨 잡음을 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/thermal-physics/chapters/heat-transport.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="열전달과 비평형 현상 · 열·통계물리와 물리화학 · SciBook">
+<meta property="og:description" content="푸리에 법칙과 열전도도, 열저항 회로와 칩 접합 온도, 열 확산 방정식과 열 시간 상수, 대류·복사 냉각, 줄 가열과 자기 가열, 제베크·펠티에 효과와 열전 냉각, 엔트로피 생성과 온사거 상반 관계, 요동–소산 정리와 존슨 잡음을 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/thermal-physics/chapters/heat-transport.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "열전달과 비평형 현상 · 열·통계물리와 물리화학 · SciBook", "headline": "17 열전달과 비평형 현상", "url": "https://science.euiyun.com/thermal-physics/chapters/heat-transport.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "푸리에 법칙과 열전도도, 열저항 회로와 칩 접합 온도, 열 확산 방정식과 열 시간 상수, 대류·복사 냉각, 줄 가열과 자기 가열, 제베크·펠티에 효과와 열전 냉각, 엔트로피 생성과 온사거 상반 관계, 요동–소산 정리와 존슨 잡음을 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 17, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/thermal-physics/#book", "name": "열·통계물리와 물리화학", "url": "https://science.euiyun.com/thermal-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "열·통계물리와 물리화학", "item": "https://science.euiyun.com/thermal-physics/"}, {"@type": "ListItem", "position": 3, "name": "17 열전달과 비평형 현상", "item": "https://science.euiyun.com/thermal-physics/chapters/heat-transport.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/thermo.js"></script>
+<style>
+  .ht-out { white-space: normal; }
+  .ht-note { font-size: 13.5px; color: var(--text-dim); margin: 0; }
+</style>
+</head>
+<body data-chapter="heat-transport">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="diffusion second-law">
+    <div class="eyebrow">Chapter 17</div>
+    <h1>열전달과 비평형 현상</h1>
+    <p class="lead">지금까지 이 책은 대부분 <b>평형</b>을 다뤘다. 온도가 어디서나 같고, 아무것도 흐르지 않는 상태다. 그러나 실제로 쓰는 칩은 평형에 있지 않다. 손톱만 한 다이에서 수백 와트가 열로 나오고, 그 열은 수 µm 두께의 접착층과 구리 뚜껑과 알루미늄 핀을 지나 공기로 빠져나간다. 열이 흐르는 길에는 언제나 온도 차가 있고, 온도 차가 있으면 엔트로피가 생긴다. 이 장은 그 흐름을 다룬다. 열전도의 푸리에 법칙과 열저항 회로로 접합 온도를 계산하고, 열 확산 방정식으로 핫스팟과 시간 상수를 구한 뒤, 열과 전기가 서로를 끌고 가는 열전 효과와 그 뒤에 있는 온사거 상반 관계, 그리고 평형의 요동이 곧 소산과 같은 얼굴이라는 요동–소산 정리로 끝맺는다. 아래는 코어 네 개가 번갈아 일하는 다이의 온도 지도다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">누르고 끌면 그 자리에 부스트 열원이 생긴다</span></div>
+    <ul class="objectives">
+      <li>푸리에 법칙 \(\mathbf q = -\kappa\nabla T\)를 분자·포논·전자가 에너지를 실어 나르는 미시 그림에서 이해하고, 재료별 열전도도와 비데만–프란츠 법칙으로 층을 지나는 온도 강하를 계산한다.</li>
+      <li>열저항 \(R_\mathrm{th}\)의 직렬·병렬 회로로 패키지의 \(\theta_\mathrm{JC}\), \(\theta_\mathrm{JA}\)와 접합 온도를 구하고, 작은 열원에서 생기는 퍼짐 저항 \(1/4\kappa a\)를 계산한다.</li>
+      <li>열 확산 방정식 \(\rho c\,\partial T/\partial t = \kappa\nabla^2T + \dot q\)에서 열 확산율과 확산 길이 \(\sqrt{\alpha t}\), 집중 용량 모형의 시간 상수 \(\tau = RC\)를 구하고 웨이퍼 척 온도 제어와 다이 핫스팟에 적용한다.</li>
+      <li>대류 계수 \(h\)와 복사의 선형화 \(h_\mathrm{rad} = 4\varepsilon\sigma T^3\), 핀 효율로 방열판을 설계하고, 줄 가열·자기 가열과 열 폭주, 전자 이동 수명의 온도 가속을 계산한다.</li>
+      <li>제베크·펠티에·톰슨 효과와 성능 지수 \(ZT\)를 이해하고, 열전 냉각기의 에너지 수지에서 최적 전류와 최대 온도 차, 성능 계수를 구한다.</li>
+      <li>국소 엔트로피 생성을 플럭스와 힘의 곱으로 쓰고, 온사거 상반 관계에서 켈빈 관계 \(\Pi = ST\)를 얻으며, 요동–소산 정리로 브라운 운동과 존슨 잡음 \(\langle v^2\rangle = 4kTR\,\Delta f\), \(kT/C\) 잡음을 설명한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="fourier">
+    <h2>푸리에 법칙과 열전도도</h2>
+    <p>뜨거운 쪽과 차가운 쪽을 고체 막대로 이으면 열이 막대를 따라 흐른다. 막대가 길수록 흐름은 줄고, 단면이 넓을수록, 온도 차가 클수록 늘어난다. 푸리에(1822)는 이 관찰을 국소 법칙으로 썼다. 어느 점에서든 단위 넓이를 지나는 열의 흐름은 그 점의 온도 기울기에 비례하고, 기울기를 내려가는 방향으로 흐른다.</p>
+    <div class="def"><span class="def-k">푸리에 법칙</span>
+      <p><span class="term">푸리에 법칙</span><span class="en">(Fourier's law)</span>: <span class="term">열류 밀도</span><span class="en">(heat flux)</span> \(\mathbf q\)[W/m²]는 \(\mathbf q = -\kappa\nabla T\)이다. 비례 상수 \(\kappa\)[W/(m·K)]가 물질의 <span class="term">열전도도</span><span class="en">(thermal conductivity)</span>다. 두께 \(L\), 넓이 \(A\)인 평판의 양면 온도가 \(T_1 > T_2\)이면 정상 상태에서 흐르는 열은 \(Q = \kappa A(T_1 - T_2)/L\)이다.</p>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="뜨거운 면과 차가운 면 사이의 평판, 열류 화살표와 선형 온도 분포, 옴 법칙·픽 법칙과의 비교">
+        <defs><linearGradient id="ht-grad" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="var(--accent)" stop-opacity=".55"/><stop offset="1" stop-color="var(--accent-2)" stop-opacity=".55"/></linearGradient></defs>
+        <rect x="120" y="60" width="230" height="170" fill="url(#ht-grad)" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <rect x="96" y="60" width="24" height="170" fill="var(--accent)"/>
+        <rect x="350" y="60" width="24" height="170" fill="var(--accent-2)"/>
+        <text class="t" x="108" y="50" text-anchor="middle" fill="var(--accent)">T₁</text>
+        <text class="t" x="362" y="50" text-anchor="middle" fill="var(--accent-2)">T₂</text>
+        <line x1="150" y1="110" x2="320" y2="110" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ht-ar)"/>
+        <line x1="150" y1="145" x2="320" y2="145" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ht-ar)"/>
+        <line x1="150" y1="180" x2="320" y2="180" stroke="var(--text)" stroke-width="2.4" marker-end="url(#ht-ar)"/>
+        <defs><marker id="ht-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--text)"/></marker></defs>
+        <text class="t" x="235" y="96" text-anchor="middle">열류 q = κ(T₁ − T₂)/L</text>
+        <line x1="120" y1="252" x2="350" y2="252" stroke="var(--text-dim)"/><line x1="120" y1="246" x2="120" y2="258" stroke="var(--text-dim)"/><line x1="350" y1="246" x2="350" y2="258" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="235" y="276" text-anchor="middle">두께 L, 넓이 A</text>
+        <line x1="460" y1="230" x2="760" y2="230" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="460" y1="230" x2="460" y2="50" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="500" y1="80" x2="720" y2="200" stroke="var(--accent)" stroke-width="3"/>
+        <line x1="500" y1="230" x2="500" y2="80" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <line x1="720" y1="230" x2="720" y2="200" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+        <text class="t t-dim" x="500" y="248" text-anchor="middle">0</text><text class="t t-dim" x="720" y="248" text-anchor="middle">L</text>
+        <text class="t t-dim" x="760" y="268" text-anchor="end">위치 x →</text>
+        <text class="t t-dim" x="470" y="44">T(x)</text>
+        <text class="t" x="600" y="110">기울기 dT/dx = −q/κ</text>
+        <text class="t t-dim" x="470" y="292">전기: J = σE · 확산: J = −D∇C · 열: q = −κ∇T</text>
+      </svg>
+      <figcaption>푸리에 법칙. 정상 상태의 균질한 평판에서는 어디서나 같은 열류가 지나가므로 온도는 직선으로 떨어진다. 옴 법칙(전하), 픽의 제1법칙(입자, <a href="diffusion.html">16장</a>)과 같은 꼴이다 — 세 가지 모두 "기울기에 비례하는 흐름"이며, 6절에서 하나의 틀로 묶는다.</figcaption>
+    </figure>
+    <p>열전도도는 물질에 따라 일곱 자릿수에 걸쳐 다르다. 다이아몬드(2200 W/(m·K))와 구리(401)는 열을 잘 나르고, 실리콘(148)도 상당히 좋다. 반면 SiO₂(1.4), 폴리이미드(0.12), 공기(0.026)는 열을 잘 막는다. 실리콘 위에 1 µm 산화막만 있어도, 열의 관점에서 그 막은 실리콘 100 µm보다 두껍다. 이 차이는 어디서 올까? 열을 나르는 "운반자"를 직접 보면 알 수 있다.</p>
+    <h3>미시 그림: 분자가 열을 실어 나른다</h3>
+    <p>8장(<a href="kinetic-theory-vacuum.html">기체 운동론과 진공</a>)에서 기체의 열전도를 "분자가 평균 자유 행로만큼 에너지를 실어 나르는 것"으로 설명했다. 이 그림을 2D 원판 기체로 직접 확인하자. 왼쪽 벽은 뜨거운 열벽(부딪힌 분자를 높은 온도의 속도로 되돌려 보낸다), 오른쪽 벽은 차가운 열벽이다. 분자는 자기들끼리 무작위로 부딪힐 뿐 아무도 "열을 오른쪽으로 보내라"는 명령을 받지 않는다.</p>
+    <div class="predict" data-for="sim-gas">
+      <p>왼쪽 벽 450 K, 오른쪽 벽 150 K 사이의 기체가 충분히 오래 지나 정상 상태가 되었다. 상자 안의 온도 분포는 어떤 모양일까?</p>
+      <div class="opts"><button class="opt">전체가 평균 온도 300 K로 고르다 — 분자가 섞이니까</button><button class="opt" data-correct>가운데가 거의 직선으로 기울고, 벽 바로 옆에서 온도가 조금 뛴다</button><button class="opt">왼쪽 절반은 450 K, 오른쪽 절반은 150 K로 계단 모양이다</button><button class="opt">벽에서 멀어질수록 지수 함수로 평균 온도에 다가간다</button></div>
+      <div class="quiz-exp">정상 상태에서는 모든 단면을 같은 열류가 지나가야 하므로 \(dT/dx = -q/\kappa\)가 일정, 곧 직선이다. 벽 옆의 "온도 뜀"은 벽에서 막 튀어나온 분자가 이웃과 부딪히기 전까지 한 평균 자유 행로를 날아가기 때문이다 — 기체가 묽을수록 커진다.</div>
+    </div>
+    <div class="sim" id="sim-gas">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>뜨거운 벽과 차가운 벽 사이의 2D 기체: 직선 온도 분포가 생기기까지</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-gas"></canvas><span class="hint top">양쪽 벽 옆 온도계의 흰 원을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>원판 수 N <output id="gas-n-out"></output></span><input type="range" id="gas-n" min="100" max="400" step="20" value="300"></label>
+          <label class="check"><input type="checkbox" id="gas-col" checked> 속력으로 색칠</label>
+          <button class="btn" id="gas-play" type="button"></button>
+          <button class="btn" id="gas-reset" type="button">측정 다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">벽 온도 T₁ / T₂</span><span class="v" id="gas-tw">—</span></div>
+        <div class="stat"><span class="k">열류 J (들어옴 / 나감)</span><span class="v" id="gas-j">—</span></div>
+        <div class="stat"><span class="k">가운데 기울기 dT/dx</span><span class="v" id="gas-g">—</span></div>
+        <div class="stat"><span class="k">κ = J/(−dT/dx)</span><span class="v" id="gas-k">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 원판 기체(빨강일수록 빠름), 오른쪽은 상자를 10칸으로 나눠 시간 평균한 온도 분포(주황 점)와 가운데 6칸에 맞춘 직선(파랑)이다. 열류 \(J\)는 왼쪽 열벽이 분자에 준 에너지와 오른쪽 열벽이 가져간 에너지를 시간과 벽 길이로 나눈 값으로, 정상 상태에서는 둘이 같다(화면 단위, \(k = 1\)). 온도는 화면 단위 \(kT\)를 300 K 기준으로 환산했다. 해볼 것: ① 처음 수십 초 동안 분포가 계단에서 직선으로 바뀌는 과정을 본다. ② 온도 차를 두 배로 하면 열류도 거의 두 배가 되어 \(\kappa\)가 그대로다 — 푸리에 법칙이 미시 충돌에서 생겨났다. ③ N을 줄이면 벽 옆의 온도 뜀이 커지고 측정 \(\kappa\)가 작아진다. 평균 자유 행로가 상자 크기에 다가가면(크누센 수가 커지면) 푸리에 법칙이 깨지기 시작한다.</div>
+    </div>
+    <p>시뮬레이터의 결론을 식으로 쓰면 8장의 운동론 결과다. 열을 나르는 입자의 단위 부피당 열용량을 \(C\), 속력을 \(v\), 평균 자유 행로를 \(\ell\)이라 하면 \(\kappa = \tfrac13 Cv\ell\)이다. 같은 꼴이 기체 분자뿐 아니라 고체 속 격자 진동(포논)과 금속의 전도 전자에도 맞는다. 운반자마다 \(C, v, \ell\)의 크기가 다를 뿐이다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="기체 분자, 포논, 전도 전자가 각각 열을 나르는 그림과 κ = CvL/3 의 대표값">
+        <g data-step="1">
+          <rect x="20" y="40" width="10" height="150" fill="var(--accent)"/><rect x="230" y="40" width="10" height="150" fill="var(--accent-2)"/>
+          <circle cx="60" cy="70" r="7" fill="var(--accent)"/><circle cx="95" cy="150" r="7" fill="var(--accent)"/><circle cx="130" cy="95" r="7" fill="var(--text-dim)"/><circle cx="165" cy="165" r="7" fill="var(--accent-2)"/><circle cx="200" cy="80" r="7" fill="var(--accent-2)"/><circle cx="150" cy="130" r="7" fill="var(--text-dim)"/>
+          <line x1="60" y1="70" x2="122" y2="92" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+          <line x1="95" y1="150" x2="142" y2="132" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+          <text class="t" x="130" y="30" text-anchor="middle" style="font-weight:700">기체: 분자</text>
+          <text class="t" x="130" y="220" text-anchor="middle">v ≈ 500 m/s, ℓ ≈ 70 nm</text>
+          <text class="t t-acc" x="130" y="246" text-anchor="middle">공기 κ ≈ 0.026</text>
+          <text class="t t-dim" x="130" y="272" text-anchor="middle">압력과 무관(ℓ ≪ 크기일 때)</text>
+        </g>
+        <g data-step="2">
+          <g fill="var(--text-dim)">
+            <circle cx="300" cy="60" r="5"/><circle cx="335" cy="60" r="5"/><circle cx="370" cy="60" r="5"/><circle cx="405" cy="60" r="5"/><circle cx="440" cy="60" r="5"/><circle cx="475" cy="60" r="5"/>
+            <circle cx="300" cy="95" r="5"/><circle cx="335" cy="95" r="5"/><circle cx="370" cy="95" r="5"/><circle cx="405" cy="95" r="5"/><circle cx="440" cy="95" r="5"/><circle cx="475" cy="95" r="5"/>
+            <circle cx="300" cy="130" r="5"/><circle cx="335" cy="130" r="5"/><circle cx="370" cy="130" r="5"/><circle cx="405" cy="130" r="5"/><circle cx="440" cy="130" r="5"/><circle cx="475" cy="130" r="5"/>
+            <circle cx="300" cy="165" r="5"/><circle cx="335" cy="165" r="5"/><circle cx="370" cy="165" r="5"/><circle cx="405" cy="165" r="5"/><circle cx="440" cy="165" r="5"/><circle cx="475" cy="165" r="5"/>
+          </g>
+          <path d="M300,112 q9,-14 18,0 t18,0 t18,0 t18,0 t18,0" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <line x1="392" y1="112" x2="470" y2="112" stroke="var(--accent)" stroke-width="2" marker-end="url(#ht-ar2)"/>
+          <defs><marker id="ht-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <text class="t" x="388" y="30" text-anchor="middle" style="font-weight:700">절연체·반도체: 포논</text>
+          <text class="t" x="388" y="220" text-anchor="middle">v ≈ 6 km/s, ℓ ≈ 수십–수백 nm</text>
+          <text class="t t-acc" x="388" y="246" text-anchor="middle">Si κ ≈ 148</text>
+          <text class="t t-dim" x="388" y="272" text-anchor="middle">얇은 막·고온에서 ℓ가 줄어 κ 감소</text>
+        </g>
+        <g data-step="3">
+          <rect x="545" y="45" width="230" height="140" rx="6" fill="var(--surface)" stroke="var(--text-faint)"/>
+          <g fill="var(--text-faint)"><circle cx="575" cy="75" r="9"/><circle cx="625" cy="75" r="9"/><circle cx="675" cy="75" r="9"/><circle cx="725" cy="75" r="9"/><circle cx="575" cy="155" r="9"/><circle cx="625" cy="155" r="9"/><circle cx="675" cy="155" r="9"/><circle cx="725" cy="155" r="9"/></g>
+          <g fill="var(--accent-2)"><circle cx="560" cy="115" r="4"/><circle cx="600" cy="105" r="4"/><circle cx="650" cy="125" r="4"/><circle cx="700" cy="110" r="4"/><circle cx="745" cy="122" r="4"/><circle cx="610" cy="140" r="4"/><circle cx="690" cy="92" r="4"/></g>
+          <line x1="600" y1="105" x2="640" y2="98" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="4 3"/>
+          <text class="t" x="660" y="30" text-anchor="middle" style="font-weight:700">금속: 전도 전자</text>
+          <text class="t" x="660" y="220" text-anchor="middle">v_F ≈ 1.6×10⁶ m/s, ℓ ≈ 40 nm</text>
+          <text class="t t-acc" x="660" y="246" text-anchor="middle">Cu κ ≈ 401</text>
+          <text class="t t-dim" x="660" y="272" text-anchor="middle">κ/σT ≈ L₀ (비데만–프란츠)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>기체: 뜨거운 쪽 분자가 한 평균 자유 행로 날아가 차가운 쪽 분자와 에너지를 나눈다. \(C\)가 작아(분자가 드묾) \(\kappa\)가 작다.</li><li>절연체와 반도체: 원자 자체는 제자리에 있고, 격자 진동의 파동 묶음인 포논이 음속으로 에너지를 나른다. 포논은 서로, 불순물과, 표면과 부딪혀 \(\ell\)이 정해진다.</li><li>금속: 페르미 속력으로 달리는 전도 전자가 전하와 함께 열도 나른다. 그래서 전기를 잘 통하는 금속이 열도 잘 통한다.</li></ol>
+      <figcaption>열을 나르는 세 운반자. 모두 \(\kappa = \tfrac13Cv\ell\)의 꼴이다. 반도체의 포논 열전도와 그 온도 의존성(움클랍 산란)은 고체물리(<a href="../../solid-state/chapters/thermal-properties.html">고체물리 · 고체의 열적 성질</a>)에서 자세히 다룬다.</figcaption>
+    </figure>
+    <p>금속에서는 전자가 전하와 열을 함께 나르므로 두 수송 계수가 서로 묶여 있다. 자유 전자 모형에서 \(\sigma = ne^2\ell/mv_F\), \(\kappa_e = \tfrac13 C_e v_F\ell\)이고 전자 열용량 \(C_e = \tfrac{\pi^2}{2}nk^2T/E_F\)(<a href="quantum-statistics.html">7장</a>)를 넣으면 \(\ell\)과 \(n\)이 약분되어 <span class="term">비데만–프란츠 법칙</span><span class="en">(Wiedemann–Franz law)</span>이 나온다.</p>
+    <div class="formula">$$\frac{\kappa_e}{\sigma T} = L_0 = \frac{\pi^2}{3}\left(\frac{k}{e}\right)^2 = 2.44\times10^{-8}\ \mathrm{W\,\Omega/K^2}$$<div class="where">\(L_0\)는 로렌츠 수. 구리(\(\sigma = 5.96\times10^7\) S/m)는 300 K에서 \(\kappa_e\approx 436\) W/(m·K)로 예측되며, 실측 401과 10% 안에서 맞는다. 배선 저항을 재면 열전도도를 짐작할 수 있다는 뜻이다(나노 배선에서 표면 산란으로 \(\sigma\)가 줄면 \(\kappa\)도 같이 준다).</div></div>
+    <figure class="mini" id="mini-kappa">
+      <div class="mini-view" style="position:relative"><canvas id="cv-kappa"></canvas><span class="hint">막대를 눌러 재료 고르기</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>막 두께 <output id="kap-L-out"></output></span><input type="range" id="kap-L" min="-1" max="3" step="0.05" value="1"></label><span class="readout" id="kap-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>300 K 부근의 열전도도(로그 눈금, <code>Thermo.kTherm</code> 대표값). 고른 재료의 막을 핫스팟 열류 100 W/cm²가 지날 때의 온도 강하 \(\Delta T = qL/\kappa\)를 오른쪽에 보인다. 같은 1 µm라도 SiO₂는 0.7 K, low-k는 3 K, 구리는 0.0025 K다. 박막의 실제 \(\kappa\)는 표면 산란 때문에 표의 값보다 작을 수 있다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-fourier">
+      <p>두께 <span class="tn" data-var="L" data-min="10" data-max="1000" data-step="10" data-unit=" µm">500</span>, 넓이 <span class="tn" data-var="A" data-min="0.1" data-max="10" data-step="0.1" data-unit=" cm²">1.0</span>인 실리콘(\(\kappa = 148\))의 열저항은 <span class="tn-out" data-out="R"></span>다. <span class="tn" data-var="Q" data-min="1" data-max="300" data-step="1" data-unit=" W">50</span>를 흘리면 양면 온도 차는 <span class="tn-out" data-out="dT"></span>이고, 열류 밀도는 <span class="tn-out" data-out="q"></span>다. 같은 열을 같은 두께의 SiO₂로 흘리면 온도 차가 <span class="tn-out ht-out" data-out="ox"></span>가 된다.</p>
+    </div>
+    <div class="example" data-title="산화막 1 µm는 실리콘 몇 µm에 해당하나">
+      <p>국부 열류 밀도가 100 W/cm²인 핫스팟 아래에 (a) 두께 1 µm의 SiO₂(\(\kappa = 1.4\)) 층과 (b) 두께 775 µm의 실리콘 웨이퍼 전체가 있다. 각 층의 온도 강하를 구하고, SiO₂ 1 µm와 열저항이 같은 실리콘 두께를 구하라(1D, 정상 상태).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 열류 밀도가 같으므로 \(\Delta T = qL/\kappa\). 열저항이 같으려면 \(L/\kappa\)가 같아야 한다.</div>
+        <div class="step"><b>풀이</b> \(q = 100\) W/cm² \(= 10^6\) W/m². (a) \(\Delta T = 10^6\times10^{-6}/1.4 = 0.714\) K. (b) \(\Delta T = 10^6\times775\times10^{-6}/148 = 5.24\) K. 같은 열저항의 실리콘 두께는 \(L_\mathrm{Si} = L_\mathrm{ox}\,\kappa_\mathrm{Si}/\kappa_\mathrm{ox} = 1\ \mu\mathrm m\times148/1.4 = 106\) µm.</div>
+        <div class="answer">(a) 0.71 K (b) 5.2 K, 실리콘 약 106 µm에 해당</div>
+        <div class="step"><b>검토</b> SOI 웨이퍼의 매몰 산화막(BOX)은 수백 nm에 불과하지만 그 위의 얇은 실리콘 소자층에서 나는 열을 아래로 거의 보내지 못한다. SOI 소자의 자기 가열이 벌크보다 심한 이유다(4절).</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-fourier" data-title="푸리에 법칙·평판 열저항 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="resistance">
+    <h2>열저항 회로와 칩 접합 온도</h2>
+    <p>평판 공식 \(Q = \kappa A\Delta T/L\)을 \(\Delta T = Q\cdot L/\kappa A\)로 다시 쓰면 옴 법칙 \(V = IR\)과 똑같다. 온도 차가 전압, 열의 흐름이 전류, \(L/\kappa A\)가 저항 노릇을 한다. 열이 여러 층을 차례로 지나면 저항이 직렬로, 두 길로 나뉘어 흐르면 병렬로 합쳐진다. 회로 이론을 그대로 쓸 수 있다는 것이 열 설계의 가장 큰 무기다.</p>
+    <div class="def"><span class="def-k">열저항</span>
+      <p>온도 차를 흐르는 열로 나눈 값 \(R_\mathrm{th} = \Delta T/Q\)[K/W]를 <span class="term">열저항</span><span class="en">(thermal resistance)</span>이라 한다. 평판 전도 \(R = L/\kappa A\), 대류 \(R = 1/hA\)(4절), 복사 \(R = 1/h_\mathrm{rad}A\). 직렬은 \(R = R_1 + R_2 + \cdots\), 병렬은 \(1/R = 1/R_1 + 1/R_2 + \cdots\).</p>
+    </div>
+    <p>칩의 열 성능은 <span class="term">접합 온도</span><span class="en">(junction temperature)</span> \(T_\mathrm{J}\) — 트랜지스터가 있는 다이 표면의 온도 — 로 정한다. 패키지 규격서는 이를 열저항으로 적는다. 접합에서 패키지 표면(케이스)까지 \(\theta_\mathrm{JC}\), 케이스에서 주위 공기까지 \(\theta_\mathrm{CA}\), 합쳐서 \(\theta_\mathrm{JA}\)이다.</p>
+    <div class="formula">$$T_\mathrm J = T_\mathrm A + P\,\theta_\mathrm{JA},\qquad \theta_\mathrm{JA} = \theta_\mathrm{JC} + \theta_\mathrm{CS} + \theta_\mathrm{SA}$$<div class="where">\(P\)는 칩 소비 전력(거의 전부 열이 된다), \(T_\mathrm A\)는 주위 온도, CS는 케이스–방열판 사이 열 계면 물질, SA는 방열판–공기. 실리콘 논리 칩은 보통 \(T_\mathrm J\le 105\) °C(서버·자동차는 125 °C까지)를 설계 한계로 둔다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 320" role="img" aria-label="플립칩 패키지 단면, 열의 경로, 열저항 직렬 회로, 온도 계단">
+        <g data-step="1">
+          <g stroke="var(--text-dim)" stroke-width="1.2">
+            <rect x="60" y="40" width="260" height="22" fill="var(--surface)"/>
+            <rect x="72" y="20" width="12" height="20" fill="var(--surface)"/><rect x="100" y="20" width="12" height="20" fill="var(--surface)"/><rect x="128" y="20" width="12" height="20" fill="var(--surface)"/><rect x="156" y="20" width="12" height="20" fill="var(--surface)"/><rect x="184" y="20" width="12" height="20" fill="var(--surface)"/><rect x="212" y="20" width="12" height="20" fill="var(--surface)"/><rect x="240" y="20" width="12" height="20" fill="var(--surface)"/><rect x="268" y="20" width="12" height="20" fill="var(--surface)"/><rect x="296" y="20" width="12" height="20" fill="var(--surface)"/>
+            <rect x="80" y="62" width="220" height="26" fill="var(--text-faint)" opacity=".5"/>
+            <rect x="80" y="88" width="220" height="12" fill="var(--accent-2)" opacity=".35"/>
+            <rect x="140" y="100" width="100" height="34" fill="var(--accent)" opacity=".75"/>
+            <rect x="140" y="134" width="100" height="8" fill="var(--accent-2)" opacity=".45"/>
+            <rect x="80" y="142" width="220" height="30" fill="var(--warn)" opacity=".45"/>
+            <rect x="80" y="172" width="220" height="8" fill="var(--accent-2)" opacity=".45"/>
+            <rect x="60" y="180" width="260" height="22" fill="var(--text-faint)" opacity=".7"/>
+          </g>
+          <text class="t" x="190" y="122" text-anchor="middle" style="font-weight:700">다이(Si)</text>
+          <g class="t t-dim" font-size="12"><text x="330" y="56">방열판 핀 → 공기</text><text x="330" y="80">방열판 바닥</text><text x="330" y="99">TIM2</text><text x="330" y="160">뚜껑(Cu, IHS)</text><text x="330" y="141">TIM1</text><text x="330" y="197">기판·범프 (아래로는 열이 조금)</text></g>
+          <text class="t t-dim" x="190" y="230" text-anchor="middle" font-size="12">※ 그림은 위아래를 뒤집어, 열이 위로 가도록 그렸다</text>
+        </g>
+        <g data-step="2">
+          <line x1="190" y1="128" x2="190" y2="30" stroke="var(--accent)" stroke-width="5" marker-end="url(#ht-ar3)" opacity=".85"/>
+          <defs><marker id="ht-ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+          <text class="t t-acc" x="200" y="262" text-anchor="middle" style="font-weight:700">Q = P : 다이 → TIM1 → 뚜껑 → TIM2 → 방열판 → 공기</text>
+        </g>
+        <g data-step="3">
+          <g stroke="var(--text)" stroke-width="2" fill="none">
+            <line x1="520" y1="290" x2="520" y2="270"/>
+            <path d="M520,270 l-8,-4 l16,-8 l-16,-8 l16,-8 l-8,-4"/>
+            <line x1="520" y1="238" x2="520" y2="226"/>
+            <path d="M520,226 l-8,-4 l16,-8 l-16,-8 l16,-8 l-8,-4"/>
+            <line x1="520" y1="194" x2="520" y2="182"/>
+            <path d="M520,182 l-8,-4 l16,-8 l-16,-8 l16,-8 l-8,-4"/>
+            <line x1="520" y1="150" x2="520" y2="138"/>
+            <path d="M520,138 l-8,-4 l16,-8 l-16,-8 l16,-8 l-8,-4"/>
+            <line x1="520" y1="106" x2="520" y2="94"/>
+            <path d="M520,94 l-8,-4 l16,-8 l-16,-8 l16,-8 l-8,-4"/>
+            <line x1="520" y1="62" x2="520" y2="44"/>
+            <line x1="505" y1="44" x2="535" y2="44"/><line x1="510" y1="38" x2="530" y2="38"/><line x1="515" y1="32" x2="525" y2="32"/>
+          </g>
+          <circle cx="520" cy="292" r="6" fill="var(--accent)"/>
+          <g class="t" font-size="12"><text x="540" y="260">R_die</text><text x="540" y="216">R_TIM1</text><text x="540" y="172">R_뚜껑 + R_퍼짐</text><text x="540" y="128">R_TIM2</text><text x="540" y="84">R_방열판 (1/ηhA)</text><text x="540" y="48">T_A (주위)</text><text x="540" y="300" fill="var(--accent)">T_J (Q 주입)</text></g>
+          <text class="t t-dim" x="690" y="240" font-size="12">θ_JC</text><line x1="680" y1="290" x2="680" y2="160" stroke="var(--text-faint)"/>
+          <text class="t t-dim" x="690" y="100" font-size="12">θ_CA</text><line x1="680" y1="155" x2="680" y2="50" stroke="var(--text-faint)"/>
+        </g>
+        <g data-step="4">
+          <polyline points="420,292 440,292 440,262 455,262 455,215 470,215 470,180 485,180 485,150 495,150 495,50" fill="none" stroke="var(--accent)" stroke-width="2.6"/>
+          <text class="t t-acc" x="420" y="312" font-size="12">T_J</text><text class="t" x="460" y="42" font-size="12" fill="var(--accent-2)">T_A</text>
+          <text class="t t-dim" x="740" y="300" text-anchor="end" font-size="12">계단 높이 = Q × R</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>플립칩 패키지의 단면. 다이의 트랜지스터 쪽은 범프로 기판에 붙고, 열은 주로 다이 뒷면을 지나 뚜껑과 방열판으로 간다.</li><li>열의 주 경로는 한 줄이다. 각 층을 같은 열 \(Q = P\)가 지난다.</li><li>그래서 열저항의 직렬 회로가 된다. 다이에서 뚜껑까지가 \(\theta_\mathrm{JC}\), 나머지가 \(\theta_\mathrm{CA}\)다.</li><li>각 저항에서 \(QR\)만큼 온도가 떨어진다. 가장 큰 계단이 설계에서 먼저 손볼 곳이다.</li></ol>
+      <figcaption>패키지를 열저항 회로로 바꾸기. 기판 쪽으로 빠지는 열(병렬 경로)은 보통 10% 안팎이라 처음 어림에서는 무시한다. 다이 크기보다 넓은 뚜껑으로 열이 퍼질 때의 추가 저항(퍼짐 저항)을 함께 넣는다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-stack">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>패키지 열 스택: 층 두께를 끌어 접합 온도 맞추기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-stack"></canvas><span class="hint top">각 층의 흰 원을 위아래로 끌면 두께가 바뀐다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>칩 전력 P <output id="stk-P-out"></output></span><input type="range" id="stk-P" min="10" max="300" step="5" value="120"></label>
+          <div class="ctrl"><span>TIM1 재료</span><div class="seg" id="stk-tim"><button data-value="grease" class="on">그리스</button><button data-value="solder">땜납</button><button data-value="indium">인듐</button></div></div>
+          <label class="ctrl"><span>방열판 θ<sub>SA</sub> <output id="stk-sa-out"></output></span><input type="range" id="stk-sa" min="0.05" max="1" step="0.01" value="0.25"></label>
+          <label class="check"><input type="checkbox" id="stk-sp" checked> 뚜껑의 퍼짐 저항 포함</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">접합 온도 T<sub>J</sub></span><span class="v" id="stk-tj">—</span></div>
+        <div class="stat"><span class="k">θ<sub>JC</sub></span><span class="v" id="stk-jc">—</span></div>
+        <div class="stat"><span class="k">θ<sub>JA</sub></span><span class="v" id="stk-ja">—</span></div>
+        <div class="stat"><span class="k">가장 큰 저항</span><span class="v" id="stk-max">—</span></div>
+      </div>
+      <div class="sim-note">다이 1 cm², 뚜껑·방열판 바닥 9 cm², 주위 35 °C. 왼쪽 층 그림의 높이는 두께를 로그 눈금으로 나타낸다. 오른쪽은 열 경로를 따라 떨어지는 온도 계단(빨간 점선이 105 °C 한계). 퍼짐 저항은 원형 열원–원판 근사식(Lee–Song–Yovanovich)으로 계산한다. 해볼 것: ① 기본 상태에서 가장 큰 계단은 어디인가? TIM1을 땜납으로 바꾸면 \(T_\mathrm J\)가 몇 도 내려가는가? ② 뚜껑을 0.5 mm로 얇게 하면 퍼짐 저항이 커져 \(\theta_\mathrm{JC}\)가 오히려 커진다 — 뚜껑의 역할은 "열을 옆으로 넓히는 것"이다. ③ 300 W에서 105 °C를 지키려면 \(\theta_\mathrm{SA}\)를 얼마까지 낮춰야 하나?</div>
+    </div>
+    <div class="tangle" id="tg-tj">
+      <p>전력 <span class="tn" data-var="P" data-min="5" data-max="400" data-step="5" data-unit=" W">100</span>인 칩의 \(\theta_\mathrm{JC}\) = <span class="tn" data-var="jc" data-min="0.02" data-max="2" data-step="0.02" data-unit=" K/W">0.20</span>, \(\theta_\mathrm{CS}\) = <span class="tn" data-var="cs" data-min="0.01" data-max="1" data-step="0.01" data-unit=" K/W">0.08</span>, \(\theta_\mathrm{SA}\) = <span class="tn" data-var="sa" data-min="0.05" data-max="5" data-step="0.05" data-unit=" K/W">0.35</span>, 주위 <span class="tn" data-var="Ta" data-min="0" data-max="60" data-step="1" data-unit=" °C">35</span>이면 \(\theta_\mathrm{JA}\) = <span class="tn-out" data-out="ja"></span>, 접합 온도는 <span class="tn-out" data-out="tj"></span>다. <span class="tn-out ht-out" data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="서버 칩의 접합 온도와 필요한 방열판">
+      <p>100 W 칩의 \(\theta_\mathrm{JC} = 0.20\) K/W, 열 계면 물질 \(\theta_\mathrm{CS} = 0.08\) K/W, 방열판 \(\theta_\mathrm{SA} = 0.35\) K/W이고 서버 안 공기는 35 °C다. (a) 접합 온도를 구하라. (b) 접합 온도를 85 °C로 낮추려면 \(\theta_\mathrm{SA}\)가 얼마여야 하는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 직렬 합 \(\theta_\mathrm{JA}\)를 구해 \(T_\mathrm J = T_\mathrm A + P\theta_\mathrm{JA}\). (b)는 허용 \(\theta_\mathrm{JA}\)에서 앞의 두 저항을 뺀다.</div>
+        <div class="step"><b>풀이</b> (a) \(\theta_\mathrm{JA} = 0.20+0.08+0.35 = 0.63\) K/W, \(T_\mathrm J = 35 + 100\times0.63 = 98\) °C. (b) 허용 \(\theta_\mathrm{JA} = (85-35)/100 = 0.50\) K/W, \(\theta_\mathrm{SA} = 0.50 - 0.28 = 0.22\) K/W.</div>
+        <div class="answer">(a) 98 °C (b) θ<sub>SA</sub> ≤ 0.22 K/W</div>
+        <div class="step"><b>검토</b> 방열판 열저항을 37% 줄여야 접합 온도가 13 °C 내려간다. 같은 효과를 \(\theta_\mathrm{CS}\)에서 얻으려면 TIM을 0으로 만들어도 모자란다(0.08뿐). 가장 큰 저항부터 줄이는 것이 원칙이다.</div>
+      </details>
+    </div>
+    <h3>퍼짐 저항: 작은 열원은 넓은 판보다 뜨겁다</h3>
+    <p>열원이 판보다 작으면 열은 먼저 옆으로 퍼진 뒤에야 넓은 단면을 쓸 수 있다. 이 퍼짐에 드는 추가 저항이 <span class="term">퍼짐 저항</span><span class="en">(spreading resistance)</span>이다. 반지름 \(a\)인 원형 열원이 반무한 매질 위에 있을 때(평균 온도 기준) 라플라스 방정식의 해는</p>
+    <div class="formula">$$R_\mathrm{sp} = \frac{1}{4\kappa a}\quad(\text{반무한 매질, 원형 열원})$$<div class="where">\(a\)에 반비례할 뿐 \(a^2\)(넓이)에 반비례하지 않는다. 열원을 작게 만들수록 저항이 크게 늘어 핫스팟 온도가 평균보다 훨씬 높아진다. 다이 안의 핫스팟, 레이저 다이오드의 활성 영역, 접촉 저항 모두 이 식으로 어림한다. <code>Thermo.Rth.spreadDisk(κ, a)</code>.</div></div>
+    <figure class="mini" id="mini-spread">
+      <div class="mini-view" style="position:relative"><canvas id="cv-spread"></canvas><span class="hint top">곡선 위 흰 원을 좌우로 끈다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>열원 전력 <output id="spr-P-out"></output></span><input type="range" id="spr-P" min="0.01" max="2" step="0.01" value="0.5"></label><span class="readout" id="spr-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>열원 반지름 \(a\)에 따른 퍼짐 저항(로그–로그). 주황은 실리콘, 파랑 점선은 구리, 회색 점선은 같은 넓이의 기둥이 300 µm 두께를 곧게 지나간다고 볼 때의 1D 저항 \(L/\kappa\pi a^2\)이다. 열원이 두께보다 작으면 1D 계산은 저항을 크게 과대평가하고, 열원이 두께보다 훨씬 크면 퍼짐 저항이 무시할 만해진다.</figcaption>
+    </figure>
+    <div class="example" data-title="핫스팟의 퍼짐 저항">
+      <p>실리콘 다이 표면의 반지름 50 µm 영역에서 0.5 W가 난다. 다이를 반무한 매질로 보고 (a) 퍼짐 저항과 (b) 주변 다이보다 높은 핫스팟의 평균 온도 상승을 구하라. (c) 같은 넓이의 기둥이 300 µm 두께를 옆으로 퍼지지 않고 지나간다고 가정하면 저항은 얼마인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(R_\mathrm{sp} = 1/4\kappa a\), \(\Delta T = PR_\mathrm{sp}\). (c)는 평판 \(L/\kappa A\)에 \(A = \pi a^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(R_\mathrm{sp} = 1/(4\times148\times50\times10^{-6}) = 33.8\) K/W. (b) \(\Delta T = 0.5\times33.8 = 16.9\) K. (c) \(R_\mathrm{1D} = 300\times10^{-6}/(148\times\pi\times(50\times10^{-6})^2) = 258\) K/W.</div>
+        <div class="answer">(a) 33.8 K/W (b) 약 17 K (c) 258 K/W — 퍼짐이 저항을 8배 가까이 줄인다</div>
+        <div class="step"><b>검토</b> 핫스팟 열류 밀도는 \(0.5/(\pi\times(50\ \mu\mathrm m)^2) = 6.4\times10^3\) W/cm²로 다이 평균(수십–100 W/cm²)보다 훨씬 크지만, 퍼짐 덕분에 온도 상승은 17 K에 그친다. 그래도 다이 평균 온도 위에 더해지므로 전력 지도를 고르게 짜는 것(코어 배치, 동적 전력 관리)이 중요하다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>핫스팟이 칩의 열 한계를 정한다</strong><p>패키지 규격서의 \(\theta_\mathrm{JA}\)는 전력이 다이 전체에 고르게 퍼진다고 보고 잰 값이다. 실제 프로세서는 코어·캐시·입출력 영역의 전력 밀도가 열 배 넘게 달라, 평균 온도는 낮아도 코어 위가 먼저 한계에 닿는다. 그래서 패키지 설계는 다이 두께(얇게 갈면 옆으로 덜 퍼진다), 솔더 TIM과 그리스 TIM의 선택, 뚜껑의 두께와 재질을 핫스팟 기준으로 고르고, 칩 안에는 온도 센서를 여러 개 두어 가장 뜨거운 곳을 따라 클럭을 조절한다. 3D 적층·HBM처럼 다이를 겹치면 위 다이의 열이 아래 다이를 지나가야 하므로 열저항 회로가 직렬로 길어진다. → <a href="https://semi.euiyun.com/packaging/chapters/thermal.html">PackagingBook · 열·기계·전기 설계</a></p></div>
+    <div class="drill" id="drill-tj" data-title="접합 온도·열저항 회로 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="heat-eq">
+    <h2>열 확산 방정식과 열 시간 상수</h2>
+    <p>정상 상태에서는 들어온 열이 그대로 나간다. 그러나 전력을 켜는 순간, 웨이퍼를 램프 앞에 놓는 순간에는 열의 일부가 물질을 데우는 데 쓰인다. 작은 부피 \(dV\)의 에너지 수지를 쓰면, 내부 에너지의 증가율 = 들어온 열류 − 나간 열류 + 그 안에서 생긴 열이다. 열류의 알짜 유출은 \(\nabla\cdot\mathbf q\)이고 푸리에 법칙을 넣으면</p>
+    <div class="formula">$$\rho c\,\frac{\partial T}{\partial t} = \nabla\cdot(\kappa\nabla T) + \dot q\quad\xrightarrow{\ \kappa\ \text{일정}\ }\quad \frac{\partial T}{\partial t} = \alpha\nabla^2T + \frac{\dot q}{\rho c},\qquad \alpha = \frac{\kappa}{\rho c}$$<div class="where">\(\rho\) 밀도, \(c\) 비열, \(\dot q\)[W/m³] 열 생성률(줄 가열 등). 이것이 <span class="term">열 확산 방정식</span><span class="en">(heat diffusion equation)</span>이고, \(\alpha\)[m²/s]가 <span class="term">열 확산율</span><span class="en">(thermal diffusivity)</span>이다. 픽의 제2법칙 \(\partial C/\partial t = D\nabla^2C\)(<a href="diffusion.html">16장</a>)와 같은 식이므로, 16장의 erfc 해와 수치 풀이(<code>Thermo.diffuse1d</code>)를 그대로 쓸 수 있다.</div></div>
+    <p>확산 방정식에서 시간과 길이는 언제나 \(x^2\sim\alpha t\)로 묶인다. 열이 시간 \(t\) 동안 스며드는 거리는 약 \(\sqrt{\alpha t}\)이고, 두께 \(L\)을 건너는 데는 약 \(L^2/\alpha\)가 걸린다. 실리콘은 \(\alpha = 148/(2329\times712) = 8.9\times10^{-5}\) m²/s로 금속에 가깝게 빠르고, SiO₂(\(8.7\times10^{-7}\))는 100배 느리다.</p>
+    <div class="predict" data-for="mini-rod">
+      <p>775 µm 실리콘 웨이퍼의 앞면을 갑자기 100 K 높게 유지하면(뒷면은 단열), 뒷면 온도가 50 K 오르는 데 약 2.5 ms가 걸린다. 두께가 두 배(1550 µm)인 웨이퍼라면?</p>
+      <div class="opts"><button class="opt">같은 2.5 ms — 같은 재료니까</button><button class="opt">√2배, 약 3.6 ms</button><button class="opt">2배, 약 5 ms</button><button class="opt" data-correct>4배, 약 10 ms</button></div>
+      <div class="quiz-exp">확산 시간은 \(L^2/\alpha\)에 비례한다. 두께가 2배면 4배다. 아래 미니 실험에서 두께를 바꿔 "뒷면 50%" 시각을 비교해 보라.</div>
+    </div>
+    <figure class="mini" id="mini-rod">
+      <div class="mini-view"><canvas id="cv-rod"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>재료</span><div class="seg" id="rod-mat"><button data-value="Si" class="on">Si</button><button data-value="SiO2">SiO₂</button><button data-value="Cu">Cu</button></div></div>
+        <div class="ctrl"><span>두께</span><div class="seg" id="rod-L"><button data-value="775" class="on">775 µm</button><button data-value="1550">1550 µm</button></div></div>
+        <button class="btn" id="rod-play" type="button">▶ 앞면 가열</button>
+        <span class="readout" id="rod-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>1D 열 방정식을 <code>Thermo.diffuse1d</code>(크랭크–니콜슨)로 푼다. 위 띠는 두께 방향 온도 지도(<code>Thermo.heatColor</code>), 아래는 온도 분포(주황)와 반무한 매질의 erfc 해(파란 점선), 회색 세로선이 확산 길이 \(2\sqrt{\alpha t}\)다. 재료와 상관없이 화면 속도가 같게 시간을 늘이거나 줄였으므로, 실제 시각은 오른쪽 값을 보라. 뒷면에 열이 닿기 전까지는 erfc 해와 겹치고, 그 뒤로는 단열면에 막혀 위로 올라간다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-difflen">
+      <p>시간 <span class="tn" data-var="t" data-min="0.01" data-max="100" data-step="0.01" data-unit=" ms">1.00</span> 동안 열이 스며드는 거리 \(\sqrt{\alpha t}\)는 실리콘에서 <span class="tn-out" data-out="si"></span>, 구리에서 <span class="tn-out" data-out="cu"></span>, SiO₂에서 <span class="tn-out" data-out="ox"></span>, 물에서 <span class="tn-out" data-out="w"></span>다. 이 시간에 실리콘 속 열이 닿는 거리가 웨이퍼 두께(775 µm)의 <span class="tn-out" data-out="frac"></span>이다.</p>
+    </div>
+    <h3>집중 용량 모형과 열 시간 상수</h3>
+    <p>물체 속 온도가 거의 고르게 유지된다면 공간 분포를 잊고 물체를 점 하나로 볼 수 있다. 열용량 \(C = \rho cV\)[J/K]인 물체가 열저항 \(R\)을 거쳐 온도 \(T_\infty\)의 주위와 이어져 있으면</p>
+    <div class="formula">$$C\frac{dT}{dt} = P - \frac{T - T_\infty}{R}\quad\Rightarrow\quad T(t) = T_\infty + PR + (T_0 - T_\infty - PR)\,e^{-t/\tau},\qquad \tau = RC$$<div class="where">이것이 <span class="term">집중 용량 모형</span><span class="en">(lumped capacitance model)</span>이고, \(\tau\)가 <span class="term">열 시간 상수</span><span class="en">(thermal time constant)</span>다. 전기 RC 회로와 똑같아서 \(\tau\)가 지나면 최종 변화의 63%, \(3\tau\)면 95%에 이른다(<code>Thermo.lumped</code>). 내부가 고르다는 가정은 <span class="term">비오 수</span><span class="en">(Biot number)</span> \(\mathrm{Bi} = hL_c/\kappa < 0.1\)(\(L_c = V/A\))일 때 맞다 — 바깥으로 나가는 저항이 안에서 퍼지는 저항보다 훨씬 클 때다.</div></div>
+    <p>식각 장비의 웨이퍼가 좋은 예다. 웨이퍼는 플라스마에서 수 W/cm²의 열을 받고, 정전척(ESC) 위에 놓여 뒷면의 헬륨 기체를 통해 냉각된 척으로 열을 버린다. 8장에서 본 것처럼, 웨이퍼와 척 사이 틈(수~수십 µm)이 헬륨의 평균 자유 행로와 비슷해 열전달 계수 \(h\)가 압력에 따라 오르다 포화한다. 여기서는 대표 모형 \(h = h_0 + \kappa_\mathrm{He}/(\delta + 4\lambda)\)(틈 \(\delta = 10\) µm, 양쪽 면의 온도 뜀을 \(2\lambda\)씩)으로 둔다. 웨이퍼 두께 방향 확산 시간(약 7 ms)이 시간 상수(약 0.5 s)보다 훨씬 짧고 \(\mathrm{Bi}\sim10^{-2}\)이므로 집중 용량 모형이 잘 맞는다.</p>
+    <div class="sim" id="sim-esc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>정전척 위의 웨이퍼: 헬륨 압력으로 온도 맞추기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-esc"></canvas><span class="hint top">왼쪽 h(P) 곡선 위 흰 원을 끌어 헬륨 압력을 정한다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>플라스마 열류 <output id="esc-q-out"></output></span><input type="range" id="esc-q" min="0.5" max="6" step="0.1" value="3"></label>
+          <label class="ctrl"><span>척(냉각수) 온도 <output id="esc-tc-out"></output></span><input type="range" id="esc-tc" min="-20" max="60" step="1" value="30"></label>
+          <button class="btn primary" id="esc-on" type="button">플라스마 끄기</button>
+          <button class="btn" id="esc-play" type="button"></button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">h (He 틈)</span><span class="v" id="esc-h">—</span></div>
+        <div class="stat"><span class="k">시간 상수 τ = C″/h</span><span class="v" id="esc-tau">—</span></div>
+        <div class="stat"><span class="k">웨이퍼 온도 (정상 상태)</span><span class="v" id="esc-tw">—</span></div>
+        <div class="stat"><span class="k">목표 60 ± 2 °C 유지</span><span class="v" id="esc-goal">—</span></div>
+      </div>
+      <div class="sim-note">웨이퍼(Si 775 µm)의 넓이당 열용량 \(C'' = \rho cd = 1285\) J/(m²·K), 정상 상태 온도 \(T_w = T_\text{척} + q/h\). 오른쪽 그래프는 실시간 웨이퍼 온도(주황)와 척 온도(파랑)다. 해볼 것: ① 헬륨 압력을 5 Torr에서 20 Torr로 올리면 웨이퍼가 몇 도 식고 시간 상수는 어떻게 바뀌는가? ② 플라스마를 껐다 켜 보고 \(\tau\)가 지나면 변화의 63%가 끝나는지 확인한다. ③ 과제: 웨이퍼를 60 ± 2 °C에 5초 동안 머물게 하라 — 압력만으로도, 척 온도만으로도 할 수 있다. 어느 쪽이 더 빨리 반응하는가?</div>
+    </div>
+    <div class="callout semi"><strong>웨이퍼 온도는 뒷면 헬륨과 척 냉각수가 정한다</strong><p>식각 속도, 선택비, 측벽 보호막의 증착은 웨이퍼 온도에 민감해서, 고종횡비 식각이나 극저온 식각은 웨이퍼 온도를 ±1 °C 안에서 다룬다. 정전척은 웨이퍼를 전기적으로 붙잡아 틈을 일정하게 하고, 뒷면 헬륨 압력을 구역(가운데·가장자리)별로 따로 조절해 플라스마 열이 큰 곳을 더 세게 식힌다. 냉각수 칠러는 척 온도를 정하지만 반응이 수십 초로 느리고, 헬륨 압력은 이 시뮬레이터처럼 1초 안에 웨이퍼 온도를 바꾼다. 헬륨이 새거나(웨이퍼가 휘어 틈이 커지면) 압력이 떨어지면 웨이퍼가 순식간에 수십 도 뜨거워져 레지스트가 타거나 식각 프로파일이 바뀐다. → <a href="https://semi.euiyun.com/etch/chapters/reactors.html">EtchBook · 반응기: 배럴에서 ICP까지</a></p></div>
+    <div class="example" data-title="웨이퍼의 두께 방향 확산 시간과 척 위의 시간 상수">
+      <p>(a) 775 µm 실리콘 웨이퍼(\(\kappa = 148\), \(\rho = 2329\) kg/m³, \(c = 712\) J/(kg·K))의 열 확산율과 두께를 건너는 특성 시간 \(L^2/\alpha\)를 구하라. (b) 이 웨이퍼가 헬륨 틈으로 \(h = 2000\) W/(m²·K)에 이어져 있을 때 집중 용량 시간 상수와, 플라스마 열류 3 W/cm²에서 척보다 높아지는 정상 상태 온도 차를 구하라. (c) 비오 수를 구해 (b)의 모형이 타당한지 판단하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\alpha = \kappa/\rho c\). 넓이당 열용량 \(C'' = \rho cd\)와 넓이당 저항 \(1/h\)의 곱이 \(\tau\). 정상 상태에서 \(q = h\Delta T\). \(\mathrm{Bi} = hd/\kappa\)(한쪽 면 냉각이므로 \(L_c = d\)).</div>
+        <div class="step"><b>풀이</b> (a) \(\alpha = 148/(2329\times712) = 8.92\times10^{-5}\) m²/s, \(L^2/\alpha = (7.75\times10^{-4})^2/8.92\times10^{-5} = 6.73\times10^{-3}\) s. (b) \(C'' = 2329\times712\times7.75\times10^{-4} = 1285\) J/(m²·K), \(\tau = 1285/2000 = 0.643\) s. \(\Delta T = 3\times10^4/2000 = 15\) K. (c) \(\mathrm{Bi} = 2000\times7.75\times10^{-4}/148 = 0.010\).</div>
+        <div class="answer">(a) α = 8.9×10⁻⁵ m²/s, 약 7 ms (b) τ ≈ 0.64 s, ΔT = 15 K (c) Bi ≈ 0.01 ≪ 0.1 — 집중 용량 모형이 맞다</div>
+        <div class="step"><b>검토</b> 두께 방향 확산(7 ms)이 냉각 시간 상수(0.64 s)보다 100배 빠르다. 그래서 웨이퍼는 두께 방향으로는 언제나 고르고, 온도 문제는 거의 언제나 웨이퍼의 <b>면 방향</b>(가운데와 가장자리의 차이)에서 생긴다.</div>
+      </details>
+    </div>
+    <h3>얇은 다이의 핫스팟: 2D 열 방정식</h3>
+    <p>다이처럼 얇고 넓은 판이 아래쪽 전체로 열을 버리면, 판 속에서는 열이 옆으로 퍼지고 동시에 아래로 빠진다. 다이 두께 \(t\)에 걸쳐 평균하면 2D 식이 된다.</p>
+    <div class="formula">$$\rho c\,t\,\frac{\partial T}{\partial t} = \kappa t\,\nabla_{\!xy}^2T + q''(x,y) - \frac{T - T_s}{R''},\qquad L_s = \sqrt{\kappa t R''}$$<div class="where">\(q''\)는 넓이당 전력 밀도[W/m²], \(R''\)[m²·K/W]는 다이 뒷면에서 방열 기준점 \(T_s\)까지의 넓이당 열저항(TIM·뚜껑·방열판을 다이 넓이로 환산). \(L_s\)는 열이 옆으로 퍼지는 거리, <b>퍼짐 길이</b>다. 열원이 \(L_s\)보다 작으면 퍼짐 덕분에 온도가 1D 어림 \(q''R''\)보다 훨씬 낮아지고, 열원끼리 \(L_s\)보다 가까우면 서로를 데운다.</div></div>
+    <div class="sim" id="sim-hotspot">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>다이 위의 핫스팟: 열원을 끌어 놓고 온도 지도 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-hot"></canvas><span class="hint top">흰 테두리 열원 A·B를 끌어 옮긴다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>열원 A (1×1 mm) <output id="hot-pa-out"></output></span><input type="range" id="hot-pa" min="0" max="10" step="0.5" value="4"></label>
+          <label class="ctrl"><span>열원 B (2×2 mm) <output id="hot-pb-out"></output></span><input type="range" id="hot-pb" min="0" max="20" step="0.5" value="8"></label>
+          <div class="ctrl"><span>다이 두께</span><div class="seg" id="hot-t"><button data-value="100">100 µm</button><button data-value="300" class="on">300 µm</button><button data-value="775">775 µm</button></div></div>
+          <label class="ctrl"><span>뒷면 R″ <output id="hot-r-out"></output></span><input type="range" id="hot-r" min="-1.7" max="0" step="0.05" value="-1"></label>
+          <button class="btn" id="hot-ss" type="button">정상 상태로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">최고 온도 상승 T<sub>max</sub> − T<sub>s</sub></span><span class="v" id="hot-tm">—</span></div>
+        <div class="stat"><span class="k">1D 어림 q″R″ (A)</span><span class="v" id="hot-1d">—</span></div>
+        <div class="stat"><span class="k">퍼짐 길이 L<sub>s</sub></span><span class="v" id="hot-ls">—</span></div>
+        <div class="stat"><span class="k">흐른 시간</span><span class="v" id="hot-time">—</span></div>
+      </div>
+      <div class="sim-note">10 × 10 mm 실리콘 다이를 50 × 50 칸으로 나눠 위의 2D 식을 양해법으로 푼다(가장자리 단열, 배경 전력 10 W 고르게). 왼쪽은 \(T - T_s\)의 온도 지도, 오른쪽은 열원 A의 중심을 지나는 가로선의 온도(주황)와 1D 어림(점선)이다. 해볼 것: ① 다이를 100 µm로 얇게 갈면 퍼짐 길이가 줄어 A의 최고 온도가 올라간다. ② 두 열원을 붙여 놓으면 최고 온도가 얼마나 오르나? 퍼짐 길이의 두세 배 떨어뜨리면? ③ \(R''\)를 줄이면(좋은 TIM·수랭) 1D 어림과 실제 최고 온도의 비가 어떻게 바뀌는가?</div>
+    </div>
+    <p>급속 열처리(RTP)도 같은 식으로 이해한다. 램프는 웨이퍼를 초당 50–250 °C씩 데우는데, 가장자리는 넓이당 복사로 잃는 열이 더 커서 가운데보다 늦게 데워진다. 면 방향 온도 차가 수 °C만 돼도 열팽창 차이로 생긴 응력이 고온의 실리콘을 소성 변형시켜 슬립 결함을 만든다. 그래서 RTP는 가장자리를 링으로 덮고 램프 구역별 출력을 따로 조절한다 → <a href="https://semi.euiyun.com/process/chapters/anneal.html">ProcessBook · 확산과 열처리</a>.</p>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="cooling">
+    <h2>대류·복사 냉각과 줄 가열</h2>
+    <p>열은 결국 고체 밖의 유체나 공간으로 나가야 한다. 고체 표면에서 움직이는 유체로 열이 옮겨 가는 것을 대류라 한다. 표면 바로 옆의 얇은 경계층에서는 유체가 거의 멈춰 있어 열이 전도로 건너가고, 그 바깥에서는 흐름이 열을 쓸어 간다(경계층은 <a href="../../fluid-mechanics/chapters/external-flow.html">유체역학 · 외부 유동</a>). 이 복잡한 과정을 공학에서는 계수 하나로 요약한다.</p>
+    <div class="formula">$$q = h\,(T_s - T_\infty),\qquad R_\mathrm{conv} = \frac{1}{hA}$$<div class="where">이 식을 <span class="term">뉴턴 냉각 법칙</span><span class="en">(Newton's law of cooling)</span>, \(h\)[W/(m²·K)]를 <span class="term">대류 열전달 계수</span><span class="en">(convection heat transfer coefficient)</span>라 한다. \(h\)는 물질 상수가 아니라 흐름의 성질이다. 대략 \(h\approx\kappa_\text{유체}/\delta\)(경계층 두께 \(\delta\))이므로 흐름이 빠를수록, 유체의 \(\kappa\)가 클수록 커진다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 310" role="img" aria-label="냉각 방식별 열전달 계수 h의 대표 범위를 로그 눈금 막대로 비교">
+        <g stroke="var(--grid)"><line x1="160" y1="40" x2="160" y2="270"/><line x1="280" y1="40" x2="280" y2="270"/><line x1="400" y1="40" x2="400" y2="270"/><line x1="520" y1="40" x2="520" y2="270"/><line x1="640" y1="40" x2="640" y2="270"/><line x1="760" y1="40" x2="760" y2="270"/></g>
+        <line x1="160" y1="270" x2="760" y2="270" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <g class="t t-dim" text-anchor="middle" font-size="12"><text x="160" y="288">1</text><text x="280" y="288">10</text><text x="400" y="288">100</text><text x="520" y="288">10³</text><text x="640" y="288">10⁴</text><text x="760" y="288">10⁵</text></g>
+        <text class="t t-dim" x="760" y="306" text-anchor="end" font-size="12">h (W/(m²·K)), 로그 눈금</text>
+        <g class="t" text-anchor="end" font-size="13">
+          <text x="150" y="58">자연 대류 (공기)</text><text x="150" y="90">복사 (ε 0.8)</text><text x="150" y="122">강제 대류 (공기)</text><text x="150" y="154">자연 대류 (물)</text><text x="150" y="186">강제 대류 (물)</text><text x="150" y="218">정전척 He 틈</text><text x="150" y="250">끓음·응축</text>
+        </g>
+        <rect x="196" y="46" width="132" height="16" rx="3" fill="var(--accent-2)" opacity=".75"/>
+        <rect x="243" y="78" width="229" height="16" rx="3" fill="var(--accent)" opacity=".75"/>
+        <rect x="328" y="110" width="120" height="16" rx="3" fill="var(--accent-2)" opacity=".75"/>
+        <rect x="364" y="142" width="156" height="16" rx="3" fill="var(--accent-2)" opacity=".75"/>
+        <rect x="400" y="174" width="276" height="16" rx="3" fill="var(--accent-2)" opacity=".75"/>
+        <rect x="534" y="206" width="83" height="16" rx="3" fill="var(--warn)" opacity=".8"/>
+        <rect x="568" y="238" width="192" height="16" rx="3" fill="var(--accent-2)" opacity=".75"/>
+        <g class="t t-dim" font-size="11"><text x="334" y="58">2–25</text><text x="478" y="90">300 K 5 → 1300 K 400</text><text x="454" y="122">25–250</text><text x="526" y="154">50–1000</text><text x="682" y="186">10²–2×10⁴</text><text x="623" y="218">5–40 Torr</text><text x="566" y="250" text-anchor="end">2.5×10³–10⁵</text></g>
+      </svg>
+      <figcaption>열전달 계수의 대표 범위(Incropera 수준의 교과서 값, 정전척 헬륨은 3절의 모형). 공기 자연 대류에서 끓음까지 네 자릿수가 넘게 차이 난다. 데이터 센터가 공랭에서 수랭·액침 냉각으로 넘어가는 이유가 이 그림에 있다. 고온의 진공 속 웨이퍼처럼 유체가 없으면 복사가 유일한 길이다.</figcaption>
+    </figure>
+    <h3>복사 냉각과 선형화</h3>
+    <p>방사율 \(\varepsilon\)인 표면이 온도 \(T_\infty\)의 넓은 주위와 주고받는 알짜 복사는 슈테판–볼츠만 법칙(<a href="quantum-statistics.html">7장</a>)으로 \(q = \varepsilon\sigma(T_s^4 - T_\infty^4)\)이다. 4제곱이라 회로에 넣기 불편하므로 인수분해해 대류와 같은 꼴로 만든다.</p>
+    <div class="formula">$$q = \underbrace{\varepsilon\sigma(T_s^2+T_\infty^2)(T_s+T_\infty)}_{h_\mathrm{rad}}(T_s - T_\infty),\qquad h_\mathrm{rad}\approx 4\varepsilon\sigma\bar T^{\,3}$$<div class="where">\(h_\mathrm{rad}\)가 <span class="term">복사 열전달 계수</span><span class="en">(radiation heat transfer coefficient)</span>, \(\bar T\)는 두 온도의 평균(K). 상온에서 \(h_\mathrm{rad}\approx 6\) W/(m²·K)로 자연 대류와 비슷하고, 1000 °C에서는 수백으로 커진다. 열저항으로 \(R_\mathrm{rad} = 1/(4\varepsilon\sigma\bar T^3A)\) — <code>Thermo.Rth.rad(ε, T, A)</code>.</div></div>
+    <figure class="mini" id="mini-hrad">
+      <div class="mini-view" style="position:relative"><canvas id="cv-hrad"></canvas><span class="hint top">곡선 위 흰 원을 좌우로 끈다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>방사율 ε <output id="hrad-e-out"></output></span><input type="range" id="hrad-e" min="0.05" max="1" step="0.05" value="0.7"></label><span class="readout" id="hrad-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>표면 온도 \(T_s\)에 따른 복사 열전달 계수(주위 300 K). 주황이 정확한 \(h_\mathrm{rad}\), 파란 점선이 평균 온도로 선형화한 \(4\varepsilon\sigma\bar T^3\), 회색 점선이 주위 온도로 선형화한 값이다. 띠는 공기 자연 대류(아래)와 강제 대류(위)의 범위. 평균 온도로 선형화하면 1000 K 차이에서도 오차가 몇 % 안이다.</figcaption>
+    </figure>
+    <div class="example" data-title="RTP 뒤 웨이퍼의 복사 냉각 속도">
+      <p>급속 열처리 챔버에서 1100 °C의 300 mm 실리콘 웨이퍼(두께 775 µm, \(\rho = 2329\) kg/m³, 고온 비열 \(c = 950\) J/(kg·K) 대표값, 방사율 0.7)의 램프를 끈 순간, 두 면에서 복사로만 식는다(차가운 벽, \(T_\infty^4\) 무시). (a) 처음 냉각 속도 \(dT/dt\)를 구하라. (b) 그 온도의 복사 열전달 계수 \(4\varepsilon\sigma T^3\)는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 집중 용량: \(\rho c d\,dT/dt = -2\varepsilon\sigma T^4\)(두 면). 웨이퍼 안의 확산 시간(수 ms)이 냉각보다 훨씬 빨라 두께 방향으로 고르다.</div>
+        <div class="step"><b>풀이</b> \(T = 1373\) K, \(\sigma T^4 = 5.670\times10^{-8}\times3.554\times10^{12} = 2.016\times10^5\) W/m². (a) \(2\varepsilon\sigma T^4 = 2.82\times10^5\) W/m², \(\rho cd = 2329\times950\times7.75\times10^{-4} = 1715\) J/(m²·K), \(dT/dt = -2.82\times10^5/1715 = -165\) K/s. (b) \(h_\mathrm{rad} = 4\times0.7\times5.670\times10^{-8}\times1373^3 = 411\) W/(m²·K).</div>
+        <div class="answer">(a) 약 −165 K/s (b) 약 410 W/(m²·K)</div>
+        <div class="step"><b>검토</b> 고온에서 복사는 강제 공랭보다 강한 냉각 수단이다. \(T^4\)에 비례하므로 온도가 내려갈수록 빠르게 느려진다(800 °C에서는 약 60 K/s). 스파이크 어닐이 "봉우리"에서 빨리 내려와야 할 때 복사만으로 모자라 헬륨을 불어 넣는 이유다.</div>
+      </details>
+    </div>
+    <h3>핀과 방열판</h3>
+    <p>\(R = 1/hA\)에서 \(h\)를 키우기 어렵다면 \(A\)를 키운다. 이것이 핀이다. 그러나 핀 끝은 뿌리보다 차가워서 넓이를 다 쓰지 못한다. 두께 \(t_f\), 높이 \(H\)인 판형 핀의 1D 열 방정식을 풀면 실제 방열량과 "핀 전체가 뿌리 온도일 때"의 비, 곧 <span class="term">핀 효율</span><span class="en">(fin efficiency)</span>이</p>
+    <div class="formula">$$\eta_f = \frac{\tanh mH}{mH},\qquad m = \sqrt{\frac{2h}{\kappa t_f}},\qquad R_\mathrm{SA} = \frac{1}{\eta_f h A_\text{핀}}$$<div class="where">\(mH\ll1\)이면 \(\eta_f\to1\), \(mH\gg1\)이면 \(\eta_f\to1/mH\) — 핀을 아무리 높여도 \(\sqrt{h\kappa t_f}\)에 비례하는 만큼만 더 버린다. \(h\)가 큰 팬 냉각일수록 핀이 짧아야 효율이 좋다.</div></div>
+    <div class="sim" id="sim-game">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>과제: 105 °C 아래로, 가장 싸게 — 방열 경로 설계</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-game"></canvas><span class="hint top">핀 위의 흰 원을 위아래로 끌어 핀 높이를 정한다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>TIM2 (가격)</span><div class="seg" id="game-tim"><button data-value="0" class="on">패드 (1)</button><button data-value="1">그리스 (3)</button><button data-value="2">액체 금속 (10)</button></div></div>
+          <div class="ctrl"><span>냉각 (가격)</span><div class="seg" id="game-sink"><button data-value="0" class="on">자연 대류 (4)</button><button data-value="1">팬 (12)</button><button data-value="2">고속 팬 (20)</button></div></div>
+          <button class="btn primary" id="game-sub" type="button">이 설계로 제출</button>
+          <button class="btn" id="game-reset" type="button">기록 지우기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">접합 온도</span><span class="v" id="game-tj">—</span></div>
+        <div class="stat"><span class="k">핀 효율 · 핀 넓이</span><span class="v" id="game-eta">—</span></div>
+        <div class="stat"><span class="k">이 설계의 가격</span><span class="v" id="game-cost">—</span></div>
+        <div class="stat"><span class="k">최고 기록</span><span class="v" id="game-best">—</span></div>
+      </div>
+      <div class="sim-note">180 W 칩, 주위 35 °C, \(\theta_\mathrm{JC} = 0.12\) K/W. TIM2는 9 cm² 뚜껑 위에 놓인다(패드 κ 3·두께 150 µm, 그리스 κ 4·50 µm, 액체 금속 κ 40·25 µm). 알루미늄 핀 20장(두께 0.8 mm, 깊이 10 cm)의 넓이는 높이에 비례하고, 알루미늄 값은 넓이 1 m²당 30이다. 자연 대류 \(h = 8\), 팬 30, 고속 팬 60 W/(m²·K). 해볼 것: ① 자연 대류로는 핀을 아무리 높여도 안 되는 이유를 핀 효율에서 찾는다. ② 고속 팬은 핀이 짧아도 되지만 팬값이 비싸다. ③ 105 °C를 넘지 않는 가장 싼 조합을 찾아 제출하라 — 최저가의 5% 안이면 ★★★.</div>
+    </div>
+    <h3>줄 가열과 자기 가열</h3>
+    <p>전류가 저항을 지나면 전기 에너지가 열이 된다(<a href="../../electromagnetics/chapters/steady-currents.html">전자기학 · 정상 전류</a>). 넓이당 전류 밀도 \(j\)인 도체의 단위 부피당 발열은 \(\dot q = j^2\rho_e\)(\(\rho_e\) 비저항)이고, 소자 전체로는 \(P = I^2R = IV\)다. 이것이 <span class="term">줄 가열</span><span class="en">(Joule heating)</span>이다. 소자가 스스로 낸 열로 자기 온도를 올리는 것을 <span class="term">자기 가열</span><span class="en">(self-heating)</span>이라 한다.</p>
+    <p>최신 트랜지스터는 자기 가열에 특히 약하다. FinFET과 나노시트의 채널은 수 nm 폭의 기둥이나 판이라 열이 빠져나갈 단면이 좁고, 둘레는 열전도도가 낮은 산화막과 low-k로 싸여 있다. 소자 하나의 열저항이 대략 \(10^5\)–\(10^6\) K/W 차수(대표값)로 보고되어, 수십 µW만 써도 채널이 수 K에서 수십 K 뜨거워진다. 배선도 마찬가지다. 넓은 Cu 선이 두께 \(t_d\)의 절연막 위에 있으면 1D 어림으로</p>
+    <div class="formula">$$\Delta T \approx j^2\rho_e\,\frac{t_m t_d}{\kappa_d}\equiv a,\qquad \rho_e = \rho_0(1+\beta\Delta T)\ \Rightarrow\ \Delta T = \frac{a}{1-\beta a}$$<div class="where">\(t_m\) 배선 두께, \(\kappa_d\) 절연막 열전도도, \(\beta\approx0.0039\)/K는 구리 비저항의 온도 계수. 온도가 오르면 저항이 커져 더 뜨거워지는 되먹임 때문에 \(\beta a\to1\)에서 온도가 발산한다 — <span class="term">열 폭주</span><span class="en">(thermal runaway)</span>. 좁은 선은 열이 옆으로도 퍼지므로 실제 온도 상승은 이 1D 값보다 작다.</div></div>
+    <p>배선 온도가 중요한 것은 수명 때문이다. 큰 전류 밀도의 전자 흐름이 금속 원자를 밀어 옮기는 <span class="term">전자 이동</span><span class="en">(electromigration)</span>은 공공이 모여 배선이 끊어지게 한다. 원자의 이동은 확산이므로(<a href="diffusion.html">16장</a>) 아레니우스형으로 온도에 민감하다. 평균 수명은 <span class="term">블랙 식</span><span class="en">(Black's equation)</span>을 따른다.</p>
+    <div class="formula">$$\mathrm{MTTF} = A\,j^{-n}\exp\!\left(\frac{E_a}{kT}\right),\qquad \frac{\mathrm{MTTF}_1}{\mathrm{MTTF}_2} = \left(\frac{j_2}{j_1}\right)^{n}\exp\!\left[\frac{E_a}{k}\left(\frac{1}{T_1}-\frac{1}{T_2}\right)\right]$$<div class="where">구리 배선은 \(n\approx1\)–2, \(E_a\approx0.8\)–1.0 eV(계면 확산). 자기 가열로 배선이 10 °C만 뜨거워져도 수명이 절반 가까이 줄어든다. 신뢰성 시험은 이 식으로 높은 온도·전류에서 잰 수명을 사용 조건으로 환산한다.</div></div>
+    <figure class="mini" id="mini-em">
+      <div class="mini-view" style="position:relative"><canvas id="cv-em"></canvas><span class="hint top">곡선 위 흰 원을 좌우로 끈다</span></div>
+      <div class="mini-ctrl"><div class="ctrl"><span>아래 절연막</span><div class="seg" id="em-d"><button data-value="1.4" class="on">SiO₂</button><button data-value="0.3">low-k</button></div></div><span class="readout" id="em-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>Cu 배선(두께 0.2 µm, \(\rho_0 = 2.2\times10^{-8}\) Ω·m) 아래 1 µm 절연막의 1D 자기 가열. 주황은 비저항 되먹임을 넣은 \(\Delta T\), 회색 점선은 되먹임 없는 \(a\), 빨간 세로선이 열 폭주 전류 밀도다. 오른쪽 값은 칩 온도 105 °C 위에 \(\Delta T\)를 더한 배선 온도에서 블랙 식(\(n = 2\), \(E_a = 0.9\) eV)으로 구한 수명을 1 MA/cm²·105 °C 기준과 비교한 것이다. low-k로 바꾸면 같은 전류에서도 훨씬 뜨겁다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-black">
+      <p>활성화 에너지 <span class="tn" data-var="Ea" data-min="0.5" data-max="1.5" data-step="0.05" data-unit=" eV">0.90</span>인 배선을 <span class="tn" data-var="T1" data-min="25" data-max="150" data-step="1" data-unit=" °C">105</span>에서 <span class="tn" data-var="T2" data-min="50" data-max="350" data-step="1" data-unit=" °C">125</span>로 데우고 전류 밀도를 <span class="tn" data-var="r" data-min="1" data-max="10" data-step="0.1" data-unit="배">1.0</span>로 키우면(\(n = 2\)) 수명이 <span class="tn-out" data-out="af"></span> 줄어든다. 거꾸로, 뒤의 조건(시험)에서 1000시간을 버틴 시편은 앞의 조건(사용)에서 <span class="tn-out ht-out" data-out="use"></span>를 버틴다.</p>
+    </div>
+    <div class="example" data-title="배선의 자기 가열과 전자 이동 수명">
+      <p>두께 0.2 µm의 넓은 Cu 배선(\(\rho_0 = 2.2\times10^{-8}\) Ω·m, \(\beta = 0.0039\)/K)이 두께 1 µm의 low-k(\(\kappa = 0.3\)) 위에 있고, 전류 밀도는 3 MA/cm²다. (a) 1D 어림으로 배선의 온도 상승(비저항 되먹임 포함)을 구하라. (b) 칩 온도가 105 °C일 때, 자기 가열이 없는 경우보다 전자 이동 수명이 몇 배 짧아지는가(\(E_a = 0.9\) eV)?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(a = j^2\rho_0t_mt_d/\kappa_d\), \(\Delta T = a/(1-\beta a)\). 같은 전류 밀도이므로 블랙 식의 지수 인자만 비교한다.</div>
+        <div class="step"><b>풀이</b> \(j = 3\times10^{10}\) A/m². (a) \(a = (3\times10^{10})^2\times2.2\times10^{-8}\times0.2\times10^{-6}\times10^{-6}/0.3 = 13.2\) K, \(\Delta T = 13.2/(1-0.0039\times13.2) = 13.9\) K. (b) \(T_1 = 378.15\) K, \(T_2 = 392.07\) K. \(\exp[0.9/8.617\times10^{-5}\times(1/378.15 - 1/392.07)] = \exp(0.980) = 2.67\).</div>
+        <div class="answer">(a) 약 14 K (b) 약 2.7배 짧아진다</div>
+        <div class="step"><b>검토</b> 되먹임은 5%만 더했지만 온도 14 K가 수명을 1/2.7로 줄였다. 설계 규칙의 최대 전류 밀도는 이렇게 "자기 가열까지 포함한 배선 온도"에서 정한다. 같은 조건을 SiO₂(κ = 1.4) 위에 두면 \(\Delta T\approx2.9\) K다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>배선이 끊어지는 속도는 온도가 정한다</strong><p>전자 이동, 응력 이주, 절연막 파괴(TDDB), 트랜지스터 열화(BTI)는 모두 열 활성화 과정이라, 신뢰성 엔지니어는 수명을 온도의 아레니우스 함수로 다룬다. 그래서 고장 분석에서는 불량 위치의 국소 온도를 먼저 따진다. 전원망의 좁은 배선, 핫스팟 위의 비아, 자기 가열이 큰 소자 근처가 먼저 끊어진다. 가속 수명 시험은 125–300 °C에서 몇 주 만에 고장을 만들고, 블랙 식의 \(n\)과 \(E_a\)로 사용 조건의 10년으로 환산한다. 환산에 쓰는 온도가 몇 °C만 틀려도 예측 수명이 수십 % 달라진다. → <a href="https://semi.euiyun.com/failure/chapters/mechanisms.html">FailureBook · 불량 메커니즘</a></p></div>
+    <p>칩 하나의 와트는 결국 건물의 열 부하가 된다. 서버 랙 하나가 수십 kW를 내면 공랭의 \(h\)로는 모자라 냉수판·액침 냉각을 쓰고, 그 열은 다시 칠러와 냉각탑을 거쳐 대기로 나간다. 팹도 같아서, 장비 전력은 공정 냉각수와 칠러의 부하로 바뀐다 → <a href="https://semi.euiyun.com/infra/chapters/cooling.html">InfraBook · 냉동·냉각수·열 관리</a>.</p>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="thermoelectric">
+    <h2>열전 효과와 열전 냉각</h2>
+    <p>지금까지 열과 전기는 따로 흘렀다. 그러나 금속과 반도체에서는 같은 운반자(전자·정공)가 전하와 에너지를 함께 나른다. 그래서 온도 차가 전압을 만들고, 전류가 열을 실어 나른다. 이 결합을 <b>열전 효과</b>라 한다. 열전대 온도계, 열전 냉각기, 우주 탐사선의 방사성 동위원소 발전기가 모두 이 효과를 쓴다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 280" role="img" aria-label="n형 반도체 막대의 뜨거운 쪽에서 전자가 차가운 쪽으로 확산하고, 전하가 쌓여 전기장이 생기며, 그 평형 전압이 제베크 전압이 되는 과정">
+        <defs><linearGradient id="ht-grad2" x1="0" x2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".35"/><stop offset="1" stop-color="var(--accent-2)" stop-opacity=".35"/></linearGradient>
+          <marker id="ht-ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--text)"/></marker></defs>
+        <rect x="120" y="90" width="560" height="80" rx="8" fill="url(#ht-grad2)" stroke="var(--text-dim)"/>
+        <text class="t t-acc" x="120" y="80" style="font-weight:700">뜨거운 쪽 T + ΔT</text>
+        <text class="t" x="680" y="80" text-anchor="end" fill="var(--accent-2)" style="font-weight:700">차가운 쪽 T</text>
+        <g data-only="1">
+          <g fill="var(--accent-2)"><circle cx="170" cy="115" r="5"/><circle cx="210" cy="145" r="5"/><circle cx="260" cy="120" r="5"/><circle cx="480" cy="140" r="5"/><circle cx="540" cy="115" r="5"/><circle cx="600" cy="145" r="5"/></g>
+          <g stroke="var(--text)" stroke-width="2" marker-end="url(#ht-ar4)"><line x1="170" y1="115" x2="225" y2="105"/><line x1="210" y1="145" x2="150" y2="155"/><line x1="260" y1="120" x2="320" y2="128"/><line x1="480" y1="140" x2="505" y2="134"/><line x1="540" y1="115" x2="518" y2="120"/><line x1="600" y1="145" x2="624" y2="141"/></g>
+          <text class="t" x="400" y="210" text-anchor="middle">뜨거운 쪽 전자는 더 빠르고 더 많이 들뜬다 → 알짜 확산은 차가운 쪽으로</text>
+        </g>
+        <g data-step="2">
+          <g class="t" font-size="20" style="font-weight:700"><text x="135" y="138" fill="var(--accent)">+ +</text><text x="625" y="138" fill="var(--accent-2)">− −</text></g>
+          <line x1="230" y1="160" x2="570" y2="160" stroke="var(--warn)" stroke-width="2.5" marker-end="url(#ht-ar4)"/>
+          <text class="t" x="400" y="186" text-anchor="middle" fill="var(--warn)">쌓인 전하가 만든 전기장 E (전자를 되밀어 낸다)</text>
+        </g>
+        <g data-step="3">
+          <line x1="140" y1="170" x2="140" y2="240" stroke="var(--text)" stroke-width="2"/><line x1="660" y1="170" x2="660" y2="240" stroke="var(--text)" stroke-width="2"/>
+          <line x1="140" y1="240" x2="370" y2="240" stroke="var(--text)" stroke-width="2"/><line x1="430" y1="240" x2="660" y2="240" stroke="var(--text)" stroke-width="2"/>
+          <circle cx="400" cy="240" r="28" fill="var(--surface)" stroke="var(--text)" stroke-width="2"/><text class="t" x="400" y="245" text-anchor="middle" style="font-weight:700">V</text>
+          <text class="t t-acc" x="400" y="40" text-anchor="middle" style="font-weight:700">확산 = 되밂 : 개회로 전압 V = S·ΔT</text>
+          <text class="t t-dim" x="400" y="62" text-anchor="middle">n형은 차가운 쪽이 음 (S &lt; 0), p형은 반대 (S &gt; 0)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>뜨거운 쪽의 전자는 에너지가 크고 빠르다. 무작위 운동의 알짜 효과로 전자가 차가운 쪽으로 확산한다.</li><li>전자가 차가운 끝에 쌓이고 뜨거운 끝에는 양전하가 남아, 전자를 되미는 전기장이 생긴다.</li><li>확산과 되밂이 균형을 이루면 전류가 멈추고, 양 끝 사이에 온도 차에 비례하는 전압이 남는다.</li></ol>
+      <figcaption>제베크 효과의 미시적 그림. 전압의 부호는 운반자 전하의 부호를 알려 준다 — 반도체의 도핑 형을 열 탐침으로 판별하는 방법(핫 프로브)이 바로 이것이다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">세 가지 열전 효과</span>
+      <p><span class="term">제베크 효과</span><span class="en">(Seebeck effect)</span>: 서로 다른 도체 A, B로 고리를 만들고 두 접점의 온도를 \(\Delta T\) 다르게 하면 열린 고리에 전압 \(V = S_{AB}\Delta T\)가 생긴다. \(S_{AB} = S_A - S_B\), \(S\)[V/K]는 물질의 <span class="term">제베크 계수</span><span class="en">(Seebeck coefficient)</span>. <span class="term">펠티에 효과</span><span class="en">(Peltier effect)</span>: 접점으로 전류 \(I\)를 흘리면 줄 열과 별개로 접점에서 \(\Pi_{AB}I\)의 열이 흡수되거나 방출된다. \(\Pi\)[V]는 <span class="term">펠티에 계수</span><span class="en">(Peltier coefficient)</span>로, 전류가 함께 나르는 열의 양(쿨롱당 J)이다. <span class="term">톰슨 효과</span><span class="en">(Thomson effect)</span>: 온도 기울기가 있는 한 도체에 전류가 흐르면 \(\mu_T I\,dT/dx\)의 열이 추가로 생기거나 흡수된다.</p>
+    </div>
+    <p>세 효과는 따로가 아니다. 켈빈(톰슨)은 열역학으로 두 관계를 얻었고, 6절에서 온사거 상반 관계로 다시 유도한다.</p>
+    <div class="formula">$$\Pi = S\,T,\qquad \mu_T = T\,\frac{dS}{dT}$$<div class="where">이것이 <span class="term">켈빈 관계</span><span class="en">(Kelvin relations)</span>다. 제베크 계수 하나만 재면 나머지가 모두 정해진다. 예: \(S = 200\) µV/K인 Bi₂Te₃는 300 K에서 \(\Pi = 0.06\) V, 곧 전하 1 C가 지날 때마다 0.06 J의 열을 실어 나른다.</div></div>
+    <figure class="mini" id="mini-seebeck">
+      <div class="mini-view" style="position:relative"><canvas id="cv-seebeck"></canvas><span class="hint top">왼쪽 온도계의 흰 원을 위아래로 끈다</span></div>
+      <div class="mini-ctrl"><div class="ctrl"><span>재료 쌍</span><div class="seg" id="sb-pair"><button data-value="K" class="on">K형 열전대</button><button data-value="BT">Bi₂Te₃ p–n</button><button data-value="Si">도핑 Si p–n</button></div></div><span class="readout" id="sb-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>뜨거운 접점(왼쪽)과 0 °C 기준 접점(오른쪽, 얼음물) 사이의 제베크 전압. 금속 열전대(K형 크로멜–알루멜, 약 41 µV/K)는 전압이 작지만 1000 °C 넘게 쓸 수 있고, 반도체 쌍(Bi₂Te₃ 약 400 µV/K, 도핑 Si 약 1 mV/K, 대표값)은 열 배 넘게 크다. 움직이는 점은 운반자의 알짜 확산 방향이다. 실제 열전대의 \(S\)는 온도에 따라 조금씩 변하므로 정밀 측정에는 표준 표를 쓴다.</figcaption>
+    </figure>
+    <h3>열전 냉각기</h3>
+    <p>열전 냉각기는 p형과 n형 반도체 다리를 번갈아 놓고 위아래를 구리 띠로 이어, 전기적으로는 직렬, 열적으로는 병렬로 만든 것이다. 전류가 n형 다리를 지날 때 전자는 전류와 반대로, p형 다리를 지날 때 정공은 전류 방향으로 움직이며 둘 다 열을 같은 면(차가운 면)에서 다른 면(뜨거운 면)으로 나른다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="열전 냉각기 모듈 구조: 위 세라믹(차가운 면), p형·n형 다리, 구리 띠, 아래 세라믹(뜨거운 면)과 전류 경로">
+        <defs><marker id="ht-ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent-2)"/></marker><marker id="ht-ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker><marker id="ht-ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker></defs>
+        <rect x="90" y="52" width="500" height="18" rx="3" fill="var(--accent-2)" opacity=".55" stroke="var(--text-dim)"/>
+        <rect x="90" y="222" width="500" height="18" rx="3" fill="var(--accent)" opacity=".55" stroke="var(--text-dim)"/>
+        <g stroke="var(--text-dim)" fill="var(--warn)" opacity=".85"><rect x="120" y="70" width="110" height="12"/><rect x="290" y="70" width="110" height="12"/><rect x="460" y="70" width="110" height="12"/><rect x="200" y="210" width="110" height="12"/><rect x="370" y="210" width="110" height="12"/><rect x="100" y="210" width="40" height="12"/><rect x="540" y="210" width="40" height="12"/></g>
+        <g stroke="var(--text-dim)"><rect x="120" y="82" width="40" height="128" fill="var(--accent-2)" opacity=".3"/><rect x="190" y="82" width="40" height="128" fill="var(--accent)" opacity=".3"/><rect x="290" y="82" width="40" height="128" fill="var(--accent-2)" opacity=".3"/><rect x="360" y="82" width="40" height="128" fill="var(--accent)" opacity=".3"/><rect x="460" y="82" width="40" height="128" fill="var(--accent-2)" opacity=".3"/><rect x="530" y="82" width="40" height="128" fill="var(--accent)" opacity=".3"/></g>
+        <g class="t" text-anchor="middle" style="font-weight:700"><text x="140" y="150">n</text><text x="210" y="150">p</text><text x="310" y="150">n</text><text x="380" y="150">p</text><text x="480" y="150">n</text><text x="550" y="150">p</text></g>
+        <g stroke="var(--accent-2)" stroke-width="2.4"><line x1="160" y1="8" x2="160" y2="46" marker-end="url(#ht-ar5)"/><line x1="340" y1="8" x2="340" y2="46" marker-end="url(#ht-ar5)"/><line x1="520" y1="8" x2="520" y2="46" marker-end="url(#ht-ar5)"/></g>
+        <g stroke="var(--accent)" stroke-width="2.4"><line x1="250" y1="244" x2="250" y2="282" marker-end="url(#ht-ar6)"/><line x1="430" y1="244" x2="430" y2="282" marker-end="url(#ht-ar6)"/></g>
+        <text class="t" x="190" y="24" fill="var(--accent-2)">Q_c 흡수 (차가운 면)</text>
+        <text class="t" x="270" y="276" fill="var(--accent)">Q_h = Q_c + P 방출 (뜨거운 면)</text>
+        <path d="M120,236 L120,262 L60,262" fill="none" stroke="var(--warn)" stroke-width="2"/><path d="M560,236 L560,262 L620,262" fill="none" stroke="var(--warn)" stroke-width="2" marker-end="url(#ht-ar7)"/>
+        <text class="t t-dim" x="40" y="258" text-anchor="middle">I →</text>
+        <g class="t" font-size="13"><text x="610" y="80">전기: 다리를 직렬로</text><text x="610" y="104">열: 다리를 병렬로</text><text x="610" y="136" class="t-dim">n형: 전자가 전류와</text><text x="610" y="156" class="t-dim">반대로 열을 나름</text><text x="610" y="186" class="t-dim">p형: 정공이 전류</text><text x="610" y="206" class="t-dim">방향으로 열을 나름</text></g>
+      </svg>
+      <figcaption>열전 냉각기(TEC) 모듈. 한 쌍의 p–n 다리가 한 "커플"이고, 상용 모듈은 수십~백여 커플(예: 127)을 4 cm 각 세라믹판 사이에 넣는다. 전류 방향을 바꾸면 차가운 면과 뜨거운 면이 바뀐다 — 그래서 온도 조절기(가열과 냉각을 모두)로 쓴다.</figcaption>
+    </figure>
+    <p>모듈 전체의 제베크 계수 \(S\)(다리 수만큼 더한 값), 전기 저항 \(R\), 열 컨덕턴스 \(K\)로 차가운 면(\(T_c\))의 에너지 수지를 쓰면, 펠티에 열은 들여오고, 줄 열의 절반은 차가운 면으로 돌아오며, 온도 차 때문에 열이 거꾸로 새어 든다.</p>
+    <div class="formula">$$Q_c = S I T_c - \tfrac12 I^2R - K(T_h - T_c),\qquad P = SI(T_h - T_c) + I^2R,\qquad \mathrm{COP} = \frac{Q_c}{P}$$<div class="where">\(Q_c\)는 \(I\)의 2차식이라 최댓값이 있다. \(dQ_c/dI = 0\)에서 최적 전류 \(I_\mathrm{opt} = ST_c/R\), 그때 \(Q_\mathrm{c,max} = S^2T_c^2/2R - K\Delta T\). \(Q_c = 0\)으로 두면 최대 온도 차 \(\Delta T_\mathrm{max} = \tfrac12ZT_c^2\), 여기서 \(Z = S^2/RK\)이다.</div></div>
+    <p>재료의 질은 무차원 <span class="term">성능 지수</span><span class="en">(figure of merit)</span> \(ZT = S^2\sigma T/\kappa\) 하나로 정해진다(<code>Thermo.thermoelectric.ZT</code>). 제베크 계수는 크고, 전기는 잘 통하고(줄 열이 작게), 열은 잘 안 통해야(역류가 작게) 한다. 그런데 비데만–프란츠 법칙이 \(\sigma\)와 \(\kappa_e\)를 묶어 두므로, 좋은 열전 재료는 포논 열전도만 골라 줄인 무거운 원소의 반도체(Bi₂Te₃, PbTe, SiGe)다. 상온 Bi₂Te₃의 \(ZT\approx0.8\)–1이다. 최대 성능 계수는 카르노 값에 \(ZT\)로 정해지는 인자를 곱한 것이다(<a href="second-law.html">3장</a>).</p>
+    <div class="formula">$$\mathrm{COP}_\mathrm{max} = \frac{T_c}{T_h - T_c}\cdot\frac{\sqrt{1+Z\bar T} - T_h/T_c}{\sqrt{1+Z\bar T}+1}\qquad(\bar T = \tfrac12(T_h+T_c))$$<div class="where"><code>Thermo.thermoelectric.copMax(Th, Tc, ZT)</code>. \(ZT\to\infty\)이면 카르노 COP. \(ZT\approx1\)이면 카르노의 10–20%로, 증기 압축 냉동기보다 효율이 낮다. 대신 움직이는 부품이 없고 작으며 온도를 0.01 °C까지 제어할 수 있다.</div></div>
+    <div class="tangle" id="tg-zt">
+      <p>제베크 계수 <span class="tn" data-var="S" data-min="20" data-max="400" data-step="5" data-unit=" µV/K">200</span>, 전기 전도도 <span class="tn" data-var="sg" data-min="0.1" data-max="10" data-step="0.1" data-unit="×10⁵ S/m">1.0</span>, 열전도도 <span class="tn" data-var="k" data-min="0.3" data-max="10" data-step="0.1" data-unit=" W/(m·K)">1.5</span>인 재료의 <span class="tn" data-var="T" data-min="200" data-max="800" data-step="10" data-unit=" K">300</span>에서 \(ZT\) = <span class="tn-out" data-out="zt"></span>, 펠티에 계수 \(\Pi = ST\) = <span class="tn-out" data-out="pi"></span>다. 이 재료로 \(\Delta T\) = <span class="tn" data-var="dT" data-min="2" data-max="80" data-step="1" data-unit=" K">20</span>를 만드는 냉각기의 최대 COP는 <span class="tn-out" data-out="cop"></span>로, 카르노 COP <span class="tn-out" data-out="car"></span>의 <span class="tn-out" data-out="pct"></span>다.</p>
+    </div>
+    <div class="predict" data-for="sim-tec">
+      <p>열전 냉각기의 전류를 0에서 계속 늘린다. 차가운 면 온도는 어떻게 될까(부하와 뜨거운 면 온도는 그대로)?</p>
+      <div class="opts"><button class="opt">전류에 비례해 계속 내려간다</button><button class="opt" data-correct>내려가다가 어떤 전류에서 가장 낮아진 뒤 다시 올라간다</button><button class="opt">처음에는 올라가다가 큰 전류에서 내려간다</button><button class="opt">전류와 상관없이 일정하다 — 온도 차는 재료가 정한다</button></div>
+      <div class="quiz-exp">펠티에 냉각 \(SIT_c\)는 \(I\)에 비례하지만 줄 열 \(\tfrac12I^2R\)은 \(I^2\)에 비례한다. 큰 전류에서는 줄 열이 이겨 차가운 면이 다시 데워진다. 가장 차가운 전류는 \(ST_c/R\) 근처다.</div>
+    </div>
+    <div class="sim" id="sim-tec">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>펠티에 냉각기: 레이저 다이오드를 25 °C로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-tec"></canvas><span class="hint top">위 그래프의 흰 원을 좌우로 끌어 전류를 정한다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>열 부하 Q<sub>L</sub> <output id="tec-q-out"></output></span><input type="range" id="tec-q" min="0" max="30" step="0.5" value="3"></label>
+          <label class="ctrl"><span>뜨거운 면(방열판) T<sub>h</sub> <output id="tec-th-out"></output></span><input type="range" id="tec-th" min="20" max="70" step="1" value="45"></label>
+          <label class="ctrl"><span>전류 I <output id="tec-i-out"></output></span><input type="range" id="tec-i" min="0" max="15" step="0.01" value="3"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">차가운 면 T<sub>c</sub></span><span class="v" id="tec-tc">—</span></div>
+        <div class="stat"><span class="k">펠티에 · 줄/2 · 역류</span><span class="v" id="tec-parts">—</span></div>
+        <div class="stat"><span class="k">입력 전력 · COP</span><span class="v" id="tec-p">—</span></div>
+        <div class="stat"><span class="k">과제: 25.0 ± 0.3 °C, 최소 전력</span><span class="v" id="tec-goal">—</span></div>
+      </div>
+      <div class="sim-note">모듈 \(S = 0.05\) V/K, \(R = 2.0\) Ω, \(K = 0.5\) W/K(\(Z = 2.5\times10^{-3}\)/K, 상온 \(ZT\approx0.77\)). 위 그래프는 전류에 따른 차가운 면 온도(주황, 부하 \(Q_L\)일 때 \(Q_c = Q_L\)이 되는 정상 상태), 아래는 입력 전력(파랑)이다(COP는 그래프 안에 적었다). 해볼 것: ① 부하 0에서 가장 낮은 온도와 그때의 전류를 읽고 \(\Delta T_\mathrm{max} = \tfrac12ZT_c^2\), \(I = ST_c/R\)과 비교한다. ② 25 °C를 지키는 전류는 두 개다. 어느 쪽이 전력이 적은가? ③ 부하를 늘려 25 °C를 지킬 수 없게 되는 \(Q_L\)을 찾는다 — 그때가 \(Q_\mathrm{c,max}\)다.</div>
+    </div>
+    <div class="example" data-title="레이저 다이오드 온도 조절기의 전류">
+      <p>통신용 레이저 다이오드가 3 W의 열을 내고, 파장을 고정하려면 25 °C로 유지해야 한다. 방열판(뜨거운 면)은 45 °C다. 모듈은 \(S = 0.05\) V/K, \(R = 2.0\) Ω, \(K = 0.5\) W/K이다. (a) 필요한 전류(두 해 중 작은 것)와 (b) 입력 전력, COP를 구하라. (c) 같은 온도에서 이 모듈의 최대 COP는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(Q_c = SIT_c - \tfrac12I^2R - K\Delta T = 3\) W를 \(I\)의 2차 방정식으로 푼다. COP\(_\mathrm{max}\)는 \(Z\bar T\)로 공식에 넣는다.</div>
+        <div class="step"><b>풀이</b> \(T_c = 298.15\) K, \(\Delta T = 20\) K. \(\tfrac12RI^2 - ST_cI + K\Delta T + Q_c = 0\)에 수를 넣으면 \(I^2 - 14.908I + 13.0 = 0\). \(I = (14.908 - \sqrt{14.908^2 - 52})/2 = 0.930\) A. (b) \(P = 0.05\times0.930\times20 + 0.930^2\times2 = 0.930 + 1.730 = 2.66\) W, COP \(= 3/2.66 = 1.13\). (c) \(Z = 0.05^2/(2\times0.5) = 2.5\times10^{-3}\)/K, \(\bar T = 308.15\) K, \(Z\bar T = 0.770\), \(\sqrt{1.770} = 1.3304\). COP\(_\mathrm{max} = 14.91\times(1.3304 - 1.0671)/(2.3304) = 1.69\).</div>
+        <div class="answer">(a) 약 0.93 A (b) 2.66 W, COP 1.13 (c) 약 1.69 (카르노 14.9)</div>
+        <div class="step"><b>검토</b> 큰 해(약 14 A)도 25 °C를 만들지만 전력이 400 W를 넘어 쓸모없다. 최대 COP는 \(I\approx1.5\) A에서 나오는데, 이때 냉각 능력이 3 W보다 커서 차가운 면이 더 차가워진다. 실제 제어기는 온도를 재며 작은 해 근처에서 전류를 조절한다.</div>
+      </details>
+    </div>
+    <p>열전 냉각기는 정밀한 온도가 필요한 작은 물건에 쓴다. 통신 레이저 다이오드는 1 °C에 파장이 약 0.1 nm 바뀌어 TEC로 온도를 고정하고, 과학용 이미지 센서는 암전류를 줄이려고 −80 °C 근처까지 냉각한다 → <a href="https://semi.euiyun.com/sensor/chapters/space.html">SensorBook · 우주·천문 센서</a>. 반대로 온도 차로 전기를 만드는 열전 발전은 효율 \(\eta_\mathrm{max}\)(<code>Thermo.thermoelectric.etaMax</code>)가 5–10%에 그쳐, 태양 빛이 닿지 않는 심우주 탐사선처럼 다른 방법이 없을 때 쓴다.</p>
+    <div class="drill" id="drill-tec" data-title="제베크·펠티에·열전 냉각기 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="onsager">
+    <h2>엔트로피 생성과 온사거 상반 관계</h2>
+    <p>열전도, 전기 전도, 확산, 점성은 모두 비가역 과정이다. 3장(<a href="second-law.html">엔트로피와 제2법칙</a>)에서는 비가역 과정 전체가 만든 엔트로피 \(S_\text{gen}\)만 따졌다. 이제 흐름이 있는 물질 속의 <b>각 점</b>에서 엔트로피가 얼마나 생기는지 묻는다. 이를 위해 <span class="term">국소 평형</span><span class="en">(local equilibrium)</span>을 가정한다. 계 전체는 평형이 아니지만, 분자 수만 개를 담은 작은 부피 하나하나는 충돌이 충분히 빨라 그 자리의 온도 \(T(\mathbf r)\), 화학 퍼텐셜 \(\mu(\mathbf r)\)이 정의된다는 것이다. 1절의 2D 기체에서 칸마다 온도를 잰 것이 바로 이 가정이다.</p>
+    <p>열류 \(\mathbf q\)는 엔트로피 흐름 \(\mathbf J_s = \mathbf q/T\)를 함께 나른다. 작은 부피의 엔트로피 수지 \(\partial s/\partial t + \nabla\cdot\mathbf J_s = \sigma\)에 에너지 보존 \(\rho c\,\partial T/\partial t = -\nabla\cdot\mathbf q\)를 넣으면 \(\nabla\cdot(\mathbf q/T) = (\nabla\cdot\mathbf q)/T + \mathbf q\cdot\nabla(1/T)\)이므로 국소 엔트로피 생성률이 남는다. 전류까지 있으면 줄 가열 항이 더해진다.</p>
+    <div class="formula">$$\sigma = \mathbf q\cdot\nabla\!\left(\frac1T\right) + \mathbf j\cdot\frac{\mathbf E}{T} = \frac{\kappa|\nabla T|^2}{T^2} + \frac{j^2\rho_e}{T}\ \ge 0$$<div class="where">\(\sigma\)[W/(m³·K)]는 단위 부피·단위 시간당 생기는 엔트로피. 두 번째 등호는 푸리에·옴 법칙을 넣은 것으로, \(\kappa>0\), \(\rho_e>0\)이 곧 제2법칙의 국소 표현이다. 열이 거꾸로(차가운 곳에서 뜨거운 곳으로) 저절로 흐르는 물질이 있다면 \(\kappa<0\)이어야 하고, 그러면 \(\sigma<0\)이 된다.</div></div>
+    <p>이 식은 일반적인 꼴을 갖는다. 비가역 과정마다 흐름 하나(<span class="term">열역학적 플럭스</span><span class="en">(thermodynamic flux)</span> \(J_i\))와 그 흐름을 일으키는 "기울기" 하나(<span class="term">열역학적 힘</span><span class="en">(thermodynamic force)</span> \(X_i\))가 짝을 이루고, 엔트로피 생성은 그 곱의 합이다.</p>
+    <div class="formula">$$\sigma = \sum_i J_i X_i,\qquad J_i = \sum_j L_{ij}X_j\quad(\text{평형 근처, 선형 응답})$$</div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="플럭스와 짝힘, 선형 법칙과 계수의 표, 그리고 열–전기, 열–물질 교차 효과">
+        <g stroke="var(--border)"><line x1="20" y1="58" x2="780" y2="58"/><line x1="20" y1="104" x2="780" y2="104"/><line x1="20" y1="150" x2="780" y2="150"/><line x1="20" y1="196" x2="780" y2="196"/><line x1="20" y1="242" x2="780" y2="242"/></g>
+        <g class="t" style="font-weight:700"><text x="30" y="44">플럭스 J</text><text x="200" y="44">짝힘 X</text><text x="400" y="44">선형 법칙</text><text x="600" y="44">계수 (σ에 주는 몫)</text></g>
+        <g class="t"><text x="30" y="86">열류 q</text><text x="200" y="86">∇(1/T) ≈ −∇T/T²</text><text x="400" y="86">푸리에 q = −κ∇T</text><text x="600" y="86">κ(∇T)²/T²</text>
+          <text x="30" y="132">전류 j</text><text x="200" y="132">E/T</text><text x="400" y="132">옴 j = σE</text><text x="600" y="132">j²ρ/T</text>
+          <text x="30" y="178">입자 흐름 J_n</text><text x="200" y="178">−∇(μ/T)</text><text x="400" y="178">픽 J = −D∇C</text><text x="600" y="178">≈ kD(∇C)²/C</text>
+          <text x="30" y="224">운동량(전단)</text><text x="200" y="224">−∇v/T</text><text x="400" y="224">뉴턴 점성 τ = η dv/dy</text><text x="600" y="224">η(dv/dy)²/T</text></g>
+        <g class="t t-acc" font-size="13"><text x="30" y="270">교차 항: 열 ↔ 전기 = 제베크·펠티에 · 열 ↔ 물질 = 소레·뒤푸르 · 전기 ↔ 물질 = 전기 삼투</text></g>
+        <text class="t t-dim" x="30" y="292" font-size="12">대각 항 Lᵢᵢ는 "자기 힘에 자기 흐름", 비대각 항 Lᵢⱼ는 "남의 힘에 내 흐름"</text>
+      </svg>
+      <figcaption>비가역 열역학의 플럭스와 힘. 1절의 그림에서 말한 "기울기에 비례하는 흐름"이 모두 이 표의 대각선이다. 비대각 항은 한 기울기가 다른 흐름을 끌고 가는 결합으로, 5절의 열전 효과가 대표적이다. 화학 반응도 반응 속도(플럭스)와 친화도/T(힘)의 짝으로 같은 틀에 들어간다(평형 근처에서만 선형).</figcaption>
+    </figure>
+    <figure class="mini" id="mini-sigma">
+      <div class="mini-view" style="position:relative"><canvas id="cv-sigma"></canvas><span class="hint top">막대 양 끝 위의 흰 원을 위아래로 끈다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>줄 가열 Q<sub>J</sub> <output id="sig-q-out"></output></span><input type="range" id="sig-q" min="0" max="0.5" step="0.01" value="0"></label><span class="readout" id="sig-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>양 끝 온도를 고정한 막대(κ = 10 W/(m·K), 길이 1 cm, 단면 1 mm²) 속의 온도(위 띠)와 국소 엔트로피 생성 \(\sigma(x)\)(아래 그래프). 같은 온도 기울기라도 \(1/T^2\) 때문에 차가운 쪽에서 엔트로피가 더 많이 생긴다. 줄 가열을 켜면 온도가 볼록해지고 \(j^2\rho/T\) 항이 더해진다. 오른쪽 값은 \(\sigma\)를 부피로 적분한 것과, 양 끝에서 나가고 들어오는 엔트로피 흐름 \(\sum Q/T\)의 차이다 — 둘은 같아야 한다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-sgen">
+      <p><span class="tn" data-var="Q" data-min="1" data-max="500" data-step="1" data-unit=" W">100</span>의 열이 접합 <span class="tn" data-var="Tj" data-min="30" data-max="150" data-step="1" data-unit=" °C">85</span>에서 주위 <span class="tn" data-var="Ta" data-min="-20" data-max="60" data-step="1" data-unit=" °C">25</span>로 흐르면 매초 <span class="tn-out" data-out="s"></span>의 엔트로피가 생긴다. 주위 온도 기준으로 잃어버린 일 \(T_0\dot S_\text{gen}\)은 <span class="tn-out" data-out="w"></span>, 곧 이 열로 이상적인 열기관을 돌렸다면 얻었을 일률이다. 열이 열저항을 지나는 동안 그만큼의 "일할 능력"이 사라진다.</p>
+    </div>
+    <h3>온사거 상반 관계</h3>
+    <p>선형 응답 \(J_i = \sum_jL_{ij}X_j\)의 계수 행렬에는 두 가지 제약이 있다. 첫째, 어떤 힘의 조합에서도 \(\sigma = \sum_{ij}L_{ij}X_iX_j\ge0\)이어야 하므로 대각 계수는 양수이고 \(L_{11}L_{22}\ge\tfrac14(L_{12}+L_{21})^2\)이다. 둘째, 온사거(1931)는 미시 운동 방정식이 시간을 거꾸로 돌려도 성립한다는 사실(미시적 가역성)과 평형 요동의 회귀에서 다음을 보였다.</p>
+    <div class="def"><span class="def-k">온사거 상반 관계</span>
+      <p>힘과 플럭스를 엔트로피 생성 \(\sigma = \sum J_iX_i\)이 되도록 고르면, 선형 계수 행렬은 대칭이다: \(L_{ij} = L_{ji}\)(자기장이 있으면 \(L_{ij}(\mathbf B) = L_{ji}(-\mathbf B)\)). 이것이 <span class="term">온사거 상반 관계</span><span class="en">(Onsager reciprocal relations)</span>다. "열 기울기가 전류를 끄는 정도"와 "전기 힘이 열류를 끄는 정도"가 같다는 뜻이다.</p>
+    </div>
+    <p>열전 현상에 적용해 보자. 1D에서 힘을 \(X_1 = E/T\)(전기), \(X_2 = \nabla(1/T) = -\nabla T/T^2\)(열)로 두고, 5절의 실험 법칙 \(j = \sigma E - \sigma S\nabla T\), \(q = \Pi j - \kappa\nabla T\)를 이 힘으로 다시 쓰면</p>
+    <div class="formula">$$\begin{aligned} j &= \underbrace{\sigma T}_{L_{11}}X_1 + \underbrace{\sigma ST^2}_{L_{12}}X_2\\ q &= \underbrace{\Pi\sigma T}_{L_{21}}X_1 + \underbrace{(\Pi\sigma ST^2 + \kappa T^2)}_{L_{22}}X_2\end{aligned}\qquad L_{12} = L_{21}\ \Rightarrow\ \Pi = ST$$<div class="where">켈빈이 1854년에 "가역 부분과 비가역 부분을 나눌 수 있다"는 가정으로 얻은 관계를 온사거 관계가 엄밀하게 뒷받침한다. 실험으로도 많은 물질에서 측정 정확도 안에서 \(\Pi = ST\)가 확인된다. 개회로(\(j = 0\))에서 \(X_1/X_2 = -L_{12}/L_{11}\)이 제베크 전압을, 등온(\(X_2 = 0\))에서 \(q/j = L_{21}/L_{11}\)이 펠티에 열을 준다.</div></div>
+    <div class="sim" id="sim-onsager">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>힘의 평면: 힘 벡터를 끌어 플럭스와 엔트로피 생성 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ons"></canvas><span class="hint top">흰 원(힘 X의 끝)을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>열 계수 L<sub>22</sub>/L<sub>11</sub> <output id="ons-l-out"></output></span><input type="range" id="ons-l" min="0.2" max="3" step="0.05" value="1.5"></label>
+          <label class="ctrl"><span>결합 L<sub>12</sub>/√(L<sub>11</sub>L<sub>22</sub>) <output id="ons-c-out"></output></span><input type="range" id="ons-c" min="-1.3" max="1.3" step="0.02" value="0.6"></label>
+          <label class="ctrl"><span>비대칭 L<sub>21</sub>/L<sub>12</sub> − 1 <output id="ons-a-out"></output></span><input type="range" id="ons-a" min="-0.5" max="0.5" step="0.02" value="0"></label>
+          <button class="btn" id="ons-oc" type="button">개회로 (j = 0)로</button>
+          <button class="btn" id="ons-iso" type="button">등온 (X₂ = 0)으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">엔트로피 생성 σ = J·X</span><span class="v" id="ons-s">—</span></div>
+        <div class="stat"><span class="k">제베크 비 −L₁₂/L₁₁</span><span class="v" id="ons-sb">—</span></div>
+        <div class="stat"><span class="k">펠티에 비 L₂₁/L₁₁</span><span class="v" id="ons-pt">—</span></div>
+        <div class="stat"><span class="k">Π/(ST) = L₂₁/L₁₂</span><span class="v" id="ons-kv">—</span></div>
+      </div>
+      <div class="sim-note">가로축 \(X_1\)(전기 힘), 세로축 \(X_2\)(열 힘), 무차원 단위(\(L_{11} = 1\)). 주황 화살표가 플럭스 \(\mathbf J = L\mathbf X\)(가로 성분 = 전류, 세로 성분 = 열류), 배경의 색은 그 자리의 \(\sigma\)(진할수록 큼, 빨강은 \(\sigma<0\)), 점선 타원은 같은 \(\sigma\)의 곡선, 초록 점선은 \(j = 0\)인 힘(개회로)이다. 해볼 것: ① 결합이 0이면 \(\mathbf J\)가 \(\mathbf X\)와 같은 방향이다. 결합을 키우면 둘이 갈라진다. ② 결합의 크기를 1보다 크게 하면 빨간 영역이 나타난다 — 그런 물질은 제2법칙을 어긴다. \(ZT\)가 유한한 이유다. ③ 비대칭을 0이 아니게 하면 \(\sigma\)는 그대로인데 \(\Pi\ne ST\)가 된다. 실험은 \(\Pi = ST\)를 보여 주므로 자연은 대칭인 \(L\)을 고른다.</div>
+    </div>
+    <p>결합의 크기는 열전 성능과 직결된다. 결합 계수 \(\lambda^2 = L_{12}L_{21}/L_{11}L_{22}\)를 위의 계수로 계산하면 \(\lambda^2 = ZT/(1+ZT)\)이다. 제2법칙(\(\lambda^2\le1\))은 \(ZT\)가 유한해야 함을 말하지 않지만, \(ZT\to\infty\)가 \(\lambda\to1\), 곧 열과 전기가 완전히 한 몸으로 흐르는 극한(카르노 효율)이다. 한편 일부 힘을 고정한 정상 상태는 선형 영역에서 전체 엔트로피 생성이 가장 작은 상태다(<span class="term">최소 엔트로피 생성 원리</span><span class="en">(minimum entropy production principle)</span>, 프리고진). 위 미니 실험의 막대가 정상 상태에 머무는 것도 이 원리로 이해할 수 있다(엄밀히는 \(L_{22} = \kappa T^2\)가 일정할 때 성립하고, 온도 차가 작으면 그 분포가 푸리에 법칙의 직선 분포와 같다).</p>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="fdt">
+    <h2>요동–소산 정리와 존슨 잡음</h2>
+    <p>물에 뜬 꽃가루가 쉬지 않고 떨리는 <span class="term">브라운 운동</span><span class="en">(Brownian motion)</span>은 물 분자의 무작위 충돌 때문이다. 같은 충돌은 꽃가루를 밀어 움직이면 그 운동을 멈추게 하는 마찰(점성)도 만든다. 아인슈타인(1905)의 통찰은 이 두 효과 — 무작위로 흔드는 <b>요동</b>과 움직임을 죽이는 <b>소산</b> — 가 같은 원인에서 나오므로 크기가 서로 묶여 있다는 것이다. 2D 기체 속의 무거운 원판으로 직접 보자.</p>
+    <figure class="mini" id="mini-brown">
+      <div class="mini-view" style="position:relative"><canvas id="cv-brown"></canvas><span class="hint top">큰 원판을 끌어 옮기거나 [밀기]를 누른다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>기체 온도 <output id="br-T-out"></output></span><input type="range" id="br-T" min="100" max="600" step="10" value="300"></label><button class="btn" id="br-kick" type="button">→ 밀기</button><span class="readout" id="br-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>작은 원판 130개 속의 무거운 원판(질량 40배, 반지름 5배). 왼쪽은 그 자취, 오른쪽은 큰 원판의 속도 \(v_x(t)\)이다. 가만히 두면 \(v_x\)가 0 주위에서 무작위로 흔들리고(요동), [밀기]로 빠르게 밀면 같은 충돌이 그 속도를 지수적으로 죽인다(소산). 온도를 올리면 흔들림이 커지고, 큰 원판의 평균 운동 에너지는 작은 원판들의 \(kT\)와 같아진다(등분배).</div>
+    </figure>
+    <p>이를 식으로 쓴 것이 <span class="term">랑주뱅 방정식</span><span class="en">(Langevin equation)</span>이다. 질량 \(m\)인 입자가 마찰 계수 \(\gamma\)의 마찰력과, 평균 0이고 아주 빨리 변하는 무작위 힘 \(F(t)\)를 받는다.</p>
+    <div class="formula">$$m\frac{dv}{dt} = -\gamma v + F(t),\qquad \langle F(t)F(t')\rangle = 2\gamma kT\,\delta(t-t')$$<div class="where">무작위 힘의 세기가 마찰 계수와 온도의 곱으로 정해져야 입자가 결국 \(\langle\tfrac12mv^2\rangle = \tfrac12kT\)(성분당)에 이른다 — 이것이 가장 간단한 <span class="term">요동–소산 정리</span><span class="en">(fluctuation–dissipation theorem)</span>다. 속도는 \(\tau_v = m/\gamma\)로 이완하고, 긴 시간에는 무작위 걸음(<a href="../../probability-statistics/chapters/stochastic.html">확률과 통계 · 확률 과정</a>)이 되어 \(\langle x^2\rangle = 2Dt\)로 퍼진다.</div></div>
+    <div class="formula">$$D = \frac{kT}{\gamma} = \mu kT\qquad(\text{아인슈타인 관계, } \mu = v/F\ \text{는 이동도})$$<div class="where">확산(요동)과 이동도(소산)가 \(kT\)로 묶인다. 전하 \(q\)인 운반자는 \(D = \mu_q kT/q\)로, 16장(<a href="diffusion.html">확산</a>)에서 반도체 도펀트와 운반자에 쓴 바로 그 관계다(<code>Thermo.einsteinD</code>). 구 모양 입자의 \(\gamma = 6\pi\eta r\)(스토크스)를 넣으면 \(D = kT/6\pi\eta r\) — 페랭은 이것으로 아보가드로수를 쟀다.</div></div>
+    <p>일반적인 요동–소산 정리는, 어떤 계에 작은 힘을 주었을 때의 소산 응답(흡수, 마찰, 저항)과 힘이 없을 때 그 양의 평형 요동 스펙트럼이 \(kT\)를 비례 상수로 같다는 것이다. 전기 회로에서 소산 원소는 저항이다. 따라서 저항에는 반드시 열잡음이 있다. 존슨(1926)이 측정하고 나이퀴스트(1928)가 설명했다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="두 저항을 무손실 전송선으로 이은 나이퀴스트의 유도: 전송선의 모드, 모드당 kT, 정합된 부하로 가는 잡음 전력">
+        <defs><marker id="ht-ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+        <g stroke="var(--text)" stroke-width="2" fill="none">
+          <path d="M120,70 l0,20 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l10,5 l0,20"/>
+          <path d="M680,70 l0,20 l-10,5 l20,10 l-20,10 l20,10 l-20,10 l10,5 l0,20"/>
+          <line x1="120" y1="70" x2="680" y2="70"/><line x1="120" y1="160" x2="680" y2="160"/>
+        </g>
+        <text class="t" x="90" y="120" text-anchor="end">R, T</text><text class="t" x="710" y="120">R, T</text>
+        <text class="t t-dim" x="400" y="60" text-anchor="middle">무손실 전송선 (특성 임피던스 R, 길이 ℓ)</text>
+        <g data-only="1"><text class="t" x="400" y="210" text-anchor="middle">같은 온도의 두 저항을 정합된 선으로 잇는다. 평형이므로 알짜 전력은 0이다.</text></g>
+        <g data-step="2">
+          <path d="M120,115 Q190,85 260,115 T400,115 T540,115 T680,115" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+          <path d="M120,115 Q155,95 190,115 T260,115 T330,115 T400,115 T470,115 T540,115 T610,115 T680,115" fill="none" stroke="var(--accent-2)" stroke-width="1.5" opacity=".6"/>
+        </g>
+        <g data-only="2"><text class="t" x="400" y="210" text-anchor="middle">선의 양 끝을 갑자기 단락하면 정상파 모드가 남는다. 주파수 폭 Δf 안의 모드 수 = 2ℓΔf / v.</text></g>
+        <g data-step="3"><text class="t t-acc" x="400" y="200" text-anchor="middle" style="font-weight:700">모드 하나의 평균 에너지 = kT (등분배: 전기 + 자기)</text></g>
+        <g data-only="3"><text class="t" x="400" y="230" text-anchor="middle">선 안의 에너지 kT·2ℓΔf/v 가 시간 ℓ/v 동안 양쪽으로 흘러 나간다 → 한 방향 전력 P = kT Δf</text></g>
+        <g data-step="4">
+          <line x1="200" y1="100" x2="300" y2="100" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#ht-ar8)"/>
+          <text class="t t-acc" x="250" y="92" text-anchor="middle">kT Δf</text>
+          <text class="t" x="400" y="232" text-anchor="middle" style="font-weight:700">정합 부하로 가는 전력 v²/4R = kTΔf ⇒ ⟨v²⟩ = 4kTR Δf</text>
+          <text class="t t-dim" x="400" y="258" text-anchor="middle">저항 = 잡음 전압원 v (스펙트럼 밀도 4kTR) + 잡음 없는 R</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>두 저항이 같은 온도에 있으면 서로에게 보내는 전력이 같아 알짜 흐름이 없다(제2법칙).</li><li>전송선 속의 전자기 모드를 센다. 길이 \(\ell\), 전파 속도 \(v\)이면 \(\Delta f\)마다 \(2\ell\Delta f/v\)개의 모드가 있다.</li><li>각 모드는 열평형에서 평균 \(kT\)의 에너지를 갖는다. 이 에너지가 선을 따라 양쪽 저항으로 흘러가므로 한 방향의 전력은 \(kT\Delta f\)다.</li><li>잡음 전압원 \(v\)와 내부 저항 \(R\)이 정합 부하 \(R\)에 주는 전력은 \(v^2/4R\)이다. 이것이 \(kT\Delta f\)와 같아야 한다.</li></ol>
+      <figcaption>나이퀴스트의 유도. 저항의 잡음 전압 스펙트럼 \(4kTR\)은 저항의 재료·구조와 무관하고 오직 \(R\)과 \(T\)로 정해진다 — 소산(\(R\))이 요동의 크기를 정한다. 아주 높은 주파수(\(hf\gtrsim kT\), 300 K에서 6 THz)에서는 \(kT\) 대신 플랑크 평균 에너지 \(hf/(e^{hf/kT}-1)\)를 써야 한다.</figcaption>
+    </figure>
+    <div class="formula">$$\langle v_n^2\rangle = 4kTR\,\Delta f,\qquad v_\mathrm{rms} = \sqrt{4kTR\Delta f}\qquad(\text{존슨–나이퀴스트 잡음})$$<div class="where"><span class="term">존슨–나이퀴스트 잡음</span><span class="en">(Johnson–Nyquist noise)</span>, 또는 열잡음. 1 kΩ, 300 K, 1 Hz 폭에서 4.07 nV/√Hz다(<code>Thermo.johnson(R, T, B)</code>). 스펙트럼이 주파수와 무관한 백색 잡음이고, 순간 값은 정규 분포를 따른다.</div></div>
+    <p>저항에 커패시터 \(C\)를 병렬로 달면 RC 저역 통과 필터가 잡음의 높은 주파수를 잘라 낸다. 잡음 대역폭은 \(\Delta f_\mathrm{eff} = \int_0^\infty df/(1+(2\pi fRC)^2) = 1/4RC\)이므로</p>
+    <div class="formula">$$\langle v_C^2\rangle = 4kTR\cdot\frac{1}{4RC} = \frac{kT}{C},\qquad \tfrac12C\langle v_C^2\rangle = \tfrac12kT$$<div class="where"><span class="term">kT/C 잡음</span><span class="en">(kT/C noise)</span>. \(R\)이 사라졌다! 큰 저항은 잡음 밀도가 크지만 대역폭을 그만큼 좁힌다. 결과는 커패시터의 에너지에 대한 등분배 정리 그 자체다. 전하로 쓰면 \(\sqrt{kTC}\) — 1 fF에서 12.7 전자.</div></div>
+    <div class="predict" data-for="sim-noise">
+      <p>저항 \(R\)과 커패시터 \(C\)가 병렬로 300 K에 있다. \(R\)을 10배 키우면 커패시터 양단 잡음 전압의 rms는?</p>
+      <div class="opts"><button class="opt">√10배 커진다 — 잡음 밀도 4kTR이 10배니까</button><button class="opt">10배 커진다</button><button class="opt" data-correct>그대로다 — 대역폭이 1/10로 줄어 상쇄된다</button><button class="opt">1/√10로 줄어든다</button></div>
+      <div class="quiz-exp">\(\langle v^2\rangle = 4kTR\times1/4RC = kT/C\). 시뮬레이터에서 \(R\)을 바꾸면 흔들림의 <b>빠르기</b>(시간 축 눈금)만 바뀌고 크기는 그대로다. 크기를 바꾸는 것은 온도와 \(C\)뿐이다.</div>
+    </div>
+    <div class="sim" id="sim-noise">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>RC 회로의 열잡음: 무작위 걸음 전압</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-noise"></canvas><span class="hint top">왼쪽 온도계의 흰 원을 위아래로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>저항 R <output id="nz-R-out"></output></span><input type="range" id="nz-R" min="1" max="7" step="0.1" value="3"></label>
+          <label class="ctrl"><span>커패시터 C <output id="nz-C-out"></output></span><input type="range" id="nz-C" min="-15" max="-11" step="0.1" value="-14"></label>
+          <button class="btn" id="nz-play" type="button"></button>
+          <button class="btn" id="nz-reset" type="button">통계 다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">v<sub>rms</sub> (측정)</span><span class="v" id="nz-meas">—</span></div>
+        <div class="stat"><span class="k">√(kT/C) (이론)</span><span class="v" id="nz-th">—</span></div>
+        <div class="stat"><span class="k">잡음 대역폭 1/4RC</span><span class="v" id="nz-bw">—</span></div>
+        <div class="stat"><span class="k">전하 잡음 √(kTC)/e</span><span class="v" id="nz-e">—</span></div>
+      </div>
+      <div class="sim-note">커패시터 전압은 마찰(\(1/RC\)로 되돌림)과 저항의 무작위 전류(세기 \(\propto kT/R\))를 함께 받는 랑주뱅 과정(오른슈타인–울렌벡 과정)이다. 가운데는 시간 \(40RC\) 동안의 전압 자취, 오른쪽은 누적한 전압의 히스토그램과 이론 정규 분포다. 세로축 눈금은 \(C\)에만 맞춰 고정했다. 해볼 것: ① \(R\)을 1 kΩ에서 1 MΩ으로 바꾸면 시간 축이 1000배 늘어날 뿐 자취의 크기는 같다. ② 온도를 4 K(액체 헬륨)로 내리면 잡음 전압이 \(\sqrt{300/4}\approx8.7\)배 작아진다. ③ \(C\)를 1 fF에서 100 fF로 키우면 전압 잡음은 10배 줄지만 전하 잡음(전자 수)은 10배 늘어난다.</div>
+    </div>
+    <div class="tangle" id="tg-johnson">
+      <p>저항 <span class="tn" data-var="R" data-min="1" data-max="1000" data-step="1" data-unit=" kΩ">1</span>이 <span class="tn" data-var="T" data-min="4" data-max="500" data-step="1" data-unit=" K">300</span>에서 대역폭 <span class="tn" data-var="B" data-min="0.01" data-max="100" data-step="0.01" data-unit=" MHz">1.00</span>로 측정되면 열잡음 전압은 <span class="tn-out" data-out="v"></span>(잡음 밀도 <span class="tn-out" data-out="d"></span>)이다. 이 저항에 <span class="tn" data-var="C" data-min="1" data-max="1000" data-step="1" data-unit=" fF">10</span>를 달면 커패시터 전압 잡음은 <span class="tn-out" data-out="kTC"></span>, 전하 잡음은 전자 <span class="tn-out" data-out="ne"></span>다.</p>
+    </div>
+    <div class="example" data-title="저항의 열잡음과 픽셀의 리셋 잡음">
+      <p>(a) 300 K의 1 kΩ 저항을 대역폭 1 MHz의 증폭기로 볼 때 열잡음 전압의 rms를 구하라. (b) 이미지 센서 픽셀의 부유 확산 노드(정전 용량 1 fF)를 리셋 트랜지스터로 기준 전압에 맞춘 뒤 끄면, 300 K에서 노드에 남는 전압 잡음과 전하 잡음(전자 수)은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(v = \sqrt{4kTR\Delta f}\). (b) 리셋 트랜지스터의 채널 저항과 노드 정전 용량이 RC를 이루므로 \(R\)과 무관하게 \(v = \sqrt{kT/C}\), 전하 \(\sqrt{kTC}\).</div>
+        <div class="step"><b>풀이</b> (a) \(4kTR\Delta f = 4\times1.381\times10^{-23}\times300\times10^3\times10^6 = 1.657\times10^{-11}\) V², \(v = 4.07\) µV. (b) \(v = \sqrt{1.381\times10^{-23}\times300/10^{-15}} = 2.04\) mV, \(Q/e = \sqrt{1.381\times10^{-23}\times300\times10^{-15}}/1.602\times10^{-19} = 12.7\).</div>
+        <div class="answer">(a) 4.07 µV (b) 2.0 mV, 약 13 전자</div>
+        <div class="step"><b>검토</b> 픽셀의 신호가 수십 전자인 어두운 장면에서 13 전자의 리셋 잡음은 치명적이다. 그래서 센서는 리셋 직후의 전압과 신호 전송 뒤의 전압을 모두 읽어 빼는 상관 이중 표본화(CDS)로 같은 리셋 잡음을 지운다. 지울 수 없는 저항 열잡음은 온도를 낮추거나 대역폭을 줄여야 줄어든다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>열잡음은 아날로그 회로의 바닥이다</strong><p>증폭기의 입력 잡음, ADC의 표본화 커패시터, 이미지 센서의 리셋 노드는 모두 \(4kTR\)과 \(kT/C\)에 막혀 있다. 12비트 ADC가 1 V 범위에서 양자화 잡음보다 열잡음을 작게 하려면 표본화 커패시터가 1 pF 안팎은 돼야 하고, 커패시터가 커지면 그만큼 구동 전력이 든다 — "잡음과 전력"의 교환은 \(kT\)에서 나온다. MOSFET 채널의 열잡음(\(4kT\gamma g_m\))도 같은 정리의 결과이고, 저주파의 1/f 잡음은 평형 요동이 아니라 결함의 포획·방출에서 온다. → <a href="https://semi.euiyun.com/analog/chapters/noise.html">AnalogBook · 잡음</a> (이미지 센서의 리셋 잡음과 암전류는 <a href="https://semi.euiyun.com/sensor/chapters/noise.html">SensorBook · 노이즈, SNR, 다이내믹 레인지</a>)</p></div>
+    <div class="drill" id="drill-johnson" data-title="존슨 잡음·kT/C 반복 연습"></div>
+    <p>이 장으로 본문이 끝난다. 평형의 열역학(1–4장)과 통계역학(5–7장)이 정한 \(kT\), 엔트로피, 자유 에너지가 비평형의 흐름(16–17장)에서도 그대로 계수와 부호를 정한다는 것을 보았다. 책에서 쓴 물리 상수와 열화학·증기압·확산·열전도도 자료는 <a href="thermo-data.html">부록 A 열역학 자료와 계산기</a>에 모아 두었다.</p>
+  </section>
+
+  <!-- ============================================================ 정리 -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>푸리에 법칙</b> \(\mathbf q = -\kappa\nabla T\). 운반자 그림 \(\kappa = \tfrac13Cv\ell\): 기체는 분자(공기 0.026), 절연체·반도체는 포논(Si 148, SiO₂ 1.4), 금속은 전자(Cu 401). 금속은 비데만–프란츠 \(\kappa/\sigma T = L_0 = 2.44\times10^{-8}\) W·Ω/K². 미시 충돌에서 직선 온도 분포와 일정한 \(\kappa\)가 생겨나며, 묽은 기체는 벽 옆에 온도 뜀이 있다.</li>
+      <li><b>열저항</b> \(R = \Delta T/Q\): 평판 \(L/\kappa A\), 대류 \(1/hA\), 복사 \(1/4\varepsilon\sigma\bar T^3A\), 직렬은 합, 병렬은 역수의 합. \(T_\mathrm J = T_\mathrm A + P\theta_\mathrm{JA}\), \(\theta_\mathrm{JA} = \theta_\mathrm{JC}+\theta_\mathrm{CS}+\theta_\mathrm{SA}\). 작은 열원의 퍼짐 저항 \(1/4\kappa a\)는 반지름에 반비례한다.</li>
+      <li><b>열 확산 방정식</b> \(\rho c\,\partial_tT = \kappa\nabla^2T + \dot q\), \(\alpha = \kappa/\rho c\)(Si \(8.9\times10^{-5}\) m²/s). 확산 거리 \(\sqrt{\alpha t}\), 건너는 시간 \(L^2/\alpha\)(775 µm Si 약 7 ms). \(\mathrm{Bi}<0.1\)이면 집중 용량 \(\tau = RC\). 얇은 다이의 퍼짐 길이 \(L_s = \sqrt{\kappa tR''}\).</li>
+      <li><b>대류·복사·핀</b>: \(q = h\Delta T\)(공기 자연 2–25, 강제 25–250, 물 10²–10⁴, 끓음 ~10⁵), \(h_\mathrm{rad} = \varepsilon\sigma(T_s^2+T_\infty^2)(T_s+T_\infty)\approx4\varepsilon\sigma\bar T^3\), 핀 효율 \(\tanh mH/mH\). 웨이퍼의 진공 속 냉각은 복사(1100 °C에서 약 165 K/s), 정전척은 헬륨 틈 \(h\)로 온도를 잡는다.</li>
+      <li><b>줄 가열·자기 가열</b>: \(\dot q = j^2\rho_e\), 비저항 되먹임 \(\Delta T = a/(1-\beta a)\)(열 폭주). 전자 이동 수명 \(\mathrm{MTTF}\propto j^{-n}e^{E_a/kT}\) — 0.9 eV에서 10 °C 오르면 수명이 약 절반.</li>
+      <li><b>열전 효과</b>: 제베크 \(V = S\Delta T\), 펠티에 \(Q = \Pi I\), 톰슨 \(\mu_T = TdS/dT\), 켈빈 관계 \(\Pi = ST\). 냉각기 \(Q_c = SIT_c - \tfrac12I^2R - K\Delta T\), 최적 전류 \(ST_c/R\), \(\Delta T_\mathrm{max} = \tfrac12ZT_c^2\), \(ZT = S^2\sigma T/\kappa\)가 COP를 정한다.</li>
+      <li><b>엔트로피 생성과 요동</b>: \(\sigma = \sum J_iX_i\ge0\)(열 \(\kappa|\nabla T|^2/T^2\), 줄 \(j^2\rho/T\)), 선형 응답 \(J_i = \sum L_{ij}X_j\)의 온사거 대칭 \(L_{ij} = L_{ji}\)가 \(\Pi = ST\)를 준다. 요동–소산 정리: 랑주뱅 힘의 세기 \(2\gamma kT\), 아인슈타인 \(D = \mu kT\), 존슨 잡음 \(4kTR\Delta f\), RC의 \(kT/C\)(R과 무관).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 문제 -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>따로 말이 없으면 \(k = 1.381\times10^{-23}\) J/K \(= 8.617\times10^{-5}\) eV/K, \(\sigma = 5.670\times10^{-8}\) W/(m²·K⁴), \(e = 1.602\times10^{-19}\) C, 열전도도는 Si 148, Cu 401, SiO₂ 1.4 W/(m·K)를 쓴다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="푸리에 법칙" data-answer="0.676" data-label="ΔT =" data-unit="K">
+        <div class="prob-q"><p>두께 0.5 mm, 넓이 1 cm²인 실리콘 다이를 두께 방향으로 20 W가 지나간다. 다이 양면의 온도 차를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\Delta T = QL/\kappa A = 20\times5\times10^{-4}/(148\times10^{-4}) = 0.676\) K.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="열 운반자">
+        <div class="prob-q"><p>상온에서 구리의 열을 주로 나르는 것은 무엇인가?</p></div>
+        <div class="prob-choices"><button>포논(격자 진동)</button><button data-correct>전도 전자</button><button>복사(광자)</button><button>구리 원자의 확산</button></div>
+        <div class="prob-sol"><p>금속에서는 전도 전자의 기여가 포논보다 수십 배 크다. 그래서 비데만–프란츠 법칙 \(\kappa\approx L_0\sigma T\)가 성립하고, 전기 전도도가 큰 금속(Ag, Cu, Au, Al)이 열전도도도 크다. 다이아몬드처럼 포논만으로 금속보다 큰 \(\kappa\)를 갖는 예외도 있다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="접합 온도" data-answer="102" data-tol="0.5" data-label="T_J =" data-unit="°C">
+        <div class="prob-q"><p>80 W 칩의 \(\theta_\mathrm{JC} = 0.3\) K/W, \(\theta_\mathrm{CS} = 0.1\) K/W, \(\theta_\mathrm{SA} = 0.5\) K/W이고 주위는 30 °C다. 접합 온도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(T_\mathrm J = 30 + 80\times(0.3+0.1+0.5) = 30 + 72 = 102\) °C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="비데만–프란츠" data-answer="276" data-label="κ_e =" data-unit="W/(m·K)">
+        <div class="prob-q"><p>알루미늄의 300 K 전기 전도도는 \(3.77\times10^7\) S/m이다. 비데만–프란츠 법칙(\(L_0 = 2.44\times10^{-8}\) W·Ω/K²)으로 전자 열전도도를 예측하라. (실측 237과 비교해 보라.)</p></div>
+        <div class="prob-sol"><p>\(\kappa_e = L_0\sigma T = 2.44\times10^{-8}\times3.77\times10^7\times300 = 276\) W/(m·K). 실측보다 16% 크다 — 상온에서는 비탄성 산란 때문에 \(L\)이 \(L_0\)보다 조금 작다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="퍼짐 저항" data-answer="8.45" data-label="ΔT =" data-unit="K">
+        <div class="prob-q"><p>실리콘 다이 표면의 반지름 20 µm 영역에서 0.1 W가 난다. 다이를 반무한 매질로 보고 핫스팟의 평균 온도 상승을 구하라.</p></div>
+        <div class="prob-sol"><p>\(R_\mathrm{sp} = 1/(4\kappa a) = 1/(4\times148\times2\times10^{-5}) = 84.5\) K/W, \(\Delta T = 0.1\times84.5 = 8.45\) K.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="확산 시간" data-answer="112" data-label="t =" data-unit="µs">
+        <div class="prob-q"><p>실리콘(\(\rho = 2329\) kg/m³, \(c = 712\) J/(kg·K))에서 열이 100 µm를 건너는 특성 시간 \(L^2/\alpha\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\alpha = 148/(2329\times712) = 8.92\times10^{-5}\) m²/s, \(t = (10^{-4})^2/8.92\times10^{-5} = 1.12\times10^{-4}\) s = 112 µs. 트랜지스터가 수 ns 단위로 켜지고 꺼져도 다이 온도는 그보다 훨씬 느리게, 평균 전력에 따라 움직이는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="열 시간 상수" data-answer="287" data-label="τ =" data-unit="s">
+        <div class="prob-q"><p>한 변 1 cm인 구리 정육면체(\(\rho = 8960\) kg/m³, \(c = 385\) J/(kg·K))가 \(h = 20\) W/(m²·K)의 공기 속에서 식는다. 비오 수가 작은지 확인하고 열 시간 상수를 구하라.</p></div>
+        <div class="prob-hint">\(L_c = V/A = (1\ \mathrm{cm})^3/6\ \mathrm{cm}^2\).</div>
+        <div class="prob-sol"><p>\(\mathrm{Bi} = hL_c/\kappa = 20\times1.667\times10^{-3}/401 = 8.3\times10^{-5}\ll0.1\). \(\tau = \rho cV/hA = 8960\times385\times10^{-6}/(20\times6\times10^{-4}) = 287\) s(약 5분).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="복사 선형화" data-answer="8.75" data-label="h_rad =" data-unit="W/(m²·K)">
+        <div class="prob-q"><p>방사율 0.9인 방열판이 평균 온도 350 K 근처에서 복사로 열을 버린다. 선형화한 복사 열전달 계수 \(4\varepsilon\sigma\bar T^3\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(h_\mathrm{rad} = 4\times0.9\times5.670\times10^{-8}\times350^3 = 8.75\) W/(m²·K). 자연 대류와 비슷한 크기라, 공랭 방열판을 검게 양극 산화하면 수십 % 효과를 본다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="전자 이동 가속" data-answer="4.00" data-label="가속 계수 =">
+        <div class="prob-q"><p>전자 이동의 활성화 에너지가 0.9 eV인 배선을 105 °C 대신 125 °C에서 같은 전류 밀도로 쓰면 평균 수명이 몇 배 짧아지는가?</p></div>
+        <div class="prob-sol"><p>\(\exp[(0.9/8.617\times10^{-5})(1/378.15 - 1/398.15)] = \exp(10444\times1.3284\times10^{-4}) = \exp(1.387) = 4.00\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="제베크 효과" data-answer="16.4" data-label="V =" data-unit="mV">
+        <div class="prob-q"><p>K형 열전대(평균 41 µV/K)의 측정 접점이 400 °C, 기준 접점이 0 °C다. 열전대 전압을 구하라.</p></div>
+        <div class="prob-sol"><p>\(V = S\Delta T = 41\times10^{-6}\times400 = 1.64\times10^{-2}\) V = 16.4 mV(표준 표 값 16.40 mV와 같다).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="열전 냉각기" data-answer="7.00; 39.0" data-label="I_opt =; Q_c,max =" data-unit="A; W">
+        <div class="prob-q"><p>모듈 \(S = 0.05\) V/K, \(R = 2.0\) Ω, \(K = 0.5\) W/K인 열전 냉각기의 차가운 면이 280 K, 뜨거운 면이 300 K다. 냉각 능력이 최대가 되는 전류와 그때의 냉각 능력 \(Q_c\)를 구하라.</p></div>
+        <div class="prob-hint">\(dQ_c/dI = ST_c - IR = 0\).</div>
+        <div class="prob-sol"><p>\(I_\mathrm{opt} = ST_c/R = 0.05\times280/2 = 7.00\) A. \(Q_\mathrm{c,max} = S^2T_c^2/2R - K\Delta T = 0.0025\times78400/4 - 0.5\times20 = 49.0 - 10.0 = 39.0\) W.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="성능 지수" data-answer="0.80" data-label="ZT =">
+        <div class="prob-q"><p>300 K에서 제베크 계수 200 µV/K, 전기 전도도 \(1.0\times10^5\) S/m, 열전도도 1.5 W/(m·K)인 Bi₂Te₃ 합금의 성능 지수 \(ZT\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(ZT = S^2\sigma T/\kappa = (2\times10^{-4})^2\times10^5\times300/1.5 = 0.80\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="엔트로피 생성" data-answer="0.0300" data-label="Ṡ_gen =" data-unit="W/K">
+        <div class="prob-q"><p>50 W의 열이 90 °C의 칩에서 25 °C의 공기로 정상 상태로 흐른다. 매초 생기는 엔트로피를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\dot S_\text{gen} = Q(1/T_c - 1/T_h) = 50\times(1/298.15 - 1/363.15) = 50\times6.003\times10^{-4} = 0.0300\) W/K.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="국소 엔트로피 생성">
+        <div class="prob-q"><p>양 끝 온도를 고정하고 열이 흐르는 균질 막대(\(\kappa\) 일정, 정상 상태)에서 단위 부피당 엔트로피 생성률이 가장 큰 곳은?</p></div>
+        <div class="prob-choices"><button>뜨거운 끝</button><button>한가운데</button><button data-correct>차가운 끝</button><button>어디서나 같다 — 온도 기울기가 일정하니까</button></div>
+        <div class="prob-sol"><p>\(\sigma = \kappa(dT/dx)^2/T^2\)에서 기울기는 일정하지만 \(1/T^2\)은 차가운 쪽이 크다. 같은 열이 낮은 온도에서 지나갈수록 엔트로피 \(Q/T\)가 더 많이 늘어나기 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="존슨 잡음" data-answer="1.82" data-label="v_rms =" data-unit="µV">
+        <div class="prob-q"><p>300 K의 10 kΩ 저항을 대역폭 20 kHz(가청 대역)로 들을 때 열잡음 전압의 rms를 구하라.</p></div>
+        <div class="prob-sol"><p>\(v = \sqrt{4kTR\Delta f} = \sqrt{4\times1.381\times10^{-23}\times300\times10^4\times2\times10^4} = \sqrt{3.31\times10^{-12}} = 1.82\) µV.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="kT/C 잡음" data-answer="1.44; 18.0" data-label="v_rms =; 전자 수 =" data-unit="mV; 개">
+        <div class="prob-q"><p>이미지 센서 픽셀의 부유 확산 노드 정전 용량이 2 fF다. 300 K에서 리셋 뒤 남는 전압 잡음과 전하 잡음(전자 수)을 구하라. 리셋 트랜지스터의 켜진 저항은 왜 필요 없는가?</p></div>
+        <div class="prob-sol"><p>\(v = \sqrt{kT/C} = \sqrt{4.143\times10^{-21}/2\times10^{-15}} = 1.44\) mV. 전하 \(\sqrt{kTC}/e = \sqrt{8.286\times10^{-36}}/1.602\times10^{-19} = 2.879\times10^{-18}/1.602\times10^{-19} = 18.0\) 전자. 저항이 크면 잡음 밀도 \(4kTR\)이 커지지만 대역폭 \(1/4RC\)가 같은 비율로 줄어 \(R\)이 약분된다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 퀴즈 -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>실리콘 다이(775 µm) 위에 두께 1 µm의 SiO₂ 층이 있다. 같은 열류가 두 층을 지날 때 온도 강하에 대해 옳은 것은?</p><div class="opts">
+        <button class="opt">SiO₂ 층은 아주 얇아서 온도 강하가 무시할 만하다</button><button class="opt" data-correct>SiO₂ 1 µm는 실리콘 약 106 µm와 같은 열저항이라, 실리콘 전체의 약 1/7만큼 온도가 떨어진다</button><button class="opt">두 층의 온도 강하는 두께에 비례하므로 실리콘이 775배 크다</button><button class="opt">열류가 같으면 온도 강하도 같다</button>
+      </div><div class="quiz-exp">\(\Delta T = qL/\kappa\). \(L/\kappa\)가 SiO₂ \(10^{-6}/1.4 = 7.1\times10^{-7}\), Si \(7.75\times10^{-4}/148 = 5.2\times10^{-6}\) m²·K/W로 7배 차이뿐이다.</div></div>
+      <div class="quiz-q"><p>어떤 물체에서 열이 1 ms 동안 50 µm 스며든다. 100 ms 동안에는 대략 얼마나 스며드는가?</p><div class="opts">
+        <button class="opt">5 mm</button><button class="opt" data-correct>500 µm</button><button class="opt">50 µm × √10 ≈ 160 µm</button><button class="opt">그대로 50 µm</button>
+      </div><div class="quiz-exp">확산 거리 \(\sqrt{\alpha t}\)는 \(\sqrt t\)에 비례한다. 시간 100배 → 거리 10배.</div></div>
+      <div class="quiz-q"><p>1000 °C의 웨이퍼가 고진공 챔버 안의 석영 핀 위에 떠 있다. 웨이퍼가 열을 잃는 주된 경로는?</p><div class="opts">
+        <button class="opt">자연 대류</button><button class="opt">핀을 통한 전도</button><button class="opt" data-correct>복사</button><button class="opt">잔류 기체의 분자 전도</button>
+      </div><div class="quiz-exp">진공에는 대류가 없고, 핀 접촉 넓이는 아주 작다. 1000 °C에서 \(h_\mathrm{rad}\)는 수백 W/(m²·K)로 크다. 그래서 RTP의 온도는 램프 복사와 웨이퍼 복사의 균형이 정하고, 방사율이 웨이퍼마다 다르면 온도가 달라진다.</div></div>
+      <div class="quiz-q"><p>펠티에 냉각기의 차가운 면과 뜨거운 면을 맞바꾸려면?</p><div class="opts">
+        <button class="opt">전류를 크게 한다</button><button class="opt" data-correct>전류의 방향을 반대로 한다</button><button class="opt">p형과 n형 다리를 다시 조립해야 한다</button><button class="opt">불가능하다 — 줄 열은 언제나 뜨거운 면을 만든다</button>
+      </div><div class="quiz-exp">펠티에 열 \(\Pi I\)는 전류에 대해 1차라 방향을 바꾸면 부호가 바뀐다. 줄 열 \(I^2R\)은 방향과 무관하다. 그래서 TEC 하나로 가열과 냉각을 모두 하는 온도 조절기를 만든다.</div></div>
+      <div class="quiz-q"><p>온사거 상반 관계 \(L_{ij} = L_{ji}\)의 근거는?</p><div class="opts">
+        <button class="opt">엔트로피 생성이 음수가 될 수 없다는 제2법칙</button><button class="opt">에너지 보존</button><button class="opt" data-correct>미시 운동 방정식의 시간 반전 대칭(미시적 가역성)과 평형 요동의 회귀</button><button class="opt">비데만–프란츠 법칙</button>
+      </div><div class="quiz-exp">제2법칙은 \(L\)의 대칭 부분이 양의 정부호라는 것만 말하고, 비대칭 부분은 \(\sigma\)에 기여하지 않으므로 제약하지 않는다. 대칭성은 미시적 가역성이라는 별개의 원리에서 온다 — 시뮬레이터의 "비대칭" 슬라이더가 \(\sigma\)를 바꾸지 않는 이유다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, Th = Thermo, CC = Th.C, kB = CC.kB, KT = Th.kTherm;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = (s) => String(s).split("").map((c) => SUP[c] || c).join("");
+  /** 유효숫자 d자리, 아주 크거나 작으면 a×10ⁿ */
+  function sci(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "×10" + sup(e);
+  }
+  function sciT(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "\\times10^{" + e + "}";
+  }
+  const fx = (x, d = 1) => (isFinite(x) ? x.toFixed(d) : "—");
+  function tfmt(s) {
+    if (!isFinite(s)) return "—";
+    const a = Math.abs(s);
+    if (a < 1e-6) return sci(s * 1e9) + " ns";
+    if (a < 1e-3) return sci(s * 1e6) + " µs";
+    if (a < 1) return sci(s * 1e3) + " ms";
+    if (a < 120) return sci(s) + " s";
+    if (a < 7200) return sci(s / 60) + " 분";
+    if (a < 172800) return sci(s / 3600) + " 시간";
+    if (a < 6.3e7) return sci(s / 86400) + " 일";
+    return sci(s / 3.156e7) + " 년";
+  }
+  function lfmt(m) {
+    if (!isFinite(m)) return "—";
+    if (m < 1e-6) return sci(m * 1e9) + " nm";
+    if (m < 1e-3) return sci(m * 1e6) + " µm";
+    if (m < 1e-2) return sci(m * 1e3) + " mm";
+    if (m < 1) return sci(m * 100) + " cm";
+    return sci(m) + " m";
+  }
+  function vfmt(v) {
+    const a = Math.abs(v);
+    if (!isFinite(v)) return "—";
+    if (a < 1e-6) return sci(v * 1e9) + " nV";
+    if (a < 1e-3) return sci(v * 1e6) + " µV";
+    if (a < 1) return sci(v * 1e3) + " mV";
+    return sci(v) + " V";
+  }
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  function line(ctx, pts, col, w = 2, dash) { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); }
+  function toggleBtn(id, st, key = "playing", cb) {
+    const b = $(id);
+    const sync = () => (b.textContent = st[key] ? "❚❚ 정지" : "▶ 재생");
+    b.addEventListener("click", () => { st[key] = !st[key]; sync(); cb && cb(); });
+    sync();
+    return sync;
+  }
+  const narrowOf = (w) => w < 560;
+  const wfit = (B, W, H) => { const s = Math.min(B.w / W, B.h / H); return { x: B.x + (B.w - W * s) / 2, y: B.y + (B.h - H * s) / 2, s, w: W * s, h: H * s, X: function (v) { return this.x + v * this.s; }, Y: function (v) { return this.y + v * this.s; } }; };
+  const font = (px, bold) => (bold ? "600 " : "") + px + "px " + SB.color("font");
+  /** CSS 색 → [r,g,b] */
+  function rgbOf(c) {
+    c = String(c).trim();
+    if (c[0] === "#") { if (c.length === 4) return [1, 2, 3].map((i) => parseInt(c[i] + c[i], 16)); return [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)); }
+    const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : [128, 128, 128];
+  }
+  /* 열지도: Thermo.heatColor 표를 미리 만들어 ImageData로 그린다 */
+  const HEAT = Array.from({ length: 256 }, (_, i) => Th.heatColor(i / 255).match(/\d+/g).map(Number));
+  const offs = {};
+  function drawHeat(ctx, T, nx, ny, lo, hi, x, y, w, h) {
+    const key = nx + "x" + ny;
+    let o = offs[key];
+    if (!o) { const cv = document.createElement("canvas"); cv.width = nx; cv.height = ny; const c2 = cv.getContext("2d"); o = offs[key] = { cv, c2, img: c2.createImageData(nx, ny) }; }
+    const d = o.img.data, span = hi - lo || 1;
+    for (let i = 0; i < nx * ny; i++) { const k = Math.max(0, Math.min(255, Math.round(((T[i] - lo) / span) * 255))), c = HEAT[k]; d[4 * i] = c[0]; d[4 * i + 1] = c[1]; d[4 * i + 2] = c[2]; d[4 * i + 3] = 255; }
+    o.c2.putImageData(o.img, 0, 0);
+    ctx.save(); ctx.imageSmoothingEnabled = true; ctx.drawImage(o.cv, x, y, w, h); ctx.restore();
+  }
+  function colorbar(ctx, x, y, w, h, lo, hi, fmt) {
+    for (let i = 0; i < h; i++) { ctx.fillStyle = Th.heatColor(1 - i / h); ctx.fillRect(x, y + i, w, 1.2); }
+    const P = pal(); ctx.strokeStyle = P.border; ctx.strokeRect(x, y, w, h);
+    SB.label(ctx, fmt(hi), x + w + 4, y + 6, { align: "left", size: 11 });
+    SB.label(ctx, fmt(lo), x + w + 4, y + h - 6, { align: "left", size: 11 });
+  }
+  /* 얇은 다이의 2D 열 방정식(양해법). 온도는 T − T_s(K). q[W/m²], 가장자리 단열 */
+  function makeDie(o) {
+    const D = { nx: o.nx, ny: o.ny, Lx: o.Lx, Ly: o.Ly, t: o.t, Rpp: o.Rpp, kappa: o.kappa || 148, rc: o.rc || 2329 * 712, time: 0 };
+    const N = D.nx * D.ny;
+    D.T = new Float64Array(N); D.q = new Float64Array(N);
+    const Tn = new Float64Array(N);
+    D.dx = D.Lx / D.nx; D.dy = D.Ly / D.ny;
+    D.update = function () {
+      const a = D.kappa * D.t, g = 1 / D.Rpp, Cc = D.rc * D.t;
+      D.cx = a / (D.dx * D.dx); D.cy = a / (D.dy * D.dy); D.g = g; D.Cc = Cc;
+      D.dt = (1.6 * Cc) / (4 * D.cx + 4 * D.cy + g);
+      D.tauV = Cc / g; D.Ls = Math.sqrt(a / g);
+    };
+    D.update();
+    D.step = function (n) {
+      const nx = D.nx, ny = D.ny, T = D.T, q = D.q, f = D.dt / D.Cc, cx = D.cx, cy = D.cy, g = D.g;
+      for (let s = 0; s < n; s++) {
+        for (let j = 0; j < ny; j++) {
+          const r = j * nx, ru = j > 0 ? r - nx : r, rd = j < ny - 1 ? r + nx : r;
+          for (let i = 0; i < nx; i++) {
+            const k = r + i, Tc = T[k];
+            const Tl = i > 0 ? T[k - 1] : Tc, Tr = i < nx - 1 ? T[k + 1] : Tc;
+            Tn[k] = Tc + f * (cx * (Tl + Tr - 2 * Tc) + cy * (T[ru + i] + T[rd + i] - 2 * Tc) + q[k] - g * Tc);
+          }
+        }
+        T.set(Tn);
+        D.time += D.dt;
+      }
+    };
+    D.max = () => { let m = -Infinity, at = 0; for (let k = 0; k < N; k++) if (D.T[k] > m) { m = D.T[k]; at = k; } return { m, at }; };
+    /** 사각 열원 더하기: 중심(cx, cy)[m], 크기 s[m], 전력 P[W] */
+    D.addSquare = function (cx, cy, sx, sy, P) {
+      const qd = P / (sx * sy);
+      for (let j = 0; j < D.ny; j++) {
+        const y0 = j * D.dy, y1 = y0 + D.dy, oy = Math.max(0, Math.min(y1, cy + sy / 2) - Math.max(y0, cy - sy / 2));
+        if (oy <= 0) continue;
+        for (let i = 0; i < D.nx; i++) {
+          const x0 = i * D.dx, x1 = x0 + D.dx, ox = Math.max(0, Math.min(x1, cx + sx / 2) - Math.max(x0, cx - sx / 2));
+          if (ox > 0) D.q[j * D.nx + i] += (qd * ox * oy) / (D.dx * D.dy);
+        }
+      }
+    };
+    return D;
+  }
+
+  /* ================================================================ 머리: 코어 네 개가 번갈아 일하는 다이 */
+  {
+    const Lx = 16e-3, Ly = 10e-3, TS = 45;
+    const D = makeDie({ nx: 64, ny: 40, Lx, Ly, t: 300e-6, Rpp: 4e-5 });
+    const R = Th.rng(17);
+    const cores = [[3.5, 3], [7.5, 3], [3.5, 7], [7.5, 7]].map(([x, y], i) => ({ x: x * 1e-3, y: y * 1e-3, P: 4, target: 4, left: 0.3 + i * 0.4 }));
+    const st = { boost: null, hist: [], lo: 0, hi: 50 };
+    function loadQ() {
+      D.q.fill(0);
+      D.addSquare(Lx / 2, Ly / 2, Lx, Ly, 12); // 배경(캐시·입출력)
+      D.addSquare(13e-3, 5e-3, 4e-3, 8e-3, 6); // 캐시 영역 조금 더
+      for (const c of cores) D.addSquare(c.x, c.y, 3e-3, 3e-3, c.P);
+      if (st.boost) D.addSquare(st.boost[0], st.boost[1], 1.5e-3, 1.5e-3, 8);
+    }
+    // 처음 화면을 정상 상태 근처로
+    loadQ(); D.step(600); D.time = 0;
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w);
+      let mx, my, mw, mh;
+      if (narrow) { mw = w - 20; mh = mw * (Ly / Lx); mx = 10; my = 10; }
+      else { mh = h - 24; mw = mh * (Lx / Ly); if (mw > w * 0.66) { mw = w * 0.66; mh = mw * (Ly / Lx); } mx = 12; my = 12; }
+      self._M = { x: mx, y: my, w: mw, h: mh };
+      drawHeat(ctx, D.T, D.nx, D.ny, st.lo, st.hi, mx, my, mw, mh);
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.strokeRect(mx, my, mw, mh);
+      cores.forEach((c, i) => {
+        const cx = mx + (c.x / Lx) * mw, cy = my + (c.y / Ly) * mh, s = (3e-3 / Lx) * mw;
+        ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.setLineDash([3, 3]); ctx.strokeRect(cx - s / 2, cy - s / 2, s, s); ctx.setLineDash([]);
+        SB.label(ctx, `코어 ${i + 1} · ${c.P.toFixed(0)} W`, cx, cy - s / 2 - 8, { size: 11, color: "#fff", bg: "rgba(0,0,0,.55)" });
+      });
+      const ccx = mx + (13 / 16) * mw, ccy = my + 0.5 * mh;
+      SB.label(ctx, "캐시·입출력", ccx, ccy, { size: 11, color: "#fff", bg: "rgba(0,0,0,.45)" });
+      if (st.boost) { const bx = mx + (st.boost[0] / Lx) * mw, by = my + (st.boost[1] / Ly) * mh; handle(ctx, bx, by, P.accent, 9); SB.label(ctx, "부스트 8 W", bx, by + 20, { size: 11, bold: true, color: "#fff", bg: "rgba(0,0,0,.6)" }); }
+      const mm = D.max(), Tm = mm.m + TS;
+      // 최고 온도 지점 표시
+      const ix = mm.at % D.nx, iy = Math.floor(mm.at / D.nx), px = mx + ((ix + 0.5) / D.nx) * mw, py = my + ((iy + 0.5) / D.ny) * mh;
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, 6, 0, 2 * PI); ctx.stroke();
+      // 오른쪽(또는 아래) 그래프
+      let B;
+      if (narrow) B = { x: 50, y: my + mh + 34, w: w - 66, h: h - (my + mh + 34) - 50 };
+      else B = { x: mx + mw + 92, y: 34, w: w - (mx + mw + 92) - 14, h: h - 34 - 60 };
+      if (!narrow) colorbar(ctx, mx + mw + 12, my + 6, 12, mh - 12, st.lo + TS, st.hi + TS, (v) => v.toFixed(0) + " °C");
+      if (B.w > 60 && B.h > 50) {
+        const tmax = 10, now = st.hist.length ? st.hist[st.hist.length - 1][0] : 0;
+        const data = st.hist.map(([t, v]) => [t - now + tmax, v]);
+        const C = SB.chart(ctx, B, { x: [0, tmax], y: [40, 120], yTicks: [40, 60, 80, 100, 120], xTicks: [0, 5, 10], xFmt: (v) => (v - tmax).toFixed(0) + " s",
+          series: [{ data, color: P.accent, width: 2.2 }], hlines: [{ y: 105, color: P.bad, label: "105 °C" }] });
+        SB.label(ctx, `최고 온도 ${Tm.toFixed(1)} °C`, C.box.x + 4, C.box.y - 14, { align: "left", bold: true, size: 13, color: Tm > 105 ? P.bad : P.text });
+      }
+    }, { aspect: 0.42, minHeight: 400, maxHeight: 440 });
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      down: (id, x, y) => { const M = cv._M; if (!M) return; if (x >= M.x && x <= M.x + M.w && y >= M.y && y <= M.y + M.h) st.boost = [((x - M.x) / M.w) * Lx, ((y - M.y) / M.h) * Ly]; },
+      move: (id, x, y) => { const M = cv._M; if (!M || !st.boost) return; st.boost = [SB.clamp((x - M.x) / M.w, 0.05, 0.95) * Lx, SB.clamp((y - M.y) / M.h, 0.05, 0.95) * Ly]; },
+      up: () => { st.boost = null; },
+    });
+    let simT = 0;
+    SB.loop("cv-hero", (dt) => {
+      for (const c of cores) {
+        c.left -= dt;
+        if (c.left <= 0) { c.target = R() < 0.55 ? 8 + 12 * R() : 2; c.left = 0.8 + 2.2 * R(); }
+        c.P += (c.target - c.P) * Math.min(1, dt * 6);
+      }
+      loadQ();
+      D.step(4);
+      simT += dt;
+      st.hist.push([simT, D.max().m + TS]);
+      while (st.hist.length && st.hist[0][0] < simT - 10) st.hist.shift();
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절: 뜨거운 벽과 차가운 벽 사이의 2D 기체 */
+  {
+    const W = 520, H = 260, RAD = 3.5, KT0 = 2e4, NB = 10, DT = 1 / 200, TAU = 10;
+    const toK = (kt) => (300 * kt) / KT0, toKT = (K) => (K * KT0) / 300;
+    const st = { N: 300, Th: toKT(450), Tc: toKT(150), playing: true };
+    function fresh() {
+      st.G = Th.gas2d({ W, H, n: st.N, r: RAD, m: 1, T: (st.Th + st.Tc) / 2, seed: 11, walls: { left: { T: st.Th }, right: { T: st.Tc } } });
+      reset();
+    }
+    function reset() { st.bins = null; st.Jin = null; st.Jout = null; st.age = 0; }
+    fresh();
+    function advance(nsteps) {
+      const G = st.G, bS = new Float64Array(NB), bC = new Float64Array(NB);
+      let ein = 0, eout = 0;
+      for (let s = 0; s < nsteps; s++) {
+        const hl = [], hr = [];
+        for (const q of G.p) {
+          const e = 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy);
+          if (q.x + q.vx * DT < q.r) hl.push([q, e]);
+          else if (q.x + q.vx * DT > W - q.r) hr.push([q, e]);
+        }
+        G.step(DT);
+        for (const [q, e] of hl) ein += 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy) - e;
+        for (const [q, e] of hr) eout -= 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy) - e;
+        for (const q of G.p) { const b = Math.min(NB - 1, Math.max(0, Math.floor((q.x / W) * NB))); bS[b] += 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy); bC[b]++; }
+      }
+      const tt = nsteps * DT, a = st.bins ? 1 - Math.exp(-tt / TAU) : 1;
+      const fr = Array.from(bS, (v, i) => (bC[i] ? v / bC[i] : NaN));
+      if (!st.bins) st.bins = fr.slice();
+      else for (let i = 0; i < NB; i++) if (isFinite(fr[i])) st.bins[i] += a * (fr[i] - st.bins[i]);
+      const jin = ein / tt / H, jout = eout / tt / H;
+      st.Jin = st.Jin == null ? jin : st.Jin + a * (jin - st.Jin);
+      st.Jout = st.Jout == null ? jout : st.Jout + a * (jout - st.Jout);
+      st.age += tt;
+    }
+    function fit() {
+      if (!st.bins) return null;
+      const xs = [], ys = [];
+      for (let i = 2; i < NB - 2; i++) { xs.push(((i + 0.5) / NB) * W); ys.push(st.bins[i]); }
+      return Th.linfit(xs, ys);
+    }
+    const TMIN = toKT(75), TMAX = toKT(750);
+    const cv = SB.canvas("cv-gas", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), G = st.G;
+      const B1 = narrow ? { x: 34, y: 28, w: w - 68, h: Math.round(h * 0.46) } : { x: 34, y: 28, w: Math.round(w * 0.56) - 34, h: h - 40 };
+      const F = wfit(B1, W, H);
+      self._F = F;
+      // 벽
+      ctx.fillStyle = P.accent; ctx.fillRect(F.X(0) - 6, F.Y(0), 6, F.h);
+      ctx.fillStyle = P.accent2; ctx.fillRect(F.X(W), F.Y(0), 6, F.h);
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.strokeRect(F.X(0), F.Y(0), F.w, F.h);
+      const col = $("gas-col").checked, vref = Math.sqrt(2 * KT0) * 2.2;
+      for (const q of G.p) { ctx.fillStyle = col ? Th.heatColor(Math.hypot(q.vx, q.vy) / vref) : P.dim; ctx.beginPath(); ctx.arc(F.X(q.x), F.Y(q.y), Math.max(1.6, q.r * F.s), 0, 2 * PI); ctx.fill(); }
+      // 온도계 (양쪽 벽 바깥)
+      const ty = (kt) => F.Y(H) - ((kt - TMIN) / (TMAX - TMIN)) * F.h;
+      [[F.X(0) - 20, st.Th, P.accent], [F.X(W) + 20, st.Tc, P.accent2]].forEach(([x, kt, c]) => {
+        ctx.strokeStyle = P.faint; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, F.Y(0)); ctx.lineTo(x, F.Y(H)); ctx.stroke();
+        handle(ctx, x, ty(kt), c, 9);
+      });
+      self._ty = ty;
+      SB.label(ctx, `T₁ = ${toK(st.Th).toFixed(0)} K`, F.X(0), F.Y(0) - 12, { align: "left", bold: true, color: P.accent, size: 12 });
+      SB.label(ctx, `T₂ = ${toK(st.Tc).toFixed(0)} K`, F.X(W), F.Y(0) - 12, { align: "right", bold: true, color: P.accent2, size: 12 });
+      // 분포 그래프
+      const B2 = narrow ? { x: 52, y: B1.y + F.h + 50, w: w - 70, h: h - (B1.y + F.h + 50) - 46 } : { x: B1.x + B1.w + 104, y: 30, w: w - (B1.x + B1.w + 104) - 14, h: h - 30 - 46 };
+      const pts = st.bins ? st.bins.map((v, i) => ({ x: (i + 0.5) / NB, y: toK(v), color: P.accent, r: 4.5 })) : [];
+      const f = fit(), series = [];
+      if (f) series.push({ data: [[0, toK(f.a)], [1, toK(f.a + f.b * W)]], color: P.accent2, width: 2, dash: [6, 4] });
+      pts.push({ x: 0, y: toK(st.Th), color: P.accent, r: 3 }, { x: 1, y: toK(st.Tc), color: P.accent2, r: 3 });
+      SB.chart(ctx, B2, { x: [0, 1], y: [0, 800], yTicks: [0, 200, 400, 600, 800], xTicks: [0, 0.25, 0.5, 0.75, 1], xLabel: "위치 x / 상자 폭", yLabel: "온도 (K)", series, points: pts });
+    }, { aspect: 0.46, minHeight: 380, maxHeight: 440 });
+    SB.range("gas-n", (v) => String(v), (v) => { st.N = v; fresh(); cv.redraw(); });
+    $("gas-col").addEventListener("change", () => cv.redraw());
+    toggleBtn("gas-play", st);
+    $("gas-reset").addEventListener("click", () => { reset(); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const F = cv._F, ty = cv._ty; if (!F) return []; return [{ id: "h", x: F.X(0) - 20, y: ty(st.Th), r: 14 }, { id: "c", x: F.X(W) + 20, y: ty(st.Tc), r: 14 }]; },
+      move: (id, x, y) => {
+        const F = cv._F; if (!F) return;
+        const kt = SB.clamp(TMIN + ((F.Y(H) - y) / F.h) * (TMAX - TMIN), TMIN, TMAX), K = Math.round(toK(kt) / 5) * 5, v = toKT(K);
+        if (id === "h") { st.Th = v; st.G.walls.left.T = v; } else if (id === "c") { st.Tc = v; st.G.walls.right.T = v; }
+      },
+      up: (id) => { if (id) st.age = 0; },
+    });
+    SB.loop("cv-gas", () => {
+      if (st.playing) advance(8);
+      cv.redraw();
+      SB.stat("gas-tw", `${toK(st.Th).toFixed(0)} / ${toK(st.Tc).toFixed(0)} K`);
+      if (st.Jin != null) {
+        SB.stat("gas-j", `${st.Jin.toFixed(0)} / ${st.Jout.toFixed(0)}`);
+        const f = fit(), g = f ? f.b : NaN; // d(kT)/dx [kT/px]
+        SB.stat("gas-g", isFinite(g) ? `${((toK(g * W)) ).toFixed(0)} K / 상자 폭` : "—");
+        const J = 0.5 * (st.Jin + st.Jout);
+        SB.stat("gas-k", isFinite(g) && g < 0 ? (J / -g).toFixed(1) + " (화면 단위)" : "—");
+      }
+    });
+  }
+
+  /* ================================================================ 1절 미니: 재료별 열전도도 */
+  {
+    const MATS = [["diamond", "다이아몬드"], ["Ag", "은"], ["Cu", "구리"], ["Au", "금"], ["SiC", "SiC"], ["AlN", "AlN"], ["Al", "알루미늄"], ["W", "텅스텐"], ["Si", "실리콘"], ["GaN", "GaN"], ["Ge", "저마늄"], ["solder", "땜납"], ["GaAs", "GaAs"], ["sapphire", "사파이어"], ["TiN", "TiN"], ["Ti", "타이타늄"], ["Si3N4", "Si₃N₄"], ["TIM", "열 그리스"], ["SiO2", "SiO₂"], ["water", "물"], ["lowk", "low-k"], ["epoxy", "에폭시"], ["He", "He 기체"], ["polyimide", "폴리이미드"], ["air", "공기"]];
+    const st = { sel: 18, L: 10 };
+    const cv = SB.canvas("cv-kappa", (ctx, w, h, self) => {
+      const P = pal(), n = MATS.length, top = 14, rowH = (h - top - 40) / n, lx = Math.min(96, w * 0.26), x0 = lx + 8, x1 = w - 16;
+      const X = (k) => x0 + ((Math.log10(k) + 2) / 6) * (x1 - x0);
+      self._row = (y) => Math.floor((y - top) / rowH); self._rowH = rowH;
+      ctx.font = "11px " + SB.color("mono"); ctx.fillStyle = P.dim; ctx.textAlign = "center";
+      [0.01, 0.1, 1, 10, 100, 1000, 10000].forEach((v) => { const px = X(v); ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(px, top); ctx.lineTo(px, h - 36); ctx.stroke(); if (v < 10000) ctx.fillText(String(v), px, h - 30); });
+      SB.label(ctx, "κ (W/(m·K)), 로그 눈금", (x0 + x1) / 2, h - 10, { size: 12, color: P.dim });
+      MATS.forEach(([key, name], i) => {
+        const k = KT[key], y = top + i * rowH, on = i === st.sel;
+        ctx.fillStyle = on ? P.accent : P.accent2; withA(ctx, on ? 1 : 0.5, () => ctx.fillRect(x0, y + 1.5, X(k) - x0, rowH - 3));
+        ctx.font = (on ? "600 " : "") + Math.min(12, rowH - 1) + "px " + SB.color("font"); ctx.fillStyle = on ? P.text : P.dim; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+        ctx.fillText(name, lx, y + rowH / 2);
+        if (on || i % 1 === 0) { ctx.textAlign = "left"; ctx.font = Math.min(11, rowH - 2) + "px " + SB.color("mono"); ctx.fillStyle = on ? P.text : P.faint; ctx.fillText(String(k), X(k) + 4, y + rowH / 2); }
+      });
+      const [key, name] = MATS[st.sel], k = KT[key], L = st.L * 1e-6, dT = (1e6 * L) / k;
+      $("kap-r").innerHTML = `${name} κ = ${k} → 100 W/cm²에서 ΔT = <b>${sci(dT, 3)} K</b>`;
+    }, { height: 420 });
+    SB.range("kap-L", (v) => lfmt(Math.pow(10, v) * 1e-6), (v) => { st.L = Math.pow(10, v); cv.redraw(); });
+    st.L = Math.pow(10, Number($("kap-L").value));
+    cv.redraw();
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { const r = cv._row(y); if (r >= 0 && r < MATS.length) st.sel = r; }, move: (id, x, y) => { const r = cv._row(y); if (r >= 0 && r < MATS.length) st.sel = r; } });
+  }
+
+  /* ================================================================ 1절 tangle */
+  SB.tangle("tg-fourier", (v) => {
+    const A = v.A * 1e-4, L = v.L * 1e-6, R = Th.Rth.slab(L, 148, A), dT = v.Q * R, dTox = v.Q * Th.Rth.slab(L, 1.4, A);
+    return { R: sci(R, 3) + " K/W", dT: sci(dT, 3) + " K", q: sci(v.Q / v.A, 3) + " W/cm²", ox: sci(dTox, 3) + " K(" + (148 / 1.4).toFixed(0) + "배)" };
+  });
+
+  /* ================================================================ 2절: 패키지 열 스택 */
+  {
+    const AD = 1e-4, AL = 9e-4, TA = 35;
+    const TIMK = { grease: KT.TIM, solder: KT.solder, indium: 86 };
+    const LAY = [
+      { id: "die", name: "다이 Si", t: 300e-6, tmin: 50e-6, tmax: 800e-6, k: 148, A: AD, w: 0.42 },
+      { id: "tim1", name: "TIM1", t: 50e-6, tmin: 10e-6, tmax: 200e-6, k: KT.TIM, A: AD, w: 0.42 },
+      { id: "lid", name: "뚜껑 Cu", t: 2e-3, tmin: 0.5e-3, tmax: 4e-3, k: 401, A: AL, w: 1 },
+      { id: "tim2", name: "TIM2", t: 50e-6, tmin: 10e-6, tmax: 200e-6, k: KT.TIM, A: AL, w: 1 },
+    ];
+    const st = { P: 120, sa: 0.25, sp: true };
+    /** 원형 열원(반지름 a)–원판(반지름 b, 두께 t, 뒷면 h) 평균 퍼짐 저항 (Lee–Song–Yovanovich) */
+    function spreadLSY(k, a, b, t, h) {
+      const eps = a / b, tau = t / b, Bi = (h * b) / k, lam = PI + 1 / (Math.sqrt(PI) * eps), th = Math.tanh(lam * tau);
+      const Phi = (th + lam / Bi) / (1 + (lam / Bi) * th);
+      const psi = (eps * tau) / Math.sqrt(PI) + 0.5 * Math.pow(1 - eps, 1.5) * Phi;
+      return psi / (k * a * Math.sqrt(PI));
+    }
+    function calc() {
+      const R = LAY.map((L) => Th.Rth.slab(L.t, L.k, L.A));
+      const hBack = 1 / (AL * (R[3] + st.sa));
+      const Rsp = st.sp ? spreadLSY(401, Math.sqrt(AD / PI), Math.sqrt(AL / PI), LAY[2].t, hBack) : 0;
+      const parts = [["다이", R[0]], ["TIM1", R[1]], ["뚜껑", R[2]], ["퍼짐", Rsp], ["TIM2", R[3]], ["방열판", st.sa]];
+      const ja = parts.reduce((s, p) => s + p[1], 0), jc = R[0] + R[1] + R[2] + Rsp;
+      return { parts, ja, jc, Tj: TA + st.P * ja };
+    }
+    const hOf = (L, H) => { const u = Math.log(L.t / L.tmin) / Math.log(L.tmax / L.tmin); return H * (0.08 + 0.17 * u); };
+    const cv = SB.canvas("cv-stack", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), r = calc();
+      const SB1 = narrow ? { x: 10, y: 26, w: w - 20, h: Math.round(h * 0.5) - 30 } : { x: 10, y: 26, w: Math.round(w * 0.42), h: h - 40 };
+      // 스택 (아래에서 위로: 다이 → TIM1 → 뚜껑 → TIM2 → 방열판)
+      const Htot = SB1.h * 0.82, cx = SB1.x + SB1.w * 0.44, full = SB1.w * 0.74;
+      let yb = SB1.y + SB1.h - 6;
+      const cols = [P.accent, P.accent2, P.warn, P.accent2];
+      self._hs = [];
+      // 기판
+      ctx.fillStyle = P.faint; withA(ctx, 0.5, () => ctx.fillRect(cx - full / 2, yb - 8, full, 8)); yb -= 8;
+      LAY.forEach((L, i) => {
+        const hh = hOf(L, Htot), ww = full * L.w;
+        withA(ctx, i === 0 ? 0.85 : 0.45, () => { ctx.fillStyle = cols[i]; ctx.fillRect(cx - ww / 2, yb - hh, ww, hh); });
+        ctx.strokeStyle = P.dim; ctx.lineWidth = 1; ctx.strokeRect(cx - ww / 2, yb - hh, ww, hh);
+        const tl = L.t >= 1e-3 ? (L.t * 1e3).toFixed(1) + " mm" : (L.t * 1e6).toFixed(0) + " µm";
+        SB.label(ctx, `${L.name} ${tl}`, cx, yb - hh / 2, { size: 11, bold: i === 0 });
+        const hx = cx + ww / 2 + 14, hy = yb - hh;
+        handle(ctx, hx, hy, cols[i], 8);
+        self._hs.push({ id: i, x: hx, y: hy, yb });
+        yb -= hh;
+      });
+      // 방열판
+      const bh = Htot * 0.07; ctx.fillStyle = P.dim; withA(ctx, 0.35, () => ctx.fillRect(cx - full / 2, yb - bh, full, bh)); yb -= bh;
+      const nf = 9, fh = Math.min(Htot * 0.22, yb - SB1.y - 4);
+      for (let i = 0; i < nf; i++) { const fx0 = cx - full / 2 + (i + 0.5) * (full / nf) - 2; withA(ctx, 0.35, () => { ctx.fillStyle = P.dim; ctx.fillRect(fx0, yb - fh, 4, fh); }); }
+      SB.label(ctx, `방열판 θSA ${st.sa.toFixed(2)} K/W`, cx, yb - fh / 2, { size: 11 });
+      SB.label(ctx, `P = ${st.P} W ↑`, cx, SB1.y + SB1.h + 6, { size: 11, color: P.accent, bold: true });
+      // 온도 계단
+      const B2 = narrow ? { x: 52, y: SB1.y + SB1.h + 40, w: w - 66, h: h - (SB1.y + SB1.h + 40) - 40 } : { x: SB1.x + SB1.w + 60, y: 22, w: w - (SB1.x + SB1.w + 60) - 12, h: h - 22 - 44 };
+      const n = r.parts.length, nodes = [r.Tj];
+      r.parts.forEach((p) => nodes.push(nodes[nodes.length - 1] - st.P * p[1]));
+      const ymax = Math.max(120, Math.ceil((r.Tj + 10) / 20) * 20);
+      const C = SB.chart(ctx, B2, { x: [0, n], y: [TA - 5, ymax], xTicks: [], xFmt: () => "", yLabel: "온도 (°C)",
+        series: [{ data: nodes.map((T, i) => [i, T]), color: P.accent, width: 2.6 }], hlines: [{ y: 105, color: P.bad, label: "105 °C" }, { y: TA, color: P.accent2, label: "주위 35 °C" }],
+        points: nodes.map((T, i) => ({ x: i, y: T, color: i === 0 ? P.accent : P.dim, r: i === 0 ? 5 : 3 })) });
+      const big = r.parts.reduce((m, p, i) => (p[1] > r.parts[m][1] ? i : m), 0);
+      r.parts.forEach((p, i) => {
+        const xm = C.X(i + 0.5);
+        SB.label(ctx, p[0], xm, C.box.y + C.box.h + 12, { size: 11, color: i === big ? P.accent : P.dim, bold: i === big });
+        const d = st.P * p[1];
+        if (d > 0.3) SB.label(ctx, d.toFixed(d < 10 ? 1 : 0), xm, C.Y((nodes[i] + nodes[i + 1]) / 2) - 10, { size: 11, color: P.dim });
+      });
+      SB.label(ctx, `T_J = ${r.Tj.toFixed(1)} °C`, C.box.x + 8, C.box.y + C.box.h - 30, { align: "left", bold: true, color: r.Tj > 105 ? P.bad : P.accent, size: 13 });
+      SB.stat("stk-tj", `<span style="color:${r.Tj > 105 ? P.bad : "inherit"}">${r.Tj.toFixed(1)} °C</span>`);
+      SB.stat("stk-jc", r.jc.toFixed(3) + " K/W");
+      SB.stat("stk-ja", r.ja.toFixed(3) + " K/W");
+      SB.stat("stk-max", `${r.parts[big][0]} ${r.parts[big][1].toFixed(3)} K/W`);
+    }, { aspect: 0.6, minHeight: 440, maxHeight: 480 });
+    SB.range("stk-P", (v) => v + " W", (v) => { st.P = v; cv.redraw(); });
+    SB.range("stk-sa", (v) => v.toFixed(2) + " K/W", (v) => { st.sa = v; cv.redraw(); });
+    SB.seg("stk-tim", (v) => { LAY[1].k = TIMK[v]; cv.redraw(); });
+    $("stk-sp").addEventListener("change", (e) => { st.sp = e.target.checked; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (cv._hs || []).map((hh) => ({ id: hh.id, x: hh.x, y: hh.y, r: 14 })),
+      move: (id, x, y) => {
+        if (id == null) return;
+        const hh = cv._hs[id], L = LAY[id], hcv = cv.h, narrow = narrowOf(cv.w);
+        const SBh = narrow ? Math.round(hcv * 0.5) - 30 : hcv - 40, Htot = SBh * 0.82;
+        const px = SB.clamp(hh.yb - y, Htot * 0.08, Htot * 0.25), u = (px / Htot - 0.08) / 0.17;
+        L.t = L.tmin * Math.pow(L.tmax / L.tmin, u);
+      },
+    });
+  }
+
+  /* ================================================================ 2절 tangle: 접합 온도 */
+  SB.tangle("tg-tj", (v) => {
+    const ja = v.jc + v.cs + v.sa, tj = v.Ta + v.P * ja, need = (105 - v.Ta) / v.P - v.jc - v.cs;
+    const msg = tj > 105 ? (need > 0 ? `⚠ 105 °C를 넘는다 — θ<sub>SA</sub>를 ${need.toFixed(3)} K/W 이하로 낮춰야 한다.` : "⚠ 105 °C를 넘는다 — 방열판만으로는 안 되고 θ<sub>JC</sub>·θ<sub>CS</sub>부터 줄여야 한다.") : `105 °C까지 여유 ${(105 - tj).toFixed(1)} °C.`;
+    return { ja: ja.toFixed(2) + " K/W", tj: tj.toFixed(1) + " °C", msg };
+  });
+
+  /* ================================================================ 2절 미니: 퍼짐 저항 */
+  {
+    const st = { a: 50e-6, P: 0.5 };
+    const cv = SB.canvas("cv-spread", (ctx, w, h, self) => {
+      const P = pal(), xs = Th.logspace(1e-6, 5e-3, 120);
+      const C = SB.chart(ctx, { x: 62, y: 26, w: w - 80, h: h - 26 - 48 }, { x: [1e-6, 5e-3], y: [0.01, 1e6], logX: true, logY: true, xTicks: [1e-6, 1e-5, 1e-4, 1e-3], yTicks: [0.01, 1, 100, 1e4, 1e6],
+        xFmt: (v) => String(Math.round(v * 1e6)) + " µm", yFmt: (v) => (v >= 1 ? (v >= 1e4 ? "10" + sup(Math.round(Math.log10(v))) : String(v)) : String(v)), xLabel: "열원 반지름 a", yLabel: "열저항 (K/W)",
+        series: [{ data: xs.map((a) => [a, Th.Rth.slab(300e-6, 148, PI * a * a)]), color: P.dim, width: 1.6, dash: [3, 4] },
+                 { data: xs.map((a) => [a, Th.Rth.spreadDisk(401, a)]), color: P.accent2, width: 1.8, dash: [6, 4] },
+                 { data: xs.map((a) => [a, Th.Rth.spreadDisk(148, a)]), color: P.accent, width: 2.6 }] });
+      self._C = C;
+      const R = Th.Rth.spreadDisk(148, st.a);
+      handle(ctx, C.X(st.a), C.Y(R), P.accent, 9);
+      SB.label(ctx, "Si 퍼짐 1/4κa", C.X(2e-4), C.Y(Th.Rth.spreadDisk(148, 2e-4)) - 14, { size: 11, color: P.accent });
+      SB.label(ctx, "Cu", C.X(2e-3), C.Y(Th.Rth.spreadDisk(401, 2e-3)) + 14, { size: 11, color: P.accent2 });
+      SB.label(ctx, "1D 기둥 (300 µm)", C.X(3e-5), C.Y(Th.Rth.slab(300e-6, 148, PI * 9e-10)) - 2, { size: 11, color: P.dim, align: "left" });
+      const q = st.P / (PI * st.a * st.a) * 1e-4;
+      $("spr-r").innerHTML = `a = ${lfmt(st.a)}: R<sub>sp</sub> = ${sci(R)} K/W, ΔT = <b>${sci(st.P * R)} K</b> (q″ = ${sci(q)} W/cm²)`;
+    }, { aspect: 0.55, minHeight: 290, maxHeight: 380 });
+    SB.range("spr-P", (v) => v.toFixed(2) + " W", (v) => { st.P = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C; return C ? [{ id: "a", x: C.X(st.a), y: C.Y(Th.Rth.spreadDisk(148, st.a)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; const u = (x - C.box.x) / C.box.w; st.a = SB.clamp(Math.pow(10, Math.log10(1e-6) + u * (Math.log10(5e-3) - Math.log10(1e-6))), 1e-6, 5e-3); } });
+  }
+
+  /* ================================================================ 3절 미니: 웨이퍼 두께 방향 1D 열 방정식 */
+  {
+    const MAT = { Si: { k: 148, rho: 2329, c: 712 }, SiO2: { k: 1.4, rho: 2200, c: 730 }, Cu: { k: 401, rho: 8960, c: 385 } };
+    const st = { mat: "Si", L: 775e-6, run: false, S: null, t50: null, done: false };
+    const alpha = () => { const m = MAT[st.mat]; return Th.diffusivity(m.k, m.rho, m.c); };
+    function fresh() {
+      st.S = Th.diffuse1d({ n: 121, L: st.L, D: alpha(), c0: 0, left: { type: "fixed", value: 100 }, right: { type: "flux", value: 0 } });
+      st.S.c[0] = 100; st.t50 = null; st.done = false;
+    }
+    fresh();
+    const btn = $("rod-play");
+    const sync = () => (btn.textContent = st.done ? "↺ 다시" : st.run ? "❚❚ 정지" : "▶ 앞면 가열");
+    btn.addEventListener("click", () => { if (st.done) { fresh(); st.run = true; } else st.run = !st.run; sync(); });
+    const cv = SB.canvas("cv-rod", (ctx, w, h) => {
+      const P = pal(), S = st.S, n = S.c.length, a = alpha(), t = S.t;
+      const sx = 60, sw = w - 78, sy = 22, sh = 26;
+      drawHeat(ctx, S.c, n, 1, 0, 100, sx, sy, sw, sh);
+      ctx.strokeStyle = P.dim; ctx.strokeRect(sx, sy, sw, sh);
+      SB.label(ctx, "앞면 (100 K 높게 고정)", sx, sy - 10, { align: "left", size: 11, color: P.accent });
+      SB.label(ctx, "뒷면 (단열)", sx + sw, sy - 10, { align: "right", size: 11, color: P.dim });
+      const Lum = st.L * 1e6, xs = Array.from(S.x, (x) => x * 1e6);
+      const series = [{ data: xs.map((x, i) => [x, S.c[i]]), color: P.accent, width: 2.6 }];
+      if (t > 0) series.unshift({ data: xs.map((x) => [x, 100 * Th.erfc((x * 1e-6) / (2 * Math.sqrt(a * t)))]), color: P.accent2, width: 1.8, dash: [6, 4] });
+      const vl = t > 0 && 2 * Math.sqrt(a * t) < st.L ? [{ x: 2 * Math.sqrt(a * t) * 1e6, color: P.dim, label: "2√(αt)" }] : [];
+      SB.chart(ctx, { x: sx, y: sy + sh + 22, w: sw, h: h - (sy + sh + 22) - 46 }, { x: [0, Lum], y: [0, 100], xTicks: Lum > 1000 ? [0, 500, 1000, 1500] : [0, 200, 400, 600, 775], yTicks: [0, 25, 50, 75, 100], xLabel: "깊이 (µm)", yLabel: "온도 상승 (K)", series, vlines: vl });
+      const back = S.c[n - 1];
+      $("rod-r").innerHTML = `t = ${tfmt(t)} · 뒷면 ${back.toFixed(1)} K · 뒷면 50% 시각 ${st.t50 == null ? "—" : "<b>" + tfmt(st.t50) + "</b>"} · L²/α = ${tfmt((st.L * st.L) / a)}`;
+    }, { aspect: 0.48, minHeight: 270, maxHeight: 340 });
+    SB.seg("rod-mat", (v) => { st.mat = v; fresh(); st.run = false; sync(); cv.redraw(); });
+    SB.seg("rod-L", (v) => { st.L = Number(v) * 1e-6; fresh(); st.run = false; sync(); cv.redraw(); });
+    SB.loop("cv-rod", () => {
+      if (!st.run) return;
+      const a = alpha(), dtf = (775e-6 * 775e-6) / a / 240, S = st.S;
+      for (let k = 0; k < 2; k++) {
+        const before = S.c[S.c.length - 1], t0 = S.t;
+        S.step(dtf / 2);
+        const after = S.c[S.c.length - 1];
+        if (st.t50 == null && before < 50 && after >= 50) st.t50 = t0 + ((50 - before) / (after - before)) * (dtf / 2);
+      }
+      if (S.t > (2.2 * st.L * st.L) / a) { st.run = false; st.done = true; sync(); }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 3절 tangle: 확산 길이 */
+  {
+    const al = { si: Th.diffusivity(148, 2329, 712), cu: Th.diffusivity(401, 8960, 385), ox: Th.diffusivity(1.4, 2200, 730), w: Th.diffusivity(0.607, 997, 4180) };
+    SB.tangle("tg-difflen", (v) => {
+      const t = v.t * 1e-3, L = (a) => lfmt(Math.sqrt(a * t));
+      return { si: L(al.si), cu: L(al.cu), ox: L(al.ox), w: L(al.w), frac: ((Math.sqrt(al.si * t) / 775e-6) * 100).toPrecision(3) + "%" };
+    });
+  }
+
+  /* ================================================================ 3절: 정전척 위의 웨이퍼 */
+  {
+    const Cpp = 2329 * 712 * 775e-6;
+    const hHe = (Pt) => 100 + 0.155 / (10e-6 + 4 * Th.mfp(Math.max(Pt, 1e-3) * Th.unit.torr, 300, Th.diameter.He));
+    const st = { P: 10, q: 3, Tch: 30, on: true, playing: true, t: 0, hist: [], goal: 0, done: false };
+    const ss = () => st.Tch + (st.on ? (st.q * 1e4) / hHe(st.P) : 0);
+    st.Tw = ss();
+    const cv = SB.canvas("cv-esc", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), hh = hHe(st.P);
+      const B1 = narrow ? { x: 56, y: 44, w: w - 72, h: Math.round(h * 0.5) - 84 } : { x: 60, y: 44, w: Math.round(w * 0.42) - 60, h: h - 44 - 48 };
+      const Ps = Th.linspace(0.2, 40, 120);
+      const C1 = SB.chart(ctx, B1, { x: [0, 40], y: [0, 7000], xTicks: [0, 10, 20, 30, 40], yTicks: [0, 2000, 4000, 6000], xLabel: "He 압력 (Torr)", yLabel: "h (W/(m²·K))", series: [{ data: Ps.map((p) => [p, hHe(p)]), color: P.accent2, width: 2.4 }] });
+      self._C1 = C1;
+      handle(ctx, C1.X(st.P), C1.Y(hh), P.accent2, 9);
+      SB.label(ctx, `${st.P.toFixed(1)} Torr`, C1.X(st.P) + 12, C1.Y(hh) + 16, { align: "left", size: 11, bold: true });
+      const B2 = narrow ? { x: 56, y: B1.y + B1.h + 62, w: w - 72, h: h - (B1.y + B1.h + 62) - 46 } : { x: B1.x + B1.w + 66, y: 44, w: w - (B1.x + B1.w + 66) - 14, h: h - 44 - 48 };
+      const now = st.t, span = 12, d = st.hist.map(([t, T]) => [t - now + span, T]), dc = st.hist.map(([t, , Tc]) => [t - now + span, Tc]);
+      let lo = Math.min(st.Tch, ...st.hist.map((x) => x[1])) - 5, hi = Math.max(70, ...st.hist.map((x) => x[1])) + 5;
+      lo = Math.floor(lo / 10) * 10; hi = Math.ceil(hi / 10) * 10;
+      SB.chart(ctx, B2, { x: [0, span], y: [lo, hi], xTicks: [0, 4, 8, 12], xFmt: (v) => (v - span).toFixed(0) + " s", yLabel: "온도 (°C)", xLabel: "시간",
+        hbands: [{ y0: 58, y1: 62, color: SB.color("accent-soft") || "rgba(0,0,0,.08)" }],
+        series: [{ data: dc, color: P.accent2, width: 1.8, dash: [6, 4] }, { data: d, color: P.accent, width: 2.4 }] });
+      SB.label(ctx, `웨이퍼 ${st.Tw.toFixed(1)} °C`, B2.x + 6, B2.y - 12, { align: "left", bold: true, color: P.accent, size: 12 });
+      SB.label(ctx, st.on ? "플라스마 켜짐" : "플라스마 꺼짐", B2.x + B2.w, B2.y - 12, { align: "right", size: 11, color: st.on ? P.accent : P.dim });
+      SB.stat("esc-h", Math.round(hh) + " W/(m²·K)");
+      SB.stat("esc-tau", (Cpp / hh).toFixed(2) + " s");
+      SB.stat("esc-tw", ss().toFixed(1) + " °C");
+      SB.stat("esc-goal", st.done ? `<span style="color:${P.ok}">달성 ✓</span>` : `${Math.min(st.goal, 5).toFixed(1)} / 5 s`);
+    }, { aspect: 0.44, minHeight: 320, maxHeight: 400 });
+    SB.range("esc-q", (v) => v.toFixed(1) + " W/cm²", (v) => { st.q = v; });
+    SB.range("esc-tc", (v) => v + " °C", (v) => { st.Tch = v; });
+    const onB = $("esc-on");
+    onB.addEventListener("click", () => { st.on = !st.on; onB.textContent = st.on ? "플라스마 끄기" : "플라스마 켜기"; });
+    toggleBtn("esc-play", st);
+    SB.drag(cv, { handles: () => { const C = cv._C1; return C ? [{ id: "p", x: C.X(st.P), y: C.Y(hHe(st.P)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C1; if (!C) return; st.P = SB.clamp(((x - C.box.x) / C.box.w) * 40, 0.5, 40); } });
+    SB.loop("cv-esc", (dt) => {
+      if (st.playing) {
+        const hh = hHe(st.P), n = 10, d = dt / n;
+        for (let i = 0; i < n; i++) st.Tw += (d * ((st.on ? st.q * 1e4 : 0) - hh * (st.Tw - st.Tch))) / Cpp;
+        st.t += dt; st.hist.push([st.t, st.Tw, st.Tch]);
+        while (st.hist.length && st.hist[0][0] < st.t - 12) st.hist.shift();
+        if (Math.abs(st.Tw - 60) <= 2) { st.goal += dt; if (st.goal >= 5) st.done = true; } else st.goal = 0;
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 3절: 다이 핫스팟 2D */
+  {
+    const L = 10e-3, NX = 50;
+    const st = { A: [3.5e-3, 5e-3], B: [6.8e-3, 5.5e-3], PA: 4, PB: 8, t: 300e-6, Rpp: 1e-5, hi: 20 };
+    const D = makeDie({ nx: NX, ny: NX, Lx: L, Ly: L, t: st.t, Rpp: st.Rpp });
+    function loadQ() { D.q.fill(0); D.addSquare(L / 2, L / 2, L, L, 10); D.addSquare(st.A[0], st.A[1], 1e-3, 1e-3, st.PA); D.addSquare(st.B[0], st.B[1], 2e-3, 2e-3, st.PB); }
+    function setPar() { D.t = st.t; D.Rpp = st.Rpp; D.update(); }
+    loadQ(); setPar();
+    const spf = () => Math.max(2, Math.min(220, Math.ceil(D.tauV / 12 / D.dt)));
+    function steady() { for (let k = 0; k < 60; k++) { const m0 = D.max().m; D.step(400); if (Math.abs(D.max().m - m0) < 1e-4 * Math.max(1, m0)) break; } }
+    steady(); D.time = 0;
+    const cv = SB.canvas("cv-hot", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), mm = D.max();
+      if (mm.m > st.hi * 0.98 || mm.m < st.hi * 0.4) st.hi = Math.max(5, Math.ceil((mm.m * 1.15) / 5) * 5);
+      const side = narrow ? Math.min(w - 50, h * 0.55) : Math.min(h - 30, w * 0.5);
+      const M = { x: 10, y: 16, w: side, h: side };
+      self._M = M;
+      drawHeat(ctx, D.T, NX, NX, 0, st.hi, M.x, M.y, M.w, M.h);
+      ctx.strokeStyle = P.dim; ctx.strokeRect(M.x, M.y, M.w, M.h);
+      colorbar(ctx, M.x + M.w + 6, M.y + 4, 10, M.h - 8, 0, st.hi, (v) => "+" + v.toFixed(0) + " K");
+      const X = (x) => M.x + (x / L) * M.w, Y = (y) => M.y + (y / L) * M.h;
+      [[st.A, 1e-3, "A"], [st.B, 2e-3, "B"]].forEach(([p, s, nm]) => {
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(X(p[0] - s / 2), Y(p[1] - s / 2), (s / L) * M.w, (s / L) * M.h);
+        SB.label(ctx, nm, X(p[0]), Y(p[1] - s / 2) - 9, { size: 12, bold: true, color: "#fff", bg: "rgba(0,0,0,.6)" });
+      });
+      SB.dashLine(ctx, M.x, Y(st.A[1]), M.x + M.w, Y(st.A[1]), "rgba(255,255,255,.7)", [4, 4]);
+      // 단면 그래프
+      const B2 = narrow ? { x: 52, y: M.y + M.h + 28, w: w - 66, h: h - (M.y + M.h + 28) - 44 } : { x: M.x + M.w + 104, y: 22, w: w - (M.x + M.w + 104) - 14, h: h - 22 - 46 };
+      const j = SB.clamp(Math.floor((st.A[1] / L) * NX), 0, NX - 1), dx = L / NX;
+      const prof = [], est = [];
+      for (let i = 0; i < NX; i++) { const x = (i + 0.5) * dx * 1e3; prof.push([x, D.T[j * NX + i]]); est.push([x, D.q[j * NX + i] * st.Rpp]); }
+      const ymax = Math.max(st.hi, ...est.map((e) => e[1])) * 1.05;
+      const C = SB.chart(ctx, B2, { x: [0, 10], y: [0, ymax], xTicks: [0, 2, 4, 6, 8, 10], xLabel: "x (mm), A를 지나는 가로선", yLabel: "T − Ts (K)", series: [{ data: est, color: P.accent2, width: 1.6, dash: [5, 4] }, { data: prof, color: P.accent, width: 2.6 }] });
+      SB.label(ctx, "1D 어림 q″R″", C.box.x + C.box.w - 4, C.box.y + 26, { align: "right", size: 11, color: P.accent2 });
+      const qA = st.PA / 1e-6 + 1e5;
+      SB.stat("hot-tm", mm.m.toFixed(1) + " K");
+      SB.stat("hot-1d", (qA * st.Rpp).toFixed(1) + " K");
+      SB.stat("hot-ls", (D.Ls * 1e3).toFixed(2) + " mm");
+      SB.stat("hot-time", tfmt(D.time));
+    }, { aspect: 0.5, minHeight: 330, maxHeight: 420 });
+    SB.range("hot-pa", (v) => v.toFixed(1) + " W", (v) => { st.PA = v; loadQ(); });
+    SB.range("hot-pb", (v) => v.toFixed(1) + " W", (v) => { st.PB = v; loadQ(); });
+    SB.seg("hot-t", (v) => { st.t = Number(v) * 1e-6; setPar(); D.time = 0; });
+    SB.range("hot-r", (v) => Math.pow(10, v).toPrecision(2) + " cm²·K/W", (v) => { st.Rpp = Math.pow(10, v) * 1e-4; setPar(); D.time = 0; });
+    $("hot-ss").addEventListener("click", () => { steady(); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const M = cv._M; if (!M) return []; return [["A", st.A], ["B", st.B]].map(([id, p]) => ({ id, x: M.x + (p[0] / L) * M.w, y: M.y + (p[1] / L) * M.h, r: 16 })); },
+      move: (id, x, y) => { const M = cv._M; if (!M || !id) return; const p = [SB.clamp((x - M.x) / M.w, 0.06, 0.94) * L, SB.clamp((y - M.y) / M.h, 0.06, 0.94) * L]; if (id === "A") st.A = p; else st.B = p; loadQ(); },
+    });
+    SB.loop("cv-hot", () => { D.step(spf()); cv.redraw(); });
+  }
+
+  /* ================================================================ 4절 미니: 복사 열전달 계수 */
+  {
+    const Tinf = 300, st = { T: 800, e: 0.7 };
+    const hEx = (T) => st.e * CC.sigma * (T * T + Tinf * Tinf) * (T + Tinf);
+    const hLin = (T) => 1 / Th.Rth.rad(st.e, 0.5 * (T + Tinf), 1);
+    const cv = SB.canvas("cv-hrad", (ctx, w, h, self) => {
+      const P = pal(), Ts = Th.linspace(300, 1500, 120);
+      const C = SB.chart(ctx, { x: 58, y: 26, w: w - 76, h: h - 26 - 48 }, { x: [300, 1500], y: [0, 260], xTicks: [300, 600, 900, 1200, 1500], yTicks: [0, 50, 100, 150, 200, 250], xLabel: "표면 온도 Ts (K)", yLabel: "h (W/(m²·K))",
+        hbands: [{ y0: 2, y1: 25, color: SB.color("accent-2-soft") || "rgba(0,0,0,.06)" }, { y0: 25, y1: 250, color: "rgba(128,128,128,.07)" }],
+        series: [{ data: Ts.map((T) => [T, 4 * st.e * CC.sigma * Tinf ** 3]), color: P.dim, width: 1.4, dash: [3, 4] }, { data: Ts.map((T) => [T, hLin(T)]), color: P.accent2, width: 1.8, dash: [6, 4] }, { data: Ts.map((T) => [T, hEx(T)]), color: P.accent, width: 2.6 }] });
+      self._C = C;
+      handle(ctx, C.X(st.T), C.Y(hEx(st.T)), P.accent, 9);
+      SB.label(ctx, "자연 대류", C.box.x + 6, C.Y(14), { align: "left", size: 11, color: P.accent2 });
+      SB.label(ctx, "강제 공랭", C.box.x + 6, C.Y(60), { align: "left", size: 11, color: P.dim });
+      const he = hEx(st.T), hl = hLin(st.T), h0 = 4 * st.e * CC.sigma * Tinf ** 3;
+      $("hrad-r").innerHTML = `Ts = ${st.T.toFixed(0)} K: h<sub>rad</sub> = <b>${he.toFixed(1)}</b>, 평균 온도 선형화 ${hl.toFixed(1)} (${(((hl - he) / he) * 100).toFixed(1)}%), 주위 온도 선형화 ${h0.toFixed(1)} (${(((h0 - he) / he) * 100).toFixed(0)}%) W/(m²·K)`;
+    }, { aspect: 0.5, minHeight: 270, maxHeight: 360 });
+    SB.range("hrad-e", (v) => v.toFixed(2), (v) => { st.e = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C; return C ? [{ id: "T", x: C.X(st.T), y: C.Y(hEx(st.T)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.T = SB.clamp(300 + ((x - C.box.x) / C.box.w) * 1200, 310, 1500); } });
+  }
+
+  /* ================================================================ 4절: 방열판 설계 과제 */
+  {
+    const G = { P: 180, Ta: 35, Rjc: 0.12, Alid: 9e-4, kAl: 237, tf: 0.8e-3, N: 20, depth: 0.1, Hmin: 0.01, Hmax: 0.12, ac: 30 };
+    const TIMS = [{ n: "패드", k: 3, t: 150e-6, c: 1 }, { n: "그리스", k: 4, t: 50e-6, c: 3 }, { n: "액체 금속", k: 40, t: 25e-6, c: 10 }];
+    const SINKS = [{ n: "자연 대류", h: 8, c: 4 }, { n: "팬", h: 30, c: 12 }, { n: "고속 팬", h: 60, c: 20 }];
+    function ev(ti, si, H) {
+      const T = TIMS[ti], S = SINKS[si], Rt = Th.Rth.slab(T.t, T.k, G.Alid), m = Math.sqrt((2 * S.h) / (G.kAl * G.tf)), eta = Math.tanh(m * H) / (m * H), A = G.N * 2 * H * G.depth;
+      const Rsa = 1 / (eta * S.h * A), Tj = G.Ta + G.P * (G.Rjc + Rt + Rsa);
+      return { Rt, eta, A, Rsa, Tj, cost: T.c + S.c + G.ac * A };
+    }
+    let OPT = Infinity, OPTd = null;
+    for (let ti = 0; ti < 3; ti++) for (let si = 0; si < 3; si++) for (let H = G.Hmin; H <= G.Hmax + 1e-9; H += 1e-4) { const r = ev(ti, si, H); if (r.Tj <= 105 && r.cost < OPT) { OPT = r.cost; OPTd = [ti, si, H]; } }
+    const st = { ti: 0, si: 0, H: 0.06, best: null, msg: "" };
+    const cv = SB.canvas("cv-game", (ctx, w, h, self) => {
+      const P = pal(), r = ev(st.ti, st.si, st.H), narrow = narrowOf(w);
+      const bw = Math.min(w - 120, 420), bx = 20 + (w - 120 - bw) / 2, base = h - 40;
+      // 칩·뚜껑·TIM
+      const chipW = bw * 0.28, lidW = bw * 0.6;
+      withA(ctx, 0.5, () => { ctx.fillStyle = P.faint; ctx.fillRect(bx + (bw - bw * 0.8) / 2, base, bw * 0.8, 10); });
+      ctx.fillStyle = P.accent; ctx.fillRect(bx + (bw - chipW) / 2, base - 12, chipW, 12);
+      withA(ctx, 0.5, () => { ctx.fillStyle = P.warn; ctx.fillRect(bx + (bw - lidW) / 2, base - 26, lidW, 14); });
+      const timCol = [P.dim, P.accent2, P.ok][st.ti];
+      ctx.fillStyle = timCol; ctx.fillRect(bx + (bw - lidW) / 2, base - 31, lidW, 5);
+      // 방열판
+      const sb = base - 31, baseH = 10;
+      withA(ctx, 0.55, () => { ctx.fillStyle = P.dim; ctx.fillRect(bx, sb - baseH, bw, baseH); });
+      const maxPx = sb - baseH - 40, fh = ((st.H - 0) / G.Hmax) * maxPx, nf = G.N;
+      for (let i = 0; i < nf; i++) {
+        const fx0 = bx + (i + 0.5) * (bw / nf) - 2;
+        // 핀 효율: 끝으로 갈수록 색이 식는다
+        const m = Math.sqrt((2 * SINKS[st.si].h) / (G.kAl * G.tf)), steps = 12;
+        for (let k = 0; k < steps; k++) { const z = (k + 0.5) / steps, th = Math.cosh(m * st.H * (1 - z)) / Math.cosh(m * st.H); ctx.fillStyle = Th.heatColor(0.35 + 0.55 * th); ctx.fillRect(fx0, sb - baseH - fh * (k + 1) / steps, 4, fh / steps + 0.5); }
+      }
+      const hx = bx + bw - (bw / nf) / 2, hy = sb - baseH - fh;
+      handle(ctx, hx, hy, P.accent, 9);
+      self._g = { sb: sb - baseH, maxPx, hx };
+      SB.label(ctx, `핀 높이 ${(st.H * 100).toFixed(1)} cm`, hx - 8, hy - 16, { align: "right", size: 12, bold: true });
+      // 공기
+      const S = SINKS[st.si], nA = st.si === 0 ? 4 : 6;
+      for (let i = 0; i < nA; i++) {
+        if (st.si === 0) SB.arrow(ctx, bx + bw * (0.15 + 0.23 * i), sb - baseH - fh - 4, bx + bw * (0.15 + 0.23 * i), sb - baseH - fh - 26, { color: P.accent2, width: 1.6, head: 6 });
+        else { const yy = sb - baseH - fh * (0.15 + 0.14 * i); SB.arrow(ctx, bx - 16, yy, bx + 30 + 10 * st.si, yy, { color: P.accent2, width: 1.6 + st.si * 0.4, head: 7 }); }
+      }
+      SB.label(ctx, S.n + ` · h = ${S.h}`, bx + 4, 30, { align: "left", size: 12, color: P.accent2, bold: true });
+      // 온도계
+      const tx = w - 60, ty0 = 56, ty1 = h - 40, Tlo = 30, Thi = 200, ty = (T) => ty1 - ((SB.clamp(T, Tlo, Thi) - Tlo) / (Thi - Tlo)) * (ty1 - ty0);
+      ctx.strokeStyle = P.border; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty0); ctx.stroke();
+      ctx.strokeStyle = r.Tj > 105 ? P.bad : P.ok; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty(r.Tj)); ctx.stroke(); ctx.lineCap = "butt";
+      SB.dashLine(ctx, tx - 16, ty(105), tx + 16, ty(105), P.bad, [3, 3]);
+      SB.label(ctx, "105", tx + 18, ty(105), { align: "left", size: 11, color: P.bad });
+      SB.label(ctx, r.Tj > 200 ? ">200 °C" : r.Tj.toFixed(0) + " °C", tx, ty0 - 14, { size: 12, bold: true, color: r.Tj > 105 ? P.bad : P.ok });
+      SB.stat("game-tj", `<span style="color:${r.Tj > 105 ? P.bad : P.ok}">${r.Tj.toFixed(1)} °C</span>`);
+      SB.stat("game-eta", `${(r.eta * 100).toFixed(0)}% · ${r.A.toFixed(3)} m²`);
+      SB.stat("game-cost", r.cost.toFixed(2));
+      SB.stat("game-best", st.best == null ? (st.msg || "—") : `${st.best.toFixed(2)} ${st.best <= OPT * 1.05 ? "★★★" : st.best <= OPT * 1.15 ? "★★☆" : "★☆☆"}${st.msg ? " · " + st.msg : ""}`);
+    }, { aspect: 0.55, minHeight: 330, maxHeight: 400 });
+    SB.seg("game-tim", (v) => { st.ti = Number(v); st.msg = ""; cv.redraw(); });
+    SB.seg("game-sink", (v) => { st.si = Number(v); st.msg = ""; cv.redraw(); });
+    $("game-sub").addEventListener("click", () => {
+      const r = ev(st.ti, st.si, st.H);
+      if (r.Tj > 105) st.msg = "불합격: T_J > 105 °C";
+      else { if (st.best == null || r.cost < st.best) st.best = r.cost; st.msg = r.cost <= OPT * 1.05 ? "최적에 가깝다!" : `합격 (최저가 대비 +${((r.cost / OPT - 1) * 100).toFixed(0)}%)`; }
+      cv.redraw();
+    });
+    $("game-reset").addEventListener("click", () => { st.best = null; st.msg = ""; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const g = cv._g; return g ? [{ id: "H", x: g.hx, y: g.sb - (st.H / G.Hmax) * g.maxPx, r: 14 }] : []; },
+      move: (id, x, y) => { const g = cv._g; if (!g) return; st.H = SB.clamp(((g.sb - y) / g.maxPx) * G.Hmax, G.Hmin, G.Hmax); st.H = Math.round(st.H * 1000) / 1000; } });
+    cv._OPT = OPTd;
+  }
+
+  /* ================================================================ 4절 미니: 배선 자기 가열과 전자 이동 */
+  {
+    const rho0 = 2.2e-8, tm = 0.2e-6, td = 1e-6, beta = 0.0039, Ea = 0.9, Tref = 378.15;
+    const st = { j: 3, kd: 1.4 };
+    const aOf = (j) => ((j * 1e10) ** 2 * rho0 * tm * td) / st.kd;
+    const dT = (j) => { const a = aOf(j); return beta * a < 1 ? a / (1 - beta * a) : Infinity; };
+    const jc = () => Math.sqrt(st.kd / (beta * rho0 * tm * td)) / 1e10;
+    const cv = SB.canvas("cv-em", (ctx, w, h, self) => {
+      const P = pal(), js = Th.linspace(0, 20, 200), J = jc();
+      const C = SB.chart(ctx, { x: 58, y: 26, w: w - 76, h: h - 26 - 48 }, { x: [0, 20], y: [0, 150], xTicks: [0, 5, 10, 15, 20], yTicks: [0, 50, 100, 150], xLabel: "전류 밀도 j (MA/cm²)", yLabel: "배선 온도 상승 ΔT (K)",
+        series: [{ data: js.map((j) => [j, aOf(j)]), color: P.dim, width: 1.4, dash: [3, 4] }, { data: js.filter((j) => j < J * 0.999).map((j) => [j, Math.min(dT(j), 1e4)]), color: P.accent, width: 2.6 }],
+        vlines: J < 20 ? [{ x: J, color: P.bad, label: "열 폭주" }] : [] });
+      self._C = C;
+      st.j = Math.min(st.j, J * 0.97);
+      const d = dT(st.j);
+      handle(ctx, C.X(st.j), C.Y(Math.min(d, 150)), P.accent, 9);
+      const T = Tref + d, life = Math.pow(st.j / 1, -2) * Math.exp((Ea / CC.kB_eV) * (1 / T - 1 / Tref));
+      $("em-r").innerHTML = `j = ${st.j.toFixed(1)} MA/cm²: ΔT = <b>${d.toFixed(1)} K</b>, 배선 ${(T - 273.15).toFixed(0)} °C, 수명 = 기준의 <b>${sci(life, 2)}</b>배`;
+    }, { aspect: 0.5, minHeight: 270, maxHeight: 360 });
+    SB.seg("em-d", (v) => { st.kd = Number(v); cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C; return C ? [{ id: "j", x: C.X(st.j), y: C.Y(Math.min(dT(st.j), 150)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.j = SB.clamp(((x - C.box.x) / C.box.w) * 20, 0.2, jc() * 0.97); } });
+  }
+
+  /* ================================================================ 4절 tangle: 블랙 식 */
+  SB.tangle("tg-black", (v) => {
+    const T1 = v.T1 + 273.15, T2 = v.T2 + 273.15, af = v.r * v.r * Math.exp((v.Ea / CC.kB_eV) * (1 / T1 - 1 / T2));
+    return { af: (af >= 100 ? sci(af, 3) : af.toPrecision(3)) + "배", use: tfmt(1000 * 3600 * af) };
+  });
+
+  /* ================================================================ 5절 미니: 제베크 열전대 */
+  {
+    const PAIRS = { K: { S: 41e-6, n: "K형 (크로멜–알루멜)" }, BT: { S: 400e-6, n: "Bi₂Te₃ p–n" }, Si: { S: 1e-3, n: "도핑 Si p–n" } };
+    const st = { T: 400, pair: "K", ph: 0 };
+    const cv = SB.canvas("cv-seebeck", (ctx, w, h, self) => {
+      const P = pal(), tx = 34, ty0 = 30, ty1 = h - 30, ty = (T) => ty1 - (T / 1000) * (ty1 - ty0);
+      ctx.strokeStyle = P.border; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty0); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty(st.T)); ctx.stroke(); ctx.lineCap = "butt";
+      handle(ctx, tx, ty(st.T), P.accent, 9);
+      self._th = { tx, ty };
+      SB.label(ctx, `${st.T.toFixed(0)} °C`, tx + 14, ty(st.T), { align: "left", size: 12, bold: true, color: P.accent });
+      const hx = 110, cx = w - 150, yA = h * 0.32, yB = h * 0.68, ym = (yA + yB) / 2;
+      // 뜨거운 접점 (가열 블록)
+      withA(ctx, 0.25 + 0.5 * (st.T / 1000), () => { ctx.fillStyle = P.accent; ctx.fillRect(hx - 30, ym - 40, 50, 80); });
+      // 기준 접점 (얼음물)
+      withA(ctx, 0.3, () => { ctx.fillStyle = P.accent2; ctx.fillRect(cx - 18, yA - 22, 46, yB - yA + 44); });
+      SB.label(ctx, "0 °C", cx + 5, yB + 32, { size: 11, color: P.accent2 });
+      line(ctx, [[cx + 6, yA], [hx, yA], [hx - 6, ym], [hx, yB], [cx + 6, yB]], P.accent, 3);
+      line(ctx, [[hx, yB], [cx + 6, yB]], P.accent2, 3);
+      SB.label(ctx, "A", (hx + cx) / 2, yA - 12, { size: 12, bold: true, color: P.accent });
+      SB.label(ctx, "B", (hx + cx) / 2, yB + 14, { size: 12, bold: true, color: P.accent2 });
+      // 구리 도선 → 전압계
+      const vx = w - 60;
+      line(ctx, [[cx + 6, yA], [vx, yA], [vx, ym - 22]], P.dim, 2);
+      line(ctx, [[cx + 6, yB], [vx, yB], [vx, ym + 22]], P.dim, 2);
+      ctx.fillStyle = P.surface; ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx, ym, 22, 0, 2 * PI); ctx.fill(); ctx.stroke();
+      SB.label(ctx, "V", vx, ym, { size: 14, bold: true });
+      // 움직이는 운반자
+      const n = 8, sp = st.T / 1000;
+      for (let i = 0; i < n; i++) {
+        const u = ((i / n + st.ph) % 1);
+        ctx.fillStyle = P.text; withA(ctx, 0.25 + 0.6 * sp, () => { ctx.beginPath(); ctx.arc(hx + 10 + u * (cx - hx - 20), yA, 3, 0, 2 * PI); ctx.fill(); ctx.beginPath(); ctx.arc(hx + 10 + u * (cx - hx - 20), yB, 3, 0, 2 * PI); ctx.fill(); });
+      }
+      const V = PAIRS[st.pair].S * st.T;
+      $("sb-r").innerHTML = `${PAIRS[st.pair].n}: S ≈ ${(PAIRS[st.pair].S * 1e6).toFixed(0)} µV/K → V = <b>${vfmt(V)}</b>`;
+    }, { aspect: 0.4, minHeight: 220, maxHeight: 280 });
+    SB.seg("sb-pair", (v) => { st.pair = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const t = cv._th; return t ? [{ id: "T", x: t.tx, y: t.ty(st.T), r: 14 }] : []; },
+      move: (id, x, y) => { const t = cv._th; if (!t) return; const T0 = t.ty(0), T1 = t.ty(1000); st.T = Math.round(SB.clamp(((T0 - y) / (T0 - T1)) * 1000, 0, 1000) / 5) * 5; } });
+    SB.loop("cv-seebeck", (dt) => { st.ph = (st.ph + dt * 0.12 * (st.T / 1000) * 3) % 1; cv.redraw(); });
+  }
+
+  /* ================================================================ 5절 tangle: ZT와 COP */
+  SB.tangle("tg-zt", (v) => {
+    const S = v.S * 1e-6, sg = v.sg * 1e5, zt = Th.thermoelectric.ZT(S, sg, v.k, v.T), Thh = v.T + v.dT / 2, Tc = v.T - v.dT / 2;
+    const cop = Th.thermoelectric.copMax(Thh, Tc, zt), car = Tc / v.dT;
+    return { zt: zt.toFixed(2), pi: (S * v.T * 1e3).toFixed(1) + " mV", cop: cop.toPrecision(3), car: car.toPrecision(3), pct: ((cop / car) * 100).toFixed(1) + "%" };
+  });
+
+  /* ================================================================ 5절: 펠티에 냉각기 */
+  {
+    const S = 0.05, R = 2, K = 0.5, TGT = 298.15;
+    const st = { Q: 3, Th: 318.15, I: 3 };
+    const Tc = (I) => (st.Q + 0.5 * I * I * R + K * st.Th) / (S * I + K);
+    const Pin = (I) => S * I * (st.Th - Tc(I)) + I * I * R;
+    function roots() { const a = R / 2, b = -S * TGT, c = K * (st.Th - TGT) + st.Q, d = b * b - 4 * a * c; if (d < 0) return null; return [(-b - Math.sqrt(d)) / (2 * a), (-b + Math.sqrt(d)) / (2 * a)]; }
+    const cv = SB.canvas("cv-tec", (ctx, w, h, self) => {
+      const P = pal(), Is = Th.linspace(0, 15, 200), r = roots();
+      const B1 = { x: 58, y: 38, w: w - 76, h: Math.round((h - 38) * 0.55) - 44 };
+      const C1 = SB.chart(ctx, B1, { x: [0, 15], y: [-40, 100], xTicks: [0, 3, 6, 9, 12, 15], yTicks: [-40, -10, 25, 60, 100], xFmt: () => "", yLabel: "T_c (°C)",
+        series: [{ data: Is.map((I) => [I, Tc(I) - 273.15]), color: P.accent, width: 2.6 }],
+        hlines: [{ y: 25, color: P.ok, label: "목표 25 °C" }, { y: st.Th - 273.15, color: P.dim, label: "T_h" }],
+        points: r ? r.filter((I) => I <= 15).map((I) => ({ x: I, y: 25, color: P.ok, r: 4 })) : [] });
+      self._C1 = C1;
+      const Tcn = Tc(st.I) - 273.15;
+      handle(ctx, C1.X(st.I), C1.Y(SB.clamp(Tcn, -40, 100)), P.accent, 9);
+      SB.label(ctx, `${Tcn.toFixed(1)} °C`, C1.X(st.I) + 12, C1.Y(SB.clamp(Tcn, -40, 100)) + 16, { align: "left", size: 12, bold: true, color: P.accent });
+      const B2 = { x: 58, y: B1.y + B1.h + 26, w: w - 76, h: h - (B1.y + B1.h + 26) - 46 };
+      const C2 = SB.chart(ctx, B2, { x: [0, 15], y: [0, 60], xTicks: [0, 3, 6, 9, 12, 15], yTicks: [0, 20, 40, 60], xLabel: "전류 I (A)", yLabel: "입력 전력 (W)",
+        series: [{ data: Is.map((I) => [I, Pin(I)]), color: P.accent2, width: 2.2 }], vlines: [{ x: st.I, color: P.accent, dash: [3, 3] }] });
+      const pin = Pin(st.I), cop = st.Q > 0 && pin > 0 ? st.Q / pin : NaN, dT = st.Th - Tc(st.I);
+      SB.label(ctx, `P = ${pin.toFixed(2)} W · COP ${isFinite(cop) ? cop.toFixed(2) : "—"}`, C2.box.x + C2.box.w - 4, C2.box.y + 10, { align: "right", size: 12, color: P.accent2 });
+      SB.stat("tec-tc", Tcn.toFixed(2) + " °C");
+      SB.stat("tec-parts", `${(S * st.I * Tc(st.I)).toFixed(1)} · ${(0.5 * st.I * st.I * R).toFixed(1)} · ${(K * dT).toFixed(1)} W`);
+      SB.stat("tec-p", `${pin.toFixed(2)} W · ${isFinite(cop) ? cop.toFixed(2) : "—"}`);
+      let g;
+      if (!r) g = `<span style="color:${P.bad}">불가: 부하 > Q<sub>c,max</sub></span>`;
+      else if (Math.abs(Tcn - 25) <= 0.3) g = Math.abs(st.I - r[0]) < 0.1 * r[0] + 0.05 ? `<span style="color:${P.ok}">달성 ✓ 최소 전력 (${pin.toFixed(2)} W)</span>` : `25 °C 달성 — 하지만 더 적은 전력의 해가 있다`;
+      else g = `해: ${r[0].toFixed(2)} A / ${r[1].toFixed(1)} A`;
+      SB.stat("tec-goal", g);
+    }, { aspect: 0.7, minHeight: 420, maxHeight: 500 });
+    const gI = SB.range("tec-i", (v) => v.toFixed(2) + " A", (v) => { st.I = v; cv.redraw(); });
+    SB.range("tec-q", (v) => v.toFixed(1) + " W", (v) => { st.Q = v; cv.redraw(); });
+    SB.range("tec-th", (v) => v + " °C", (v) => { st.Th = v + 273.15; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C1; return C ? [{ id: "I", x: C.X(st.I), y: C.Y(SB.clamp(Tc(st.I) - 273.15, -40, 100)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C1; if (!C) return; st.I = Math.round(SB.clamp(((x - C.box.x) / C.box.w) * 15, 0, 15) * 100) / 100; gI.set(st.I, true); } });
+  }
+
+  /* ================================================================ 6절 미니: 막대 속 엔트로피 생성 */
+  {
+    const k = 10, Lr = 0.01, A = 1e-6, TL = 250, TH = 600;
+    const st = { Th: 500, Tc: 300, QJ: 0 };
+    const qd = () => st.QJ / (A * Lr);
+    const T = (x) => st.Th + ((st.Tc - st.Th) * x) / Lr + (qd() * x * (Lr - x)) / (2 * k);
+    const dTdx = (x) => (st.Tc - st.Th) / Lr + (qd() * (Lr - 2 * x)) / (2 * k);
+    const sig = (x) => (k * dTdx(x) ** 2) / T(x) ** 2 + qd() / T(x);
+    const cv = SB.canvas("cv-sigma", (ctx, w, h, self) => {
+      const P = pal(), x0 = 70, x1 = w - 70, ry = 60, rh = 26, ty0 = 34, ty1 = 126, ty = (TT) => ty1 - ((TT - TL) / (TH - TL)) * (ty1 - ty0);
+      const n = 80, arr = Float64Array.from({ length: n }, (_, i) => T(((i + 0.5) / n) * Lr));
+      drawHeat(ctx, arr, n, 1, TL, Math.max(TH, ...arr), x0, ry, x1 - x0, rh);
+      ctx.strokeStyle = P.dim; ctx.strokeRect(x0, ry, x1 - x0, rh);
+      [[x0 - 30, st.Th, P.accent], [x1 + 30, st.Tc, P.accent2]].forEach(([x, TT, c]) => { ctx.strokeStyle = P.faint; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, ty0); ctx.lineTo(x, ty1); ctx.stroke(); handle(ctx, x, ty(TT), c, 9); SB.label(ctx, TT.toFixed(0) + " K", x, ty1 + 12, { size: 11, color: c, bold: true }); });
+      self._ty = ty; self._xs = [x0 - 30, x1 + 30];
+      const xs = Th.linspace(0, Lr, 160), data = xs.map((x) => [x * 1e3, sig(x) / 1e3]), ymax = Math.max(...data.map((d) => d[1])) * 1.15 || 1;
+      SB.chart(ctx, { x: x0, y: 166, w: x1 - x0, h: h - 166 - 46 }, { x: [0, 10], y: [0, ymax], xTicks: [0, 2, 4, 6, 8, 10], xLabel: "위치 x (mm)", yLabel: "σ (kW/(m³·K))", series: [{ data, color: P.accent, width: 2.6 }] });
+      const tot = Th.simpson((x) => sig(x) * A, 0, Lr, 400), Qin = -k * A * dTdx(0), Qout = -k * A * dTdx(Lr), bnd = Qout / st.Tc - Qin / st.Th;
+      $("sig-r").innerHTML = `∫σ dV = <b>${(tot * 1e3).toFixed(3)} mW/K</b> · Q<sub>out</sub>/T<sub>2</sub> − Q<sub>in</sub>/T<sub>1</sub> = ${(bnd * 1e3).toFixed(3)} mW/K`;
+    }, { aspect: 0.58, minHeight: 360, maxHeight: 400 });
+    SB.range("sig-q", (v) => v.toFixed(2) + " W", (v) => { st.QJ = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const ty = cv._ty, xs = cv._xs; return ty ? [{ id: "h", x: xs[0], y: ty(st.Th), r: 14 }, { id: "c", x: xs[1], y: ty(st.Tc), r: 14 }] : []; },
+      move: (id, x, y) => { if (!cv._ty || !id) return; const t0 = cv._ty(TL), t1 = cv._ty(TH), TT = Math.round(SB.clamp(TL + ((t0 - y) / (t0 - t1)) * (TH - TL), TL, TH) / 5) * 5; if (id === "h") st.Th = TT; else st.Tc = TT; } });
+  }
+
+  /* ================================================================ 6절 tangle: 엔트로피 생성과 잃어버린 일 */
+  SB.tangle("tg-sgen", (v) => {
+    const Tj = v.Tj + 273.15, Ta = v.Ta + 273.15, s = Tj > Ta ? v.Q * (1 / Ta - 1 / Tj) : NaN;
+    return { s: isFinite(s) ? sci(s, 3) + " W/K" : "— (Tj > Ta여야 한다)", w: isFinite(s) ? sci(Ta * s, 3) + " W" : "—" };
+  });
+
+  /* ================================================================ 6절: 온사거 힘의 평면 */
+  {
+    const st = { X: [0.6, 0.5], L22: 1.5, c: 0.6, eps: 0 };
+    const Lm = () => { const L12 = st.c * Math.sqrt(st.L22); return [[1, L12], [L12 * (1 + st.eps), st.L22]]; };
+    const sigma = (L, x1, x2) => L[0][0] * x1 * x1 + (L[0][1] + L[1][0]) * x1 * x2 + L[1][1] * x2 * x2;
+    const N = 70;
+    const cv = SB.canvas("cv-ons", (ctx, w, h, self) => {
+      const P = pal(), L = Lm(), side = Math.min(w - 40, h - 30), ox = (w - side) / 2, oy = 14;
+      const X = (u) => ox + ((u + 1) / 2) * side, Y = (v) => oy + ((1 - v) / 2) * side;
+      self._map = { X, Y, side, ox, oy };
+      // σ 배경
+      const off = document.createElement("canvas"); off.width = N; off.height = N; const c2 = off.getContext("2d"), img = c2.createImageData(N, N);
+      const ac = rgbOf(P.accent), bd = rgbOf(P.bad), smax = 1 + st.L22 + Math.abs(L[0][1] + L[1][0]);
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const u = -1 + (2 * (i + 0.5)) / N, v = 1 - (2 * (j + 0.5)) / N, s = sigma(L, u, v), k = 4 * (j * N + i), c = s >= 0 ? ac : bd;
+        img.data[k] = c[0]; img.data[k + 1] = c[1]; img.data[k + 2] = c[2]; img.data[k + 3] = s >= 0 ? Math.round(150 * Math.min(1, s / smax)) : 200;
+      }
+      c2.putImageData(img, 0, 0); ctx.save(); ctx.imageSmoothingEnabled = true; ctx.drawImage(off, ox, oy, side, side); ctx.restore();
+      ctx.strokeStyle = P.border; ctx.strokeRect(ox, oy, side, side);
+      line(ctx, [[X(-1), Y(0)], [X(1), Y(0)]], P.axis, 1); line(ctx, [[X(0), Y(-1)], [X(0), Y(1)]], P.axis, 1);
+      SB.label(ctx, "X₁ 전기 힘 →", X(1) - 4, Y(0) + 12, { align: "right", size: 11, color: P.dim });
+      SB.label(ctx, "X₂ 열 힘 ↑", X(0) + 6, Y(1) + 10, { align: "left", size: 11, color: P.dim });
+      // j = 0 선
+      const sl = -L[0][1] / L[0][0];
+      ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, side, side); ctx.clip();
+      SB.dashLine(ctx, X(sl * -1.5), Y(-1.5), X(sl * 1.5), Y(1.5), P.ok, [6, 4]);
+      // 등 σ 곡선
+      const s0 = sigma(L, st.X[0], st.X[1]);
+      if (s0 > 0) {
+        const pts = []; let ok = true;
+        for (let a = 0; a <= 2 * PI + 1e-9; a += PI / 90) { const u = Math.cos(a), v = Math.sin(a), q = sigma(L, u, v); if (q <= 0) { ok = false; break; } const r = Math.sqrt(s0 / q); pts.push([X(r * u), Y(r * v)]); }
+        if (ok) line(ctx, pts, P.text, 1.2, [3, 4]);
+      }
+      ctx.restore();
+      SB.label(ctx, "j = 0 (개회로)", X(SB.clamp(sl * 0.85, -0.9, 0.9)) + 6, Y(0.85), { align: "left", size: 11, color: P.ok });
+      // 화살표
+      const J = [L[0][0] * st.X[0] + L[0][1] * st.X[1], L[1][0] * st.X[0] + L[1][1] * st.X[1]];
+      const nrm = Math.max(1, Math.hypot(1, Math.abs(L[0][1])) , Math.hypot(Math.abs(L[1][0]), st.L22)), sc = 0.8 / nrm;
+      SB.arrow(ctx, X(0), Y(0), X(J[0] * sc), Y(J[1] * sc), { color: P.accent, width: 3, label: "J" });
+      SB.arrow(ctx, X(0), Y(0), X(st.X[0]), Y(st.X[1]), { color: P.text, width: 2, label: "X" });
+      handle(ctx, X(st.X[0]), Y(st.X[1]), P.text, 9);
+      const neg = 4 * L[0][0] * L[1][1] < (L[0][1] + L[1][0]) ** 2;
+      SB.stat("ons-s", `<span style="color:${s0 < 0 ? P.bad : "inherit"}">${s0.toFixed(3)}</span>${neg ? ` <span style="color:${P.bad}">⚠ σ&lt;0 영역</span>` : ""}`);
+      SB.stat("ons-sb", sl.toFixed(3));
+      SB.stat("ons-pt", (L[1][0] / L[0][0]).toFixed(3));
+      SB.stat("ons-kv", (L[1][0] / L[0][1] || 1).toFixed(3) + (st.eps === 0 ? " (켈빈 관계)" : ""));
+    }, { aspect: 0.85, minHeight: 320, maxHeight: 460 });
+    SB.range("ons-l", (v) => v.toFixed(2), (v) => { st.L22 = v; cv.redraw(); });
+    SB.range("ons-c", (v) => v.toFixed(2), (v) => { st.c = v; cv.redraw(); });
+    SB.range("ons-a", (v) => (v >= 0 ? "+" : "") + v.toFixed(2), (v) => { st.eps = v; cv.redraw(); });
+    $("ons-oc").addEventListener("click", () => { const L = Lm(); if (Math.abs(st.X[1]) < 0.05) st.X[1] = 0.6; st.X[0] = SB.clamp((-L[0][1] / L[0][0]) * st.X[1], -1, 1); cv.redraw(); });
+    $("ons-iso").addEventListener("click", () => { if (Math.abs(st.X[0]) < 0.05) st.X[0] = 0.6; st.X[1] = 0; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const m = cv._map; return m ? [{ id: "X", x: m.X(st.X[0]), y: m.Y(st.X[1]), r: 14 }] : []; },
+      move: (id, x, y) => { const m = cv._map; if (!m) return; st.X = [SB.clamp(((x - m.ox) / m.side) * 2 - 1, -1, 1), SB.clamp(1 - ((y - m.oy) / m.side) * 2, -1, 1)]; } });
+  }
+
+  /* ================================================================ 7절 미니: 브라운 운동 (2D 기체 속 무거운 원판) */
+  {
+    const W = 420, H = 240, KT0 = 2e4, M = 40;
+    const st = { T: 300, grab: null, trail: [], vh: [], t: 0, ke: null };
+    const G = Th.gas2d({ W, H, T: KT0, seed: 3, species: [{ n: 1, m: M, r: 16, tag: 1, region: [190, 230] }, { n: 130, m: 1, r: 3, tag: 0 }] });
+    const B = G.p.find((q) => q.tag === 1);
+    const kT = () => (KT0 * st.T) / 300;
+    const cv = SB.canvas("cv-brown", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w);
+      const B1 = narrow ? { x: 8, y: 8, w: w - 16, h: Math.round(h * 0.55) } : { x: 8, y: 8, w: Math.round(w * 0.56), h: h - 16 };
+      const F = wfit(B1, W, H); self._F = F;
+      ctx.strokeStyle = P.dim; ctx.strokeRect(F.X(0), F.Y(0), F.w, F.h);
+      for (const q of G.p) if (q !== B) { ctx.fillStyle = P.accent2; withA(ctx, 0.55, () => { ctx.beginPath(); ctx.arc(F.X(q.x), F.Y(q.y), Math.max(1.5, q.r * F.s), 0, 2 * PI); ctx.fill(); }); }
+      if (st.trail.length > 1) line(ctx, st.trail.map(([x, y]) => [F.X(x), F.Y(y)]), P.text, 1.3);
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(F.X(B.x), F.Y(B.y), B.r * F.s, 0, 2 * PI); ctx.fill();
+      handle(ctx, F.X(B.x), F.Y(B.y), P.accent, 7);
+      const B2 = narrow ? { x: 52, y: B1.y + F.h + 26, w: w - 66, h: h - (B1.y + F.h + 26) - 40 } : { x: B1.x + B1.w + 62, y: 22, w: w - (B1.x + B1.w + 62) - 12, h: h - 22 - 42 };
+      const vth = Math.sqrt(kT() / M), span = 8, now = st.t, ymax = 9 * Math.sqrt(KT0 * 2 / M);
+      SB.chart(ctx, B2, { x: [0, span], y: [-ymax, ymax], xTicks: [0, 4, 8], xFmt: (v) => (v - span).toFixed(0) + " s", yTicks: [-200, -100, 0, 100, 200], xLabel: "시간", yLabel: "큰 원판 vₓ (px/s)",
+        series: [{ data: st.vh.map(([t, v]) => [t - now + span, v]), color: P.accent, width: 1.6 }], hlines: [{ y: vth, color: P.accent2 }, { y: -vth, color: P.accent2 }] });
+      $("br-r").innerHTML = st.ke == null ? "" : `큰 원판 ⟨½Mv²⟩/kT = <b>${st.ke.toFixed(2)}</b> (2D 등분배 → 1)`;
+    }, { aspect: 0.48, minHeight: 300, maxHeight: 380 });
+    SB.range("br-T", (v) => v + " K", (v) => { st.T = v; G.setT(kT()); });
+    $("br-kick").addEventListener("click", () => { B.vx = 7 * Math.sqrt(kT() / M) * 1.0 + B.vx; });
+    SB.drag(cv, {
+      handles: () => { const F = cv._F; return F ? [{ id: "B", x: F.X(B.x), y: F.Y(B.y), r: Math.max(14, B.r * F.s) }] : []; },
+      down: (id) => { if (id) st.grab = true; },
+      move: (id, x, y) => { const F = cv._F; if (!F || !id) return; B.x = SB.clamp((x - F.x) / F.s, B.r + 1, W - B.r - 1); B.y = SB.clamp((y - F.y) / F.s, B.r + 1, H - B.r - 1); B.vx = B.vy = 0; st.trail = []; },
+      up: () => { st.grab = null; },
+    });
+    SB.loop("cv-brown", (dt) => {
+      for (let s = 0; s < 4; s++) { if (st.grab) { B.vx = B.vy = 0; } G.step(1 / 240); }
+      st.t += 4 / 240;
+      st.trail.push([B.x, B.y]); if (st.trail.length > 700) st.trail.shift();
+      st.vh.push([st.t, B.vx]); while (st.vh.length && st.vh[0][0] < st.t - 8) st.vh.shift();
+      const e = (0.5 * M * (B.vx * B.vx + B.vy * B.vy)) / kT();
+      st.ke = st.ke == null ? e : st.ke + 0.004 * (e - st.ke);
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 7절: RC 회로의 존슨 잡음 */
+  {
+    const NS = 400, NBIN = 41;
+    const R0 = Th.rng(5);
+    const st = { R: 1e3, C: 1e-14, T: 300, V: 0, buf: [], hist: new Float64Array(NBIN), n: 0, s2: 0, playing: true };
+    const sigV = () => Math.sqrt((kB * st.T) / st.C), vmax = () => 4 * Math.sqrt((kB * 600) / st.C);
+    function resetStats() { st.hist.fill(0); st.n = 0; st.s2 = 0; }
+    function push(k) {
+      const f = Math.exp(-0.1), sd = sigV() * Math.sqrt(1 - f * f), vm = vmax();
+      for (let i = 0; i < k; i++) {
+        st.V = st.V * f + sd * R0.normal();
+        st.buf.push(st.V); if (st.buf.length > NS) st.buf.shift();
+        const b = Math.floor(((st.V + vm) / (2 * vm)) * NBIN); if (b >= 0 && b < NBIN) st.hist[b]++;
+        st.n++; st.s2 += st.V * st.V;
+      }
+    }
+    st.V = sigV() * R0.normal(); push(NS);
+    const cv = SB.canvas("cv-noise", (ctx, w, h, self) => {
+      const P = pal(), vm = vmax(), tx = 26, ty0 = 26, ty1 = h - 46, ty = (T) => ty1 - ((T - 4) / 596) * (ty1 - ty0);
+      ctx.strokeStyle = P.border; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty0); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, ty(st.T)); ctx.stroke(); ctx.lineCap = "butt";
+      handle(ctx, tx, ty(st.T), P.accent, 9); self._ty = ty; self._tx = tx;
+      SB.label(ctx, st.T.toFixed(0) + " K", tx, ty0 - 14, { size: 12, bold: true, color: P.accent });
+      const hw = Math.max(60, Math.round(w * 0.2)), B = { x: tx + 64, y: 22, w: w - tx - 64 - hw - 14, h: h - 22 - 46 };
+      const win = 40 * st.R * st.C;
+      const C = SB.chart(ctx, B, { x: [0, 40], y: [-vm, vm], xTicks: [0, 10, 20, 30, 40], xFmt: (v) => (v === 40 ? tfmt(win) : v === 0 ? "0" : ""), yTicks: [-vm, -vm / 2, 0, vm / 2, vm], yFmt: (v) => (Math.abs(v) < 1e-30 ? "0" : vfmt(v)), xLabel: "시간 (창 = 40RC)",
+        series: [{ data: st.buf.map((v, i) => [(i / (NS - 1)) * 40, v]), color: P.accent, width: 1.3 }], hlines: [{ y: sigV(), color: P.accent2 }, { y: -sigV(), color: P.accent2 }] });
+      // 히스토그램
+      const hx = B.x + B.w + 8, mx = Math.max(1, ...st.hist), Y = C.Y;
+      for (let i = 0; i < NBIN; i++) { const v0 = -vm + (2 * vm * i) / NBIN, v1 = v0 + (2 * vm) / NBIN, len = (st.hist[i] / mx) * (hw - 6); ctx.fillStyle = P.accent; withA(ctx, 0.55, () => ctx.fillRect(hx, Y(v1), len, Math.max(1, Y(v0) - Y(v1) - 0.5))); }
+      const s = sigV(), binW = (2 * vm) / NBIN, peak = (st.n * binW) / (Math.sqrt(2 * PI) * s);
+      const g = []; for (let k = 0; k <= 80; k++) { const v = -vm + (2 * vm * k) / 80; g.push([hx + ((peak * Math.exp((-v * v) / (2 * s * s))) / mx) * (hw - 6), Y(v)]); }
+      line(ctx, g, P.accent2, 1.8);
+      const meas = st.n ? Math.sqrt(st.s2 / st.n) : NaN;
+      SB.stat("nz-meas", vfmt(meas));
+      SB.stat("nz-th", vfmt(s));
+      SB.stat("nz-bw", sci(1 / (4 * st.R * st.C)) + " Hz");
+      SB.stat("nz-e", (Math.sqrt(kB * st.T * st.C) / CC.e).toPrecision(3) + " 개");
+    }, { aspect: 0.5, minHeight: 300, maxHeight: 380 });
+    const Rfmt = (r) => (r >= 1e6 ? sci(r / 1e6) + " MΩ" : r >= 1e3 ? sci(r / 1e3) + " kΩ" : sci(r) + " Ω");
+    const Cfmt = (c) => (c >= 1e-12 ? sci(c * 1e12) + " pF" : sci(c * 1e15) + " fF");
+    SB.range("nz-R", (v) => Rfmt(Math.pow(10, v)), (v) => { st.R = Math.pow(10, v); cv.redraw(); });
+    SB.range("nz-C", (v) => Cfmt(Math.pow(10, v)), (v) => { st.C = Math.pow(10, v); st.V = sigV() * R0.normal(); st.buf = []; resetStats(); push(NS); cv.redraw(); });
+    toggleBtn("nz-play", st);
+    $("nz-reset").addEventListener("click", () => { resetStats(); cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._ty ? [{ id: "T", x: cv._tx, y: cv._ty(st.T), r: 14 }] : []),
+      move: (id, x, y) => { const ty = cv._ty; if (!ty) return; const a = ty(4), b = ty(600); st.T = Math.round(SB.clamp(4 + ((a - y) / (a - b)) * 596, 4, 600)); },
+      up: (id) => { if (id) resetStats(); } });
+    SB.loop("cv-noise", () => { if (st.playing) push(4); cv.redraw(); });
+  }
+
+  /* ================================================================ 7절 tangle */
+  SB.tangle("tg-johnson", (v) => {
+    const R = v.R * 1e3, T = v.T, B = v.B * 1e6, C = v.C * 1e-15;
+    return { v: vfmt(Th.johnson(R, T, B)), d: sci(Math.sqrt(4 * kB * T * R) * 1e9, 3) + " nV/√Hz", kTC: vfmt(Math.sqrt((kB * T) / C)), ne: (Math.sqrt(kB * T * C) / CC.e).toPrecision(3) + "개" };
+  });
+
+  /* ================================================================ 드릴 */
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const rnd = (a, b, d = 0) => { const p = Math.pow(10, d); return Math.round((a + Math.random() * (b - a)) * p) / p; };
+  SB.drill("drill-fourier", () => {
+    const m = pick([["실리콘", 148], ["SiO₂", 1.4], ["구리", 401], ["알루미늄", 237], ["땜납", 58], ["열 그리스", 4]]);
+    const L = pick([10, 20, 50, 100, 200, 500]), A = rnd(0.5, 4, 1), Q = rnd(5, 150, 0);
+    const dT = (Q * L * 1e-6) / (m[1] * A * 1e-4);
+    return { q: `<p>두께 ${L} µm, 넓이 ${A} cm²인 ${m[0]}(κ = ${m[1]} W/(m·K)) 층을 ${Q} W가 지나간다. 층 양면의 온도 차는?</p>`, answer: dT, label: "ΔT =", unit: "K", tol: "1%",
+      sol: `\\(R = L/\\kappa A = ${L}\\times10^{-6}/(${m[1]}\\times${A}\\times10^{-4}) = ${sciT(dT / Q, 4)}\\) K/W, \\(\\Delta T = QR = ${sciT(dT, 4)}\\) K` };
+  });
+  SB.drill("drill-tj", () => {
+    const P = rnd(20, 200, 0), jc = rnd(0.1, 0.5, 2), cs = rnd(0.03, 0.2, 2), sa = rnd(0.15, 1, 2), Ta = rnd(20, 45, 0), Tj = Ta + P * (jc + cs + sa);
+    return { q: `<p>전력 ${P} W, \\(\\theta_\\mathrm{JC} = ${jc}\\), \\(\\theta_\\mathrm{CS} = ${cs}\\), \\(\\theta_\\mathrm{SA} = ${sa}\\) K/W, 주위 ${Ta} °C일 때 접합 온도는?</p>`, answer: Tj, label: "T<sub>J</sub> =", unit: "°C", tol: "0.5",
+      sol: `\\(T_\\mathrm J = ${Ta} + ${P}\\times(${jc}+${cs}+${sa}) = ${Tj.toFixed(2)}\\) °C` };
+  });
+  SB.drill("drill-tec", () => {
+    const k = Math.floor(Math.random() * 3);
+    if (k === 0) { const S = rnd(20, 500, 0), dT = rnd(10, 300, 0), V = S * 1e-6 * dT * 1e3; return { q: `<p>제베크 계수 차가 ${S} µV/K인 열전대의 두 접점 온도 차가 ${dT} K다. 열전대 전압은?</p>`, answer: V, label: "V =", unit: "mV", sol: `\\(V = S\\Delta T = ${S}\\times10^{-6}\\times${dT} = ${sciT(V, 4)}\\) mV` }; }
+    if (k === 1) { const S = rnd(100, 300, 0), T = rnd(250, 400, 0), I = rnd(0.5, 5, 1), Q = S * 1e-6 * T * I; return { q: `<p>제베크 계수 ${S} µV/K인 접점(온도 ${T} K)으로 ${I} A를 흘린다. 켈빈 관계로 펠티에 계수를 구해 접점이 나르는 펠티에 열을 구하라.</p>`, answer: Q, label: "Q =", unit: "W", sol: `\\(\\Pi = ST = ${sciT(S * 1e-6 * T, 4)}\\) V, \\(Q = \\Pi I = ${sciT(Q, 4)}\\) W` }; }
+    const S = rnd(0.02, 0.08, 3), R = rnd(1, 4, 1), Tc = rnd(260, 300, 0), I = (S * Tc) / R;
+    return { q: `<p>모듈 제베크 계수 ${S} V/K, 저항 ${R} Ω인 열전 냉각기의 차가운 면이 ${Tc} K다. 냉각 능력이 최대인 전류는?</p>`, answer: I, label: "I =", unit: "A", sol: `\\(I_\\mathrm{opt} = ST_c/R = ${S}\\times${Tc}/${R} = ${sciT(I, 4)}\\) A` };
+  });
+  SB.drill("drill-johnson", () => {
+    if (Math.random() < 0.6) {
+      const R = pick([50, 100, 1e3, 1e4, 1e5, 1e6]), T = pick([4, 77, 300, 350, 400]), B = pick([1e3, 2e4, 1e5, 1e6, 1e7]), v = Th.johnson(R, T, B) * 1e6;
+      return { q: `<p>${sci(R)} Ω 저항이 ${T} K에 있다. 대역폭 ${sci(B)} Hz에서 열잡음 전압의 rms는?</p>`, answer: v, label: "v<sub>rms</sub> =", unit: "µV", sol: `\\(v = \\sqrt{4kTR\\Delta f} = \\sqrt{4\\times1.381\\times10^{-23}\\times${T}\\times${R}\\times${B}} = ${sciT(v, 4)}\\) µV` };
+    }
+    const C = pick([1, 2, 5, 10, 100, 1000]), T = pick([77, 250, 300, 350]), v = Math.sqrt((kB * T) / (C * 1e-15)) * 1e6;
+    return { q: `<p>정전 용량 ${C} fF인 노드가 ${T} K에서 리셋된 뒤 남는 kT/C 잡음 전압(rms)은?</p>`, answer: v, label: "v<sub>rms</sub> =", unit: "µV", sol: `\\(v = \\sqrt{kT/C} = \\sqrt{1.381\\times10^{-23}\\times${T}/(${C}\\times10^{-15})} = ${sciT(v, 4)}\\) µV` };
+  });
+})();
+</script>
+</body>
+</html>
