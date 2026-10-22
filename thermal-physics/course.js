@@ -218,8 +218,7 @@ SB.registerCourse({
      "tags": [
       "픽의 법칙",
       "딜–그로브"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "heat-transport",
@@ -374,9 +373,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 6,
    "hero": 1
+  },
+  "diffusion": {
+   "problems": 0,
+   "examples": 2,
+   "sims": 2,
+   "figures": 2,
+   "drills": 1,
+   "minis": 1,
+   "tangles": 2,
+   "steps": 1,
+   "predicts": 2,
+   "hero": 1
   }
  },
- "published": 9,
+ "published": 10,
  "total": 19,
  "url": "https://science.euiyun.com/thermal-physics/"
 });
