@@ -547,19 +547,23 @@
   /** 정규 용액 활동도 계수 ln γ_A = Ω x_B²/RT */
   T.gammaRegular = (xB, TK, W) => exp((W * xB * xB) / (C.R * TK));
   /** 두 곡선 f, g의 공통 접선 (뉴턴 2D, 수치 미분) → [xa, xb] 또는 null */
-  T.commonTangent = function (f, g, xa, xb, it = 80) {
-    const d = (F, x) => { const h = 1e-6; return (F(x + h) - F(x - h)) / (2 * h); };
-    const res = (a, b) => [d(f, a) - d(g, b), f(a) - d(f, a) * a - (g(b) - d(g, b) * b)];
+  T.commonTangent = function (f, g, xa, xb, it = 100) {
+    // 잔차: 기울기 같음 f'(a) = g'(b), 절편 같음. 미분은 중심 차분(h ≈ 1e-5), 수렴은 잔차와 걸음 크기로 판정.
+    const d = (F, x) => { const h = 1e-5 * Math.min(x, 1 - x, 0.01) + 1e-9; return (F(x + h) - F(x - h)) / (2 * h); };
+    const res = (a, b) => { const fa = d(f, a), gb = d(g, b); return [fa - gb, f(a) - fa * a - (g(b) - gb * b)]; };
+    const scale = Math.max(1e-30, Math.abs(f(xa)) + Math.abs(g(xb)) + Math.abs(d(f, xa)) + Math.abs(d(g, xb)));
     for (let i = 0; i < it; i++) {
       const r = res(xa, xb), h = 1e-6;
+      if (Math.abs(r[0]) + Math.abs(r[1]) < 1e-11 * scale) return [xa, xb];
       const ra = res(xa + h, xb), rb = res(xa, xb + h);
       const J = [[(ra[0] - r[0]) / h, (rb[0] - r[0]) / h], [(ra[1] - r[1]) / h, (rb[1] - r[1]) / h]];
       const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
-      if (!isFinite(det) || Math.abs(det) < 1e-30) return null;
-      const da = (r[0] * J[1][1] - r[1] * J[0][1]) / det, db = (J[0][0] * r[1] - J[1][0] * r[0]) / det;
-      xa -= da; xb -= db;
-      xa = Math.min(1 - 1e-12, Math.max(1e-12, xa)); xb = Math.min(1 - 1e-12, Math.max(1e-12, xb));
-      if (Math.abs(da) + Math.abs(db) < 1e-12) return [xa, xb];
+      if (!isFinite(det) || det === 0) return null;
+      let da = (r[0] * J[1][1] - r[1] * J[0][1]) / det, db = (J[0][0] * r[1] - J[1][0] * r[0]) / det;
+      // 걸음을 제한해 0..1 밖으로 튀지 않게
+      const lim = 0.1, m = Math.max(Math.abs(da), Math.abs(db)); if (m > lim) { da *= lim / m; db *= lim / m; }
+      xa = Math.min(1 - 1e-9, Math.max(1e-9, xa - da)); xb = Math.min(1 - 1e-9, Math.max(1e-9, xb - db));
+      if (Math.abs(da) + Math.abs(db) < 1e-11) { const r2 = res(xa, xb); return Math.abs(r2[0]) + Math.abs(r2[1]) < 1e-6 * scale ? [xa, xb] : null; }
     }
     return null;
   };
