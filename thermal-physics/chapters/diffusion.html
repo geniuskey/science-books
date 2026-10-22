@@ -1,0 +1,1783 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>확산 · 열·통계물리와 물리화학 · SciBook</title>
+<meta name="description" content="무작위 걸음과 확산 계수, 픽의 제1·2법칙, 공공·틈새 확산 기구와 아레니우스형 D, erfc·가우스 분포와 접합 깊이, 열 예산 Dt, 수치 풀이, 딜–그로브 열산화, 아인슈타인 관계를 도펀트 드라이브인과 열산화로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/thermal-physics/chapters/diffusion.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="확산 · 열·통계물리와 물리화학 · SciBook">
+<meta property="og:description" content="무작위 걸음과 확산 계수, 픽의 제1·2법칙, 공공·틈새 확산 기구와 아레니우스형 D, erfc·가우스 분포와 접합 깊이, 열 예산 Dt, 수치 풀이, 딜–그로브 열산화, 아인슈타인 관계를 도펀트 드라이브인과 열산화로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/thermal-physics/chapters/diffusion.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "확산 · 열·통계물리와 물리화학 · SciBook", "headline": "16 확산", "url": "https://science.euiyun.com/thermal-physics/chapters/diffusion.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "무작위 걸음과 확산 계수, 픽의 제1·2법칙, 공공·틈새 확산 기구와 아레니우스형 D, erfc·가우스 분포와 접합 깊이, 열 예산 Dt, 수치 풀이, 딜–그로브 열산화, 아인슈타인 관계를 도펀트 드라이브인과 열산화로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 16, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/thermal-physics/#book", "name": "열·통계물리와 물리화학", "url": "https://science.euiyun.com/thermal-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "열·통계물리와 물리화학", "item": "https://science.euiyun.com/thermal-physics/"}, {"@type": "ListItem", "position": 3, "name": "16 확산", "item": "https://science.euiyun.com/thermal-physics/chapters/diffusion.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/thermo.js"></script>
+<style>
+  .df-out { white-space: normal; }
+  .df-note { font-size: 13.5px; color: var(--text-dim); margin: 0; }
+</style>
+</head>
+<body data-chapter="diffusion">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="kinetics boltzmann">
+    <div class="eyebrow">Chapter 16</div>
+    <h1>확산</h1>
+    <p class="lead">웨이퍼 속 붕소 원자는 1000 °C에서 1초에 백 번쯤 이웃 자리로 뛴다. 방향은 매번 제멋대로다. 그런데 이 무작위한 뜀 수십만 번이 모이면 놀랄 만큼 정확한 법칙이 나온다. 퍼진 폭은 시간의 제곱근에 비례하고, 농도 분포는 오차 함수나 가우스 곡선이 되며, 접합 깊이는 온도와 시간의 곱 하나 \(Dt\)로 정해진다. 이 장은 원자 하나의 무작위 걸음에서 출발해 픽의 법칙, 고체 속 확산 기구, 도펀트 분포와 열 예산, 수치 풀이, 열산화의 딜–그로브 모형, 그리고 확산과 이동도를 잇는 아인슈타인 관계까지 간다. 아래 그림의 점 하나하나는 도펀트 원자다. 왼쪽 표면에 공급원이 붙어 있는 동안에는 위 그래프의 분포가 erfc로 자라고, 누르면 공급원을 떼어 같은 원자들이 가우스 분포로 더 깊이 퍼진다(드라이브인). 점선은 같은 조건에서 푼 픽 방정식이다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">누르면 공급원을 떼거나 다시 붙인다</span></div>
+    <ul class="objectives">
+      <li>무작위 걸음에서 \(\langle x^2\rangle = 2Dt\)를 얻고, 뜀 빈도와 뜀 거리로 확산 계수 \(D = \Gamma a^2/6\)과 확산 길이를 계산한다.</li>
+      <li>픽 제1법칙 \(J = -D\,\partial C/\partial x\)와 연속 방정식에서 제2법칙 \(\partial C/\partial t = D\,\partial^2C/\partial x^2\)를 세우고, 정상 상태 막 투과와 곡률이 농도 변화를 정하는 원리를 설명한다.</li>
+      <li>공공·틈새·틈새 짝 확산 기구를 구별하고, \(D = D_0e^{-E_a/kT}\)의 활성화 에너지를 두 온도의 \(D\)로 구하며, 구리 같은 틈새형 원소가 왜 빠른지 설명한다.</li>
+      <li>일정 공급원(erfc)과 제한 공급원(가우스) 해로 도즈·표면 농도·접합 깊이를 계산하고, 선증착과 드라이브인 2단계 공정을 설계한다.</li>
+      <li>여러 단계 열처리의 열 예산 \(\sum D_it_i\)와 램프·RTA 스파이크의 기여를 구하고, 확산 방정식을 크랭크–니콜슨과 양해법으로 풀며 안정성 조건 \(D\Delta t/\Delta x^2\le\tfrac12\)를 확인한다.</li>
+      <li>딜–그로브 모형으로 건식·습식 열산화 두께를 계산하고 선형·포물선 영역, (100)·(111) 차이, 초기 건식 산화 보정을 설명한다.</li>
+      <li>아인슈타인 관계 \(D = \mu kT/q\)를 무작위 걸음으로 확인하고 캐리어 확산 계수를 이동도에서 구한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="walk">
+    <h2>무작위 걸음과 확산 계수</h2>
+    <p>결정 속 원자는 거의 모든 시간을 제자리에서 진동하며 보내다가(진동수 \(\nu\sim10^{13}\) Hz) 가끔 장벽을 넘어 이웃 자리로 뛴다. 6장에서 본 대로 장벽 \(E_m\)을 넘을 확률은 볼츠만 인자 \(e^{-E_m/kT}\)이므로 뜀 빈도는 \(\Gamma\approx\nu e^{-E_m/kT}\)다. 뜀의 방향은 앞의 뜀과 상관없이 무작위다. 이렇게 한 걸음씩 무작위로 움직이는 운동을 <span class="term">무작위 걸음</span><span class="en">(random walk)</span>이라 한다. 확률과 통계에서 랜덤 워크의 위치 분포가 정규 분포로 가는 것을 보았다(<a href="../../probability-statistics/chapters/stochastic.html">확률과 통계 · 확률 과정</a>). 여기서는 그 결과를 원자 수십억 개의 집단에 적용한다.</p>
+    <p>한 걸음의 변위가 \(\mathbf r_i\)(길이 \(a\))이고 \(N\)걸음 뒤의 변위가 \(\mathbf R = \sum\mathbf r_i\)라면, 걸음끼리 상관이 없으므로 교차항이 평균 0이 되어</p>
+    <div class="formula">$$\langle R^2\rangle = \sum_i\langle r_i^2\rangle + \sum_{i\ne j}\langle\mathbf r_i\cdot\mathbf r_j\rangle = Na^2 = \Gamma t\,a^2$$<div class="where">\(N = \Gamma t\)는 시간 \(t\) 동안의 뜀 수. 평균 변위 \(\langle\mathbf R\rangle\)는 0이지만 퍼진 폭 \(\sqrt{\langle R^2\rangle}\)은 \(\sqrt t\)로 자란다.</div></div>
+    <p>3차원에서 한 방향 성분은 전체의 1/3을 갖는다(\(\langle x^2\rangle = \langle R^2\rangle/3\)). 이 퍼짐의 빠르기를 하나의 숫자로 나타낸 것이 <span class="term">확산 계수</span><span class="en">(diffusion coefficient)</span> \(D\)다.</p>
+    <div class="formula">$$\langle x^2\rangle = 2Dt,\qquad \langle R^2\rangle = 2dDt\quad(d\text{ 차원}),\qquad D = \frac{\Gamma a^2}{2d}\;\xrightarrow{\;d=3\;}\;\frac{\Gamma a^2}{6}$$<div class="where">\(D\)의 단위는 길이²/시간(반도체 관례 cm²/s). 시간 \(t\) 동안 원자가 퍼지는 대표 거리 <span class="term">확산 길이</span><span class="en">(diffusion length)</span>는 \(\sqrt{Dt}\)이고, 분포의 표준 편차는 \(\sqrt{2Dt}\), 공정에서 흔히 쓰는 "퍼짐 깊이"는 \(2\sqrt{Dt}\)다.</div></div>
+    <div class="predict" data-for="sim-walk">
+      <p>원자 400개가 한 점에서 출발해 무작위로 걷는다. 걸음 수를 100에서 400으로 4배 늘리면 구름의 지름(퍼진 폭)은 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">4배 — 걸은 거리에 비례하니까</button><button class="opt" data-correct>2배</button><button class="opt">16배</button><button class="opt">그대로 — 평균 위치는 0이니까</button></div>
+      <div class="quiz-exp">\(\langle x^2\rangle\)이 걸음 수에 비례하므로 폭 \(\sqrt{\langle x^2\rangle}\)은 \(\sqrt N\)에 비례한다. 원자는 400걸음을 걸었지만 대부분은 앞뒤로 오가며 상쇄되어 평균 20걸음 거리만큼만 퍼진다. 확산이 "느린" 근본 이유다.</div>
+    </div>
+    <div class="sim" id="sim-walk">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>무작위 걸음 구름과 ⟨x²⟩ 직선 맞히기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-walk1"></canvas></div><div><canvas id="cv-walk2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>걷는 원자 수 <output id="walk-n-out"></output></span><input type="range" id="walk-n" min="50" max="800" step="50" value="400"></label>
+          <div class="ctrl"><span>걸음 방식</span><div class="seg" id="walk-mode"><button data-value="lat" class="on">격자 4방향</button><button data-value="free">아무 방향</button><button data-value="one">x 방향만</button></div></div>
+          <button class="btn" id="walk-play" type="button"></button>
+          <button class="btn" id="walk-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">걸음 수 N</span><span class="v" id="walk-N">—</span></div>
+        <div class="stat"><span class="k">측정 ⟨x²⟩/N</span><span class="v" id="walk-m">—</span></div>
+        <div class="stat"><span class="k">내 직선 기울기</span><span class="v" id="walk-s">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="walk-ok">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 원자 구름(걸음 길이 \(a = 1\)), 원은 반지름 \(\sqrt{\langle R^2\rangle}\)이다. 오른쪽 주황 점은 측정한 \(\langle x^2\rangle\), 흰 원이 달린 직선은 네가 정한 \(2Dt\)다. 해볼 것: ① 직선 기울기를 측정점에 5% 이내로 맞혀 \(D\)를 읽는다(격자 4방향이면 \(\langle x^2\rangle = N/2\), 곧 \(D = \tfrac14\) 걸음당). ② "x 방향만"으로 바꾸면 기울기가 두 배가 된다 — 한 걸음이 모두 x 성분이다. ③ 원자 수를 50으로 줄이면 점이 직선 주위로 출렁인다. \(D\)는 집단 평균의 성질이다.</div>
+    </div>
+    <div class="tangle" id="tg-walk">
+      <p>원자가 초당 <span class="tn" data-var="G" data-min="-2" data-max="10" data-step="0.5">2</span> 자릿수(\(\Gamma = 10^{x}\) s⁻¹의 \(x\)) 빈도로 거리 <span class="tn" data-var="a" data-min="0.1" data-max="0.5" data-step="0.01" data-unit=" nm">0.24</span>씩 3차원 무작위로 뛰면 \(D = \Gamma a^2/6 =\) <span class="tn-out df-out" data-out="D"></span>이다. 이 원자가 한 방향으로 1 µm(\(\sqrt{2Dt}\))를 퍼지는 데 <span class="tn-out" data-out="t"></span>가 걸리고, 그동안 <span class="tn-out df-out" data-out="N"></span>번 뛴다.</p>
+    </div>
+    <div class="example" data-title="1000 °C 인 원자의 걸음 수">
+      <p>1000 °C 실리콘에서 인의 확산 계수는 \(D = 1.25\times10^{-14}\) cm²/s다. 30분 동안 (a) 한 방향 rms 변위 \(\sqrt{2Dt}\)와 (b) 뜀 거리를 최근접 거리 \(a = 0.235\) nm로 볼 때의 뜀 수 \(N\)과 뜀 빈도 \(\Gamma\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(t = 1800\) s를 넣는다. 3차원에서 \(\langle R^2\rangle = 6Dt = Na^2\)이므로 \(N = 6Dt/a^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(2Dt = 2\times1.25\times10^{-14}\times1800 = 4.50\times10^{-11}\) cm², \(\sqrt{2Dt} = 6.71\times10^{-6}\) cm = 67 nm. (b) \(N = 6\times1.25\times10^{-14}\times1800/(2.35\times10^{-8})^2 = 1.35\times10^{-10}/5.52\times10^{-16} = 2.45\times10^5\), \(\Gamma = N/t = 136\) s⁻¹.</div>
+        <div class="answer">(a) 약 67 nm (b) 약 2.4×10⁵번, 초당 약 140번</div>
+        <div class="step"><b>검토</b> 25만 번을 뛰었는데 알짜로는 \(\sqrt N\approx500\)걸음, 곧 0.1 µm 남짓 움직였다. 실제 인 원자는 혼자 뛰지 않고 점결함과 짝을 지어 움직이므로(3절) 이 \(N\)은 "등가 뜀 수"로 보아야 한다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-len" data-title="확산 길이 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="fick">
+    <h2>픽의 제1·2법칙</h2>
+    <p>원자 하나하나를 따라가는 대신 단위 부피당 원자 수, 곧 농도 \(C(x,t)\)를 보자. 이웃한 두 원자면(간격 \(a\))에 원자가 각각 \(n_1 = C(x)a\), \(n_2 = C(x+a)a\)개(단위 넓이당) 있고, 각 원자가 단위 시간에 오른쪽·왼쪽으로 \(\Gamma/2\)씩 뛴다면(1차원), 면 사이를 지나는 알짜 흐름은 \(\tfrac{\Gamma}{2}(n_1-n_2) = -\tfrac{\Gamma a^2}{2}\,\partial C/\partial x\)다. 한 원자는 어느 쪽으로 갈지 모르지만, <b>많은 쪽에서 출발하는 원자가 더 많기 때문에</b> 알짜 흐름이 생긴다. 이것이 <span class="term">픽 제1법칙</span><span class="en">(Fick's first law)</span>이다.</p>
+    <div class="formula">$$J = -D\,\frac{\partial C}{\partial x}$$<div class="where">\(J\)는 단위 시간·단위 넓이당 지나가는 원자 수, 곧 <span class="term">확산 플럭스</span><span class="en">(diffusion flux)</span>[cm⁻²s⁻¹]. 음의 부호는 농도가 낮아지는 쪽으로 흐른다는 뜻이다. 기체의 확산도 같은 꼴이며 8장 운동론에서 \(D = \tfrac13\bar v\lambda\)를 얻었다(<a href="kinetic-theory-vacuum.html">기체 운동론과 진공</a>).</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="얇은 판으로 들어오고 나가는 플럭스의 차이가 판 속 농도 변화를 정하는 연속 방정식 유도">
+        <line x1="40" y1="250" x2="760" y2="250" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="760" y="272" text-anchor="end">깊이 x →</text>
+        <path d="M60,70 C200,80 300,120 400,160 C500,200 600,228 740,236" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t t-acc" x="70" y="58">C(x)</text>
+        <g data-step="2">
+          <rect x="360" y="60" width="80" height="190" fill="var(--accent-soft, rgba(234,88,12,.12))" stroke="var(--accent)" stroke-dasharray="5 4"/>
+          <text class="t" x="400" y="52" text-anchor="middle">두께 Δx, 넓이 A</text>
+          <line x1="290" y1="110" x2="355" y2="110" stroke="var(--accent-2)" stroke-width="5"/><polygon points="355,102 370,110 355,118" fill="var(--accent-2)"/>
+          <line x1="440" y1="110" x2="485" y2="110" stroke="var(--accent-2)" stroke-width="3"/><polygon points="485,104 497,110 485,116" fill="var(--accent-2)"/>
+          <text class="t" x="300" y="96" fill="var(--accent-2)">J(x)</text>
+          <text class="t" x="450" y="96" fill="var(--accent-2)">J(x+Δx)</text>
+        </g>
+        <g data-only="1" class="t">
+          <text x="470" y="90" style="font-weight:700">1. 농도 분포가 있다</text>
+          <text x="470" y="118">기울기가 있는 곳마다</text>
+          <text x="470" y="144">J = −D ∂C/∂x 가 흐른다</text>
+        </g>
+        <g data-only="2" class="t">
+          <text x="520" y="160" style="font-weight:700">2. 얇은 판의 장부</text>
+          <text x="520" y="186">들어온 것 − 나간 것</text>
+          <text x="520" y="212">= A[J(x) − J(x+Δx)] dt</text>
+        </g>
+        <g data-only="3" class="t">
+          <text x="500" y="150" style="font-weight:700">3. Δx → 0</text>
+          <text x="500" y="178">∂C/∂t = −∂J/∂x</text>
+          <text x="500" y="206" class="t-acc" style="font-weight:700">= D ∂²C/∂x²  (D 일정)</text>
+          <text x="60" y="290" class="t-dim">곡선이 아래로 볼록(∂²C/∂x² &gt; 0)한 곳은 차오르고, 위로 볼록한 곳은 줄어든다</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>농도 기울기가 있으면 플럭스가 생긴다.</li><li>얇은 판으로 들어오는 플럭스와 나가는 플럭스의 차이만큼 판 속 원자 수가 바뀐다.</li><li>판 두께를 0으로 보내면 연속 방정식이 되고, 제1법칙을 넣으면 확산 방정식이 된다.</li></ol>
+      <figcaption>연속 방정식과 픽 제2법칙. 원자는 생기거나 사라지지 않으므로(보존), 농도 변화는 플럭스의 공간 변화(발산)로만 생긴다.</figcaption>
+    </figure>
+    <p>원자는 보존되므로 얇은 판 속 원자 수의 변화는 들어온 플럭스와 나간 플럭스의 차이다. 이 장부가 <span class="term">연속 방정식</span><span class="en">(continuity equation)</span>이고, 제1법칙을 대입한 것이 <span class="term">픽 제2법칙</span><span class="en">(Fick's second law)</span>, 곧 확산 방정식이다.</p>
+    <div class="formula">$$\frac{\partial C}{\partial t} = -\frac{\partial J}{\partial x} = \frac{\partial}{\partial x}\!\left(D\frac{\partial C}{\partial x}\right)\;\xrightarrow{\;D\text{ 일정}\;}\; D\,\frac{\partial^2C}{\partial x^2}$$<div class="where">농도가 시간에 따라 변하는 속도는 기울기가 아니라 <b>곡률</b>에 비례한다. 직선 분포(곡률 0)는 플럭스가 흘러도 변하지 않는다 — 정상 상태다. 17장의 열 방정식도 같은 식이다(\(C\to T\), \(D\to\alpha\)).</div></div>
+    <div class="predict" data-for="sim-fick">
+      <p>농도 분포에 봉우리 하나와 그 옆의 골짜기가 있다. 확산이 시작되면 처음 순간 농도가 가장 빨리 <b>올라가는</b> 곳은?</p>
+      <div class="opts"><button class="opt">봉우리 꼭대기</button><button class="opt">기울기가 가장 가파른 곳</button><button class="opt" data-correct>골짜기 바닥 — 아래로 가장 볼록한 곳</button><button class="opt">어디서나 같은 속도로 평평해진다</button></div>
+      <div class="quiz-exp">\(\partial C/\partial t = D\,\partial^2C/\partial x^2\)이므로 곡률이 가장 큰 양수인 골짜기 바닥이 가장 빨리 차오르고, 봉우리 꼭대기(곡률 음수)가 가장 빨리 깎인다. 기울기가 가장 큰 곳은 플럭스가 가장 크지만, 들어오는 양과 나가는 양이 거의 같으면 농도는 거의 변하지 않는다. 시뮬레이터 아래 막대(\(\partial C/\partial t\))로 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-fick">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>농도 분포를 끌어 그리고 플럭스 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-fick"></canvas><span class="hint top">흰 원을 위아래로 끌어 분포를 만든다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>처음 분포</span><div class="seg" id="fick-pre"><button data-value="bump" class="on">봉우리·골짜기</button><button data-value="step">계단</button><button data-value="line">직선</button></div></div>
+          <div class="ctrl"><span>양 끝 경계</span><div class="seg" id="fick-bc"><button data-value="closed" class="on">막힘(J = 0)</button><button data-value="fixed">농도 고정</button></div></div>
+          <button class="btn primary" id="fick-play" type="button"></button>
+          <button class="btn" id="fick-reset" type="button">처음으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간 Dt/L²</span><span class="v" id="fick-t">—</span></div>
+        <div class="stat"><span class="k">총량 ∫C dx</span><span class="v" id="fick-q">—</span></div>
+        <div class="stat"><span class="k">최대 |J| 위치</span><span class="v" id="fick-j">—</span></div>
+      </div>
+      <div class="sim-note">위의 파란 화살표가 플럭스 \(J = -D\,\partial C/\partial x\)(길이 ∝ 크기), 아래 막대가 \(\partial C/\partial t = D\,\partial^2C/\partial x^2\)다(초록: 차오름, 빨강: 줄어듦). 재생하면 크랭크–니콜슨 방법(5절)으로 픽 제2법칙을 푼다. 해볼 것: ① "직선"에서는 화살표는 있는데 막대가 없다 — 정상 상태. ② "막힘"에서는 총량이 그대로이고 결국 평평해진다. "농도 고정"에서는 양 끝을 잇는 직선으로 간다. ③ 재생 중에 흰 원을 끌어 날카로운 뾰족점을 만들면 금세 무뎌진다 — 짧은 파장의 굴곡일수록 빨리 사라진다(\(\propto e^{-Dk^2t}\)).</div>
+    </div>
+    <h3>정상 상태: 막을 지나는 확산</h3>
+    <p>막의 양쪽 농도가 \(C_1\), \(C_2\)로 고정되면 결국 막 안 분포는 직선이 되고 플럭스는 \(J = D(C_1-C_2)/L\)로 일정해진다. 층이 여러 개면 플럭스가 연속이어야 하므로 "확산 저항" \(L_i/D_i\)이 직렬로 더해진다 — 전기 저항, 열저항(17장)과 똑같은 구조다. 구리 배선 둘레의 배리어 막, 열산화에서 산화막을 지나는 산소(6절), 게이트 산화막을 뚫는 붕소가 모두 이 계산이다.</p>
+    <figure class="mini" id="mini-steady">
+      <div class="mini-view" style="position:relative"><canvas id="cv-steady"></canvas><span class="hint top">경계의 흰 원을 좌우로 끈다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>배리어 D 비 D<sub>2</sub>/D<sub>1</sub> <output id="steady-r-out"></output></span><input type="range" id="steady-r" min="-3" max="0" step="0.1" value="-1"></label><span class="readout" id="steady-out"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>두 층 막의 정상 상태 분포(층마다 직선, 경계에서 플럭스가 같다). 왼쪽은 확산이 빠른 층, 오른쪽은 느린 배리어 층이다. 농도 강하는 거의 모두 배리어에서 일어나고, 플럭스는 \(J = \Delta C/(L_1/D_1 + L_2/D_2)\)로 느린 층이 정한다. 배리어를 얇게(흰 원을 오른쪽으로) 하면 플럭스가 얼마나 늘어나는지 보라.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-flux">
+      <p>확산 계수 \(10^{x}\) cm²/s의 \(x\) = <span class="tn" data-var="d" data-min="-16" data-max="-6" data-step="0.5">-14</span>인 원자의 농도가 깊이 <span class="tn" data-var="L" data-min="0.01" data-max="2" data-step="0.01" data-unit=" µm">0.10</span> 사이에서 \(10^{19}\)에서 \(10^{18}\) cm⁻³으로 직선적으로 줄면, 플럭스는 <span class="tn-out df-out" data-out="J"></span>이고 한 시간 동안 1 cm²를 지나는 원자는 <span class="tn-out df-out" data-out="N"></span>개다. 표면 원자층(약 \(6.8\times10^{14}\) cm⁻²)으로 치면 <span class="tn-out" data-out="ml"></span>층이다.</p>
+    </div>
+    <div class="example" data-title="농도 기울기와 플럭스">
+      <p>1000 °C에서 붕소(\(D = 1.53\times10^{-14}\) cm²/s)의 농도가 표면 아래 0.10 µm 사이에서 \(1.0\times10^{19}\) cm⁻³에서 \(1.0\times10^{18}\) cm⁻³으로 거의 직선적으로 줄어 있다. 이 구간의 플럭스와 1시간 동안 지나가는 붕소의 양(cm⁻²)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 직선이면 기울기 \(\partial C/\partial x = \Delta C/\Delta x\)가 일정하다. 단위를 cm로 맞춘다.</div>
+        <div class="step"><b>풀이</b> \(\partial C/\partial x = -(9.0\times10^{18})/(1.0\times10^{-5}\ \text{cm}) = -9.0\times10^{23}\) cm⁻⁴. \(J = 1.53\times10^{-14}\times9.0\times10^{23} = 1.38\times10^{10}\) cm⁻²s⁻¹. 1시간: \(1.38\times10^{10}\times3600 = 4.95\times10^{13}\) cm⁻².</div>
+        <div class="answer">\(J\approx1.4\times10^{10}\) cm⁻²s⁻¹, 1시간에 약 \(5\times10^{13}\) cm⁻²</div>
+        <div class="step"><b>검토</b> 이온 주입 도즈(10¹³–10¹⁵ cm⁻²)와 비슷한 양이 한 시간에 이 면을 지난다. 그만큼 분포가 크게 바뀌므로 "직선"이라는 가정은 오래가지 않는다 — 제2법칙이 필요한 이유다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="mechanisms">
+    <h2>고체 속 확산 기구와 아레니우스형 확산 계수</h2>
+    <p>결정 속 원자는 아무 데로나 뛸 수 없다. 이웃 자리가 비어 있거나, 원자 사이의 틈을 지나갈 수 있어야 한다. 원자가 어떤 "길"로 움직이는지를 <b>확산 기구</b>라 하며, 기구에 따라 활성화 에너지가 몇 배씩 달라진다. 고체물리에서 점결함의 종류와 공공·격자간 기구를 보았다(<a href="../../solid-state/chapters/crystal-defects.html">고체물리 · 결정 결함</a>). 여기서는 기구가 \(D\)의 온도 의존성을 어떻게 정하는지에 집중한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="공공 기구, 틈새 기구, 틈새 짝 기구의 세 가지 확산 경로">
+        <defs><marker id="df-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+        <g>
+          <text class="t" x="130" y="24" text-anchor="middle" style="font-weight:700">공공 기구</text>
+          <g fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5">
+            <circle cx="60" cy="60" r="15"/><circle cx="110" cy="60" r="15"/><circle cx="160" cy="60" r="15"/><circle cx="210" cy="60" r="15"/>
+            <circle cx="60" cy="110" r="15"/><circle cx="210" cy="110" r="15"/>
+            <circle cx="60" cy="160" r="15"/><circle cx="110" cy="160" r="15"/><circle cx="160" cy="160" r="15"/><circle cx="210" cy="160" r="15"/>
+          </g>
+          <circle cx="110" cy="110" r="15" fill="var(--accent)"/>
+          <circle cx="160" cy="110" r="15" fill="none" stroke="var(--text-dim)" stroke-dasharray="4 3"/>
+          <path d="M122,100 Q135,88 148,100" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#df-ar)"/>
+          <text class="t t-dim" x="130" y="205" text-anchor="middle">빈자리로 자리바꿈</text>
+          <text class="t" x="130" y="228" text-anchor="middle">Eₐ = 공공 형성 + 이동</text>
+          <text class="t t-dim" x="130" y="250" text-anchor="middle">Sb, As, 자기 확산 (3.4–4.8 eV)</text>
+        </g>
+        <g>
+          <text class="t" x="400" y="24" text-anchor="middle" style="font-weight:700">틈새(격자간) 기구</text>
+          <g fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5">
+            <circle cx="330" cy="60" r="15"/><circle cx="380" cy="60" r="15"/><circle cx="430" cy="60" r="15"/><circle cx="480" cy="60" r="15"/>
+            <circle cx="330" cy="110" r="15"/><circle cx="380" cy="110" r="15"/><circle cx="430" cy="110" r="15"/><circle cx="480" cy="110" r="15"/>
+            <circle cx="330" cy="160" r="15"/><circle cx="380" cy="160" r="15"/><circle cx="430" cy="160" r="15"/><circle cx="480" cy="160" r="15"/>
+          </g>
+          <circle cx="355" cy="135" r="7" fill="var(--accent)"/>
+          <path d="M362,130 Q380,118 397,130" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#df-ar)"/>
+          <path d="M412,130 Q430,118 448,130" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#df-ar)"/>
+          <text class="t t-dim" x="400" y="205" text-anchor="middle">원자 사이 틈을 지나감</text>
+          <text class="t" x="400" y="228" text-anchor="middle">Eₐ ≈ 이동 에너지만</text>
+          <text class="t t-dim" x="400" y="250" text-anchor="middle">Cu, Fe, Ni, H (0.2–0.7 eV)</text>
+        </g>
+        <g>
+          <text class="t" x="670" y="24" text-anchor="middle" style="font-weight:700">틈새 짝 기구</text>
+          <g fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5">
+            <circle cx="600" cy="60" r="15"/><circle cx="650" cy="60" r="15"/><circle cx="700" cy="60" r="15"/><circle cx="750" cy="60" r="15"/>
+            <circle cx="600" cy="110" r="15"/><circle cx="700" cy="110" r="15"/><circle cx="750" cy="110" r="15"/>
+            <circle cx="600" cy="160" r="15"/><circle cx="650" cy="160" r="15"/><circle cx="700" cy="160" r="15"/><circle cx="750" cy="160" r="15"/>
+          </g>
+          <circle cx="650" cy="110" r="15" fill="var(--accent)"/>
+          <circle cx="625" cy="135" r="10" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2.5"/>
+          <path d="M630,127 L642,118" stroke="var(--accent-2)" stroke-width="2.5" marker-end="url(#df-ar)"/>
+          <path d="M662,118 Q675,128 672,135" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#df-ar)"/>
+          <text class="t t-dim" x="670" y="205" text-anchor="middle">자기 격자간 원자가 밀어냄</text>
+          <text class="t" x="670" y="228" text-anchor="middle">도펀트–격자간 짝이 이동</text>
+          <text class="t t-dim" x="670" y="250" text-anchor="middle">B, P (대부분), Au·Pt (차내기)</text>
+        </g>
+      </svg>
+      <figcaption>실리콘 속 원자의 세 가지 확산 길. 회색 원은 실리콘, 주황은 확산하는 원자, 점선 원은 공공, 파란 테 작은 원은 자기 격자간 원자. 치환형 도펀트는 점결함(공공 또는 자기 격자간 원자)이 와야 움직이므로 점결함의 농도와 함께 활성화 에너지가 커진다. 틈새형 원자는 기다릴 필요가 없어 훨씬 빠르다.</figcaption>
+    </figure>
+    <p>공공 기구로 움직이는 원자는 (1) 옆에 공공이 있어야 하고(확률 \(\propto e^{-H_f/kT}\), 6장의 공공 농도) (2) 그 장벽을 넘어야 한다(\(\propto e^{-H_m/kT}\)). 두 볼츠만 인자가 곱해지므로 활성화 에너지는 형성 에너지와 이동 에너지의 합이다. 틈새를 지나는 원자는 (2)만 있으면 된다. 실리콘의 붕소·인은 대부분 자기 격자간 원자와 짝을 지어 움직이는 <span class="term">틈새 짝 기구</span><span class="en">(interstitialcy mechanism)</span>를 쓰고, 비소는 공공과 격자간 원자를 반씩, 안티모니는 주로 공공을 쓴다. 이 구분 때문에 점결함 농도를 흔드는 공정(이온 주입, 산화)이 도펀트마다 다르게 확산을 바꾼다(5절).</p>
+    <div class="formula">$$D = D_0\,e^{-E_a/kT},\qquad E_a^{\text{공공}} = H_f + H_m,\qquad E_a^{\text{틈새}}\approx H_m,\qquad D_0\approx g\,a^2\nu\,e^{S/k}$$<div class="where">\(g\)는 기하 인자(1/6 정도에 배위수와 상관 인자가 곱해진다), \(S\)는 형성·이동 엔트로피. 이 꼴은 13장의 아레니우스 식과 같다(<a href="kinetics.html">반응 속도론</a>). \(\ln D\)를 \(1/T\)에 대해 그리면 기울기 \(-E_a/k\)인 직선이다.</div></div>
+    <p>이 장에서는 공공 기구를 <span class="term">공공 기구</span><span class="en">(vacancy mechanism)</span>, 원자 사이 틈을 지나는 기구를 <span class="term">틈새 기구</span><span class="en">(interstitial mechanism)</span>라 부른다. 실리콘 원자 자신이 결정 속에서 움직이는 <span class="term">자기 확산</span><span class="en">(self-diffusion)</span>은 활성화 에너지가 4.8 eV로 가장 느리다.</p>
+    <div class="predict" data-for="sim-mech">
+      <p>공공 기구에서 도펀트 원자가 방금 공공과 자리를 바꿨다(오른쪽으로 한 칸). 도펀트의 <b>다음</b> 뜀으로 가장 흔한 것은?</p>
+      <div class="opts"><button class="opt">다시 오른쪽 — 같은 방향으로 계속 간다</button><button class="opt" data-correct>왼쪽 — 방금 떠난 자리로 되돌아간다</button><button class="opt">위·아래·왼쪽·오른쪽이 모두 같은 확률</button></div>
+      <div class="quiz-exp">자리를 바꾼 직후 공공은 도펀트 바로 왼쪽(방금 떠난 자리)에 있다. 공공이 다른 곳으로 떠나기 전에 다시 바꾸면 도펀트는 제자리로 돌아간다. 그래서 공공 기구의 뜀은 서로 상관이 있고, 무작위 걸음보다 덜 퍼진다. 이 효과를 상관 인자 \(f\)(다이아몬드 격자 자기 확산 0.5)로 \(D\)에 곱한다. 시뮬레이터에서 "되돌아감" 비율을 보라.</div>
+    </div>
+    <div class="sim" id="sim-mech">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>격자 속 확산 기구: 공공·틈새·틈새 짝</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-mech"></canvas><span class="hint top">공공(점선 원)이나 틈새 원자를 끌어 옆 자리로 옮겨 본다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>확산 기구</span><div class="seg" id="mech-mode"><button data-value="vac" class="on">공공</button><button data-value="int">틈새</button><button data-value="icy">틈새 짝</button></div></div>
+          <label class="ctrl"><span>온도 <output id="mech-T-out"></output></span><input type="range" id="mech-T" min="700" max="1300" step="10" value="1000"></label>
+          <button class="btn" id="mech-play" type="button"></button>
+          <button class="btn" id="mech-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">도펀트 뜀 수</span><span class="v" id="mech-n">—</span></div>
+        <div class="stat"><span class="k">되돌아간 비율</span><span class="v" id="mech-back">—</span></div>
+        <div class="stat"><span class="k">이 기구의 Eₐ(대표)</span><span class="v" id="mech-ea">—</span></div>
+        <div class="stat"><span class="k">D(T) (대표 원소)</span><span class="v" id="mech-D">—</span></div>
+      </div>
+      <div class="sim-note">주황이 도펀트, 주황 선은 그 자취다. 애니메이션 속도는 \(\Gamma\propto e^{-E_m/kT}\)를 따르되 보기 좋게 줄였다(실제 비는 오른쪽 아래 값). 해볼 것: ① 공공 기구에서 도펀트는 공공이 옆에 올 때만 움직이고, 바꾼 직후 되돌아가는 일이 잦다(되돌아간 비율이 무작위 걸음의 1/4보다 훨씬 크다). ② 틈새 기구로 바꾸면 도펀트가 쉬지 않고 돌아다닌다 — 구리·철의 빠른 확산. ③ 틈새 짝 기구에서는 파란 테 자기 격자간 원자가 와서 도펀트를 틈새로 밀어내야 도펀트가 움직인다. 공공이나 틈새 원자를 손으로 끌어 도펀트 옆으로 데려가 보라.</div>
+    </div>
+    <figure class="mini" id="mini-arr">
+      <div class="mini-view" style="position:relative"><canvas id="cv-arr"></canvas><span class="hint top">세로선을 좌우로 끌어 온도를 바꾼다</span></div>
+      <div class="mini-ctrl"><div class="seg" id="arr-el"><button data-value="B" class="on">B</button><button data-value="P">P</button><button data-value="As">As</button><button data-value="Sb">Sb</button><button data-value="Si">Si</button><button data-value="Cu">Cu</button><button data-value="Fe">Fe</button><button data-value="Au">Au</button></div><span class="readout" id="arr-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>실리콘 속 원소의 아레니우스 그림 \(\log_{10}D\) 대 \(1000/T\). 도펀트(B·P·As·Sb)와 자기 확산(Si)은 진성 확산 계수(Plummer), 틈새형 금속(Cu·Fe·Au)은 대표값이다. 직선의 기울기가 활성화 에너지다. 두 무리 사이에 10⁸–10¹⁰배의 간격이 있다. 고른 원소의 1시간 확산 길이 \(2\sqrt{Dt}\)도 보인다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-arr">
+      <p>\(D_0 =\) <span class="tn" data-var="D0" data-min="0.01" data-max="10" data-step="0.01" data-unit=" cm²/s">0.76</span>, \(E_a =\) <span class="tn" data-var="Ea" data-min="0.3" data-max="5" data-step="0.01" data-unit=" eV">3.46</span>인 원자는 <span class="tn" data-var="T" data-min="300" data-max="1300" data-step="10" data-unit=" °C">1000</span>에서 \(D =\) <span class="tn-out df-out" data-out="D"></span>이다. 온도를 10 °C 올리면 \(D\)가 <span class="tn-out" data-out="r10"></span>배가 되고, \(D\)가 두 배가 되는 온도 간격은 <span class="tn-out" data-out="dT"></span>다.</p>
+    </div>
+    <div class="callout semi"><strong>구리 배선에 배리어가 꼭 필요한 이유</strong><p>구리는 실리콘 속에서 틈새로 움직이며 활성화 에너지가 0.2–0.5 eV밖에 되지 않는다. 400 °C 배선 공정에서도 \(D\)가 \(10^{-6}\) cm²/s를 넘어 1분이면 수백 µm, 곧 웨이퍼 두께에 가깝게 퍼져 트랜지스터 영역에 깊은 준위(전자–정공 재결합 중심)를 만들고, 산화막 속에서도 전기장을 따라 움직인다. 그래서 다마신 구리는 반드시 Ta/TaN 같은 확산 배리어로 둘러싸고 위는 SiN·SiCN 캡으로 덮는다. 배리어는 앞 절의 직렬 확산 저항 \(L/D\)을 크게 만드는 층이고, 얇아질수록(수 nm) 결정립계 같은 빠른 길을 막는 것이 관건이다. → <a href="https://semi.euiyun.com/process/chapters/metal.html">ProcessBook · 금속 배선</a></p></div>
+    <div class="example" data-title="두 온도의 D로 활성화 에너지 구하기">
+      <p>실리콘 속 비소의 확산 계수를 900 °C에서 \(1.10\times10^{-16}\) cm²/s, 1000 °C에서 \(1.59\times10^{-15}\) cm²/s로 측정했다. 활성화 에너지 \(E_a\)(eV)와 \(D_0\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\ln(D_2/D_1) = (E_a/k)(1/T_1 - 1/T_2)\). 온도는 켈빈, \(k = 8.617\times10^{-5}\) eV/K.</div>
+        <div class="step"><b>풀이</b> \(T_1 = 1173.15\) K, \(T_2 = 1273.15\) K, \(1/T_1 - 1/T_2 = 6.696\times10^{-5}\) K⁻¹. \(\ln(1.59\times10^{-15}/1.10\times10^{-16}) = \ln14.45 = 2.671\). \(E_a = 8.617\times10^{-5}\times2.671/6.696\times10^{-5} = 3.44\) eV. \(D_0 = D_2\,e^{E_a/kT_2} = 1.59\times10^{-15}\times e^{31.34} = 0.065\) cm²/s.</div>
+        <div class="answer">\(E_a\approx3.44\) eV, \(D_0\approx0.065\) cm²/s</div>
+        <div class="step"><b>검토</b> Plummer의 진성 As 값(0.066 cm²/s, 3.44 eV)과 맞는다. 100 °C 차이로 \(D\)가 14배 — 확산 공정의 온도를 ±1 °C로 묶는 이유다(1 °C에 약 2.5%).</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-D" data-title="아레니우스 확산 계수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="profiles">
+    <h2>일정 공급원과 제한 공급원: erfc와 가우스 분포</h2>
+    <p>반도체 공정의 확산에는 경계 조건이 두 가지 있다. 표면을 도펀트 기체나 도핑 유리로 덮어 표면 농도를 고용 한계(11장, <a href="binary-phase-diagrams.html">이성분 상태도</a>) 근처의 \(C_s\)로 붙잡아 두는 <span class="term">일정 공급원</span><span class="en">(constant source)</span> 확산(<span class="term">선증착</span><span class="en">(predeposition)</span>)과, 이미 들어간 총량(도즈) \(Q\)만 가지고 원천 없이 더 깊이 퍼뜨리는 <span class="term">제한 공급원</span><span class="en">(limited source)</span> 확산(<span class="term">드라이브인</span><span class="en">(drive-in)</span>)이다. 이온 주입 뒤의 열처리는 거의 모두 제한 공급원이다.</p>
+    <p>무한히 깊은 웨이퍼에서 \(D\)가 일정하면 확산 방정식에는 길이 눈금이 \(\sqrt{Dt}\) 하나뿐이다. 그래서 해는 \(\eta = x/2\sqrt{Dt}\) 하나의 함수가 된다(닮음 해). 표면 농도 고정 조건의 해는 <span class="term">오차 함수</span><span class="en">(error function)</span>의 여함수 erfc이고, 표면이 막힌 상태에서 처음에 표면에 몰려 있던 도즈 \(Q\)의 해는 가우스 함수(무작위 걸음의 분포 그 자체)다.</p>
+    <div class="compare">
+      <div><h4>일정 공급원 (선증착)</h4><p>$$C(x,t) = C_s\,\operatorname{erfc}\frac{x}{2\sqrt{Dt}}$$ 표면 농도는 \(C_s\) 그대로, 들어간 양은 \(Q(t) = \dfrac{2C_s\sqrt{Dt}}{\sqrt\pi}\)로 \(\sqrt t\)에 비례해 늘어난다.</p></div>
+      <div><h4>제한 공급원 (드라이브인)</h4><p>$$C(x,t) = \frac{Q}{\sqrt{\pi Dt}}\exp\!\left(-\frac{x^2}{4Dt}\right)$$ 총량 \(Q\)는 그대로, 표면 농도 \(C_0 = Q/\sqrt{\pi Dt}\)는 \(1/\sqrt t\)로 줄어든다.</p></div>
+    </div>
+    <p>도펀트를 반대 형의 기판(배경 농도 \(N_B\))에 넣으면 \(C(x_j) = N_B\)인 깊이에서 알짜 도핑이 0이 되어 pn 접합이 생긴다. 이 깊이가 <span class="term">접합 깊이</span><span class="en">(junction depth)</span>다.</p>
+    <div class="formula">$$x_j^{\text{erfc}} = 2\sqrt{Dt}\;\operatorname{erfc}^{-1}\!\frac{N_B}{C_s},\qquad x_j^{\text{가우스}} = 2\sqrt{Dt\,\ln\frac{Q}{N_B\sqrt{\pi Dt}}}$$<div class="where">\(N_B/C_s = 10^{-4}\)이면 \(\operatorname{erfc}^{-1} = 2.75\)이므로 \(x_j\approx5.5\sqrt{Dt}\). 둘 다 \(\sqrt{Dt}\)에 비례하지만 가우스에는 로그 인자가 붙는다 — 오래 퍼뜨릴수록 표면 농도가 줄어 로그가 작아지므로, 시간 4배에 접합은 2배보다 조금 덜 깊어진다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="선증착 erfc 분포, 공급원 제거, 드라이브인 가우스 분포, 배경 농도와 만나는 접합 깊이를 로그 눈금으로 그린 2단계 확산">
+        <line x1="70" y1="260" x2="470" y2="260" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="260" x2="70" y2="40" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="62" y="44" text-anchor="end">10²¹</text><text class="t t-dim" x="62" y="114" text-anchor="end">10¹⁹</text><text class="t t-dim" x="62" y="187" text-anchor="end">10¹⁷</text><text class="t t-dim" x="62" y="260" text-anchor="end">10¹⁵</text>
+        <text class="t t-dim" x="70" y="280" text-anchor="middle">0</text><text class="t t-dim" x="337" y="280" text-anchor="middle">1</text><text class="t t-dim" x="470" y="280" text-anchor="middle">1.5 µm</text>
+        <line x1="70" y1="223.3" x2="470" y2="223.3" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text class="t" x="466" y="216" text-anchor="end" fill="var(--accent-2)">배경 N_B = 10¹⁶ (n형)</text>
+        <g data-step="1">
+          <polyline points="70.0,76.7 72.7,81.2 75.3,86.8 78.0,93.6 80.7,101.6 83.3,111.0 86.0,121.6 88.7,133.7 91.3,147.2 94.0,162.1 96.7,178.5 99.3,196.3 102.0,215.6 104.7,236.4 107.3,258.7" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        </g>
+        <g data-only="1" class="t">
+          <rect x="70" y="30" width="16" height="230" fill="var(--accent-soft, rgba(234,88,12,.15))"/>
+          <text x="510" y="70" style="font-weight:700">1. 선증착 950 °C, 20분</text>
+          <text x="510" y="98">표면 C_s = 10²⁰ (고용 한계 근처)</text>
+          <text x="510" y="124">erfc 분포, x_j = 0.12 µm</text>
+          <text x="510" y="150" class="t-dim">도즈 Q = 2.5×10¹⁴ cm⁻²</text>
+        </g>
+        <g data-only="2" class="t">
+          <text x="510" y="70" style="font-weight:700">2. 공급원 제거</text>
+          <text x="510" y="98">도핑 유리를 식각하고</text>
+          <text x="510" y="124">얇은 산화막으로 표면을 막는다</text>
+          <text x="510" y="150" class="t-dim">이제 Q 는 보존된다 (J(0) = 0)</text>
+        </g>
+        <g data-step="3">
+          <polyline points="70.0,121.1 75.3,121.2 80.7,121.3 86.0,121.4 91.3,121.6 96.7,121.9 102.0,122.2 107.3,122.6 112.7,123.0 118.0,123.5 123.3,124.1 128.7,124.7 134.0,125.3 139.3,126.1 144.7,126.8 150.0,127.7 155.3,128.6 160.7,129.6 166.0,130.6 171.3,131.7 176.7,132.8 182.0,134.0 187.3,135.2 192.7,136.5 198.0,137.9 203.3,139.3 208.7,140.8 214.0,142.4 219.3,144.0 224.7,145.6 230.0,147.3 235.3,149.1 240.7,151.0 246.0,152.8 251.3,154.8 256.7,156.8 262.0,158.9 267.3,161.0 272.7,163.2 278.0,165.4 283.3,167.7 288.7,170.1 294.0,172.5 299.3,175.0 304.7,177.5 310.0,180.1 315.3,182.7 320.7,185.4 326.0,188.2 331.3,191.0 336.7,193.9 342.0,196.9 347.3,199.9 352.7,202.9 358.0,206.0 363.3,209.2 368.7,212.4 374.0,215.7 379.3,219.1 384.7,222.5 390.0,225.9 395.3,229.5 400.7,233.0 406.0,236.7 411.3,240.4 416.7,244.1 422.0,248.0 427.3,251.8 432.7,255.8 438.0,259.7" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        </g>
+        <g data-only="3" class="t">
+          <text x="510" y="70" style="font-weight:700">3. 드라이브인 1100 °C, 1시간</text>
+          <text x="510" y="98">같은 Q 가 가우스로 퍼진다</text>
+          <text x="510" y="124">표면 농도 6×10¹⁸ 로 감소</text>
+          <text x="510" y="150" class="t-dim">(Dt)_drive ≈ 100 × (Dt)_pre</text>
+        </g>
+        <g data-step="4">
+          <circle cx="386" cy="223.3" r="7" fill="#fff" stroke="var(--accent)" stroke-width="2.5"/>
+          <line x1="386" y1="223" x2="386" y2="260" stroke="var(--accent)" stroke-dasharray="3 3"/>
+          <circle cx="103" cy="223.3" r="5" fill="var(--text-dim)"/>
+        </g>
+        <g data-only="4" class="t">
+          <text x="510" y="70" style="font-weight:700">4. 접합 깊이</text>
+          <text x="510" y="98">C(x_j) = N_B 인 곳</text>
+          <text x="510" y="124" class="t-acc" style="font-weight:700">x_j = 0.12 → 1.19 µm</text>
+          <text x="510" y="150" class="t-dim">p형 영역이 열 배 깊어졌다</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>선증착: 표면 농도를 고용 한계 근처로 붙잡고 짧게 확산해 얕은 erfc 분포로 도즈를 넣는다.</li><li>공급원을 걷어 내고 표면을 막으면 이후로는 총량이 보존된다.</li><li>높은 온도에서 오래 드라이브인하면 같은 도즈가 가우스 분포로 깊이 퍼지고 표면 농도는 낮아진다.</li><li>배경 농도선과 만나는 점이 접합이다. 접합이 0.12 µm에서 1.19 µm로 깊어졌다.</li></ol>
+      <figcaption>2단계 확산(로그 눈금). 선증착은 도즈를 정하고, 드라이브인은 깊이와 표면 농도를 정한다. 드라이브인의 \(Dt\)가 선증착보다 훨씬 크면(여기서 약 100배) 처음 분포를 표면의 델타 함수로 보아 가우스 해를 그대로 쓸 수 있다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-prof">
+      <p>도즈 \(Q\)가 정해진 드라이브인에서 시간을 1시간에서 4시간으로 늘렸다(온도 그대로). 접합 깊이는?</p>
+      <div class="opts"><button class="opt">4배</button><button class="opt">정확히 2배</button><button class="opt" data-correct>2배보다 조금 작다</button><button class="opt">그대로 — 도즈가 그대로이니까</button></div>
+      <div class="quiz-exp">\(\sqrt{Dt}\)는 2배가 되지만 표면 농도 \(Q/\sqrt{\pi Dt}\)가 절반이 되어 로그 인자 \(\sqrt{\ln(C_0/N_B)}\)가 줄어든다. 예를 들어 \(C_0/N_B\)가 600에서 300으로 가면 \(\sqrt{\ln}\)은 2.53에서 2.39로 6% 준다. 시뮬레이터에서 시간 손잡이를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-prof">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>로그 눈금 도핑 분포와 접합 깊이</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-prof"></canvas><span class="hint top">오른쪽 흰 원: 배경 농도 · 곡선 위 흰 원: 확산 시간</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>공급원</span><div class="seg" id="prof-kind"><button data-value="erfc" class="on">일정 (erfc)</button><button data-value="gauss">제한 (가우스)</button></div></div>
+          <div class="ctrl"><span>도펀트</span><div class="seg" id="prof-el"><button data-value="B" class="on">B</button><button data-value="P">P</button><button data-value="As">As</button><button data-value="Sb">Sb</button></div></div>
+          <label class="ctrl"><span>온도 <output id="prof-T-out"></output></span><input type="range" id="prof-T" min="800" max="1200" step="5" value="1000"></label>
+          <label class="ctrl"><span id="prof-s-lab">표면 농도 C<sub>s</sub> <output id="prof-s-out"></output></span><input type="range" id="prof-s" min="17" max="21" step="0.1" value="20"></label>
+          <label class="check"><input type="checkbox" id="prof-lin"> 선형 눈금</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">D</span><span class="v" id="prof-D">—</span></div>
+        <div class="stat"><span class="k">시간 t</span><span class="v" id="prof-t">—</span></div>
+        <div class="stat"><span class="k">√(Dt)</span><span class="v" id="prof-L">—</span></div>
+        <div class="stat"><span class="k">접합 깊이 x<sub>j</sub></span><span class="v" id="prof-xj">—</span></div>
+        <div class="stat"><span class="k" id="prof-qk">도즈 Q</span><span class="v" id="prof-q">—</span></div>
+      </div>
+      <div class="sim-note">주황 곡선이 현재 분포, 연한 곡선은 시간 1/4·4배의 같은 분포, 파란 점선은 배경 농도 \(N_B\)다. 해볼 것: ① erfc에서 시간을 4배로 하면 접합 깊이가 정확히 2배가 된다(로그 인자가 없다). 가우스에서는 2배보다 작다. ② 배경 농도를 10배 낮추면 접합이 얼마나 깊어지는가? 로그 눈금에서 분포의 "꼬리"가 접합을 정한다. ③ 같은 \(Dt\)로 B와 As를 비교하려면 온도를 얼마나 바꿔야 하는가? As는 같은 온도에서 \(D\)가 약 10배 작다.</div>
+    </div>
+    <figure class="mini" id="mini-dose">
+      <div class="mini-view"><canvas id="cv-dose"></canvas></div>
+      <div class="mini-ctrl"><div class="seg" id="dose-kind"><button data-value="gauss" class="on">제한 공급원</button><button data-value="erfc">일정 공급원</button></div><button class="btn" id="dose-play" type="button"></button><span class="readout" id="dose-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>선형 눈금으로 본 시간에 따른 분포. 칠한 넓이가 들어 있는 도펀트 총량이다. 제한 공급원에서는 넓이가 그대로이고 봉우리가 \(1/\sqrt t\)로 낮아지며, 일정 공급원에서는 표면 높이가 그대로이고 넓이가 \(\sqrt t\)로 늘어난다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-xj">
+      <p>도즈 \(10^{x}\) cm⁻²의 \(x\) = <span class="tn" data-var="q" data-min="11" data-max="16" data-step="0.1">14</span>인 붕소를 <span class="tn" data-var="T" data-min="900" data-max="1200" data-step="5" data-unit=" °C">1100</span>에서 <span class="tn" data-var="t" data-min="5" data-max="600" data-step="5" data-unit=" 분">60</span> 드라이브인하면 \(\sqrt{Dt} =\) <span class="tn-out" data-out="L"></span>, 표면 농도는 <span class="tn-out df-out" data-out="C0"></span>이다. 배경 \(N_B = 10^{16}\) cm⁻³에서 접합 깊이는 <span class="tn-out" data-out="xj"></span>다.</p>
+    </div>
+    <div class="example" data-title="붕소 선증착의 접합 깊이와 도즈">
+      <p>n형 기판(\(N_B = 1.0\times10^{16}\) cm⁻³)에 950 °C에서 20분 동안 붕소를 표면 농도 \(C_s = 1.0\times10^{20}\) cm⁻³로 선증착한다. \(D = 4.21\times10^{-15}\) cm²/s일 때 (a) 접합 깊이와 (b) 들어간 도즈를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> erfc 해. \(x_j = 2\sqrt{Dt}\,\operatorname{erfc}^{-1}(N_B/C_s)\), \(Q = 2C_s\sqrt{Dt/\pi}\).</div>
+        <div class="step"><b>풀이</b> \(Dt = 4.21\times10^{-15}\times1200 = 5.05\times10^{-12}\) cm², \(\sqrt{Dt} = 2.25\times10^{-6}\) cm. \(N_B/C_s = 10^{-4}\), \(\operatorname{erfc}^{-1}(10^{-4}) = 2.751\). (a) \(x_j = 2\times2.25\times10^{-6}\times2.751 = 1.24\times10^{-5}\) cm = 0.124 µm. (b) \(Q = 2\times10^{20}\times2.25\times10^{-6}/1.772 = 2.54\times10^{14}\) cm⁻².</div>
+        <div class="answer">(a) \(x_j\approx0.124\) µm (b) \(Q\approx2.5\times10^{14}\) cm⁻²</div>
+        <div class="step"><b>검토</b> 실제로는 \(10^{20}\) cm⁻³에서 붕소 확산이 농도에 따라 빨라지므로(외인성 확산, 5절) 분포가 erfc보다 각지고 조금 깊다. 그래서 오늘날에는 도즈를 정확히 넣는 단계를 이온 주입이 맡는다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="드라이브인 뒤의 접합 깊이">
+      <p>앞 예제의 도즈(\(2.54\times10^{14}\) cm⁻²)를 1100 °C(\(D = 1.52\times10^{-13}\) cm²/s)에서 1시간 드라이브인한다. 표면 농도와 접합 깊이를 구하라. 선증착의 \(Dt\)는 무시해도 되는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 가우스 해. \(C_0 = Q/\sqrt{\pi Dt}\), \(x_j = 2\sqrt{Dt\ln(C_0/N_B)}\).</div>
+        <div class="step"><b>풀이</b> \(Dt = 1.52\times10^{-13}\times3600 = 5.47\times10^{-10}\) cm². \(\sqrt{\pi Dt} = 4.15\times10^{-5}\) cm, \(C_0 = 2.54\times10^{14}/4.15\times10^{-5} = 6.1\times10^{18}\) cm⁻³. \(\ln(6.1\times10^{18}/10^{16}) = 6.42\). \(x_j = 2\sqrt{5.47\times10^{-10}\times6.42} = 1.19\times10^{-4}\) cm = 1.19 µm. 선증착의 \(Dt = 5.05\times10^{-12}\)은 드라이브인의 1%라 무시해도 된다(포함해도 1.19 µm).</div>
+        <div class="answer">\(C_0\approx6.1\times10^{18}\) cm⁻³, \(x_j\approx1.19\) µm</div>
+        <div class="step"><b>검토</b> 표면 농도가 \(10^{20}\)에서 \(6\times10^{18}\)로 낮아지고 접합이 열 배 깊어졌다. 같은 도즈를 더 깊이 퍼뜨리면 평균 농도는 낮아진다 — 웰(well)은 이렇게 만든다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>도펀트 분포는 점결함이 정한다</strong><p>여기의 erfc·가우스는 \(D\)가 일정한 진성 확산의 해다. 실제 공정에서 도펀트 농도가 진성 캐리어 농도 \(n_i\)(1000 °C에서 약 \(7\times10^{18}\) cm⁻³)를 넘으면 하전된 점결함이 늘어 \(D\)가 농도에 따라 커지고(외인성 확산) 분포가 상자 모양이 된다. 이온 주입이 남긴 여분의 자기 격자간 원자는 어닐 초기 몇 초 동안 붕소·인의 확산을 수십–수천 배로 키운다(과도 증속 확산, TED). 산화도 표면에서 격자간 원자를 주입해 붕소·인을 빠르게 한다(OED). 이런 효과는 이 장의 모형을 넘어서며, 공정 시뮬레이터는 점결함 방정식을 함께 푼다. → <a href="https://semi.euiyun.com/doping/chapters/diffusion.html">DopingBook · 확산</a></p></div>
+    <div class="drill" id="drill-xj" data-title="접합 깊이 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="budget">
+    <h2>열 예산과 수치 풀이</h2>
+    <p>실제 공정은 한 온도에서 끝나지 않는다. 웰 드라이브인, 게이트 산화, 다결정 실리콘 증착, 소스·드레인 어닐, 실리사이드, 배선까지 수십 단계가 저마다 온도와 시간을 가진다. \(D\)가 깊이에 무관하고(진성 확산) 시간에 따라서만 바뀐다면, 새 시간 변수 \(d\tau = D(t)\,dt\)를 쓰면 확산 방정식이 \(\partial C/\partial\tau = \partial^2C/\partial x^2\)가 된다. 분포는 온도 이력 전체가 아니라 그 적분 하나에만 의존한다. 이것이 <span class="term">열 예산</span><span class="en">(thermal budget)</span>이다.</p>
+    <div class="formula">$$(Dt)_\text{총} = \int D\big(T(t)\big)\,dt = \sum_i D(T_i)\,t_i,\qquad t_\text{램프}^\text{등가}\approx\frac{kT_p^2}{E_a\,r}$$<div class="where">가우스 분포의 \(Dt\) 자리에 \((Dt)_\text{총}\)을 넣으면 된다. 온도가 \(r\)[K/s]로 오르내리는 램프 하나는 최고 온도 \(T_p\)에서 \(kT_p^2/E_ar\)만큼 머문 것과 같다(\(D\)가 \(kT^2/E_a\approx40\) K마다 \(e\)배씩 바뀐다). 퍼니스 램프 10 °C/min은 1000 °C에서 한쪽에 약 4분, RTA 150 °C/s 스파이크는 약 0.3초다.</div></div>
+    <p>\(D\)가 온도에 지수적으로 민감하므로 열 예산은 <b>가장 뜨거운 단계</b>가 거의 다 차지한다. 1000 °C에서 붕소의 \(D\)는 900 °C의 15배, 800 °C의 360배다. 그래서 소자 미세화의 역사는 "높은 온도를 짧게"의 역사였다. 퍼니스(수십 분)에서 RTA(수 초), 스파이크(1초 남짓), 플래시·레이저 어닐(밀리초 이하)로 왔다.</p>
+    <div class="predict" data-for="sim-budget">
+      <p>붕소에 대해 "900 °C 퍼니스 30분"과 "1050 °C RTA 스파이크(150 °C/s로 올렸다 내림, 머무는 시간 0)" 중 어느 쪽의 \(Dt\)가 더 클까?</p>
+      <div class="opts"><button class="opt" data-correct>900 °C 30분이 더 크다</button><button class="opt">1050 °C 스파이크가 더 크다 — 온도가 150 °C 높으니까</button><button class="opt">거의 같다</button></div>
+      <div class="quiz-exp">\(D(1050\,°\mathrm C)/D(900\,°\mathrm C)\approx48\)이지만, 스파이크의 등가 시간은 올림·내림을 합쳐 1초가 채 안 된다. 900 °C 30분(1800초)이 수십 배 크다. 다만 스파이크의 진짜 목적은 확산이 아니라 활성화다 — 도펀트를 격자 자리에 넣는 데는 높은 온도가 짧게만 있으면 된다.</div>
+    </div>
+    <div class="sim" id="sim-budget">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>공정 흐름의 열 예산 계산기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-budget"></canvas><span class="hint top">각 단계의 위 흰 원: 온도 · 오른쪽 흰 원: 시간(로그)</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>예시 흐름</span><div class="seg" id="bud-pre"><button data-value="furnace" class="on">퍼니스 시대</button><button data-value="rta">RTA 시대</button><button data-value="spike">스파이크</button></div></div>
+          <div class="ctrl"><span>도펀트</span><div class="seg" id="bud-el"><button data-value="B" class="on">B</button><button data-value="P">P</button><button data-value="As">As</button><button data-value="Sb">Sb</button></div></div>
+          <label class="check"><input type="checkbox" id="bud-ramp" checked> 램프 포함</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">총 Dt</span><span class="v" id="bud-dt">—</span></div>
+        <div class="stat"><span class="k">√(Dt)</span><span class="v" id="bud-L">—</span></div>
+        <div class="stat"><span class="k">1000 °C 등가 시간</span><span class="v" id="bud-eq">—</span></div>
+        <div class="stat"><span class="k">가장 큰 몫</span><span class="v" id="bud-max">—</span></div>
+      </div>
+      <div class="sim-note">위는 단계별 온도(칸마다 시간 눈금이 다르다 — 각 칸 아래 숫자), 아래 막대는 각 단계가 총 \(Dt\)에서 차지하는 몫이다(옅은 부분은 램프). 퍼니스 단계는 10 °C/min, RTA 단계는 150 °C/s로 오르내린다고 본다. 해볼 것: ① "퍼니스 시대"에서 가장 뜨거운 단계의 온도를 50 °C만 낮추면 총 \(Dt\)가 얼마나 줄어드는가? ② "스파이크"에서 램프를 끄면 \(Dt\)가 거의 0이 된다 — 스파이크의 \(Dt\)는 거의 모두 램프다. ③ 도펀트를 As로 바꾸면 \(Dt\)는 10배쯤 작지만 몫의 비율은 거의 그대로다(활성화 에너지가 비슷하다).</div>
+    </div>
+    <div class="example" data-title="세 단계 열처리의 열 예산">
+      <p>붕소 도핑 영역이 (1) 1000 °C 30분, (2) 900 °C 60분, (3) 1050 °C 10초를 차례로 겪는다(램프 무시). 각 단계의 \(D\)는 \(1.53\times10^{-14}\), \(1.04\times10^{-15}\), \(5.03\times10^{-14}\) cm²/s다. 총 \(Dt\), 1000 °C 등가 시간, 각 단계의 몫을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\sum D_it_i\)를 더하고 \(D(1000\,°\mathrm C)\)로 나눈다.</div>
+        <div class="step"><b>풀이</b> \(D_1t_1 = 1.53\times10^{-14}\times1800 = 2.75\times10^{-11}\), \(D_2t_2 = 1.04\times10^{-15}\times3600 = 3.74\times10^{-12}\), \(D_3t_3 = 5.03\times10^{-14}\times10 = 5.0\times10^{-13}\) cm². 합 \(3.18\times10^{-11}\) cm². 등가 시간 \(3.18\times10^{-11}/1.53\times10^{-14} = 2080\) s \(\approx34.6\)분. 몫: 86.6%, 11.8%, 1.6%.</div>
+        <div class="answer">\((Dt)_\text{총}\approx3.2\times10^{-11}\) cm², 1000 °C 약 35분과 같다</div>
+        <div class="step"><b>검토</b> 900 °C 단계는 시간이 두 배인데도 몫이 1/7이다. \(\sqrt{(Dt)_\text{총}} = 56\) nm — 얕은 접합 소자에서는 이 정도도 크다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>열 예산은 공정 흐름 전체의 줄다리기다</strong><p>소스·드레인 접합은 웨이퍼가 공정 끝까지 겪는 모든 열처리의 \(Dt\)를 합친 만큼 깊어진다. 그래서 접합을 만든 뒤의 단계(스페이서 증착, 실리사이드, 배선 유전막)는 온도를 낮추고(LPCVD 대신 PECVD·ALD) 어닐은 스파이크·밀리초 어닐로 바꿨다. 반대로 도펀트를 충분히 활성화하고 주입 손상을 없애려면 온도가 높아야 한다. 이 줄다리기를 "열 예산을 나눠 쓴다"고 하며, 공정 통합 엔지니어는 단계마다 \(Dt\) 장부를 관리한다. → <a href="https://semi.euiyun.com/doping/chapters/budget.html">DopingBook · 써멀 버짓</a></p></div>
+    <h3>게임: 목표 접합 깊이를 가장 짧은 시간에</h3>
+    <p>붕소 웰을 드라이브인으로 만든다. 웨이퍼에는 이미 인(P)으로 만든 영역이 있어서, 이번 열처리에서 인이 겪는 \(Dt\)가 정해진 한도를 넘으면 안 된다. 인은 붕소보다 활성화 에너지가 0.2 eV 커서 높은 온도에서 상대적으로 더 빨라진다. 장비 사용 시간에도 상한이 있다. 온도–시간 평면의 점을 끌어 조건을 모두 지키면서 접합 깊이를 ±3% 안에 맞추고, 가능하면 짧은 시간으로 끝내라.</p>
+    <div class="sim" id="sim-game">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>드라이브인 과제: 접합 깊이·열 예산·시간</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-game1"></canvas><span class="hint top">흰 원을 끌어 온도와 시간을 고른다</span></div><div><canvas id="cv-game2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <p class="df-note" id="game-task">—</p>
+          <label class="check"><input type="checkbox" id="game-hint"> 힌트: 등 Dt 곡선 보이기</label>
+          <button class="btn primary" id="game-go" type="button">이 조건으로 드라이브인</button>
+          <button class="btn" id="game-next" type="button">다음 과제</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">온도 / 시간</span><span class="v" id="game-tt">—</span></div>
+        <div class="stat"><span class="k">B 접합 깊이</span><span class="v" id="game-xj">—</span></div>
+        <div class="stat"><span class="k">P의 Dt / 한도</span><span class="v" id="game-p">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="game-res">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 온도(세로)–시간(가로, 로그) 평면, 빨간 영역은 금지 구역(인의 열 예산 초과, 시간 초과)이다. 오른쪽은 고른 조건의 붕소 분포(로그 눈금)와 목표 깊이 띠다. 해볼 것: ① 접합 깊이는 \(D_\mathrm B(T)\,t\) 하나로 정해지므로, 같은 깊이를 주는 점들은 평면 위의 곡선(등 \(Dt\) 곡선)을 이룬다. ② 그 곡선을 따라 온도를 올리면 시간은 줄지만 인의 \(Dt\)는 늘어난다 — \(D_\mathrm P/D_\mathrm B\)가 온도와 함께 커지기 때문이다. ③ 성공하면 최단 시간 대비 점수가 나온다. 100점은 인의 한도에 딱 닿는 가장 높은 온도다.</div>
+    </div>
+
+    <h3>수치 풀이: 양해법과 크랭크–니콜슨</h3>
+    <p>\(D\)가 농도·깊이에 따라 바뀌거나, 층이 여러 개거나, 경계 조건이 복잡하면 해석해가 없다. 깊이를 간격 \(\Delta x\)의 격자로, 시간을 \(\Delta t\) 간격으로 나누고 미분을 차분으로 바꾼다. 가장 단순한 <span class="term">양해법</span><span class="en">(explicit method, FTCS)</span>은 지금 값으로 다음 값을 바로 계산한다.</p>
+    <div class="formula">$$C_i^{n+1} = C_i^n + r\left(C_{i+1}^n - 2C_i^n + C_{i-1}^n\right),\qquad r = \frac{D\,\Delta t}{\Delta x^2}\le\frac12$$<div class="where">이 <span class="term">안정성 조건</span><span class="en">(stability condition)</span>을 넘으면 격자 하나 간격으로 지그재그하는 오차가 매 걸음 \(|1-4r|\)배씩 커져 해가 폭발한다. 격자를 반으로 줄이면 \(\Delta t\)는 1/4로 줄여야 한다.</div></div>
+    <figure class="mini" id="mini-explicit">
+      <div class="mini-view"><canvas id="cv-explicit"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>r = DΔt/Δx² <output id="exp-r-out"></output></span><input type="range" id="exp-r" min="0.1" max="0.7" step="0.01" value="0.4"></label><button class="btn" id="exp-run" type="button">처음부터</button><span class="readout" id="exp-out"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 문제(가운데 상자 모양 분포의 확산)를 양해법(주황 점)과 크랭크–니콜슨(파란 선)으로 같은 \(\Delta t\)로 푼다. \(r\)이 0.5를 조금만 넘어도 몇십 걸음 만에 양해법의 지그재그가 자라 터진다. 크랭크–니콜슨은 \(r\)이 커도 안정하다.</figcaption>
+    </figure>
+    <p><span class="term">크랭크–니콜슨 방법</span><span class="en">(Crank–Nicolson method)</span>은 시간 \(n\)과 \(n+1\)의 공간 차분을 반씩 평균한다. 그러면 매 걸음 미지수 \(C_i^{n+1}\)이 이웃과 엮인 삼중 대각 연립 방정식을 풀어야 하지만(토머스 알고리즘, \(O(N)\)), 어떤 \(\Delta t\)에서도 안정하고 시간 정확도도 2차다. 이 책의 <code>Thermo.diffuse1d</code>가 이 방법을 쓴다. 층 사이 면에서는 \(D\)의 조화 평균을 써서 플럭스가 연속되게 한다(2절의 막 투과 미니 실험).</p>
+    <div class="sim" id="sim-num">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>크랭크–니콜슨으로 푸는 도펀트 확산: 해석해와 외인성 확산</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-num"></canvas><span class="hint top">점선: 해석해 · 실선: 수치 풀이</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>문제</span><div class="seg" id="num-kind"><button data-value="pre" class="on">선증착 (C<sub>s</sub> 고정)</button><button data-value="imp">주입 뒤 어닐</button></div></div>
+          <label class="ctrl"><span>온도 <output id="num-T-out"></output></span><input type="range" id="num-T" min="900" max="1150" step="5" value="1000"></label>
+          <label class="check"><input type="checkbox" id="num-ext"> 농도 의존 D (외인성)</label>
+          <button class="btn primary" id="num-play" type="button"></button>
+          <button class="btn" id="num-reset" type="button">처음으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간</span><span class="v" id="num-t">—</span></div>
+        <div class="stat"><span class="k">x<sub>j</sub> 수치 / 해석</span><span class="v" id="num-xj">—</span></div>
+        <div class="stat"><span class="k">도즈 수치 / 해석</span><span class="v" id="num-q">—</span></div>
+      </div>
+      <div class="sim-note">붕소, 배경 \(N_B = 10^{16}\) cm⁻³, 깊이 격자 241칸. "주입 뒤 어닐"은 \(10^{15}\) cm⁻²를 깊이 50 nm(폭 20 nm)에 넣은 가우스 분포에서 시작하고 표면은 막혀 있다. "농도 의존 D"는 \(D = D_i(1 + p/n_i)/2\)로 붕소 농도가 진성 캐리어 농도 \(n_i\)를 넘는 곳에서 확산이 빨라지는 효과를 흉내 낸다(대표적 모형). 해볼 것: ① 진성 조건에서는 수치 풀이가 해석해 위에 겹친다. ② 외인성을 켜면 높은 농도 영역은 평평하고 앞쪽은 가파른 상자 모양이 된다 — 접합이 더 깊고 날카롭다. ③ 온도를 올리면 \(n_i\)가 커져 외인성 효과가 약해진다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="oxidation">
+    <h2>딜–그로브 열산화 모형</h2>
+    <p>실리콘을 산소나 수증기 속에서 800–1200 °C로 가열하면 표면에 SiO₂가 자란다. 산화막은 실리콘 위에 쌓이는 것이 아니라 <b>실리콘을 먹으며 안쪽으로</b> 자란다. 산화제(O₂ 또는 H₂O)가 이미 생긴 산화막을 확산으로 통과해 Si/SiO₂ 계면에 도착해야 반응하기 때문이다. 1965년 딜(Deal)과 그로브(Grove)는 이 과정을 세 플럭스의 직렬 연결로 보았다. 이것이 <span class="term">딜–그로브 모형</span><span class="en">(Deal–Grove model)</span>이다.</p>
+    <div class="rxn">$$\ce{Si(s) + O2(g) -> SiO2(s)}\qquad\ce{Si(s) + 2H2O(g) -> SiO2(s) + 2H2(g)}$$</div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="기체, 산화막, 실리콘 단면과 산화제 농도 분포, 기체 전달·산화막 확산·계면 반응의 세 플럭스">
+        <rect x="60" y="40" width="200" height="220" fill="none"/>
+        <rect x="260" y="40" width="220" height="220" fill="var(--accent-2-soft, rgba(3,105,161,.10))" stroke="var(--text-dim)"/>
+        <rect x="480" y="40" width="260" height="220" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="160" y="285" text-anchor="middle">기체 (O₂ 또는 H₂O)</text>
+        <text class="t t-dim" x="370" y="285" text-anchor="middle">SiO₂ (두께 x)</text>
+        <text class="t t-dim" x="610" y="285" text-anchor="middle">Si</text>
+        <g data-step="1">
+          <polyline points="70,70 240,70 260,95" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <polyline points="260,105 480,215" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <text class="t t-acc" x="80" y="62">C*</text>
+          <text class="t t-acc" x="268" y="122">C₀</text>
+          <text class="t t-acc" x="440" y="236">Cᵢ</text>
+        </g>
+        <g data-only="1" class="t">
+          <text x="500" y="80" style="font-weight:700">1. 산화제 농도</text>
+          <text x="500" y="106">산화막 표면 C₀ ≈ C* (용해도)</text>
+          <text x="500" y="132">계면 Cᵢ 에서 반응으로 소모</text>
+        </g>
+        <g data-step="2">
+          <line x1="300" y1="160" x2="420" y2="160" stroke="var(--accent-2)" stroke-width="4"/><polygon points="420,152 436,160 420,168" fill="var(--accent-2)"/>
+          <text class="t" x="320" y="150" fill="var(--accent-2)">F₂ = D(C₀ − Cᵢ)/x</text>
+          <circle cx="480" cy="190" r="10" fill="var(--accent)"/>
+          <text class="t" x="496" y="196" fill="var(--accent)">F₃ = kₛCᵢ</text>
+        </g>
+        <g data-only="2" class="t">
+          <text x="500" y="80" style="font-weight:700">2. 직렬 플럭스</text>
+          <text x="500" y="106">막 확산 F₂ = 계면 반응 F₃</text>
+          <text x="500" y="132">(기체 전달 F₁ 은 보통 빠르다)</text>
+        </g>
+        <g data-only="3" class="t">
+          <text x="500" y="70" style="font-weight:700">3. 성장 속도 dx/dt = F/N₁</text>
+          <text x="500" y="96">F = kₛC*/(1 + kₛx/D)</text>
+          <text x="500" y="122" class="t-acc" style="font-weight:700">x² + Ax = B(t + τ)</text>
+          <text x="500" y="148">얇을 때 x ≈ (B/A)t : 반응 지배</text>
+          <text x="500" y="174">두꺼울 때 x² ≈ Bt : 확산 지배</text>
+          <text x="500" y="200" class="t-dim">N₁: SiO₂ 단위 부피당 산화제 수</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>산화막 표면의 산화제 농도는 기체 속 분압에 비례하는 용해도 \(C^*\)이고, 계면에서는 반응으로 소모되어 \(C_i\)로 낮다.</li><li>정상 상태에서 산화막을 지나는 확산 플럭스와 계면 반응 플럭스가 같다 — 2절의 직렬 막 투과와 같은 구조다.</li><li>플럭스를 단위 부피당 산화제 수 \(N_1\)로 나누면 성장 속도가 되고, 적분하면 딜–그로브 식이 된다.</li></ol>
+      <figcaption>딜–그로브 모형. 확산 저항 \(x/D\)와 반응 저항 \(1/k_s\)가 직렬이다. 산화막이 얇으면 반응 저항이, 두꺼우면 확산 저항이 지배한다.</figcaption>
+    </figure>
+    <div class="formula">$$x^2 + Ax = B(t+\tau),\qquad x(t) = \frac A2\left[\sqrt{1+\frac{t+\tau}{A^2/4B}}-1\right],\qquad B = \frac{2DC^*}{N_1},\quad \frac BA = \frac{C^*}{N_1\left(1/k_s+1/h\right)}$$<div class="where">\(B\)는 <span class="term">포물선 속도 상수</span><span class="en">(parabolic rate constant)</span>, \(B/A\)는 <span class="term">선형 속도 상수</span><span class="en">(linear rate constant)</span>. \(t\ll A^2/4B\)이면 \(x\approx(B/A)(t+\tau)\), \(t\gg A^2/4B\)이면 \(x\approx\sqrt{Bt}\). \(\tau = (x_i^2+Ax_i)/B\)는 처음 두께 \(x_i\)에 해당하는 시간 이동이다.</div></div>
+    <p>계수는 아레니우스형이다(Plummer, (111) 기준).</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>분위기</th><th class="num">B: C₁ (µm²/h)</th><th class="num">E₁ (eV)</th><th class="num">B/A: C₂ (µm/h)</th><th class="num">E₂ (eV)</th></tr></thead>
+      <tbody>
+        <tr><td>건식 O₂</td><td class="num">7.72×10²</td><td class="num">1.23</td><td class="num">6.23×10⁶</td><td class="num">2.0</td></tr>
+        <tr><td>습식 H₂O</td><td class="num">3.86×10²</td><td class="num">0.78</td><td class="num">1.63×10⁸</td><td class="num">2.05</td></tr>
+      </tbody>
+    </table></div>
+    <p>표에서 세 가지를 읽는다. (1) \(B\)의 활성화 에너지는 산화제가 SiO₂ 속을 확산하는 에너지다. 수증기는 SiO₂에 산소보다 600배쯤 많이 녹아(\(C^*\approx3\times10^{19}\) 대 \(5\times10^{16}\) cm⁻³) 습식 산화가 수십 배 빠르다. (2) \(B/A\)의 활성화 에너지(약 2 eV)는 계면에서 Si–Si 결합을 끊는 반응 에너지라 분위기와 거의 무관하다. 표면에 결합이 더 많은 (111) 면이 (100)보다 1.68배 빠르다(\(B\)는 같다). (3) 건식 산화의 처음 20–30 nm는 이 식보다 훨씬 빨리 자란다. 딜–그로브는 이것을 설명하지 못하므로, 처음 두께 \(x_i = 25\) nm를 가정한 \(\tau\)로 보정해 쓴다. 산화막 1 nm가 자랄 때 실리콘은 0.44 nm가 소모된다(원자 밀도 비 \(2.2\times10^{22}/5.0\times10^{22}\)).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 220" role="img" aria-label="원래 실리콘 표면을 기준으로 산화막의 44퍼센트는 아래로, 56퍼센트는 위로 자란 단면">
+        <rect x="80" y="130" width="240" height="70" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="200" y="172" text-anchor="middle">Si</text>
+        <line x1="60" y1="130" x2="340" y2="130" stroke="var(--accent)" stroke-dasharray="6 4" stroke-width="2"/>
+        <text class="t t-acc" x="200" y="120" text-anchor="middle">원래 표면</text>
+        <rect x="480" y="56" width="240" height="100" fill="var(--accent-2-soft, rgba(3,105,161,.15))" stroke="var(--accent-2)" stroke-width="2"/>
+        <rect x="480" y="156" width="240" height="44" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <line x1="460" y1="112" x2="740" y2="112" stroke="var(--accent)" stroke-dasharray="6 4" stroke-width="2"/>
+        <text class="t t-dim" x="600" y="186" text-anchor="middle">Si</text>
+        <text class="t" x="600" y="88" text-anchor="middle" fill="var(--accent-2)">SiO₂ 두께 x</text>
+        <line x1="750" y1="56" x2="750" y2="112" stroke="var(--text-dim)"/><text class="t" x="756" y="88">0.56x</text>
+        <line x1="750" y1="112" x2="750" y2="156" stroke="var(--text-dim)"/><text class="t" x="756" y="139">0.44x</text>
+        <text class="t t-dim" x="400" y="110" text-anchor="middle">산화 →</text>
+      </svg>
+      <figcaption>산화막은 원래 표면 아래로 44%, 위로 56% 자란다. 국부 산화(LOCOS)의 단차와 버즈 빅, STI 라이너 산화가 활성 영역 폭을 줄이는 것이 이 부피 팽창 때문이다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-dg">
+      <p>(100) 실리콘을 1000 °C 습식 산화로 1 µm 키우는 데 약 4.5시간이 걸린다. 같은 조건으로 시간을 두 배(9시간)로 늘리면 두께는?</p>
+      <div class="opts"><button class="opt">2 µm</button><button class="opt" data-correct>약 1.5 µm — √2배보다 조금 크다</button><button class="opt">1 µm 그대로 — 포화된다</button><button class="opt">4 µm</button></div>
+      <div class="quiz-exp">두꺼운 영역에서는 \(x^2\approx Bt\)라 시간 두 배에 두께 \(\sqrt2\)배다. 선형 항 \(Ax\) 때문에 \(\sqrt2\)보다 조금 더 크다(\(A = 0.42\) µm). 산화제가 점점 두꺼워지는 막을 뚫고 가야 하므로 성장이 느려진다 — 그래서 두꺼운 필드 산화막은 습식으로, 고온에서 키운다.</div>
+    </div>
+    <div class="sim" id="sim-dg">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>딜–그로브 성장 곡선: 선형에서 포물선으로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-dg"></canvas><span class="hint top">곡선 위 흰 원을 끌어 시간을 고른다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>분위기</span><div class="seg" id="dg-amb"><button data-value="dry" class="on">건식 O₂</button><button data-value="wet">습식 H₂O</button></div></div>
+          <div class="ctrl"><span>결정면</span><div class="seg" id="dg-or"><button data-value="100" class="on">(100)</button><button data-value="111">(111)</button></div></div>
+          <label class="ctrl"><span>온도 <output id="dg-T-out"></output></span><input type="range" id="dg-T" min="800" max="1200" step="5" value="1000"></label>
+          <label class="ctrl"><span>처음 두께 x<sub>i</sub> <output id="dg-xi-out"></output></span><input type="range" id="dg-xi" min="0" max="100" step="1" value="25"></label>
+          <label class="check"><input type="checkbox" id="dg-log"> 로그–로그 눈금</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간 t</span><span class="v" id="dg-t">—</span></div>
+        <div class="stat"><span class="k">두께 x</span><span class="v" id="dg-x">—</span></div>
+        <div class="stat"><span class="k">성장 속도</span><span class="v" id="dg-r">—</span></div>
+        <div class="stat"><span class="k">영역 (t / (A²/4B))</span><span class="v" id="dg-reg">—</span></div>
+        <div class="stat"><span class="k">B, B/A</span><span class="v" id="dg-k">—</span></div>
+      </div>
+      <div class="sim-note">주황이 딜–그로브 곡선, 파란 점선이 선형 극한 \((B/A)(t+\tau)\), 파란 실선이 포물선 극한 \(\sqrt{B(t+\tau)}\)다. 로그–로그 눈금에서는 기울기가 1에서 1/2로 꺾이는 것이 보인다. 해볼 것: ① 습식 1000 °C에서 1 µm까지의 시간을 읽고 건식과 비교한다. ② (111)로 바꾸면 얇은 영역(선형)만 빨라지고 두꺼운 영역은 거의 같다 — \(B\)는 결정면과 무관하다. ③ 처음 두께 \(x_i\)를 0으로 하면 건식 얇은 산화가 실제보다 느리게 예측된다. 25 nm 보정이 "초기 빠른 성장"을 대신한다.</div>
+    </div>
+    <div class="tangle" id="tg-dg">
+      <p>(100) 실리콘을 <span class="tn" data-var="T" data-min="800" data-max="1200" data-step="5" data-unit=" °C">1000</span>에서 <span class="tn" data-var="t" data-min="5" data-max="1200" data-step="5" data-unit=" 분">60</span> 동안 산화하면 건식으로는 <span class="tn-out" data-out="xd"></span>, 습식으로는 <span class="tn-out" data-out="xw"></span>가 자란다(건식은 \(x_i = 25\) nm 보정). 습식 산화막 아래로 소모된 실리콘은 <span class="tn-out" data-out="si"></span>다.</p>
+    </div>
+    <div class="example" data-title="습식·건식 산화 시간">
+      <p>1000 °C에서 (100) 실리콘에 (a) 습식 산화로 0.50 µm(\(B = 0.315\) µm²/h, \(A = 0.424\) µm, \(\tau = 0\)), (b) 건식 산화로 0.10 µm(\(B = 0.0104\) µm²/h, \(A = 0.233\) µm, \(\tau = 0.617\) h)를 키우는 시간을 구하라. (a)에서 소모되는 실리콘 두께는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(t = (x^2 + Ax)/B - \tau\).</div>
+        <div class="step"><b>풀이</b> (a) \(t = (0.25 + 0.424\times0.50)/0.315 = 0.462/0.315 = 1.46\) h \(\approx\) 88분. 소모 Si \(= 0.44\times0.50 = 0.22\) µm. (b) \(t = (0.010 + 0.0233)/0.0104 - 0.617 = 3.20 - 0.62 = 2.57\) h.</div>
+        <div class="answer">(a) 약 1.46시간, Si 0.22 µm 소모 (b) 약 2.6시간</div>
+        <div class="step"><b>검토</b> 건식으로 0.1 µm를 키우는 시간에 습식으로는 0.7 µm 넘게 자란다. 건식은 느리지만 막이 치밀하고 계면 결함이 적어 게이트 산화막에, 습식은 두꺼운 필드·마스크 산화막에 쓴다.</div>
+      </details>
+    </div>
+    <h3>게임: 목표 산화막을 가장 짧은 시간에</h3>
+    <p>과제마다 목표 두께와 조건(분위기 제한, 온도 상한)이 있다. 시간이 10분보다 짧으면 퍼니스의 승온·퍼지 오차 때문에 두께를 맞출 수 없으므로 실패다. 조건 안에서 두께를 ±3% 안에 맞추고, 시간을 되도록 짧게 하라.</p>
+    <div class="sim" id="sim-ox">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>산화 레시피 과제</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ox"></canvas><span class="hint top">평면 위 흰 원을 끌어 온도·시간을 고른다</span></div>
+        <div class="sim-controls">
+          <p class="df-note" id="ox-task">—</p>
+          <div class="ctrl"><span>분위기</span><div class="seg" id="ox-amb"><button data-value="dry" class="on">건식</button><button data-value="wet">습식</button></div></div>
+          <button class="btn primary" id="ox-go" type="button">산화 시작</button>
+          <button class="btn" id="ox-next" type="button">다음 과제</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">조건</span><span class="v" id="ox-tt">—</span></div>
+        <div class="stat"><span class="k">예상 두께</span><span class="v" id="ox-x">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="ox-res">—</span></div>
+        <div class="stat"><span class="k">누적 점수</span><span class="v" id="ox-score">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 온도–시간 평면(시간 로그 눈금, 빨간 영역은 과제 조건 밖), 오른쪽은 산화막 단면이다. "산화 시작"을 누르면 단면이 자라며 원래 표면(점선) 아래로 44%가 들어간다. 해볼 것: ① 두꺼운 막은 습식·고온이 압도적으로 빠르다. ② 게이트 산화막처럼 건식만 허용되면 10분 하한이 걸림돌이 된다 — 목표가 얇을수록 온도를 낮춰야 한다. ③ 온도 상한이 낮은 과제에서는 습식으로도 시간이 길어진다. 포물선 영역에서 시간이 두께의 제곱으로 늘기 때문이다.</div>
+    </div>
+    <div class="callout semi"><strong>게이트 산화막과 필드 산화막</strong><p>게이트 산화막은 수 nm로 얇고 균일해야 하며, 계면 결함(\(D_{it}\))과 고정 전하가 적어야 한다. 그래서 건식 O₂로 낮은 온도에서 천천히 키우거나, 오늘날에는 산화 뒤 질화(SiON)·고유전막(HfO₂) 아래의 얇은 계면층으로 쓴다. 이 두께에서는 딜–그로브의 초기 영역 보정이 결정적이고, 실제 공정은 실측 곡선으로 맞춘다. 반대로 LOCOS 필드 산화막이나 하드마스크처럼 수백 nm가 필요한 막은 습식(H₂/O₂ 연소, 파이로제닉) 산화로 키운다. 산화는 표면에서 격자간 실리콘을 주입해 그 아래 붕소·인의 확산을 빠르게 하므로(OED), 산화 단계도 도펀트 열 예산에 들어간다. → <a href="https://semi.euiyun.com/process/chapters/oxidation.html">ProcessBook · 열산화</a></p></div>
+    <div class="drill" id="drill-ox" data-title="딜–그로브 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="einstein">
+    <h2>아인슈타인 관계와 이동도</h2>
+    <p>지금까지는 원자가 아무 쪽으로나 똑같이 뛰었다. 하전 입자에 전기장이 걸리면(또는 어떤 입자에 힘이 걸리면) 한쪽 장벽이 낮아지고 반대쪽이 높아진다. 장벽 차이 \(\pm\tfrac12 qEa\)가 \(kT\)보다 작으면 뜀 빈도는 \(\Gamma_\pm = \tfrac{\Gamma}{2}e^{\pm qEa/2kT}\approx\tfrac\Gamma2(1\pm qEa/2kT)\)가 되어, 퍼짐 위에 평균 이동이 겹친다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 230" role="img" aria-label="전기장이 없을 때의 대칭 퍼텐셜 장벽과 전기장이 걸려 기울어진 장벽, 오른쪽 뜀이 쉬워진 모습">
+        <text class="t" x="200" y="24" text-anchor="middle" style="font-weight:700">장 없음: 대칭</text>
+        <path d="M40,150 Q70,70 100,150 Q130,70 160,150 Q190,70 220,150 Q250,70 280,150 Q310,70 340,150 Q370,70 400,150" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
+        <circle cx="220" cy="140" r="9" fill="var(--accent)"/>
+        <path d="M212,124 Q195,100 178,118" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M228,124 Q245,100 262,118" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text class="t t-dim" x="200" y="190" text-anchor="middle">Γ₊ = Γ₋ → 퍼짐만 (D)</text>
+        <text class="t" x="600" y="24" text-anchor="middle" style="font-weight:700">장 E: 기울어진 장벽</text>
+        <path d="M440,90 Q470,30 500,110 Q530,50 560,130 Q590,70 620,150 Q650,90 680,170 Q710,110 740,190" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
+        <circle cx="620" cy="140" r="9" fill="var(--accent)"/>
+        <path d="M612,124 Q598,74 578,108" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M628,124 Q648,90 670,148" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t t-dim" x="600" y="214" text-anchor="middle">Γ₊ &gt; Γ₋ → 퍼짐 + 흐름 (v = μE)</text>
+        <text class="t" x="700" y="70" fill="var(--accent-2)">기울기 qE</text>
+      </svg>
+      <figcaption>힘이 걸린 무작위 걸음. 장벽이 기울면 내리막 뜀이 오르막 뜀보다 잦아진다. 평균 이동 속도와 퍼짐은 같은 뜀 빈도 \(\Gamma\)에서 나오므로 둘의 비가 \(kT\)로만 정해진다.</figcaption>
+    </figure>
+    <p>평균 속도는 \(v = a(\Gamma_+-\Gamma_-) = \Gamma a^2qE/2kT\)(1차원)이고, 퍼짐은 \(D = \Gamma a^2/2\)이다. 단위 전기장당 속도인 <span class="term">이동도</span><span class="en">(mobility)</span> \(\mu = v/E\)와 \(D\)의 비에서 \(\Gamma\)와 \(a\)가 모두 사라진다. 이것이 <span class="term">아인슈타인 관계</span><span class="en">(Einstein relation)</span>다.</p>
+    <div class="formula">$$\frac{D}{\mu} = \frac{kT}{q}\qquad\Longleftrightarrow\qquad D = \mu\,\frac{kT}{q}$$<div class="where">\(kT/q\)는 <span class="term">열전압</span><span class="en">(thermal voltage)</span>으로 300 K에서 25.85 mV. 평형에서 확산 플럭스 \(-D\,dC/dx\)와 표류 플럭스 \(\mu CE\)가 상쇄되면 \(C\propto e^{-qV/kT}\)가 되어야 한다(볼츠만 분포). 이 조건에서도 같은 관계가 나온다. 비축퇴 캐리어(볼츠만 근사, 7장)에서 성립한다.</div></div>
+    <p>아인슈타인 관계는 무작위 운동(요동)과 끌려가는 운동(응답)이 같은 미시 과정의 두 얼굴이라는 첫 번째 예다. 17장의 요동–소산 정리와 존슨 잡음이 같은 생각을 일반화한다(<a href="heat-transport.html">열전달과 비평형 현상</a>).</p>
+    <div class="sim" id="sim-drift">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>힘이 걸린 무작위 걸음: 표류와 퍼짐</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-drift"></canvas><span class="hint top">화살표 끝의 흰 원을 좌우로 끌어 힘(전기장)을 바꾼다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>원자 수 <output id="drift-n-out"></output></span><input type="range" id="drift-n" min="100" max="800" step="50" value="500"></label>
+          <button class="btn" id="drift-play" type="button"></button>
+          <button class="btn" id="drift-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">힘 qEa/kT</span><span class="v" id="drift-f">—</span></div>
+        <div class="stat"><span class="k">측정 D (걸음당)</span><span class="v" id="drift-D">—</span></div>
+        <div class="stat"><span class="k">측정 μ·kT</span><span class="v" id="drift-mu">—</span></div>
+        <div class="stat"><span class="k">D / (μkT)</span><span class="v" id="drift-r">—</span></div>
+      </div>
+      <div class="sim-note">원자들은 한 줄(1차원) 격자 위를 뛴다(세로 위치는 보기 좋게 흩어 놓았다). 아래는 위치 히스토그램과, 측정한 평균·분산으로 그린 가우스 곡선이다. 측정 \(D = \Delta\langle(x-\bar x)^2\rangle/2\Delta N\), \(\mu kT = (\Delta\bar x/\Delta N)/(qEa/kT)\) (모두 걸음·격자 단위). 해볼 것: ① 힘이 작으면(\(|qEa/kT|<0.5\)) \(D/\mu kT\)가 1에 가깝다 — 아인슈타인 관계. ② 힘을 3 이상으로 키우면 비가 1에서 벗어난다. 장벽 기울기가 \(kT\)보다 크면 선형 응답이 깨진다. ③ 힘을 0으로 두면 평균은 제자리, 폭만 \(\sqrt N\)으로 자란다.</div>
+    </div>
+    <figure class="mini" id="mini-sed">
+      <div class="mini-view"><canvas id="cv-sed"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>힘 qEa/kT <output id="sed-f-out"></output></span><input type="range" id="sed-f" min="0" max="0.6" step="0.02" value="0.2"></label><button class="btn" id="sed-reset" type="button">고르게 다시</button><span class="readout" id="sed-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>양쪽이 막힌 상자 속에서 힘이 걸린 무작위 걸음. 처음에는 고르게 있다가, 표류(오른쪽)와 확산(되밀림)이 균형을 이루면 볼츠만 분포 \(C\propto e^{-qV/kT}\)(파란 선)가 된다. 감쇠 길이는 \(kT/qE\)다. 확산과 표류가 같은 \(kT\)로 묶여 있지 않다면 이 평형 분포가 나올 수 없다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-ein">
+      <p>이동도 <span class="tn" data-var="mu" data-min="1" data-max="3000" data-step="1" data-unit=" cm²/(V·s)">1400</span>인 전하 운반자는 <span class="tn" data-var="T" data-min="77" data-max="600" data-step="1" data-unit=" K">300</span>에서 열전압 <span class="tn-out" data-out="vt"></span>, 확산 계수 \(D =\) <span class="tn-out" data-out="D"></span>다. 1 ns 동안 한 방향 rms 퍼짐 \(\sqrt{2Dt}\)는 <span class="tn-out" data-out="L"></span>이다.</p>
+    </div>
+    <div class="example" data-title="전자의 확산 계수">
+      <p>300 K에서 저농도 실리콘의 전자 이동도는 약 1400 cm²/(V·s)다. (a) 전자의 확산 계수와 (b) 1 ns 동안의 rms 퍼짐 \(\sqrt{2Dt}\)를 구하고, (c) 1000 °C 붕소 원자의 확산 계수와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(D = \mu kT/q\), \(kT/q = 8.617\times10^{-5}\times300 = 0.02585\) V.</div>
+        <div class="step"><b>풀이</b> (a) \(D = 1400\times0.02585 = 36.2\) cm²/s. (b) \(\sqrt{2\times36.2\times10^{-9}} = 2.69\times10^{-4}\) cm = 2.7 µm. (c) 붕소 \(1.53\times10^{-14}\) cm²/s와 비교하면 약 \(2\times10^{15}\)배다.</div>
+        <div class="answer">(a) 36 cm²/s (b) 약 2.7 µm (c) 약 10¹⁵배</div>
+        <div class="step"><b>검토</b> 전자는 격자에서 튕기며 \(10^{-13}\) s마다 흩어지지만, 흩어지는 사이에 열속도(\(10^7\) cm/s)로 10–30 nm를 날아간다. 원자처럼 장벽을 넘을 필요가 없다. 이 확산 계수와 소수 캐리어 수명 \(\tau\)로 확산 길이 \(L = \sqrt{D\tau}\)가 정해지고, pn 접합의 확산 전류가 계산된다.</div>
+      </details>
+    </div>
+    <div class="callout tip"><strong>산화막 속 이동 이온</strong><p>나트륨 같은 알칼리 이온은 SiO₂ 속에서 틈새로 움직이며, 게이트 전압이 걸린 채로 가열하면(바이어스–온도 스트레스) 전기장을 따라 계면으로 몰려 문턱 전압을 바꾼다. 이온의 이동도는 아인슈타인 관계로 확산 계수에서 얻으며, 그 값이 아레니우스형이므로 온도를 올린 가속 시험으로 상온 수명을 추정한다. 1960년대 MOS 소자의 불안정성이 이것이었고, 청정실의 나트륨 관리와 인 규산염 유리(PSG) 게터링이 그 해답이었다.</p></div>
+  </section>
+
+  <!-- ============================================================ 정리 -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>무작위 걸음</b>: 상관없는 걸음 \(N = \Gamma t\)번이면 \(\langle R^2\rangle = Na^2\). 한 방향 \(\langle x^2\rangle = 2Dt\), 3차원 \(D = \Gamma a^2/6\). 퍼진 폭은 \(\sqrt t\)로 자라고, 확산 길이는 \(\sqrt{Dt}\)(공정의 퍼짐 깊이 \(2\sqrt{Dt}\)).</li>
+      <li><b>픽의 법칙</b>: \(J = -D\,\partial C/\partial x\), 연속 방정식 \(\partial C/\partial t = -\partial J/\partial x\)에서 \(\partial C/\partial t = D\,\partial^2C/\partial x^2\). 농도 변화는 곡률이 정한다. 정상 상태 막 투과 \(J = \Delta C/\sum(L_i/D_i)\) — 느린 층(배리어)이 지배한다.</li>
+      <li><b>확산 기구</b>: 공공(\(E_a = H_f+H_m\), 3.4–4.8 eV), 틈새(\(E_a\approx H_m\), 0.2–0.7 eV — Cu·Fe), 틈새 짝(B·P는 자기 격자간 원자와 짝). \(D = D_0e^{-E_a/kT}\), 두 온도로 \(E_a = k\ln(D_2/D_1)/(1/T_1-1/T_2)\). 공공 기구의 뜀은 되돌아감 때문에 상관이 있다.</li>
+      <li><b>분포와 접합</b>: 일정 공급원 \(C_s\operatorname{erfc}(x/2\sqrt{Dt})\), 도즈 \(2C_s\sqrt{Dt/\pi}\); 제한 공급원 \(\frac{Q}{\sqrt{\pi Dt}}e^{-x^2/4Dt}\). 접합 \(x_j = 2\sqrt{Dt}\operatorname{erfc}^{-1}(N_B/C_s)\) 또는 \(2\sqrt{Dt\ln(Q/N_B\sqrt{\pi Dt})}\). 선증착이 도즈를, 드라이브인이 깊이를 정한다.</li>
+      <li><b>열 예산</b>: \(D\)가 깊이에 무관하면 분포는 \(\int D\,dt = \sum D_it_i\)에만 의존한다. 가장 뜨거운 단계가 거의 다 차지하고, 램프는 \(kT_p^2/E_ar\)만큼의 등가 시간을 더한다. 외인성 확산·TED·OED는 이 단순 모형을 넘는다.</li>
+      <li><b>수치 풀이</b>: 양해법은 \(r = D\Delta t/\Delta x^2\le\tfrac12\)일 때만 안정하고, 크랭크–니콜슨은 삼중 대각 연립을 풀어 무조건 안정하다. 농도 의존 \(D\), 다층 막, 복잡한 경계는 수치로 푼다.</li>
+      <li><b>딜–그로브와 아인슈타인</b>: \(x^2+Ax = B(t+\tau)\) — 얇으면 선형(\(B/A\), 계면 반응, (111)이 1.68배), 두꺼우면 포물선(\(B\), 산화막 속 확산, 습식이 수십 배). 건식 초기 영역은 \(x_i = 25\) nm로 보정, Si 소모 0.44x. 하전 입자의 퍼짐과 표류는 \(D = \mu kT/q\)로 묶인다(300 K 열전압 25.9 mV).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 문제 -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>따로 말이 없으면 \(k = 8.617\times10^{-5}\) eV/K이고, 실리콘 속 진성 확산 계수는 \(D = D_0e^{-E_a/kT}\)로 B (0.76 cm²/s, 3.46 eV), P (3.85, 3.66), As (0.066, 3.44), Sb (0.214, 3.65)를 쓴다. 섭씨는 켈빈으로 바꿔 계산한다(\(T = t + 273.15\)). 답이 ±1–2% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="아레니우스 D" data-answer="1.52e-13" data-label="D =" data-unit="cm²/s">
+        <div class="prob-q"><p>1100 °C 실리콘 속 붕소의 확산 계수를 구하라.</p></div>
+        <div class="prob-sol"><p>\(kT = 8.617\times10^{-5}\times1373.15 = 0.11833\) eV, \(D = 0.76\,e^{-3.46/0.11833} = 0.76\,e^{-29.24} = 1.52\times10^{-13}\) cm²/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="확산 길이" data-answer="0.0677" data-label="2√(Dt) =" data-unit="µm">
+        <div class="prob-q"><p>1000 °C에서 비소를 2시간 확산할 때 퍼짐 깊이 \(2\sqrt{Dt}\)를 µm로 구하라.</p></div>
+        <div class="prob-sol"><p>\(D = 0.066\,e^{-3.44/0.10971} = 1.59\times10^{-15}\) cm²/s. \(Dt = 1.15\times10^{-11}\) cm², \(2\sqrt{Dt} = 6.77\times10^{-6}\) cm = 0.0677 µm. 비소가 얕은 접합에 쓰이는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="빠른 확산">
+        <div class="prob-q"><p>1000 °C 실리콘 속에서 확산 계수가 가장 큰 원소는?</p></div>
+        <div class="prob-choices"><button>붕소</button><button>인</button><button>안티모니</button><button data-correct>구리</button></div>
+        <div class="prob-sol"><p>구리는 틈새로 움직여 활성화 에너지가 0.5 eV 안팎이다. 1000 °C에서 \(D\sim10^{-4}\) cm²/s로, 치환형 도펀트(10⁻¹⁴–10⁻¹⁵)보다 10¹⁰배쯤 크다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="뜀 빈도와 D" data-answer="1.5e-10" data-label="D =" data-unit="cm²/s">
+        <div class="prob-q"><p>틈새 원자가 3차원으로 거리 0.30 nm씩, 초당 \(1.0\times10^6\)번 무작위로 뛴다. 확산 계수를 구하라.</p></div>
+        <div class="prob-sol"><p>\(D = \Gamma a^2/6 = 10^6\times(3.0\times10^{-8}\ \text{cm})^2/6 = 1.5\times10^{-10}\) cm²/s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="정상 상태 투과" data-answer="5.0e12" data-label="J =" data-unit="cm⁻²s⁻¹">
+        <div class="prob-q"><p>두께 0.20 µm인 막의 한쪽 농도가 \(5.0\times10^{16}\) cm⁻³, 반대쪽이 0으로 유지된다. 막 속 확산 계수가 \(2.0\times10^{-9}\) cm²/s일 때 정상 상태 플럭스를 구하라.</p></div>
+        <div class="prob-sol"><p>\(J = D\,\Delta C/L = 2.0\times10^{-9}\times5.0\times10^{16}/2.0\times10^{-5} = 5.0\times10^{12}\) cm⁻²s⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="활성화 에너지" data-answer="3.65" data-tol="0.03" data-label="Eₐ =" data-unit="eV">
+        <div class="prob-q"><p>안티모니의 확산 계수가 1000 °C에서 \(7.62\times10^{-16}\), 1100 °C에서 \(8.59\times10^{-15}\) cm²/s다. 활성화 에너지를 구하라.</p></div>
+        <div class="prob-sol"><p>\(1/1273.15 - 1/1373.15 = 5.720\times10^{-5}\) K⁻¹, \(\ln(8.59\times10^{-15}/7.62\times10^{-16}) = \ln11.27 = 2.423\). \(E_a = 8.617\times10^{-5}\times2.423/5.720\times10^{-5} = 3.65\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="erfc 접합" data-answer="0.210" data-label="x_j =" data-unit="µm">
+        <div class="prob-q"><p>p형 기판(\(N_B = 1.0\times10^{15}\) cm⁻³)에 1000 °C에서 15분 동안 인을 \(C_s = 1.0\times10^{20}\) cm⁻³로 선증착한다. 접합 깊이를 구하라. (\(\operatorname{erfc}^{-1}(10^{-5}) = 3.123\))</p></div>
+        <div class="prob-hint">\(D_\mathrm P(1000\,°\mathrm C) = 1.25\times10^{-14}\) cm²/s.</div>
+        <div class="prob-sol"><p>\(Dt = 1.25\times10^{-14}\times900 = 1.126\times10^{-11}\) cm², \(\sqrt{Dt} = 3.36\times10^{-6}\) cm. \(x_j = 2\times3.36\times10^{-6}\times3.123 = 2.10\times10^{-5}\) cm = 0.210 µm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="선증착 도즈" data-answer="3.79e14" data-label="Q =" data-unit="cm⁻²">
+        <div class="prob-q"><p>앞 문제의 선증착으로 들어간 인의 도즈를 구하라.</p></div>
+        <div class="prob-sol"><p>\(Q = 2C_s\sqrt{Dt/\pi} = 2\times10^{20}\times\sqrt{1.126\times10^{-11}/\pi} = 2\times10^{20}\times1.893\times10^{-6} = 3.79\times10^{14}\) cm⁻².</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="드라이브인" data-answer="1.71e18; 1.50" data-label="C₀ =; x_j =" data-unit="cm⁻³; µm">
+        <div class="prob-q"><p>붕소 \(1.0\times10^{14}\) cm⁻²을 이온 주입한 뒤(얕다고 본다) 1100 °C에서 2시간 드라이브인한다. 배경 농도 \(1.0\times10^{16}\) cm⁻³일 때 표면 농도와 접합 깊이를 구하라.</p></div>
+        <div class="prob-sol"><p>\(D = 1.52\times10^{-13}\), \(Dt = 1.094\times10^{-9}\) cm². \(C_0 = 10^{14}/\sqrt{\pi\times1.094\times10^{-9}} = 10^{14}/5.863\times10^{-5} = 1.71\times10^{18}\) cm⁻³. \(\ln(171) = 5.140\), \(x_j = 2\sqrt{1.094\times10^{-9}\times5.140} = 1.50\times10^{-4}\) cm = 1.50 µm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="열 예산" data-answer="215" data-tol="2%" data-label="t_eq =" data-unit="분">
+        <div class="prob-q"><p>붕소 영역이 1100 °C 20분과 950 °C 60분을 겪는다(램프 무시). 같은 \(Dt\)를 주는 1000 °C 등가 시간은 몇 분인가?</p></div>
+        <div class="prob-sol"><p>\(D(1100) = 1.52\times10^{-13}\), \(D(950) = 4.21\times10^{-15}\), \(D(1000) = 1.53\times10^{-14}\) cm²/s. \(\sum Dt = 1.52\times10^{-13}\times1200 + 4.21\times10^{-15}\times3600 = 1.824\times10^{-10} + 1.52\times10^{-11} = 1.976\times10^{-10}\) cm². \(t_\text{eq} = 1.976\times10^{-10}/1.53\times10^{-14} = 1.29\times10^4\) s = 215분. 1100 °C 20분이 92%를 차지한다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="접합 깊이 두 배" data-answer="4.65" data-tol="2%" data-label="t =" data-unit="h">
+        <div class="prob-q"><p>도즈 \(1.0\times10^{14}\) cm⁻²의 붕소를 1100 °C에서 1시간 드라이브인하면 \(N_B = 10^{16}\) cm⁻³에서 접합 깊이가 1.10 µm다. 같은 온도에서 접합 깊이를 2.19 µm(2배)로 하려면 드라이브인 시간이 몇 시간이어야 하는가?</p></div>
+        <div class="prob-hint">\(x_j^2 = 4Dt\ln(Q/N_B\sqrt{\pi Dt})\)를 \(t\)에 대해 반복법(또는 이분법)으로 푼다. 답은 4시간보다 크다.</div>
+        <div class="prob-sol"><p>\(D = 1.52\times10^{-13}\) cm²/s. 시간 \(t\)에서 \(x_j(t) = 2\sqrt{Dt\ln(C_0/N_B)}\), \(C_0 = Q/\sqrt{\pi Dt}\). 4시간이면 \(Dt = 2.19\times10^{-9}\), \(C_0 = 1.21\times10^{18}\), \(\ln121 = 4.80\), \(x_j = 2.05\) µm(부족). 5시간이면 \(\ln108 = 4.69\), \(x_j = 2.26\) µm. 이분법으로 \(t = 4.65\) h에서 2.19 µm. 로그 인자가 줄어 4배보다 16% 더 걸린다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="양해법 안정성" data-answer="1.25" data-label="Δt_max =" data-unit="s">
+        <div class="prob-q"><p>격자 간격 5 nm, \(D = 1.0\times10^{-13}\) cm²/s인 확산을 양해법(FTCS)으로 풀 때 안정한 최대 시간 간격은?</p></div>
+        <div class="prob-sol"><p>\(\Delta t\le\Delta x^2/2D = (5\times10^{-7}\ \text{cm})^2/(2\times10^{-13}) = 1.25\) s. 1시간을 풀려면 2880걸음 이상이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="습식 산화 시간" data-answer="2.23" data-label="t =" data-unit="h">
+        <div class="prob-q"><p>1100 °C 습식 산화에서 (100) 실리콘의 딜–그로브 계수는 \(B = 0.529\) µm²/h, \(A = 0.182\) µm, \(\tau = 0\)이다. 1.0 µm를 키우는 시간을 구하라.</p></div>
+        <div class="prob-sol"><p>\(t = (x^2 + Ax)/B = (1 + 0.182)/0.529 = 2.23\) h. 소모되는 실리콘은 0.44 µm다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="성장 영역">
+        <div class="prob-q"><p>딜–그로브 모형에서 산화막이 아주 얇을 때 성장 속도를 정하는 것은?</p></div>
+        <div class="prob-choices"><button>산화막 속 산화제의 확산 (포물선 상수 B)</button><button data-correct>Si/SiO₂ 계면의 반응 (선형 상수 B/A)</button><button>기체 속 산화제의 확산 (h)</button><button>실리콘 속 산소의 확산</button></div>
+        <div class="prob-sol"><p>얇으면 확산 저항 \(x/D\)가 작아 반응 저항 \(1/k_s\)가 지배한다: \(x\approx(B/A)t\). 그래서 이 영역의 속도는 결정면((111)이 1.68배)에 민감하고, 두꺼운 영역은 결정면과 무관하다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="2단계 산화" data-answer="0.284" data-tol="2%" data-label="x =" data-unit="µm">
+        <div class="prob-q"><p>(100) 실리콘을 1000 °C 건식 산화로 2시간(\(B = 0.01044\) µm²/h, \(A = 0.2325\) µm, \(x_i = 25\) nm → \(\tau = 0.617\) h) 키운 뒤, 같은 온도에서 습식 산화로 30분(\(B = 0.3155\), \(A = 0.4237\)) 더 키운다. 최종 두께는?</p></div>
+        <div class="prob-hint">건식 단계 뒤의 두께를 습식 단계의 \(x_i\)로 쓰고 \(\tau\)를 새로 구한다.</div>
+        <div class="prob-sol"><p>건식: \(x^2 + 0.2325x = 0.01044\times2.617 = 0.02732\) → \(x = 0.0858\) µm. 습식: \(\tau = (0.0858^2 + 0.4237\times0.0858)/0.3155 = 0.1386\) h. \(x^2 + 0.4237x = 0.3155\times0.6386 = 0.2015\) → \(x = (-0.4237+\sqrt{0.1795+0.8059})/2 = 0.284\) µm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="아인슈타인 관계" data-answer="11.6" data-label="D =" data-unit="cm²/s">
+        <div class="prob-q"><p>300 K에서 정공 이동도가 450 cm²/(V·s)일 때 정공의 확산 계수를 구하라.</p></div>
+        <div class="prob-sol"><p>\(D = \mu kT/q = 450\times0.02585 = 11.6\) cm²/s.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 퀴즈 -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>온도를 그대로 두고 확산 시간을 9배로 늘리면, \(D\)가 일정한 erfc 분포의 접합 깊이는?</p><div class="opts">
+        <button class="opt">9배</button><button class="opt" data-correct>3배</button><button class="opt">81배</button><button class="opt">그대로</button>
+      </div><div class="quiz-exp">erfc 분포는 \(x/\sqrt{Dt}\)만의 함수이고 표면 농도가 고정이므로 같은 농도의 깊이가 \(\sqrt t\)로 자란다. \(\sqrt9 = 3\). 가우스(제한 공급원)라면 로그 인자 때문에 3배보다 조금 작다.</div></div>
+      <div class="quiz-q"><p>제한 공급원 드라이브인에서 시간이 지나면 표면 농도는?</p><div class="opts">
+        <button class="opt">그대로</button><button class="opt">\(\sqrt t\)에 비례해 커진다</button><button class="opt" data-correct>\(1/\sqrt t\)에 비례해 줄어든다</button><button class="opt">지수적으로 줄어든다</button>
+      </div><div class="quiz-exp">총량 \(Q\)가 보존되는데 폭이 \(\sqrt{Dt}\)로 넓어지므로 높이는 \(Q/\sqrt{\pi Dt}\)로 줄어든다.</div></div>
+      <div class="quiz-q"><p>두꺼운 산화막의 성장 속도가 결정면((100), (111))에 거의 무관한 이유는?</p><div class="opts">
+        <button class="opt">두꺼우면 계면 반응이 더 빨라져서</button><button class="opt" data-correct>성장이 산화막을 지나는 산화제의 확산(B)에 지배되는데, 확산은 비정질 SiO₂ 속에서 일어나 결정면과 상관없기 때문</button><button class="opt">두꺼운 산화막은 실리콘을 먹지 않아서</button><button class="opt">결정면 효과는 습식 산화에서만 나타나서</button>
+      </div><div class="quiz-exp">결정면은 계면 반응 속도 \(k_s\), 곧 \(B/A\)에만 들어간다. 두꺼운 영역의 \(x^2\approx Bt\)에는 \(k_s\)가 없다.</div></div>
+      <div class="quiz-q"><p>구리 배선에 반드시 확산 배리어가 필요한 가장 근본적인 이유는?</p><div class="opts">
+        <button class="opt">구리가 산소와 반응해 부피가 커지므로</button><button class="opt">구리의 녹는점이 낮아서</button><button class="opt" data-correct>구리가 실리콘·산화막 속에서 틈새로 움직여 활성화 에너지가 작고, 낮은 온도에서도 소자 영역까지 퍼지기 때문</button><button class="opt">구리가 도펀트보다 무거워서</button>
+      </div><div class="quiz-exp">틈새 기구는 공공을 기다릴 필요가 없어 \(E_a\)가 이동 에너지뿐이다(0.2–0.5 eV). 400 °C에서도 몇 분 만에 수백 µm를 간다. 깊은 준위를 만들어 수명과 누설 전류를 망친다.</div></div>
+      <div class="quiz-q"><p>아인슈타인 관계 \(D/\mu = kT/q\)에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">흩어짐이 잦은 물질일수록 \(D/\mu\)가 커진다</button><button class="opt" data-correct>\(D/\mu\)는 입자나 물질과 무관하게 온도로만 정해진다(비축퇴, 선형 응답)</button><button class="opt">전기장이 아무리 커도 그대로 성립한다</button><button class="opt">하전되지 않은 원자에는 \(D\)가 없다</button>
+      </div><div class="quiz-exp">\(D\)와 \(\mu\)는 같은 뜀(또는 흩어짐) 빈도에서 나오므로 그 빈도가 비에서 사라진다. 장벽 기울기가 \(kT\)를 넘는 강한 장이나 축퇴된 캐리어에서는 고쳐 써야 한다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, Th = Thermo, kEV = Th.C.kB_eV;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const K = (c) => c + 273.15;
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = (s) => String(s).split("").map((c) => SUP[c] || c).join("");
+  function sci(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "×10" + sup(e);
+  }
+  function sciT(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "\\times10^{" + e + "}";
+  }
+  function tfmt(s) {
+    if (!isFinite(s) || s < 0) return "∞";
+    if (s < 1e-3) return sci(s * 1e6) + " µs";
+    if (s < 1) return sci(s * 1e3) + " ms";
+    if (s < 120) return sci(s) + " s";
+    if (s < 7200) return sci(s / 60) + " 분";
+    if (s < 172800) return sci(s / 3600) + " 시간";
+    if (s < 6.3e7) return sci(s / 86400) + " 일";
+    return sci(s / 3.156e7) + " 년";
+  }
+  /** cm → 보기 좋은 길이 */
+  function lfmt(cm) {
+    if (!isFinite(cm)) return "—";
+    const m = cm / 100;
+    if (m < 1e-6) return sci(m * 1e9) + " nm";
+    if (m < 1e-3) return sci(m * 1e6) + " µm";
+    if (m < 1e-2) return sci(m * 1e3) + " mm";
+    if (m < 1) return sci(m * 100) + " cm";
+    return sci(m) + " m";
+  }
+  const umfmt = (um) => (um < 0.1 ? sci(um * 1e3) + " nm" : sci(um) + " µm");
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  function line(ctx, pts, col, w = 2, dash) { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); }
+  function toggleBtn(id, st, key = "playing", cb) {
+    const b = $(id);
+    const sync = () => (b.textContent = st[key] ? "❚❚ 정지" : "▶ 재생");
+    b.addEventListener("click", () => { st[key] = !st[key]; sync(); cb && cb(); });
+    sync();
+    return sync;
+  }
+  const narrowOf = (w) => w < 560;
+  const pow10Fmt = (v) => { const e = Math.round(Math.log10(v)); return e === 0 ? "1" : e === 1 ? "10" : "10" + sup(e); };
+  const rpick = (a) => a[Math.floor(Math.random() * a.length)];
+  const DOP = { B: "붕소(B)", P: "인(P)", As: "비소(As)", Sb: "안티모니(Sb)" };
+  /** 진성 캐리어 농도 [cm⁻³] (Plummer 근사식) */
+  const niSi = (TK) => 3.87e16 * Math.pow(TK, 1.5) * Math.exp(-0.605 / (kEV * TK));
+  /** 가우스 접합 깊이 [cm] */
+  const xjG = (Dt, Q, NB) => Th.junctionGauss(Dt, 1, Q, NB);
+
+  /* ================================================================ 머리: 표면 공급원과 무작위 걸음 */
+  {
+    const NX = 64, NY = 22, N0 = 4, CAP = 700, DD = 0.25;
+    const R = Th.rng(5);
+    const st = { w: [], on: true, step: 0, phase: 0, hist: new Float64Array(NX), cn: null, auto: true, hold: 0 };
+    function mkCN() { st.cn = Th.diffuse1d({ n: NX + 1, L: NX, D: DD, c0: (x) => (x < 0.5 ? N0 : 0), left: { type: "fixed", value: N0 }, right: { type: "fixed", value: 0 } }); }
+    function add(i) { st.w.push({ i, j: Math.floor(R() * NY), ox: R() - 0.5, oy: R() - 0.5 }); }
+    function fresh() { st.w = []; for (let k = 0; k < N0 * NY; k++) { add(0); st.w[k].j = k % NY; } st.on = true; st.step = 0; st.hist.fill(0); mkCN(); }
+    fresh();
+    function setSource(on) { st.on = on; st.cn.left = on ? { type: "fixed", value: N0 } : { type: "flux", value: 0 }; }
+    function step() {
+      const keep = [];
+      for (const q of st.w) {
+        const r = R();
+        if (r < 0.25) q.i++; else if (r < 0.5) q.i--; else if (r < 0.75) q.j = (q.j + 1) % NY; else q.j = (q.j + NY - 1) % NY;
+        if (q.i < 0) { if (st.on) continue; q.i = 0; }
+        if (q.i > NX - 1) continue;
+        keep.push(q);
+      }
+      st.w = keep;
+      if (st.on) {
+        const at0 = st.w.filter((q) => q.i === 0).length;
+        for (let k = at0; k < N0 * NY; k++) add(0);
+      }
+      st.cn.step(1); st.step++;
+      // 깊이별 개수(시간 평균)
+      const h = new Float64Array(NX);
+      for (const q of st.w) h[q.i] += 1 / NY;
+      for (let i = 0; i < NX; i++) st.hist[i] += (h[i] - st.hist[i]) * 0.08;
+      if (st.auto) {
+        if (st.on && (st.w.length > CAP || st.step > 520)) setSource(false);
+        else if (!st.on && st.step > 2300) { st.hold++; if (st.hold > 60) { st.hold = 0; fresh(); } }
+      }
+    }
+    const cv = SB.canvas("cv-hero", (ctx, w, h) => {
+      const P = pal(), narrow = narrowOf(w);
+      const B1 = { x: 52, y: 26, w: w - 52 - 16, h: Math.round(h * 0.42) - 26 };
+      const C = SB.chart(ctx, B1, { x: [0, NX], y: [0, N0 * 1.15], xTicks: [], yTicks: [0, N0 / 2, N0], yFmt: (v) => (v / N0).toFixed(1),
+        series: [{ data: Array.from(st.cn.c, (v, i) => [i, v]), color: P.accent2, width: 2, dash: [6, 4] },
+                 { data: Array.from(st.hist, (v, i) => [i + 0.5, v]), color: P.accent, width: 2.4 }] });
+      SB.label(ctx, st.on ? "공급원 붙음 · 일정 공급원 → erfc" : "공급원 뗌 · 총량 보존 → 가우스", C.box.x + 4, C.box.y - 12, { align: "left", bold: true, size: 13, color: st.on ? P.accent : P.accent2 });
+      if (!narrow) SB.label(ctx, `C/C_s (주황: 원자 수 / 파란 점선: 픽 방정식)  ·  걸음 ${st.step}`, C.box.x + C.box.w, C.box.y - 12, { align: "right", size: 11, color: P.dim });
+      // 웨이퍼 단면
+      const top = B1.y + B1.h + 18, bh = h - top - 14, s = C.box.w / NX, sy = bh / NY, x0 = C.box.x, y0 = top;
+      ctx.fillStyle = P.surface; ctx.fillRect(x0, y0, s * NX, sy * NY);
+      ctx.strokeStyle = P.border; ctx.strokeRect(x0, y0, s * NX, sy * NY);
+      if (st.on) { ctx.fillStyle = P.accent; withA(ctx, 0.35, () => ctx.fillRect(x0 - 10, y0, 10, sy * NY)); }
+      SB.label(ctx, "표면", x0 - 6, y0 - 8, { size: 11, color: P.dim, align: "left" });
+      SB.label(ctx, "깊이 →", x0 + s * NX - 4, y0 + sy * NY + 8, { size: 11, color: P.dim, align: "right" });
+      ctx.fillStyle = P.accent;
+      const rad = Math.max(1.4, Math.min(s, sy) * 0.22);
+      withA(ctx, 0.8, () => { for (const q of st.w) { ctx.beginPath(); ctx.arc(x0 + (q.i + 0.5 + q.ox * 0.7) * s, y0 + (q.j + 0.5 + q.oy * 0.7) * sy, rad, 0, 2 * PI); ctx.fill(); } });
+      SB.label(ctx, `원자 ${st.w.length}개`, x0 + s * NX - 4, y0 + 10, { align: "right", size: 12, bold: true });
+    }, { aspect: 0.5, minHeight: 330, maxHeight: 440 });
+    SB.drag(cv, { free: true, handles: () => [], down: () => { setSource(!st.on); st.auto = false; if (!st.on) st.step = Math.max(st.step, 0); }, move: () => {} });
+    SB.loop("cv-hero", () => { step(); step(); cv.redraw(); });
+  }
+
+  /* ================================================================ 1절: 무작위 걸음 구름 */
+  {
+    const NMAX = 400, R0 = 11;
+    const st = { n: 400, mode: "lat", p: [], N: 0, m: [], s: 0.2, playing: true, R: null };
+    function fresh() {
+      st.R = Th.rng(R0); st.p = []; st.N = 0; st.m = [[0, 0]];
+      for (let k = 0; k < st.n; k++) st.p.push({ x: 0, y: 0, yo: (st.R() - 0.5) * 2 });
+    }
+    fresh();
+    const theory = () => (st.mode === "one" ? 1 : 0.5);
+    function step() {
+      if (st.N >= NMAX) { st.playing = false; syncPlay(); return; }
+      let s2 = 0;
+      for (const q of st.p) {
+        if (st.mode === "lat") { const r = st.R(); if (r < 0.25) q.x++; else if (r < 0.5) q.x--; else if (r < 0.75) q.y++; else q.y--; }
+        else if (st.mode === "free") { const a = 2 * PI * st.R(); q.x += Math.cos(a); q.y += Math.sin(a); }
+        else q.x += st.R() < 0.5 ? 1 : -1;
+        s2 += q.x * q.x;
+      }
+      st.N++; st.m.push([st.N, s2 / st.p.length]);
+    }
+    const measSlope = () => { let a = 0, b = 0; for (const [n, v] of st.m) { a += n * v; b += n * n; } return b > 0 ? a / b : 0; };
+    const cv1 = SB.canvas("cv-walk1", (ctx, w, h) => {
+      const P = pal(), cx = w / 2, cy = h / 2, sc = Math.min(w, h) / 2 / 66;
+      ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+      let r2 = 0; for (const q of st.p) r2 += q.x * q.x + (st.mode === "one" ? 0 : q.y * q.y); r2 /= st.p.length || 1;
+      ctx.fillStyle = P.accent;
+      withA(ctx, 0.7, () => { for (const q of st.p) { const y = st.mode === "one" ? q.yo * 40 : q.y; ctx.beginPath(); ctx.arc(cx + q.x * sc, cy + y * sc, 1.8, 0, 2 * PI); ctx.fill(); } });
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.arc(cx, cy, Math.sqrt(r2) * sc, 0, 2 * PI); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, `√⟨R²⟩ = ${Math.sqrt(r2).toFixed(1)}`, cx, 14, { color: P.accent2, bold: true });
+      SB.label(ctx, `√N = ${Math.sqrt(st.N).toFixed(1)}`, cx, h - 12, { color: P.dim, size: 11 });
+    }, { aspect: 1, minHeight: 240, maxHeight: 340 });
+    const cv2 = SB.canvas("cv-walk2", (ctx, w, h, self) => {
+      const P = pal(), ymax = theory() * NMAX * 1.35;
+      const C = SB.chart(ctx, { x: 50, y: 34, w: w - 50 - 18, h: h - 34 - 46 }, { x: [0, NMAX], y: [0, ymax], xLabel: "걸음 수 N", yLabel: "⟨x²⟩",
+        series: [{ data: [[0, 0], [NMAX, st.s * NMAX]], color: P.text, width: 1.6 }] });
+      ctx.fillStyle = P.accent;
+      st.m.forEach(([n, v], i) => { if (i % 8 === 0 || i === st.m.length - 1) { ctx.beginPath(); ctx.arc(C.X(n), C.Y(v), 2.6, 0, 2 * PI); ctx.fill(); } });
+      const hy = C.Y(Math.min(ymax, st.s * NMAX));
+      handle(ctx, C.X(NMAX), hy, P.text, 9);
+      self._C = C; self._ymax = ymax;
+      SB.label(ctx, `내 직선: ⟨x²⟩ = ${st.s.toFixed(3)} N  (D = ${(st.s / 2).toFixed(3)})`, C.box.x + 4, 16, { align: "left", size: 12, bold: true });
+      const m = measSlope(), ok = st.N > 50 && Math.abs(st.s / m - 1) < 0.05;
+      SB.stat("walk-N", String(st.N));
+      SB.stat("walk-m", st.N ? m.toFixed(3) : "—");
+      SB.stat("walk-s", st.s.toFixed(3));
+      SB.stat("walk-ok", st.N < 50 ? "더 걸어 보자" : ok ? `✓ 맞힘 · D = ${(m / 2).toFixed(3)}` : st.s > m ? "직선을 내려라" : "직선을 올려라");
+    }, { aspect: 0.85, minHeight: 240, maxHeight: 340 });
+    SB.drag(cv2, { handles: () => { const C = cv2._C; return C ? [{ id: "s", x: C.X(NMAX), y: C.Y(Math.min(cv2._ymax, st.s * NMAX)), r: 14 }] : []; },
+      move: (id, x, y) => { const C = cv2._C; if (!C) return; const v = (C.box.y + C.box.h - y) / C.box.h * cv2._ymax; st.s = SB.clamp(v / NMAX, 0, cv2._ymax / NMAX); } });
+    const syncPlay = toggleBtn("walk-play", st, "playing", () => { if (st.playing && st.N >= NMAX) fresh(); });
+    $("walk-reset").addEventListener("click", () => { fresh(); st.playing = true; syncPlay(); cv1.redraw(); cv2.redraw(); });
+    SB.range("walk-n", (v) => v + "개", (v) => { st.n = v; fresh(); cv1.redraw(); cv2.redraw(); });
+    SB.seg("walk-mode", (v) => { st.mode = v; fresh(); st.playing = true; syncPlay(); cv1.redraw(); cv2.redraw(); });
+    SB.loop("cv-walk1", () => { if (!st.playing) return; step(); step(); cv1.redraw(); cv2.redraw(); });
+  }
+
+  SB.tangle("tg-walk", (v) => {
+    const G = Math.pow(10, v.G), a = v.a * 1e-7, D = (G * a * a) / 6, t = 1e-8 / (2 * D);
+    return { D: sci(D) + " cm²/s", t: tfmt(t), N: sci(G * t) };
+  });
+
+  SB.drill("drill-len", () => {
+    const el = rpick(["B", "P", "As", "Sb"]), Tc = 900 + 25 * Math.floor(Math.random() * 11), tm = rpick([10, 15, 20, 30, 45, 60, 90, 120, 240]);
+    const d = Th.diffSi[el], D = Th.D(el, K(Tc)), L = 2 * Math.sqrt(D * tm * 60) * 1e4;
+    return { q: `<p>실리콘 속 ${DOP[el]}(\\(D_0 = ${d.D0}\\) cm²/s, \\(E_a = ${d.Ea}\\) eV)를 ${Tc} °C에서 ${tm}분 확산한다. 확산 계수 \\(D\\)와 퍼짐 깊이 \\(2\\sqrt{Dt}\\)(µm)를 구하라.</p>`,
+      answer: [D, L], label: ["D =", "2√(Dt) ="], unit: ["cm²/s", "µm"], tol: "2%",
+      sol: `\\(kT = 8.617\\times10^{-5}\\times${K(Tc).toFixed(2)} = ${(kEV * K(Tc)).toFixed(5)}\\) eV, \\(D = ${d.D0}\\,e^{-${d.Ea}/${(kEV * K(Tc)).toFixed(5)}} = ${sciT(D)}\\) cm²/s. \\(2\\sqrt{Dt} = 2\\sqrt{${sciT(D)}\\times${tm * 60}} = ${sciT(L / 1e4)}\\) cm \\(= ${sciT(L)}\\) µm` };
+  });
+
+  /* ================================================================ 2절: 픽 법칙 — 끌어 그리는 분포 */
+  {
+    const n = 121, NK = 9;
+    const PRE = {
+      bump: [0.15, 0.2, 0.75, 0.9, 0.4, 0.1, 0.3, 0.55, 0.5],
+      step: [0.9, 0.9, 0.9, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1],
+      line: [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1],
+    };
+    const st = { k: PRE.bump.slice(), c: new Float64Array(n), sim: null, t: 0, playing: false, bc: "closed", pre: "bump" };
+    const xs = (i) => i / (n - 1);
+    function interp() {
+      // 캣멀–롬 보간(끝점 고정), 0–1로 자름
+      for (let i = 0; i < n; i++) {
+        const u = xs(i) * (NK - 1), j = Math.min(NK - 2, Math.floor(u)), f = u - j;
+        const p0 = st.k[Math.max(0, j - 1)], p1 = st.k[j], p2 = st.k[j + 1], p3 = st.k[Math.min(NK - 1, j + 2)];
+        const v = 0.5 * (2 * p1 + (-p0 + p2) * f + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f + (-p0 + 3 * p1 - 3 * p2 + p3) * f * f * f);
+        st.c[i] = SB.clamp(v, 0, 1);
+      }
+      st.sim = null;
+    }
+    function ensureSim() {
+      if (st.sim) return;
+      const bc = (v) => (st.bc === "closed" ? { type: "flux", value: 0 } : { type: "fixed", value: v });
+      st.sim = Th.diffuse1d({ n, L: 1, D: 1, c0: Float64Array.from(st.c), left: bc(st.c[0]), right: bc(st.c[n - 1]) });
+    }
+    function reset() { st.k = PRE[st.pre].slice(); interp(); st.t = 0; }
+    reset();
+    const cv = SB.canvas("cv-fick", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w);
+      const box = { x: 54, y: 70, w: w - 54 - 18, h: h - 70 - 96 };
+      const C = SB.chart(ctx, box, { x: [0, 1], y: [0, 1.05], xLabel: "", yLabel: "농도 C", xTicks: [0, 0.25, 0.5, 0.75, 1], yTicks: [0, 0.5, 1],
+        series: [{ data: Array.from(st.c, (v, i) => [xs(i), v]), color: P.accent, width: 3, fill: SB.color("accent-soft") }] });
+      self._C = C;
+      // 플럭스 화살표
+      const dx = 1 / (n - 1), NA = narrow ? 8 : 12;
+      let jmax = 0, jx = 0;
+      for (let i = 1; i < n - 1; i++) { const J = -(st.c[i + 1] - st.c[i - 1]) / (2 * dx); if (Math.abs(J) > Math.abs(jmax)) { jmax = J; jx = xs(i); } }
+      for (let a = 0; a < NA; a++) {
+        const i = Math.round(((a + 0.5) / NA) * (n - 1)), J = -(st.c[Math.min(n - 1, i + 1)] - st.c[Math.max(0, i - 1)]) / (2 * dx);
+        const L = SB.clamp(J * 0.045 * box.w, -box.w / NA * 1.4, box.w / NA * 1.4), x = C.X(xs(i)), y = box.y - 18;
+        if (Math.abs(L) > 3) SB.arrow(ctx, x - L / 2, y, x + L / 2, y, { color: P.accent2, width: 2.2, head: 8 });
+        else { ctx.fillStyle = P.faint; ctx.beginPath(); ctx.arc(x, y, 2, 0, 2 * PI); ctx.fill(); }
+      }
+      SB.label(ctx, "플럭스 J = −D ∂C/∂x", box.x, box.y - 38, { align: "left", size: 12, color: P.accent2, bold: true });
+      // ∂C/∂t 막대
+      const by = box.y + box.h + 50, NB2 = narrow ? 30 : 48;
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(box.x, by); ctx.lineTo(box.x + box.w, by); ctx.stroke();
+      for (let a = 0; a < NB2; a++) {
+        const i = Math.round(((a + 0.5) / NB2) * (n - 1));
+        let d2 = 0;
+        if (i > 0 && i < n - 1) d2 = (st.c[i + 1] - 2 * st.c[i] + st.c[i - 1]) / (dx * dx);
+        else if (st.bc === "closed") { const j = i === 0 ? 1 : n - 2; d2 = (2 * (st.c[j] - st.c[i])) / (dx * dx); }
+        const hgt = SB.clamp(d2 * 0.01, -1, 1) * 34, x = C.X(xs(i));
+        ctx.fillStyle = hgt > 0 ? P.ok : P.bad;
+        if (Math.abs(hgt) > 0.5) ctx.fillRect(x - box.w / NB2 * 0.35, by, box.w / NB2 * 0.7, -hgt);
+      }
+      SB.label(ctx, "∂C/∂t = D ∂²C/∂x²  (위: 차오름, 아래: 줄어듦)", box.x, by + 40, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, "깊이 x / L", box.x + box.w, by + 40, { align: "right", size: 11, color: P.dim });
+      // 핸들
+      for (let k = 0; k < NK; k++) { const i = Math.round((k / (NK - 1)) * (n - 1)); handle(ctx, C.X(xs(i)), C.Y(st.c[i]), P.accent, 8); }
+      let q = 0; for (let i = 0; i < n; i++) q += st.c[i] * (i === 0 || i === n - 1 ? 0.5 : 1); q *= dx;
+      SB.stat("fick-t", st.t.toFixed(4));
+      SB.stat("fick-q", q.toFixed(4));
+      SB.stat("fick-j", Math.abs(jmax) < 1e-3 ? "—" : `x/L = ${jx.toFixed(2)}`);
+    }, { aspect: 0.62, minHeight: 360, maxHeight: 470 });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; if (!C) return []; return Array.from({ length: NK }, (_, k) => { const i = Math.round((k / (NK - 1)) * (n - 1)); return { id: k, x: C.X(xs(i)), y: C.Y(st.c[i]), r: 13 }; }); },
+      down: () => { for (let k = 0; k < NK; k++) st.k[k] = st.c[Math.round((k / (NK - 1)) * (n - 1))]; },
+      move: (id, x, y) => { const C = cv._C; if (!C) return; st.k[id] = SB.clamp((C.box.y + C.box.h - y) / C.box.h * 1.05, 0, 1); interp(); },
+    });
+    const sync = toggleBtn("fick-play", st);
+    $("fick-reset").addEventListener("click", () => { reset(); cv.redraw(); });
+    SB.seg("fick-pre", (v) => { st.pre = v; reset(); cv.redraw(); });
+    SB.seg("fick-bc", (v) => { st.bc = v; st.sim = null; cv.redraw(); });
+    SB.loop("cv-fick", () => {
+      if (!st.playing) return;
+      ensureSim();
+      for (let s = 0; s < 2; s++) st.sim.step(2e-4);
+      st.c.set(st.sim.c); st.t += 4e-4;
+      if (st.t > 0.6) { st.playing = false; sync(); }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 2절 미니: 두 층 막의 정상 상태 */
+  {
+    const st = { xb: 0.7, r: 0.1 };
+    const cv = SB.canvas("cv-steady", (ctx, w, h, self) => {
+      const P = pal();
+      const box = { x: 50, y: 30, w: w - 50 - 18, h: h - 30 - 44 };
+      const D1 = 1, D2 = st.r, L1 = st.xb, L2 = 1 - st.xb, Rt = L1 / D1 + L2 / D2, J = 1 / Rt, Ci = 1 - J * L1 / D1;
+      ctx.fillStyle = P.surface; ctx.fillRect(box.x, box.y, box.w * st.xb, box.h);
+      withA(ctx, 0.18, () => { ctx.fillStyle = P.accent2; ctx.fillRect(box.x + box.w * st.xb, box.y, box.w * (1 - st.xb), box.h); });
+      const C = SB.chart(ctx, box, { x: [0, 1], y: [0, 1.1], xLabel: "깊이 x / L", yLabel: "농도 C/C₁", xTicks: [0, 0.5, 1], yTicks: [0, 0.5, 1],
+        series: [{ data: [[0, 1], [1, 0]], color: P.faint, width: 1.5, dash: [5, 4] }, { data: [[0, 1], [st.xb, Ci], [1, 0]], color: P.accent, width: 3 }] });
+      self._C = C;
+      SB.label(ctx, "빠른 층 D₁", C.X(st.xb / 2), box.y + 14, { size: 12, color: P.dim });
+      SB.label(ctx, "배리어 D₂", C.X((1 + st.xb) / 2), box.y + 14, { size: 12, color: P.accent2, bold: true });
+      handle(ctx, C.X(st.xb), C.Y(Ci), P.accent2, 9);
+      SB.stat("steady-out", `J / J(같은 두께, 배리어 없음) = ${(J / 1).toPrecision(3)} · 배리어에서 떨어지는 농도 ${(Ci * 100).toFixed(0)}%`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 300 });
+    SB.range("steady-r", (v) => sci(Math.pow(10, v), 2), (v) => { st.r = Math.pow(10, v); cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C; if (!C) return []; const D2 = st.r, J = 1 / (st.xb + (1 - st.xb) / D2); return [{ id: "b", x: C.X(st.xb), y: C.Y(1 - J * st.xb), r: 14 }]; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.xb = SB.clamp((x - C.box.x) / C.box.w, 0.3, 0.97); } });
+  }
+
+  SB.tangle("tg-flux", (v) => {
+    const D = Math.pow(10, v.d), J = (D * 9e18) / (v.L * 1e-4), N = J * 3600;
+    return { J: sci(J) + " cm⁻²s⁻¹", N: sci(N), ml: sci(N / 6.8e14, 2) };
+  });
+
+  /* ================================================================ 3절: 격자 속 확산 기구 */
+  {
+    const NXc = 11, NYc = 7, EAS = { vac: ["Sb", 3.65], int: ["Cu", 0.43], icy: ["B", 3.46] };
+    const st = { mode: "vac", T: 1000, atoms: [], site: {}, vac: null, mob: null, dop: null, trail: [], n: 0, back: 0, prev: null, cur: null, playing: true, acc: 0, R: Th.rng(3), drag: false };
+    const key = (i, j) => i + "," + j;
+    function fresh() {
+      st.atoms = []; st.site = {}; st.n = 0; st.back = 0; st.trail = []; st.acc = 0; st.R = Th.rng(3);
+      for (let i = 0; i < NXc; i++) for (let j = 0; j < NYc; j++) { const a = { type: "H", gx: i, gy: j, x: i, y: j }; st.atoms.push(a); st.site[key(i, j)] = a; }
+      st.vac = null; st.mob = null;
+      const center = st.site[key(5, 3)];
+      if (st.mode === "vac") { center.type = "D"; st.dop = center; const v = st.site[key(6, 3)]; st.atoms.splice(st.atoms.indexOf(v), 1); delete st.site[key(6, 3)]; st.vac = [6, 3]; }
+      else if (st.mode === "int") { const d = { type: "D", gx: 4.5, gy: 2.5, x: 4.5, y: 2.5, inter: true }; st.atoms.push(d); st.dop = d; st.mob = d; }
+      else { center.type = "D"; st.dop = center; const I = { type: "I", gx: 3.5, gy: 2.5, x: 3.5, y: 2.5, inter: true }; st.atoms.push(I); st.mob = I; }
+      st.prev = null; st.cur = [st.dop.gx, st.dop.gy]; st.trail = [[st.dop.gx, st.dop.gy]];
+    }
+    fresh();
+    function dopMoved() {
+      const p = [st.dop.gx, st.dop.gy];
+      if (st.prev && Math.abs(p[0] - st.prev[0]) < 1e-6 && Math.abs(p[1] - st.prev[1]) < 1e-6) st.back++;
+      st.prev = st.cur; st.cur = p; st.n++; st.trail.push(p); if (st.trail.length > 80) st.trail.shift();
+    }
+    const inB = (i, j) => i >= 0 && j >= 0 && i < NXc && j < NYc;
+    const inI = (x, y) => x > 0 && y > 0 && x < NXc - 1 && y < NYc - 1;
+    const nb4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    /** 공공을 (i,j)의 원자와 바꾼다 */
+    function vacTo(i, j) {
+      const a = st.site[key(i, j)]; if (!a) return;
+      delete st.site[key(i, j)]; a.gx = st.vac[0]; a.gy = st.vac[1]; st.site[key(a.gx, a.gy)] = a; st.vac = [i, j];
+      if (a === st.dop) dopMoved();
+    }
+    function mobTo(x, y) {
+      const m = st.mob; m.gx = x; m.gy = y;
+      if (m === st.dop) { dopMoved(); return; }
+    }
+    function corners(x, y) { return [[x - 0.5, y - 0.5], [x + 0.5, y - 0.5], [x - 0.5, y + 0.5], [x + 0.5, y + 0.5]]; }
+    function icyAfterMove() {
+      const m = st.mob;
+      if (m.type === "I") {
+        // 자기 격자간 원자 옆에 도펀트가 있으면 밀어낸다
+        const c = corners(m.gx, m.gy).find(([i, j]) => st.site[key(i, j)] === st.dop);
+        if (c && st.R() < 0.6) {
+          const d = st.dop; delete st.site[key(c[0], c[1])];
+          m.type = "H"; m.inter = false; m.gx = c[0]; m.gy = c[1]; st.site[key(c[0], c[1])] = m;
+          d.inter = true; d.gx = st._lastI[0]; d.gy = st._lastI[1]; st.mob = d; dopMoved();
+        }
+      } else if (st.R() < 0.3) {
+        // 틈새 도펀트가 격자 원자를 차낸다
+        const d = m, cs = corners(d.gx, d.gy).filter(([i, j]) => st.site[key(i, j)] && st.site[key(i, j)] !== d);
+        if (cs.length) {
+          const [i, j] = cs[Math.floor(st.R() * cs.length)], h = st.site[key(i, j)], ix = d.gx, iy = d.gy;
+          h.type = "I"; h.inter = true; h.gx = ix; h.gy = iy; delete st.site[key(i, j)];
+          d.inter = false; d.gx = i; d.gy = j; st.site[key(i, j)] = d; st.mob = h; dopMoved();
+        }
+      }
+    }
+    function tick() {
+      if (st.mode === "vac") {
+        const opts = nb4.map(([a, b]) => [st.vac[0] + a, st.vac[1] + b]).filter(([i, j]) => inB(i, j));
+        const [i, j] = opts[Math.floor(st.R() * opts.length)]; vacTo(i, j);
+      } else {
+        const m = st.mob, opts = nb4.map(([a, b]) => [m.gx + a, m.gy + b]).filter(([x, y]) => inI(x, y));
+        const [x, y] = opts[Math.floor(st.R() * opts.length)];
+        st._lastI = [x, y];
+        if (st.mode === "icy" && m.type === "I") { m.gx = x; m.gy = y; icyAfterMove(); }
+        else { mobTo(x, y); if (st.mode === "icy") icyAfterMove(); }
+      }
+    }
+    const rate = () => (st.mode === "int" ? 18 : 7) * Math.exp(-0.5 * (1 / (kEV * K(st.T)) - 1 / (kEV * K(1000))));
+    const cv = SB.canvas("cv-mech", (ctx, w, h, self) => {
+      const P = pal(), s = Math.min((w - 30) / NXc, (h - 30) / NYc), ox = (w - s * (NXc - 1)) / 2, oy = (h - s * (NYc - 1)) / 2;
+      const X = (g) => ox + g * s, Y = (g) => oy + g * s;
+      self._g = { X, Y, s, ox, oy };
+      // 틈새 자리 표시
+      ctx.fillStyle = P.faint;
+      for (let i = 0; i < NXc - 1; i++) for (let j = 0; j < NYc - 1; j++) { ctx.beginPath(); ctx.arc(X(i + 0.5), Y(j + 0.5), 1.5, 0, 2 * PI); ctx.fill(); }
+      // 자취
+      if (st.trail.length > 1) line(ctx, st.trail.map(([a, b]) => [X(a), Y(b)]), P.accent, 2);
+      if (st.vac) { ctx.strokeStyle = P.dim; ctx.setLineDash([4, 3]); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(X(st.vac[0]), Y(st.vac[1]), s * 0.32, 0, 2 * PI); ctx.stroke(); ctx.setLineDash([]); }
+      for (const a of st.atoms) {
+        const r = a.inter ? s * 0.2 : s * 0.32;
+        ctx.beginPath(); ctx.arc(X(a.x), Y(a.y), r, 0, 2 * PI);
+        if (a.type === "D") { ctx.fillStyle = P.accent; ctx.fill(); }
+        else if (a.type === "I") { ctx.fillStyle = P.surface; ctx.fill(); ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.stroke(); }
+        else { ctx.fillStyle = P.surface; ctx.fill(); ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.stroke(); }
+      }
+      const hp = st.vac ? [X(st.vac[0]), Y(st.vac[1])] : st.mob ? [X(st.mob.x), Y(st.mob.y)] : null;
+      if (hp) { ctx.strokeStyle = st.vac ? P.text : P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(hp[0], hp[1], Math.max(12, s * 0.4), 0, 2 * PI); ctx.stroke(); }
+      const [el, ea] = EAS[st.mode];
+      SB.stat("mech-n", String(st.n));
+      SB.stat("mech-back", st.n > 1 ? `${((st.back / (st.n - 1)) * 100).toFixed(0)}% (무작위면 25%)` : "—");
+      SB.stat("mech-ea", `${ea} eV (${el})`);
+      SB.stat("mech-D", `${sci(Th.D(el, K(st.T)))} cm²/s`);
+    }, { aspect: 0.62, minHeight: 280, maxHeight: 400 });
+    function nearest(px, py, inter) {
+      const g = cv._g; if (!g) return null;
+      let x = (px - g.ox) / g.s, y = (py - g.oy) / g.s;
+      if (inter) { x = Math.round(x - 0.5) + 0.5; y = Math.round(y - 0.5) + 0.5; } else { x = Math.round(x); y = Math.round(y); }
+      return [x, y];
+    }
+    SB.drag(cv, {
+      handles: () => { const g = cv._g; if (!g) return []; if (st.vac) return [{ id: "v", x: g.X(st.vac[0]), y: g.Y(st.vac[1]), r: Math.max(14, g.s * 0.4) }]; if (st.mob) return [{ id: "m", x: g.X(st.mob.x), y: g.Y(st.mob.y), r: Math.max(14, g.s * 0.4) }]; return []; },
+      down: () => { st.drag = true; },
+      up: () => { st.drag = false; },
+      move: (id, px, py) => {
+        if (id === "v") { const p = nearest(px, py, false); if (p && inB(p[0], p[1]) && Math.abs(p[0] - st.vac[0]) + Math.abs(p[1] - st.vac[1]) === 1) vacTo(p[0], p[1]); }
+        if (id === "m") { const m = st.mob, p = nearest(px, py, true); if (p && inI(p[0], p[1]) && Math.abs(p[0] - m.gx) + Math.abs(p[1] - m.gy) === 1) { st._lastI = p; if (st.mode === "icy" && m.type === "I") { m.gx = p[0]; m.gy = p[1]; icyAfterMove(); } else { mobTo(p[0], p[1]); if (st.mode === "icy") icyAfterMove(); } } }
+      },
+    });
+    toggleBtn("mech-play", st);
+    $("mech-reset").addEventListener("click", () => { fresh(); cv.redraw(); });
+    SB.seg("mech-mode", (v) => { st.mode = v; fresh(); cv.redraw(); });
+    SB.range("mech-T", (v) => v + " °C", (v) => { st.T = v; cv.redraw(); });
+    SB.loop("cv-mech", (dt) => {
+      if (st.playing && !st.drag) { st.acc += dt * rate(); let k = 0; while (st.acc >= 1 && k < 4) { st.acc -= 1; tick(); k++; } if (st.acc > 4) st.acc = 0; }
+      for (const a of st.atoms) { a.x += (a.gx - a.x) * 0.3; a.y += (a.gy - a.y) * 0.3; }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 3절 미니: 아레니우스 그림 */
+  {
+    const ELS = ["B", "P", "As", "Sb", "Si", "Cu", "Fe", "Au"], FAST = { Cu: 1, Fe: 1, Au: 1 };
+    const st = { el: "B", inv: 1000 / K(1000) };
+    const cv = SB.canvas("cv-arr", (ctx, w, h, self) => {
+      const P = pal(), x0 = 0.62, x1 = 1.05;
+      const series = ELS.map((e) => ({ data: [[x0, Th.D(e, 1000 / x0)], [x1, Th.D(e, 1000 / x1)]], color: e === st.el ? P.accent : FAST[e] ? P.accent2 : P.dim, width: e === st.el ? 3.2 : 1.6, dash: FAST[e] && e !== st.el ? [6, 4] : null }));
+      const C = SB.chart(ctx, { x: 58, y: 26, w: w - 58 - 40, h: h - 26 - 46 }, { x: [x0, x1], y: [1e-20, 1e-3], logY: true, yTicks: [1e-20, 1e-16, 1e-12, 1e-8, 1e-4], yFmt: pow10Fmt, xLabel: "1000/T (K⁻¹)", yLabel: "D (cm²/s)", series });
+      self._C = C;
+      const labs = ELS.map((e) => ({ e, y: C.Y(Th.D(e, 1000 / x1)) })).filter((o) => o.y > C.box.y && o.y < C.box.y + C.box.h + 4).sort((a, b) => a.y - b.y);
+      for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 12) labs[i].y = labs[i - 1].y + 12;
+      labs.forEach(({ e, y }) => SB.label(ctx, e, C.box.x + C.box.w + 16, y, { size: 11, color: e === st.el ? P.accent : P.dim, bold: e === st.el }));
+      const hx = C.X(st.inv);
+      SB.dashLine(ctx, hx, C.box.y, hx, C.box.y + C.box.h, P.text, [4, 3]);
+      handle(ctx, hx, C.box.y + 12, P.text, 9);
+      const T = 1000 / st.inv, D = Th.D(st.el, T);
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(hx, C.Y(D), 5, 0, 2 * PI); ctx.fill();
+      SB.label(ctx, `${(T - 273.15).toFixed(0)} °C`, Math.min(hx + 8, C.box.x + C.box.w - 40), C.box.y + 30, { align: "left", bold: true });
+      SB.stat("arr-r", `${st.el}: D = ${sci(D)} cm²/s · 1시간 2√(Dt) = ${lfmt(2 * Math.sqrt(D * 3600))} · Eₐ = ${Th.diffSi[st.el].Ea} eV`);
+    }, { aspect: 0.5, minHeight: 260, maxHeight: 340 });
+    SB.seg("arr-el", (v) => { st.el = v; cv.redraw(); });
+    SB.drag(cv, { handles: () => { const C = cv._C; return C ? [{ id: "T", x: C.X(st.inv), y: C.box.y + 12, r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.inv = SB.clamp(0.62 + ((x - C.box.x) / C.box.w) * 0.43, 0.63, 1.04); } });
+  }
+
+  SB.tangle("tg-arr", (v) => {
+    const TK = K(v.T), D = Th.Dgen(v.D0, v.Ea, TK), r10 = Th.Dgen(v.D0, v.Ea, TK + 10) / D;
+    const T2 = 1 / (1 / TK - (kEV * Math.LN2) / v.Ea);
+    return { D: sci(D) + " cm²/s", r10: r10.toPrecision(3), dT: (T2 - TK).toFixed(1) + " °C" };
+  });
+
+  SB.drill("drill-D", () => {
+    const el = rpick(["B", "P", "As", "Sb"]), d = Th.diffSi[el];
+    if (Math.random() < 0.5) {
+      const Tc = 850 + 10 * Math.floor(Math.random() * 36), D = Th.D(el, K(Tc));
+      return { q: `<p>\\(D_0 = ${d.D0}\\) cm²/s, \\(E_a = ${d.Ea}\\) eV인 ${DOP[el]}의 ${Tc} °C에서의 확산 계수를 구하라.</p>`, answer: D, label: "D =", unit: "cm²/s", tol: "2%",
+        sol: `\\(kT = ${(kEV * K(Tc)).toFixed(5)}\\) eV, \\(D = ${d.D0}\\exp(-${d.Ea}/${(kEV * K(Tc)).toFixed(5)}) = ${sciT(D)}\\) cm²/s` };
+    }
+    const T1 = 900 + 25 * Math.floor(Math.random() * 5), T2 = T1 + rpick([50, 75, 100, 150]);
+    const D1 = Number(Th.D(el, K(T1)).toPrecision(3)), D2 = Number(Th.D(el, K(T2)).toPrecision(3));
+    const Ea = (kEV * Math.log(D2 / D1)) / (1 / K(T1) - 1 / K(T2));
+    return { q: `<p>어떤 원자의 실리콘 속 확산 계수가 ${T1} °C에서 \\(${sciT(D1)}\\), ${T2} °C에서 \\(${sciT(D2)}\\) cm²/s다. 활성화 에너지(eV)를 구하라.</p>`, answer: Ea, label: "Eₐ =", unit: "eV", tol: 0.03,
+      sol: `\\(E_a = k\\ln(D_2/D_1)/(1/T_1 - 1/T_2) = 8.617\\times10^{-5}\\times${Math.log(D2 / D1).toFixed(4)}/${sciT(1 / K(T1) - 1 / K(T2), 4)} = ${Ea.toFixed(3)}\\) eV (${DOP[el]})` };
+  });
+
+  /* ================================================================ 4절: 로그 눈금 도핑 분포 */
+  {
+    const NICE = [0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30];
+    const st = { kind: "erfc", el: "B", Tc: 1000, s: 20, t: 3600, NB: 1e16, lin: false, xmax: 1, dragT: false };
+    const Dn = () => Th.D(st.el, K(st.Tc));
+    const amt = () => Math.pow(10, st.s);
+    function prof(x, t) { const D = Dn(); return st.kind === "erfc" ? Th.erfcProfile(x, D, t, amt()) : Th.gaussProfile(x, D, t, amt()); }
+    function xjOf(t) { const D = Dn(); if (st.kind === "erfc") return amt() > st.NB ? Th.junctionErfc(D, t, amt(), st.NB) : 0; return xjG(D * t, amt(), st.NB); }
+    function rescale() { const D = Dn(), x4 = Math.max(xjOf(4 * st.t), 3 * Math.sqrt(D * 4 * st.t)) * 1e4 * 1.15; st.xmax = NICE.find((v) => v >= x4) || 30; }
+    rescale();
+    const cv = SB.canvas("cv-prof", (ctx, w, h, self) => {
+      const P = pal(), D = Dn(), xm = st.xmax * 1e-4;
+      const ys = st.lin ? [0, (st.kind === "erfc" ? amt() : prof(0, st.t / 4)) * 1.08] : [1e14, 1e21];
+      const curve = (t) => Array.from({ length: 241 }, (_, i) => { const x = (xm * i) / 240; return [x * 1e4, prof(x, t)]; });
+      const C = SB.chart(ctx, { x: 64, y: 30, w: w - 64 - 34, h: h - 30 - 48 }, { x: [0, st.xmax], y: ys, logY: !st.lin, yFmt: st.lin ? (v) => sci(v, 2) : pow10Fmt, yTicks: st.lin ? null : [1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21],
+        xLabel: "깊이 x (µm)", yLabel: st.lin ? "C (cm⁻³)" : "C (cm⁻³), 로그",
+        series: [{ data: curve(st.t / 4), color: P.faint, width: 1.5 }, { data: curve(st.t * 4), color: P.faint, width: 1.5, dash: [5, 4] }, { data: curve(st.t), color: P.accent, width: 3 }],
+        hlines: [{ y: st.NB, color: P.accent2, dash: [6, 4], width: 2 }] });
+      self._C = C;
+      const xj = xjOf(st.t);
+      if (xj > 0 && xj < xm) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(C.X(xj * 1e4), C.Y(st.NB), 5, 0, 2 * PI); ctx.fill(); SB.label(ctx, `x_j = ${umfmt(xj * 1e4)}`, Math.min(C.X(xj * 1e4) + 8, C.box.x + C.box.w - 90), C.Y(st.NB) - 14, { align: "left", bold: true, color: P.accent }); }
+      const xh = Math.min(2 * Math.sqrt(D * st.t), xm * 0.97), yh = prof(xh, st.t);
+      self._h = [C.X(xh * 1e4), C.Y(Math.max(yh, ys[0]))];
+      handle(ctx, self._h[0], self._h[1], P.accent, 9);
+      SB.label(ctx, "2√(Dt)", self._h[0] + 12, self._h[1] - 12, { align: "left", size: 11, color: P.dim });
+      self._nb = [C.box.x + C.box.w + 14, C.Y(st.NB)];
+      handle(ctx, self._nb[0], self._nb[1], P.accent2, 9);
+      SB.label(ctx, `N_B = ${sci(st.NB, 2)}`, C.box.x + C.box.w - 4, C.Y(st.NB) + 14, { align: "right", size: 11, color: P.accent2 });
+      SB.stat("prof-D", sci(D) + " cm²/s");
+      SB.stat("prof-t", tfmt(st.t));
+      SB.stat("prof-L", umfmt(Math.sqrt(D * st.t) * 1e4));
+      SB.stat("prof-xj", xj > 0 ? umfmt(xj * 1e4) : "접합 없음");
+      if (st.kind === "erfc") { $("prof-qk").textContent = "도즈 Q"; SB.stat("prof-q", sci(Th.erfcDose(D, st.t, amt())) + " cm⁻²"); }
+      else { $("prof-qk").textContent = "표면 농도 C₀"; SB.stat("prof-q", sci(amt() / Math.sqrt(PI * D * st.t)) + " cm⁻³"); }
+    }, { aspect: 0.6, minHeight: 320, maxHeight: 440 });
+    const sR = SB.range("prof-s", (v) => (st.kind === "erfc" ? sci(Math.pow(10, v), 2) + " cm⁻³" : sci(Math.pow(10, v), 2) + " cm⁻²"), (v) => { st.s = v; rescale(); cv.redraw(); });
+    SB.range("prof-T", (v) => v + " °C", (v) => { st.Tc = v; rescale(); cv.redraw(); });
+    SB.seg("prof-el", (v) => { st.el = v; rescale(); cv.redraw(); });
+    SB.seg("prof-kind", (v) => {
+      st.kind = v; const el = sR.el;
+      if (v === "erfc") { el.min = 17; el.max = 21; $("prof-s-lab").firstChild.textContent = "표면 농도 Cₛ "; sR.set(20, true); st.s = 20; }
+      else { el.min = 11; el.max = 16; $("prof-s-lab").firstChild.textContent = "도즈 Q "; sR.set(14, true); st.s = 14; }
+      rescale(); cv.redraw();
+    });
+    $("prof-lin").addEventListener("change", (e) => { st.lin = e.target.checked; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }, { id: "nb", x: cv._nb[0], y: cv._nb[1], r: 14 }] : []),
+      down: (id) => { st.dragT = id === "t"; },
+      up: () => { st.dragT = false; rescale(); cv.redraw(); },
+      move: (id, x, y) => {
+        const C = cv._C; if (!C) return;
+        if (id === "t") { const xc = SB.clamp(((x - C.box.x) / C.box.w) * st.xmax, 1e-4, st.xmax * 0.97) * 1e-4; st.t = SB.clamp((xc / 2) ** 2 / Dn(), 60, 72000); }
+        if (id === "nb" && !st.lin) { const f = (C.box.y + C.box.h - y) / C.box.h; st.NB = Math.pow(10, SB.clamp(14 + 7 * f, 14, 19.5)); }
+      },
+    });
+  }
+
+  /* ================================================================ 4절 미니: 총량 보존과 표면 고정 */
+  {
+    const st = { kind: "gauss", tau: 0.05, playing: true };
+    const G = (x, t) => Math.exp(-x * x / (4 * t)) / Math.sqrt(PI * t), E = (x, t) => Th.erfc(x / (2 * Math.sqrt(t)));
+    const cv = SB.canvas("cv-dose", (ctx, w, h) => {
+      const P = pal(), f = st.kind === "gauss" ? G : E, ymax = st.kind === "gauss" ? 1.25 : 1.1;
+      const cur = (t) => Array.from({ length: 161 }, (_, i) => { const x = (8 * i) / 160; return [x, f(x, t)]; });
+      const C = SB.chart(ctx, { x: 46, y: 18, w: w - 46 - 16, h: h - 18 - 44 }, { x: [0, 8], y: [0, ymax], xLabel: "깊이 (임의 단위)", yTicks: [0, 0.5, 1],
+        series: [0.25, 1, 4].map((t) => ({ data: cur(t), color: P.faint, width: 1.3, dash: [4, 4] })).concat([{ data: cur(st.tau), color: P.accent, width: 3, fill: SB.color("accent-soft") }]) });
+      let area = 0; for (let i = 0; i < 800; i++) { const x = (i + 0.5) * 0.01; area += f(x, st.tau) * 0.01; }
+      SB.label(ctx, `Dt = ${st.tau.toFixed(2)}`, C.box.x + C.box.w - 4, C.box.y + 10, { align: "right", bold: true });
+      SB.stat("dose-r", st.kind === "gauss" ? `넓이 ${area.toFixed(3)} (그대로) · 봉우리 ${f(0, st.tau).toFixed(2)} ∝ 1/√t` : `넓이 ${area.toFixed(3)} = 2√(Dt/π) · 표면 1.00 (그대로)`);
+    }, { aspect: 0.4, minHeight: 220, maxHeight: 300 });
+    SB.seg("dose-kind", (v) => { st.kind = v; cv.redraw(); });
+    toggleBtn("dose-play", st);
+    SB.loop("cv-dose", (dt) => { if (!st.playing) return; st.tau *= Math.exp(dt * 0.9); if (st.tau > 4.5) st.tau = 0.05; cv.redraw(); });
+  }
+
+  SB.tangle("tg-xj", (v) => {
+    const Q = Math.pow(10, v.q), D = Th.D("B", K(v.T)), t = v.t * 60, C0 = Q / Math.sqrt(PI * D * t), xj = xjG(D * t, Q, 1e16);
+    return { L: umfmt(Math.sqrt(D * t) * 1e4), C0: sci(C0) + " cm⁻³", xj: xj > 0 ? umfmt(xj * 1e4) : "접합 없음(C₀ < N_B)" };
+  });
+
+  SB.drill("drill-xj", () => {
+    const el = rpick(["B", "P", "As"]), Tc = 900 + 25 * Math.floor(Math.random() * 11), tm = rpick([15, 20, 30, 60, 90, 120]), D = Th.D(el, K(Tc)), t = tm * 60;
+    if (Math.random() < 0.5) {
+      const Cs = rpick([5e19, 1e20, 2e20]), r = rpick([1e-3, 1e-4, 1e-5]), NB = Cs * r, inv = Th.erfcinv(r), xj = 2 * Math.sqrt(D * t) * inv * 1e4;
+      return { q: `<p>${DOP[el]}를 ${Tc} °C(\\(D = ${sciT(D)}\\) cm²/s)에서 ${tm}분 동안 표면 농도 \\(${sciT(Cs, 2)}\\) cm⁻³로 선증착한다. 배경 농도 \\(${sciT(NB, 2)}\\) cm⁻³에서 접합 깊이(µm)는? (\\(\\operatorname{erfc}^{-1}(${sciT(r, 1)}) = ${inv.toFixed(3)}\\))</p>`,
+        answer: xj, label: "x_j =", unit: "µm", tol: "2%", sol: `\\(x_j = 2\\sqrt{Dt}\\,\\operatorname{erfc}^{-1}(N_B/C_s) = 2\\sqrt{${sciT(D)}\\times${t}}\\times${inv.toFixed(3)} = ${sciT(xj / 1e4)}\\) cm \\(= ${sciT(xj)}\\) µm` };
+    }
+    const Q = rpick([1e13, 5e13, 1e14, 5e14, 1e15]), NB = rpick([1e15, 1e16, 1e17]), C0 = Q / Math.sqrt(PI * D * t);
+    if (C0 <= NB * 3) return { q: `<p>${DOP[el]} 도즈 \\(${sciT(Q, 1)}\\) cm⁻²를 ${Tc} °C(\\(D = ${sciT(D)}\\) cm²/s)에서 ${tm}분 드라이브인할 때 표면 농도(cm⁻³)는?</p>`, answer: C0, label: "C₀ =", unit: "cm⁻³", tol: "2%", sol: `\\(C_0 = Q/\\sqrt{\\pi Dt} = ${sciT(C0)}\\) cm⁻³` };
+    const xj = xjG(D * t, Q, NB) * 1e4;
+    return { q: `<p>${DOP[el]} 도즈 \\(${sciT(Q, 1)}\\) cm⁻²(얕은 주입)를 ${Tc} °C(\\(D = ${sciT(D)}\\) cm²/s)에서 ${tm}분 드라이브인한다. 표면 농도(cm⁻³)와 배경 \\(${sciT(NB, 1)}\\) cm⁻³에서의 접합 깊이(µm)를 구하라.</p>`,
+      answer: [C0, xj], label: ["C₀ =", "x_j ="], unit: ["cm⁻³", "µm"], tol: "2%",
+      sol: `\\(Dt = ${sciT(D * t)}\\) cm², \\(C_0 = Q/\\sqrt{\\pi Dt} = ${sciT(C0)}\\) cm⁻³, \\(x_j = 2\\sqrt{Dt\\ln(C_0/N_B)} = 2\\sqrt{${sciT(D * t)}\\times${Math.log(C0 / NB).toFixed(3)}} = ${sciT(xj)}\\) µm` };
+  });
+
+  /* ================================================================ 5절: 열 예산 계산기 */
+  {
+    const PRE = {
+      furnace: [{ n: "S/D 어닐", T: 950, t: 1800, f: 1 }, { n: "BPSG 리플로", T: 900, t: 1800, f: 1 }, { n: "치밀화", T: 850, t: 1800, f: 1 }, { n: "금속 소결", T: 450, t: 1800, f: 1 }],
+      rta: [{ n: "스페이서", T: 720, t: 3600, f: 1 }, { n: "S/D RTA", T: 1050, t: 10, f: 0 }, { n: "실리사이드", T: 700, t: 30, f: 0 }, { n: "유전막", T: 650, t: 1800, f: 1 }],
+      spike: [{ n: "스페이서 ALD", T: 550, t: 1800, f: 1 }, { n: "스파이크", T: 1050, t: 0, f: 0 }, { n: "실리사이드", T: 450, t: 30, f: 0 }, { n: "저온 유전막", T: 400, t: 1800, f: 1 }],
+    };
+    const st = { steps: PRE.furnace.map((s) => Object.assign({}, s)), el: "B", ramp: true };
+    const t2u = (t) => (t <= 0 ? 0 : SB.clamp((Math.log10(t) + 1) / 5.5, 0.04, 1));
+    const u2t = (u) => (u < 0.04 ? 0 : Math.pow(10, 5.5 * u - 1));
+    const tlab = (t) => (t <= 0 ? "0 s" : t < 60 ? `${Number(t.toPrecision(2))} s` : t < 3600 ? `${Number((t / 60).toPrecision(2))} 분` : `${Number((t / 3600).toPrecision(2))} h`);
+    function contrib(s) {
+      const pl = Th.D(st.el, K(s.T)) * s.t;
+      let rp = 0;
+      if (st.ramp) { const T0 = s.f ? 700 : 400, r = s.f ? 10 / 60 : 150; if (s.T > T0) { const n = 120, dT = (s.T - T0) / n, list = []; for (let i = 0; i < n; i++) list.push({ T: K(T0 + (i + 0.5) * dT), t: dT / r }); rp = 2 * Th.thermalBudget(st.el, list); } }
+      return { pl, rp, tot: pl + rp };
+    }
+    const cv = SB.canvas("cv-budget", (ctx, w, h, self) => {
+      const P = pal(), ns = st.steps.length, top = 58, ch = Math.round(h * 0.46), bx = 52, bw = w - bx - 14, cw = bw / ns;
+      const Ymin = 300, Ymax = 1200, Y = (T) => top + ch - ((T - Ymin) / (Ymax - Ymin)) * ch;
+      ctx.strokeStyle = P.grid; ctx.fillStyle = P.dim; ctx.font = "11px " + SB.color("mono"); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      [400, 600, 800, 1000, 1200].forEach((T) => { ctx.beginPath(); ctx.moveTo(bx, Y(T)); ctx.lineTo(bx + bw, Y(T)); ctx.stroke(); ctx.fillText(T + "", bx - 6, Y(T)); });
+      SB.label(ctx, "°C", bx - 30, top - 14, { size: 11, color: P.dim });
+      const cs = st.steps.map(contrib), tot = cs.reduce((a, c) => a + c.tot, 0);
+      self._hs = [];
+      st.steps.forEach((s, k) => {
+        const x0 = bx + k * cw, T0 = s.f ? 700 : 400, base = Math.min(T0, s.T), u = t2u(s.t), ru = cw * 0.14, pw = (cw - 2 * ru - 10) * u;
+        ctx.strokeStyle = P.border; ctx.beginPath(); ctx.moveTo(x0, top); ctx.lineTo(x0, top + ch); ctx.stroke();
+        const xa = x0 + 5, xb = xa + ru, xc = xb + pw, xd = xc + ru;
+        const pts = [[xa, Y(base)], [xb, Y(s.T)], [xc, Y(s.T)], [xd, Y(base)]];
+        withA(ctx, 0.25, () => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.moveTo(xa, top + ch); pts.forEach(([x, y]) => ctx.lineTo(x, y)); ctx.lineTo(xd, top + ch); ctx.closePath(); ctx.fill(); });
+        line(ctx, pts, P.accent, 2.5);
+        const hx = (xb + xc) / 2;
+        handle(ctx, hx, Y(s.T), P.accent, 8);
+        handle(ctx, xc, top + ch + 14, P.text, 8);
+        self._hs.push({ id: "T" + k, x: hx, y: Y(s.T), r: 13 }, { id: "t" + k, x: xc, y: top + ch + 14, r: 13 });
+        SB.label(ctx, s.n, x0 + cw / 2, top - 14, { size: 11, bold: true });
+        SB.label(ctx, `${s.T}°C`, hx, Y(s.T) - 16, { size: 11, color: P.accent });
+        SB.label(ctx, tlab(s.t), x0 + cw / 2, top + ch + 32, { size: 11, color: P.dim });
+      });
+      self._geom = { bx, cw, top, ch, Ymin, Ymax };
+      // 몫 막대
+      const by = top + ch + 50, bh = Math.min(20, (h - by - 10) / ns - 6);
+      st.steps.forEach((s, k) => {
+        const y = by + k * (bh + 6), fr = tot > 0 ? cs[k].tot / tot : 0, frp = tot > 0 ? cs[k].pl / tot : 0, L = (bw - 110) * fr;
+        ctx.fillStyle = P.grid; ctx.fillRect(bx + 100, y, bw - 110, bh);
+        ctx.fillStyle = P.accent; ctx.fillRect(bx + 100, y, (bw - 110) * frp, bh);
+        withA(ctx, 0.4, () => { ctx.fillStyle = P.accent; ctx.fillRect(bx + 100 + (bw - 110) * frp, y, L - (bw - 110) * frp, bh); });
+        SB.label(ctx, s.n, bx + 94, y + bh / 2, { align: "right", size: 11 });
+        SB.label(ctx, `${(fr * 100).toFixed(fr < 0.01 ? 2 : 1)}%`, bx + 104 + Math.max(L, 0), y + bh / 2, { align: "left", size: 11, bold: true });
+      });
+      const imax = cs.reduce((a, c, i) => (c.tot > cs[a].tot ? i : a), 0);
+      SB.stat("bud-dt", sci(tot) + " cm²");
+      SB.stat("bud-L", umfmt(Math.sqrt(tot) * 1e4));
+      SB.stat("bud-eq", tfmt(tot / Th.D(st.el, K(1000))));
+      SB.stat("bud-max", `${st.steps[imax].n} ${tot > 0 ? ((cs[imax].tot / tot) * 100).toFixed(0) : 0}%`);
+    }, { aspect: 0.7, minHeight: 400, maxHeight: 500 });
+    SB.drag(cv, { handles: () => cv._hs || [],
+      move: (id, x, y) => {
+        const g = cv._geom; if (!g || id == null) return;
+        const k = Number(id.slice(1)), s = st.steps[k];
+        if (id[0] === "T") s.T = Math.round(SB.clamp(g.Ymin + ((g.top + g.ch - y) / g.ch) * (g.Ymax - g.Ymin), 350, 1200) / 5) * 5;
+        else { const x0 = g.bx + k * g.cw, ru = g.cw * 0.14, u = (x - (x0 + 5 + ru)) / (g.cw - 2 * ru - 10); s.t = Number(u2t(SB.clamp(u, 0, 1)).toPrecision(2)); }
+      } });
+    SB.seg("bud-pre", (v) => { st.steps = PRE[v].map((s) => Object.assign({}, s)); cv.redraw(); });
+    SB.seg("bud-el", (v) => { st.el = v; cv.redraw(); });
+    $("bud-ramp").addEventListener("change", (e) => { st.ramp = e.target.checked; cv.redraw(); });
+  }
+
+  /* ================================================================ 5절 게임: 드라이브인 과제 */
+  {
+    const ROUNDS = [{ xj: 2.0, Q: 2e13, TP: 1065, Tt: 1040 }, { xj: 1.5, Q: 2e13, TP: 1075, Tt: 1045 }, { xj: 2.5, Q: 5e13, TP: 1080, Tt: 1050 }, { xj: 1.2, Q: 1e13, TP: 1070, Tt: 1055 }];
+    const NB = 1e15, TOL = 0.03, TL = [950, 1200], LT = [-1, 1.5];
+    const r2 = (x) => Number(x.toPrecision(2));
+    function mk(r) {
+      const Dt = Th.bisectLog((d) => xjG(d, r.Q, NB) * 1e4 - r.xj, 1e-13, 1e-6);
+      const Plim = r2((Dt * Th.D("P", K(r.TP))) / Th.D("B", K(r.TP)));
+      const tmax = Math.round((Dt / Th.D("B", K(r.Tt)) / 3600) * 2) / 2;
+      const TPx = Th.bisect((c) => (Th.D("P", K(c)) * Dt) / Th.D("B", K(c)) - Plim, 900, 1300);
+      const Tb = Math.min(TL[1], isFinite(TPx) ? TPx : TL[1]), tbest = Dt / Th.D("B", K(Tb)) / 3600;
+      return Object.assign({}, r, { Dt, Plim, tmax, tbest });
+    }
+    const st = { k: 0, R: mk(ROUNDS[0]), T: 1000, lt: 0.5, res: null, scores: [] };
+    const th = () => Math.pow(10, st.lt);
+    function task() { const R = st.R; $("game-task").innerHTML = `과제 ${st.k + 1}/${ROUNDS.length}: 붕소 도즈 ${sci(R.Q, 1)} cm⁻², 배경 ${sci(NB, 1)} cm⁻³에서 <b>접합 깊이 ${R.xj} µm</b>(±3%). 조건: 인의 Dt ≤ ${sci(R.Plim, 2)} cm², 시간 ≤ ${R.tmax} h, 온도 ${TL[0]}–${TL[1]} °C.`; }
+    task();
+    function evalNow() {
+      const R = st.R, t = th() * 3600, DtB = Th.D("B", K(st.T)) * t, xj = xjG(DtB, R.Q, NB) * 1e4, Pd = Th.D("P", K(st.T)) * t;
+      return { xj, Pd, okx: Math.abs(xj / R.xj - 1) <= TOL, okp: Pd <= R.Plim, okt: th() <= R.tmax, DtB };
+    }
+    let cv2 = null;
+    const cv1 = SB.canvas("cv-game1", (ctx, w, h, self) => {
+      const P = pal(), R = st.R;
+      const C = SB.chart(ctx, { x: 52, y: 34, w: w - 52 - 14, h: h - 34 - 46 }, { x: LT, y: TL, xTicks: [-1, -0.5, 0, 0.5, 1, 1.5], xFmt: (v) => String(Number(Math.pow(10, v).toPrecision(2))), xLabel: "시간 (h, 로그)", yLabel: "온도 (°C)" });
+      self._C = C;
+      // 금지 구역
+      const NXg = 50, NYg = 40;
+      withA(ctx, 0.22, () => { ctx.fillStyle = P.bad;
+        for (let a = 0; a < NXg; a++) for (let b = 0; b < NYg; b++) {
+          const lt = LT[0] + ((a + 0.5) / NXg) * (LT[1] - LT[0]), T = TL[0] + ((b + 0.5) / NYg) * (TL[1] - TL[0]), t = Math.pow(10, lt);
+          if (t > R.tmax || Th.D("P", K(T)) * t * 3600 > R.Plim) { const x = C.X(LT[0] + (a / NXg) * (LT[1] - LT[0])), y = C.Y(TL[0] + ((b + 1) / NYg) * (TL[1] - TL[0])); ctx.fillRect(x, y, C.box.w / NXg + 0.5, C.box.h / NYg + 0.5); }
+        } });
+      if ($("game-hint").checked) {
+        const iso = (f) => { const o = []; for (let T = TL[0]; T <= TL[1]; T += 2) { const lt = Math.log10((R.Dt * f) / Th.D("B", K(T)) / 3600); o.push([C.X(SB.clamp(lt, LT[0] - 1, LT[1] + 1)), C.Y(T)]); } return o; };
+        ctx.save(); ctx.beginPath(); ctx.rect(C.box.x, C.box.y, C.box.w, C.box.h); ctx.clip();
+        line(ctx, iso(1), P.accent2, 2, [6, 4]); line(ctx, iso(0.94), P.accent2, 1, [2, 3]); line(ctx, iso(1.06), P.accent2, 1, [2, 3]);
+        ctx.restore();
+      }
+      const e = evalNow(), hx = C.X(st.lt), hy = C.Y(st.T);
+      handle(ctx, hx, hy, e.okx && e.okp && e.okt ? P.ok : P.accent, 10);
+      SB.label(ctx, `${st.T} °C, ${th().toPrecision(3)} h`, SB.clamp(hx, C.box.x + 60, C.box.x + C.box.w - 60), hy - 18, { bold: true, size: 12 });
+      SB.stat("game-tt", `${st.T} °C / ${th().toPrecision(3)} h`);
+      SB.stat("game-xj", `${e.xj.toFixed(2)} µm (목표 ${R.xj})`);
+      SB.stat("game-p", `${(e.Pd / R.Plim * 100).toFixed(0)}%`);
+      if (cv2) cv2.redraw();
+    }, { aspect: 0.85, minHeight: 260, maxHeight: 360 });
+    cv2 = SB.canvas("cv-game2", (ctx, w, h) => {
+      const P = pal(), R = st.R, e = evalNow(), xm = 4;
+      const C = SB.chart(ctx, { x: 58, y: 34, w: w - 58 - 14, h: h - 34 - 46 }, { x: [0, xm], y: [1e14, 1e19], logY: true, yFmt: pow10Fmt, xLabel: "깊이 (µm)", yLabel: "B 농도 (cm⁻³)",
+        bands: [{ x0: R.xj * (1 - TOL), x1: R.xj * (1 + TOL), color: SB.color("accent-2-soft") }],
+        series: [{ data: Array.from({ length: 201 }, (_, i) => { const x = (xm * i) / 200; return [x, R.Q / Math.sqrt(PI * e.DtB) * Math.exp(-((x * 1e-4) ** 2) / (4 * e.DtB))]; }), color: P.accent, width: 3 }],
+        hlines: [{ y: NB, color: P.accent2, dash: [6, 4], width: 1.6 }], vlines: [{ x: R.xj, color: P.accent2, dash: [3, 3] }] });
+      SB.label(ctx, `목표 ${R.xj} µm`, Math.min(C.X(R.xj) + 6, C.box.x + C.box.w - 60), C.box.y + 12, { align: "left", size: 11, color: P.accent2 });
+    }, { aspect: 0.85, minHeight: 260, maxHeight: 360 });
+    SB.drag(cv1, { handles: () => { const C = cv1._C; return C ? [{ id: "p", x: C.X(st.lt), y: C.Y(st.T), r: 14 }] : []; },
+      move: (id, x, y) => { const C = cv1._C; if (!C) return; st.lt = SB.clamp(LT[0] + ((x - C.box.x) / C.box.w) * (LT[1] - LT[0]), LT[0], LT[1]); st.T = Math.round(SB.clamp(TL[0] + ((C.box.y + C.box.h - y) / C.box.h) * (TL[1] - TL[0]), TL[0], TL[1])); } });
+    $("game-hint").addEventListener("change", () => cv1.redraw());
+    $("game-go").addEventListener("click", () => {
+      const e = evalNow(), R = st.R;
+      let msg;
+      if (!e.okp) msg = "✗ 인의 열 예산 초과 — 온도를 낮춰라";
+      else if (!e.okt) msg = "✗ 시간 초과 — 온도를 올려라";
+      else if (!e.okx) msg = e.xj < R.xj ? `✗ 접합이 얕다 (${e.xj.toFixed(2)} µm)` : `✗ 접합이 깊다 (${e.xj.toFixed(2)} µm)`;
+      else { const sc = Math.min(100, Math.round((100 * R.tbest) / th())); st.scores[st.k] = Math.max(st.scores[st.k] || 0, sc); msg = `✓ 성공! ${sc}점 (최단 ${R.tbest.toPrecision(3)} h)`; }
+      SB.stat("game-res", msg + (st.scores.length ? ` · 합계 ${st.scores.reduce((a, b) => a + (b || 0), 0)}점` : ""));
+    });
+    $("game-next").addEventListener("click", () => { st.k = (st.k + 1) % ROUNDS.length; st.R = mk(ROUNDS[st.k]); task(); SB.stat("game-res", "—"); cv1.redraw(); });
+    SB.stat("game-res", "—");
+  }
+
+  /* ================================================================ 5절 미니: 양해법의 안정성 */
+  {
+    const M = 41, NSTEP = 80;
+    const st = { r: 0.4, n: 0, ex: null, cn: null, acc: 0 };
+    const box0 = (i) => (i >= 16 && i <= 24 ? 1 : 0);
+    function fresh() { st.n = 0; st.ex = Float64Array.from({ length: M }, (_, i) => box0(i)); st.cn = Th.diffuse1d({ n: M, L: M - 1, D: 1, c0: (x) => box0(Math.round(x)) }); }
+    fresh();
+    function stepEx() {
+      const c = st.ex, nx = new Float64Array(M);
+      for (let i = 0; i < M; i++) { const l = c[i > 0 ? i - 1 : 1], r = c[i < M - 1 ? i + 1 : M - 2]; nx[i] = c[i] + st.r * (l - 2 * c[i] + r); }
+      st.ex = nx; st.cn.step(st.r); st.n++;
+    }
+    const cv = SB.canvas("cv-explicit", (ctx, w, h) => {
+      const P = pal();
+      const C = SB.chart(ctx, { x: 46, y: 18, w: w - 46 - 16, h: h - 18 - 44 }, { x: [0, M - 1], y: [-0.5, 1.5], xLabel: "격자 번호 i", yTicks: [-0.5, 0, 0.5, 1, 1.5],
+        series: [{ data: Array.from(st.cn.c, (v, i) => [i, v]), color: P.accent2, width: 2.5 }] });
+      let err = 0; for (let i = 0; i < M; i++) err = Math.max(err, Math.abs(st.ex[i] - st.cn.c[i]));
+      const bad = err > 0.2;
+      ctx.fillStyle = bad ? P.bad : P.accent;
+      for (let i = 0; i < M; i++) { const y = SB.clamp(st.ex[i], -0.5, 1.5); ctx.beginPath(); ctx.arc(C.X(i), C.Y(y), 3.2, 0, 2 * PI); ctx.fill(); }
+      SB.label(ctx, `걸음 ${st.n}`, C.box.x + C.box.w - 4, C.box.y + 10, { align: "right", bold: true });
+      SB.stat("exp-out", `|1 − 4r| = ${Math.abs(1 - 4 * st.r).toFixed(2)} · 최대 차이 ${sci(err, 2)} · ${st.r <= 0.5 ? "안정" : "불안정"}`);
+    }, { aspect: 0.4, minHeight: 220, maxHeight: 300 });
+    SB.range("exp-r", (v) => v.toFixed(2), (v) => { st.r = v; fresh(); cv.redraw(); });
+    $("exp-run").addEventListener("click", () => { fresh(); cv.redraw(); });
+    SB.loop("cv-explicit", (dt) => { if (st.n >= NSTEP) return; st.acc += dt * 20; while (st.acc >= 1 && st.n < NSTEP) { st.acc -= 1; stepEx(); } cv.redraw(); });
+  }
+
+  /* ================================================================ 5절: 크랭크–니콜슨 도펀트 확산 */
+  {
+    const n = 241, NB = 1e16, Cs = 1e20, Qi = 1e15, Rp = 0.05, dRp = 0.02, TEND = 3600;
+    const st = { kind: "pre", Tc: 1000, ext: false, playing: true, sim: null, L: 0.5, t: 0 };
+    const Di = () => Th.D("B", K(st.Tc)) * 1e8; // µm²/s
+    function imp(x, s2) { const s = Math.sqrt(s2), a = (Qi / (Math.sqrt(2 * PI) * s * 1e-4)); return a * (Math.exp(-((x - Rp) ** 2) / (2 * s2)) + Math.exp(-((x + Rp) ** 2) / (2 * s2))); }
+    function anal(x, t) { const D = Di(); return st.kind === "pre" ? Th.erfcProfile(x, D, Math.max(t, 1e-9), Cs) : imp(x, dRp * dRp + 2 * D * t); }
+    function xjAnal(t) { const D = Di(); if (st.kind === "pre") return Th.junctionErfc(D, Math.max(t, 1e-9), Cs, NB); return Th.bisect((x) => anal(x, t) - NB, Rp, st.L); }
+    function fresh() {
+      const D = Di();
+      st.L = st.kind === "pre" ? Math.max(0.2, Math.ceil(1.5 * Th.junctionErfc(D, TEND, Cs, NB) * 10) / 10) : Math.max(0.3, Math.ceil(1.6 * Th.bisect((x) => imp(x, dRp * dRp + 2 * D * TEND) - NB, Rp, 20) * 10) / 10);
+      st.t = 0;
+      const ni = niSi(K(st.Tc));
+      const Dfun = (i) => { const c = st.sim ? st.sim.c[i] : 0, p = c / 2 + Math.sqrt((c * c) / 4 + ni * ni); return st.ext ? (D * (1 + p / ni)) / 2 : D; };
+      st.sim = null;
+      st.sim = Th.diffuse1d({ n, L: st.L, D: Dfun, c0: st.kind === "pre" ? (x) => (x < 1e-12 ? Cs : 0) : (x) => imp(x, dRp * dRp), left: st.kind === "pre" ? { type: "fixed", value: Cs } : { type: "flux", value: 0 }, right: { type: "flux", value: 0 } });
+    }
+    fresh();
+    function xjNum() { const c = st.sim.c, x = st.sim.x; let i0 = 0; for (let i = 0; i < n; i++) if (c[i] > c[i0]) i0 = i; for (let i = i0; i < n - 1; i++) if (c[i] >= NB && c[i + 1] < NB) { const f = Math.log(c[i] / NB) / Math.log(c[i] / Math.max(c[i + 1], 1)); return x[i] + f * (x[i + 1] - x[i]); } return NaN; }
+    const cv = SB.canvas("cv-num", (ctx, w, h) => {
+      const P = pal(), sim = st.sim;
+      const C = SB.chart(ctx, { x: 64, y: 30, w: w - 64 - 18, h: h - 30 - 48 }, { x: [0, st.L], y: [1e14, 1e21], logY: true, yFmt: pow10Fmt, yTicks: [1e14, 1e16, 1e18, 1e20], xLabel: "깊이 x (µm)", yLabel: "B 농도 (cm⁻³)",
+        series: [{ data: Array.from(sim.x, (x) => [x, anal(x, st.t)]), color: P.accent2, width: 2, dash: [6, 4] }, { data: Array.from(sim.c, (v, i) => [sim.x[i], v]), color: P.accent, width: 3 }],
+        hlines: [{ y: NB, color: P.dim, dash: [3, 3] }, { y: niSi(K(st.Tc)), color: P.warn, dash: [2, 4], label: "n_i" }] });
+      SB.label(ctx, `${st.Tc} °C, t = ${(st.t / 60).toFixed(1)} 분${st.ext ? " · 외인성 D(C)" : ""}`, C.box.x + 4, 14, { align: "left", bold: true });
+      const xn = xjNum(), xa = xjAnal(st.t);
+      SB.stat("num-t", (st.t / 60).toFixed(1) + " 분");
+      SB.stat("num-xj", `${isFinite(xn) ? umfmt(xn) : "—"} / ${isFinite(xa) ? umfmt(xa) : "—"}`);
+      const qa = st.kind === "pre" ? Th.erfcDose(Di() * 1e-8, st.t, Cs) : Qi;
+      SB.stat("num-q", `${sci(sim.total() * 1e-4, 3)} / ${sci(qa, 3)} cm⁻²`);
+    }, { aspect: 0.56, minHeight: 300, maxHeight: 420 });
+    const sync = toggleBtn("num-play", st);
+    $("num-reset").addEventListener("click", () => { fresh(); st.playing = true; sync(); cv.redraw(); });
+    $("num-ext").addEventListener("change", (e) => { st.ext = e.target.checked; fresh(); st.playing = true; sync(); cv.redraw(); });
+    SB.seg("num-kind", (v) => { st.kind = v; fresh(); st.playing = true; sync(); cv.redraw(); });
+    SB.range("num-T", (v) => v + " °C", (v) => { st.Tc = v; fresh(); cv.redraw(); });
+    SB.loop("cv-num", () => {
+      if (!st.playing) return;
+      const dx = st.L / (n - 1), Dm = Di() * (st.ext ? 12 : 1), DT = 12, sub = Math.max(1, Math.ceil((Dm * DT) / (dx * dx) / 1.5));
+      for (let k = 0; k < sub; k++) st.sim.step(DT / sub);
+      st.t += DT;
+      if (st.t >= TEND) { st.playing = false; sync(); }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 6절: 딜–그로브 성장 곡선 */
+  {
+    const st = { amb: "dry", or: "100", Tc: 1000, xi: 25, log: false, th: 2 };
+    const model = () => Th.dealGrove(K(st.Tc), st.amb, st.or, st.xi / 1000);
+    const cv = SB.canvas("cv-dg", (ctx, w, h, self) => {
+      const P = pal(), g = model(), tmax = 10;
+      const xs = st.log ? [1e-3, 10] : [0, Math.max(0.05, g.x(tmax) * 1.15)], ts = st.log ? [1e-3, 100] : [0, tmax];
+      const tgrid = st.log ? Array.from({ length: 161 }, (_, i) => Math.pow(10, -3 + (5 * i) / 160)) : Array.from({ length: 161 }, (_, i) => (tmax * i) / 160);
+      const C = SB.chart(ctx, { x: 60, y: 22, w: w - 60 - 18, h: h - 22 - 48 }, { x: ts, y: xs, logX: st.log, logY: st.log, xFmt: st.log ? pow10Fmt : null, yFmt: st.log ? pow10Fmt : null,
+        xLabel: "시간 t (h)", yLabel: "산화막 두께 x (µm)",
+        series: [{ data: tgrid.map((t) => [t, g.BA * (t + g.tau)]), color: P.accent2, width: 1.6, dash: [6, 4] }, { data: tgrid.map((t) => [t, Math.sqrt(g.B * (t + g.tau))]), color: P.accent2, width: 1.6 }, { data: tgrid.map((t) => [t, g.x(t)]), color: P.accent, width: 3 }] });
+      self._C = C;
+      st.th = SB.clamp(st.th, st.log ? 1e-3 : 0, st.log ? 100 : tmax);
+      const x = g.x(st.th), hx = C.X(Math.max(st.th, st.log ? 1e-3 : 0)), hy = C.Y(Math.max(x, st.log ? 1e-3 : 0));
+      self._h = [hx, hy];
+      handle(ctx, hx, hy, P.accent, 9);
+      const reg = (st.th + g.tau) / ((g.A * g.A) / (4 * g.B));
+      SB.label(ctx, reg < 0.3 ? "선형 영역 (계면 반응)" : reg > 3 ? "포물선 영역 (막 속 확산)" : "전이 영역", C.box.x + 6, C.box.y + 10, { align: "left", bold: true, color: P.accent });
+      SB.stat("dg-t", st.th < 1 ? (st.th * 60).toPrecision(3) + " 분" : st.th.toPrecision(3) + " h");
+      SB.stat("dg-x", umfmt(x));
+      SB.stat("dg-r", sci((g.B / (2 * x + g.A)) * 1000 / 60, 3) + " nm/분");
+      SB.stat("dg-reg", reg.toPrecision(3));
+      SB.stat("dg-k", `${sci(g.B, 3)} µm²/h, ${sci(g.BA, 3)} µm/h`);
+    }, { aspect: 0.6, minHeight: 300, maxHeight: 420 });
+    SB.seg("dg-amb", (v) => { st.amb = v; if (v === "wet") { st.xi = 0; dXi.set(0, true); } else { st.xi = 25; dXi.set(25, true); } cv.redraw(); });
+    SB.seg("dg-or", (v) => { st.or = v; cv.redraw(); });
+    SB.range("dg-T", (v) => v + " °C", (v) => { st.Tc = v; cv.redraw(); });
+    const dXi = SB.range("dg-xi", (v) => v + " nm", (v) => { st.xi = v; cv.redraw(); });
+    $("dg-log").addEventListener("change", (e) => { st.log = e.target.checked; cv.redraw(); });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "t", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { const C = cv._C; if (!C) return; const f = SB.clamp((x - C.box.x) / C.box.w, 0, 1); st.th = st.log ? Math.pow(10, -3 + 5 * f) : f * 10; } });
+  }
+
+  SB.tangle("tg-dg", (v) => {
+    const t = v.t / 60, xd = Th.dealGrove(K(v.T), "dry", "100").x(t), xw = Th.dealGrove(K(v.T), "wet", "100").x(t);
+    return { xd: umfmt(xd), xw: umfmt(xw), si: umfmt(0.44 * xw) };
+  });
+
+  /* ================================================================ 6절 게임: 산화 레시피 */
+  {
+    const TASKS = [
+      { n: "패드 산화막", x: 0.05, amb: "any", Tmax: 1000 },
+      { n: "게이트 산화막", x: 0.08, amb: "dry", Tmax: 1100 },
+      { n: "필드 산화막", x: 0.6, amb: "any", Tmax: 1100 },
+      { n: "하드마스크 산화막", x: 0.3, amb: "any", Tmax: 950 },
+    ];
+    const TMIN = 10, TL = [800, 1200], LT = [0.5, 3.3], TOL = 0.03;
+    const st = { k: 0, amb: "dry", T: 1000, lt: 1.5, anim: null, scores: [], last: null };
+    const tmin = () => Math.pow(10, st.lt);
+    const thick = (amb, T, tm) => Th.dealGrove(K(T), amb, "100").x(tm / 60);
+    function best(task) {
+      const ambs = task.amb === "any" ? ["dry", "wet"] : [task.amb];
+      let b = Infinity;
+      for (const a of ambs) {
+        const tAt = (T) => Th.dealGrove(K(T), a, "100").t(task.x) * 60;
+        const t1 = tAt(task.Tmax);
+        if (t1 >= TMIN) b = Math.min(b, t1);
+        else if (tAt(TL[0]) >= TMIN) b = Math.min(b, TMIN);
+      }
+      return b;
+    }
+    function task() { const T = TASKS[st.k]; $("ox-task").innerHTML = `과제 ${st.k + 1}/${TASKS.length}: <b>${T.n} ${T.x * 1000} nm</b>(±3%) · ${T.amb === "dry" ? "건식만 허용" : "건식·습식 모두 허용"} · 온도 ≤ ${T.Tmax} °C · 시간 ≥ ${TMIN}분 · (100) 기판`; }
+    task();
+    const cv = SB.canvas("cv-ox", (ctx, w, h, self) => {
+      const P = pal(), T = TASKS[st.k], narrow = narrowOf(w);
+      const B1 = narrow ? { x: 52, y: 34, w: w - 52 - 14, h: Math.round(h * 0.55) - 34 - 40 } : { x: 52, y: 34, w: Math.round(w * 0.6) - 52, h: h - 34 - 46 };
+      const C = SB.chart(ctx, B1, { x: LT, y: TL, xTicks: [1, 1.5, 2, 2.5, 3], xFmt: (v) => String(Math.round(Math.pow(10, v))), xLabel: "시간 (분, 로그)", yLabel: "온도 (°C)" });
+      self._C = C;
+      withA(ctx, 0.22, () => { ctx.fillStyle = P.bad; ctx.fillRect(C.box.x, C.box.y, C.X(1) - C.box.x, C.box.h); ctx.fillRect(C.box.x, C.box.y, C.box.w, C.Y(T.Tmax) - C.box.y); });
+      const ok = T.amb === "any" || T.amb === st.amb, x = thick(st.amb, st.T, tmin());
+      const hx = C.X(st.lt), hy = C.Y(st.T);
+      handle(ctx, hx, hy, P.accent, 10);
+      SB.label(ctx, `${st.T} °C, ${tmin().toPrecision(3)} 분`, SB.clamp(hx, C.box.x + 60, C.box.x + C.box.w - 60), hy - 18, { bold: true, size: 12 });
+      // 단면
+      const B2 = narrow ? { x: 40, y: B1.y + B1.h + 56, w: w - 80, h: h - (B1.y + B1.h + 56) - 14 } : { x: B1.x + B1.w + 40, y: 30, w: w - (B1.x + B1.w + 40) - 50, h: h - 60 };
+      const xs = st.anim ? st.anim.x : st.last != null ? st.last : (st.amb === "dry" ? 0.025 : 0), sc = (B2.h * 0.42) / (T.x * 1.25), sy = B2.y + B2.h * 0.5;
+      ctx.fillStyle = P.surface; ctx.fillRect(B2.x, sy + 0.44 * xs * sc, B2.w, B2.y + B2.h - (sy + 0.44 * xs * sc));
+      ctx.strokeStyle = P.border; ctx.strokeRect(B2.x, B2.y, B2.w, B2.h);
+      withA(ctx, 0.35, () => { ctx.fillStyle = P.accent2; ctx.fillRect(B2.x, sy - 0.56 * xs * sc, B2.w, xs * sc); });
+      SB.dashLine(ctx, B2.x - 6, sy, B2.x + B2.w + 6, sy, P.accent, [5, 4]);
+      const tyt = sy - 0.56 * T.x * sc;
+      SB.dashLine(ctx, B2.x, tyt, B2.x + B2.w, tyt, P.ok, [2, 3]);
+      SB.label(ctx, `목표 ${T.x * 1000} nm`, B2.x + B2.w / 2, tyt - 10, { size: 11, color: P.ok });
+      SB.label(ctx, "SiO₂", B2.x + B2.w / 2, sy - 0.28 * xs * sc, { size: 12, bold: true, color: P.accent2 });
+      SB.label(ctx, "Si", B2.x + B2.w / 2, B2.y + B2.h - 14, { size: 12, color: P.dim });
+      SB.label(ctx, "원래 표면", B2.x + B2.w, sy + 12, { size: 10, color: P.accent, align: "right" });
+      SB.stat("ox-tt", `${st.amb === "dry" ? "건식" : "습식"} ${st.T} °C, ${tmin().toPrecision(3)} 분${ok ? "" : " (분위기 불가)"}`);
+      SB.stat("ox-x", umfmt(x));
+      const tot = st.scores.reduce((a, b) => a + (b || 0), 0);
+      SB.stat("ox-score", `${tot}점 / ${TASKS.length * 100}`);
+    }, { aspect: 0.55, minHeight: 360, maxHeight: 440 });
+    SB.drag(cv, { handles: () => { const C = cv._C; return C ? [{ id: "p", x: C.X(st.lt), y: C.Y(st.T), r: 14 }] : []; },
+      move: (id, x, y) => { const C = cv._C; if (!C) return; st.last = null; st.lt = SB.clamp(LT[0] + ((x - C.box.x) / C.box.w) * (LT[1] - LT[0]), LT[0], LT[1]); st.T = Math.round(SB.clamp(TL[0] + ((C.box.y + C.box.h - y) / C.box.h) * (TL[1] - TL[0]), TL[0], TL[1]) / 5) * 5; } });
+    SB.seg("ox-amb", (v) => { st.amb = v; st.last = null; cv.redraw(); });
+    $("ox-go").addEventListener("click", () => {
+      const T = TASKS[st.k], t = tmin(), x = thick(st.amb, st.T, t);
+      st.anim = { t: 0, x: st.amb === "dry" ? 0.025 : 0, xf: x, x0: st.amb === "dry" ? 0.025 : 0 };
+      let msg;
+      if (T.amb !== "any" && T.amb !== st.amb) msg = "✗ 이 과제는 건식만 허용";
+      else if (st.T > T.Tmax) msg = `✗ 온도 상한 ${T.Tmax} °C 초과`;
+      else if (t < TMIN) msg = "✗ 10분 미만은 두께를 제어할 수 없다";
+      else if (Math.abs(x / T.x - 1) > TOL) msg = x < T.x ? `✗ 얇다 (${umfmt(x)})` : `✗ 두껍다 (${umfmt(x)})`;
+      else { const b = best(T), sc = Math.min(100, Math.round((100 * b) / t)); st.scores[st.k] = Math.max(st.scores[st.k] || 0, sc); msg = `✓ 성공! ${sc}점 (최단 약 ${b.toPrecision(3)}분)`; }
+      SB.stat("ox-res", msg);
+    });
+    $("ox-next").addEventListener("click", () => { st.k = (st.k + 1) % TASKS.length; st.anim = null; st.last = null; task(); SB.stat("ox-res", "—"); cv.redraw(); });
+    SB.stat("ox-res", "—");
+    SB.loop("cv-ox", (dt) => { const a = st.anim; if (!a) return; a.t = Math.min(1, a.t + dt / 1.6); a.x = a.x0 + (a.xf - a.x0) * Math.sqrt(a.t); if (a.t >= 1) { st.last = a.xf; st.anim = null; } cv.redraw(); });
+  }
+
+  SB.drill("drill-ox", () => {
+    const amb = rpick(["dry", "wet"]), Tc = 900 + 25 * Math.floor(Math.random() * 11), g = Th.dealGrove(K(Tc), amb, "100");
+    const B = Number(g.B.toPrecision(3)), A = Number(g.A.toPrecision(3)), tau = Number(g.tau.toPrecision(3));
+    if (Math.random() < 0.5) {
+      const th = rpick([0.5, 1, 2, 3, 4, 6]), x = (A / 2) * (Math.sqrt(1 + (th + tau) / ((A * A) / (4 * B))) - 1);
+      return { q: `<p>${Tc} °C ${amb === "dry" ? "건식" : "습식"} 산화, (100) 기판: \\(B = ${B}\\) µm²/h, \\(A = ${A}\\) µm, \\(\\tau = ${tau}\\) h. ${th}시간 뒤 산화막 두께(µm)는?</p>`, answer: x, label: "x =", unit: "µm", tol: "2%",
+        sol: `\\(x^2 + Ax = B(t+\\tau) = ${B}\\times${(th + tau).toFixed(3)} = ${(B * (th + tau)).toPrecision(4)}\\) → \\(x = \\tfrac{-A + \\sqrt{A^2 + 4B(t+\\tau)}}{2} = ${x.toPrecision(3)}\\) µm` };
+    }
+    const x = rpick(amb === "dry" ? [0.05, 0.08, 0.1, 0.15] : [0.2, 0.3, 0.5, 0.8, 1.0]), t = (x * x + A * x) / B - tau;
+    if (t <= 0) return { q: `<p>${Tc} °C 건식 산화(\\(\\tau = ${tau}\\) h)에서 처음 두께 보정 \\(x_i\\)는 몇 nm로 가정했는가?</p>`, answer: 25, label: "x_i =", unit: "nm", tol: "1%", sol: "Plummer의 관례로 \\(x_i = 25\\) nm" };
+    return { q: `<p>${Tc} °C ${amb === "dry" ? "건식" : "습식"} 산화, (100) 기판: \\(B = ${B}\\) µm²/h, \\(A = ${A}\\) µm, \\(\\tau = ${tau}\\) h. ${x} µm를 키우는 데 걸리는 시간(h)은?</p>`, answer: t, label: "t =", unit: "h", tol: "2%",
+      sol: `\\(t = (x^2 + Ax)/B - \\tau = (${(x * x).toPrecision(3)} + ${(A * x).toPrecision(3)})/${B} - ${tau} = ${t.toPrecision(3)}\\) h` };
+  });
+
+  /* ================================================================ 7절: 힘이 걸린 무작위 걸음 */
+  {
+    const FMAX = 4, G0 = 0.5 / Math.cosh(FMAX / 2), XW = 160;
+    const st = { n: 500, f: 0.4, p: [], N: 0, playing: true, R: Th.rng(9) };
+    function fresh() { st.R = Th.rng(9); st.p = Array.from({ length: st.n }, () => ({ x: 0, y: st.R() })); st.N = 0; }
+    fresh();
+    function tick() {
+      const pr = G0 * Math.exp(st.f / 2), pl = G0 * Math.exp(-st.f / 2);
+      for (const q of st.p) { const r = st.R(); if (r < pr) q.x++; else if (r < pr + pl) q.x--; }
+      st.N++;
+    }
+    function stats() { let m = 0, v = 0; for (const q of st.p) m += q.x; m /= st.p.length; for (const q of st.p) v += (q.x - m) ** 2; v /= st.p.length; return { m, v }; }
+    const cv = SB.canvas("cv-drift", (ctx, w, h, self) => {
+      const P = pal(), bx = 30, bw = w - 60, X = (x) => bx + ((x + XW) / (2 * XW)) * bw;
+      // 힘 화살표
+      const ay = 42, ax0 = w / 2, ax1 = ax0 + (st.f / FMAX) * (bw / 2) * 0.9;
+      SB.arrow(ctx, ax0, ay, ax1, ay, { color: P.accent2, width: 3, head: 10 });
+      handle(ctx, ax1, ay, P.accent2, 9); self._a = [ax1, ay, ax0, bw];
+      SB.label(ctx, `힘 qEa/kT = ${st.f.toFixed(2)}`, ax0, ay + 22, { size: 12, bold: true, color: P.accent2 });
+      // 원자 띠
+      const sy = 82, sh = Math.round(h * 0.3);
+      ctx.strokeStyle = P.border; ctx.strokeRect(bx, sy, bw, sh);
+      SB.dashLine(ctx, X(0), sy, X(0), sy + sh, P.faint, [3, 3]);
+      ctx.fillStyle = P.accent; withA(ctx, 0.75, () => { for (const q of st.p) { if (Math.abs(q.x) > XW) continue; ctx.beginPath(); ctx.arc(X(q.x), sy + 4 + q.y * (sh - 8), 1.8, 0, 2 * PI); ctx.fill(); } });
+      // 히스토그램
+      const { m, v } = stats(), NBN = 64, bwid = (2 * XW) / NBN, hist = new Float64Array(NBN);
+      for (const q of st.p) { const k = Math.floor((q.x + XW) / bwid); if (k >= 0 && k < NBN) hist[k]++; }
+      const hy = sy + sh + 20, hh = h - hy - 34, hm = Math.max(4, ...hist) * 1.15;
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(bx, hy + hh); ctx.lineTo(bx + bw, hy + hh); ctx.stroke();
+      ctx.fillStyle = P.accent; withA(ctx, 0.5, () => hist.forEach((c, k) => { const x = X(-XW + k * bwid), y = hy + hh - (c / hm) * hh; ctx.fillRect(x + 0.5, y, (bw / NBN) - 1, hy + hh - y); }));
+      if (v > 0.5) { const pts = []; for (let i = 0; i <= 200; i++) { const x = -XW + (2 * XW * i) / 200, g = (st.p.length * bwid) / Math.sqrt(2 * PI * v) * Math.exp(-((x - m) ** 2) / (2 * v)); pts.push([X(x), hy + hh - (g / hm) * hh]); } line(ctx, pts, P.accent2, 2); }
+      SB.label(ctx, `걸음 ${st.N} · 평균 ${m.toFixed(1)} · 분산 ${v.toFixed(1)}`, bx, h - 12, { align: "left", size: 11, color: P.dim });
+      const D = st.N ? v / (2 * st.N) : NaN, vel = st.N ? m / st.N : NaN, muKT = Math.abs(st.f) > 0.02 ? vel / st.f : NaN;
+      SB.stat("drift-f", st.f.toFixed(2));
+      SB.stat("drift-D", st.N > 20 ? D.toFixed(4) : "—");
+      SB.stat("drift-mu", st.N > 20 && isFinite(muKT) ? muKT.toFixed(4) : "—");
+      SB.stat("drift-r", st.N > 20 && isFinite(muKT) ? (D / muKT).toFixed(3) : "힘을 걸어 보라");
+    }, { aspect: 0.6, minHeight: 320, maxHeight: 420 });
+    SB.drag(cv, { handles: () => (cv._a ? [{ id: "f", x: cv._a[0], y: cv._a[1], r: 14 }] : []),
+      move: (id, x) => { const a = cv._a; if (!a) return; const bw = a[3]; st.f = Math.round(SB.clamp(((x - a[2]) / ((bw / 2) * 0.9)) * FMAX, -FMAX, FMAX) * 20) / 20; fresh(); } });
+    const sync = toggleBtn("drift-play", st);
+    $("drift-reset").addEventListener("click", () => { fresh(); st.playing = true; sync(); cv.redraw(); });
+    SB.range("drift-n", (v) => v + "개", (v) => { st.n = v; fresh(); cv.redraw(); });
+    SB.loop("cv-drift", () => { if (!st.playing) return; if (st.N < 1500) { for (let k = 0; k < 3; k++) tick(); } cv.redraw(); });
+  }
+
+  /* ================================================================ 7절 미니: 상자 속 평형 — 볼츠만 분포 */
+  {
+    const M = 30, NW = 600, G0 = 0.45;
+    const st = { f: 0.2, p: [], R: Th.rng(4), hist: new Float64Array(M) };
+    function fresh() { st.p = Array.from({ length: NW }, (_, k) => k % M); st.hist = new Float64Array(M); for (const i of st.p) st.hist[i]++; }
+    fresh();
+    function tick() {
+      const pr = G0 * Math.exp(st.f / 2) / Math.exp(0.3), pl = G0 * Math.exp(-st.f / 2) / Math.exp(0.3);
+      for (let k = 0; k < st.p.length; k++) { const r = st.R(); let i = st.p[k]; if (r < pr) { if (i < M - 1) i++; } else if (r < pr + pl) { if (i > 0) i--; } st.p[k] = i; }
+      const h = new Float64Array(M); for (const i of st.p) h[i]++;
+      for (let i = 0; i < M; i++) st.hist[i] += (h[i] - st.hist[i]) * 0.05;
+    }
+    const cv = SB.canvas("cv-sed", (ctx, w, h) => {
+      const P = pal();
+      let Z = 0; for (let i = 0; i < M; i++) Z += Math.exp(st.f * i);
+      const th = Array.from({ length: M }, (_, i) => (NW * Math.exp(st.f * i)) / Z), ym = Math.max(...th, ...st.hist) * 1.15;
+      const C = SB.chart(ctx, { x: 46, y: 18, w: w - 46 - 16, h: h - 18 - 44 }, { x: [-0.5, M - 0.5], y: [0, ym], xLabel: "위치 (칸) — 오른쪽이 내리막", yLabel: "원자 수",
+        series: [{ data: th.map((v, i) => [i, v]), color: P.accent2, width: 2.4 }] });
+      ctx.fillStyle = P.accent; withA(ctx, 0.6, () => st.hist.forEach((v, i) => { const x = C.X(i - 0.4), y = C.Y(v); ctx.fillRect(x, y, C.X(i + 0.4) - x, C.Y(0) - y); }));
+      SB.stat("sed-r", st.f > 0 ? `감쇠 길이 kT/qE = ${(1 / st.f).toFixed(1)}칸 · 오른쪽 끝/왼쪽 끝 이론 ${sci(Math.exp(st.f * (M - 1)), 2)}배` : "힘 0: 고르게 퍼진다");
+    }, { aspect: 0.4, minHeight: 220, maxHeight: 300 });
+    SB.range("sed-f", (v) => v.toFixed(2), (v) => { st.f = v; cv.redraw(); });
+    $("sed-reset").addEventListener("click", () => { fresh(); cv.redraw(); });
+    SB.loop("cv-sed", () => { for (let k = 0; k < 6; k++) tick(); cv.redraw(); });
+  }
+
+  SB.tangle("tg-ein", (v) => {
+    const vt = kEV * v.T, D = Th.einsteinD(v.mu, v.T), L = Math.sqrt(2 * D * 1e-9) * 1e4;
+    return { vt: (vt * 1000).toFixed(2) + " mV", D: sci(D) + " cm²/s", L: umfmt(L) };
+  });
+})();
+</script>
+</body>
+</html>

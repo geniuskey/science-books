@@ -136,8 +136,7 @@ SB.registerCourse({
      "tags": [
       "라울 법칙",
       "정규 용액"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "binary-phase-diagrams",
@@ -148,8 +147,7 @@ SB.registerCourse({
      "tags": [
       "지렛대 규칙",
       "공정계"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -165,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "평형 상수",
       "엘링엄 도표"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "kinetics",
@@ -177,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "아레니우스 식",
       "속도 법칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "surfaces-thin-films",
@@ -189,8 +185,7 @@ SB.registerCourse({
      "tags": [
       "랭뮤어 흡착",
       "핵생성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "electrochemistry",
@@ -201,8 +196,7 @@ SB.registerCourse({
      "tags": [
       "네른스트 식",
       "전기 도금"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -374,20 +368,92 @@ SB.registerCourse({
    "predicts": 6,
    "hero": 1
   },
+  "solutions": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 14,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "binary-phase-diagrams": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "chemical-equilibrium": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 11,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "kinetics": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "surfaces-thin-films": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "electrochemistry": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
   "diffusion": {
-   "problems": 0,
-   "examples": 2,
-   "sims": 2,
-   "figures": 2,
-   "drills": 1,
-   "minis": 1,
-   "tangles": 2,
-   "steps": 1,
-   "predicts": 2,
+   "problems": 16,
+   "examples": 8,
+   "sims": 10,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
    "hero": 1
   }
  },
- "published": 10,
+ "published": 16,
  "total": 19,
  "url": "https://science.euiyun.com/thermal-physics/"
 });
