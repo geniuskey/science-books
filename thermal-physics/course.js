@@ -223,8 +223,7 @@ SB.registerCourse({
      "tags": [
       "열저항",
       "열전 효과"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -451,9 +450,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 6,
    "hero": 1
+  },
+  "heat-transport": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 16,
+   "drills": 4,
+   "minis": 8,
+   "tangles": 7,
+   "steps": 4,
+   "predicts": 4,
+   "hero": 1
   }
  },
- "published": 16,
+ "published": 17,
  "total": 19,
  "url": "https://science.euiyun.com/thermal-physics/"
 });
