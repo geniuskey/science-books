@@ -1,0 +1,1658 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>온도와 상태 방정식 · 열·통계물리와 물리화학 · SciBook</title>
+<meta name="description" content="열평형과 제0법칙, 온도 눈금과 기체 온도계, 이상 기체와 돌턴 분압 법칙, 압축 인자와 비리얼 전개, 판데르발스 등온선과 임계점, 대응 상태 원리, 열팽창 계수와 압축률을 2D 기체 시뮬레이션으로 익히고 가스 실린더와 MFC sccm에 적용한다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/thermal-physics/chapters/equations-of-state.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="온도와 상태 방정식 · 열·통계물리와 물리화학 · SciBook">
+<meta property="og:description" content="열평형과 제0법칙, 온도 눈금과 기체 온도계, 이상 기체와 돌턴 분압 법칙, 압축 인자와 비리얼 전개, 판데르발스 등온선과 임계점, 대응 상태 원리, 열팽창 계수와 압축률을 2D 기체 시뮬레이션으로 익히고 가스 실린더와 MFC sccm에 적용한다.">
+<meta property="og:url" content="https://science.euiyun.com/thermal-physics/chapters/equations-of-state.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "온도와 상태 방정식 · 열·통계물리와 물리화학 · SciBook", "headline": "01 온도와 상태 방정식", "url": "https://science.euiyun.com/thermal-physics/chapters/equations-of-state.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "열평형과 제0법칙, 온도 눈금과 기체 온도계, 이상 기체와 돌턴 분압 법칙, 압축 인자와 비리얼 전개, 판데르발스 등온선과 임계점, 대응 상태 원리, 열팽창 계수와 압축률을 2D 기체 시뮬레이션으로 익히고 가스 실린더와 MFC sccm에 적용한다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 1, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/thermal-physics/#book", "name": "열·통계물리와 물리화학", "url": "https://science.euiyun.com/thermal-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "열·통계물리와 물리화학", "item": "https://science.euiyun.com/thermal-physics/"}, {"@type": "ListItem", "position": 3, "name": "01 온도와 상태 방정식", "item": "https://science.euiyun.com/thermal-physics/chapters/equations-of-state.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/thermo.js"></script>
+<style>
+  .eos-wrap { white-space: normal; }
+  .tangle .tn-out.eos-wrap { white-space: normal; }
+  .fit-score b { color: var(--accent); }
+</style>
+</head>
+<body data-chapter="equations-of-state">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="">
+    <div class="eyebrow">Chapter 01</div>
+    <h1>온도와 상태 방정식</h1>
+    <p class="lead">온도계를 대면 숫자가 나온다. 그 숫자는 무엇을 재는 것일까? 압력계는 무엇을 재고, 기체 1몰이 22.4 L를 차지한다는 말은 언제 맞고 언제 틀릴까? 이 책은 이런 거시적인 양을 <b>분자들의 운동에서 끌어내는 방법</b>을 배운다. 첫 장에서는 그 출발점인 온도와 상태 방정식을 다룬다. 아래 상자에는 원판 분자 120개가 있다. 분자가 벽에 부딪칠 때마다 벽은 운동량을 받고, 이 충격량을 시간과 벽 길이로 나누면 압력이 된다. 오른쪽 피스톤을 끌어 넓이를 줄이거나, 왼쪽 열벽의 온도 막대를 끌어 분자를 데워 보라. 벽에서 잰 압력은 늘 \(NkT/A\)를 따라간다. 이것이 2차원 이상 기체 법칙이다. 둘의 비율이 1보다 조금 큰 까닭은 분자에 크기가 있기 때문이고, 4절에서 다룬다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">피스톤과 온도 막대를 끌어 보세요</span></div>
+    <ul class="objectives">
+      <li>열평형과 열역학 제0법칙으로 온도를 정의하고, 단열벽·투열벽, 상태 변수와 상태 방정식의 뜻을 설명한다.</li>
+      <li>정적 기체 온도계의 압력을 \(P_\mathrm{tp}\to0\)으로 외삽해 이상 기체 온도를 얻고, 켈빈·섭씨·화씨 눈금과 2019년 SI 재정의를 설명한다.</li>
+      <li>분자 충돌에서 \(PV = NkT\)를 이끌어 내고, 돌턴 분압 법칙과 몰분율로 혼합 기체의 분압을 구하며, MFC 표준 유량(sccm)을 몰 유량과 챔버 분압으로 바꾼다.</li>
+      <li>압축 인자 \(Z\)와 비리얼 전개로 실제 기체의 편차를 기술하고, 제2 비리얼 계수 \(B(T)\)와 보일 온도로 인력과 반발의 균형을 읽으며, 고압 실린더의 실제 기체량을 계산한다.</li>
+      <li>판데르발스 식의 두 보정항을 해석하고, 등온선의 불안정 고리와 임계점 조건에서 \(T_\mathrm c, P_\mathrm c, V_\mathrm c\)를 \(a, b\)로 나타낸다.</li>
+      <li>환산 변수와 대응 상태 원리로 일반화 압축 인자 차트를 읽고, 열팽창 계수 \(\alpha\)와 등온 압축률 \(\kappa_T\)를 계산해 \((\partial P/\partial T)_V = \alpha/\kappa_T\)를 응용한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="equilibrium">
+    <h2>열평형과 열역학 제0법칙</h2>
+    <p>열역학은 관심 있는 부분인 <span class="term">계</span><span class="en">(system)</span>와 나머지인 <span class="term">주위</span><span class="en">(surroundings)</span>를 나누는 데서 시작한다. 계는 챔버 속 기체일 수도, 웨이퍼 한 장일 수도, 버블러 속 액체 전구체일 수도 있다. 계와 주위를 가르는 벽의 성질이 중요하다. 물질도 에너지도 통과시키지 않고 열도 막는 벽을 <span class="term">단열벽</span><span class="en">(adiabatic wall)</span>, 움직이지 않고 물질도 막지만 열은 통과시키는 벽을 <span class="term">투열벽</span><span class="en">(diathermal wall)</span>이라 한다. 보온병의 진공 이중벽은 단열벽에 가깝고, 얇은 금속판은 투열벽에 가깝다.</p>
+    <p>두 계를 투열벽으로 맞대 두면 처음에는 압력, 부피, 전기 저항 같은 거시적 성질이 변하다가 결국 더 변하지 않는 상태에 이른다. 이 상태를 <span class="term">열평형</span><span class="en">(thermal equilibrium)</span>이라 한다. 평형 상태는 몇 개의 거시 변수만으로 완전히 정해진다. 기체 한 덩어리라면 \(P, V, n\)과 아직 정의하지 않은 한 가지 변수로 충분하다. 이런 변수를 <span class="term">상태 변수</span><span class="en">(state variable)</span>라 부른다. 분자 \(10^{23}\)개의 위치와 속도를 몰라도 평형 상태는 몇 개의 숫자로 기술된다는 것, 이것이 열역학이 가능한 이유다.</p>
+    <p>분자 수준에서는 무슨 일이 일어날까? 아래 시뮬레이터에서 왼쪽 칸에는 빠른(뜨거운) 원판이, 오른쪽 칸에는 느린(차가운) 원판이 있다. 칸막이를 투열벽으로 바꾸면 칸막이가 양쪽 원판과 부딪치며 에너지를 나른다. 칸막이는 열용량이 작은 얇은 막이다. 부딪친 분자를 막 자신의 온도에 맞는 속도로 되튕겨 내면서 에너지를 받거나 내주고, 막의 온도는 그 에너지 장부에 따라 오르내린다(전체 에너지는 보존된다).</p>
+    <div class="predict" data-for="sim-eq">
+      <p>움직이지 않는 투열벽으로 나뉜 두 기체가 있다. 원판 수는 양쪽이 같지만 왼쪽 칸이 더 좁고(넓이 35 %), 처음에는 왼쪽이 더 뜨겁다. 오래 기다리면 양쪽에서 같아지는 것은 무엇일까?</p>
+      <div class="opts"><button class="opt">압력</button><button class="opt" data-correct>분자 한 개의 평균 운동 에너지(온도)</button><button class="opt">압력과 온도 모두</button><button class="opt">분자의 수밀도</button></div>
+      <div class="quiz-exp">벽이 움직이지 않고 분자도 통과하지 못하므로 양쪽이 주고받을 수 있는 것은 에너지뿐이다. 에너지 교환이 멈추는 조건은 <b>분자당 평균 운동 에너지가 같아지는 것</b>이고, 이것이 온도가 같다는 뜻이다. 넓이가 다르면 \(P = NkT/A\)에 따라 압력은 달라진 채로 남는다. 칸막이를 '구멍' 모드로 바꾸면 분자도 오가므로 그때는 압력(과 밀도)까지 같아진다.</div>
+    </div>
+    <div class="sim" id="sim-eq">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>투열벽을 사이에 둔 두 기체의 열평형</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><canvas id="cv-eq"></canvas><span class="hint top">칸막이 원 끌기</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>칸막이</span><div class="seg" id="eq-wall"><button data-value="adia">단열벽</button><button data-value="dia" class="on">투열벽</button><button data-value="hole">구멍</button></div></div>
+          <button class="btn" id="eq-play" type="button"></button>
+          <button class="btn" id="eq-reset" type="button">처음 상태로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">왼쪽 T</span><span class="v" id="eq-tl">—</span></div>
+        <div class="stat"><span class="k">오른쪽 T</span><span class="v" id="eq-tr">—</span></div>
+        <div class="stat"><span class="k">왼쪽 P (벽 측정)</span><span class="v" id="eq-pl">—</span></div>
+        <div class="stat"><span class="k">오른쪽 P (벽 측정)</span><span class="v" id="eq-pr">—</span></div>
+        <div class="stat"><span class="k">N 왼쪽 / 오른쪽</span><span class="v" id="eq-n">—</span></div>
+      </div>
+      <div class="sim-note">원판의 색은 빠르기다(주황 = 빠름, 파랑 = 느림). 아래 그래프는 양쪽 칸의 온도 \(kT = \langle\tfrac12 mv^2\rangle\)(2차원 등분배)의 시간 변화이고, 온도는 분자당 평균 운동 에너지를 켈빈처럼 보이게 비례 환산한 값이다. 해볼 것: ① 단열벽에서는 두 온도가 처음 값을 유지하고, 투열벽으로 바꾸면 수 초 안에 한 값으로 모인다. 그래도 압력은 다르다. ② 평형이 된 뒤 칸막이를 끌어 왼쪽 칸을 넓히면 그쪽 기체가 팽창하며 식는다. 다시 기다리면 온도가 같아진다. ③ '구멍'으로 바꾸면 분자 수와 압력까지 같아진다.</div>
+    </div>
+    <p>평형에 이른 두 계 A와 B를 각각 제3의 계 C(온도계)와 맞대 보자. 실험은 다음 사실을 알려 준다.</p>
+    <div class="def"><span class="def-k">열역학 제0법칙</span>
+      <p>계 A와 B가 각각 계 C와 열평형에 있으면, A와 B도 서로 열평형에 있다.</p>
+    </div>
+    <p><span class="term">열역학 제0법칙</span><span class="en">(zeroth law of thermodynamics)</span>은 너무 당연해 보여서 제1·2법칙이 나온 뒤에야 이름이 붙었다. 하지만 이 법칙이 있어야 온도를 정의할 수 있다. "열평형에 있다"는 관계가 전이적이므로, 서로 열평형인 계들을 한 묶음으로 모을 수 있다. 각 묶음에 붙이는 이름표가 <span class="term">온도</span><span class="en">(temperature)</span>다. 온도계는 C 역할을 하는 작은 계이고, 그 이름표를 숫자로 읽을 수 있게 만든 장치다. 위 시뮬레이터에서 보았듯 분자 수준에서 "같은 온도"란 분자당 평균 운동 에너지가 같다는 뜻이다. 5장에서는 이것을 더 일반적인 통계적 정의 \(1/T = \partial S/\partial U\)로 바꾼다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="계 A와 B가 각각 온도계 C와 열평형이면 A와 B도 열평형임을 보이는 그림">
+        <defs><marker id="eos-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="40" y="60" width="150" height="110" rx="10" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+        <text class="t" x="115" y="110" text-anchor="middle" style="font-weight:700;font-size:20px">A</text>
+        <text class="t t-dim" x="115" y="135" text-anchor="middle">챔버 속 기체</text>
+        <rect x="320" y="40" width="160" height="150" rx="10" class="f-surface" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <rect x="390" y="60" width="20" height="95" rx="10" fill="none" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="400" cy="160" r="15" fill="var(--accent)"/>
+        <rect x="395" y="95" width="10" height="60" fill="var(--accent)"/>
+        <text class="t" x="400" y="215" text-anchor="middle" style="font-weight:700">C: 온도계</text>
+        <rect x="610" y="60" width="150" height="110" rx="10" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+        <text class="t" x="685" y="110" text-anchor="middle" style="font-weight:700;font-size:20px">B</text>
+        <text class="t t-dim" x="685" y="135" text-anchor="middle">웨이퍼 척</text>
+        <line x1="195" y1="115" x2="315" y2="115" stroke="var(--text-dim)" stroke-width="2" marker-start="url(#eos-arr)" marker-end="url(#eos-arr)"/>
+        <text class="t" x="255" y="103" text-anchor="middle">열평형</text>
+        <line x1="485" y1="115" x2="605" y2="115" stroke="var(--text-dim)" stroke-width="2" marker-start="url(#eos-arr)" marker-end="url(#eos-arr)"/>
+        <text class="t" x="545" y="103" text-anchor="middle">열평형</text>
+        <path d="M115,175 C115,240 685,240 685,175" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5" marker-start="url(#eos-arr)" marker-end="url(#eos-arr)"/>
+        <text class="t t-acc" x="400" y="243" text-anchor="middle" style="font-weight:700">⇒ A와 B도 열평형 (같은 온도)</text>
+      </svg>
+      <figcaption>제0법칙. A와 B를 직접 맞대 보지 않아도, 둘 다 온도계 C와 같은 눈금을 보이면 맞댔을 때 열이 흐르지 않는다. 그래서 온도계 하나로 서로 떨어진 계들의 온도를 비교할 수 있다.</figcaption>
+    </figure>
+    <p>온도계가 쓸모 있으려면 재는 대상보다 훨씬 작아야 한다. 온도계도 계이므로 맞대는 순간 대상과 열을 주고받아 대상의 온도를 바꾼다. 열용량이 \(C_s\)인 시료(온도 \(T_s\))에 열용량 \(C_p\)인 탐침(온도 \(T_p\))을 대면, 열이 바깥으로 새지 않는 한 둘은 \(T_f = (C_sT_s + C_pT_p)/(C_s + C_p)\)에서 평형을 이룬다(열용량은 2장에서 정식으로 다룬다).</p>
+    <div class="tangle" id="tg-probe">
+      <p>열용량 <span class="tn" data-var="Cs" data-min="1" data-max="200" data-step="1" data-unit=" J/K">20</span>인 작은 시료가 <span class="tn" data-var="Ts" data-min="30" data-max="400" data-step="5" data-unit=" °C">150</span>이다. 여기에 열용량 <span class="tn" data-var="Cp" data-min="0.1" data-max="10" data-step="0.1" data-unit=" J/K">2.0</span>인 25 °C 열전대 탐침을 대면, 탐침이 읽는 평형 온도는 <span class="tn-out" data-out="Tf"></span>이고 오차는 <span class="tn-out" data-out="err"></span>다. 오차를 1 °C 아래로 줄이려면 탐침의 열용량이 <span class="tn-out" data-out="need"></span> 이하여야 한다.</p>
+    </div>
+    <p>평형 상태가 몇 개의 변수로 정해진다면, 그 변수들 사이에는 관계식이 있어야 한다. 순수한 기체나 액체 한 덩어리에서는 \(P, V, T, n\) 가운데 셋을 정하면 나머지 하나가 정해진다. 이 관계 \(f(P, V, T, n) = 0\)을 <span class="term">상태 방정식</span><span class="en">(equation of state)</span>이라 한다. 열역학 법칙은 상태 방정식을 알려 주지 않는다. 상태 방정식은 실험으로 재거나, 분자 모형과 통계역학(6장)으로 계산해야 한다. 이 장의 나머지는 가장 중요한 상태 방정식들인 이상 기체, 비리얼 전개, 판데르발스 식과 그 일반화를 다룬다.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="temperature-scales">
+    <h2>온도 눈금과 기체 온도계</h2>
+    <p>제0법칙은 온도가 <b>있다</b>는 것만 알려 주고 숫자는 정해 주지 않는다. 숫자를 붙이려면 온도에 따라 단조롭게 변하는 성질(온도 속성)을 하나 골라 기준점에 값을 정해야 한다. 수은 기둥의 길이, 백금선의 저항, 열전대의 기전력이 모두 쓰인다. 문제는 이 눈금들이 기준점(예: 물의 어는점 0, 끓는점 100)에서는 일치하지만 그 사이와 바깥에서 서로 조금씩 어긋난다는 것이다. 수은의 팽창과 백금의 저항이 온도에 똑같이 선형일 이유가 없기 때문이다.</p>
+    <p>기체는 예외적이다. 부피를 일정하게 두고 압력을 재는 <span class="term">정적 기체 온도계</span><span class="en">(constant-volume gas thermometer)</span>에서는 <b>기체를 묽게 할수록</b> 어떤 기체를 쓰든 같은 눈금이 나온다. 그 공통 눈금이 이상 기체 온도 눈금이고, 3장에서 보듯 카르노 기관으로 정의하는 열역학적 온도와 정확히 같다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="정적 기체 온도계: 항온조 속 유리구, 모세관, 수은 U자관과 높이를 조절하는 저장조">
+        <rect x="40" y="120" width="230" height="160" rx="12" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="t t-dim" x="155" y="270" text-anchor="middle">측정할 계(항온조)</text>
+        <circle cx="150" cy="190" r="45" class="f-surface" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="140" cy="180" r="3" fill="var(--accent-2)"/><circle cx="165" cy="200" r="3" fill="var(--accent-2)"/><circle cx="130" cy="205" r="3" fill="var(--accent-2)"/><circle cx="160" cy="172" r="3" fill="var(--accent-2)"/><circle cx="150" cy="215" r="3" fill="var(--accent-2)"/>
+        <text class="t" x="150" y="248" text-anchor="middle" style="font-size:12px">기체(부피 일정)</text>
+        <path d="M150,145 L150,70 L380,70 L380,200" fill="none" stroke="var(--text)" stroke-width="3"/>
+        <path d="M370,200 L370,250 Q370,265 385,265 L505,265 Q520,265 520,250 L520,90" fill="none" stroke="var(--text)" stroke-width="2"/>
+        <path d="M390,200 L390,248 Q390,250 392,250 L498,250 Q500,250 500,248 L500,90" fill="none" stroke="var(--text)" stroke-width="2"/>
+                <path d="M371,150 L389,150 L389,249 L499,249 L499,95 L519,95 L519,264 L371,264 Z" fill="var(--text-dim)" opacity="0.55"/>
+        <line x1="355" y1="150" x2="405" y2="150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text class="t t-acc" x="350" y="146" text-anchor="end">기준 표시(부피 고정)</text>
+        <line x1="545" y1="95" x2="545" y2="150" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="537" y1="95" x2="553" y2="95" stroke="var(--text-dim)"/><line x1="537" y1="150" x2="553" y2="150" stroke="var(--text-dim)"/>
+        <text class="t" x="560" y="127">h</text>
+        <text class="t t-dim" x="565" y="170">P = P(대기) + ρgh</text>
+        <text class="t t-dim" x="600" y="70">오른쪽 관(저장조)을 올리고 내려</text>
+        <text class="t t-dim" x="600" y="90">왼쪽 수은면을 기준 표시에</text>
+        <text class="t t-dim" x="600" y="110">맞춘다</text>
+        <text class="t" x="230" y="60" text-anchor="middle" style="font-size:12px">가는 모세관</text>
+      </svg>
+      <figcaption>정적 기체 온도계. 유리구 속 기체의 부피를 늘 같게(수은면을 기준 표시에) 맞춘 뒤 수은 기둥 높이 차 \(h\)로 압력을 읽는다. 온도는 압력에 비례하는 양으로 정의한다.</figcaption>
+    </figure>
+    <p>물의 <span class="term">삼중점</span><span class="en">(triple point)</span>은 얼음·물·수증기가 함께 있는 유일한 온도와 압력(611.657 Pa)이라 재현성이 아주 좋다. 온도계를 삼중점 칸에 넣었을 때의 압력을 \(P_\mathrm{tp}\), 측정할 계에 넣었을 때의 압력을 \(P\)라 하면 이상 기체 온도는</p>
+    <div class="formula">$$T = 273.16\ \mathrm K\times\lim_{P_\mathrm{tp}\to0}\frac{P}{P_\mathrm{tp}}\qquad(\text{부피 일정})$$<div class="where">\(P_\mathrm{tp}\to0\)은 유리구에 넣는 기체의 양을 줄여 간다는 뜻이다. 기체 양을 바꿔 가며 잰 비 \(P/P_\mathrm{tp}\)를 \(P_\mathrm{tp}\)에 대해 그리고 0으로 외삽한다. 273.16이라는 숫자는 섭씨 눈금과 간격을 맞추려고 고른 값이다.</div></div>
+    <p>왜 외삽이 필요할까? 기체 분자 사이에는 인력과 반발이 있어서 압력이 온도에 정확히 비례하지 않는다. 그 편차는 밀도에 비례하므로(4절의 비리얼 계수), 밀도를 0으로 보내면 사라진다. 아래 시뮬레이터에서 직접 외삽해 보자.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 290" role="img" aria-label="기체 양을 달리한 압력–섭씨 온도 직선들이 모두 섭씨 영하 273.15도에서 압력 0으로 모이는 외삽 그림">
+        <line x1="70" y1="250" x2="770" y2="250" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="562.9" y1="20" x2="562.9" y2="250" stroke="var(--text-faint)" stroke-dasharray="3 4"/>
+        <text class="t t-dim" x="70" y="270" text-anchor="middle">−300</text><text class="t t-dim" x="234.3" y="270" text-anchor="middle">−200</text><text class="t t-dim" x="398.6" y="270" text-anchor="middle">−100</text><text class="t t-dim" x="562.9" y="270" text-anchor="middle">0</text><text class="t t-dim" x="727.1" y="270" text-anchor="middle">100</text>
+        <text class="t t-dim" x="770" y="288" text-anchor="end">t (°C)</text>
+        <text class="t t-dim" x="555" y="32" text-anchor="end">압력 P</text>
+        <g data-step="1">
+          <circle cx="562.9" cy="78" r="5" fill="var(--accent)"/><circle cx="603.9" cy="62.3" r="5" fill="var(--accent)"/><circle cx="645" cy="46.5" r="5" fill="var(--accent)"/><circle cx="686.1" cy="30.8" r="5" fill="var(--accent)"/><circle cx="727.1" cy="15" r="5" fill="var(--accent)"/>
+          <path d="M562.9,78 L727.1,15" stroke="var(--accent)" stroke-width="2.5"/>
+        </g>
+        <g data-step="2">
+          <circle cx="562.9" cy="128.2" r="5" fill="var(--accent)"/><circle cx="645" cy="105.9" r="5" fill="var(--accent)"/><circle cx="727.1" cy="83.6" r="5" fill="var(--accent)"/>
+          <path d="M562.9,128.2 L727.1,83.6" stroke="var(--accent)" stroke-width="2.5"/>
+          <circle cx="562.9" cy="178.3" r="5" fill="var(--accent)"/><circle cx="645" cy="165.2" r="5" fill="var(--accent)"/><circle cx="727.1" cy="152.1" r="5" fill="var(--accent)"/>
+          <path d="M562.9,178.3 L727.1,152.1" stroke="var(--accent)" stroke-width="2.5"/>
+          <text class="t t-dim" x="740" y="160">기체 적게</text>
+        </g>
+        <g data-step="3">
+          <path d="M114.1,250 L562.9,78 M114.1,250 L562.9,128.2 M114.1,250 L562.9,178.3" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="7 5"/>
+          <circle cx="114.1" cy="250" r="7" fill="var(--bad)"/>
+          <text class="t" x="106" y="232" text-anchor="end" style="font-weight:700">−273.15 °C</text>
+        </g>
+        <g data-step="4">
+          <line x1="114.1" y1="250" x2="114.1" y2="20" stroke="var(--accent-2)" stroke-width="2"/>
+          <text class="t t-acc" x="120" y="40" style="font-weight:700">T = 0 K (새 원점)</text>
+          <text class="t" x="180" y="110" style="font-size:14px">T = t + 273.15,  P ∝ T</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>유리구에 기체를 넣고 0–100 °C에서 압력을 재면 직선이 나온다(샤를·게이뤼삭).</li><li>기체 양을 줄이면 기울기는 작아지지만 여전히 직선이다.</li><li>세 직선을 압력 0까지 연장하면 모두 −273.15 °C 한 점에서 만난다. 기체 종류를 바꿔도 같다.</li><li>그 점을 원점으로 삼은 눈금이 켈빈 눈금이다. 압력은 절대 온도에 비례한다.</li></ol>
+      <figcaption>샤를의 외삽. 압력이 0이 되는 온도는 기체와 무관하므로, 그 점을 원점으로 잡으면 물질과 무관한 절대 온도 눈금을 얻는다. 실제 기체는 −273 °C에 가기 전에 액화하므로 이 외삽은 측정이 아니라 묽은 기체 법칙의 연장이다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-gt">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>기체 온도계 외삽 실험</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-gt"></canvas><span class="hint top">흰 원을 좌우로 끌어 기체 양(P<sub>tp</sub>) 바꾸기</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>기체</span><div class="seg" id="gt-gas"><button data-value="N2" class="on">N₂</button><button data-value="O2">O₂</button><button data-value="H2">H₂</button><button data-value="He">He</button></div></div>
+          <div class="ctrl"><span>측정할 계</span><div class="seg" id="gt-bath"><button data-value="373.124" class="on">끓는 물</button><button data-value="302.9146">갈륨 녹는점</button><button data-value="194.686">드라이아이스</button></div></div>
+          <button class="btn primary" id="gt-meas" type="button">이 기체 양으로 측정</button>
+          <button class="btn" id="gt-clear" type="button">측정값 지우기</button>
+          <label class="check"><input type="checkbox" id="gt-all"> 다른 기체의 직선도 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">P<sub>tp</sub></span><span class="v" id="gt-ptp">—</span></div>
+        <div class="stat"><span class="k">읽은 값 273.16·P/P<sub>tp</sub></span><span class="v" id="gt-read">—</span></div>
+        <div class="stat"><span class="k">외삽 결과(측정 ≥ 2개)</span><span class="v" id="gt-ext">—</span></div>
+        <div class="stat"><span class="k">참값</span><span class="v" id="gt-true">—</span></div>
+      </div>
+      <div class="sim-note">가로축은 삼중점에서 잰 압력 \(P_\mathrm{tp}\)(= 유리구 속 기체의 양), 세로축은 그 기체 양에서 읽은 온도 \(273.16\,P/P_\mathrm{tp}\)다. 기체의 비이상성은 판데르발스 모형의 제2 비리얼 계수로 계산했다(4절). 해볼 것: ① N₂로 \(P_\mathrm{tp}\)를 바꿔 가며 서너 번 측정하고 외삽값이 참값과 0.01 K 안으로 맞는지 본다. ② He으로 바꾸면 기울기의 부호가 바뀐다. 반발이 우세한 기체다. ③ '다른 기체의 직선'을 켜면 모든 직선이 \(P_\mathrm{tp} = 0\)에서 한 점에 모인다.</div>
+    </div>
+    <div class="example" data-title="기체 온도계의 외삽">
+      <p>질소를 채운 정적 기체 온도계로 끓는 물(1 atm)의 온도를 쟀다. 삼중점 압력이 \(P_\mathrm{tp} = 80.00\) kPa일 때 끓는 물 속 압력은 109.343 kPa, 기체를 덜어 \(P_\mathrm{tp} = 40.00\) kPa로 만들었을 때는 54.6559 kPa였다. 이상 기체 온도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 각 기체 양에서 \(T^* = 273.16\,P/P_\mathrm{tp}\)를 계산하고, \(T^*\)가 \(P_\mathrm{tp}\)에 선형이라고 보고 \(P_\mathrm{tp} = 0\)으로 외삽한다.</div>
+        <div class="step"><b>풀이</b> \(T^*_{80} = 273.16\times109.343/80.00 = 373.337\) K, \(T^*_{40} = 273.16\times54.6559/40.00 = 373.230\) K. 직선 외삽: \(T = T^*_{40} - (T^*_{80} - T^*_{40}) = 373.230 - 0.107 = 373.123\) K.</div>
+        <div class="answer">\(T \approx 373.12\) K (= 99.97 °C)</div>
+        <div class="step"><b>검토</b> 보정 크기는 0.2 K 정도로 작지만 정밀 측정에서는 결정적이다. 국제 온도 눈금 ITS-90에서 1 atm 물의 끓는점은 373.124 K(99.974 °C)다. 섭씨 눈금을 정의할 때 쓰던 "끓는점 100 °C"는 이제 정의가 아니라 측정값이다.</div>
+      </details>
+    </div>
+    <p><b>켈빈과 2019년 SI.</b> 2019년부터 켈빈은 볼츠만 상수를 정확히 \(k = 1.380649\times10^{-23}\) J/K로 고정해 정의한다. 온도는 이제 "분자 한 개의 에너지 척도 \(kT\)"를 재는 양이 되었고, 물의 삼중점 273.16 K는 측정값(불확도 약 0.1 mK)으로 바뀌었다. 실용 눈금은 다음과 같다.</p>
+    <div class="formula">$$t\,[{}^\circ\mathrm C] = T\,[\mathrm K] - 273.15,\qquad t_\mathrm F\,[{}^\circ\mathrm F] = \tfrac95\,t\,[{}^\circ\mathrm C] + 32$$<div class="where">0 °C = 273.15 K는 정의상 정확한 값이고, 온도 <b>차이</b> 1 °C와 1 K는 같다. 기체 법칙과 볼츠만 인자에는 반드시 켈빈을 쓴다. 섭씨로 계산하면 0 °C에서 압력이 0이 되는 엉뚱한 답이 나온다.</div></div>
+    <p>실험실과 팹의 온도 측정은 ITS-90의 고정점(물의 삼중점, 갈륨 녹는점 302.9146 K, 인듐 어는점 429.7485 K, 주석 505.078 K, 아연 692.677 K, 알루미늄 933.473 K, 은 1234.93 K 등)으로 교정한 백금 저항 온도계(Pt100)와 열전대를 쓴다. 1000 °C가 넘는 RTP 챔버처럼 접촉할 수 없는 곳에서는 복사로 재는 파이로미터를 쓰며, 그 원리(플랑크 법칙)는 7장에서 다룬다.</p>
+    <div class="drill" id="drill-temp" data-title="온도 눈금 변환 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="ideal-gas">
+    <h2>이상 기체와 돌턴 분압 법칙</h2>
+    <p>머리 그림에서 본 것을 식으로 옮겨 보자. 넓이 \(A\)인 2차원 상자에서 질량 \(m\), 속도 \(v_x\)인 원판이 오른쪽 벽에 부딪치면 벽은 운동량 \(2mv_x\)를 받는다. 이 원판은 시간 \(2L_x/|v_x|\)마다 같은 벽에 돌아오므로 벽이 받는 평균 힘은 \(mv_x^2/L_x\)다. 모든 원판에 대해 더하고 벽 길이 \(L_y\)로 나누면 (2차원) 압력은</p>
+    <div class="formula">$$P_{2\mathrm D} = \frac{N m\langle v_x^2\rangle}{L_xL_y} = \frac{N}{A}\,m\langle v_x^2\rangle,\qquad P_{3\mathrm D} = \frac NV\,m\langle v_x^2\rangle = \frac{2}{3}\frac NV\Big\langle \tfrac12 mv^2\Big\rangle$$<div class="where">분자끼리 부딪쳐도 운동량이 보존되므로 결과는 바뀌지 않는다. 분자 운동 에너지의 평균이 한 방향마다 \(\tfrac12 kT\)라는 <b>등분배</b> \(m\langle v_x^2\rangle = kT\)를 쓰면 2차원에서 \(PA = NkT\), 3차원에서 \(PV = NkT\)가 된다. 유도의 자세한 과정은 <a href="../../general-physics/chapters/kinetic-theory-first-law.html">일반물리학 · 분자 운동론과 열역학 제1법칙</a>을 보라.</div></div>
+    <p>이렇게 얻은 <span class="term">이상 기체</span><span class="en">(ideal gas)</span> 상태 방정식은 분자의 크기와 분자 사이 힘을 무시한 결과다.</p>
+    <div class="formula">$$PV = NkT = nRT,\qquad R = N_\mathrm A k = 8.314\ \mathrm{J/(mol\,K)},\qquad n_V \equiv \frac NV = \frac{P}{kT}$$<div class="where">\(N\)은 분자 수, \(n\)은 몰수, \(n_V\)는 수밀도다. 0 °C, 1 atm에서 \(n_V = 2.687\times10^{25}\) m⁻³(로슈미트 수), 몰부피 \(V_\mathrm m = 22.414\) L/mol이다. 25 °C, 1 bar에서는 24.79 L/mol이다.</div></div>
+    <div class="sim" id="sim-pv">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>피스톤 상자로 목표 상태 만들기</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><canvas id="cv-pv"></canvas><span class="hint top">피스톤을 끌어 넓이, 온도 막대를 끌어 온도 조절</span></div>
+        <div class="sim-controls">
+          <button class="btn primary" id="pv-new" type="button">새 목표</button>
+          <button class="btn" id="pv-play" type="button"></button>
+          <button class="btn" id="pv-trace" type="button">자취 지우기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">넓이 A</span><span class="v" id="pv-a">—</span></div>
+        <div class="stat"><span class="k">기체 온도 T</span><span class="v" id="pv-t">—</span></div>
+        <div class="stat"><span class="k">벽에서 잰 P</span><span class="v" id="pv-p">—</span></div>
+        <div class="stat"><span class="k">목표 (A, P)</span><span class="v" id="pv-goal">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="pv-score">—</span></div>
+      </div>
+      <div class="sim-note">원판 80개가 든 상자의 벽(위·아래·왼쪽)은 모두 온도 막대가 정한 온도의 열벽이다. 오른쪽 그래프는 측정한 상태 \((A, P)\)의 자취(주황)와 지금 열벽 온도의 이상 기체 등온선 \(P = NkT/A\)(파랑)다. 목표: 과녁(○) 안에 상태점을 1.5초 동안 머물게 하라. 과녁에 닿으려면 \(T = PA/Nk\)가 되는 온도를 먼저 계산해 맞추고 피스톤으로 넓이를 맞추는 것이 빠르다. 해볼 것: ① 온도를 고정하고 피스톤을 천천히 움직이면 자취가 쌍곡선을 따른다(보일 법칙). ② 피스톤을 고정하고 온도를 두 배로 하면 압력이 두 배가 된다.</div>
+    </div>
+    <p>압력의 SI 단위는 Pa(= N/m²)이지만, 현장에서는 bar(10⁵ Pa), atm(101 325 Pa), Torr(= 1/760 atm = 133.322 Pa), mTorr, psi를 섞어 쓴다. 이상 기체 식에 넣기 전에 반드시 Pa로 바꾸는 습관을 들이자. 반도체 공정 압력은 대기압의 10⁻⁹에서 실린더 압력 150 bar까지 열네 자릿수에 걸친다.</p>
+    <figure class="mini" id="mini-units">
+      <div class="mini-view" style="position:relative"><canvas id="cv-units"></canvas><span class="hint top">흰 원을 좌우로 끌기</span></div>
+      <div class="mini-ctrl"><span class="readout" id="units-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>로그 눈금 압력 축 위의 지시점을 끌면 같은 압력이 여러 단위로 표시되고, 300 K에서의 수밀도 \(n_V = P/kT\)가 나온다. 식각 챔버의 10 mTorr에도 cm³마다 분자가 3×10¹⁴개나 있다. 기체가 "묽다"는 것은 분자 사이 거리 \(n_V^{-1/3}\)가 분자 크기보다 훨씬 크다는 뜻일 뿐, 분자가 적다는 뜻이 아니다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>챔버 압력은 단위부터 확인한다</strong><p>건식 식각은 1–100 mTorr, 스퍼터링은 수 mTorr, LPCVD는 0.1–1 Torr, PECVD는 1–10 Torr, 상압 공정은 760 Torr 근처에서 일한다. 장비 화면은 Torr, 진공 게이지 사양은 Pa나 mbar, 배관 압력계는 psi나 kPa(게이지 압력)로 적는 경우가 많아 단위 혼동이 흔한 사고 원인이다. 압력은 곧 분자 수밀도 \(n_V = P/kT\)이고, 평균 자유 행로와 플라스마 밀도, 이온의 충돌 횟수가 모두 여기서 정해진다(8장). → <a href="https://semi.euiyun.com/etch/chapters/plasma.html">EtchBook · 플라스마: 식각의 재료</a></p></div>
+    <div class="example" data-title="식각 챔버 속 분자 수">
+      <p>부피 50 L인 식각 챔버의 압력이 5.0 mTorr, 기체 온도가 25 °C다. 챔버 속 분자 수와 수밀도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(N = PV/kT\). 압력은 Pa, 부피는 m³, 온도는 K로 바꾼다.</div>
+        <div class="step"><b>풀이</b> \(P = 5.0\times10^{-3}\times133.32 = 0.6666\) Pa, \(V = 0.050\) m³, \(T = 298.15\) K. \(n_V = P/kT = 0.6666/(1.3806\times10^{-23}\times298.15) = 1.62\times10^{20}\) m⁻³, \(N = n_VV = 8.10\times10^{18}\).</div>
+        <div class="answer">\(N \approx 8.1\times10^{18}\)개, \(n_V \approx 1.6\times10^{20}\) m⁻³ \(= 1.6\times10^{14}\) cm⁻³</div>
+        <div class="step"><b>검토</b> 몰수로는 \(1.3\times10^{-5}\) mol뿐이지만 분자 수는 엄청나다. 대기압(\(2.5\times10^{19}\) cm⁻³)보다 15만 배 묽다.</div>
+      </details>
+    </div>
+    <p><b>혼합 기체.</b> 서로 반응하지 않는 기체를 섞으면 각 성분은 다른 성분이 없는 것처럼 행동한다. 성분 \(i\)가 혼자 전체 부피를 차지할 때 낼 압력을 <span class="term">분압</span><span class="en">(partial pressure)</span> \(P_i\)라 하면</p>
+    <div class="formula">$$P = \sum_i P_i,\qquad P_i = \frac{N_ikT}{V} = x_iP,\qquad x_i = \frac{n_i}{\sum_j n_j}$$<div class="where">첫 식이 <span class="term">돌턴 분압 법칙</span><span class="en">(Dalton's law of partial pressures)</span>, \(x_i\)는 <span class="term">몰분율</span><span class="en">(mole fraction)</span>이다. 이상 기체에서는 분자 하나가 벽에 주는 평균 충격이 \(kT\)로만 정해지고 질량과 무관하므로 성분별 압력이 단순히 더해진다.</div></div>
+    <div class="predict" data-for="sim-dalton">
+      <p>같은 온도에서 가벼운 원판 30개가 든 상자와, 질량이 16배인 무거운 원판 30개가 든 상자가 있다. 무거운 원판 상자의 압력은 가벼운 원판 상자의 몇 배일까?</p>
+      <div class="opts"><button class="opt">16배</button><button class="opt">4배(질량의 제곱근)</button><button class="opt" data-correct>같다</button><button class="opt">1/4배 — 무거우면 느리니까</button></div>
+      <div class="quiz-exp">무거운 분자는 4배 느리게 움직여 벽에 덜 자주 오지만(\(\propto v\)), 한 번 부딪칠 때 운동량을 4배 더 준다(\(\propto mv\)). 곱 \(mv^2 \propto kT\)는 같다. 그래서 같은 온도에서 압력은 분자 <b>개수</b>만 센다. 시뮬레이터에서 질량비를 바꿔도 압력이 그대로인지 보라.</div>
+    </div>
+    <div class="sim" id="sim-dalton">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>돌턴 분압 법칙 실험: A만, B만, A+B</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><canvas id="cv-dalton"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>A 원판 수 N<sub>A</sub> <output id="dal-na-out"></output></span><input type="range" id="dal-na" min="0" max="60" step="5" value="30"></label>
+          <label class="ctrl"><span>B 원판 수 N<sub>B</sub> <output id="dal-nb-out"></output></span><input type="range" id="dal-nb" min="0" max="60" step="5" value="30"></label>
+          <label class="ctrl"><span>질량비 m<sub>B</sub>/m<sub>A</sub> <output id="dal-m-out"></output></span><input type="range" id="dal-m" min="1" max="16" step="1" value="16"></label>
+          <label class="ctrl"><span>벽 온도 <output id="dal-t-out"></output></span><input type="range" id="dal-t" min="100" max="600" step="10" value="300"></label>
+          <button class="btn" id="dal-play" type="button"></button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">P(A만)</span><span class="v" id="dal-pa">—</span></div>
+        <div class="stat"><span class="k">P(B만)</span><span class="v" id="dal-pb">—</span></div>
+        <div class="stat"><span class="k">P(A)+P(B)</span><span class="v" id="dal-sum">—</span></div>
+        <div class="stat"><span class="k">P(A+B 혼합)</span><span class="v" id="dal-pm">—</span></div>
+        <div class="stat"><span class="k">x<sub>B</sub>P(혼합)</span><span class="v" id="dal-xb">—</span></div>
+      </div>
+      <div class="sim-note">세 상자는 크기와 벽 온도가 같다. 왼쪽은 A(가벼움)만, 가운데는 B(무거움)만, 오른쪽은 둘을 섞었다. 압력은 벽 충격량을 몇 초 동안 평균한 값이라 조금씩 흔들린다. 해볼 것: ① 혼합 상자의 압력이 두 상자 압력의 합과 몇 % 안에서 맞는지 본다. ② 질량비를 1과 16 사이에서 바꿔도 B 상자의 압력은 그대로다. ③ \(N_A = 45, N_B = 15\)로 두면 B의 분압은 \(x_B P = P/4\)이다.</div>
+    </div>
+    <p><b>MFC와 표준 유량.</b> 공정 장비는 기체 유량을 질량 유량 제어기(MFC)로 맞춘다. MFC는 열식 센서로 질량(몰) 유량을 재지만 표시는 <span class="term">sccm</span><span class="en">(standard cubic centimeter per minute)</span>으로 한다. 1 sccm은 "표준 상태로 환산했을 때 1분에 1 cm³"인 몰 유량이다. 반도체 업계의 표준 상태는 보통 0 °C, 1 atm이다(일부 장비·가스 회사는 20 °C나 25 °C를 쓰므로 사양서를 확인해야 한다).</p>
+    <div class="formula">$$\dot n = \frac{P_\mathrm{std}\,\dot V_\mathrm{std}}{RT_\mathrm{std}},\qquad 1\ \mathrm{sccm} = \frac{101325\times10^{-6}}{8.314\times273.15}\ \frac{\mathrm{mol}}{\mathrm{min}} = 4.462\times10^{-5}\ \frac{\mathrm{mol}}{\mathrm{min}} = 7.436\times10^{-7}\ \frac{\mathrm{mol}}{\mathrm s}$$<div class="where">1 slm(standard liter per minute) = 1000 sccm. 같은 "100 sccm"이라도 실제 챔버(저압·고온) 안에서의 부피 유량은 \(\dot V = \dot V_\mathrm{std}(T/T_\mathrm{std})(P_\mathrm{std}/P)\)로 수백 배 커진다.</div></div>
+    <div class="tangle" id="tg-sccm">
+      <p>MFC가 <span class="tn" data-var="q" data-min="1" data-max="2000" data-step="1" data-unit=" sccm">100</span>을 흘리면 몰 유량은 <span class="tn-out" data-out="mol"></span>, 분자로는 초당 <span class="tn-out" data-out="mps"></span>개다. 이 기체가 <span class="tn" data-var="T" data-min="20" data-max="800" data-step="10" data-unit=" °C">400</span>, <span class="tn" data-var="P" data-min="0.01" data-max="10" data-step="0.01" data-unit=" Torr">1.00</span>인 챔버에 들어가면 실제 부피 유량은 <span class="tn-out" data-out="vact"></span>로, 표준 유량의 <span class="tn-out" data-out="ratio"></span>배다.</p>
+    </div>
+    <p>여러 기체를 MFC로 섞어 챔버에 흘리고 펌프로 일정한 압력을 유지하면, 잘 섞인 정상 상태에서 각 성분의 몰분율은 유량 비와 같다(모든 성분이 같은 비율로 배기된다고 가정). 따라서 성분 \(i\)의 분압은 \(P_i = (\dot n_i/\sum\dot n_j)\,P\)다. 막의 성장 속도나 도핑 농도는 전체 압력이 아니라 반응 기체의 분압에 따라 정해지는 경우가 많다.</p>
+    <div class="example" data-title="실레인 분압과 몰 유량">
+      <p>SiH₄ 50 sccm과 N₂ 950 sccm을 섞어 전체 압력 2.0 Torr로 유지하는 CVD 챔버가 있다. (a) SiH₄의 몰 유량과 초당 분자 수, (b) SiH₄의 분압(Torr, Pa)을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> sccm을 몰 유량으로 바꾸는 환산 \(7.436\times10^{-7}\) mol/s per sccm을 쓰고, 분압은 유량 비로 구한다.</div>
+        <div class="step"><b>풀이</b> (a) \(\dot n = 50\times7.436\times10^{-7} = 3.72\times10^{-5}\) mol/s, 분자로는 \(\times N_\mathrm A = 2.24\times10^{19}\) s⁻¹. (b) \(x = 50/1000 = 0.050\), \(P_{\mathrm{SiH_4}} = 0.050\times2.0 = 0.10\) Torr \(= 13.3\) Pa.</div>
+        <div class="answer">(a) \(3.72\times10^{-5}\) mol/s, \(2.24\times10^{19}\) 분자/s (b) 0.10 Torr = 13.3 Pa</div>
+        <div class="step"><b>검토</b> 분압은 몰분율에만 의존하므로, 유량을 둘 다 두 배로 늘려도 같은 전체 압력이면 분압은 그대로다. 대신 기체가 챔버에 머무는 시간이 절반이 된다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>증착 속도는 전구체 분압이 정한다</strong><p>CVD에서 막의 성장 속도는 표면에 도달하는 반응 기체의 플럭스 \(\propto P_i/\sqrt{2\pi mkT}\)(8장)와 표면 반응 속도로 정해진다. 그래서 레시피는 "SiH₄ 50 sccm / N₂ 950 sccm / 2 Torr"처럼 유량 비와 전체 압력을 함께 적는다. 도펀트 기체는 보통 희석해서 공급하므로(예: H₂ 속 1 % B₂H₆), 실제 도펀트 분압은 희석률 × 유량 비 × 전체 압력으로 계산해야 한다. 액체 전구체(TEOS, TMA)는 버블러 온도로 증기압을 정해 운반 기체에 실어 보내며, 증기압은 9장에서 다룬다. → <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a></p></div>
+    <div class="drill" id="drill-ideal" data-title="챔버 속 분자 수 반복 연습"></div>
+    <div class="drill" id="drill-pp" data-title="유량 비와 분압 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="real-gas">
+    <h2>실제 기체: 압축 인자와 비리얼 전개</h2>
+    <p>이상 기체 법칙에서 얼마나 벗어났는지 재는 가장 간단한 양은 <span class="term">압축 인자</span><span class="en">(compressibility factor)</span>다.</p>
+    <div class="formula">$$Z \equiv \frac{PV_\mathrm m}{RT} = \frac{V_\mathrm m}{V_\mathrm m^\text{이상}}$$<div class="where">이상 기체는 언제나 \(Z = 1\)이다. \(Z < 1\)이면 같은 \(T, P\)에서 이상 기체보다 부피가 작다(분자가 서로 끌어당겨 뭉친다). \(Z > 1\)이면 부피가 크다(분자 크기 때문에 서로 밀어낸다).</div></div>
+    <p>상온에서 대부분의 기체는 수십 bar까지 \(Z\)가 1보다 약간 작다가, 수백 bar에서 1을 넘는다. 분자 사이 인력은 수 Å 거리에서 작용하는 약한 힘이라 저압에서 먼저 드러나고, 반발은 분자가 서로 닿을 만큼 밀도가 높을 때 우세해진다. H₂와 He은 인력이 아주 약해 상온에서 처음부터 \(Z > 1\)이다.</p>
+    <p>밀도가 낮을 때의 편차는 밀도에 대한 거듭제곱 급수로 정리할 수 있다. 이것이 <span class="term">비리얼 전개</span><span class="en">(virial expansion)</span>다.</p>
+    <div class="formula">$$Z = 1 + \frac{B(T)}{V_\mathrm m} + \frac{C(T)}{V_\mathrm m^2} + \cdots \;=\; 1 + \frac{B(T)}{RT}\,P + \cdots$$<div class="where">\(B\)는 제2 <span class="term">비리얼 계수</span><span class="en">(virial coefficient)</span>(\(B_2\)로도 쓴다, 단위 m³/mol), \(C\)는 제3 비리얼 계수다. 통계역학은 \(B\)가 분자 <b>두 개</b> 사이의 상호 작용에서, \(C\)는 세 개의 상호 작용에서 나온다는 것을 보여 준다: \(B(T) = -2\pi N_\mathrm A\int_0^\infty\big(e^{-u(r)/kT}-1\big)r^2\,dr\). 저압에서는 첫 보정만 남아 \(Z\approx1+BP/RT\)다.</div></div>
+    <p>\(B\)의 부호는 인력과 반발의 줄다리기를 그대로 보여 준다. 반지름 \(\sigma/2\)인 단단한 공(강체 구)이면 \(u\)가 \(r<\sigma\)에서 무한대이고 바깥에서 0이므로 \(B = \tfrac{2\pi}{3}N_\mathrm A\sigma^3\), 분자 부피의 4배인 양수다. 인력이 있으면 \(e^{-u/kT} - 1 > 0\)인 영역이 생겨 \(B\)를 음수 쪽으로 끌어내리고, 이 효과는 저온에서 클수록 커진다. 따라서 \(B(T)\)는 저온에서 음수, 고온에서 양수이고, 그 사이에 \(B = 0\)인 <span class="term">보일 온도</span><span class="en">(Boyle temperature)</span> \(T_\mathrm B\)가 있다. 보일 온도에서는 저압 영역의 \(Z\)가 1에 가장 가깝게 오래 머물러 기체가 넓은 압력 범위에서 이상 기체처럼 보인다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>기체</th><th class="num">B(273 K) [cm³/mol]</th><th class="num">B(600 K) [cm³/mol]</th><th class="num">보일 온도 T<sub>B</sub> [K]</th></tr></thead>
+      <tbody>
+        <tr><td>He</td><td class="num">+12.0</td><td class="num">+10.4</td><td class="num">22.6</td></tr>
+        <tr><td>N₂</td><td class="num">−10.5</td><td class="num">+21.7</td><td class="num">327.2</td></tr>
+        <tr><td>Ar</td><td class="num">−21.7</td><td class="num">+11.9</td><td class="num">411.5</td></tr>
+        <tr><td>CO₂</td><td class="num">−149.7</td><td class="num">−12.4</td><td class="num">714.8</td></tr>
+      </tbody>
+    </table></div>
+    <p>위 표는 실측 대표값이다. 상온의 N₂는 보일 온도 바로 아래라 \(B\)가 작아서 150 bar에서도 \(Z\approx1\)인 반면, CO₂는 \(B\)가 크게 음수라 수십 bar만 되어도 이상 기체와 크게 다르다. 분자 크기 효과가 압력을 높인다는 것을 2차원 원판 기체로 직접 확인해 보자.</p>
+    <figure class="mini" id="mini-disk">
+      <div class="mini-view" style="position:relative"><canvas id="cv-disk"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>원판 반지름 r <output id="disk-r-out"></output></span><input type="range" id="disk-r" min="1" max="12" step="1" value="8"></label><button class="btn" id="disk-play" type="button"></button><span class="readout" id="disk-rd"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>원판 100개가 든 상자(왼쪽)에서 벽 충격량으로 잰 \(Z = PA/NkT\)(주황 점)를 원판이 차지하는 넓이 비율 \(\eta = N\pi r^2/A\)에 대해 찍는다. 파랑 점선은 2차원 제2 비리얼 보정 \(Z = 1 + 2\eta\)(강체 원판의 \(B = \tfrac{\pi}{2}\sigma^2\), \(\sigma = 2r\)), 실선은 고밀도까지 맞는 헨더슨 근사식 \(Z = (1+\eta^2/8)/(1-\eta)^2\)이다. 인력이 없는 원판인데도 크기만으로 압력이 커지고, \(\eta\)가 커지면 제2 비리얼 항만으로는 부족해진다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-virial">
+      <p>상온(300 K)의 CO₂를 1 bar에서 50 bar로 압축했다. 압축 인자 \(Z\)는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">1로 일정하다</button><button class="opt" data-correct>1보다 눈에 띄게 작아진다(0.7 안팎)</button><button class="opt">1보다 커진다 — 분자 크기 때문에</button><button class="opt">0에 가까워진다</button></div>
+      <div class="quiz-exp">CO₂는 \(B(300\ \mathrm K)\approx-120\) cm³/mol로 인력이 강하다. 저압 근사 \(Z\approx1+BP/RT\)로도 50 bar에서 \(1-0.24 = 0.76\)이고, 판데르발스 모형은 0.7 남짓을 준다. 반발 효과는 수백 bar에서야 우세해진다.</div>
+    </div>
+    <div class="sim" id="sim-virial">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>압축 인자 Z와 비리얼 계수 B(T)</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><div class="sim-split"><div style="position:relative"><canvas id="cv-zp"></canvas><span class="hint top">곡선 위 점을 끌어 압력 읽기</span></div><div style="position:relative"><canvas id="cv-b2"></canvas><span class="hint top">점을 끌어 온도 바꾸기</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>기체</span><div class="seg" id="vir-gas"><button data-value="N2">N₂</button><button data-value="CO2" class="on">CO₂</button><button data-value="CH4">CH₄</button><button data-value="Ar">Ar</button><button data-value="He">He</button><button data-value="H2">H₂</button></div></div>
+          <label class="check"><input type="checkbox" id="vir-lin" checked> 저압 근사 1 + BP/RT 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">온도 T</span><span class="v" id="vir-t">—</span></div>
+        <div class="stat"><span class="k">B(T) = b − a/RT</span><span class="v" id="vir-b">—</span></div>
+        <div class="stat"><span class="k">보일 온도 a/Rb</span><span class="v" id="vir-tb">—</span></div>
+        <div class="stat"><span class="k">P에서 Z</span><span class="v" id="vir-z">—</span></div>
+        <div class="stat"><span class="k">V<sub>m</sub> 실제 / 이상</span><span class="v" id="vir-v">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 판데르발스 모형(5절)으로 계산한 \(Z\)–\(P\) 곡선(파랑, 모형)과 저압 근사 직선(점선)이다. 오른쪽은 같은 모형의 \(B(T) = b - a/RT\)이고, 끌 수 있는 점이 지금 온도다. 임계 온도 아래에서는 기체가 어느 압력에서 액화하므로 곡선이 끊긴다(9장). 해볼 것: ① CO₂의 온도를 끌어 올리며 \(Z\)의 최솟값이 1에 다가가는 것을 본다. ② 온도를 보일 온도에 맞추면 저압 근사 직선이 수평이 된다. ③ He과 H₂는 상온에서 이미 보일 온도 위라 \(Z>1\)이다. 판데르발스 모형의 보일 온도 \(a/Rb\)는 실측(표)보다 높게 나오는데, 모형의 한계다.</div>
+    </div>
+    <p><b>고압 실린더 속 기체의 양.</b> 47 L 실린더에 150 bar로 충전된 기체가 몇 mol인지, 압력이 30 bar로 떨어졌을 때 얼마가 남았는지는 매일 쓰는 계산이다. \(n = PV/ZRT\)이므로 \(Z\)를 모르면 많게는 수십 %씩 틀린다. 아래 \(Z\)는 실측에 잘 맞는 펭–로빈슨 상태 방정식(판데르발스 식을 개량한 3차 상태 방정식)으로 계산한 대표값이다.</p>
+    <div class="tangle" id="tg-cyl">
+      <p>25 °C, 절대 압력 <span class="tn" data-var="P" data-min="5" data-max="200" data-step="5" data-unit=" bar">150</span>인 47 L 실린더 속 Ar은 \(Z\) = <span class="tn-out" data-out="Zar"></span>, 양은 <span class="tn-out" data-out="nar"></span>로 이상 기체 계산보다 <span class="tn-out" data-out="dar"></span> 많다. 같은 조건의 N₂는 \(Z\) = <span class="tn-out" data-out="Zn2"></span>이고, SiH₄라면 \(Z\) = <span class="tn-out" data-out="Zsi"></span>로 이상 기체 값의 <span class="tn-out" data-out="rsi"></span>배가 들어간다.</p>
+    </div>
+    <div class="example" data-title="아르곤 실린더의 잔량">
+      <p>47 L 실린더에 25 °C, 150 bar(절대 압력)의 Ar이 들어 있다. 이 조건의 압축 인자는 \(Z = 0.925\), 30 bar에서는 \(Z = 0.975\)다. (a) 실린더 속 Ar의 몰수와 질량, (b) 압력이 30 bar로 떨어졌을 때 처음 양의 몇 %가 남았는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n = PV/ZRT\). 남은 비율은 \(\dfrac{P_2/Z_2}{P_1/Z_1}\)이고, 압력 비 30/150 = 20 %와 비교한다.</div>
+        <div class="step"><b>풀이</b> (a) 이상 기체라면 \(n = (150\times10^5)(0.047)/(8.314\times298.15) = 284.4\) mol. 실제로는 \(284.4/0.925 = 307.4\) mol, 질량 \(307.4\times39.948\ \mathrm{g/mol} = 12.3\) kg. (b) \(\dfrac{30/0.975}{150/0.925} = \dfrac{30.77}{162.2} = 0.190\).</div>
+        <div class="answer">(a) 약 307 mol, 12.3 kg (b) 약 19.0 % (압력 비로 계산하면 20 %)</div>
+        <div class="step"><b>검토</b> 고압에서는 인력 때문에 기체가 더 많이 들어가므로, 압력 게이지만 보고 잔량을 계산하면 남은 양을 과대 평가한다. N₂는 상온 150 bar에서 \(Z\approx1.00\)이라 이 보정이 거의 없다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>실린더 잔량과 교체 주기</strong><p>특수가스 실린더는 가스 캐비닛에서 압력 변환기로 잔량을 감시하고, 정해진 압력 아래로 떨어지면 교체한다. 압력이 몰수에 정비례한다는 이상 기체 가정은 N₂·He·H₂ 같은 영구 기체에는 대체로 맞지만, CO₂·N₂O처럼 상온에서 액화하는 기체나 임계 온도가 상온 근처인 SiH₄(\(T_\mathrm c\approx270\) K)에서는 크게 틀린다. 그래서 이런 기체는 충전량을 압력이 아니라 무게로 관리한다. 압력이 떨어지는 마지막 구간에서는 불순물(수분·잔류 기체)의 비율이 커지므로 실린더를 완전히 비우지 않고 교체 압력을 둔다. → <a href="https://semi.euiyun.com/infra/chapters/gas.html">InfraBook · 가스 공급</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="van-der-waals">
+    <h2>판데르발스 기체와 임계점</h2>
+    <p>1873년 판데르발스는 분자 그림에서 바로 나오는 두 보정으로 이상 기체 식을 고쳤다. 첫째, 분자에는 크기가 있어 한 분자가 움직일 수 있는 부피는 \(V\)가 아니라 \(V - nb\)다. 둘째, 기체 안쪽 분자는 사방에서 같은 힘으로 끌리지만 벽 근처 분자는 안쪽으로만 끌려 벽에 덜 세게 부딪친다. 이 압력 감소는 벽에 오는 분자 수(\(\propto n/V\))와 끌어당기는 이웃 수(\(\propto n/V\))의 곱에 비례한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="판데르발스 보정: 분자의 배제 부피와 벽 근처 분자가 안쪽으로 끌려 충격이 줄어드는 그림">
+        <rect x="30" y="30" width="330" height="200" rx="10" class="f-surface" stroke="var(--text-dim)"/>
+        <text class="t" x="195" y="22" text-anchor="middle" style="font-weight:700">반발: 배제 부피 b</text>
+        <circle cx="150" cy="130" r="56" fill="var(--bad)" opacity="0.12" stroke="var(--bad)" stroke-dasharray="5 4"/>
+        <circle cx="150" cy="130" r="28" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="234" cy="130" r="28" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+        <line x1="150" y1="130" x2="206" y2="130" stroke="var(--text)" stroke-width="1.5"/>
+        <text class="t" x="178" y="122" text-anchor="middle">σ</text>
+        <text class="t t-dim" x="195" y="205" text-anchor="middle">다른 분자 중심이 못 들어오는 구: 반지름 σ</text>
+        <text class="t t-dim" x="195" y="222" text-anchor="middle">b = (2π/3)Nₐσ³ = 분자 부피의 4배</text>
+        <rect x="430" y="30" width="340" height="200" rx="10" class="f-surface" stroke="var(--text-dim)"/>
+        <text class="t" x="600" y="22" text-anchor="middle" style="font-weight:700">인력: a/V²만큼 압력 감소</text>
+        <line x1="745" y1="40" x2="745" y2="220" stroke="var(--text)" stroke-width="5"/>
+        <text class="t t-dim" x="738" y="235" text-anchor="end">벽</text>
+        <circle cx="530" cy="90" r="14" class="f-acc2-soft" stroke="var(--accent-2)"/>
+        <circle cx="560" cy="160" r="14" class="f-acc2-soft" stroke="var(--accent-2)"/>
+        <circle cx="490" cy="150" r="14" class="f-acc2-soft" stroke="var(--accent-2)"/>
+        <circle cx="610" cy="110" r="14" class="f-acc2-soft" stroke="var(--accent-2)"/>
+        <circle cx="715" cy="130" r="14" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+        <line x1="715" y1="130" x2="640" y2="114" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#eos-arr)"/>
+        <line x1="715" y1="130" x2="660" y2="160" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#eos-arr)"/>
+        <line x1="715" y1="130" x2="740" y2="130" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#eos-arr)"/>
+        <text class="t t-dim" x="600" y="205" text-anchor="middle">벽 쪽 분자는 안쪽으로만 끌려</text>
+        <text class="t t-dim" x="600" y="222" text-anchor="middle">벽을 덜 세게 친다: ΔP ∝ (n/V)²</text>
+        <circle cx="510" cy="60" r="14" class="f-acc2-soft" stroke="var(--accent-2)"/>
+      </svg>
+      <figcaption>판데르발스 식의 두 보정. 왼쪽: 두 분자가 지름 \(\sigma\)보다 가까워질 수 없으므로 분자 쌍마다 부피 \(\tfrac{4\pi}{3}\sigma^3\)이 배제되고, 분자당으로는 그 절반이다. 오른쪽: 기체 안쪽 분자는 알짜 힘이 0이지만 벽 근처 분자는 안쪽으로 끌려 벽에 주는 충격이 줄어든다.</figcaption>
+    </figure>
+    <div class="formula">$$\Big(P + \frac{an^2}{V^2}\Big)(V - nb) = nRT\qquad\Longleftrightarrow\qquad P = \frac{RT}{V_\mathrm m - b} - \frac{a}{V_\mathrm m^2}$$<div class="where">이것이 <span class="term">판데르발스 상태 방정식</span><span class="en">(van der Waals equation of state)</span>이다. \(a\)[Pa·m⁶/mol²]는 인력의 세기, \(b\)[m³/mol]는 분자 1몰의 배제 부피다. 저밀도로 전개하면 \(Z = 1 + (b - a/RT)/V_\mathrm m + b^2/V_\mathrm m^2 + \cdots\), 곧 \(B = b - a/RT\)이고 보일 온도는 \(T_\mathrm B = a/Rb\)다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>기체</th><th class="num">a [Pa·m⁶/mol²]</th><th class="num">b [cm³/mol]</th><th class="num">실측 T<sub>c</sub> [K]</th><th class="num">실측 P<sub>c</sub> [bar]</th><th class="num">실측 Z<sub>c</sub></th></tr></thead>
+      <tbody>
+        <tr><td>He</td><td class="num">0.00346</td><td class="num">23.8</td><td class="num">5.2</td><td class="num">2.27</td><td class="num">0.302</td></tr>
+        <tr><td>H₂</td><td class="num">0.0245</td><td class="num">26.5</td><td class="num">33.1</td><td class="num">13.0</td><td class="num">0.303</td></tr>
+        <tr><td>N₂</td><td class="num">0.137</td><td class="num">38.7</td><td class="num">126.2</td><td class="num">34.0</td><td class="num">0.289</td></tr>
+        <tr><td>Ar</td><td class="num">0.1355</td><td class="num">32.0</td><td class="num">150.7</td><td class="num">48.6</td><td class="num">0.291</td></tr>
+        <tr><td>CH₄</td><td class="num">0.2303</td><td class="num">43.1</td><td class="num">190.6</td><td class="num">46.0</td><td class="num">0.286</td></tr>
+        <tr><td>CO₂</td><td class="num">0.364</td><td class="num">42.7</td><td class="num">304.1</td><td class="num">73.8</td><td class="num">0.274</td></tr>
+        <tr><td>H₂O</td><td class="num">0.5536</td><td class="num">30.5</td><td class="num">647.1</td><td class="num">220.6</td><td class="num">0.229</td></tr>
+      </tbody>
+    </table></div>
+    <p>두 항이 압력을 어느 쪽으로 움직이는지 손으로 확인해 보자.</p>
+    <figure class="mini" id="mini-ab">
+      <div class="mini-view" style="position:relative"><canvas id="cv-ab"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>인력 a <output id="ab-a-out"></output></span><input type="range" id="ab-a" min="0" max="0.6" step="0.01" value="0.36"></label><label class="ctrl"><span>배제 부피 b <output id="ab-b-out"></output></span><input type="range" id="ab-b" min="0" max="80" step="1" value="43"></label><span class="readout" id="ab-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>1 mol, 300 K에서의 \(P\)–\(V_\mathrm m\) 곡선. 회색 점선은 이상 기체, 주황은 반발만(\(a = 0\)), 초록은 인력만(\(b = 0\)), 파랑은 둘 다 넣은 판데르발스 식이다. \(b\)는 곡선을 오른쪽으로 밀어 압력을 높이고(작은 부피에서 발산), \(a\)는 곡선을 아래로 끌어내린다. 처음 값은 CO₂다.</figcaption>
+    </figure>
+    <div class="example" data-title="CO₂의 판데르발스 압력">
+      <p>CO₂ 1.00 mol을 0.500 L 용기에 넣고 300 K로 유지한다. 이상 기체 식과 판데르발스 식(\(a = 0.364\) Pa·m⁶/mol², \(b = 4.267\times10^{-5}\) m³/mol)으로 압력과 \(Z\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> SI 단위로 \(V_\mathrm m = 5.00\times10^{-4}\) m³/mol을 넣고 두 항을 따로 계산해 크기를 비교한다.</div>
+        <div class="step"><b>풀이</b> 이상: \(P = RT/V_\mathrm m = 2494.3/5.00\times10^{-4} = 4.99\times10^6\) Pa = 49.9 bar. 판데르발스: 반발 항 \(RT/(V_\mathrm m-b) = 2494.3/4.573\times10^{-4} = 54.5\) bar, 인력 항 \(a/V_\mathrm m^2 = 0.364/2.5\times10^{-7} = 14.6\) bar, \(P = 54.5 - 14.6 = 40.0\) bar. \(Z = PV_\mathrm m/RT = 40.0/49.9 = 0.801\).</div>
+        <div class="answer">이상 기체 49.9 bar, 판데르발스 40.0 bar (\(Z\approx0.80\))</div>
+        <div class="step"><b>검토</b> 배제 부피는 압력을 9 % 올리고 인력은 29 % 내려, 알짜로 20 % 낮다. 300 K는 CO₂의 임계 온도 304 K 바로 아래라 인력 효과가 크다.</div>
+      </details>
+    </div>
+    <p>판데르발스 등온선을 여러 온도에서 그려 보면 놀라운 일이 생긴다. 높은 온도에서는 이상 기체처럼 부드러운 쌍곡선이지만, 온도를 낮추면 곡선에 S자 고리가 생긴다.</p>
+    <div class="predict" data-for="sim-vdw">
+      <p>판데르발스 식에서 온도를 임계 온도보다 낮게 고정하고 큰 부피에서 출발해 부피를 줄여 간다. 식이 주는 압력은?</p>
+      <div class="opts"><button class="opt">이상 기체처럼 계속 증가한다</button><button class="opt" data-correct>증가하다가 감소하고, 다시 급격히 증가한다</button><button class="opt">어느 부피부터 일정하다</button><button class="opt">점점 감소한다</button></div>
+      <div class="quiz-exp">\(T<T_\mathrm c\)인 판데르발스 등온선은 극대와 극소를 가진다. 그 사이(\(\partial P/\partial V > 0\))에서는 부피를 줄이면 압력이 <b>떨어지므로</b> 조금만 흔들려도 무너지는 불안정한 상태다. 실제 기체는 이 구간 대신 액체와 기체로 나뉘어 압력이 일정한 수평선을 따른다. "압력이 일정"은 실제 현상이지 식이 주는 답이 아니다. 그 수평선의 높이를 정하는 맥스웰 작도는 <a href="phase-transitions.html">9장</a>에서 다룬다.</div>
+    </div>
+    <div class="sim" id="sim-vdw">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>판데르발스 등온선과 임계점</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-vdw"></canvas><span class="hint top">상태점을 끌면 그 점을 지나는 등온선이 그려진다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>기체</span><select id="vdw-gas"><option value="CO2" selected>CO₂</option><option value="N2">N₂</option><option value="Ar">Ar</option><option value="CH4">CH₄</option><option value="H2O">H₂O</option><option value="NH3">NH₃</option><option value="Xe">Xe</option></select></label>
+          <label class="check"><input type="checkbox" id="vdw-ideal" checked> 같은 온도의 이상 기체</label>
+          <label class="check"><input type="checkbox" id="vdw-spin" checked> 불안정 영역 표시</label>
+          <button class="btn" id="vdw-crit" type="button">임계점으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T (T/T<sub>c</sub>)</span><span class="v" id="vdw-t">—</span></div>
+        <div class="stat"><span class="k">V<sub>m</sub></span><span class="v" id="vdw-v">—</span></div>
+        <div class="stat"><span class="k">P</span><span class="v" id="vdw-p">—</span></div>
+        <div class="stat"><span class="k">Z</span><span class="v" id="vdw-z">—</span></div>
+        <div class="stat"><span class="k">∂P/∂V</span><span class="v" id="vdw-s">—</span></div>
+      </div>
+      <div class="sim-note">흐린 곡선은 \(T/T_\mathrm c\) = 0.85, 0.9, 0.95, 1, 1.1, 1.25, 1.5인 등온선, 굵은 파랑이 지금 등온선이다. 빨갛게 칠한 영역(스피노달 안쪽)에서는 \(\partial P/\partial V > 0\)이라 등온 압축률이 음수가 되어 역학적으로 불안정하다. 해볼 것: ① 상태점을 위아래로 끌어 고리가 생기고 사라지는 온도를 찾는다. 그 경계가 임계 온도다. ② '임계점으로'를 누르면 등온선이 그 점에서 수평 변곡점을 가진다. ③ 임계점에서 \(Z_\mathrm c\)를 읽어 표의 실측값(0.27–0.30)과 비교한다.</div>
+    </div>
+    <p>고리가 처음 생기는 온도에서 극대와 극소가 한 점으로 합쳐진다. 그 점에서 등온선은 기울기도 0, 곡률도 0인 수평 변곡점을 가진다. 이 점이 <span class="term">임계점</span><span class="en">(critical point)</span>이고, 그 온도가 <span class="term">임계 온도</span><span class="en">(critical temperature)</span> \(T_\mathrm c\)다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 290" role="img" aria-label="환산 판데르발스 등온선: 임계 온도 위, 임계점, 임계 온도 아래의 고리와 불안정 구간, 맥스웰 수평선">
+        <line x1="70" y1="255" x2="760" y2="255" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="20" x2="70" y2="255" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="91.2" y="273" text-anchor="middle">0.5</text><text class="t t-dim" x="197.5" y="273" text-anchor="middle">1</text><text class="t t-dim" x="303.8" y="273" text-anchor="middle">1.5</text><text class="t t-dim" x="410" y="273" text-anchor="middle">2</text><text class="t t-dim" x="516.2" y="273" text-anchor="middle">2.5</text><text class="t t-dim" x="622.5" y="273" text-anchor="middle">3</text><text class="t t-dim" x="728.8" y="273" text-anchor="middle">3.5</text>
+        <text class="t t-dim" x="62" y="259" text-anchor="end">0</text><text class="t t-dim" x="62" y="146" text-anchor="end">1</text><text class="t t-dim" x="62" y="34" text-anchor="end">2</text>
+        <text class="t t-dim" x="760" y="290" text-anchor="end">V/Vc</text><text class="t t-dim" x="78" y="16">P/Pc</text>
+        <g data-step="1"><path d="M165,25 L173,33 L181,41 L190,48 L200,54 L209,59 L219,65 L230,70 L241,74 L252,79 L264,83 L277,88 L290,92 L303,96 L318,101 L332,105 L348,109 L364,113 L381,117 L399,121 L418,125 L437,129 L457,133 L478,137 L501,140 L524,144 L548,148 L573,151 L599,155 L627,158 L656,161 L686,165 L717,168 L750,171" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text class="t t-acc" x="600" y="148" style="font-weight:700">T = 1.2 Tc</text></g>
+        <g data-step="2"><path d="M106,28 L112,64 L117,89 L123,107 L130,120 L136,128 L143,134 L150,138 L157,140 L165,141 L173,142 L181,142 L190,142 L200,143 L209,143 L219,143 L230,143 L241,143 L252,144 L264,145 L277,145 L290,147 L303,148 L318,149 L332,151 L348,152 L364,154 L381,156 L399,158 L418,160 L437,162 L457,165 L478,167 L501,169 L524,171 L548,174 L573,176 L599,178 L627,180 L656,183 L686,185 L717,187 L750,189" fill="none" stroke="var(--text)" stroke-width="2.5"/><circle cx="197.5" cy="142.5" r="7" fill="var(--bad)"/><line x1="140" y1="142.5" x2="255" y2="142.5" stroke="var(--bad)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="t" x="210" y="128" style="font-weight:700">임계점: ∂P/∂V = 0, ∂²P/∂V² = 0</text><text class="t" x="600" y="178">T = Tc</text></g>
+        <g data-step="3"><path d="M96,65 L101,118 L106,154 L112,178 L117,193 L123,201 L130,206 L136,208 L143,207 L150,206 L157,203 L165,200 L173,196 L181,193 L190,190 L200,187 L209,184 L219,182 L230,180 L241,178 L252,176 L264,175 L277,174 L290,174 L303,174 L318,174 L332,174 L348,174 L364,175 L381,176 L399,177 L418,178 L437,179 L457,180 L478,182 L501,183 L524,185 L548,186 L573,188 L599,190 L627,192 L656,193 L686,195 L717,197 L750,198" fill="none" stroke="var(--accent-2)" stroke-width="2.5"/><path d="M138,208 L143,207 L148,206 L153,205 L158,203 L164,200 L169,198 L175,196 L181,193 L188,191 L194,189 L201,186 L208,184 L215,183 L222,181 L230,180 L238,178 L246,177 L254,176 L263,175 L271,175 L281,174 L290,174 L300,174 L310,174" fill="none" stroke="var(--bad)" stroke-width="5" opacity="0.8"/><circle cx="137.7" cy="207.8" r="5" fill="var(--bad)"/><circle cx="309.8" cy="173.5" r="5" fill="var(--bad)"/><text class="t" x="320" y="215" style="fill:var(--bad)">∂P/∂V &gt; 0: 불안정</text><text class="t t-acc" x="600" y="208" style="fill:var(--accent-2)">T = 0.9 Tc</text></g>
+        <g data-step="4"><line x1="113.2" y1="182.2" x2="484.1" y2="182.2" stroke="var(--ok)" stroke-width="2.5" stroke-dasharray="8 5"/><text class="t" x="300" y="240" text-anchor="middle" style="fill:var(--ok)">실제: 액체 + 기체 공존(수평선) — 높이는 9장 맥스웰 작도</text></g>
+      </svg>
+      <ol class="steps-cap"><li>임계 온도 위에서 등온선은 단조 감소한다. 압축하면 기체는 점점 진해질 뿐 액체와 기체의 구분이 없다.</li><li>임계 온도에서는 극대와 극소가 한 점에서 만나 수평 변곡점이 된다. 두 조건을 연립하면 \(V_\mathrm c, T_\mathrm c, P_\mathrm c\)가 나온다.</li><li>임계 온도 아래에서는 고리가 생긴다. 극대·극소(스피노달) 사이의 빨간 구간은 \(\partial P/\partial V > 0\)인 불안정 상태다.</li><li>실제 계는 고리 대신 액체와 기체가 공존하는 수평선을 따른다. 고리의 위·아래 넓이가 같도록 높이를 정하는 것이 맥스웰 작도다.</li></ol>
+      <figcaption>환산 변수 \(P/P_\mathrm c\), \(V/V_\mathrm c\)로 그린 판데르발스 등온선. 고리의 극대와 극소 사이 구간은 실제로 관측되지 않는다. 고리의 바깥 가지 중 일부(과포화 증기, 과열 액체)는 준안정 상태로 관측된다.</figcaption>
+    </figure>
+    <p>임계점 조건 \((\partial P/\partial V_\mathrm m)_T = 0\), \((\partial^2P/\partial V_\mathrm m^2)_T = 0\)을 판데르발스 식에 적용하면</p>
+    <div class="formula">$$-\frac{RT}{(V_\mathrm m-b)^2} + \frac{2a}{V_\mathrm m^3} = 0,\qquad \frac{2RT}{(V_\mathrm m-b)^3} - \frac{6a}{V_\mathrm m^4} = 0$$
+    $$\Longrightarrow\quad V_\mathrm c = 3b,\qquad T_\mathrm c = \frac{8a}{27Rb},\qquad P_\mathrm c = \frac{a}{27b^2},\qquad Z_\mathrm c = \frac{P_\mathrm cV_\mathrm c}{RT_\mathrm c} = \frac38$$<div class="where">두 식을 나누면 \(V_\mathrm m - b = \tfrac23V_\mathrm m\), 곧 \(V_\mathrm c = 3b\)이다. 거꾸로 실측 \(T_\mathrm c, P_\mathrm c\)에서 \(a = 27R^2T_\mathrm c^2/64P_\mathrm c\), \(b = RT_\mathrm c/8P_\mathrm c\)로 판데르발스 상수를 정한다. 판데르발스 보일 온도는 \(T_\mathrm B = a/Rb = \tfrac{27}{8}T_\mathrm c\)다.</div></div>
+    <div class="tangle" id="tg-crit">
+      <p>판데르발스 상수가 \(a\) = <span class="tn" data-var="a" data-min="0.005" data-max="0.6" data-step="0.005">0.137</span> Pa·m⁶/mol², \(b\) = <span class="tn" data-var="b" data-min="15" data-max="60" data-step="0.1" data-unit=" cm³/mol">38.7</span>인 기체는 \(T_\mathrm c\) = <span class="tn-out" data-out="Tc"></span>, \(P_\mathrm c\) = <span class="tn-out" data-out="Pc"></span>, \(V_\mathrm c\) = <span class="tn-out" data-out="Vc"></span>, 보일 온도 <span class="tn-out" data-out="TB"></span>를 가진다. 25 °C에서 압축만으로 액화할 수 <span class="tn-out" data-out="liq"></span>.</p>
+    </div>
+    <div class="example" data-title="질소의 임계 상수">
+      <p>N₂의 판데르발스 상수 \(a = 0.137\) Pa·m⁶/mol², \(b = 3.87\times10^{-5}\) m³/mol로 \(T_\mathrm c, P_\mathrm c, V_\mathrm c\)와 \(Z_\mathrm c\)를 구하고 실측값 126.2 K, 34.0 bar, 90 cm³/mol, \(Z_\mathrm c = 0.289\)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 위의 세 공식에 SI 값을 넣는다.</div>
+        <div class="step"><b>풀이</b> \(T_\mathrm c = 8(0.137)/[27(8.314)(3.87\times10^{-5})] = 126.2\) K. \(P_\mathrm c = 0.137/[27(3.87\times10^{-5})^2] = 3.39\times10^6\) Pa = 33.9 bar. \(V_\mathrm c = 3b = 116\) cm³/mol. \(Z_\mathrm c = 3/8 = 0.375\).</div>
+        <div class="answer">\(T_\mathrm c = 126\) K, \(P_\mathrm c = 33.9\) bar, \(V_\mathrm c = 116\) cm³/mol, \(Z_\mathrm c = 0.375\)</div>
+        <div class="step"><b>검토</b> \(T_\mathrm c\)와 \(P_\mathrm c\)는 거의 정확한데, 이는 표의 \(a, b\)가 바로 실측 임계 상수에서 거꾸로 구한 값이기 때문이다. 대신 \(V_\mathrm c\)는 30 % 크고 \(Z_\mathrm c\)도 0.375로 실측(0.29)보다 크다. 세 임계 상수를 두 개의 상수로 모두 맞출 수는 없다.</div>
+      </details>
+    </div>
+    <p>임계 온도 위의 유체는 아무리 압축해도 액체와 기체로 나뉘지 않는다. 밀도는 액체만큼 높아질 수 있지만 경계면이 생기지 않는 이 상태를 <span class="term">초임계 유체</span><span class="en">(supercritical fluid)</span>라 한다. 상온의 N₂, Ar, He, SiH₄(270 K)는 초임계이므로 실린더 안에서 액체가 없고, CO₂(304 K)와 NH₃(405 K)는 상온에서 압축하면 액화한다. 초임계 CO₂는 표면 장력이 없어 미세 패턴을 무너뜨리지 않고 말리는 건조 공정에 쓰인다(9장).</p>
+    <div class="sim" id="sim-fit">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>도전: 측정 자료에 판데르발스 등온선 맞추기</h3></div>
+      <div class="sim-body">
+        <div class="sim-view" style="position:relative"><div class="sim-split"><div style="position:relative"><canvas id="cv-fit"></canvas></div><div style="position:relative"><canvas id="cv-pad"></canvas><span class="hint top">점을 끌어 a와 b 고르기</span></div></div></div>
+        <div class="sim-controls">
+          <button class="btn primary" id="fit-next" type="button">다음 기체</button>
+          <label class="check"><input type="checkbox" id="fit-map"> 오차 지도 힌트 보기</label>
+          <button class="btn" id="fit-crit" type="button">임계 상수에서 구한 a, b 넣기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">기체 / 온도</span><span class="v" id="fit-gas">—</span></div>
+        <div class="stat"><span class="k">a, b</span><span class="v" id="fit-ab">—</span></div>
+        <div class="stat"><span class="k">RMS 오차</span><span class="v" id="fit-err">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="fit-goal">—</span></div>
+        <div class="stat"><span class="k">성공</span><span class="v fit-score" id="fit-score">—</span></div>
+      </div>
+      <div class="sim-note">주황 점은 한 기체를 일정 온도에서 압축하며 잰 \(P\)–\(V_\mathrm m\) 자료(정밀 상태 방정식으로 만든 모의 측정값)다. 오른쪽 판에서 점 \((b, a)\)를 끌면 왼쪽 파랑 곡선이 바뀐다. RMS 상대 오차가 목표 아래로 내려가면 성공이다. 요령: 먼저 큰 부피(오른쪽 끝) 자료를 \(a\)로 맞추고, 작은 부피(왼쪽) 자료를 \(b\)로 맞춘다. '임계 상수에서 구한 a, b'를 넣어 보면 맞기는 하지만 최적은 아니다. 두 상수짜리 모형의 한계다.</div>
+    </div>
+    <div class="drill" id="drill-vdw" data-title="판데르발스 압력 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="corresponding-states">
+    <h2>대응 상태 원리</h2>
+    <p>판데르발스 식에 \(P = P_\mathrm rP_\mathrm c\), \(V_\mathrm m = V_\mathrm rV_\mathrm c\), \(T = T_\mathrm rT_\mathrm c\)를 넣고 임계 상수 공식을 쓰면 \(a\)와 \(b\)가 사라진다.</p>
+    <div class="formula">$$\Big(P_\mathrm r + \frac{3}{V_\mathrm r^2}\Big)(3V_\mathrm r - 1) = 8T_\mathrm r,\qquad P_\mathrm r = \frac P{P_\mathrm c},\quad V_\mathrm r = \frac{V_\mathrm m}{V_\mathrm c},\quad T_\mathrm r = \frac T{T_\mathrm c}$$<div class="where">\(P_\mathrm r, V_\mathrm r, T_\mathrm r\)를 <span class="term">환산 변수</span><span class="en">(reduced variables)</span>라 한다. 이 식에는 물질 상수가 하나도 없다. 판데르발스 기체라면 모든 기체가 환산 변수로 같은 상태 방정식을 따른다.</div></div>
+    <p>판데르발스 식이 정확하지 않은데도, 실제 기체들은 놀랄 만큼 이 성질을 따른다. 같은 \(T_\mathrm r\)와 \(P_\mathrm r\)에 있는 기체들은 거의 같은 \(Z\)를 가진다. 이것이 <span class="term">대응 상태 원리</span><span class="en">(principle of corresponding states)</span>다. 분자 사이 퍼텐셜이 모양은 같고 에너지 척도 \(\varepsilon\)와 길이 척도 \(\sigma\)만 다르다면(예: 레너드–존스 퍼텐셜), 통계역학에서 이 원리가 엄밀히 나온다. \(kT_\mathrm c\propto\varepsilon\), \(V_\mathrm c\propto N_\mathrm A\sigma^3\)이기 때문이다. Ar, Kr, Xe, CH₄, N₂, O₂처럼 구에 가까운 무극성 분자는 아주 잘 맞고, 극성이 강하거나 길쭉한 분자(H₂O, NH₃)와 양자 효과가 큰 He, H₂는 덜 맞는다.</p>
+    <p>공학에서는 이 원리를 <b>일반화 압축 인자 차트</b>로 쓴다. \(Z\)를 \(T_\mathrm r\)별 곡선으로 \(P_\mathrm r\)에 대해 그려 두면, 어떤 기체든 임계 상수만 알면 \(Z\)를 읽을 수 있다. 정밀도를 높이려면 분자의 비구형성을 나타내는 세 번째 변수인 피처의 이심 인자 \(\omega\)를 더한다(\(Z = Z^{(0)} + \omega Z^{(1)}\)).</p>
+    <div class="sim" id="sim-cs">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>일반화 압축 인자 차트</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-cs"></canvas><span class="hint top">상태점을 끌어 (P<sub>r</sub>, T<sub>r</sub>) 고르기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>기체(실제 T, P 표시)</span><select id="cs-gas"><option value="CH4" selected>CH₄</option><option value="N2">N₂</option><option value="Ar">Ar</option><option value="CO2">CO₂</option><option value="SiH4">SiH₄</option><option value="O2">O₂</option></select></label>
+          <label class="check"><input type="checkbox" id="cs-vdw" checked> 판데르발스 환산식(점선)</label>
+          <label class="check"><input type="checkbox" id="cs-pts" checked> 여러 기체의 계산점</label>
+          <button class="btn" id="cs-cyl" type="button">25 °C, 150 bar 실린더</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">T<sub>r</sub>, P<sub>r</sub></span><span class="v" id="cs-r">—</span></div>
+        <div class="stat"><span class="k">이 기체의 T, P</span><span class="v" id="cs-tp">—</span></div>
+        <div class="stat"><span class="k">Z (차트)</span><span class="v" id="cs-z">—</span></div>
+        <div class="stat"><span class="k">Z (판데르발스)</span><span class="v" id="cs-zv">—</span></div>
+        <div class="stat"><span class="k">Z (이 기체, 펭–로빈슨)</span><span class="v" id="cs-zp">—</span></div>
+      </div>
+      <div class="sim-note">실선은 단순 유체(\(\omega = 0\))의 리–케슬러 일반화 차트 \(Z^{(0)}(T_\mathrm r, P_\mathrm r)\)(\(T_\mathrm r\) = 1.0, 1.1, 1.2, 1.5, 2, 3), 점선은 판데르발스 환산식, 작은 점들은 서로 다른 기체 여섯 가지를 펭–로빈슨 식으로 같은 환산 상태에서 계산한 값이다. 해볼 것: ① 기체가 달라도 같은 \((T_\mathrm r, P_\mathrm r)\)의 점들이 한 곡선 근처에 모인다. ② \(T_\mathrm r = 1\), \(P_\mathrm r = 1\)(임계점)에서 차트는 \(Z\approx0.29\), 판데르발스는 0.375다. ③ '실린더' 버튼으로 기체마다 25 °C, 150 bar의 환산 상태를 보고 SiH₄가 왜 이상 기체와 거리가 먼지 확인한다.</div>
+    </div>
+    <div class="example" data-title="대응 상태로 메테인의 Z 추정">
+      <p>메테인(\(T_\mathrm c = 190.6\) K, \(P_\mathrm c = 46.0\) bar)이 25 °C, 150 bar에 있다. 환산 변수를 구하고 일반화 차트로 \(Z\)와 몰부피를 추정하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(T_\mathrm r = T/T_\mathrm c\), \(P_\mathrm r = P/P_\mathrm c\)를 구해 차트(시뮬레이터)에서 \(Z\)를 읽고 \(V_\mathrm m = ZRT/P\)로 바꾼다.</div>
+        <div class="step"><b>풀이</b> \(T_\mathrm r = 298.15/190.6 = 1.56\), \(P_\mathrm r = 150/46.0 = 3.26\). 차트에서 \(Z\approx0.82\). \(V_\mathrm m = 0.82\times8.314\times298.15/(150\times10^5) = 1.36\times10^{-4}\) m³/mol = 0.136 L/mol(이상 기체 0.165 L/mol).</div>
+        <div class="answer">\(T_\mathrm r\approx1.56\), \(P_\mathrm r\approx3.26\), \(Z\approx0.82\), \(V_\mathrm m\approx0.136\) L/mol</div>
+        <div class="step"><b>검토</b> 메테인 고유의 펭–로빈슨 계산은 \(Z = 0.80\)으로, 임계 상수 두 개만 쓴 차트가 2–3 % 안에서 맞는다. 판데르발스 환산식은 0.78을 준다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-cs" data-title="환산 변수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="response">
+    <h2>열팽창 계수와 등온 압축률</h2>
+    <p>상태 방정식 \(V(T, P)\)를 알면 온도나 압력을 조금 바꿨을 때 부피가 얼마나 변하는지 알 수 있다. 부피의 전미분은</p>
+    <div class="formula">$$\frac{dV}{V} = \alpha\,dT - \kappa_T\,dP,\qquad \alpha \equiv \frac1V\Big(\frac{\partial V}{\partial T}\Big)_P,\qquad \kappa_T \equiv -\frac1V\Big(\frac{\partial V}{\partial P}\Big)_T$$<div class="where">\(\alpha\)는 (부피) <span class="term">열팽창 계수</span><span class="en">(thermal expansion coefficient)</span>[K⁻¹], \(\kappa_T\)는 <span class="term">등온 압축률</span><span class="en">(isothermal compressibility)</span>[Pa⁻¹]다. \(\kappa_T\)의 역수는 부피 탄성률 \(K\)다. 등방성 고체의 부피 팽창 계수는 선팽창 계수의 3배(\(\alpha = 3\alpha_L\))다.</div></div>
+    <p>이상 기체 \(V = nRT/P\)에서는 \(\alpha = 1/T\), \(\kappa_T = 1/P\)다. 상온·1 bar 기체의 \(\alpha\approx3.4\times10^{-3}\) K⁻¹은 액체 물(\(2.6\times10^{-4}\) K⁻¹)의 13배, 실리콘(\(3\times2.6\times10^{-6}\) K⁻¹)의 430배다. 물은 특이하게 0–4 °C에서 \(\alpha < 0\)이다. 온도가 오르는데 부피가 줄어든다.</p>
+    <figure class="mini" id="mini-alpha">
+      <div class="mini-view" style="position:relative"><canvas id="cv-alpha"></canvas><span class="hint top">곡선 위 점을 끌기</span></div>
+      <div class="mini-ctrl"><div class="ctrl"><span>물질</span><div class="seg" id="alpha-sub"><button data-value="water" class="on">물(액체)</button><button data-value="gas">이상 기체</button></div></div><span class="readout" id="alpha-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>1 기압에서 질량 1 kg의 부피 \(V(T)\)와, 끌 수 있는 점에서의 접선(주황)이다. 열팽창 계수는 접선의 기울기를 그 점의 부피로 나눈 값이다. 물은 4 °C에서 부피가 최소라 접선이 수평(\(\alpha = 0\))이고, 그 아래에서는 기울기가 음수다. 이상 기체는 \(V\propto T\)인 직선이지만 \(\alpha = 1/T\)는 온도가 오를수록 작아진다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-kappa">
+      <div class="mini-view" style="position:relative"><canvas id="cv-kappa"></canvas><span class="hint top">등온선 위 점을 끌기</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>환산 온도 T<sub>r</sub> <output id="kap-t-out"></output></span><input type="range" id="kap-t" min="0.9" max="2" step="0.01" value="1.05"></label><span class="readout" id="kap-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>판데르발스 환산 등온선 위의 점에서 접선 기울기로 \(\kappa_T\)를 계산해, 같은 압력의 이상 기체 값 \(1/P\)와 비교한다. 임계점에 다가가면 접선이 수평이 되어 \(\kappa_T\to\infty\)가 된다. 아주 작은 압력 변화로 밀도가 크게 흔들리는 이 현상 때문에 임계점 근처 유체는 빛을 강하게 산란해 뿌옇게 보인다(임계 단백광). \(T_\mathrm r<1\)이면 불안정 구간에서 \(\kappa_T<0\)이 된다.</figcaption>
+    </figure>
+    <p>\(V\)가 \(T\)와 \(P\)의 함수이므로 세 편미분 사이에는 순환 관계 \((\partial P/\partial T)_V(\partial T/\partial V)_P(\partial V/\partial P)_T = -1\)이 성립한다. 이것을 \(\alpha\)와 \(\kappa_T\)로 쓰면</p>
+    <div class="formula">$$\Big(\frac{\partial P}{\partial T}\Big)_V = \frac{\alpha}{\kappa_T}$$<div class="where">부피를 고정하고 데웠을 때 압력이 오르는 비율이다. 이상 기체에서는 \((1/T)/(1/P) = P/T\)(샤를 법칙). 액체는 \(\alpha\)는 작지만 \(\kappa_T\)가 훨씬 더 작아서, 갇힌 액체를 데우면 압력이 엄청나게 오른다.</div></div>
+    <div class="tangle" id="tg-trap">
+      <p>밸브 두 개 사이에 물이 꽉 찬 채 갇힌 배관이 <span class="tn" data-var="dT" data-min="1" data-max="40" data-step="1" data-unit=" K">5</span> 데워지면(25 °C 물: \(\alpha = 2.57\times10^{-4}\) K⁻¹, \(\kappa_T = 4.52\times10^{-10}\) Pa⁻¹) 압력은 <span class="tn-out" data-out="dP"></span> 오른다. 기체(N₂, 1 bar)였다면 <span class="tn-out" data-out="gas"></span> 올랐을 것이다.</p>
+    </div>
+    <div class="example" data-title="갇힌 물의 압력 상승">
+      <p>양쪽 밸브가 닫힌 초순수 배관 구간이 물로 완전히 차 있다. 실내 온도가 올라 물의 온도가 5.0 K 높아지면 압력은 얼마나 오를까? 배관은 늘어나지 않는다고 본다. 25 °C 물의 \(\alpha = 2.57\times10^{-4}\) K⁻¹, \(\kappa_T = 4.52\times10^{-10}\) Pa⁻¹이다.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 부피 일정이므로 \(dV = 0 = \alpha\,dT - \kappa_T\,dP\), 곧 \(\Delta P = (\alpha/\kappa_T)\Delta T\).</div>
+        <div class="step"><b>풀이</b> \(\alpha/\kappa_T = 2.57\times10^{-4}/4.52\times10^{-10} = 5.69\times10^5\) Pa/K = 5.69 bar/K. \(\Delta P = 5.69\times5.0 = 28.4\) bar.</div>
+        <div class="answer">약 28 bar 상승 (1 K마다 약 5.7 bar)</div>
+        <div class="step"><b>검토</b> 몇 도만 데워져도 수십 bar가 된다. 실제로는 배관이 조금 늘어나 덜 오르지만, 그래서 액체 배관에는 열팽창 안전 밸브를 두고 양쪽 밸브를 동시에 잠그지 않는 운전 규칙을 둔다.</div>
+      </details>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>물질(25 °C 부근)</th><th class="num">선팽창 계수 α<sub>L</sub> [10⁻⁶ K⁻¹]</th><th class="num">등온 압축률 κ<sub>T</sub> [10⁻¹¹ Pa⁻¹]</th></tr></thead>
+      <tbody>
+        <tr><td>실리콘 Si</td><td class="num">2.6</td><td class="num">1.0</td></tr>
+        <tr><td>용융 실리카 SiO₂</td><td class="num">0.5</td><td class="num">2.7</td></tr>
+        <tr><td>구리 Cu</td><td class="num">16.5</td><td class="num">0.73</td></tr>
+        <tr><td>알루미늄 Al</td><td class="num">23.1</td><td class="num">1.3</td></tr>
+        <tr><td>텅스텐 W</td><td class="num">4.5</td><td class="num">0.32</td></tr>
+        <tr><td>물(액체)</td><td class="num">86 (= α/3)</td><td class="num">45.2</td></tr>
+        <tr><td>이상 기체(1 bar)</td><td class="num">1120 (= 1/3T)</td><td class="num">10⁶ (= 1/P)</td></tr>
+      </tbody>
+    </table></div>
+    <p>고체의 열팽창은 원자 사이 퍼텐셜이 비대칭(비조화)이기 때문에 생긴다. 그 미시적 그림과 그뤼나이젠 관계는 <a href="../../solid-state/chapters/thermal-properties.html">고체물리 · 열적 성질</a>에서 다룬다. 4장에서는 \(\alpha\)와 \(\kappa_T\)가 열용량의 차이 \(C_P - C_V = TV\alpha^2/\kappa_T\)를 정한다는 것을 증명한다. 막과 기판의 열팽창 계수가 다르면 증착 온도에서 식을 때 막에 응력이 생기고 웨이퍼가 휜다.</p>
+    <div class="callout semi"><strong>0.1 °C가 수십 nm가 되는 곳</strong><p>노광 장비는 웨이퍼와 레티클, 스테이지의 위치를 nm 단위로 맞춰야 한다. 실리콘의 선팽창 계수 \(2.6\times10^{-6}\) K⁻¹을 300 mm에 곱하면 1 K에 780 nm, 0.1 K에도 78 nm가 늘어난다. 그래서 노광 구역의 공조는 ±0.1 °C 이내로 온도를 묶고, 웨이퍼는 노광 전에 척 위에서 온도를 맞춘다(열평형 대기). 같은 계산이 CMP 패드, 식각 척, 프로브 카드의 정렬에도 쓰인다. → <a href="https://semi.euiyun.com/infra/chapters/hvac.html">InfraBook · 공조: 온도·습도·압력</a></p></div>
+    <p>이 장에서 상태 방정식은 "평형 상태 사이의 관계"였다. 다음 장에서는 한 평형 상태에서 다른 평형 상태로 갈 때 주고받는 일과 열을 다룬다. → <a href="first-law.html">2장 · 제1법칙과 엔탈피</a></p>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>열평형과 제0법칙</b>: 투열벽으로 맞댄 계는 거시 변수가 변하지 않는 열평형에 이르고, "열평형"은 전이적 관계다. 서로 열평형인 계들의 공통 이름표가 온도다. 분자 수준에서는 분자당 평균 운동 에너지가 같다는 뜻이다. 평형 상태는 몇 개의 상태 변수로 정해지고, 그 관계 \(f(P,V,T,n)=0\)이 상태 방정식이다.</li>
+      <li><b>이상 기체 온도</b>: \(T = 273.16\ \mathrm K\times\lim_{P_\mathrm{tp}\to0}(P/P_\mathrm{tp})\)(부피 일정). 묽은 극한에서는 기체 종류와 무관하다. 2019년부터 켈빈은 \(k = 1.380649\times10^{-23}\) J/K로 정의한다. \(t[{}^\circ\mathrm C] = T[\mathrm K] - 273.15\).</li>
+      <li><b>이상 기체와 돌턴</b>: 벽 충격량에서 \(PV = NkT = nRT\), \(n_V = P/kT\). 혼합 기체는 \(P = \sum P_i\), \(P_i = x_iP\). 같은 온도에서 압력은 분자 개수만 센다. 1 sccm = \(7.436\times10^{-7}\) mol/s(0 °C, 1 atm 기준). 혼합 유량의 분압은 \(P_i = (\dot n_i/\sum\dot n_j)P\).</li>
+      <li><b>실제 기체</b>: \(Z = PV_\mathrm m/RT = 1 + B/V_\mathrm m + C/V_\mathrm m^2 + \cdots\approx1 + BP/RT\). \(B<0\)이면 인력, \(B>0\)이면 반발이 우세하고 \(B(T_\mathrm B) = 0\)인 보일 온도에서 바뀐다. 고압 실린더의 몰수는 \(n = PV/ZRT\)이다(Ar 150 bar에서 \(Z\approx0.93\)).</li>
+      <li><b>판데르발스 식</b>: \(P = RT/(V_\mathrm m-b) - a/V_\mathrm m^2\), \(B = b - a/RT\), \(T_\mathrm B = a/Rb\). 임계점은 \(\partial P/\partial V = \partial^2P/\partial V^2 = 0\): \(V_\mathrm c = 3b\), \(T_\mathrm c = 8a/27Rb\), \(P_\mathrm c = a/27b^2\), \(Z_\mathrm c = 3/8\)(실측 0.23–0.30). \(T<T_\mathrm c\)의 고리 중 \(\partial P/\partial V>0\) 구간은 불안정하고, 실제로는 액체–기체 공존선으로 바뀐다(맥스웰 작도는 9장). \(T>T_\mathrm c\)이면 초임계 유체다.</li>
+      <li><b>대응 상태 원리</b>: 환산 변수 \(T_\mathrm r = T/T_\mathrm c\), \(P_\mathrm r = P/P_\mathrm c\)가 같으면 기체가 달라도 \(Z\)가 거의 같다. 판데르발스 환산식 \((P_\mathrm r + 3/V_\mathrm r^2)(3V_\mathrm r - 1) = 8T_\mathrm r\)에는 물질 상수가 없다. 일반화 차트로 임계 상수만 알면 \(Z\)를 추정한다.</li>
+      <li><b>응답 계수</b>: \(dV/V = \alpha\,dT - \kappa_T\,dP\), 이상 기체 \(\alpha = 1/T\), \(\kappa_T = 1/P\). \((\partial P/\partial T)_V = \alpha/\kappa_T\) — 갇힌 물은 1 K에 약 5.7 bar 오른다. 임계점에서 \(\kappa_T\to\infty\). 실리콘 \(\alpha_L = 2.6\times10^{-6}\) K⁻¹.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>\(R = 8.314\) J/(mol·K), \(k = 1.381\times10^{-23}\) J/K, \(N_\mathrm A = 6.022\times10^{23}\) mol⁻¹, 1 atm = 101 325 Pa, 1 Torr = 133.32 Pa, 0 °C = 273.15 K를 쓴다. 따로 말이 없으면 답이 ±1 % 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="온도 눈금" data-answer="1323" data-tol="0.6" data-label="T =" data-unit="K">
+        <div class="prob-q"><p>RTP 장비가 웨이퍼를 1050 °C까지 가열한다. 이 온도를 켈빈으로 나타내라.</p></div>
+        <div class="prob-sol"><p>\(T = t + 273.15 = 1323.15\) K ≈ 1323 K.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="제0법칙">
+        <div class="prob-q"><p>열전대 하나를 웨이퍼 척에 대니 87.3 °C, 같은 열전대를 챔버 벽에 대니 87.3 °C를 읽었다. 제0법칙에서 곧바로 결론지을 수 있는 것은?</p></div>
+        <div class="prob-choices"><button>척과 벽의 압력이 같다</button><button data-correct>척과 벽을 맞대도 둘 사이에 알짜 열 흐름이 없다</button><button>척과 벽의 열용량이 같다</button><button>열전대의 온도가 87.3 °C가 아닐 수도 있으므로 아무것도 알 수 없다</button></div>
+        <div class="prob-sol"><p>척과 열전대, 벽과 열전대가 각각 열평형이므로 제0법칙에 따라 척과 벽도 열평형, 곧 같은 온도다. 맞대도 알짜 열 흐름이 없다. 압력이나 열용량은 온도와 무관하다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="이상 기체" data-answer="3.24e15" data-label="n_V =" data-unit="cm⁻³">
+        <div class="prob-q"><p>100 mTorr, 25 °C인 챔버 속 기체의 수밀도를 cm⁻³ 단위로 구하라.</p></div>
+        <div class="prob-hint">\(n_V = P/kT\), \(P = 0.100\times133.32\) Pa.</div>
+        <div class="prob-sol"><p>\(P = 13.33\) Pa, \(n_V = 13.33/(1.381\times10^{-23}\times298.15) = 3.24\times10^{21}\) m⁻³ \(= 3.24\times10^{15}\) cm⁻³.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="기체 온도계" data-answer="373.14" data-tol="0.02" data-label="T* =" data-unit="K">
+        <div class="prob-q"><p>정적 기체 온도계의 삼중점 압력이 50.00 kPa였다. 이 온도계를 어떤 계에 넣으니 압력이 68.30 kPa가 되었다. 이 기체 양에서 읽은 온도 \(T^* = 273.16\,P/P_\mathrm{tp}\)는? (소수 둘째 자리까지)</p></div>
+        <div class="prob-sol"><p>\(T^* = 273.16\times68.30/50.00 = 373.14\) K. 이 값은 기체 양에 따라 조금씩 달라지므로, 정확한 온도를 얻으려면 기체 양을 바꿔 가며 잰 \(T^*\)를 \(P_\mathrm{tp}\to0\)으로 외삽한다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="돌턴 법칙" data-answer="0.500" data-label="P(O₂) =" data-unit="atm">
+        <div class="prob-q"><p>N₂ 3.0 mol과 O₂ 1.0 mol을 섞은 기체의 전체 압력이 2.0 atm이다. O₂의 분압은?</p></div>
+        <div class="prob-sol"><p>\(x_{\mathrm{O_2}} = 1.0/4.0 = 0.25\), \(P_{\mathrm{O_2}} = 0.25\times2.0 = 0.50\) atm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="sccm" data-answer="1.49e-4; 112" data-label="ṅ =; t =" data-unit="mol/s; 분">
+        <div class="prob-q"><p>MFC가 N₂를 200 sccm(0 °C, 1 atm 기준) 흘린다. (a) 몰 유량(mol/s)과 (b) N₂ 1 mol을 흘리는 데 걸리는 시간(분)을 구하라.</p></div>
+        <div class="prob-sol"><p>(a) \(\dot n = (101325\times200\times10^{-6})/(8.314\times273.15)/60 = 1.49\times10^{-4}\) mol/s. (b) \(1/\dot n = 6724\) s = 112 분. 같은 뜻으로, 표준 상태 몰부피 22 414 cm³를 200 cm³/min으로 나눠도 112 분이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="분압" data-answer="0.990" data-label="P(B₂H₆) =" data-unit="mTorr">
+        <div class="prob-q"><p>H₂에 1.0 % 희석한 B₂H₆ 혼합 기체 20 sccm과 순수 H₂ 2000 sccm을 챔버에 흘려 전체 압력을 10 Torr로 유지한다. B₂H₆의 분압을 mTorr로 구하라. 모든 기체가 같은 비율로 배기된다고 본다.</p></div>
+        <div class="prob-sol"><p>B₂H₆ 유량 \(= 0.010\times20 = 0.20\) sccm, 전체 2020 sccm. \(x = 0.20/2020 = 9.90\times10^{-5}\), \(P = 9.90\times10^{-5}\times10\) Torr \(= 9.90\times10^{-4}\) Torr = 0.990 mTorr.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="압축 인자" data-answer="0.700" data-label="Z =">
+        <div class="prob-q"><p>CO₂ 1.00 mol을 300 K에서 0.250 L 용기에 넣었더니 압력이 69.8 bar였다. 압축 인자 \(Z\)는?</p></div>
+        <div class="prob-sol"><p>\(Z = PV/nRT = (69.8\times10^5)(2.50\times10^{-4})/(8.314\times300) = 1745/2494 = 0.700\). 인력 때문에 이상 기체보다 압력이 30 % 낮다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="비리얼 전개" data-answer="0.976; 4.87" data-label="Z =; V_m =" data-unit="; L/mol">
+        <div class="prob-q"><p>300 K의 CO₂는 제2 비리얼 계수가 \(B = -122\) cm³/mol이다. 5.0 bar에서 저압 근사 \(Z\approx1+BP/RT\)로 \(Z\)와 몰부피 \(V_\mathrm m\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(BP/RT = (-122\times10^{-6})(5.0\times10^5)/(8.314\times300) = -0.0245\), \(Z = 0.976\). \(V_\mathrm m = ZRT/P = 0.976\times2494/5.0\times10^5 = 4.87\times10^{-3}\) m³/mol = 4.87 L/mol(이상 기체 4.99 L/mol).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="보일 온도" data-answer="426" data-label="T_B =" data-unit="K">
+        <div class="prob-q"><p>N₂의 판데르발스 상수 \(a = 0.137\) Pa·m⁶/mol², \(b = 3.87\times10^{-5}\) m³/mol로 보일 온도를 구하라. (실측은 327 K다.)</p></div>
+        <div class="prob-sol"><p>\(B = b - a/RT = 0\)에서 \(T_\mathrm B = a/Rb = 0.137/(8.314\times3.87\times10^{-5}) = 426\) K. 판데르발스 식은 \(T_\mathrm B = 3.375\,T_\mathrm c\)를 주지만, 실제 기체는 \(2.4\)–\(2.7\,T_\mathrm c\)(N₂ 2.6, Ar 2.7, CO₂ 2.4)라 모형이 30 % 안팎 높게 준다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="판데르발스 식" data-answer="270; 249" data-label="P(vdW) =; P(이상) =" data-unit="bar; bar">
+        <div class="prob-q"><p>N₂ 1.00 mol을 0.100 L 용기에 넣고 300 K로 유지한다. 판데르발스 식(\(a = 0.137\) Pa·m⁶/mol², \(b = 3.87\times10^{-5}\) m³/mol)과 이상 기체 식으로 압력을 각각 구하라.</p></div>
+        <div class="prob-sol"><p>\(V_\mathrm m = 1.00\times10^{-4}\) m³/mol. 반발 항 \(RT/(V_\mathrm m-b) = 2494.3/6.13\times10^{-5} = 4.069\times10^7\) Pa, 인력 항 \(a/V_\mathrm m^2 = 1.37\times10^7\) Pa. \(P = 2.70\times10^7\) Pa = 270 bar. 이상 기체는 \(2494.3/10^{-4} = 249\) bar. 이 밀도에서는 반발이 우세해 \(Z\approx1.08\)이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="실린더 잔량" data-answer="19.0" data-tol="0.3" data-label="남은 비율 =" data-unit="%">
+        <div class="prob-q"><p>25 °C의 47 L Ar 실린더 압력이 150 bar에서 30 bar로 떨어졌다(둘 다 절대 압력). 두 압력에서의 압축 인자가 각각 0.925와 0.975라면, 처음 들어 있던 Ar의 몇 %가 남았는가?</p></div>
+        <div class="prob-hint">\(n\propto P/Z\)이므로 부피와 온도는 약분된다.</div>
+        <div class="prob-sol"><p>\(\dfrac{n_2}{n_1} = \dfrac{P_2/Z_2}{P_1/Z_1} = \dfrac{30/0.975}{150/0.925} = \dfrac{30.77}{162.16} = 0.190\), 곧 19.0 %. 압력 비(20 %)로 계산하면 남은 양을 5 % 과대 평가한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="임계 상수" data-answer="0.366; 42.8" data-label="a =; b =" data-unit="Pa·m⁶/mol²; cm³/mol">
+        <div class="prob-q"><p>CO₂의 실측 임계 상수 \(T_\mathrm c = 304.13\) K, \(P_\mathrm c = 73.77\) bar로 판데르발스 상수 \(a\)와 \(b\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(a = 27R^2T_\mathrm c^2/(64P_\mathrm c) = 27(8.314)^2(304.13)^2/(64\times7.377\times10^6) = 0.366\) Pa·m⁶/mol². \(b = RT_\mathrm c/(8P_\mathrm c) = 8.314\times304.13/(8\times7.377\times10^6) = 4.28\times10^{-5}\) m³/mol = 42.8 cm³/mol.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="대응 상태">
+        <div class="prob-q"><p>대응 상태 원리에 따르면 다음 중 압축 인자가 가장 비슷한 두 상태는? (임계 상수: Ar 150.7 K, 48.6 bar / CH₄ 190.6 K, 46.0 bar / CO₂ 304.1 K, 73.8 bar)</p></div>
+        <div class="prob-choices"><button>Ar 300 K, 100 bar 와 CO₂ 300 K, 100 bar</button><button data-correct>Ar 226 K, 97 bar 와 CH₄ 286 K, 92 bar</button><button>CH₄ 300 K, 50 bar 와 CO₂ 300 K, 50 bar</button><button>Ar 150 K, 10 bar 와 CO₂ 300 K, 10 bar</button></div>
+        <div class="prob-sol"><p>Ar 226 K, 97 bar는 \(T_\mathrm r = 1.50\), \(P_\mathrm r = 2.00\)이고 CH₄ 286 K, 92 bar도 \(T_\mathrm r = 1.50\), \(P_\mathrm r = 2.00\)이다. 같은 \(T, P\)라도 임계 상수가 다르면 환산 상태가 달라 \(Z\)가 다르다(CO₂ 300 K는 \(T_\mathrm r\approx0.99\)라 액화 근처다).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="응답 계수" data-answer="3.33e-3; 5.00e-6" data-label="α =; κ_T =" data-unit="K⁻¹; Pa⁻¹">
+        <div class="prob-q"><p>300 K, 2.0 bar의 이상 기체의 열팽창 계수 \(\alpha\)와 등온 압축률 \(\kappa_T\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(V = nRT/P\)에서 \(\alpha = (1/V)(nR/P) = 1/T = 3.33\times10^{-3}\) K⁻¹, \(\kappa_T = -(1/V)(-nRT/P^2) = 1/P = 1/(2.0\times10^5) = 5.0\times10^{-6}\) Pa⁻¹.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="갇힌 액체" data-answer="28.4" data-label="ΔP =" data-unit="bar">
+        <div class="prob-q"><p>양쪽 밸브가 닫혀 물이 꽉 찬 배관이 25 °C에서 30 °C로 데워졌다. 배관이 늘어나지 않는다면 압력은 몇 bar 오르는가? \(\alpha = 2.57\times10^{-4}\) K⁻¹, \(\kappa_T = 4.52\times10^{-10}\) Pa⁻¹을 일정하다고 본다.</p></div>
+        <div class="prob-hint">\(dV = V(\alpha\,dT - \kappa_T\,dP) = 0\).</div>
+        <div class="prob-sol"><p>\(\Delta P = (\alpha/\kappa_T)\Delta T = (2.57\times10^{-4}/4.52\times10^{-10})\times5 = 2.84\times10^6\) Pa = 28.4 bar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>움직이지 않는 투열벽으로 나뉜 두 기체가 열평형에 이르렀다. 반드시 같은 것은?</p><div class="opts">
+        <button class="opt">압력</button><button class="opt">밀도</button><button class="opt" data-correct>온도</button><button class="opt">내부 에너지</button>
+      </div><div class="quiz-exp">투열벽은 에너지만 통과시키므로 에너지 교환이 멈추는 조건, 곧 온도만 같아진다. 부피와 분자 수가 다르면 압력·밀도·내부 에너지는 다를 수 있다.</div></div>
+      <div class="quiz-q"><p>정적 기체 온도계에서 \(P_\mathrm{tp}\to0\)으로 외삽하는 이유는?</p><div class="opts">
+        <button class="opt">삼중점에서 기체가 액화하기 때문</button><button class="opt" data-correct>분자 사이 상호 작용에 의한 편차가 밀도에 비례해 묽은 극한에서 사라지기 때문</button><button class="opt">압력계의 영점을 맞추기 위해</button><button class="opt">켈빈 눈금이 0 K에서 정의되기 때문</button>
+      </div><div class="quiz-exp">\(PV_\mathrm m/RT = 1 + B/V_\mathrm m + \cdots\)의 보정은 밀도에 비례한다. 밀도→0이면 모든 기체가 같은 눈금(이상 기체 온도)을 준다.</div></div>
+      <div class="quiz-q"><p>상온 50 bar에서 어떤 기체의 \(Z = 0.85\)이다. 옳은 설명은?</p><div class="opts">
+        <button class="opt">분자 크기(반발)가 우세하다</button><button class="opt" data-correct>인력이 우세해 같은 \(T, P\)의 이상 기체보다 부피가 15 % 작다</button><button class="opt">이 기체는 보일 온도 위에 있다</button><button class="opt">이상 기체 식으로 구한 몰수가 실제보다 크다</button>
+      </div><div class="quiz-exp">\(Z<1\)이면 \(V_\mathrm m < RT/P\), 인력이 우세하다는 뜻이다. 같은 \(P, V, T\)에서 실제 몰수는 \(PV/ZRT\)이므로 이상 기체 계산보다 많다. 보일 온도 아래에서 \(B<0\)이다.</div></div>
+      <div class="quiz-q"><p>25 °C에서 압축만으로 액화할 수 <b>없는</b> 기체는? (임계 온도: SiH₄ 270 K, CO₂ 304 K, NH₃ 405 K, H₂O 647 K)</p><div class="opts">
+        <button class="opt" data-correct>SiH₄</button><button class="opt">CO₂</button><button class="opt">NH₃</button><button class="opt">H₂O</button>
+      </div><div class="quiz-exp">임계 온도보다 높은 온도에서는 액체–기체 구분이 없어 아무리 압축해도 액화하지 않는다. SiH₄의 \(T_\mathrm c\)는 −3.5 °C라 상온에서 초임계 상태다.</div></div>
+      <div class="quiz-q"><p>판데르발스 등온선에서 \(\partial P/\partial V > 0\)인 구간에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">임계 온도 위에서만 나타난다</button><button class="opt">과포화 증기처럼 실험에서 오래 관측되는 준안정 상태다</button><button class="opt" data-correct>등온 압축률이 음수인 불안정 상태라 실제로는 액체와 기체로 나뉜다</button><button class="opt">이상 기체에서도 나타난다</button>
+      </div><div class="quiz-exp">\(\kappa_T = -(1/V)(\partial V/\partial P)_T < 0\)이면 작은 밀도 요동이 스스로 커져 계가 두 상으로 갈라진다. 준안정 상태(과포화 증기, 과열 액체)는 스피노달 바깥, 공존선 안쪽의 가지다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, R = Thermo.C.R, kB = Thermo.C.kB, NA = Thermo.C.NA, TORR = Thermo.unit.torr;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono, bold) => (bold ? "600 " : "") + px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const f3 = (x) => (isFinite(x) ? String(Number(x.toPrecision(3))) : "—");
+  const fx = (x, d = 2) => (isFinite(x) ? x.toFixed(d) : "—");
+  const SUP = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻" };
+  const sup = (n) => String(n).split("").map((c) => SUP[c] || c).join("");
+  /** 과학 표기: 1.23×10⁻⁴ (−2 ≤ 지수 ≤ 4이면 보통 표기) */
+  const sci = (x, d = 2) => {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    x = Number(x.toPrecision(d + 1));
+    const e = Math.floor(Math.log10(Math.abs(x)) + 1e-12);
+    if (e >= -2 && e <= 4) return String(Number(x.toPrecision(d + 1)));
+    const m = x / Math.pow(10, e);
+    return m.toFixed(d) + "×10" + sup(e);
+  };
+  /** TeX 과학 표기 */
+  const texSci = (x, d = 2) => { if (!isFinite(x)) return "—"; const e = Math.floor(Math.log10(Math.abs(x)) + 1e-12); if (e >= -2 && e <= 4) return String(Number(x.toPrecision(d + 1))); return (x / Math.pow(10, e)).toFixed(d) + "\\times10^{" + e + "}"; };
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  const clip = (ctx, B, fn) => { ctx.save(); ctx.beginPath(); ctx.rect(B.x, B.y - 2, B.w + 2, B.h + 4); ctx.clip(); fn(); ctx.restore(); };
+  function line(ctx, pts, col, w = 2, dash) { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let on = false; pts.forEach(([x, y]) => { if (!isFinite(x) || !isFinite(y)) { on = false; return; } on ? ctx.lineTo(x, y) : ctx.moveTo(x, y); on = true; }); ctx.stroke(); ctx.restore(); }
+  function toggleBtn(id, st, key = "playing", cb) {
+    const b = $(id);
+    const sync = () => (b.textContent = st[key] ? "❚❚ 정지" : "▶ 재생");
+    b.addEventListener("click", () => { st[key] = !st[key]; sync(); cb && cb(); });
+    sync();
+    return sync;
+  }
+  function rgbOf(c) {
+    c = String(c).trim();
+    if (c[0] === "#") { if (c.length === 4) c = "#" + c.slice(1).split("").map((x) => x + x).join(""); return [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)); }
+    const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : [128, 128, 128];
+  }
+  const mix = (c1, c2, t) => { const a = rgbOf(c1), b = rgbOf(c2); t = SB.clamp(t, 0, 1); return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`; };
+  /** 축이 있는 좌표계 (SB.chart 대신 직접 그릴 때) */
+  const frame = (B, x0, x1, y0, y1) => ({ box: B, X: (v) => B.x + ((v - x0) / (x1 - x0)) * B.w, Y: (v) => B.y + B.h - ((v - y0) / (y1 - y0)) * B.h, ix: (px) => x0 + ((px - B.x) / B.w) * (x1 - x0), iy: (py) => y0 + ((B.y + B.h - py) / B.h) * (y1 - y0) });
+
+  /* ---------------------------------------------------------------- 2D 기체 도구 */
+  const KU = 300;                       // 화면 단위: kT = 300 × T[K]
+  const T2kT = (TK) => TK * KU, kT2T = (kT) => kT / KU;
+  /** 원판 중심이 갈 수 있는 넓이 */
+  const accA = (Wr, H, r) => Math.max(1, (Wr - 2 * r) * (H - 2 * r));
+  /** 벽 충격량으로 잰 2D 압력(원판 중심이 닿는 벽 길이 기준) */
+  const measP = (G, r, Wr) => { const per = 2 * ((Wr - 2 * r) + (G.H - 2 * r)); const I = G.impulse.left + G.impulse.right + G.impulse.top + G.impulse.bottom; return G.impT > 0 ? I / (per * G.impT) : 0; };
+  const Zhd = (eta) => (1 + (eta * eta) / 8) / ((1 - eta) * (1 - eta));   // 헨더슨 근사(강체 원판)
+  /** 원판 그리기: 운동 에너지를 kTref와 비교해 파랑(느림)→주황(빠름) 5단계 */
+  function drawParticles(ctx, G, ox, oy, S, kTref, o = {}) {
+    const P = pal(), cols = [0, 1, 2, 3, 4].map((i) => mix(P.accent2, P.accent, i / 4)), th = [0.3, 0.7, 1.2, 2.0];
+    const rr = (q) => Math.max(o.minR || 1.6, q.r * S);
+    for (let k = 0; k < 5; k++) {
+      ctx.fillStyle = cols[k]; ctx.beginPath();
+      for (const q of G.p) {
+        const e = (0.5 * q.m * (q.vx * q.vx + q.vy * q.vy)) / kTref;
+        let b = 0; while (b < 4 && e > th[b]) b++;
+        if (b !== k) continue;
+        const x = ox + q.x * S, y = oy + q.y * S, rad = rr(q);
+        ctx.moveTo(x + rad, y); ctx.arc(x, y, rad, 0, 2 * PI);
+      }
+      ctx.fill();
+    }
+    if (o.ring) { ctx.strokeStyle = P.text; ctx.lineWidth = 1; for (const q of G.p) if (o.ring(q)) { ctx.beginPath(); ctx.arc(ox + q.x * S, oy + q.y * S, rr(q) + 0.8, 0, 2 * PI); ctx.stroke(); } }
+  }
+  /** 피스톤 상자 + 온도 막대 그리기 → 핸들 위치 */
+  function drawPistonBox(ctx, G, g, o) {
+    const P = pal(), { ox, oy, S } = g, Hh = G.H * S, xp = ox + G.piston.x * S;
+    const u = (o.Tw - o.TMIN) / (o.TMAX - o.TMIN), tc = mix(P.accent2, P.accent, u);
+    withA(ctx, 0.1, () => { ctx.fillStyle = tc; ctx.fillRect(ox, oy, xp - ox, Hh); });
+    ctx.strokeStyle = P.axis; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(ox + G.W * S + 6, oy); ctx.lineTo(ox, oy); ctx.lineTo(ox, oy + Hh); ctx.lineTo(ox + G.W * S + 6, oy + Hh); ctx.stroke();
+    ctx.strokeStyle = tc; ctx.lineWidth = 5; ctx.beginPath();
+    (o.hot || ["left"]).forEach((k) => { if (k === "left") { ctx.moveTo(ox, oy); ctx.lineTo(ox, oy + Hh); } if (k === "top") { ctx.moveTo(ox, oy); ctx.lineTo(xp, oy); } if (k === "bottom") { ctx.moveTo(ox, oy + Hh); ctx.lineTo(xp, oy + Hh); } });
+    ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, xp - ox, Hh); ctx.clip(); drawParticles(ctx, G, ox, oy, S, o.kTref); ctx.restore();
+    // 피스톤
+    ctx.fillStyle = P.dim; ctx.fillRect(xp, oy + 1, 7, Hh - 2);
+    ctx.strokeStyle = P.dim; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(xp + 7, oy + Hh / 2); ctx.lineTo(Math.max(xp + 14, ox + G.W * S + 6), oy + Hh / 2); ctx.stroke();
+    // 온도 막대
+    const bx = g.barX, bw = g.barW, yT = oy + Hh * (1 - u);
+    ctx.fillStyle = P.grid; ctx.fillRect(bx, oy, bw, Hh);
+    ctx.fillStyle = tc; ctx.fillRect(bx, yT, bw, oy + Hh - yT);
+    ctx.strokeStyle = P.axis; ctx.lineWidth = 1; ctx.strokeRect(bx, oy, bw, Hh);
+    handle(ctx, bx + bw / 2, yT, P.accent, 9);
+    handle(ctx, xp + 3.5, oy + Hh / 2, P.accent2, 10);
+    return { yT, xp: xp + 3.5, yp: oy + Hh / 2 };
+  }
+  /** 피스톤 상자 드래그 연결 */
+  function pistonDrag(cv, G, st, o) {
+    SB.drag(cv, {
+      handles: () => { const g = cv._g, hh = cv._h; if (!g || !hh) return []; return [{ id: "T", x: g.barX + g.barW / 2, y: hh.yT, r: 14 }, { id: "pis", x: hh.xp, y: hh.yp, r: 16 }]; },
+      move: (id, x, y) => {
+        const g = cv._g; if (!g) return;
+        if (id === "T") { const u = 1 - (y - g.oy) / (G.H * g.S); o.setT(SB.clamp(o.TMIN + u * (o.TMAX - o.TMIN), o.TMIN, o.TMAX)); }
+        if (id === "pis") st.tgt = SB.clamp((x - g.ox) / g.S, o.XMIN, G.W);
+      },
+    });
+  }
+  const pistonStep = (G, st, h) => { G.piston.v = SB.clamp((st.tgt - G.piston.x) * 5, -180, 180); G.step(h); };
+
+  /* ---------------------------------------------------------------- 상태 방정식 도구 */
+  const VDW = Thermo.vdwData;
+  const GASKO = { N2: "N₂", O2: "O₂", H2: "H₂", He: "He", Ar: "Ar", CO2: "CO₂", CH4: "CH₄", H2O: "H₂O", NH3: "NH₃", Xe: "Xe", SiH4: "SiH₄", Ne: "Ne" };
+  /** 펭–로빈슨 자료 {Tc[K], Pc[Pa], ω} (대표값) */
+  const PRD = { N2: [126.19, 33.958e5, 0.0372], Ar: [150.687, 48.63e5, -0.002], SiH4: [269.7, 48.4e5, 0.094], CO2: [304.13, 73.773e5, 0.225], CH4: [190.56, 45.99e5, 0.011], O2: [154.58, 50.43e5, 0.022] };
+  function prAB(T, g) { const [Tc, Pc, w] = PRD[g], kap = 0.37464 + 1.54226 * w - 0.26992 * w * w, al = Math.pow(1 + kap * (1 - Math.sqrt(T / Tc)), 2); return { a: (0.45724 * R * R * Tc * Tc / Pc) * al, b: 0.0778 * R * Tc / Pc }; }
+  /** 펭–로빈슨 Z(T, P[Pa]) — 가장 큰 실근(기체 쪽) */
+  function prZ(T, P, g) {
+    const { a, b } = prAB(T, g), A = (a * P) / (R * T * R * T), B = (b * P) / (R * T);
+    const z = Thermo.cubicReal(-(1 - B), A - 3 * B * B - 2 * B, -(A * B - B * B - B * B * B)).filter((v) => v > B);
+    return z.length ? Math.max(...z) : NaN;
+  }
+  const prP = (T, V, g) => { const { a, b } = prAB(T, g); return (R * T) / (V - b) - a / (V * V + 2 * b * V - b * b); };
+  /** 리–케슬러 단순 유체 Z⁽⁰⁾(Tr, Pr) */
+  const LK = { b1: 0.1181193, b2: 0.265728, b3: 0.15479, b4: 0.030323, c1: 0.0236744, c2: 0.0186984, c3: 0, c4: 0.042724, d1: 0.155488e-4, d2: 0.623689e-4, be: 0.65392, ga: 0.060167 };
+  function lkZ(Tr, Pr) {
+    const k = LK, B = k.b1 - k.b2 / Tr - k.b3 / (Tr * Tr) - k.b4 / (Tr * Tr * Tr), Cc = k.c1 - k.c2 / Tr + k.c3 / (Tr * Tr * Tr), D = k.d1 + k.d2 / Tr;
+    const f = (V) => (Pr * V) / Tr - (1 + B / V + Cc / (V * V) + D / Math.pow(V, 5) + (k.c4 / (Tr * Tr * Tr * V * V)) * (k.be + k.ga / (V * V)) * Math.exp(-k.ga / (V * V)));
+    let V1 = Math.max(50, (20 * Tr) / Math.max(Pr, 1e-3)), f1 = f(V1);
+    const n = 500, lo = 0.02;
+    for (let i = 1; i <= n; i++) {
+      const V0 = V1 * Math.pow(lo / V1, 1 / (n - i + 1)), f0 = f(V0);
+      if (f0 * f1 <= 0) return (Pr * Thermo.bisect(f, V0, V1, 1e-12)) / Tr;
+      V1 = V0; f1 = f0;
+    }
+    return NaN;
+  }
+  /** 판데르발스 환산식 Z (가장 큰 근) */
+  function vdwRedZ(Tr, Pr) {
+    const r = Thermo.cubicReal(-(Pr + 8 * Tr) / (3 * Pr), 3 / Pr, -1 / Pr).filter((v) => v > 1 / 3);
+    return r.length ? ((Pr * Math.max(...r)) / Tr) * 0.375 : NaN;
+  }
+  const vdwRedP = (Tr, Vr) => (8 * Tr) / (3 * Vr - 1) - 3 / (Vr * Vr);
+
+  /* ================================================================ 머리: 피스톤 상자 */
+  {
+    const W = 600, H = 300, N = 120, r = 3.5, TMIN = 100, TMAX = 800, XMIN = 150;
+    const st = { Tw: 300, tgt: 420, P: null, Pid: null, idAcc: 0, Tg: 300 };
+    const G = Thermo.gas2d({ W, H, n: N, r, m: 1, T: T2kT(300), seed: 5, walls: { left: { T: T2kT(300) } }, piston: { x: 420, v: 0, M: 1e9, F: 0, xmin: 100, xmax: W } });
+    const o = { TMIN, TMAX, XMIN, setT: (T) => { st.Tw = T; G.walls.left.T = T2kT(T); } };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 560;
+      const top = 36, bottom = narrow ? 54 : 34, barX = 12, barW = 20, left = barX + barW + 12;
+      const S = Math.min((w - left - 20) / W, (h - top - bottom) / H);
+      const g = { ox: left, oy: top, S, barX, barW };
+      self._g = g;
+      self._h = drawPistonBox(ctx, G, g, { Tw: st.Tw, TMIN, TMAX, kTref: T2kT(300), hot: ["left"] });
+      SB.label(ctx, `열벽 ${Math.round(st.Tw)} K`, barX, top - 14, { align: "left", size: 12, color: P.accent, bold: true });
+      const A = accA(G.piston.x, H, r), kT = G.kT();
+      const Pm = st.P, Pi = st.Pid != null ? st.Pid : (N * kT) / A;
+      const t1 = `벽에서 잰 P = ${Pm == null ? "…" : Pm.toFixed(1)}`, t2 = `NkT/A = ${Pi.toFixed(1)}`, t3 = `PA/NkT = ${Pm == null ? "…" : (Pm / Pi).toFixed(3)}`, t4 = `기체 T ≈ ${Math.round(st.Tg)} K`;
+      const yb = top + H * S + 18;
+      if (narrow) {
+        SB.label(ctx, t1 + "   " + t2, left, yb, { align: "left", size: 12, bold: true });
+        SB.label(ctx, t3 + "   " + t4, left, yb + 18, { align: "left", size: 12, color: P.dim });
+      } else {
+        SB.label(ctx, t1, left, yb, { align: "left", size: 13, bold: true, color: P.accent });
+        SB.label(ctx, t2, left + 200, yb, { align: "left", size: 13, bold: true, color: P.accent2 });
+        SB.label(ctx, t3 + "    " + t4, left + 360, yb, { align: "left", size: 12, color: P.dim });
+      }
+    }, { aspect: 0.48, minHeight: 250, maxHeight: 430 });
+    pistonDrag(cv, G, st, o);
+    SB.loop("cv-hero", (dt) => {
+      const n = 4, h = Math.min(dt, 1 / 30) / n;
+      for (let i = 0; i < n; i++) { pistonStep(G, st, h); st.idAcc += ((N * G.kT()) / accA(G.piston.x, H, r)) * h; }
+      st.Tg += (kT2T(G.kT()) - st.Tg) * 0.04;
+      if (G.impT >= 0.5) {
+        const Pm = measP(G, r, G.piston.x), Pi = st.idAcc / G.impT;
+        st.P = st.P == null ? Pm : st.P + (Pm - st.P) * 0.35;
+        st.Pid = st.Pid == null ? Pi : st.Pid + (Pi - st.Pid) * 0.35;
+        G.resetImpulse(); st.idAcc = 0;
+      }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절: 투열벽과 열평형 */
+  {
+    const W = 600, H = 300, r = 4, NL = 50, NR = 50, Cw = 20, X0 = 210;
+    const st = { mode: "dia", Ew: 0, hist: [], t: 0, tH: 0, PL: null, PR: null, playing: true, rn: Thermo.rng(12) };
+    let G, prev;
+    const build = () => {
+      st.hist = []; st.t = 0; st.tH = 0; st.PL = st.PR = null;
+      G = Thermo.gas2d({ W, H, seed: 11, partition: { x: X0, gap: null }, species: [{ n: NL, m: 1, r, tag: 0, T: T2kT(500), region: [0, X0] }, { n: NR, m: 1, r, tag: 1, T: T2kT(150), region: [X0, W] }] });
+      G.setT(T2kT(500), (q) => q.tag === 0); G.setT(T2kT(150), (q) => q.tag === 1);
+      st.Ew = Cw * T2kT((NL * 500 + NR * 150) / (NL + NR));
+      prev = new Float64Array(G.p.length);
+      G.partition.gap = st.mode === "hole" ? [H * 0.32, H * 0.68] : null;
+    };
+    build();
+    /* 칸막이: tag로 쪽을 지키고(라이브러리 칸막이의 누수 보완), 투열벽이면 부딪친 분자를
+       벽 온도 kT_w로 다시 내보내며 에너지를 벽(열용량 Cw)과 주고받는다 — 전체 에너지 보존 */
+    const stepEq = (dt) => {
+      const X = G.partition.x;
+      for (let i = 0; i < G.p.length; i++) prev[i] = G.p[i].vx;
+      G.step(dt);
+      if (st.mode === "hole") return;
+      for (let i = 0; i < G.p.length; i++) {
+        const q = G.p[i]; let hit = false;
+        if (q.tag === 0 && q.x > X - q.r) { q.x = X - q.r; if (q.vx > 0) q.vx = -q.vx; hit = true; }
+        else if (q.tag === 1 && q.x < X + q.r) { q.x = X + q.r; if (q.vx < 0) q.vx = -q.vx; hit = true; }
+        if (st.mode !== "dia") continue;
+        const d = q.x - X;
+        if (!hit) { if (Math.abs(d) > q.r + 4 || Math.sign(q.vx) === Math.sign(prev[i])) continue; if (!(d < 0 ? q.vx < 0 : q.vx > 0)) continue; }
+        const sd = Math.sqrt(st.Ew / Cw / q.m), vn = sd * Math.sqrt(-2 * Math.log(1 - st.rn() + 1e-300)), vt = sd * st.rn.normal();
+        const dE = 0.5 * q.m * (q.vx * q.vx + q.vy * q.vy) - 0.5 * q.m * (vn * vn + vt * vt);
+        if (st.Ew + dE <= 0) continue;
+        st.Ew += dE; q.vx = q.tag === 0 ? -vn : vn; q.vy = vt;
+      }
+    };
+    const retag = () => G.p.forEach((q) => (q.tag = q.x < G.partition.x ? 0 : 1));
+    const left = (q) => q.x < G.partition.x;
+    const cv = SB.canvas("cv-eq", (ctx, w, h, self) => {
+      const P = pal();
+      const boxH = h * 0.54, S = Math.min((w - 24) / W, (boxH - 30) / H), ox = (w - W * S) / 2, oy = 30;
+      self._g = { ox, oy, S };
+      const X = G.partition.x, xs = ox + X * S, Hh = H * S;
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 2; ctx.strokeRect(ox, oy, W * S, Hh);
+      drawParticles(ctx, G, ox, oy, S, T2kT(300));
+      // 칸막이
+      const wc = st.mode === "adia" ? P.dim : st.mode === "dia" ? P.accent : P.ok;
+      ctx.strokeStyle = wc; ctx.lineWidth = st.mode === "adia" ? 6 : 4; ctx.setLineDash(st.mode === "dia" ? [7, 3] : []);
+      ctx.beginPath();
+      if (G.partition.gap) { ctx.moveTo(xs, oy); ctx.lineTo(xs, oy + G.partition.gap[0] * S); ctx.moveTo(xs, oy + G.partition.gap[1] * S); ctx.lineTo(xs, oy + Hh); }
+      else { ctx.moveTo(xs, oy); ctx.lineTo(xs, oy + Hh); }
+      ctx.stroke(); ctx.setLineDash([]);
+      handle(ctx, xs, oy + Hh * 0.15, P.accent, 9);
+      self._hx = [xs, oy + Hh * 0.15];
+      const TL = kT2T(G.kT(left)), TR = kT2T(G.kT((q) => !left(q)));
+      SB.label(ctx, `왼쪽 ${Math.round(TL)} K`, ox + 2, oy - 12, { align: "left", bold: true, color: P.accent });
+      SB.label(ctx, `오른쪽 ${Math.round(TR)} K`, ox + 98, oy - 12, { align: "left", bold: true, color: P.accent2 });
+      // 온도 기록
+      const B = { x: 54, y: oy + Hh + 26, w: w - 54 - 16, h: h - (oy + Hh + 26) - 44 };
+      const t1 = Math.max(30, st.t), t0 = t1 - 30;
+      const sL = st.hist.map((p) => [p[0], p[1]]), sR = st.hist.map((p) => [p[0], p[2]]);
+      SB.chart(ctx, B, { x: [t0, t1], y: [0, 600], yTicks: [0, 200, 400, 600], xLabel: "시간 (s)", yLabel: "T (K)", series: [{ data: sL, color: P.accent, width: 2.2 }, { data: sR, color: P.accent2, width: 2.2 }] });
+    }, { aspect: 0.74, minHeight: 400, maxHeight: 580 });
+    SB.drag(cv, {
+      handles: () => (cv._hx ? [{ id: "w", x: cv._hx[0], y: cv._hx[1], r: 15 }] : []),
+      move: (id, x) => {
+        const g = cv._g; if (!g) return;
+        const oldX = G.partition.x, nx = SB.clamp((x - g.ox) / g.S, W * 0.2, W * 0.8);
+        for (const q of G.p) {
+          const isL = st.mode === "hole" ? q.x < oldX : q.tag === 0;
+          if (isL && q.x > nx - q.r) q.x = nx - q.r - 0.5;
+          else if (!isL && q.x < nx + q.r) q.x = nx + q.r + 0.5;
+        }
+        G.partition.x = nx;
+      },
+    });
+    SB.seg("eq-wall", (v) => { if (st.mode === "hole" && v !== "hole") retag(); if (v === "dia") st.Ew = Cw * G.kT(); st.mode = v; G.partition.gap = v === "hole" ? [H * 0.32, H * 0.68] : null; cv.redraw(); });
+    toggleBtn("eq-play", st);
+    $("eq-reset").addEventListener("click", () => { build(); cv.redraw(); });
+    SB.loop("cv-eq", (dt) => {
+      if (!st.playing) return;
+      const n = 4, h = Math.min(dt, 1 / 30) / n;
+      for (let i = 0; i < n; i++) stepEq(h);
+      st.t += n * h; st.tH += n * h;
+      if (st.tH >= 0.2) { st.tH = 0; st.hist.push([st.t, kT2T(G.kT(left)), kT2T(G.kT((q) => !left(q)))]); if (st.hist.length > 160) st.hist.shift(); }
+      if (G.impT >= 1) {
+        const pl = G.impulse.left / ((H - 2 * r) * G.impT), pr = G.impulse.right / ((H - 2 * r) * G.impT);
+        st.PL = st.PL == null ? pl : st.PL + (pl - st.PL) * 0.5; st.PR = st.PR == null ? pr : st.PR + (pr - st.PR) * 0.5;
+        G.resetImpulse();
+      }
+      const nl = G.p.filter(left).length;
+      SB.stat("eq-tl", Math.round(kT2T(G.kT(left))) + " K");
+      SB.stat("eq-tr", Math.round(kT2T(G.kT((q) => !left(q)))) + " K");
+      SB.stat("eq-pl", st.PL == null ? "…" : st.PL.toFixed(0));
+      SB.stat("eq-pr", st.PR == null ? "…" : st.PR.toFixed(0));
+      SB.stat("eq-n", `${nl} / ${G.p.length - nl}`);
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 2절: 기체 온도계 외삽 */
+  {
+    const Ttp = 273.16;
+    const st = { gas: "N2", T: 373.124, Ptp: 80, meas: [], all: false, R: Thermo.rng(21) };
+    const Bv = (g, T) => VDW[g].b - VDW[g].a / (R * T);
+    const rhoOf = (g, Ptp) => { const B1 = Bv(g, Ttp), c = R * Ttp, P = Ptp * 1e3; return Math.abs(B1) < 1e-12 ? P / c : (-c + Math.sqrt(c * c + 4 * B1 * c * P)) / (2 * B1 * c); };
+    const reading = (g, T, Ptp) => { const rho = rhoOf(g, Ptp); return (T * (1 + Bv(g, T) * rho)) / (1 + Bv(g, Ttp) * rho); };
+    const GASES = ["N2", "O2", "H2", "He"];
+    const fit = () => {
+      if (st.meas.length < 2) return null;
+      const xs = st.meas.map((m) => m.x), ys = st.meas.map((m) => m.y);
+      if (Math.max(...xs) - Math.min(...xs) < 3) return null;
+      return Thermo.linfit(xs, ys);
+    };
+    const cv = SB.canvas("cv-gt", (ctx, w, h, self) => {
+      const P = pal(), T = st.T;
+      let dev = 0; GASES.forEach((g) => (dev = Math.max(dev, Math.abs(reading(g, T, 120) - T))));
+      const D = dev * 1.15 + 0.04;
+      const B = { x: 66, y: 34, w: w - 66 - 16, h: h - 34 - 48 };
+      const c = SB.chart(ctx, B, { x: [0, 120], y: [T - D, T + D], xLabel: "삼중점 압력 Pₜₚ (kPa)", yLabel: "읽은 온도 (K)", yFmt: (v) => v.toFixed(D < 0.3 ? 2 : 1), hlines: [{ y: T, color: P.ok, label: `참값 ${T.toFixed(3)} K` }] });
+      self._c = c;
+      const curve = (g) => { const pts = []; for (let i = 0; i <= 60; i++) { const x = 2 * i; pts.push([c.X(x), c.Y(reading(g, T, Math.max(x, 1e-6)))]); } return pts; };
+      clip(ctx, B, () => {
+        if (st.all) GASES.forEach((g) => { if (g !== st.gas) { line(ctx, curve(g), P.faint, 1.5, [5, 4]); const y = reading(g, T, 118); SB.label(ctx, GASKO[g], c.X(116), c.Y(y) - 9, { size: 11, color: P.dim }); } });
+        line(ctx, curve(st.gas), P.accent2, 2, [6, 4]);
+        const F = fit();
+        if (F) {
+          const xm = Math.max(...st.meas.map((m) => m.x));
+          line(ctx, [[c.X(0), c.Y(F.a)], [c.X(xm), c.Y(F.a + F.b * xm)]], P.accent, 2);
+          const good = Math.abs(F.a - T) < 0.01;
+          ctx.fillStyle = good ? P.ok : P.bad; ctx.beginPath(); ctx.arc(c.X(0) + 1, c.Y(F.a), 6, 0, 2 * PI); ctx.fill();
+        }
+        st.meas.forEach((m) => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(c.X(m.x), c.Y(m.y), 5, 0, 2 * PI); ctx.fill(); });
+      });
+      const yr = reading(st.gas, T, st.Ptp);
+      handle(ctx, c.X(st.Ptp), c.Y(yr), P.accent, 9);
+      self._hp = [c.X(st.Ptp), c.Y(yr)];
+      SB.label(ctx, `${GASKO[st.gas]} 기체 온도계`, B.x + 8, B.y - 14, { align: "left", bold: true });
+    }, { aspect: 0.72, minHeight: 300, maxHeight: 460 });
+    const upd = () => {
+      const T = st.T, yr = reading(st.gas, T, st.Ptp), F = fit();
+      SB.stat("gt-ptp", `${st.Ptp.toFixed(1)} kPa`);
+      SB.stat("gt-read", yr.toFixed(3) + " K");
+      SB.stat("gt-ext", F ? `${F.a.toFixed(3)} K (${F.a - T >= 0 ? "+" : ""}${((F.a - T) * 1000).toFixed(1)} mK)` : `측정 ${st.meas.length}개`);
+      SB.stat("gt-true", `${T.toFixed(3)} K`);
+    };
+    SB.drag(cv, { handles: () => (cv._hp ? [{ id: "p", x: cv._hp[0], y: cv._hp[1], r: 14 }] : []), move: (id, x) => { const c = cv._c; if (!c) return; const v = ((x - c.box.x) / c.box.w) * 120; st.Ptp = SB.clamp(Math.round(v * 2) / 2, 5, 120); upd(); } });
+    SB.seg("gt-gas", (v) => { st.gas = v; st.meas = []; upd(); cv.redraw(); });
+    SB.seg("gt-bath", (v) => { st.T = Number(v); st.meas = []; upd(); cv.redraw(); });
+    $("gt-meas").addEventListener("click", () => { if (st.meas.length >= 8) st.meas.shift(); st.meas.push({ x: st.Ptp, y: reading(st.gas, st.T, st.Ptp) + 0.0015 * st.R.normal() }); upd(); cv.redraw(); });
+    $("gt-clear").addEventListener("click", () => { st.meas = []; upd(); cv.redraw(); });
+    $("gt-all").addEventListener("change", (e) => { st.all = e.target.checked; cv.redraw(); });
+    upd();
+  }
+
+  /* ================================================================ 2절: 온도 눈금 드릴 */
+  {
+    const RD = Thermo.rng(101);
+    SB.drill("drill-temp", () => {
+      const k = Math.floor(RD() * 4);
+      if (k === 0) { const t = Math.round(-200 + RD() * 1400); return { q: `<p>${t} °C는 몇 K인가? (소수 첫째 자리까지)</p>`, answer: t + 273.15, label: "T =", unit: "K", tol: "0.06", sol: `\\(T = t + 273.15 = ${t} + 273.15 = ${(t + 273.15).toFixed(2)}\\) K` }; }
+      if (k === 1) { const T = Math.round(20 + RD() * 1500); return { q: `<p>${T} K는 몇 °C인가?</p>`, answer: T - 273.15, label: "t =", unit: "°C", tol: "0.06", sol: `\\(t = T - 273.15 = ${(T - 273.15).toFixed(2)}\\) °C` }; }
+      if (k === 2) { const t = Math.round(-50 + RD() * 450); const F = (9 / 5) * t + 32; return { q: `<p>${t} °C는 몇 °F인가?</p>`, answer: F, label: "t<sub>F</sub> =", unit: "°F", tol: "0.06", sol: `\\(t_\\mathrm F = \\tfrac95 t + 32 = ${F.toFixed(1)}\\) °F` }; }
+      const F = Math.round(-300 + RD() * 1100), TK = ((F - 32) * 5) / 9 + 273.15;
+      return { q: `<p>${F} °F는 몇 K인가?</p>`, answer: TK, label: "T =", unit: "K", tol: "0.06", sol: `\\(t = \\tfrac59(t_\\mathrm F - 32) = ${(((F - 32) * 5) / 9).toFixed(2)}\\) °C, \\(T = ${TK.toFixed(2)}\\) K` };
+    });
+  }
+
+  /* ================================================================ 3절: 피스톤 상자 게임 */
+  {
+    const W = 500, H = 300, N = 80, r = 3, TMIN = 100, TMAX = 600, XMIN = 130;
+    const st = { Tg: 300, Tw: 300, tgt: 350, P: null, trace: [], tTr: 0, goal: null, hold: 0, score: 0, done: false, playing: true, rng: Thermo.rng(31) };
+    const G = Thermo.gas2d({ W, H, n: N, r, m: 1, T: T2kT(300), seed: 9, walls: { left: { T: T2kT(300) }, top: { T: T2kT(300) }, bottom: { T: T2kT(300) } }, piston: { x: 350, v: 0, M: 1e9, F: 0, xmin: 100, xmax: W } });
+    const o = { TMIN, TMAX, XMIN, setT: (T) => { st.Tw = T; ["left", "top", "bottom"].forEach((k) => (G.walls[k].T = T2kT(T))); } };
+    const AX = [25, 155], PY = [0, 480];
+    const newGoal = (first) => {
+      for (let k = 0; k < 80; k++) {
+        const T = first ? 450 : 150 + st.rng() * 400, x = first ? 220 : 160 + st.rng() * 330;
+        const A = accA(x, H, r), P = ((N * T2kT(T)) / A) * Zhd((N * PI * r * r) / A);
+        if (P > 15 && P < 440 && (first || !st.goal || Math.abs(A - st.goal.A) / A > 0.15)) { st.goal = { A, P, T }; break; }
+      }
+      st.hold = 0; st.done = false;
+    };
+    newGoal(true);
+    const cv = SB.canvas("cv-pv", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 620;
+      const barX = 10, barW = 18, left = barX + barW + 10;
+      let g, CB;
+      if (narrow) {
+        const S = Math.min((w - left - 18) / W, (h * 0.42 - 34) / H);
+        g = { ox: left, oy: 30, S, barX, barW };
+        CB = { x: 56, y: 30 + H * S + 30, w: w - 56 - 14, h: h - (30 + H * S + 30) - 44 };
+      } else {
+        const bw = w * 0.52;
+        const S = Math.min((bw - left - 24) / W, (h - 60) / H);
+        g = { ox: left, oy: (h - H * S) / 2, S, barX, barW };
+        CB = { x: bw + 50, y: 20, w: w - bw - 50 - 14, h: h - 20 - 46 };
+      }
+      self._g = g;
+      self._h = drawPistonBox(ctx, G, g, { Tw: st.Tw, TMIN, TMAX, kTref: T2kT(300), hot: ["left", "top", "bottom"] });
+      SB.label(ctx, `열벽 ${Math.round(st.Tw)} K`, g.ox + 4, g.oy - 12, { align: "left", size: 12, color: P.dim });
+      const c = SB.chart(ctx, CB, { x: AX, y: PY, xLabel: "넓이 A (×10³)", yLabel: "압력 P", yTicks: [0, 100, 200, 300, 400] });
+      clip(ctx, CB, () => {
+        const iso = []; for (let i = 0; i <= 80; i++) { const A = AX[0] + ((AX[1] - AX[0]) * i) / 80; iso.push([c.X(A), c.Y((N * T2kT(st.Tw)) / (A * 1e3))]); }
+        line(ctx, iso, P.accent2, 2, [6, 4]);
+        withA(ctx, 0.7, () => line(ctx, st.trace.map(([A, p]) => [c.X(A / 1e3), c.Y(p)]), P.accent, 1.6));
+        if (st.goal) {
+          const gx = c.X(st.goal.A / 1e3), gy = c.Y(st.goal.P), rx = Math.abs(c.X((st.goal.A * 1.04) / 1e3) - gx), ry = Math.abs(c.Y(st.goal.P * 1.06) - gy);
+          ctx.strokeStyle = st.done ? P.ok : P.bad; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.ellipse(gx, gy, Math.max(rx, 5), Math.max(ry, 5), 0, 0, 2 * PI); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(gx - 4, gy); ctx.lineTo(gx + 4, gy); ctx.moveTo(gx, gy - 4); ctx.lineTo(gx, gy + 4); ctx.stroke();
+          if (st.hold > 0 && !st.done) { ctx.fillStyle = P.ok; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.arc(gx, gy, Math.max(rx, 5) + 4, -PI / 2, -PI / 2 + 2 * PI * Math.min(1, st.hold / 1.5)); ctx.closePath(); withA(ctx, 0.35, () => ctx.fill()); }
+        }
+        const A = accA(G.piston.x, H, r);
+        if (st.P != null) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(c.X(A / 1e3), c.Y(st.P), 5.5, 0, 2 * PI); ctx.fill(); }
+      });
+      if (st.done) SB.label(ctx, "성공! ‘새 목표’를 눌러 계속", CB.x + CB.w / 2, CB.y + 14, { bold: true, color: P.ok, size: 13 });
+    }, { aspect: 0.46, minHeight: 360, maxHeight: 470 });
+    pistonDrag(cv, G, st, o);
+    const upd = () => {
+      const A = accA(G.piston.x, H, r);
+      SB.stat("pv-a", (A / 1e3).toFixed(1) + " ×10³");
+      SB.stat("pv-t", `${Math.round(st.Tg)} K`);
+      SB.stat("pv-p", st.P == null ? "…" : st.P.toFixed(1));
+      SB.stat("pv-goal", st.goal ? `(${(st.goal.A / 1e3).toFixed(0)}×10³, ${st.goal.P.toFixed(0)})` : "—");
+      SB.stat("pv-score", st.done ? `<b style="color:var(--ok)">성공</b> · ${st.score}회` : `${st.score}회 · 머문 시간 ${st.hold.toFixed(1)} s`);
+    };
+    $("pv-new").addEventListener("click", () => { newGoal(false); st.trace = []; upd(); cv.redraw(); });
+    $("pv-trace").addEventListener("click", () => { st.trace = []; cv.redraw(); });
+    toggleBtn("pv-play", st);
+    SB.loop("cv-pv", (dt) => {
+      if (!st.playing) return;
+      const n = 4, h = Math.min(dt, 1 / 30) / n;
+      for (let i = 0; i < n; i++) pistonStep(G, st, h);
+      st.Tg += (kT2T(G.kT()) - st.Tg) * 0.04;
+      if (G.impT >= 0.25) { const Pm = measP(G, r, G.piston.x); st.P = st.P == null ? Pm : st.P + (Pm - st.P) * 0.25; G.resetImpulse(); }
+      const A = accA(G.piston.x, H, r);
+      st.tTr += n * h; if (st.tTr > 0.2 && st.P != null) { st.tTr = 0; st.trace.push([A, st.P]); if (st.trace.length > 300) st.trace.shift(); }
+      if (st.goal && !st.done && st.P != null) {
+        const ok = Math.abs(A - st.goal.A) / st.goal.A < 0.04 && Math.abs(st.P - st.goal.P) / st.goal.P < 0.06;
+        st.hold = ok ? st.hold + n * h : 0;
+        if (st.hold >= 1.5) { st.done = true; st.score++; }
+      }
+      upd(); cv.redraw();
+    });
+  }
+
+  /* ================================================================ 3절: 압력 단위 미니 */
+  {
+    const L0 = -6, L1 = 7.5;
+    const st = { lp: Math.log10(1.3332) };
+    const BANDS = [[1e-6, 1e-3, "고진공(베이스)", 0], [0.133, 1.33, "스퍼터링", 0], [13.3, 133, "LPCVD", 0], [1e7, 2e7, "실린더", 0], [0.133, 13.3, "건식 식각", 1], [133, 1333, "PECVD", 1]];
+    const cv = SB.canvas("cv-units", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 520, x0 = 20, x1 = w - 20, ya = h * 0.55;
+      const X = (l) => x0 + ((l - L0) / (L1 - L0)) * (x1 - x0);
+      self._X = X; self._x = [x0, x1]; self._ya = ya;
+      BANDS.forEach(([a, b, name, row]) => {
+        const xa = X(Math.log10(a)), xb = X(Math.log10(b)), y = row ? ya + 10 : ya - 34;
+        ctx.fillStyle = row ? SB.color("accent-2-soft") : SB.color("accent-soft"); ctx.strokeStyle = row ? P.accent2 : P.accent; ctx.lineWidth = 1;
+        ctx.fillRect(xa, y, Math.max(xb - xa, 3), 22); ctx.strokeRect(xa, y, Math.max(xb - xa, 3), 22);
+        SB.label(ctx, name, (xa + xb) / 2, row ? y + 34 : y - 10, { size: narrow ? 10 : 11, color: row ? P.accent2 : P.accent });
+      });
+      const xatm = X(Math.log10(101325));
+      ctx.strokeStyle = P.text; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xatm, ya - 36); ctx.lineTo(xatm, ya + 30); ctx.stroke();
+      SB.label(ctx, "1 atm", xatm, ya + 42, { size: narrow ? 10 : 11, bold: true });
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, ya); ctx.lineTo(x1, ya); ctx.stroke();
+      ctx.font = font(10, true); ctx.fillStyle = P.dim; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      for (let e = -6; e <= 7; e++) { const x = X(e); ctx.beginPath(); ctx.moveTo(x, ya - 4); ctx.lineTo(x, ya + 4); ctx.stroke(); if (!narrow || e % 2 === 0) ctx.fillText("10" + sup(e), x, h - 16); }
+      SB.label(ctx, "Pa", x1, h - 30, { size: 10, color: P.dim, align: "right" });
+      const xp = X(st.lp);
+      ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xp, 8); ctx.lineTo(xp, h - 20); ctx.stroke();
+      handle(ctx, xp, ya, P.bad, 9);
+    }, { aspect: 0.3, minHeight: 170, maxHeight: 230 });
+    const upd = () => {
+      const p = Math.pow(10, st.lp), n = p / (kB * 300) / 1e6;
+      $("units-r").innerHTML = `${sci(p, 2)} Pa = ${sci(p / TORR, 2)} Torr = ${sci((p / TORR) * 1000, 2)} mTorr = ${sci(p / 1e5, 2)} bar · n<sub>V</sub>(300 K) = ${sci(n, 2)} cm⁻³`;
+    };
+    SB.drag(cv, { free: true, handles: () => [], move: (id, x) => { const [x0, x1] = cv._x || [0, 1]; st.lp = SB.clamp(L0 + ((x - x0) / (x1 - x0)) * (L1 - L0), L0, L1); upd(); } });
+    upd();
+  }
+
+  /* ================================================================ 3절: 돌턴 분압 */
+  {
+    const L = 300, r = 2;
+    const st = { NA: 30, NB: 30, m: 16, T: 300, G: [], P: [null, null, null], playing: true };
+    const build = () => {
+      const kT = T2kT(st.T), walls = () => ({ left: { T: kT }, right: { T: kT }, top: { T: kT }, bottom: { T: kT } });
+      const spA = { n: st.NA, m: 1, r, tag: 0, T: kT }, spB = { n: st.NB, m: st.m, r, tag: 1, T: kT };
+      const mk = (specs, seed) => { const s = specs.filter((x) => x.n > 0); return s.length ? Thermo.gas2d({ W: L, H: L, seed, species: s, walls: walls() }) : null; };
+      st.G = [mk([spA], 41), mk([spB], 42), mk([spA, spB], 43)];
+      st.P = [null, null, null];
+    };
+    build();
+    const ideal = (n) => (n * T2kT(st.T)) / accA(L, L, r);
+    const cv = SB.canvas("cv-dalton", (ctx, w, h) => {
+      const P = pal(), gap = 14, bw = Math.min((w - 4 * gap) / 3, h - 74), S = bw / L, y0 = 30;
+      const names = ["A만", "B만", "A + B"], ns = [st.NA, st.NB, st.NA + st.NB];
+      for (let i = 0; i < 3; i++) {
+        const ox = gap + i * (bw + gap) + (w - (3 * bw + 4 * gap)) / 2;
+        ctx.strokeStyle = P.axis; ctx.lineWidth = 2; ctx.strokeRect(ox, y0, bw, bw);
+        const G = st.G[i];
+        if (G) {
+          for (const q of G.p) { ctx.fillStyle = q.tag ? P.accent2 : P.accent; ctx.beginPath(); ctx.arc(ox + q.x * S, y0 + q.y * S, q.tag ? 3.2 : 2.2, 0, 2 * PI); ctx.fill(); }
+        }
+        SB.label(ctx, names[i], ox + bw / 2, y0 - 13, { bold: true });
+        SB.label(ctx, `P = ${st.P[i] == null ? "…" : st.P[i].toFixed(1)}`, ox + bw / 2, y0 + bw + 14, { bold: true, color: P.text, size: 12 });
+        SB.label(ctx, `이상 ${ideal(ns[i]).toFixed(1)}`, ox + bw / 2, y0 + bw + 31, { color: P.dim, size: 11 });
+      }
+    }, { aspect: 0.44, minHeight: 230, maxHeight: 380 });
+    const rd = (v) => (v == null ? "…" : v.toFixed(1));
+    const upd = () => {
+      SB.stat("dal-pa", rd(st.P[0])); SB.stat("dal-pb", rd(st.P[1]));
+      SB.stat("dal-sum", st.P[0] == null || st.P[1] == null ? "…" : (st.P[0] + st.P[1]).toFixed(1));
+      SB.stat("dal-pm", rd(st.P[2]));
+      const nt = st.NA + st.NB;
+      SB.stat("dal-xb", st.P[2] == null || !nt ? "…" : ((st.NB / nt) * st.P[2]).toFixed(1));
+    };
+    SB.range("dal-na", (v) => String(v), (v) => { st.NA = v; build(); upd(); cv.redraw(); });
+    SB.range("dal-nb", (v) => String(v), (v) => { st.NB = v; build(); upd(); cv.redraw(); });
+    SB.range("dal-m", (v) => v + "배", (v) => { st.m = v; build(); upd(); cv.redraw(); });
+    SB.range("dal-t", (v) => v + " K", (v) => { st.T = v; st.G.forEach((G) => { if (!G) return; ["left", "right", "top", "bottom"].forEach((k) => (G.walls[k].T = T2kT(v))); G.setT(T2kT(v)); G.resetImpulse(); }); st.P = [null, null, null]; upd(); cv.redraw(); });
+    toggleBtn("dal-play", st);
+    SB.loop("cv-dalton", (dt) => {
+      if (!st.playing) return;
+      const n = 3, h = Math.min(dt, 1 / 30) / n;
+      st.G.forEach((G, i) => {
+        if (!G) { st.P[i] = 0; return; }
+        for (let k = 0; k < n; k++) G.step(h);
+        if (G.impT >= 0.5) { const p = measP(G, r, L); st.P[i] = st.P[i] == null ? p : st.P[i] + (p - st.P[i]) * 0.2; G.resetImpulse(); }
+      });
+      upd(); cv.redraw();
+    });
+  }
+
+  /* ================================================================ 3절: sccm 탱글 */
+  {
+    SB.tangle("tg-sccm", (v) => {
+      const mol = Thermo.sccm2mol(v.q), ratio = ((v.T + 273.15) / 273.15) * (760 / v.P), vact = (v.q * ratio) / 1000;
+      return { mol: sci(mol, 2) + " mol/s", mps: sci(mol * NA, 2), vact: (vact >= 100 ? vact.toFixed(0) : vact.toPrecision(3)) + " L/min", ratio: ratio >= 100 ? ratio.toFixed(0) : ratio.toPrecision(3) };
+    });
+  }
+  /* ================================================================ 1절: 탐침 탱글 */
+  {
+    SB.tangle("tg-probe", (v) => {
+      const Tf = (v.Cs * v.Ts + v.Cp * 25) / (v.Cs + v.Cp), err = v.Ts - Tf, need = v.Cs / (v.Ts - 26);
+      return { Tf: Tf.toFixed(1) + " °C", err: "−" + err.toFixed(1) + " °C", need: need.toPrecision(2) + " J/K" };
+    }, { fmt: { Cp: (x) => x.toFixed(1) } });
+  }
+
+  /* ================================================================ 3절: 드릴(분자 수, 분압) */
+  {
+    const RD = Thermo.rng(202);
+    SB.drill("drill-ideal", () => {
+      const V = Math.round(10 + RD() * 190), PmT = Math.round(1 + RD() * 999), t = Math.round(20 + RD() * 380);
+      const P = (PmT / 1000) * TORR, T = t + 273.15, N = (P * V * 1e-3) / (kB * T);
+      return { q: `<p>부피 ${V} L인 챔버에 ${PmT} mTorr, ${t} °C의 기체가 있다. 챔버 속 분자 수는?</p>`, answer: N, label: "N =", unit: "개", tol: "1.5%",
+        sol: `\\(P = ${PmT}\\times10^{-3}\\times133.32 = ${f3(P)}\\) Pa, \\(T = ${T.toFixed(2)}\\) K. \\(N = PV/kT = ${f3(P)}\\times${(V * 1e-3).toFixed(3)}/(1.381\\times10^{-23}\\times${T.toFixed(2)}) = ${texSci(N)}\\)` };
+    });
+    const RP = Thermo.rng(303);
+    SB.drill("drill-pp", () => {
+      const f = [0.5, 1, 2, 5, 10][Math.floor(RP() * 5)], q1 = Math.round(10 + RP() * 190), q2 = Math.round(100 + RP() * 4900), Pt = [0.5, 1, 2, 5, 10, 20][Math.floor(RP() * 6)];
+      const x = ((f / 100) * q1) / (q1 + q2), Pm = x * Pt * 1000;
+      return { q: `<p>H₂에 ${f} % 희석한 도펀트 기체 ${q1} sccm과 N₂ ${q2} sccm을 섞어 챔버 압력을 ${Pt} Torr로 유지한다. 도펀트의 분압은 몇 mTorr인가?</p>`, answer: Pm, label: "P<sub>i</sub> =", unit: "mTorr", tol: "1%",
+        sol: `도펀트 유량 \\(= ${f / 100}\\times${q1} = ${f3((f / 100) * q1)}\\) sccm, 전체 ${q1 + q2} sccm. \\(x = ${texSci(x)}\\), \\(P_i = xP = ${f3(Pm)}\\) mTorr.` };
+    });
+  }
+
+  /* ================================================================ 4절: 강체 원판의 Z */
+  {
+    const W = 500, H = 400, N = 100;
+    const st = { r: 8, G: null, sum: 0, cnt: 0, warm: 0, pts: {}, playing: true };
+    const build = () => { st.G = Thermo.gas2d({ W, H, n: N, r: st.r, m: 1, T: T2kT(300), seed: 17 }); st.sum = 0; st.cnt = 0; st.warm = 0; };
+    build();
+    const etaOf = (r) => (N * PI * r * r) / accA(W, H, r);
+    const cv = SB.canvas("cv-disk", (ctx, w, h) => {
+      const P = pal(), narrow = w < 560;
+      let S, ox, oy, CB;
+      if (narrow) { S = Math.min((w - 20) / W, (h * 0.48 - 16) / H); ox = (w - W * S) / 2; oy = 10; CB = { x: 52, y: oy + H * S + 22, w: w - 52 - 14, h: h - (oy + H * S + 22) - 44 }; }
+      else { S = Math.min((w * 0.45 - 20) / W, (h - 20) / H); ox = 10; oy = (h - H * S) / 2; CB = { x: w * 0.45 + 52, y: 16, w: w * 0.55 - 52 - 14, h: h - 16 - 46 }; }
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 2; ctx.strokeRect(ox, oy, W * S, H * S);
+      drawParticles(ctx, st.G, ox, oy, S, T2kT(300), { minR: 1.2 });
+      const c = SB.chart(ctx, CB, { x: [0, 0.3], y: [0.9, 2.2], xLabel: "넓이 비율 η = Nπr²/A", yLabel: "Z = PA/NkT", xTicks: [0, 0.1, 0.2, 0.3], yTicks: [1, 1.4, 1.8, 2.2] });
+      clip(ctx, CB, () => {
+        const a = [], b = []; for (let i = 0; i <= 60; i++) { const e = (0.3 * i) / 60; a.push([c.X(e), c.Y(1 + 2 * e)]); b.push([c.X(e), c.Y(Zhd(e))]); }
+        line(ctx, a, P.accent2, 1.8, [6, 4]); line(ctx, b, P.accent2, 2.2);
+        Object.keys(st.pts).forEach((k) => { const p = st.pts[k]; ctx.fillStyle = P.accent; withA(ctx, Number(k) === st.r ? 1 : 0.55, () => { ctx.beginPath(); ctx.arc(c.X(p.eta), c.Y(p.Z), Number(k) === st.r ? 6.5 : 4.5, 0, 2 * PI); ctx.fill(); }); });
+      });
+      SB.label(ctx, "1 + 2η", c.X(0.25), c.Y(1.5) + 14, { size: 11, color: P.accent2 });
+      SB.label(ctx, "헨더슨", c.X(0.24), c.Y(Zhd(0.24)) - 14, { size: 11, color: P.accent2 });
+    }, { aspect: 0.48, minHeight: 300, maxHeight: 420 });
+    const upd = () => {
+      const p = st.pts[st.r], eta = etaOf(st.r);
+      $("disk-rd").innerHTML = `η = ${eta.toFixed(3)} · Z 측정 ${p ? p.Z.toFixed(3) : "…"} (${p ? p.n : 0}구간 평균) · 1+2η = ${(1 + 2 * eta).toFixed(3)} · 헨더슨 ${Zhd(eta).toFixed(3)}`;
+    };
+    SB.range("disk-r", (v) => v + " px", (v) => { st.r = v; build(); upd(); cv.redraw(); });
+    toggleBtn("disk-play", st);
+    SB.loop("cv-disk", (dt) => {
+      if (!st.playing) return;
+      const G = st.G, n = 4, h = Math.min(dt, 1 / 30) / n;
+      for (let i = 0; i < n; i++) G.step(h);
+      st.warm += n * h;
+      if (G.impT >= 0.5) {
+        if (st.warm > 1) {
+          const Zw = (measP(G, st.r, W) * accA(W, H, st.r)) / (N * G.kT());
+          st.sum += Zw; st.cnt++;
+          st.pts[st.r] = { eta: etaOf(st.r), Z: st.sum / st.cnt, n: st.cnt };
+        }
+        G.resetImpulse();
+      }
+      upd(); cv.redraw();
+    });
+    upd();
+  }
+
+  /* ================================================================ 4절: Z–P와 B(T) */
+  {
+    const st = { gas: "CO2", T: 300, P: 50, lin: true };
+    const gd = () => VDW[st.gas];
+    const Tc = () => (8 * gd().a) / (27 * R * gd().b);
+    const Tlo = () => Math.max(30, 0.7 * Tc()), THI = 1200;
+    const Bm = (T) => gd().b - gd().a / (R * T);
+    /** 기체 가지의 Z(P) 곡선, 끊기는 압력 */
+    const zCurve = (T) => {
+      const { a, b } = gd(), pts = []; let prevZ = null, end = 400;
+      for (let P = 0.5; P <= 400; P += 2.5) {
+        const r = Thermo.vdwVolumes(T, P * 1e5, a, b); if (!r.length) { end = P; break; }
+        const Z = (P * 1e5 * r[r.length - 1]) / (R * T);
+        if (prevZ != null && prevZ - Z > 0.15) { end = P; break; }
+        prevZ = Z; pts.push([P, Z]);
+      }
+      return { pts, end: pts.length ? pts[pts.length - 1][0] : 0, cut: end < 400 };
+    };
+    const zAt = (T, P) => { const { a, b } = gd(), r = Thermo.vdwVolumes(T, P * 1e5, a, b); return r.length ? (P * 1e5 * r[r.length - 1]) / (R * T) : NaN; };
+    let cur = zCurve(st.T);
+    const cvZ = SB.canvas("cv-zp", (ctx, w, h, self) => {
+      const P = pal(), B = { x: 50, y: 34, w: w - 50 - 14, h: h - 34 - 46 };
+      const c = SB.chart(ctx, B, { x: [0, 400], y: [0, 1.6], xLabel: "P (bar)", yLabel: "Z", yTicks: [0, 0.4, 0.8, 1.2, 1.6], xTicks: [0, 100, 200, 300, 400], hlines: [{ y: 1, color: P.faint, label: "이상 기체" }] });
+      self._c = c;
+      clip(ctx, B, () => {
+        line(ctx, cur.pts.map(([p, z]) => [c.X(p), c.Y(z)]), P.accent2, 2.4);
+        if (st.lin) { const s = Bm(st.T) / (R * st.T); line(ctx, [[c.X(0), c.Y(1)], [c.X(400), c.Y(1 + s * 400e5)]], P.accent2, 1.4, [5, 4]); }
+      });
+      if (cur.cut) { const z = cur.pts.length ? cur.pts[cur.pts.length - 1][1] : 1; SB.label(ctx, "↓ 응축(9장)", c.X(cur.end) + 4, c.Y(z) + 14, { align: "left", size: 11, color: P.bad }); }
+      const Pp = Math.min(st.P, cur.end), z = zAt(st.T, Pp);
+      if (isFinite(z)) { handle(ctx, c.X(Pp), c.Y(z), P.accent, 9); self._hp = [c.X(Pp), c.Y(z)]; }
+      SB.label(ctx, `${GASKO[st.gas]} · ${Math.round(st.T)} K (판데르발스)`, B.x + 6, B.y - 14, { align: "left", bold: true, size: 12 });
+      upd();
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    const cvB = SB.canvas("cv-b2", (ctx, w, h, self) => {
+      const P = pal(), B = { x: 56, y: 34, w: w - 56 - 14, h: h - 34 - 46 };
+      const t0 = Tlo(), y0 = Math.min(Bm(t0) * 1.1e6, -10), y1 = gd().b * 1.25e6;
+      const c = SB.chart(ctx, B, { x: [t0, THI], y: [y0, y1], xLabel: "T (K)", yLabel: "B (cm³/mol)", hlines: [{ y: 0, color: P.faint }] });
+      self._c = c; self._t0 = t0;
+      const pts = []; for (let i = 0; i <= 120; i++) { const T = t0 + ((THI - t0) * i) / 120; pts.push([c.X(T), c.Y(Bm(T) * 1e6)]); }
+      clip(ctx, B, () => line(ctx, pts, P.accent2, 2.4));
+      const TB = gd().a / (R * gd().b);
+      if (TB > t0 && TB < THI) { SB.dashLine(ctx, c.X(TB), B.y, c.X(TB), B.y + B.h, P.ok); SB.label(ctx, `보일 온도 ${Math.round(TB)} K`, c.X(TB) + 4, B.y + 10, { align: "left", size: 11, color: P.ok }); }
+      handle(ctx, c.X(st.T), c.Y(Bm(st.T) * 1e6), P.accent, 9);
+      self._hp = [c.X(st.T), c.Y(Bm(st.T) * 1e6)];
+      SB.label(ctx, "B(T) = b − a/RT", B.x + 6, B.y - 14, { align: "left", bold: true, size: 12 });
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 400 });
+    function upd() {
+      const Pp = Math.min(st.P, cur.end), z = zAt(st.T, Pp);
+      SB.stat("vir-t", `${Math.round(st.T)} K (${Math.round(st.T - 273.15)} °C)`);
+      SB.stat("vir-b", `${(Bm(st.T) * 1e6).toFixed(1)} cm³/mol`);
+      SB.stat("vir-tb", `${Math.round(gd().a / (R * gd().b))} K`);
+      SB.stat("vir-z", `${Pp.toFixed(0)} bar에서 ${isFinite(z) ? z.toFixed(3) : "—"}`);
+      SB.stat("vir-v", isFinite(z) ? `${z.toFixed(3)}배` : "—");
+    }
+    SB.drag(cvZ, { handles: () => (cvZ._hp ? [{ id: "p", x: cvZ._hp[0], y: cvZ._hp[1], r: 14 }] : []), move: (id, x) => { const c = cvZ._c; if (!c) return; st.P = SB.clamp(((x - c.box.x) / c.box.w) * 400, 1, Math.max(1, cur.end)); } });
+    SB.drag(cvB, { handles: () => (cvB._hp ? [{ id: "t", x: cvB._hp[0], y: cvB._hp[1], r: 14 }] : []), move: (id, x) => { const c = cvB._c; if (!c) return; const t0 = cvB._t0; st.T = SB.clamp(t0 + ((x - c.box.x) / c.box.w) * (THI - t0), t0, THI); cur = zCurve(st.T); cvZ.redraw(); } });
+    SB.seg("vir-gas", (v) => { st.gas = v; st.T = SB.clamp(st.T, Tlo(), THI); cur = zCurve(st.T); cvZ.redraw(); cvB.redraw(); });
+    $("vir-lin").addEventListener("change", (e) => { st.lin = e.target.checked; cvZ.redraw(); });
+  }
+
+  /* ================================================================ 4절: 실린더 탱글 */
+  {
+    SB.tangle("tg-cyl", (v) => {
+      const P = v.P * 1e5, T = 298.15, V = 0.047, zA = prZ(T, P, "Ar"), zN = prZ(T, P, "N2"), zS = prZ(T, P, "SiH4");
+      const nI = (P * V) / (R * T), nA = nI / zA;
+      return { Zar: zA.toFixed(3), nar: `${nA.toFixed(0)} mol(${((nA * 39.948) / 1000).toFixed(1)} kg)`, dar: `${((1 / zA - 1) * 100).toFixed(1)} %`, Zn2: zN.toFixed(3), Zsi: zS.toFixed(2), rsi: (1 / zS).toFixed(2) };
+    });
+  }
+
+  /* ================================================================ 5절: a, b 미니 */
+  {
+    const T = 300, VX = [0.15, 1.0], PYr = [0, 120], VM = 0.3;
+    const ga = SB.range("ab-a", (v) => v.toFixed(2), () => { cv.redraw(); upd(); });
+    const gb = SB.range("ab-b", (v) => v + " cm³/mol", () => { cv.redraw(); upd(); });
+    const Pf = (V, a, b) => ((R * T) / (V - b) - a / (V * V)) / 1e5;
+    const cv = SB.canvas("cv-ab", (ctx, w, h) => {
+      const P = pal(), a = ga(), b = gb() * 1e-6, B = { x: 52, y: 16, w: w - 52 - 14, h: h - 16 - 46 };
+      const c = SB.chart(ctx, B, { x: VX, y: PYr, xLabel: "Vₘ (L/mol)", yLabel: "P (bar)", vlines: [{ x: VM, color: P.faint, label: "0.3 L/mol" }] });
+      const curve = (aa, bb) => { const pts = []; for (let i = 0; i <= 120; i++) { const V = VX[0] + ((VX[1] - VX[0]) * i) / 120; pts.push([c.X(V), c.Y(Pf(V * 1e-3, aa, bb))]); } return pts; };
+      clip(ctx, B, () => {
+        line(ctx, curve(0, 0), P.faint, 1.8, [5, 4]);
+        line(ctx, curve(0, b), P.accent, 2);
+        line(ctx, curve(a, 0), P.ok, 2);
+        line(ctx, curve(a, b), P.accent2, 2.8);
+      });
+      const items = [["이상", P.faint], ["반발만", P.accent], ["인력만", P.ok], ["판데르발스", P.accent2]];
+      items.forEach(([t, col], i) => SB.label(ctx, t, B.x + B.w - 8, B.y + 12 + i * 16, { align: "right", size: 11, color: col, bold: true }));
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    const upd = () => {
+      const a = ga(), b = gb() * 1e-6, V = VM * 1e-3;
+      $("ab-r").innerHTML = `0.3 L/mol에서: 이상 ${Pf(V, 0, 0).toFixed(1)} · 반발만 ${Pf(V, 0, b).toFixed(1)} · 인력만 ${Pf(V, a, 0).toFixed(1)} · 판데르발스 ${Pf(V, a, b).toFixed(1)} bar`;
+    };
+    upd();
+  }
+
+  /* ================================================================ 5절: 판데르발스 등온선 */
+  {
+    const st = { gas: "CO2", Tr: 0.9, Vr: 1.6, ideal: true, spin: true };
+    const FAM = [0.85, 0.9, 0.95, 1, 1.1, 1.25, 1.5], VR = [0.42, 4];
+    const crit = () => Thermo.vdwCritical(VDW[st.gas].a, VDW[st.gas].b);
+    const cv = SB.canvas("cv-vdw", (ctx, w, h, self) => {
+      const P = pal(), C = crit(), Vc = C.Vc * 1e3, Pc = C.Pc / 1e5;
+      const B = { x: 54, y: 30, w: w - 54 - 14, h: h - 30 - 46 };
+      const xr = [VR[0] * Vc, VR[1] * Vc], yr = [0, 2 * Pc];
+      const c = SB.chart(ctx, B, { x: xr, y: yr, xLabel: "Vₘ (L/mol)", yLabel: "P (bar)" });
+      self._c = c; self._sc = [Vc, Pc];
+      const iso = (Tr) => { const pts = []; for (let i = 0; i <= 160; i++) { const Vr = VR[0] + ((VR[1] - VR[0]) * i) / 160; pts.push([c.X(Vr * Vc), c.Y(vdwRedP(Tr, Vr) * Pc)]); } return pts; };
+      clip(ctx, B, () => {
+        if (st.spin) {
+          ctx.beginPath(); ctx.moveTo(c.X((2 / 3) * Vc), c.Y(0));
+          for (let i = 0; i <= 120; i++) { const Vr = 2 / 3 + ((VR[1] - 2 / 3) * i) / 120; ctx.lineTo(c.X(Vr * Vc), c.Y(((3 * Vr - 2) / (Vr * Vr * Vr)) * Pc)); }
+          ctx.lineTo(c.X(VR[1] * Vc), c.Y(0)); ctx.closePath(); ctx.fillStyle = P.bad; withA(ctx, 0.12, () => ctx.fill());
+        }
+        FAM.forEach((Tr) => withA(ctx, 0.45, () => line(ctx, iso(Tr), Tr === 1 ? P.dim : P.faint, 1.2)));
+        if (st.ideal) { const pts = []; for (let i = 0; i <= 160; i++) { const Vr = VR[0] + ((VR[1] - VR[0]) * i) / 160; pts.push([c.X(Vr * Vc), c.Y(((8 / 3) * st.Tr * Pc) / Vr)]); } line(ctx, pts, P.dim, 1.5, [6, 4]); }
+        // 지금 등온선: 안정 구간 파랑, 불안정 빨강
+        const seg = []; let curU = null, pts = [];
+        for (let i = 0; i <= 240; i++) {
+          const Vr = VR[0] + ((VR[1] - VR[0]) * i) / 240, p = [c.X(Vr * Vc), c.Y(vdwRedP(st.Tr, Vr) * Pc)];
+          const u = (-24 * st.Tr) / Math.pow(3 * Vr - 1, 2) + 6 / (Vr * Vr * Vr) > 0;
+          if (curU !== null && u !== curU) { pts.push(p); seg.push([curU, pts]); pts = []; }
+          curU = u; pts.push(p);
+        }
+        seg.push([curU, pts]);
+        seg.forEach(([u, p]) => line(ctx, p, u ? P.bad : P.accent2, 3));
+      });
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(c.X(Vc), c.Y(Pc), 4.5, 0, 2 * PI); ctx.fill();
+      SB.label(ctx, "임계점", c.X(Vc) + 8, c.Y(Pc) - 10, { align: "left", size: 11, bold: true });
+      const hx = c.X(st.Vr * Vc), hy = c.Y(vdwRedP(st.Tr, st.Vr) * Pc);
+      handle(ctx, hx, hy, P.accent, 9); self._hp = [hx, hy];
+      SB.label(ctx, `${GASKO[st.gas]} · Tc = ${C.Tc.toFixed(1)} K, Pc = ${Pc.toFixed(1)} bar`, B.x + 6, B.y - 14, { align: "left", bold: true, size: 12 });
+      upd();
+    }, { aspect: 0.82, minHeight: 320, maxHeight: 480 });
+    function upd() {
+      const C = crit(), T = st.Tr * C.Tc, Vm = st.Vr * C.Vc, Pr = vdwRedP(st.Tr, st.Vr), P = Pr * C.Pc;
+      const slope = (-24 * st.Tr) / Math.pow(3 * st.Vr - 1, 2) + 6 / Math.pow(st.Vr, 3);
+      SB.stat("vdw-t", `${T.toFixed(1)} K (${st.Tr.toFixed(3)})`);
+      SB.stat("vdw-v", `${(Vm * 1e3).toFixed(3)} L/mol`);
+      SB.stat("vdw-p", `${(P / 1e5).toFixed(1)} bar`);
+      SB.stat("vdw-z", ((Pr * st.Vr) / st.Tr * 0.375).toFixed(3));
+      SB.stat("vdw-s", Math.abs(slope) < 0.02 ? "≈ 0 (수평)" : slope > 0 ? `<span style="color:var(--bad)">&gt; 0 불안정</span>` : "&lt; 0 안정");
+    }
+    SB.drag(cv, {
+      free: true, handles: () => (cv._hp ? [{ id: "s", x: cv._hp[0], y: cv._hp[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        const c = cv._c; if (!c) return;
+        const [Vc, Pc] = cv._sc, b = c.box;
+        const Vm = (VR[0] + ((x - b.x) / b.w) * (VR[1] - VR[0])) * Vc, Pp = (1 - (y - b.y) / b.h) * 2 * Pc;
+        const Vr = SB.clamp(Vm / Vc, 0.45, VR[1]), Pr = Pp / Pc;
+        st.Vr = Vr; st.Tr = SB.clamp(((Pr + 3 / (Vr * Vr)) * (3 * Vr - 1)) / 8, 0.8, 2);
+      },
+    });
+    $("vdw-gas").addEventListener("change", (e) => { st.gas = e.target.value; cv.redraw(); });
+    $("vdw-ideal").addEventListener("change", (e) => { st.ideal = e.target.checked; cv.redraw(); });
+    $("vdw-spin").addEventListener("change", (e) => { st.spin = e.target.checked; cv.redraw(); });
+    $("vdw-crit").addEventListener("click", () => { st.Tr = 1; st.Vr = 1; cv.redraw(); });
+  }
+
+  /* ================================================================ 5절: 임계 상수 탱글 */
+  {
+    SB.tangle("tg-crit", (v) => {
+      const C = Thermo.vdwCritical(v.a, v.b * 1e-6), TB = v.a / (R * v.b * 1e-6);
+      return { Tc: C.Tc.toFixed(1) + " K", Pc: (C.Pc / 1e5).toFixed(1) + " bar", Vc: (C.Vc * 1e6).toFixed(0) + " cm³/mol", TB: TB.toFixed(0) + " K", liq: C.Tc > 298.15 ? "있다" : "없다(초임계)" };
+    }, { fmt: { a: (x) => x.toFixed(3) } });
+  }
+
+  /* ================================================================ 5절: 판데르발스 맞추기 게임 */
+  {
+    const ROUNDS = [{ g: "CO2", T: 320, v: [0.12e-3, 1.2e-3] }, { g: "Ar", T: 180, v: [0.07e-3, 0.7e-3] }, { g: "N2", T: 150, v: [0.08e-3, 0.8e-3] }, { g: "CH4", T: 220, v: [0.08e-3, 0.8e-3] }];
+    const AR = [0.02, 0.6], BR = [10, 80];
+    const st = { k: 0, a: 0.15, b: 30, data: [], best: 1, map: false, solved: [false, false, false, false], grid: null, rng: Thermo.rng(55) };
+    const rms = (a, b) => { const T = ROUNDS[st.k].T; let s = 0; for (const [V, P] of st.data) { const p = (R * T) / (V - b * 1e-6) - a / (V * V); if (V <= b * 1e-6) return 9; s += (p / P - 1) ** 2; } return Math.sqrt(s / st.data.length); };
+    const setup = () => {
+      const Rd = ROUNDS[st.k], n = 8;
+      st.data = []; for (let i = 0; i < n; i++) { const V = Rd.v[0] * Math.pow(Rd.v[1] / Rd.v[0], i / (n - 1)); st.data.push([V, prP(Rd.T, V, Rd.g) * (1 + 0.004 * st.rng.normal())]); }
+      let best = 9; const NX = 36, NY = 30; st.grid = [];
+      for (let j = 0; j < NY; j++) { const row = []; for (let i = 0; i < NX; i++) { const a = AR[0] + ((AR[1] - AR[0]) * (j + 0.5)) / NY, b = BR[0] + ((BR[1] - BR[0]) * (i + 0.5)) / NX; row.push(rms(a, b)); } st.grid.push(row); }
+      for (let j = 0; j <= 150; j++) for (let i = 0; i <= 150; i++) { const e = rms(AR[0] + ((AR[1] - AR[0]) * j) / 150, BR[0] + ((BR[1] - BR[0]) * i) / 150); if (e < best) best = e; }
+      st.best = best;
+    };
+    setup();
+    const goal = () => st.best + 0.01;
+    const cvF = SB.canvas("cv-fit", (ctx, w, h) => {
+      const P = pal(), Rd = ROUNDS[st.k], B = { x: 50, y: 30, w: w - 50 - 14, h: h - 30 - 46 };
+      const Pmax = Math.max(...st.data.map((d) => d[1])) / 1e5;
+      const c = SB.chart(ctx, B, { x: [Rd.v[0] * 0.9e3, Rd.v[1] * 1.05e3], y: [0, Pmax * 1.2], xLabel: "Vₘ (L/mol)", yLabel: "P (bar)" });
+      const pts = []; for (let i = 0; i <= 120; i++) { const V = Rd.v[0] * 0.9 + ((Rd.v[1] * 1.05 - Rd.v[0] * 0.9) * i) / 120; pts.push([c.X(V * 1e3), c.Y(((R * Rd.T) / (V - st.b * 1e-6) - st.a / (V * V)) / 1e5)]); }
+      clip(ctx, B, () => line(ctx, pts, P.accent2, 2.4));
+      st.data.forEach(([V, p]) => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(c.X(V * 1e3), c.Y(p / 1e5), 5, 0, 2 * PI); ctx.fill(); });
+      SB.label(ctx, `${GASKO[Rd.g]}, ${Rd.T} K 측정 자료`, B.x + 6, B.y - 14, { align: "left", bold: true, size: 12 });
+      if (st.solved[st.k]) SB.label(ctx, "성공!", B.x + B.w - 8, B.y + 12, { align: "right", bold: true, color: P.ok, size: 14 });
+    }, { aspect: 0.8, minHeight: 270, maxHeight: 400 });
+    const cvP = SB.canvas("cv-pad", (ctx, w, h, self) => {
+      const P = pal(), B = { x: 54, y: 30, w: w - 54 - 14, h: h - 30 - 46 };
+      const F = frame(B, BR[0], BR[1], AR[0], AR[1]); self._F = F;
+      if (st.map && st.grid) {
+        const NY = st.grid.length, NX = st.grid[0].length, cw = B.w / NX, ch = B.h / NY;
+        for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const e = st.grid[j][i], al = SB.clamp(1 - e / 0.15, 0, 1) ** 2; if (al < 0.03) continue; ctx.fillStyle = P.ok; withA(ctx, al * 0.6, () => ctx.fillRect(B.x + i * cw, B.y + B.h - (j + 1) * ch, cw + 0.5, ch + 0.5)); }
+      }
+      SB.chart(ctx, B, { x: BR, y: AR, xLabel: "b (cm³/mol)", yLabel: "a (Pa·m⁶/mol²)", xTicks: [10, 30, 50, 70], yTicks: [0.1, 0.2, 0.3, 0.4, 0.5] });
+      handle(ctx, F.X(st.b), F.Y(st.a), P.accent2, 10);
+      SB.label(ctx, "(b, a) 고르기", B.x + 6, B.y - 14, { align: "left", bold: true, size: 12 });
+    }, { aspect: 0.8, minHeight: 270, maxHeight: 400 });
+    const upd = () => {
+      const Rd = ROUNDS[st.k], e = rms(st.a, st.b);
+      if (e < goal()) st.solved[st.k] = true;
+      SB.stat("fit-gas", `${st.k + 1}/4 · ${GASKO[Rd.g]}, ${Rd.T} K`);
+      SB.stat("fit-ab", `${st.a.toFixed(3)}, ${st.b.toFixed(1)} cm³/mol`);
+      SB.stat("fit-err", e > 1 ? "—" : (e * 100).toFixed(2) + " %");
+      SB.stat("fit-goal", `&lt; ${(goal() * 100).toFixed(1)} %`);
+      const n = st.solved.filter(Boolean).length;
+      SB.stat("fit-score", (st.solved[st.k] ? "<b>이 기체 성공</b> · " : "") + `${n}/4`);
+    };
+    SB.drag(cvP, { free: true, handles: () => [], move: (id, x, y) => { const F = cvP._F; if (!F) return; st.b = SB.clamp(F.ix(x), BR[0], BR[1]); st.a = SB.clamp(F.iy(y), AR[0], AR[1]); upd(); cvF.redraw(); } });
+    $("fit-next").addEventListener("click", () => { st.k = (st.k + 1) % ROUNDS.length; st.a = 0.15; st.b = 30; setup(); upd(); cvF.redraw(); cvP.redraw(); });
+    $("fit-map").addEventListener("change", (e) => { st.map = e.target.checked; cvP.redraw(); });
+    $("fit-crit").addEventListener("click", () => { const [Tc, Pc] = PRD[ROUNDS[st.k].g]; st.a = SB.clamp((27 * R * R * Tc * Tc) / (64 * Pc), AR[0], AR[1]); st.b = SB.clamp(((R * Tc) / (8 * Pc)) * 1e6, BR[0], BR[1]); upd(); cvF.redraw(); cvP.redraw(); });
+    upd();
+  }
+
+  /* ================================================================ 5절: 판데르발스 드릴 */
+  {
+    const RD = Thermo.rng(404), GS = ["N2", "Ar", "CO2", "CH4", "O2", "NH3"];
+    SB.drill("drill-vdw", () => {
+      const g = GS[Math.floor(RD() * GS.length)], { a, b } = VDW[g], T = Math.round(250 + RD() * 350), Vl = Number((0.1 + RD() * 1.9).toFixed(2));
+      const V = Vl * 1e-3, rep = (R * T) / (V - b), att = a / (V * V), P = (rep - att) / 1e5;
+      return { q: `<p>${GASKO[g]} 1.00 mol이 ${Vl} L 용기에 ${T} K로 들어 있다. 판데르발스 식(\\(a = ${a}\\) Pa·m⁶/mol², \\(b = ${(b * 1e6).toFixed(2)}\\) cm³/mol)으로 압력을 bar로 구하라.</p>`, answer: P, label: "P =", unit: "bar", tol: "1%",
+        sol: `\\(RT/(V_\\mathrm m - b) = ${(R * T).toFixed(1)}/${f3(V - b)} = ${f3(rep / 1e5)}\\) bar, \\(a/V_\\mathrm m^2 = ${f3(att / 1e5)}\\) bar, \\(P = ${f3(P)}\\) bar (이상 기체 ${f3((R * T) / V / 1e5)} bar).` };
+    });
+  }
+
+  /* ================================================================ 6절: 일반화 압축 인자 차트 */
+  {
+    const TRS = [1.0, 1.1, 1.2, 1.5, 2.0, 3.0], PX = [0, 8], ZY = [0.2, 1.2], CG = ["N2", "Ar", "CH4", "CO2", "O2", "SiH4"];
+    const st = { gas: "CH4", Tr: 1.5, Pr: 3, vdw: true, pts: true };
+    const curves = TRS.map((Tr) => { const d = []; for (let i = 1; i <= 64; i++) { const Pr = (8 * i) / 64; d.push([Pr, lkZ(Tr, Pr)]); } return d; });
+    const dots = []; [1.1, 1.5, 2.0].forEach((Tr) => [0.5, 1.5, 3, 5, 7].forEach((Pr) => CG.forEach((g, gi) => { const [Tc, Pc] = PRD[g]; dots.push({ Pr, z: prZ(Tr * Tc, Pr * Pc, g), gi }); })));
+    let curLine = null;
+    const mkCur = () => { const d = []; for (let i = 1; i <= 64; i++) { const Pr = (8 * i) / 64; d.push([Pr, lkZ(st.Tr, Pr)]); } curLine = d; };
+    mkCur();
+    const cv = SB.canvas("cv-cs", (ctx, w, h, self) => {
+      const P = pal(), B = { x: 50, y: 30, w: w - 50 - 16, h: h - 30 - 46 };
+      const c = SB.chart(ctx, B, { x: PX, y: ZY, xLabel: "환산 압력 Pᵣ", yLabel: "Z", xTicks: [0, 1, 2, 3, 4, 5, 6, 7, 8], yTicks: [0.2, 0.4, 0.6, 0.8, 1.0, 1.2], hlines: [{ y: 1, color: P.faint }] });
+      self._c = c;
+      clip(ctx, B, () => {
+        curves.forEach((d, i) => { line(ctx, d.map(([x, y]) => [c.X(x), c.Y(y)]), P.dim, 1.4); });
+        if (st.vdw) TRS.forEach((Tr) => { const d = []; for (let i = 1; i <= 64; i++) { const Pr = (8 * i) / 64; d.push([c.X(Pr), c.Y(vdwRedZ(Tr, Pr))]); } withA(ctx, 0.6, () => line(ctx, d, P.accent2, 1.2, [4, 4])); });
+        if (st.pts) dots.forEach((d) => { ctx.fillStyle = P.series[d.gi % 6]; withA(ctx, 0.85, () => { ctx.beginPath(); ctx.arc(c.X(d.Pr) + (d.gi - 2.5) * 1.6, c.Y(d.z), 2.6, 0, 2 * PI); ctx.fill(); }); });
+        line(ctx, curLine.map(([x, y]) => [c.X(x), c.Y(y)]), P.accent, 2.6);
+      });
+      TRS.forEach((Tr) => { const xp = Tr < 1.15 ? 1.6 : 2.4, z = lkZ(Tr, xp); SB.label(ctx, "Tᵣ=" + Tr.toFixed(1), c.X(xp), c.Y(z) + (Tr < 1.15 ? -9 : 10), { size: 10, color: P.dim }); });
+      const z = lkZ(st.Tr, st.Pr);
+      handle(ctx, c.X(st.Pr), c.Y(z), P.accent, 9); self._hp = [c.X(st.Pr), c.Y(z)];
+      // 온도 레일(왼쪽 위)
+      const rx0 = B.x + 12, rx1 = B.x + Math.min(220, B.w * 0.5), ry = B.y + 14, ux = rx0 + ((st.Tr - 1) / 2) * (rx1 - rx0);
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(rx0, ry); ctx.lineTo(rx1, ry); ctx.stroke();
+      SB.label(ctx, `Tᵣ = ${st.Tr.toFixed(2)}`, rx1 + 8, ry, { align: "left", size: 12, bold: true, color: P.accent });
+      handle(ctx, ux, ry, P.accent, 9); self._rail = [rx0, rx1, ry, ux];
+      upd();
+    }, { aspect: 0.72, minHeight: 320, maxHeight: 480 });
+    function upd() {
+      const [Tc, Pc] = PRD[st.gas], T = st.Tr * Tc, P = st.Pr * Pc;
+      SB.stat("cs-r", `${st.Tr.toFixed(2)}, ${st.Pr.toFixed(2)}`);
+      SB.stat("cs-tp", `${GASKO[st.gas]}: ${T.toFixed(0)} K (${(T - 273.15).toFixed(0)} °C), ${(P / 1e5).toFixed(0)} bar`);
+      SB.stat("cs-z", lkZ(st.Tr, st.Pr).toFixed(3));
+      SB.stat("cs-zv", vdwRedZ(st.Tr, st.Pr).toFixed(3));
+      SB.stat("cs-zp", prZ(T, P, st.gas).toFixed(3));
+    }
+    SB.drag(cv, {
+      handles: () => { const o = []; if (cv._hp) o.push({ id: "p", x: cv._hp[0], y: cv._hp[1], r: 14 }); if (cv._rail) o.push({ id: "t", x: cv._rail[3], y: cv._rail[2], r: 14 }); return o; },
+      move: (id, x) => {
+        const c = cv._c; if (!c) return;
+        if (id === "p") st.Pr = SB.clamp(((x - c.box.x) / c.box.w) * 8, 0.1, 8);
+        if (id === "t") { const [rx0, rx1] = cv._rail; st.Tr = Math.round(SB.clamp(1 + ((x - rx0) / (rx1 - rx0)) * 2, 1, 3) * 100) / 100; mkCur(); }
+      },
+    });
+    $("cs-gas").addEventListener("change", (e) => { st.gas = e.target.value; cv.redraw(); });
+    $("cs-vdw").addEventListener("change", (e) => { st.vdw = e.target.checked; cv.redraw(); });
+    $("cs-pts").addEventListener("change", (e) => { st.pts = e.target.checked; cv.redraw(); });
+    $("cs-cyl").addEventListener("click", () => {
+      const [Tc, Pc] = PRD[st.gas], tr = 298.15 / Tc;
+      st.Pr = SB.clamp(150e5 / Pc, 0.1, 8);
+      st.Tr = SB.clamp(tr, 1, 3); mkCur(); cv.redraw();
+      if (tr < 1) SB.stat("cs-tp", `${GASKO[st.gas]}: Tᵣ = ${tr.toFixed(3)} &lt; 1 — 25 °C에서 액화 가능(차트 밖)`);
+    });
+  }
+
+  /* ================================================================ 6절: 환산 변수 드릴 */
+  {
+    const RD = Thermo.rng(505), GS = ["N2", "Ar", "CH4", "CO2", "O2"];
+    SB.drill("drill-cs", () => {
+      const g = GS[Math.floor(RD() * GS.length)], [Tc, Pc] = PRD[g], t = Math.round(-50 + RD() * 350), Pb = Math.round(10 + RD() * 290);
+      const Tr = (t + 273.15) / Tc, Pr = (Pb * 1e5) / Pc;
+      return { q: `<p>${GASKO[g]}(\\(T_\\mathrm c = ${Tc}\\) K, \\(P_\\mathrm c = ${(Pc / 1e5).toFixed(2)}\\) bar)가 ${t} °C, ${Pb} bar에 있다. 환산 온도와 환산 압력은?</p>`, answer: [Tr, Pr], label: ["T<sub>r</sub> =", "P<sub>r</sub> ="], unit: ["", ""], tol: "1%",
+        sol: `\\(T_\\mathrm r = ${(t + 273.15).toFixed(2)}/${Tc} = ${Tr.toFixed(3)}\\), \\(P_\\mathrm r = ${Pb}/${(Pc / 1e5).toFixed(2)} = ${Pr.toFixed(3)}\\)` };
+    });
+  }
+
+  /* ================================================================ 7절: 열팽창 미니 */
+  {
+    const rho = (t) => 999.97495 * (1 - ((t - 3.983035) ** 2 * (t + 301.797)) / (522528.9 * (t + 69.34881)));
+    const st = { sub: "water", t: 15 };
+    const Vf = (t) => (st.sub === "water" ? 1000 / rho(t) : (R * (t + 273.15)) / 101325 * 1000);
+    const dV = (t) => (Vf(t + 1e-3) - Vf(t - 1e-3)) / 2e-3;
+    const TX = () => (st.sub === "water" ? [0, 40] : [0, 100]);
+    const cv = SB.canvas("cv-alpha", (ctx, w, h, self) => {
+      const P = pal(), [t0, t1] = TX(), B = { x: 78, y: 22, w: w - 78 - 14, h: h - 22 - 46 };
+      let v0 = Infinity, v1 = -Infinity; for (let i = 0; i <= 80; i++) { const v = Vf(t0 + ((t1 - t0) * i) / 80); v0 = Math.min(v0, v); v1 = Math.max(v1, v); }
+      const pad = (v1 - v0) * 0.12, yr = [v0 - pad, v1 + pad];
+      const c = SB.chart(ctx, B, { x: [t0, t1], y: yr, xLabel: "t (°C)", yLabel: st.sub === "water" ? "V (L/kg)" : "V (L/mol)", yFmt: (v) => (st.sub === "water" ? v.toFixed(4) : v.toFixed(1)) });
+      self._c = c;
+      const pts = []; for (let i = 0; i <= 120; i++) { const t = t0 + ((t1 - t0) * i) / 120; pts.push([c.X(t), c.Y(Vf(t))]); }
+      clip(ctx, B, () => {
+        line(ctx, pts, P.accent2, 2.4);
+        const s = dV(st.t), v = Vf(st.t), dt = (t1 - t0) * 0.25;
+        line(ctx, [[c.X(st.t - dt), c.Y(v - s * dt)], [c.X(st.t + dt), c.Y(v + s * dt)]], P.accent, 2);
+      });
+      handle(ctx, c.X(st.t), c.Y(Vf(st.t)), P.accent, 9); self._hp = [c.X(st.t), c.Y(Vf(st.t))];
+      upd();
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    function upd() { const a = dV(st.t) / Vf(st.t); $("alpha-r").innerHTML = `t = ${st.t.toFixed(1)} °C · α = ${sci(a, 2)} K⁻¹` + (st.sub === "gas" ? ` (1/T = ${sci(1 / (st.t + 273.15), 2)})` : a < 0 ? " — 음수: 데우면 줄어든다" : ""); }
+    SB.drag(cv, { handles: () => (cv._hp ? [{ id: "t", x: cv._hp[0], y: cv._hp[1], r: 14 }] : []), move: (id, x) => { const c = cv._c; if (!c) return; const [t0, t1] = TX(); st.t = SB.clamp(t0 + ((x - c.box.x) / c.box.w) * (t1 - t0), t0 + 0.05, t1 - 0.05); } });
+    SB.seg("alpha-sub", (v) => { st.sub = v; st.t = v === "water" ? 15 : 25; cv.redraw(); });
+  }
+
+  /* ================================================================ 7절: 압축률 미니 */
+  {
+    const st = { Vr: 1.3 };
+    const gt = SB.range("kap-t", (v) => v.toFixed(2), () => cv.redraw());
+    const VX = [0.45, 4], PY = [0, 2.5];
+    const dPdV = (Tr, Vr) => (-24 * Tr) / Math.pow(3 * Vr - 1, 2) + 6 / (Vr * Vr * Vr);
+    const cv = SB.canvas("cv-kappa", (ctx, w, h, self) => {
+      const P = pal(), Tr = gt(), B = { x: 50, y: 22, w: w - 50 - 14, h: h - 22 - 46 };
+      const c = SB.chart(ctx, B, { x: VX, y: PY, xLabel: "Vᵣ = V/Vc", yLabel: "Pᵣ = P/Pc" });
+      self._c = c;
+      const pts = []; for (let i = 0; i <= 200; i++) { const Vr = VX[0] + ((VX[1] - VX[0]) * i) / 200; pts.push([c.X(Vr), c.Y(vdwRedP(Tr, Vr))]); }
+      const s = dPdV(Tr, st.Vr), p = vdwRedP(Tr, st.Vr), d = 0.5;
+      clip(ctx, B, () => {
+        line(ctx, pts, P.accent2, 2.4);
+        line(ctx, [[c.X(st.Vr - d), c.Y(p - s * d)], [c.X(st.Vr + d), c.Y(p + s * d)]], s > 0 ? P.bad : P.accent, 2);
+      });
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(c.X(1), c.Y(1), 4, 0, 2 * PI); ctx.fill();
+      handle(ctx, c.X(st.Vr), c.Y(p), P.accent, 9); self._hp = [c.X(st.Vr), c.Y(p)];
+      const k = -1 / (st.Vr * s), ki = p > 0 ? 1 / p : NaN;
+      $("kap-r").innerHTML = s > 0 ? `κ<sub>T</sub>·P<sub>c</sub> = ${k.toFixed(2)} &lt; 0 — 불안정` : `κ<sub>T</sub>·P<sub>c</sub> = ${k > 1e4 ? "∞에 가까움" : k.toPrecision(3)} · 이상 기체 1/P<sub>r</sub> = ${ki.toPrecision(3)} · 비 ${(k / ki).toPrecision(3)}`;
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    SB.drag(cv, { handles: () => (cv._hp ? [{ id: "v", x: cv._hp[0], y: cv._hp[1], r: 14 }] : []), move: (id, x) => { const c = cv._c; if (!c) return; st.Vr = SB.clamp(VX[0] + ((x - c.box.x) / c.box.w) * (VX[1] - VX[0]), 0.5, 3.9); } });
+  }
+
+  /* ================================================================ 7절: 갇힌 액체 탱글 */
+  {
+    SB.tangle("tg-trap", (v) => {
+      const dP = ((2.57e-4 / 4.52e-10) * v.dT) / 1e5, g = ((1e5 / 298.15) * v.dT) / 1e5;
+      return { dP: dP.toFixed(1) + " bar", gas: g.toFixed(3) + " bar" };
+    });
+  }
+})();
+</script>
+</body>
+</html>
