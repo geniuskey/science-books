@@ -824,6 +824,8 @@
    * opt = {n, W, H, r, m, T(kT), seed, species:[{n, m, r, tag}], partition:{x, gap:[y0,y1] | null}}
    * 벽: walls.{left,right,top,bottom} = null(탄성 반사) | {T}(열벽: 반사 때 속도를 그 온도로 다시 뽑음)
    * piston: {x, v, M, F} 를 주면 오른쪽 벽이 움직이는 피스톤(질량 M, 바깥 힘 F).
+   *   시간 간격: 한 step에 빠른 분자가 반지름의 절반 이상 움직이면 충돌을 놓친다(고에너지 충돌 통계가 줄어든다).
+   *   충돌 통계를 재는 시뮬레이터는 v·dt < r/2 가 되도록 step을 잘게 나눈다.
    *   피스톤이 정해진 속도로 움직여야 하면(준정적 압축 등) M을 아주 크게(예: 1e9) 두고 매 step 전에 piston.v를 다시 정한다.
    * → G {p[], step(dt), kT(filter), speeds(filter), impulse(벽에 준 운동량 누적), pressure(), reset}
    */
