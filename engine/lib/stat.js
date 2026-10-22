@@ -453,7 +453,7 @@
     for (let i = 0; i <= N; i++) { const x = a + i * h, wt = i === 0 || i === N ? 1 : i % 2 ? 4 : 2; s += wt * Math.exp(lf(x)) * prange(q * x); }
     return Math.min(1, (s * h) / 3);
   };
-  Stat.qtukey = (p, k, df = Infinity) => { let a = 0, b = 20; for (let i = 0; i < 60; i++) { const m = (a + b) / 2; if (Stat.ptukey(m, k, df) < p) a = m; else b = m; } return (a + b) / 2; };
+  Stat.qtukey = (p, k, df = Infinity) => { let a = 0, b = 20; while (Stat.ptukey(b, k, df) < p && b < 1e4) { a = b; b *= 2; } for (let i = 0; i < 60; i++) { const m = (a + b) / 2; if (Stat.ptukey(m, k, df) < p) a = m; else b = m; } return (a + b) / 2; };
 
   /* ------------------------------------------------------------ 기술 통계 */
   Stat.sum = (x) => { let s = 0; for (const v of x) s += v; return s; };
