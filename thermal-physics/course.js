@@ -3970,7 +3970,7 @@ SB.registerCourse({
     "ko": "패러데이 법칙",
     "en": "Faraday's law of electrolysis",
     "abbr": "",
-    "def": "전극에서 반응한 물질의 양이 통과한 전하에 비례한다는 법칙 \\(n = \\varepsilon Q/(nF)\\).",
+    "def": "전극에서 반응한 물질의 양이 통과한 전하에 비례한다는 법칙. 석출 몰수는 \\(n_\\mathrm{mol} = \\varepsilon Q/(nF)\\)이다(\\(n\\)은 반응 전자 수, \\(\\varepsilon\\)는 전류 효율).",
     "chapters": [
      "electrochemistry#faraday"
     ]
