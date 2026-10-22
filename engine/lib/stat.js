@@ -514,7 +514,7 @@
     else { k = opts.bins || Stat.bins.sturges(x); if (b === a) b = a + 1; w = (b - a) / k; }
     const counts = new Array(k).fill(0);
     let n = 0;
-    for (const v of x) { if (v < a || v > b) continue; let i = Math.floor((v - a) / w); if (i >= k) i = k - 1; counts[i]++; n++; }
+    for (const v of x) { if (v < a || v > b) continue; let i = Math.floor((v - a) / w + 1e-9); if (i >= k) i = k - 1; counts[i]++; n++; }
     const edges = Array.from({ length: k + 1 }, (_, i) => a + i * w);
     return { edges, counts, width: w, n, density: counts.map((c) => c / (x.length * w)), rel: counts.map((c) => c / x.length) };
   };
