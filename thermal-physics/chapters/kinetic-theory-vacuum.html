@@ -1,0 +1,1595 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>기체 운동론과 진공 · 열·통계물리와 물리화학 · SciBook</title>
+<meta name="description" content="맥스웰–볼츠만 속력 분포, 압력의 미시적 유래, 벽 충돌 플럭스와 단분자층 형성 시간, 평균 자유 행로와 크누센 수, 분출과 기체 분리, 점성·열전도·확산의 운동론, 분자류 컨덕턴스와 배기 시간, 진공 게이지를 2D 기체 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/thermal-physics/chapters/kinetic-theory-vacuum.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="기체 운동론과 진공 · 열·통계물리와 물리화학 · SciBook">
+<meta property="og:description" content="맥스웰–볼츠만 속력 분포, 압력의 미시적 유래, 벽 충돌 플럭스와 단분자층 형성 시간, 평균 자유 행로와 크누센 수, 분출과 기체 분리, 점성·열전도·확산의 운동론, 분자류 컨덕턴스와 배기 시간, 진공 게이지를 2D 기체 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/thermal-physics/chapters/kinetic-theory-vacuum.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "기체 운동론과 진공 · 열·통계물리와 물리화학 · SciBook", "headline": "08 기체 운동론과 진공", "url": "https://science.euiyun.com/thermal-physics/chapters/kinetic-theory-vacuum.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "맥스웰–볼츠만 속력 분포, 압력의 미시적 유래, 벽 충돌 플럭스와 단분자층 형성 시간, 평균 자유 행로와 크누센 수, 분출과 기체 분리, 점성·열전도·확산의 운동론, 분자류 컨덕턴스와 배기 시간, 진공 게이지를 2D 기체 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 8, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/thermal-physics/#book", "name": "열·통계물리와 물리화학", "url": "https://science.euiyun.com/thermal-physics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "열·통계물리와 물리화학", "item": "https://science.euiyun.com/thermal-physics/"}, {"@type": "ListItem", "position": 3, "name": "08 기체 운동론과 진공", "item": "https://science.euiyun.com/thermal-physics/chapters/kinetic-theory-vacuum.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/thermo.js"></script>
+<style>
+  .kv-out { white-space: normal; }
+  .kv-note { font-size: 13.5px; color: var(--text-dim); margin: 0; }
+</style>
+</head>
+<body data-chapter="kinetic-theory-vacuum">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="boltzmann">
+    <div class="eyebrow">Chapter 08</div>
+    <h1>기체 운동론과 진공</h1>
+    <p class="lead">팹 장비의 절반은 진공 장비다. 스퍼터와 식각 챔버는 수 mTorr에서, 이온 주입기 빔 라인은 10⁻⁶ Torr에서, 로드락은 몇 십 초마다 대기압과 진공을 오간다. 이 압력들은 아무렇게나 정한 숫자가 아니다. 기체 분자가 <b>얼마나 빨리 움직이는지</b>, <b>벽을 얼마나 자주 때리는지</b>, <b>다음 충돌까지 얼마나 멀리 가는지</b>가 공정의 방향성·오염·균일도·배기 시간을 정한다. 6장의 볼츠만 인자를 분자 하나의 병진 운동에 적용하면 이 세 가지가 모두 나온다. 아래 상자는 2차원 기체다. 오른쪽 벽의 구멍이 펌프로 이어져 있어, 구멍에 우연히 닿은 분자만 빠져나간다. 분자 수는 지수적으로 줄고, 흰 테두리 분자의 자취는 압력이 낮아질수록 직선 구간이 길어진다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">누르면 밸브를 닫고(벤트) 다시 누르면 연다</span></div>
+    <ul class="objectives">
+      <li>볼츠만 인자에서 맥스웰–볼츠만 속력 분포를 유도하고, 최빈·평균·제곱 평균 제곱근 속력과 어떤 속력 이상인 분자의 비율을 계산한다.</li>
+      <li>벽에 부딪히는 분자의 운동량 전달로 \(P = nkT\)를 다시 얻고, 벽 충돌 플럭스 \(\Phi = P/\sqrt{2\pi mkT}\)와 단분자층 형성 시간을 구해 베이스 압력과 오염을 연결한다.</li>
+      <li>충돌 단면적으로 평균 자유 행로 \(\lambda = kT/\sqrt2\pi d^2P\)를 구하고, 크누센 수로 점성류·전이류·분자류를 판정한다.</li>
+      <li>분출 속도가 \(1/\sqrt M\)에 비례하는 이유(그레이엄 법칙)와 다단 분리의 단 수를 계산하고, 구멍이 평균 자유 행로보다 크면 분리가 사라짐을 확인한다.</li>
+      <li>점성·열전도·확산을 "평균 자유 행로만큼 실어 나르는" 운동론으로 설명하고, 점성 계수가 압력과 무관하다가 분자류에서 압력에 비례하게 되는 이유를 피라니 게이지와 정전척 헬륨 냉각에 적용한다.</li>
+      <li>분자류 컨덕턴스(구멍·긴 관)와 직렬 합성, 유효 배기 속도, 탈기체가 있는 배기 곡선 \(P(t)\)를 계산하고, 압력 범위에 맞는 진공 게이지를 고른다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="mb">
+    <h2>맥스웰–볼츠만 속력 분포</h2>
+    <p>온도 \(T\)의 기체 속 분자 하나를 계로 보고 나머지 기체를 열저장체로 보면, 6장의 결론에 따라 분자가 속도 \(\mathbf v\) 근처에 있을 확률은 볼츠만 인자 \(e^{-E/kT}\)에 비례한다. 병진 에너지는 \(E = \tfrac12 m(v_x^2+v_y^2+v_z^2)\)로 세 성분의 합이므로 인자가 세 개의 곱으로 갈라진다. 성분 하나의 분포는 평균 0, 분산 \(kT/m\)인 정규 분포다.</p>
+    <div class="formula">$$g(v_x) = \sqrt{\frac{m}{2\pi kT}}\;e^{-mv_x^2/2kT},\qquad \langle v_x\rangle = 0,\qquad \langle v_x^2\rangle = \frac{kT}{m}$$<div class="where">\(\langle \tfrac12 mv_x^2\rangle = \tfrac12 kT\) — 6장의 등분배 정리가 성분마다 성립한다. 세 성분은 서로 독립이다.</div></div>
+    <p>속도의 방향은 상관없고 크기(속력) \(v = |\mathbf v|\)만 묻는다면, 속도 공간에서 반지름 \(v\)와 \(v+dv\) 사이의 껍질에 들어 있는 확률을 모두 더한다. 껍질의 부피는 \(4\pi v^2dv\)이다. 이렇게 얻은 것이 <span class="term">맥스웰–볼츠만 속력 분포</span><span class="en">(Maxwell–Boltzmann speed distribution)</span>다.</p>
+    <div class="formula">$$f(v) = 4\pi\left(\frac{m}{2\pi kT}\right)^{3/2} v^2\,e^{-mv^2/2kT},\qquad \int_0^\infty f(v)\,dv = 1$$<div class="where">\(v^2\)(껍질이 넓어지는 효과)는 커지고 \(e^{-mv^2/2kT}\)(에너지 비용)는 줄어서 둘의 곱에 봉우리가 생긴다. \(m\)은 분자 하나의 질량 \(M/N_\mathrm A\)이고 \(m/k = M/R\)이다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="속도 성분의 정규 분포, 속도 공간의 껍질, 껍질 부피와 볼츠만 인자의 곱이 만드는 속력 분포">
+        <g data-only="1">
+          <line x1="45" y1="250" x2="325" y2="250" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <line x1="185" y1="250" x2="185" y2="40" stroke="var(--text-faint)" stroke-dasharray="4 4"/>
+          <polyline points="45.0,250.0 47.3,250.0 49.7,250.0 52.0,249.9 54.3,249.9 56.7,249.9 59.0,249.9 61.3,249.8 63.7,249.8 66.0,249.7 68.3,249.6 70.7,249.5 73.0,249.4 75.3,249.2 77.7,249.0 80.0,248.8 82.3,248.5 84.7,248.1 87.0,247.7 89.3,247.2 91.7,246.5 94.0,245.8 96.3,244.9 98.7,243.8 101.0,242.6 103.3,241.1 105.7,239.4 108.0,237.5 110.3,235.3 112.7,232.8 115.0,230.0 117.3,226.8 119.7,223.2 122.0,219.3 124.3,214.9 126.7,210.2 129.0,205.0 131.3,199.4 133.7,193.3 136.0,186.9 138.3,180.1 140.7,172.9 143.0,165.5 145.3,157.7 147.7,149.8 150.0,141.7 152.3,133.6 154.7,125.5 157.0,117.4 159.3,109.6 161.7,102.0 164.0,94.8 166.3,88.1 168.7,81.9 171.0,76.4 173.3,71.5 175.7,67.5 178.0,64.2 180.3,61.9 182.7,60.5 185.0,60.0 187.3,60.5 189.7,61.9 192.0,64.2 194.3,67.5 196.7,71.5 199.0,76.4 201.3,81.9 203.7,88.1 206.0,94.8 208.3,102.0 210.7,109.6 213.0,117.4 215.3,125.5 217.7,133.6 220.0,141.7 222.3,149.8 224.7,157.7 227.0,165.5 229.3,172.9 231.7,180.1 234.0,186.9 236.3,193.3 238.7,199.4 241.0,205.0 243.3,210.2 245.7,214.9 248.0,219.3 250.3,223.2 252.7,226.8 255.0,230.0 257.3,232.8 259.7,235.3 262.0,237.5 264.3,239.4 266.7,241.1 269.0,242.6 271.3,243.8 273.7,244.9 276.0,245.8 278.3,246.5 280.7,247.2 283.0,247.7 285.3,248.1 287.7,248.5 290.0,248.8 292.3,249.0 294.7,249.2 297.0,249.4 299.3,249.5 301.7,249.6 304.0,249.7 306.3,249.8 308.7,249.8 311.0,249.9 313.3,249.9 315.7,249.9 318.0,249.9 320.3,250.0 322.7,250.0 325.0,250.0" fill="none" stroke="var(--accent-2)" stroke-width="2.5"/>
+          <text class="t t-dim" x="325" y="272" text-anchor="end">vₓ →</text>
+          <text class="t t-dim" x="185" y="272" text-anchor="middle">0</text>
+          <text class="t" x="50" y="40">g(vₓ) ∝ exp(−m vₓ²/2kT)</text>
+        </g>
+        <g data-step="2">
+          <circle cx="185" cy="150" r="30" fill="none" stroke="var(--text-faint)"/>
+          <circle cx="185" cy="150" r="60" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <circle cx="185" cy="150" r="72" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <circle cx="185" cy="150" r="105" fill="none" stroke="var(--text-faint)"/>
+          <line x1="70" y1="150" x2="300" y2="150" stroke="var(--text-dim)"/><line x1="185" y1="35" x2="185" y2="265" stroke="var(--text-dim)"/>
+          <text class="t t-dim" x="300" y="168" text-anchor="end">vₓ</text><text class="t t-dim" x="192" y="44">v_y</text>
+          <line x1="185" y1="150" x2="236" y2="112" stroke="var(--accent)" stroke-width="2"/>
+          <text class="t t-acc" x="214" y="120">v</text>
+          <text class="t" x="40" y="290">껍질 v ~ v+dv: 부피 4πv² dv</text>
+        </g>
+        <g data-only="1" class="t">
+          <text x="420" y="80" style="font-weight:700">1. 성분 하나는 정규 분포</text>
+          <text x="420" y="110">평균 0, 분산 kT/m</text>
+          <text x="420" y="140">에너지 ½m vₓ² 에 대한 볼츠만 인자</text>
+          <text x="420" y="170" class="t-dim">vᵧ, v_z 도 같은 분포, 서로 독립</text>
+        </g>
+        <g data-only="2" class="t">
+          <text x="420" y="80" style="font-weight:700">2. 세 성분의 곱</text>
+          <text x="420" y="110">exp(−m(vₓ²+vᵧ²+v_z²)/2kT) = exp(−mv²/2kT)</text>
+          <text x="420" y="140">방향과 무관 — 반지름 v 만의 함수</text>
+          <text x="420" y="170">같은 v 를 갖는 속도는 껍질 위에 있다</text>
+        </g>
+        <g data-step="3">
+          <line x1="420" y1="250" x2="775" y2="250" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <line x1="420" y1="250" x2="420" y2="30" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <text class="t t-dim" x="775" y="272" text-anchor="end">속력 v / v_mp</text>
+          <text class="t t-dim" x="536.7" y="268" text-anchor="middle">1</text><text class="t t-dim" x="653.3" y="268" text-anchor="middle">2</text>
+          <polyline points="420.0,50.0 422.9,50.1 425.8,50.5 428.8,51.1 431.7,52.0 434.6,53.1 437.5,54.4 440.4,56.0 443.3,57.8 446.2,59.9 449.2,62.1 452.1,64.6 455.0,67.2 457.9,70.0 460.8,73.1 463.8,76.2 466.7,79.6 469.6,83.1 472.5,86.7 475.4,90.4 478.3,94.2 481.2,98.2 484.2,102.2 487.1,106.3 490.0,110.5 492.9,114.7 495.8,118.9 498.8,123.2 501.7,127.5 504.6,131.8 507.5,136.0 510.4,140.3 513.3,144.5 516.2,148.7 519.2,152.9 522.1,157.0 525.0,161.0 527.9,165.0 530.8,168.9 533.8,172.7 536.7,176.4 539.6,180.1 542.5,183.6 545.4,187.0 548.3,190.4 551.2,193.6 554.2,196.7 557.1,199.7 560.0,202.6 562.9,205.4 565.8,208.1 568.8,210.6 571.7,213.1 574.6,215.4 577.5,217.7 580.4,219.8 583.3,221.8 586.2,223.7 589.2,225.6 592.1,227.3 595.0,228.9 597.9,230.5 600.8,231.9 603.8,233.3 606.7,234.5 609.6,235.7 612.5,236.9 615.4,237.9 618.3,238.9 621.2,239.8 624.2,240.6 627.1,241.4 630.0,242.2 632.9,242.8 635.8,243.5 638.8,244.1 641.7,244.6 644.6,245.1 647.5,245.5 650.4,246.0 653.3,246.3 656.2,246.7 659.2,247.0 662.1,247.3 665.0,247.6 667.9,247.8 670.8,248.0 673.8,248.2 676.7,248.4 679.6,248.6 682.5,248.7 685.4,248.9 688.3,249.0 691.2,249.1 694.2,249.2 697.1,249.3 700.0,249.4 702.9,249.4 705.8,249.5 708.8,249.6 711.7,249.6 714.6,249.7 717.5,249.7 720.4,249.7 723.3,249.8 726.2,249.8 729.2,249.8 732.1,249.8 735.0,249.9 737.9,249.9 740.8,249.9 743.8,249.9 746.7,249.9 749.6,249.9 752.5,249.9 755.4,249.9 758.3,250.0 761.2,250.0 764.2,250.0 767.1,250.0 770.0,250.0" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="6 4"/>
+          <polyline points="420.0,250.0 422.9,250.0 425.8,249.9 428.8,249.9 431.7,249.8 434.6,249.7 437.5,249.5 440.4,249.4 443.3,249.2 446.2,248.9 449.2,248.7 452.1,248.4 455.0,248.1 457.9,247.8 460.8,247.4 463.8,247.0 466.7,246.6 469.6,246.2 472.5,245.7 475.4,245.2 478.3,244.7 481.2,244.2 484.2,243.6 487.1,243.0 490.0,242.4 492.9,241.8 495.8,241.1 498.8,240.4 501.7,239.7 504.6,238.9 507.5,238.2 510.4,237.4 513.3,236.5 516.2,235.7 519.2,234.8 522.1,233.9 525.0,232.9 527.9,232.0 530.8,231.0 533.8,230.0 536.7,228.9 539.6,227.9 542.5,226.8 545.4,225.7 548.3,224.5 551.2,223.4 554.2,222.2 557.1,220.9 560.0,219.7 562.9,218.4 565.8,217.1 568.8,215.8 571.7,214.4 574.6,213.0 577.5,211.6 580.4,210.2 583.3,208.7 586.2,207.2 589.2,205.7 592.1,204.2 595.0,202.6 597.9,201.0 600.8,199.4 603.8,197.8 606.7,196.1 609.6,194.4 612.5,192.7 615.4,190.9 618.3,189.2 621.2,187.4 624.2,185.5 627.1,183.7 630.0,181.8 632.9,179.9 635.8,177.9 638.8,176.0 641.7,174.0 644.6,172.0 647.5,169.9 650.4,167.9 653.3,165.8 656.2,163.7 659.2,161.5 662.1,159.4 665.0,157.2 667.9,154.9 670.8,152.7 673.8,150.4 676.7,148.1 679.6,145.8 682.5,143.4 685.4,141.0 688.3,138.6 691.2,136.2 694.2,133.7 697.1,131.2 700.0,128.7 702.9,126.2 705.8,123.6 708.8,121.0 711.7,118.4 714.6,115.8 717.5,113.1 720.4,110.4 723.3,107.7 726.2,104.9 729.2,102.2 732.1,99.4 735.0,96.5 737.9,93.7 740.8,90.8 743.8,87.9 746.7,84.9 749.6,82.0 752.5,79.0 755.4,76.0 758.3,72.9 761.2,69.9 764.2,66.8 767.1,63.7 770.0,60.5" fill="none" stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="3 4"/>
+          <text class="t" x="440" y="44" fill="var(--accent-2)">exp(−mv²/2kT)</text>
+          <text class="t t-dim" x="700" y="60" text-anchor="end">4πv² (껍질)</text>
+        </g>
+        <g data-step="4">
+          <polyline points="420.0,250.0 422.9,249.7 425.8,248.6 428.8,247.0 431.7,244.6 434.6,241.6 437.5,238.0 440.4,233.9 443.3,229.1 446.2,223.8 449.2,218.1 452.1,211.9 455.0,205.3 457.9,198.3 460.8,191.1 463.8,183.6 466.7,175.9 469.6,168.0 472.5,160.1 475.4,152.1 478.3,144.1 481.2,136.3 484.2,128.5 487.1,120.9 490.0,113.5 492.9,106.3 495.8,99.5 498.8,92.9 501.7,86.8 504.6,81.1 507.5,75.8 510.4,70.9 513.3,66.5 516.2,62.7 519.2,59.3 522.1,56.4 525.0,54.1 527.9,52.3 530.8,51.0 533.8,50.3 536.7,50.0 539.6,50.2 542.5,51.0 545.4,52.2 548.3,53.8 551.2,55.9 554.2,58.4 557.1,61.3 560.0,64.5 562.9,68.1 565.8,71.9 568.8,76.1 571.7,80.5 574.6,85.1 577.5,89.9 580.4,94.8 583.3,99.9 586.2,105.1 589.2,110.4 592.1,115.7 595.0,121.1 597.9,126.4 600.8,131.8 603.8,137.1 606.7,142.4 609.6,147.6 612.5,152.7 615.4,157.8 618.3,162.7 621.2,167.5 624.2,172.1 627.1,176.6 630.0,181.0 632.9,185.2 635.8,189.3 638.8,193.2 641.7,196.9 644.6,200.5 647.5,203.9 650.4,207.1 653.3,210.2 656.2,213.1 659.2,215.8 662.1,218.4 665.0,220.9 667.9,223.2 670.8,225.3 673.8,227.3 676.7,229.2 679.6,230.9 682.5,232.6 685.4,234.1 688.3,235.5 691.2,236.8 694.2,238.0 697.1,239.1 700.0,240.1 702.9,241.1 705.8,241.9 708.8,242.7 711.7,243.4 714.6,244.1 717.5,244.7 720.4,245.2 723.3,245.7 726.2,246.2 729.2,246.6 732.1,247.0 735.0,247.3 737.9,247.6 740.8,247.9 743.8,248.1 746.7,248.3 749.6,248.5 752.5,248.7 755.4,248.8 758.3,249.0 761.2,249.1 764.2,249.2 767.1,249.3 770.0,249.4" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <line x1="536.7" y1="250" x2="536.7" y2="50" stroke="var(--accent)" stroke-dasharray="3 3"/>
+          <line x1="551.6" y1="250" x2="551.6" y2="56" stroke="var(--accent)" stroke-dasharray="3 3"/>
+          <line x1="562.9" y1="250" x2="562.9" y2="68" stroke="var(--accent)" stroke-dasharray="3 3"/>
+          <text class="t t-acc" x="600" y="110" style="font-weight:700">f(v) = 둘의 곱</text>
+          <text class="t" x="600" y="136">v_mp : v̄ : v_rms</text>
+          <text class="t" x="600" y="160">= 1 : 1.128 : 1.225</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>속도의 각 성분은 분산 \(kT/m\)인 정규 분포를 따른다.</li><li>세 성분의 곱은 속력 \(v\)에만 의존하므로, 같은 \(v\)를 갖는 속도는 반지름 \(v\)의 껍질에 모여 있다.</li><li>껍질 부피 \(4\pi v^2\)는 커지고 볼츠만 인자는 줄어든다.</li><li>둘을 곱하면 봉우리가 있는 \(f(v)\)가 된다. 세 가지 대표 속력은 서로 몇 % 차이다.</li></ol>
+      <figcaption>맥스웰–볼츠만 속력 분포가 만들어지는 과정. 정규 분포를 세 번 곱한 뒤 껍질 위에서 더하는 것뿐이다. 속력 0 근처의 분자가 드문 이유는 에너지 때문이 아니라 그런 속도가 들어갈 "자리"(껍질 부피)가 작기 때문이다.</figcaption>
+    </figure>
+    <p>분포에서 세 가지 대표 속력이 나온다. 봉우리 위치인 <span class="term">최빈 속력</span><span class="en">(most probable speed)</span>, 평균인 <span class="term">평균 속력</span><span class="en">(mean speed)</span>, 운동 에너지와 직결되는 <span class="term">제곱 평균 제곱근 속력</span><span class="en">(root-mean-square speed)</span>이다.</p>
+    <div class="formula">$$v_\mathrm{mp} = \sqrt{\frac{2kT}{m}},\qquad \bar v = \sqrt{\frac{8kT}{\pi m}},\qquad v_\mathrm{rms} = \sqrt{\langle v^2\rangle} = \sqrt{\frac{3kT}{m}}$$<div class="where">\(\tfrac12 m v_\mathrm{rms}^2 = \tfrac32 kT\)이다. 진공 계산(플럭스, 컨덕턴스, 평균 자유 행로)에는 거의 언제나 평균 속력 \(\bar v\)가 들어간다. 300 K 질소는 \(\bar v = 476\) m/s로 음속(353 m/s)보다 빠르다.</div></div>
+    <p>문턱 속력 \(v^*\)보다 빠른 분자의 비율은 \(f(v)\)를 \(v^*\)부터 적분해 얻는다. \(x = v^*/v_\mathrm{mp}\)로 두면</p>
+    <div class="formula">$$F(v>v^*) = \operatorname{erfc}(x) + \frac{2}{\sqrt\pi}\,x\,e^{-x^2}$$<div class="where">\(x\)가 크면 \(e^{-x^2}\), 곧 볼츠만 인자 \(e^{-mv^{*2}/2kT}\)가 지배한다. 화학 반응에서 활성화 에너지를 넘는 분자의 비율(13장)이 온도에 그토록 민감한 이유다.</div></div>
+    <div class="sim" id="sim-mb">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>속력 분포: 봉우리와 꼬리를 끌어 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-mb"></canvas><span class="hint top">봉우리를 좌우로 끌면 온도, 아래 흰 원은 문턱 속력</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>기체</span><div class="seg" id="mb-gas"><button data-value="H2">H₂</button><button data-value="He">He</button><button data-value="H2O">H₂O</button><button data-value="N2" class="on">N₂</button><button data-value="Ar">Ar</button><button data-value="Xe">Xe</button></div></div>
+          <label class="ctrl"><span>온도 T <output id="mb-T-out"></output></span><input type="range" id="mb-T" min="20" max="1500" step="5" value="300"></label>
+          <label class="check"><input type="checkbox" id="mb-ref" checked> 300 K 곡선 겹쳐 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">v<sub>mp</sub></span><span class="v" id="mb-vmp">—</span></div>
+        <div class="stat"><span class="k">v̄ (평균)</span><span class="v" id="mb-vbar">—</span></div>
+        <div class="stat"><span class="k">v<sub>rms</sub></span><span class="v" id="mb-vrms">—</span></div>
+        <div class="stat"><span class="k">v &gt; v* 비율</span><span class="v" id="mb-frac">—</span></div>
+      </div>
+      <div class="sim-note">주황 곡선이 현재 온도의 \(f(v)\), 칠한 넓이가 문턱 속력 \(v^*\)보다 빠른 분자의 비율이다. 파란 점선은 같은 기체의 300 K 분포. 해볼 것: ① 온도를 4배로 올리면 봉우리 속력은 2배가 되고 높이는 절반이 된다(넓이는 1로 그대로). ② N₂에서 \(v^* = 1000\) m/s 위의 비율이 300 K에서 약 1%인데, 600 K에서는 몇 %인가? ③ 같은 300 K에서 H₂와 Xe의 봉우리 속력 비는 \(\sqrt{131.3/2.016}\approx 8\)이다.</div>
+    </div>
+    <div class="tangle" id="tg-speed">
+      <p>몰 질량 <span class="tn" data-var="M" data-min="2" data-max="200" data-step="1" data-unit=" g/mol">28</span>인 기체가 <span class="tn" data-var="T" data-min="50" data-max="1500" data-step="10" data-unit=" K">300</span>에 있으면 최빈 속력은 <span class="tn-out" data-out="vmp"></span>, 평균 속력은 <span class="tn-out" data-out="vbar"></span>, 제곱 평균 제곱근 속력은 <span class="tn-out" data-out="vrms"></span>다. 분자 하나의 평균 병진 에너지 \(\tfrac32kT\)는 <span class="tn-out" data-out="E"></span>이고, 1 km/s보다 빠른 분자는 <span class="tn-out" data-out="frac"></span>다.</p>
+    </div>
+    <figure class="mini" id="mini-mass">
+      <div class="mini-view"><canvas id="cv-mass"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>온도 <output id="mass-T-out"></output></span><input type="range" id="mass-T" min="50" max="1200" step="10" value="300"></label><span class="readout" id="mass-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 온도에서 여섯 기체의 속력 분포. 모두 같은 평균 에너지 \(\tfrac32kT\)를 갖지만, 가벼운 분자는 넓고 낮게, 무거운 분자는 좁고 높게 퍼진다. 각 곡선 위의 점은 평균 속력 \(\bar v\propto\sqrt{T/M}\)이다. Xe를 1200 K로 데워도 평균 속력(440 m/s)은 300 K 수증기(594 m/s)보다 느리다.</figcaption>
+    </figure>
+    <div class="example" data-title="300 K 질소의 대표 속력과 빠른 분자의 비율">
+      <p>300 K의 N₂(\(M = 28.014\) g/mol)에 대해 (a) \(v_\mathrm{mp}\), \(\bar v\), \(v_\mathrm{rms}\)를 구하고 (b) 속력이 1000 m/s를 넘는 분자의 비율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(kT/m = RT/M\)로 바꿔 SI 단위(kg/mol)로 계산한다. 비율은 \(x = v^*/v_\mathrm{mp}\)로 꼬리 적분 공식을 쓴다.</div>
+        <div class="step"><b>풀이</b> (a) \(RT/M = 8.314\times300/0.028014 = 8.904\times10^4\) m²/s². \(v_\mathrm{mp} = \sqrt{2\times8.904\times10^4} = 422\) m/s, \(\bar v = \sqrt{8\times8.904\times10^4/\pi} = 476\) m/s, \(v_\mathrm{rms} = \sqrt{3\times8.904\times10^4} = 517\) m/s. (b) \(x = 1000/422 = 2.370\). \(\operatorname{erfc}(2.370) = 8.6\times10^{-4}\), \(\tfrac{2}{\sqrt\pi}\,x\,e^{-x^2} = 1.128\times2.370\times3.63\times10^{-3} = 9.7\times10^{-3}\). 합 \(= 0.0105\).</div>
+        <div class="answer">(a) 422, 476, 517 m/s (b) 약 1.05%</div>
+        <div class="step"><b>검토</b> 세 속력의 비 \(1:1.128:1.225\)가 맞다. 1000 m/s는 평균의 2배 남짓인데도 100개 중 1개꼴이다 — 정규 분포의 꼬리보다 두껍다. 꼬리의 거의 전부가 \(x\,e^{-x^2}\) 항에서 온다.</div>
+      </details>
+    </div>
+    <h3>2차원 기체로 확인하기: 무작위 충돌이 분포를 만든다</h3>
+    <p>볼츠만 분포는 "분자와 저장체가 에너지를 무작위로 주고받으면" 생긴다고 했다. 정말 그런지 이 책의 2차원 원판 기체로 확인하자. 2차원에서는 속도 성분이 둘이므로 껍질 부피 \(4\pi v^2dv\) 대신 고리 둘레 \(2\pi v\,dv\)가 들어가, 속력 분포가</p>
+    <div class="formula">$$f_\mathrm{2D}(v) = \frac{mv}{kT}\,e^{-mv^2/2kT},\qquad \langle\tfrac12mv^2\rangle = kT$$<div class="where">(2차원 등분배: 자유도 2개 × \(\tfrac12kT\)). 시뮬레이터에서는 \(k = 1\)로 두고 온도를 \(kT = \langle\tfrac12mv^2\rangle\)로 정의한다.</div></div>
+    <p>가 된다. 처음에 모든 원판이 <b>같은 속력</b>으로 무작위 방향으로 출발하게 해 보자. 에너지는 탄성 충돌에서 보존되므로 평균 에너지는 그대로다.</p>
+    <div class="predict" data-for="sim-gas">
+      <p>원판 220개가 모두 같은 속력으로 출발한다. 원판끼리 수십 번씩 부딪힌 뒤 속력 분포는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">그대로 한 속력에 모여 있다 — 탄성 충돌은 에너지를 보존하니까</button><button class="opt" data-correct>넓게 퍼져 \(f_\mathrm{2D}(v)\) 모양이 되고, 평균 에너지는 그대로다</button><button class="opt">모두 느려져 0 근처에 모인다</button><button class="opt">0부터 최댓값까지 고르게 퍼진다</button></div>
+      <div class="quiz-exp">충돌 한 번은 두 원판의 에너지 합만 보존하고 나누는 비율은 무작위다. 이 무작위 나눔이 수십 번 쌓이면 볼츠만 분포가 된다(5장의 에너지 덩어리 교환과 같은 이치). 원판 하나당 평균 10번쯤 부딪히면 맥스웰–볼츠만 분포와 거의 구별되지 않는다.</div>
+    </div>
+    <div class="sim" id="sim-gas">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>2D 기체: 속력 히스토그램이 맥스웰–볼츠만이 되기까지</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-gas"></canvas><span class="hint top">열벽을 켜면 왼쪽 온도계 손잡이를 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>처음 상태</span><div class="seg" id="gas-init"><button data-value="one" class="on">모두 같은 속력</button><button data-value="two">두 속력</button><button data-value="mb">MB 분포</button></div></div>
+          <label class="check"><input type="checkbox" id="gas-wall"> 왼쪽 벽을 열벽으로</label>
+          <button class="btn" id="gas-play" type="button"></button>
+          <button class="btn" id="gas-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">충돌 / 원판</span><span class="v" id="gas-coll">—</span></div>
+        <div class="stat"><span class="k">kT (측정)/kT₀</span><span class="v" id="gas-kt">—</span></div>
+        <div class="stat"><span class="k">MB와의 거리 (KL)</span><span class="v" id="gas-kl">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 원판 220개, 오른쪽은 최근 속력의 히스토그램(주황)과 측정한 \(kT\)로 그린 \(f_\mathrm{2D}(v)\)(파란 선)이다. KL은 히스토그램과 이론 분포의 차이로, 0에 가까울수록 맥스웰–볼츠만이다(유한 표본 때문에 0.02–0.05 근처가 바닥). 해볼 것: ① "모두 같은 속력"에서 충돌 / 원판이 1, 3, 10일 때 히스토그램을 본다. ② "두 속력"(느린 무리와 빠른 무리)도 같은 곡선으로 간다 — 처음 상태를 잊는다. ③ 열벽을 켜고 온도계를 위로 끌면 벽에 닿은 분자가 그 온도로 다시 튀어나와 기체 전체가 데워진다.</div>
+    </div>
+    <div class="drill" id="drill-speed" data-title="대표 속력 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="pressure">
+    <h2>압력의 미시적 유래와 벽 충돌 플럭스</h2>
+    <p>압력은 벽에 부딪히는 분자들이 단위 시간에 벽에 건네는 운동량을 넓이로 나눈 것이다. 일반물리학(<a href="../../general-physics/chapters/kinetic-theory-first-law.html">일반물리학 · 분자 운동론</a>)에서는 상자 속 분자 하나가 벽 사이를 왕복한다고 보고 이 결과를 얻었다. 여기서는 속도 분포를 그대로 쓰는 방법으로 다시 세운다. 같은 계산이 압력과 함께 진공 기술의 핵심량인 <b>벽 충돌 플럭스</b>를 준다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="벽에 부딪히는 분자의 운동량 변화와 시간 dt 동안 벽에 닿는 분자가 들어 있는 기둥">
+        <rect x="600" y="30" width="26" height="240" fill="var(--surface)" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="640" y="40">벽 (넓이 A)</text>
+        <g data-only="1">
+          <circle cx="450" cy="120" r="12" fill="var(--accent)"/>
+          <line x1="462" y1="120" x2="590" y2="150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4"/>
+          <line x1="590" y1="150" x2="470" y2="200" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4"/>
+          <circle cx="470" cy="200" r="12" fill="var(--accent-2)"/>
+          <text class="t" x="80" y="90" style="font-weight:700">1. 한 번 부딪힐 때</text>
+          <text class="t" x="80" y="122">vₓ → −vₓ (탄성 반사)</text>
+          <text class="t" x="80" y="152">벽이 받는 운동량 Δp = 2m vₓ</text>
+          <text class="t t-dim" x="80" y="182">평행 성분 vᵧ, v_z 는 그대로</text>
+        </g>
+        <g data-step="2">
+          <rect x="420" y="80" width="180" height="140" fill="var(--accent-soft, rgba(234,88,12,.12))" stroke="var(--accent)" stroke-dasharray="5 4"/>
+          <line x1="420" y1="240" x2="600" y2="240" stroke="var(--text-dim)"/><line x1="420" y1="234" x2="420" y2="246" stroke="var(--text-dim)"/><line x1="600" y1="234" x2="600" y2="246" stroke="var(--text-dim)"/>
+          <text class="t" x="510" y="262" text-anchor="middle">vₓ dt</text>
+          <circle cx="455" cy="110" r="5" fill="var(--accent)"/><circle cx="520" cy="160" r="5" fill="var(--accent)"/><circle cx="575" cy="125" r="5" fill="var(--accent)"/><circle cx="490" cy="200" r="5" fill="var(--accent)"/><circle cx="560" cy="190" r="5" fill="var(--accent)"/>
+        </g>
+        <g data-only="2" class="t">
+          <text x="80" y="90" style="font-weight:700">2. dt 동안 닿는 분자</text>
+          <text x="80" y="122">x 속도가 vₓ 인 분자 중</text>
+          <text x="80" y="152">길이 vₓdt, 넓이 A 의 기둥 안에 있는 것</text>
+          <text x="80" y="182">개수 = n g(vₓ)dvₓ · A vₓ dt</text>
+        </g>
+        <g data-only="3" class="t">
+          <text x="60" y="70" style="font-weight:700">3. vₓ &gt; 0 에 대해 더하면</text>
+          <text x="60" y="104">운동량: P = ∫ 2m vₓ · n vₓ g dvₓ = n m⟨vₓ²⟩ = nkT</text>
+          <text x="60" y="138">개수: Φ = ∫ n vₓ g dvₓ = n √(kT/2πm)</text>
+          <text x="60" y="172" class="t-acc" style="font-weight:700">Φ = ¼ n v̄ = P / √(2πmkT)</text>
+          <text x="60" y="206" class="t-dim">(2D 기체에서는 Φ = n v̄ / π)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>분자 하나가 벽에 남기는 운동량은 \(2mv_x\)다.</li><li>시간 \(dt\) 동안 벽에 닿는 분자는 길이 \(v_x\,dt\)인 기둥 안에 있는 분자다.</li><li>\(v_x>0\)인 분자에 대해 더하면 압력과 플럭스가 나온다.</li></ol>
+      <figcaption>압력과 벽 충돌 플럭스의 유도. 압력은 \(v_x^2\)의 평균(운동량 × 빈도), 플럭스는 \(v_x\)의 평균(빈도만)에서 온다. 그래서 압력에는 \(kT\)가, 플럭스에는 \(\sqrt{kT/m}\)가 들어간다.</figcaption>
+    </figure>
+    <div class="formula">$$P = nm\langle v_x^2\rangle = \tfrac13 nm\langle v^2\rangle = nkT,\qquad \Phi = \tfrac14 n\bar v = \frac{P}{\sqrt{2\pi mkT}}$$<div class="where">\(n = N/V\)는 수밀도[m⁻³], \(\Phi\)는 단위 넓이·단위 시간당 벽에 부딪히는 분자 수[m⁻²s⁻¹]. 실용식: \(\Phi = 3.51\times10^{22}\,P[\mathrm{Torr}]/\sqrt{M\,T}\) cm⁻²s⁻¹ (\(M\)은 g/mol, \(T\)는 K).</div></div>
+    <p>\(P = nkT\)는 상태 방정식(1장)의 미시적 설명이다. 같은 압력이면 기체 종류와 상관없이 수밀도가 같다(아보가드로). 그러나 플럭스는 \(1/\sqrt{m}\)에 비례한다. 같은 압력에서 수소는 질소보다 \(\sqrt{28/2}\approx3.7\)배 자주 벽을 때린다. 이 정의에 따른 \(\Phi\)를 <span class="term">벽 충돌 플럭스</span><span class="en">(wall collision flux, impingement rate)</span>라 한다.</p>
+    <div class="sim" id="sim-wall">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>벽을 때리는 분자로 압력 재기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-wall"></canvas><span class="hint top">오른쪽 벽의 흰 원을 끌어 상자 넓이 바꾸기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>원판 수 N <output id="wall-n-out"></output></span><input type="range" id="wall-n" min="40" max="300" step="10" value="150"></label>
+          <button class="btn" id="wall-play" type="button"></button>
+          <button class="btn" id="wall-reset" type="button">측정 다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">압력 (측정)</span><span class="v" id="wall-p">—</span></div>
+        <div class="stat"><span class="k">nkT (이상 기체)</span><span class="v" id="wall-pt">—</span></div>
+        <div class="stat"><span class="k">플럭스 (측정)</span><span class="v" id="wall-f">—</span></div>
+        <div class="stat"><span class="k">n v̄/π (이론)</span><span class="v" id="wall-ft">—</span></div>
+      </div>
+      <div class="sim-note">위아래 벽은 온도 \(kT_0\)의 열벽이라 상자를 줄이거나 늘려도 온도가 일정하다(등온). 왼쪽·오른쪽 벽이 받은 운동량을 시간과 벽 길이로 나눈 것이 압력(2D에서는 힘/길이), 부딪힌 횟수를 나눈 것이 플럭스다. 벽의 깜박임이 충돌 한 번이다. 해볼 것: ① 상자 넓이를 절반으로 줄이면 압력과 플럭스가 모두 2배가 된다(보일 법칙). ② 측정값이 이상 기체 값보다 몇 % 큰 것은 원판 자신의 넓이 때문이다 — 1장 판데르발스 식의 \(b\)와 같은 효과다. N을 줄이면 차이가 줄어든다. ③ 측정 시간이 짧으면 값이 출렁인다. 압력은 수많은 충돌의 평균이다.</div>
+    </div>
+    <h3>단분자층 형성 시간</h3>
+    <p>진공을 쓰는 가장 큰 이유는 <b>깨끗한 표면</b>이다. 표면에 원자 자리가 \(n_s\approx10^{15}\) cm⁻²(= \(10^{19}\) m⁻²) 있고, 부딪힌 분자가 확률 \(s\)로 달라붙는다면(<span class="term">부착 계수</span><span class="en">(sticking coefficient)</span>), 깨끗한 표면이 한 층으로 덮이는 데 걸리는 시간은</p>
+    <div class="formula">$$\tau_\mathrm{ml} = \frac{n_s}{s\,\Phi} = \frac{n_s\sqrt{2\pi mkT}}{s\,P}$$<div class="where">이를 <span class="term">단분자층 형성 시간</span><span class="en">(monolayer formation time)</span>이라 한다. 노출량은 흔히 랭뮤어(1 L = \(10^{-6}\) Torr·s)로 쓰며, \(s\approx1\)이면 수 L에 한 층이 덮인다.</div></div>
+    <div class="predict" data-for="mini-mono">
+      <p>방금 세정한 실리콘 표면을 300 K, \(10^{-6}\) Torr의 진공(수증기)에 두었다. 부착 계수가 1이라면 한 층이 덮이는 데 걸리는 시간은?</p>
+      <div class="opts"><button class="opt">몇 주 — 10⁻⁶ Torr면 거의 빈 공간이니까</button><button class="opt">한 시간쯤</button><button class="opt" data-correct>몇 초</button><button class="opt">몇 마이크로초</button></div>
+      <div class="quiz-exp">\(10^{-6}\) Torr의 수증기는 1 cm²에 매초 \(4.8\times10^{14}\)개를 때린다. 표면 자리 \(10^{15}\) cm⁻²를 채우는 데 약 2초다. 표면을 몇 시간 깨끗이 두려면 \(10^{-9}\)–\(10^{-10}\) Torr의 초고진공이 필요하다.</div>
+    </div>
+    <figure class="mini" id="mini-mono">
+      <div class="mini-view" style="position:relative"><canvas id="cv-mono"></canvas><span class="hint">곡선 위 흰 원을 끈다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>부착 계수 s <output id="mono-s-out"></output></span><input type="range" id="mono-s" min="-3" max="0" step="0.1" value="0"></label><span class="readout" id="mono-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>압력에 따른 단분자층 형성 시간(로그–로그). 주황은 H₂O, 파랑은 N₂, 점선은 H₂다(300 K). \(\tau_\mathrm{ml}\propto 1/P\)이므로 직선이고, 압력을 1000배 낮추면 1000배 오래 깨끗하다. 부착 계수가 작으면(예: 상온 금속 위 N₂) 같은 압력에서도 훨씬 오래 버틴다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-mono">
+      <p>압력 \(10^{x}\) Torr에서 \(x\) = <span class="tn" data-var="x" data-min="-11" data-max="-2" data-step="0.5">-6</span>, 온도 <span class="tn" data-var="T" data-min="200" data-max="800" data-step="10" data-unit=" K">300</span>의 수증기는 수밀도 <span class="tn-out kv-out" data-out="n"></span>, 플럭스 <span class="tn-out kv-out" data-out="F"></span>이고, 부착 계수 1이면 <span class="tn-out" data-out="t"></span>마다 한 층씩 쌓인다. 그동안 분자 하나가 날아가는 평균 거리(평균 자유 행로, 3절)는 <span class="tn-out" data-out="lam"></span>다.</p>
+    </div>
+    <div class="example" data-title="10⁻⁶ Torr에서의 플럭스와 단분자층 시간">
+      <p>300 K, \(1.0\times10^{-6}\) Torr의 N₂에 대해 (a) 수밀도 \(n\), (b) 벽 충돌 플럭스 \(\Phi\)(cm⁻²s⁻¹), (c) \(s = 1\), \(n_s = 10^{15}\) cm⁻²일 때 단분자층 형성 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 압력을 Pa로 바꾼 뒤 \(n = P/kT\), \(\Phi = P/\sqrt{2\pi mkT}\), \(\tau = n_s/\Phi\).</div>
+        <div class="step"><b>풀이</b> \(P = 10^{-6}\times133.32 = 1.333\times10^{-4}\) Pa. (a) \(n = 1.333\times10^{-4}/(1.381\times10^{-23}\times300) = 3.22\times10^{16}\) m⁻³. (b) \(m = 0.028014/6.022\times10^{23} = 4.652\times10^{-26}\) kg, \(\sqrt{2\pi mkT} = \sqrt{2\pi\times4.652\times10^{-26}\times4.142\times10^{-21}} = 3.479\times10^{-23}\) kg·m/s. \(\Phi = 1.333\times10^{-4}/3.479\times10^{-23} = 3.83\times10^{18}\) m⁻²s⁻¹ \(= 3.83\times10^{14}\) cm⁻²s⁻¹. 실용식으로도 \(3.51\times10^{22}\times10^{-6}/\sqrt{28.0\times300} = 3.83\times10^{14}\). (c) \(\tau = 10^{15}/3.83\times10^{14} = 2.6\) s.</div>
+        <div class="answer">(a) \(3.22\times10^{16}\) m⁻³ (b) \(3.83\times10^{14}\) cm⁻²s⁻¹ (c) 약 2.6 s</div>
+        <div class="step"><b>검토</b> "고진공"이라는 \(10^{-6}\) Torr에도 1 cm³에 분자가 3×10¹⁰개 있다. 진공은 비어 있는 것이 아니라 <b>표면에 도착하는 속도가 느린 것</b>이다. 10⁻⁶ Torr·s = 1 랭뮤어가 대략 한 층이라는 경험칙과 맞는다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>베이스 압력이 막의 순도를 정한다</strong><p>PVD로 알루미늄을 1 nm/s로 쌓으면 표면에 매초 약 \(6\times10^{15}\) cm⁻²의 Al 원자가 도착한다. 챔버에 \(10^{-6}\) Torr의 수증기가 남아 있으면 같은 표면에 \(4.8\times10^{14}\) cm⁻²s⁻¹이 도착하므로, 부착 계수가 1이라면 막 속 산소·수소 불순물이 원자 비로 8%에 이를 수 있다. 베이스 압력을 \(10^{-8}\) Torr로 낮추면 0.08%다. 그래서 금속 증착 챔버는 공정 전 베이스 압력을 10⁻⁸ Torr대로 확인하고, 웨이퍼는 로드락에서 펌핑한 뒤 들여보낸다. → <a href="https://semi.euiyun.com/process/chapters/deposition.html">ProcessBook · 박막 증착</a></p></div>
+    <div class="drill" id="drill-flux" data-title="플럭스와 단분자층 시간 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="mfp">
+    <h2>평균 자유 행로와 크누센 수</h2>
+    <p>분자는 다른 분자와 부딪힐 때까지 직선으로 날아간다. 지름 \(d\)인 강체 구 두 개는 중심 사이 거리가 \(d\) 안으로 들어오면 부딪힌다. 그러므로 날아가는 분자는 반지름 \(d\)(지름이 아니다)인 원통을 쓸고 지나가며, 그 원통 안에 중심이 있는 분자와 모두 부딪힌다. 이 원의 넓이 \(\sigma = \pi d^2\)를 <span class="term">충돌 단면적</span><span class="en">(collision cross section)</span>이라 한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="지름 d인 분자가 반지름 d인 원통을 쓸고 지나가며 그 안에 중심이 있는 분자와 충돌하는 그림">
+        <defs><marker id="kv-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+        <rect x="90" y="70" width="560" height="120" rx="4" fill="var(--accent-soft, rgba(234,88,12,.10))" stroke="var(--accent)" stroke-dasharray="6 4"/>
+        <ellipse cx="90" cy="130" rx="18" ry="60" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+        <ellipse cx="650" cy="130" rx="18" ry="60" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle cx="90" cy="130" r="30" fill="var(--accent)" opacity="0.85"/>
+        <line x1="125" y1="130" x2="700" y2="130" stroke="var(--accent)" stroke-width="2" marker-end="url(#kv-ar)"/>
+        <line x1="60" y1="70" x2="60" y2="130" stroke="var(--text-dim)"/><line x1="54" y1="70" x2="66" y2="70" stroke="var(--text-dim)"/><line x1="54" y1="130" x2="66" y2="130" stroke="var(--text-dim)"/>
+        <text class="t" x="50" y="105" text-anchor="end">d</text>
+        <circle cx="260" cy="95" r="30" fill="var(--accent-2)" opacity="0.8"/><circle cx="430" cy="172" r="30" fill="var(--accent-2)" opacity="0.8"/>
+        <circle cx="540" cy="225" r="30" fill="none" stroke="var(--text-faint)" stroke-width="1.5"/><circle cx="340" cy="35" r="30" fill="none" stroke="var(--text-faint)" stroke-width="1.5"/>
+        <text class="t" x="260" y="100" text-anchor="middle" fill="#fff">충돌</text><text class="t" x="430" y="177" text-anchor="middle" fill="#fff">충돌</text>
+        <text class="t t-dim" x="585" y="230">비켜 감</text>
+        <text class="t" x="680" y="80">단면적 σ = πd²</text>
+        <text class="t" x="680" y="104">길이 v̄ t 동안</text>
+        <text class="t" x="680" y="128">부피 σ v̄ t</text>
+        <text class="t t-acc" x="680" y="160" style="font-weight:700">λ = 1/(√2 nσ)</text>
+      </svg>
+      <figcaption>충돌 원통. 중심이 원통(반지름 \(d\)) 안에 있는 분자(파랑)와는 부딪히고, 밖에 있는 분자(회색)는 비켜 간다. 단위 시간당 충돌 수는 원통 부피 × 수밀도다.</figcaption>
+    </figure>
+    <p>다른 분자도 움직이므로 충돌을 세는 데 쓰이는 속력은 상대 속력이다. 두 분자의 속도가 독립인 맥스웰–볼츠만 분포를 따르면 상대 속력의 평균은 \(\sqrt2\,\bar v\)이다. 그래서 분자 하나의 충돌 빈도 \(z\)와 충돌 사이 평균 거리, 곧 <span class="term">평균 자유 행로</span><span class="en">(mean free path)</span>는</p>
+    <div class="formula">$$z = \sqrt2\,n\sigma\bar v,\qquad \lambda = \frac{\bar v}{z} = \frac{1}{\sqrt2\,n\pi d^2} = \frac{kT}{\sqrt2\,\pi d^2 P}$$<div class="where">실용 경험칙(공기·질소, 상온): \(\lambda\,[\mathrm{cm}] \approx \dfrac{5\times10^{-3}}{P\,[\mathrm{Torr}]}\), 또는 \(\lambda\,[\mathrm{mm}]\approx 6.5/P\,[\mathrm{Pa}]\). 1 atm에서 65 nm, 1 Torr에서 49 µm, 1 mTorr에서 4.9 cm, 10⁻⁶ Torr에서 49 m.</div></div>
+    <p>자유 행로 하나하나는 제각각이다. 매 순간 충돌할 확률이 일정하므로(기억 없음) 거리 \(x\)를 충돌 없이 갈 확률은 \(e^{-x/\lambda}\)이고, 자유 행로는 평균 \(\lambda\)인 지수 분포를 따른다. \(\lambda\)의 3배 넘게 날아가는 분자도 5%나 된다.</p>
+    <div class="predict" data-for="sim-mfp">
+      <p>아래 2D 기체에서 원판 수를 절반으로 줄이면(같은 상자, 같은 온도), 추적하는 원판의 평균 자유 행로는?</p>
+      <div class="opts"><button class="opt">그대로 — 원판 크기가 같으니까</button><button class="opt">√2배</button><button class="opt" data-correct>2배</button><button class="opt">4배</button></div>
+      <div class="quiz-exp">\(\lambda\propto 1/n\)이다. 쓸고 지나가는 띠(2D에서는 폭 \(2d\)) 안에 들어오는 원판 수가 절반이니 다음 충돌까지 두 배를 간다. 압력을 반으로 낮추면 평균 자유 행로가 두 배가 되는 것과 같다.</div>
+    </div>
+    <div class="sim" id="sim-mfp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>분자 하나를 따라가며 자유 행로 재기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-mfp"></canvas><span class="hint top">아무 원판이나 누르면 그 원판을 추적한다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>원판 수 N <output id="mfp-n-out"></output></span><input type="range" id="mfp-n" min="30" max="300" step="10" value="120"></label>
+          <button class="btn" id="mfp-play" type="button"></button>
+          <button class="btn" id="mfp-reset" type="button">기록 지우기</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">추적 원판 평균 λ</span><span class="v" id="mfp-lt">—</span></div>
+        <div class="stat"><span class="k">전체 평균 v̄t / 충돌</span><span class="v" id="mfp-la">—</span></div>
+        <div class="stat"><span class="k">이론 1/(2√2 n d)</span><span class="v" id="mfp-th">—</span></div>
+        <div class="stat"><span class="k">충돌 빈도 z</span><span class="v" id="mfp-z">—</span></div>
+      </div>
+      <div class="sim-note">흰 테두리 원판의 자취가 직선 조각으로 그려지고, 점이 충돌 지점이다. 아래 히스토그램은 지금까지 잰 자유 행로의 분포(주황)와 평균 \(\lambda\)인 지수 분포(파랑)다. 2D에서는 쓸고 지나가는 단면이 넓이 \(\pi d^2\) 대신 폭 \(2d\)라서 \(\lambda_\mathrm{2D} = 1/(2\sqrt2\,nd)\)이다(\(d = 2r\), 길이 단위는 px). 해볼 것: ① N = 60, 120, 240에서 λ를 읽어 \(1/n\) 비례를 확인한다. ② 짧은 자유 행로가 가장 흔하고, 평균의 3배를 넘는 것도 드물지 않다. ③ 벽에 맞고 튕기는 것은 충돌로 세지 않는다. N이 작아 \(\lambda\)가 상자 크기에 가까워지면 분자는 벽과 벽 사이를 오가게 된다 — 분자류다.</div>
+    </div>
+    <h3>크누센 수: 기체가 유체인가 입자인가</h3>
+    <p>평균 자유 행로를 장치의 특성 길이 \(L\)(관 지름, 챔버 크기, 간격)과 비교한 무차원 수가 <span class="term">크누센 수</span><span class="en">(Knudsen number)</span> \(\mathrm{Kn} = \lambda/L\)이다. \(\mathrm{Kn}\ll1\)이면 분자는 벽에 닿기 전에 서로 수없이 부딪혀 기체가 연속 유체처럼 흐른다(<span class="term">점성류</span><span class="en">(viscous flow)</span>, <a href="../../fluid-mechanics/chapters/pipe-flow.html">유체역학 · 관 내 점성 유동</a>의 세계). \(\mathrm{Kn}\gg1\)이면 분자끼리는 거의 만나지 않고 벽과 벽 사이를 따로따로 날아다닌다(<span class="term">분자류</span><span class="en">(molecular flow)</span>). 사이가 전이류다. 이 장에서는 \(\mathrm{Kn}<0.01\)을 점성류, \(\mathrm{Kn}>0.5\)를 분자류로 나눈다(교재에 따라 경계를 1로 잡기도 한다).</p>
+    <figure class="mini" id="mini-kn">
+      <div class="mini-view" style="position:relative"><canvas id="cv-kn"></canvas><span class="hint top">곡선 위 흰 원을 끌어 압력 바꾸기</span></div>
+      <div class="mini-ctrl"><div class="ctrl"><span>기체</span><div class="seg" id="kn-gas"><button data-value="N2" class="on">N₂</button><button data-value="Ar">Ar</button><button data-value="He">He</button></div></div><div class="ctrl"><span>특성 길이 L</span><div class="seg" id="kn-L"><button data-value="1e-7">트렌치 100 nm</button><button data-value="1e-3">시스 1 mm</button><button data-value="0.05" class="on">간격 5 cm</button><button data-value="0.3">챔버 30 cm</button></div></div><span class="readout" id="kn-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>300 K에서 평균 자유 행로 \(\lambda\)(곡선)와 특성 길이 \(L\)(가로 점선). 파란 띠가 분자류(\(\mathrm{Kn}>0.5\)), 주황 띠가 점성류(\(\mathrm{Kn}<0.01\))다. 같은 압력이라도 무엇과 비교하느냐에 따라 영역이 달라진다. 대기압 세정에서도 100 nm 트렌치 속의 기체는 거의 분자류다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-mfp">
+      <p>아르곤 압력 <span class="tn" data-var="P" data-min="0.1" data-max="100" data-step="0.1" data-unit=" mTorr">5</span>, 온도 <span class="tn" data-var="T" data-min="250" data-max="700" data-step="10" data-unit=" K">300</span>에서 평균 자유 행로는 <span class="tn-out" data-out="lam"></span>이다. 표적에서 튀어나온 원자가 <span class="tn" data-var="L" data-min="1" data-max="40" data-step="1" data-unit=" cm">5</span> 떨어진 웨이퍼까지 날아가면 \(\mathrm{Kn}\) = <span class="tn-out" data-out="kn"></span>(<span class="tn-out" data-out="reg"></span>)이고, 한 번도 부딪히지 않고 도착하는 비율은 \(e^{-L/\lambda}\) = <span class="tn-out" data-out="pass"></span>다.</p>
+    </div>
+    <div class="example" data-title="스퍼터 챔버의 평균 자유 행로">
+      <p>300 K, 5 mTorr의 Ar(\(d = 3.67\times10^{-10}\) m) 속에서 (a) 평균 자유 행로를 구하라. (b) 표적–웨이퍼 간격이 5 cm일 때 크누센 수와, 충돌 없이 도착하는 원자의 비율을 구하라(스퍼터 원자의 충돌 단면적을 Ar과 같다고 본다). (c) 0.5 mTorr로 낮추면?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\lambda = kT/(\sqrt2\pi d^2P)\), \(\mathrm{Kn} = \lambda/L\), 무충돌 확률 \(e^{-L/\lambda}\).</div>
+        <div class="step"><b>풀이</b> (a) \(P = 5\times0.13332 = 0.6666\) Pa. \(\sqrt2\pi d^2 = 1.4142\times\pi\times1.347\times10^{-19} = 5.984\times10^{-19}\) m². \(\lambda = 4.142\times10^{-21}/(5.984\times10^{-19}\times0.6666) = 1.04\times10^{-2}\) m. (b) \(\mathrm{Kn} = 1.04/5 = 0.21\) — 전이류. 무충돌 비율 \(e^{-5/1.04} = e^{-4.8} = 0.008\). (c) \(\lambda\)가 10배인 10.4 cm, \(\mathrm{Kn} = 2.1\)(분자류), 무충돌 비율 \(e^{-0.48} = 0.62\).</div>
+        <div class="answer">(a) 1.04 cm (b) Kn ≈ 0.21, 약 0.8% (c) λ ≈ 10.4 cm, 약 62%</div>
+        <div class="step"><b>검토</b> 5 mTorr에서는 스퍼터 원자 대부분이 몇 번씩 부딪혀 방향이 흩어지고 에너지를 잃는다(열화). 깊은 구멍 바닥까지 똑바로 보내려는 장거리(long-throw) 스퍼터가 1 mTorr 아래에서 도는 이유다. 실제 스퍼터 원자는 에너지가 커서 단면적이 조금 작다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>식각·스퍼터 챔버가 mTorr에서 도는 이유</strong><p>이방성 식각에서는 이온이 시스(약 1 mm)를 지나는 동안 거의 부딪히지 않아야 웨이퍼에 수직으로 도착한다. 30 mTorr의 Ar에서 \(\lambda\approx1.7\) mm이므로 시스 \(\mathrm{Kn}\approx1\) — 한 번 남짓 부딪힌다. 압력을 낮추면 방향성은 좋아지지만 라디칼 밀도와 식각 속도가 떨어지고, 플라스마를 유지할 전자 충돌도 줄어든다. 그래서 정밀 식각은 수~수십 mTorr에서 고밀도 플라스마로 하고, 스퍼터는 원자가 표적에서 웨이퍼까지 날아가는 \(\mathrm{Kn}\)을 기준으로 압력을 고른다. → <a href="https://semi.euiyun.com/etch/chapters/plasma.html">EtchBook · 플라스마: 식각의 재료</a></p></div>
+    <div class="drill" id="drill-mfp" data-title="평균 자유 행로와 크누센 수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="effusion">
+    <h2>분출과 기체 분리</h2>
+    <p>용기 벽에 작은 구멍을 뚫고 바깥을 진공으로 두자. 구멍이 평균 자유 행로보다 충분히 작으면(구멍 기준 \(\mathrm{Kn}\gg1\)), 분자들은 구멍 근처에서 서로 밀거나 끌지 않는다. 구멍 자리에 와서 "벽에 부딪히려던" 분자가 그냥 빠져나갈 뿐이다. 이것이 <span class="term">분출</span><span class="en">(effusion)</span>이다. 빠져나가는 속도는 벽 충돌 플럭스에 구멍 넓이를 곱한 것이다.</p>
+    <div class="formula">$$\frac{dN}{dt} = -\Phi A = -\frac{PA}{\sqrt{2\pi mkT}} = -\tfrac14 n\bar vA \quad\Rightarrow\quad \frac{\text{분출 속도}_1}{\text{분출 속도}_2} = \sqrt{\frac{M_2}{M_1}}\ (\text{같은 } P, T)$$<div class="where">이 비가 <span class="term">그레이엄 법칙</span><span class="en">(Graham's law)</span>이다(<a href="../../general-chemistry/chapters/gases.html">일반화학 · 기체</a>). 빠른 분자가 구멍을 더 자주 찾아오므로, 빠져나간 분자의 속력 분포는 \(v\,f(v)\)로 기울어 있고 평균 운동 에너지가 \(\tfrac32kT\)가 아니라 \(2kT\)다 — 분출은 남은 기체를 식힌다.</div></div>
+    <p>분출 식은 반도체에서도 그대로 쓰인다. 분자선 에피택시(MBE)의 크누센 셀은 원료를 녹인 도가니에 작은 구멍을 낸 것이고, 거기서 나오는 원자 플럭스는 원료의 증기압 \(P_\mathrm{vap}(T)\)(<a href="phase-transitions.html">9장</a>)을 위 식에 넣은 것이다. 셀 온도 1 K의 차이가 성장 속도 몇 %의 차이가 되는 것은 증기압이 온도에 지수적으로 민감하기 때문이다. 헬륨 누설 검사도 분출의 응용이다. 분자류 영역의 작은 누설 구멍을 지나는 속도는 \(1/\sqrt M\)에 비례하므로 헬륨은 공기보다 \(\sqrt{28.97/4.00} = 2.7\)배 빨리 새어 나온다.</p>
+    <div class="predict" data-for="sim-eff">
+      <p>왼쪽 칸에 질량 1(가벼움)과 질량 4(무거움)인 원판이 같은 수만큼 섞여 있고 같은 온도다. 칸막이의 <b>작은 구멍</b>으로 빠져나가는 원판의 수는 가벼운 쪽이 몇 배일까?</p>
+      <div class="opts"><button class="opt">4배 — 질량 비</button><button class="opt" data-correct>2배 — 질량 비의 제곱근</button><button class="opt">같다 — 온도가 같으니까</button><button class="opt">16배</button></div>
+      <div class="quiz-exp">플럭스는 \(\tfrac14 n\bar v\)(2D에서는 \(n\bar v/\pi\))이고 \(\bar v\propto1/\sqrt m\)이다. 수밀도가 같으면 가벼운 원판이 \(\sqrt{4/1} = 2\)배 많이 나간다. 그런데 구멍을 크게 하면? 시뮬레이터에서 손잡이를 끌어 구멍을 평균 자유 행로보다 크게 만들어 보라.</div>
+    </div>
+    <div class="sim" id="sim-eff">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>분출: 작은 구멍은 가벼운 분자를 골라낸다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-eff"></canvas><span class="hint top">칸막이의 흰 원을 위아래로 끌어 구멍 크기 바꾸기</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>왼쪽 원판 수 <output id="eff-n-out"></output></span><input type="range" id="eff-n" min="60" max="360" step="20" value="120"></label>
+          <div class="ctrl"><span>빠르기</span><div class="seg" id="eff-speed"><button data-value="1">×1</button><button data-value="4" class="on">×4</button></div></div>
+          <button class="btn" id="eff-play" type="button"></button>
+          <button class="btn" id="eff-reset" type="button">세기 다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">나간 수 (가벼움 / 무거움)</span><span class="v" id="eff-cnt">—</span></div>
+        <div class="stat"><span class="k">분리비 (측정)</span><span class="v" id="eff-ratio">—</span></div>
+        <div class="stat"><span class="k">구멍 기준 Kn = λ/w</span><span class="v" id="eff-kn">—</span></div>
+        <div class="stat"><span class="k">영역</span><span class="v" id="eff-reg">—</span></div>
+      </div>
+      <div class="sim-note">오른쪽 칸은 펌프로 계속 비운다고 보고, 구멍을 지난 원판은 세고 나서 왼쪽에 같은 온도로 다시 넣는다(원료가 일정한 저장조). 주황은 가벼운 원판(질량 1), 파랑은 무거운 원판(질량 4)이다. 이론 분리비는 \(\sqrt{4/1} = 2\)다. 해볼 것: ① 구멍 폭 \(w\)를 \(\lambda\)보다 작게 두고 수십 개가 셀 때까지 기다려 분리비 ≈ 2를 확인한다. ② 원판 수를 360으로 늘려 \(\lambda\)를 줄이고 구멍을 크게 하면 분리비가 1로 무너진다 — 기체가 구멍을 통해 덩어리로 흘러(점성류) 가벼운 분자와 무거운 분자가 함께 나간다. ③ 같은 Kn에서는 원판 수를 바꿔도 분리비가 비슷하다.</div>
+    </div>
+    <h3>다단 분리</h3>
+    <p>한 번의 분출로 얻는 분리비를 <span class="term">분리 계수</span><span class="en">(separation factor)</span> \(\alpha = \sqrt{M_2/M_1}\)라 한다. 가벼운 성분과 무거운 성분의 몰 비를 \(R = x/(1-x)\)라 하면 이상적인 한 단은 \(R\)을 \(\alpha\)배로 만든다. 단을 \(n\)개 이으면</p>
+    <div class="formula">$$R_n = \alpha^n R_0\quad\Rightarrow\quad n = \frac{\ln(R_n/R_0)}{\ln\alpha}\approx\frac{\ln(R_n/R_0)}{\alpha-1}$$<div class="where">\(\alpha\)가 1에 가까우면 \(\ln\alpha\approx\alpha-1\)이고, 단 수는 질량 차에 반비례한다. 실제 단은 이상 분리비에 크게 못 미치므로 필요한 단 수가 몇 배 더 많다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 220" role="img" aria-label="분출 단을 직렬로 이어 가벼운 성분을 조금씩 농축하는 다단 분리 계단">
+        <defs><marker id="kv-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--text-dim)"/></marker></defs>
+        <g class="t" text-anchor="middle">
+          <rect x="60" y="120" width="110" height="60" rx="6" fill="var(--surface)" stroke="var(--text-dim)"/><text x="115" y="146">단 1</text><text x="115" y="166" class="t-dim">R₀ → αR₀</text>
+          <rect x="250" y="90" width="110" height="60" rx="6" fill="var(--surface)" stroke="var(--text-dim)"/><text x="305" y="116">단 2</text><text x="305" y="136" class="t-dim">→ α²R₀</text>
+          <rect x="440" y="60" width="110" height="60" rx="6" fill="var(--surface)" stroke="var(--text-dim)"/><text x="495" y="86">단 3</text><text x="495" y="106" class="t-dim">→ α³R₀</text>
+          <text x="660" y="60" style="font-weight:700">…</text><text x="700" y="40" class="t-acc" style="font-weight:700">αⁿR₀ (농축)</text>
+          <text x="115" y="210" class="t-dim">원료 R₀</text>
+        </g>
+        <line x1="170" y1="135" x2="248" y2="115" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kv-ar2)"/>
+        <line x1="360" y1="105" x2="438" y2="85" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kv-ar2)"/>
+        <line x1="550" y1="75" x2="640" y2="55" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kv-ar2)"/>
+        <line x1="250" y1="140" x2="172" y2="165" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#kv-ar2)"/>
+        <line x1="440" y1="110" x2="362" y2="135" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#kv-ar2)"/>
+        <text class="t" x="560" y="170" fill="var(--accent)">→ 구멍을 지난 쪽(가벼운 성분 많음)은 다음 단으로</text>
+        <text class="t" x="560" y="194" fill="var(--accent-2)">⇠ 남은 쪽(무거운 성분 많음)은 앞 단으로 되돌림</text>
+      </svg>
+      <figcaption>분출 다단 분리(캐스케이드). 단마다 몰 비가 \(\alpha\)배씩 늘고, 각 단의 남은 기체는 앞 단으로 되돌려 버리는 원료를 줄인다. \(\alpha\)가 1.004인 UF₆에서는 수백 단이 필요하다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-stage">
+      <p>가벼운 분자의 몰 질량이 <span class="tn" data-var="M" data-min="2" data-max="400" data-step="1" data-unit=" g/mol">349</span>, 무거운 분자가 <span class="tn" data-var="dM" data-min="1" data-max="40" data-step="1">3</span> g/mol 더 무거우면 이상 분리 계수는 \(\alpha\) = <span class="tn-out" data-out="a"></span>다. 가벼운 성분을 <span class="tn" data-var="x0" data-min="0.1" data-max="50" data-step="0.01" data-unit=" %">0.72</span>에서 <span class="tn" data-var="x1" data-min="1" data-max="99.9" data-step="0.1" data-unit=" %">4</span>로 농축하려면 이상적인 단이 <span class="tn-out" data-out="n"></span> 필요하다.</p>
+    </div>
+    <div class="example" data-title="UF₆ 분출 농축의 단 수">
+      <p>천연 우라늄의 ²³⁵U 비율은 0.72%다. ²³⁵UF₆(349.03 g/mol)와 ²³⁸UF₆(352.04 g/mol)를 분출로 분리해 4%로 농축하려면 이상적인 단이 몇 개 필요한가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\alpha = \sqrt{352.04/349.03}\), 몰 비 \(R = x/(1-x)\)로 바꿔 \(n = \ln(R_n/R_0)/\ln\alpha\).</div>
+        <div class="step"><b>풀이</b> \(\alpha = \sqrt{1.008624} = 1.004303\), \(\ln\alpha = 4.294\times10^{-3}\). \(R_0 = 0.0072/0.9928 = 7.252\times10^{-3}\), \(R_n = 0.04/0.96 = 4.167\times10^{-2}\). \(\ln(R_n/R_0) = \ln 5.746 = 1.748\). \(n = 1.748/4.294\times10^{-3} = 407\).</div>
+        <div class="answer">약 407단(이상적인 경우)</div>
+        <div class="step"><b>검토</b> \(\alpha-1 = 0.0043\)뿐이어서 단 하나의 효과가 아주 작다. 실제 기체 확산 공장은 다공성 막을 통과하는 분출이 이상에 못 미쳐 천 단 넘게 이었고, 오늘날은 분리 계수가 훨씬 큰 원심 분리를 쓴다. 고열전도·양자 소자용 동위 원소 순수 ²⁸Si도 SiF₄의 질량 차(1 g/mol)를 이용해 농축한다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="transport">
+    <h2>점성·열전도·확산의 운동론</h2>
+    <p>기체 속에 흐름 속도·온도·농도의 기울기가 있으면, 분자들이 그 양을 실어 날라 기울기를 없앤다. 한 분자는 마지막으로 부딪힌 곳(대략 \(\lambda\)만큼 떨어진 곳)의 값을 가지고 날아온다. \(z\) 방향으로 기울기가 있을 때 위에서 오는 분자와 아래에서 오는 분자가 가져오는 양의 차이를 세면, 어떤 양 \(q\)(분자 하나가 나르는 운동량·에너지·표지)에 대해 하나의 공식이 나온다.</p>
+    <div class="formula">$$J_q = -\tfrac13\,n\bar v\lambda\,\frac{dq}{dz}$$<div class="where">플럭스 \(\tfrac14n\bar v\) × 가져오는 값의 차이 \(\sim\lambda\,dq/dz\)에서 나온 단순 평균 자유 행로 이론. 계수 \(\tfrac13\)은 비스듬히 오는 분자를 평균한 결과다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="위판이 움직이는 두 판 사이 기체에서 층 사이를 오가는 분자가 운동량을 나르는 그림">
+        <defs><marker id="kv-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker><marker id="kv-ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="60" y="20" width="440" height="12" fill="var(--text-dim)"/><rect x="60" y="218" width="440" height="12" fill="var(--text-dim)"/>
+        <text class="t" x="520" y="32">윗판: 속도 u</text><text class="t" x="520" y="230">아랫판: 정지</text>
+        <line x1="80" y1="60" x2="300" y2="60" stroke="var(--accent)" stroke-width="2" marker-end="url(#kv-ar3)"/>
+        <line x1="80" y1="100" x2="245" y2="100" stroke="var(--accent)" stroke-width="2" marker-end="url(#kv-ar3)"/>
+        <line x1="80" y1="140" x2="190" y2="140" stroke="var(--accent)" stroke-width="2" marker-end="url(#kv-ar3)"/>
+        <line x1="80" y1="180" x2="135" y2="180" stroke="var(--accent)" stroke-width="2" marker-end="url(#kv-ar3)"/>
+        <line x1="380" y1="120" x2="380" y2="80" stroke="var(--text-faint)" stroke-dasharray="4 3"/><line x1="380" y1="120" x2="380" y2="160" stroke="var(--text-faint)" stroke-dasharray="4 3"/>
+        <circle cx="380" cy="80" r="8" fill="var(--accent)"/><circle cx="380" cy="160" r="8" fill="var(--accent-2)"/>
+        <line x1="392" y1="86" x2="392" y2="114" stroke="var(--text-dim)" stroke-width="1.6" marker-end="url(#kv-ar4)"/>
+        <line x1="368" y1="154" x2="368" y2="126" stroke="var(--text-dim)" stroke-width="1.6" marker-end="url(#kv-ar4)"/>
+        <line x1="330" y1="120" x2="470" y2="120" stroke="var(--text-dim)"/>
+        <text class="t t-dim" x="475" y="124">기준면</text>
+        <text class="t" x="400" y="78">위층(빠름)에서 온 분자: 운동량 +</text>
+        <text class="t" x="400" y="170">아래층(느림)에서 온 분자: 운동량 −</text>
+        <text class="t t-dim" x="300" y="128" text-anchor="end">±λ</text>
+        <text class="t t-acc" x="560" y="110" style="font-weight:700">τ = η du/dz</text>
+        <text class="t" x="560" y="136">η = ⅓ n m v̄ λ</text>
+        <text class="t t-dim" x="560" y="162">n ∝ P, λ ∝ 1/P → η 는 P 무관</text>
+      </svg>
+      <figcaption>점성의 운동론. 기준면을 위아래로 지나는 분자는 \(\lambda\)쯤 떨어진 층의 흐름 운동량을 가져와 섞는다. 그 결과 위층은 끌려 느려지고 아래층은 밀려 빨라진다. 같은 그림에서 운동량 대신 에너지를 나르면 열전도, 분자 표지를 나르면 확산이다.</figcaption>
+    </figure>
+    <p>\(q\)에 흐름 운동량 \(mu\)를 넣으면 <span class="term">점성 계수</span><span class="en">(viscosity)</span>, 분자 하나의 열에너지(\(dq/dz = c_v\,dT/dz\), \(c_v\)는 분자당 열용량)를 넣으면 열전도도, 표지된 분자의 비율을 넣으면 확산 계수가 된다.</p>
+    <div class="formula">$$\eta = \tfrac13 nm\bar v\lambda = \frac{m\bar v}{3\sqrt2\,\pi d^2},\qquad \kappa = \tfrac13 n c_v\bar v\lambda = \frac{c_v}{m}\eta,\qquad D = \tfrac13\bar v\lambda\propto\frac{T^{3/2}}{P}$$<div class="where">\(n\lambda = 1/\sqrt2\pi d^2\)이므로 \(\eta\)와 \(\kappa\)에서 \(n\)이 지워진다. 강체 구의 정확한 이론(채프먼–엔스코그)은 계수를 고친다: \(\eta = \tfrac{5}{16}\sqrt{\pi mkT}/\pi d^2\), 단원자 기체 \(\kappa = \tfrac{15}{4}(k/m)\eta\), \(D = \tfrac38\sqrt{\pi kT/m}\,/\,n\pi d^2\).</div></div>
+    <p>맥스웰이 1860년에 이 결과를 얻었을 때 스스로도 의심했다. <b>기체의 점성 계수는 압력과 무관하다.</b> 압력을 낮추면 운동량을 나르는 분자 수 \(n\)은 줄지만 한 분자가 나르는 거리 \(\lambda\)가 그만큼 늘기 때문이다. 직접 실험으로 확인되자 원자론의 강력한 증거가 되었다. 또 \(\eta\propto\sqrt T\)라서, 액체와 달리 <b>기체는 뜨거울수록 끈끈하다.</b> 확산 계수는 \(1/P\)에 비례해 압력을 낮추면 빨라진다. 0.5 Torr의 저압 CVD에서 확산은 대기압보다 1500배 빨라, 수직으로 촘촘히 세운 웨이퍼 수백 장 사이로도 원료가 고르게 퍼진다.</p>
+    <p>압력과 무관하다는 결론에는 조건이 있다. \(\lambda\)가 판 사이 간격 \(L\)보다 작아야 한다(\(\mathrm{Kn}\ll1\)). 압력이 더 낮아져 \(\lambda>L\)이 되면 분자는 판에서 판으로 곧장 날아가므로, 나르는 거리는 \(\lambda\)가 아니라 \(L\)로 묶이고 운동량·열의 전달은 분자 수, 곧 압력에 비례하게 된다. 진공 보온병이 열을 막는 원리이고, 다음 절의 피라니 게이지가 압력을 재는 원리다.</p>
+    <div class="predict" data-for="mini-visc">
+      <p>판 간격이 1 cm인 점성계 속 질소의 압력을 760 Torr에서 1 Torr로 낮췄다. 점성 계수는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">1/760로 줄어든다 — 분자 수가 그만큼 줄었으니까</button><button class="opt" data-correct>거의 변하지 않는다</button><button class="opt">760배로 커진다 — 평균 자유 행로가 그만큼 늘었으니까</button><button class="opt">0이 된다</button></div>
+      <div class="quiz-exp">1 Torr에서도 \(\lambda\approx 49\) µm로 간격 1 cm보다 훨씬 작다(\(\mathrm{Kn}\approx0.005\)). \(n\)의 감소와 \(\lambda\)의 증가가 정확히 상쇄된다. 압력을 \(10^{-2}\) Torr 아래로 더 내려 \(\lambda\)가 간격에 가까워져야 점성 계수가 줄기 시작한다.</div>
+    </div>
+    <figure class="mini" id="mini-visc">
+      <div class="mini-view" style="position:relative"><canvas id="cv-visc"></canvas><span class="hint top">흰 원을 좌우로 끌어 압력 바꾸기</span></div>
+      <div class="mini-ctrl"><div class="ctrl"><span>간격 L</span><div class="seg" id="visc-L"><button data-value="1e-5">10 µm</button><button data-value="1e-3">1 mm</button><button data-value="0.01" class="on">1 cm</button></div></div><span class="readout" id="visc-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>300 K 질소에서 압력에 따른 수밀도 \(n\)(점선, \(\propto P\)), 평균 자유 행로 \(\lambda\)(점선, \(\propto1/P\))와 판 사이의 실효 점성(또는 열전달) \(\eta_\mathrm{eff}/\eta\)(주황). \(\eta_\mathrm{eff} = \eta/(1+2\mathrm{Kn})\)는 연속체 극한과 분자류 극한을 잇는 단순 보간이다. 넓은 압력 범위에서 평평하다가, \(\mathrm{Kn}\sim1\) 아래로 내려가면 압력에 비례해 떨어진다. 간격이 좁을수록 꺾이는 압력이 높다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-visc">
+      <p>몰 질량 <span class="tn" data-var="M" data-min="2" data-max="140" data-step="1" data-unit=" g/mol">40</span>, 분자 지름 <span class="tn" data-var="d" data-min="2" data-max="6" data-step="0.01" data-unit=" Å">3.67</span>인 단원자 기체가 <span class="tn" data-var="T" data-min="100" data-max="1500" data-step="10" data-unit=" K">300</span>이면, 강체 구 이론의 점성 계수는 <span class="tn-out" data-out="eta"></span>, 열전도도는 <span class="tn-out" data-out="k"></span>, 1 atm에서의 자기 확산 계수는 <span class="tn-out" data-out="D"></span>다(Ar 실측: 22.7 µPa·s, 0.0177 W/(m·K)).</p>
+    </div>
+    <div class="example" data-title="질소의 점성 계수와 확산 계수">
+      <p>300 K의 N₂(\(d = 3.78\times10^{-10}\) m)에 대해 (a) 강체 구 이론의 점성 계수를 구해 실측값 17.9 µPa·s와 비교하고, (b) 자기 확산 계수를 1 atm과 1 Torr에서 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\eta = \tfrac5{16}\sqrt{\pi mkT}/\pi d^2\), \(D = \tfrac38\sqrt{\pi kT/m}/(n\pi d^2)\), \(n = P/kT\).</div>
+        <div class="step"><b>풀이</b> (a) \(m = 4.652\times10^{-26}\) kg, \(\sqrt{\pi mkT} = \sqrt{\pi\times4.652\times10^{-26}\times4.142\times10^{-21}} = 2.461\times10^{-23}\). \(\pi d^2 = 4.489\times10^{-19}\) m². \(\eta = 0.3125\times2.461\times10^{-23}/4.489\times10^{-19} = 1.71\times10^{-5}\) Pa·s. (b) \(\sqrt{\pi kT/m} = \sqrt{\pi\times4.142\times10^{-21}/4.652\times10^{-26}} = 528.9\) m/s. 1 atm: \(n = 101325/4.142\times10^{-21} = 2.446\times10^{25}\) m⁻³, \(D = 0.375\times528.9/(2.446\times10^{25}\times4.489\times10^{-19}) = 1.81\times10^{-5}\) m² /s = 0.181 cm²/s. 1 Torr에서는 760배인 137 cm²/s.</div>
+        <div class="answer">(a) 17.1 µPa·s (실측보다 4% 작음) (b) 0.18 cm²/s, 137 cm²/s</div>
+        <div class="step"><b>검토</b> 지름 \(d\)를 점성 실측에서 거꾸로 구한 표의 값이므로 점성은 잘 맞는다. 실제 분자는 딱딱한 공이 아니라 끌어당기는 힘이 있어 \(\eta\)가 \(\sqrt T\)보다 조금 빨리 자란다(서덜랜드 보정). 1 Torr에서 확산 길이 \(\sqrt{Dt}\)는 1초에 약 12 cm다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>정전척 뒷면 헬륨이 웨이퍼 온도를 정한다</strong><p>식각 중 웨이퍼는 플라스마에서 수 kW의 열을 받는다. 웨이퍼와 정전척 사이는 표면 거칠기 정도(수~수십 µm)의 틈이고 진공이라 열이 거의 건너가지 못한다. 그래서 틈에 헬륨을 5–20 Torr 넣는다. 10 Torr 헬륨의 평균 자유 행로는 약 15 µm로 틈과 비슷해(\(\mathrm{Kn}\sim1\)), 열전달이 압력에 거의 비례하는 영역이다. 헬륨 압력을 조절하면 웨이퍼 온도를 조절할 수 있는 이유다. 헬륨을 쓰는 것은 가볍고 빨라(\(\bar v\) 큼) 열전도도가 크고 화학적으로 비활성이기 때문이다. → <a href="https://semi.euiyun.com/etch/chapters/reactors.html">EtchBook · 반응기: 배럴에서 ICP까지</a></p></div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="pumping">
+    <h2>분자류 컨덕턴스와 배기 시간</h2>
+    <p>진공 시스템은 챔버, 관, 밸브, 펌프의 직렬 연결이다. 관과 밸브는 기체가 흐르는 것을 방해하고, 펌프는 들어온 기체를 내보낸다. 전기 회로처럼 다루기 위해 세 가지 양을 정한다.</p>
+    <div class="def"><span class="def-k">처리량 · 컨덕턴스 · 배기 속도</span>
+      <p><span class="term">처리량</span><span class="en">(throughput)</span> \(Q = P\,\dfrac{dV}{dt}\)[Pa·m³/s]은 어떤 단면을 지나는 기체의 양(\(PV\) 단위, 곧 분자 수 × \(kT\))이다. 정상 상태에서 직렬 연결의 모든 단면에서 같다(전류처럼). <span class="term">컨덕턴스</span><span class="en">(conductance)</span> \(C = Q/(P_1-P_2)\)[m³/s]는 양 끝 압력 차당 처리량(전기 전도도처럼)이고, <span class="term">배기 속도</span><span class="en">(pumping speed)</span> \(S = Q/P\)[m³/s]는 펌프 입구 압력에서 펌프가 매초 빨아들이는 부피다. 1 Pa·m³/s = 1000 Pa·L/s ≈ 7.5 Torr·L/s.</p>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="챔버, 게이트 밸브, 터보 분자 펌프, 포어라인, 건식 펌프로 이루어진 진공 시스템과 게이지 위치">
+        <rect x="30" y="50" width="200" height="140" rx="10" fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t" x="130" y="80" text-anchor="middle" style="font-weight:700">공정 챔버</text>
+        <text class="t t-dim" x="130" y="104" text-anchor="middle">부피 V, 압력 P</text>
+        <text class="t" x="130" y="128" text-anchor="middle" fill="var(--accent)">탈기체 Q (벽·웨이퍼)</text>
+        <g fill="var(--accent)"><circle cx="60" cy="160" r="3"/><circle cx="80" cy="172" r="3"/><circle cx="100" cy="158" r="3"/><circle cx="185" cy="168" r="3"/></g>
+        <rect x="230" y="95" width="40" height="50" fill="var(--text-faint)"/><text class="t t-dim" x="250" y="88" text-anchor="middle">밸브</text>
+        <rect x="270" y="80" width="120" height="80" rx="6" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2"/>
+        <text class="t" x="330" y="112" text-anchor="middle" style="font-weight:700">터보 펌프</text><text class="t t-dim" x="330" y="134" text-anchor="middle">S ≈ 수백~수천 L/s</text>
+        <path d="M390 120 H600 V180" fill="none" stroke="var(--text-dim)" stroke-width="10"/>
+        <text class="t" x="495" y="108" text-anchor="middle">포어라인 (지름 d, 길이 L) → C</text>
+        <rect x="560" y="180" width="80" height="50" rx="6" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2"/><text class="t" x="600" y="210" text-anchor="middle">건식 펌프</text>
+        <text class="t t-dim" x="660" y="216">→ 배기 (스크러버)</text>
+        <circle cx="70" cy="40" r="14" fill="var(--bg-elev)" stroke="var(--text-dim)"/><text class="t" x="70" y="45" text-anchor="middle">C</text>
+        <circle cx="120" cy="40" r="14" fill="var(--bg-elev)" stroke="var(--text-dim)"/><text class="t" x="120" y="45" text-anchor="middle">I</text>
+        <circle cx="500" cy="145" r="14" fill="var(--bg-elev)" stroke="var(--text-dim)"/><text class="t" x="500" y="150" text-anchor="middle">P</text>
+        <text class="t t-dim" x="30" y="236">게이지 — C: 정전 용량 압력계(공정 압력), I: 이온 게이지(베이스 압력), P: 피라니(포어라인)</text>
+      </svg>
+      <figcaption>전형적인 고진공 공정 챔버. 같은 처리량 \(Q\)가 챔버 → 밸브 → 터보 펌프 → 포어라인 → 건식 펌프를 차례로 지난다. 압력은 하류로 갈수록 높아지고(터보 펌프가 압축), 각 부품의 컨덕턴스가 챔버에서 실제로 쓸 수 있는 배기 속도를 깎는다.</figcaption>
+    </figure>
+    <h3>분자류 컨덕턴스</h3>
+    <p>분자류에서는 분자들이 서로 부딪히지 않으므로 컨덕턴스를 기하와 \(\bar v\)만으로 계산할 수 있다. 얇은 벽의 구멍(넓이 \(A\))은 양쪽에서 들어오는 플럭스의 차이만큼 통과시키므로 \(Q = \tfrac14\bar vA\,(n_1-n_2)kT\), 곧</p>
+    <div class="formula">$$C_\text{구멍} = \tfrac14\bar v A,\qquad C_\text{긴 관} = \frac{\pi}{12}\,\bar v\,\frac{d^3}{L}\quad(L\gg d),\qquad \frac1{C_\text{짧은 관}}\approx\frac1{C_\text{구멍}}+\frac1{C_\text{긴 관}}$$<div class="where">20 °C 공기(\(\bar v = 463\) m/s)에서 \(C_\text{구멍} = 11.6\,A\) L/s(\(A\)는 cm²), \(C_\text{긴 관} = 12.1\,d^3/L\) L/s(\(d, L\)은 cm). 다른 기체·온도는 \(\sqrt{T/M}\)으로 비례시킨다(He는 공기의 2.7배). 마지막 식은 관 입구의 제한을 더한 근사다.</div></div>
+    <p>긴 관의 컨덕턴스가 \(d^3\)에 비례하고 \(L\)에 반비례한다는 점이 설계의 핵심이다. 관 지름을 반으로 줄이면 컨덕턴스는 1/8이 된다. 분자류의 컨덕턴스는 <b>압력과 무관</b>하다. 반면 점성류(대기압에 가까운 배기 초기)에서는 푸아죄유 흐름의 컨덕턴스 \(C = \pi d^4\bar P/128\eta L\)이 평균 압력 \(\bar P\)에 비례해(20 °C 공기: \(C\approx1.36\,d^4\bar P/L\) L/s, \(d, L\)은 cm, \(\bar P\)는 Pa) 수천 배 크다. 그래서 같은 포어라인도 배기 초기에는 아무 문제가 없다가 압력이 낮아지면 갑자기 병목이 된다.</p>
+    <p>부품을 직렬로 이으면 저항(\(1/C\))이 더해지고, 병렬이면 컨덕턴스가 더해진다. 배기 속도 \(S\)인 펌프를 컨덕턴스 \(C\)를 거쳐 챔버에 붙이면, 처리량이 같다는 조건 \(Q = S_\mathrm{eff}P = C(P-P_p) = SP_p\)에서</p>
+    <div class="formula">$$\frac{1}{C_\text{합}} = \sum_i\frac{1}{C_i}\ (\text{직렬}),\qquad C_\text{합} = \sum_i C_i\ (\text{병렬}),\qquad \frac{1}{S_\mathrm{eff}} = \frac1S+\frac1C\ \Rightarrow\ S_\mathrm{eff} = \frac{SC}{S+C}$$<div class="where">\(S_\mathrm{eff}\)를 <span class="term">유효 배기 속도</span><span class="en">(effective pumping speed)</span>라 한다. 언제나 \(S\)와 \(C\) 중 작은 것보다 작다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 260" role="img" aria-label="펌프에 관과 밸브를 차례로 붙일 때 유효 배기 속도가 줄어드는 과정">
+        <rect x="40" y="80" width="140" height="100" rx="8" fill="var(--surface)" stroke="var(--text-dim)"/><text class="t" x="110" y="135" text-anchor="middle">챔버</text>
+        <rect x="610" y="90" width="130" height="80" rx="8" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2"/><text class="t" x="675" y="125" text-anchor="middle" style="font-weight:700">펌프</text><text class="t" x="675" y="148" text-anchor="middle">S = 500 L/s</text>
+        <g data-only="1"><line x1="180" y1="130" x2="610" y2="130" stroke="var(--text-faint)" stroke-dasharray="6 5"/><text class="t" x="395" y="60" text-anchor="middle" style="font-weight:700">펌프를 챔버에 바로 붙이면 S_eff = 500 L/s</text></g>
+        <g data-step="2"><rect x="380" y="110" width="230" height="40" fill="var(--text-faint)" opacity="0.6"/><text class="t" x="495" y="135" text-anchor="middle">관 d 10 cm, L 30 cm</text><text class="t t-acc" x="495" y="180" text-anchor="middle">C관 = 284 L/s (N₂, 20 °C)</text></g>
+        <g data-step="3"><rect x="180" y="100" width="60" height="60" fill="var(--text-dim)" opacity="0.7"/><line x1="240" y1="130" x2="380" y2="130" stroke="var(--text-faint)" stroke-width="3"/><text class="t" x="210" y="190" text-anchor="middle">밸브</text><text class="t t-acc" x="210" y="212" text-anchor="middle">1000 L/s</text></g>
+        <g data-only="2" class="t"><text x="395" y="60" text-anchor="middle" style="font-weight:700">1/S_eff = 1/500 + 1/284 → S_eff = 181 L/s</text></g>
+        <g data-only="3" class="t"><text x="395" y="40" text-anchor="middle" style="font-weight:700">C합 = 1/(1/284 + 1/1000) = 221 L/s</text><text x="395" y="66" text-anchor="middle">S_eff = 1/(1/500 + 1/221) = 153 L/s</text></g>
+        <g data-only="4" class="t"><text x="395" y="40" text-anchor="middle" style="font-weight:700">펌프를 1000 L/s로 2배 키워도 S_eff = 181 L/s (+18%)</text><text x="395" y="66" text-anchor="middle" class="t-acc">병목은 컨덕턴스 — 관을 굵고 짧게</text><text x="395" y="240" text-anchor="middle" class="t-dim">S_eff &lt; min(S, C합) 은 언제나 성립</text></g>
+      </svg>
+      <ol class="steps-cap"><li>펌프를 챔버에 직접 붙이면 펌프 속도를 그대로 쓴다.</li><li>지름 10 cm, 길이 30 cm 관 하나가 유효 배기 속도를 36%로 깎는다.</li><li>밸브까지 직렬로 더하면 153 L/s로 줄어든다.</li><li>펌프만 키워서는 컨덕턴스 한계를 넘을 수 없다.</li></ol>
+      <figcaption>직렬 컨덕턴스와 유효 배기 속도. 저항을 더하듯 \(1/C\)를 더한다. 비싼 펌프를 사기 전에 펌프와 챔버 사이의 컨덕턴스를 먼저 본다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-cond">
+      <p>배기 속도 <span class="tn" data-var="S" data-min="10" data-max="3000" data-step="10" data-unit=" L/s">500</span>인 펌프를 지름 <span class="tn" data-var="d" data-min="1" data-max="40" data-step="0.5" data-unit=" cm">10</span>, 길이 <span class="tn" data-var="L" data-min="2" data-max="300" data-step="1" data-unit=" cm">30</span>인 관으로 챔버에 붙이면(N₂, 20 °C, 분자류) 관의 컨덕턴스는 <span class="tn-out" data-out="C"></span>, 유효 배기 속도는 <span class="tn-out" data-out="Se"></span>로 펌프 성능의 <span class="tn-out" data-out="pct"></span>만 쓴다.</p>
+    </div>
+    <figure class="mini" id="mini-seff">
+      <div class="mini-view" style="position:relative"><canvas id="cv-seff"></canvas><span class="hint top">흰 원을 끌어 펌프 속도 S 바꾸기</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>컨덕턴스 C <output id="seff-c-out"></output></span><input type="range" id="seff-c" min="20" max="1000" step="10" value="200"></label><span class="readout" id="seff-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>유효 배기 속도 \(S_\mathrm{eff} = SC/(S+C)\)(주황)와 \(S_\mathrm{eff} = S\)(점선), 상한 \(C\)(파란 선). 펌프 속도를 \(C\)만큼 키우면 \(S_\mathrm{eff}\)는 \(C/2\), 10배로 키워도 \(0.91\,C\)에 그친다. "돈으로 산 배기 속도"(\(S\))와 "챔버가 느끼는 배기 속도"(\(S_\mathrm{eff}\))의 차이를 끌어서 확인해 보라.</figcaption>
+    </figure>
+    <h3>배기 곡선과 탈기체</h3>
+    <p>부피 \(V\)인 챔버를 유효 배기 속도 \(S\)로 퍼낼 때, 챔버 안 기체량 \(PV\)의 변화는 나가는 처리량 \(SP\)과 벽·웨이퍼에서 나오는 기체 <span class="term">탈기체</span><span class="en">(outgassing)</span> 처리량 \(Q\)(누설·투과 포함)의 차이다.</p>
+    <div class="formula">$$V\frac{dP}{dt} = -SP + Q\quad\Rightarrow\quad P(t) = (P_0-P_u)\,e^{-t/\tau}+P_u,\qquad \tau = \frac VS,\qquad P_u = \frac QS$$<div class="where">\(\tau\)는 배기 시정수, \(P_u\)는 더 내려가지 않는 바닥, 곧 <span class="term">베이스 압력</span><span class="en">(base pressure)</span>이다. 대기압에서 \(P\)까지 걸리는 시간은 탈기체를 무시하면 \(t = \tau\ln(P_0/P)\) — 압력 한 자리(10배)마다 \(2.3\tau\)다.</div></div>
+    <p>실제 배기는 이 식보다 복잡하다. 대기압 근처는 점성류라 컨덕턴스가 크고, 건식 펌프의 배기 속도는 바닥 압력 근처에서 떨어진다. 고진공에서는 벽에 흡착된 물이 천천히 떨어져 나오는 탈기체가 대략 \(1/t\)로 줄어들며 배기 시간을 지배한다. 그래서 고진공 챔버는 벽을 데우는 베이킹으로 물을 몰아내고, 웨이퍼는 로드락에서 먼저 물을 뺀 뒤 들인다. 그래도 위의 단순식은 "시정수 \(V/S\)"와 "바닥 \(Q/S\)"라는 두 숫자로 거의 모든 현장 판단을 가능하게 한다.</p>
+    <div class="sim" id="sim-pump">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>배기 곡선을 손으로 끌어 펌프와 탈기체 읽기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-pump"></canvas><span class="hint top">기울기의 흰 원은 배기 속도, 바닥의 흰 원은 탈기체</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>챔버 부피 V <output id="pump-V-out"></output></span><input type="range" id="pump-V" min="10" max="200" step="5" value="50"></label>
+          <label class="check"><input type="checkbox" id="pump-noQ"> 탈기체 없는 곡선 겹치기</label>
+          <button class="btn" id="pump-reset" type="button">기본값</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">배기 속도 S</span><span class="v" id="pump-S">—</span></div>
+        <div class="stat"><span class="k">시정수 τ = V/S</span><span class="v" id="pump-tau">—</span></div>
+        <div class="stat"><span class="k">탈기체 Q</span><span class="v" id="pump-Q">—</span></div>
+        <div class="stat"><span class="k">베이스 P<sub>u</sub> = Q/S</span><span class="v" id="pump-Pu">—</span></div>
+        <div class="stat"><span class="k">10 mTorr 도달</span><span class="v" id="pump-t">—</span></div>
+      </div>
+      <div class="sim-note">세로축은 로그 압력(Torr), 가로축은 시간이다. 대기압에서 출발한 곡선 \(P(t) = (P_0-P_u)e^{-St/V}+P_u\)가 로그 축에서 직선으로 내려가다 베이스 압력에서 눕는다. 해볼 것: ① 기울기 손잡이를 끌어 \(S\)를 2배로 하면 직선의 기울기 \(-S/V\)가 2배가 되고 바닥은 절반이 된다. ② 바닥 손잡이를 10 mTorr 위로 올리면 아무리 기다려도 목표에 닿지 않는다 — 탈기체를 줄이거나 \(S\)를 키워야 한다. ③ 부피를 4배로 하면 직선은 4배 느리지만 바닥은 그대로다.</div>
+    </div>
+    <div class="example" data-title="터보 펌프와 연결 관의 유효 배기 속도">
+      <p>배기 속도 500 L/s(N₂)인 터보 펌프를 지름 10 cm, 길이 30 cm인 관으로 챔버에 붙였다. 20 °C의 N₂ 분자류에서 (a) 관 입구(구멍)와 긴 관의 컨덕턴스, (b) 짧은 관의 컨덕턴스, (c) 유효 배기 속도를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\bar v = \sqrt{8RT/\pi M}\)로 \(C_\text{구멍} = \tfrac14\bar vA\), \(C_\text{긴 관} = \tfrac{\pi}{12}\bar v d^3/L\)을 구해 직렬 합성한 뒤 \(S_\mathrm{eff} = SC/(S+C)\).</div>
+        <div class="step"><b>풀이</b> \(\bar v = \sqrt{8\times8.314\times293.15/(\pi\times0.028014)} = 470.7\) m/s. (a) \(A = \pi(0.05)^2 = 7.854\times10^{-3}\) m², \(C_\text{구멍} = 0.25\times470.7\times7.854\times10^{-3} = 0.924\) m³/s = 924 L/s. \(C_\text{긴 관} = (\pi/12)\times470.7\times10^{-3}/0.30 = 0.411\) m³/s = 411 L/s. (b) \(1/C = 1/924+1/411\) → \(C = 284\) L/s. (c) \(S_\mathrm{eff} = 500\times284/784 = 181\) L/s.</div>
+        <div class="answer">(a) 924 L/s, 411 L/s (b) 284 L/s (c) 181 L/s</div>
+        <div class="step"><b>검토</b> 관의 길이가 지름의 3배밖에 안 되는데도 펌프 성능의 36%만 남았다. 고진공 펌프를 챔버에 바짝 붙이고(게이트 밸브 하나만 두고) 입구를 펌프 구경만큼 크게 내는 이유다. 수소처럼 가벼운 기체에서는 \(C\)가 \(\sqrt{28/2}\)배 크지만 터보 펌프의 수소 배기 속도는 오히려 작아 계산을 다시 해야 한다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="로드락 배기 시간과 베이스 압력">
+      <p>부피 30 L인 로드락을 유효 배기 속도 10 L/s(일정하다고 본다)로 대기압(1.0×10⁵ Pa)에서 퍼낸다. (a) 시정수와 10 Pa까지 걸리는 시간(탈기체 무시)을 구하라. (b) 웨이퍼·벽의 탈기체가 \(Q = 2.0\times10^{-3}\) Pa·m³/s이면 베이스 압력과 0.25 Pa까지 걸리는 시간은? (c) 0.1 Pa에는 도달할 수 있는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\tau = V/S\), \(t = \tau\ln\frac{P_0-P_u}{P-P_u}\), \(P_u = Q/S\).</div>
+        <div class="step"><b>풀이</b> (a) \(\tau = 0.030/0.010 = 3.0\) s. \(t = 3.0\ln(10^5/10) = 3.0\times9.21 = 27.6\) s. (b) \(P_u = 2.0\times10^{-3}/0.010 = 0.20\) Pa. \(t = 3.0\ln\frac{10^5-0.2}{0.25-0.2} = 3.0\ln(2.0\times10^6) = 43.5\) s (탈기체가 없으면 \(3.0\ln(4\times10^5) = 38.7\) s). (c) 0.1 Pa는 베이스 압력 0.2 Pa보다 낮으므로 이 펌프로는 도달할 수 없다.</div>
+        <div class="answer">(a) 3.0 s, 27.6 s (b) 0.20 Pa, 43.5 s (c) 불가능</div>
+        <div class="step"><b>검토</b> 대기압에서 10 Pa까지 네 자리를 내려오는 데는 30초가 안 걸리지만, 베이스 근처의 마지막 몇십 %에서 시간이 크게 늘어난다. 목표 압력이 베이스의 몇 배 이상이어야 배기 시간이 예측 가능하다. 실제 로드락은 처음 몇 초를 천천히 빼서(소프트 펌핑) 단열 팽창 냉각으로 수증기가 맺히고 파티클이 날리는 것을 막는다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-design">
+      <div class="sim-head"><span class="sim-tag">GAME</span><h3>로드락 배기 설계: 40초 안에 10 mTorr</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-design"></canvas><span class="hint top">펌프 아이콘을 좌우로 끌어 포어라인 길이 바꾸기</span></div>
+        <div class="sim-controls">
+          <p style="margin:0;font-size:14px">부피 40 L의 로드락(탈기체 \(2\times10^{-3}\) Pa·m³/s)을 대기압에서 <b>10 mTorr까지 40초 안에</b> 퍼내야 한다. 건식 펌프의 크기, 포어라인 지름과 길이를 고르되 <b>비용을 가장 적게</b>. 펌프를 클린룸 안(4 m 미만)에 두면 자리 값이 든다.</p>
+          <div class="ctrl"><span>건식 펌프 S₀</span><div class="seg" id="des-S"><button data-value="8">8 L/s</button><button data-value="16">16</button><button data-value="30" class="on">30</button><button data-value="60">60</button></div></div>
+          <div class="ctrl"><span>포어라인 지름</span><div class="seg" id="des-d"><button data-value="16">16 mm</button><button data-value="25" class="on">25</button><button data-value="40">40</button><button data-value="50">50</button><button data-value="63">63</button></div></div>
+          <label class="check"><input type="checkbox" id="des-opt"> 최적 설계 보기(정답 공개)</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">10 mTorr 도달 시간</span><span class="v" id="des-t">—</span></div>
+        <div class="stat"><span class="k">베이스 압력</span><span class="v" id="des-base">—</span></div>
+        <div class="stat"><span class="k">10 mTorr에서 S<sub>eff</sub></span><span class="v" id="des-seff">—</span></div>
+        <div class="stat"><span class="k">비용</span><span class="v" id="des-cost">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="des-ok">—</span></div>
+      </div>
+      <div class="sim-note">모형: 펌프 배기 속도 \(S(P_p) = S_0(1-P_\mathrm{ult}/P_p)\)(바닥 \(P_\mathrm{ult}\) = 0.1 Pa), 포어라인 컨덕턴스는 분자류(짧은 관)와 점성류(푸아죄유, 관 평균 압력)의 합으로 근사하고, 매 순간 \(C(P-P_p) = S(P_p)P_p\)를 풀어 \(V\,dP/dt = Q - S(P_p)P_p\)를 적분한다. 비용(임의 단위): 펌프 8/16/30/60 L/s = 1.0/1.5/2.4/4.0, 관 0.0025 × 지름[mm] × 길이[m], 클린룸 자리 1.5. 해볼 것: ① 30 L/s 펌프에 25 mm 관을 6 m 달면 아무리 기다려도 안 된다 — 왜? 10 mTorr에서 \(S_\mathrm{eff}\)를 보라. ② 펌프를 60 L/s로 키우는 것과 관을 굵게 하는 것 중 무엇이 싼가? ③ 성공하면 ★, 최소 비용의 5% 안이면 ★★★.</div>
+    </div>
+    <div class="callout semi"><strong>로드락은 진공과 대기의 경계다</strong><p>로드락은 웨이퍼 한 로트가 들어올 때마다 대기압에서 수십 mTorr까지 퍼내고, 나갈 때 질소로 다시 채운다(벤트). 이 주기가 장비 처리량을 정하므로 배기 시간 몇 초가 곧 생산성이다. 펌프는 보통 서브팹에 두어 포어라인이 길어지는데, 낮은 압력에서는 분자류 컨덕턴스 \(\propto d^3/L\) 때문에 관 지름이 결정적이다. 수증기는 탈기체의 주범이라 FOUP에서 들어온 웨이퍼의 습기가 베이스 압력을 올린다. 벤트·퍼지 기체의 순도와, 퍼지를 몇 번 반복해야 불순물이 충분히 희석되는지는 → <a href="https://semi.euiyun.com/infra/chapters/gas.html">InfraBook · 가스 공급(퍼지 횟수)</a></p></div>
+    <div class="drill" id="drill-cond" data-title="컨덕턴스와 배기 시간 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="gauges">
+    <h2>진공 게이지</h2>
+    <p>대기압에서 10⁻¹⁰ Torr까지 열세 자리를 하나의 게이지로 잴 수는 없다. 압력을 재는 방법은 크게 셋이다. <b>힘</b>(격막이 받는 \(P\times A\))을 직접 재는 방법은 기체 종류와 무관하지만 압력이 낮으면 힘이 너무 작다. <b>열전달</b>(기체가 뜨거운 선에서 가져가는 열)은 5절에서 본 대로 분자류 영역에서 압력에 비례한다. <b>이온화</b>(전자로 때려 만든 이온의 전류)는 수밀도 \(n = P/kT\)에 비례해 가장 낮은 압력까지 잰다. 뒤의 두 방법은 기체마다 감도가 다르다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>게이지</th><th>원리</th><th class="num">범위 (Torr)</th><th>기체 의존</th><th>팹에서의 쓰임</th></tr></thead>
+      <tbody>
+        <tr><td><span class="term">정전 용량 압력계</span><span class="en">(capacitance manometer, CDG)</span></td><td>격막의 휨 → 정전 용량</td><td class="num">헤드마다 4자리 (1000 Torr 헤드 0.1–1000, 1 Torr 헤드 10⁻⁴–1)</td><td>없음(절대압)</td><td>공정 압력 측정·제어</td></tr>
+        <tr><td><span class="term">피라니 게이지</span><span class="en">(Pirani gauge)</span></td><td>가열선의 열손실(열전도)</td><td class="num">10⁻³–10 (대류형은 ~1000)</td><td>있음</td><td>로드락, 포어라인, 러핑</td></tr>
+        <tr><td><span class="term">전리 게이지</span><span class="en">(ionization gauge)</span> — 열음극(B–A)</td><td>열전자가 만든 이온 전류 \(I_+ = S_gKI_eP\)</td><td class="num">10⁻¹⁰–10⁻³</td><td>있음(감도 계수)</td><td>베이스 압력, 빔 라인</td></tr>
+        <tr><td>냉음극(페닝·역마그네트론)</td><td>자기장 속 방전 전류</td><td class="num">10⁻⁹–10⁻²</td><td>있음</td><td>필라멘트 없이 견고</td></tr>
+        <tr><td>잔류 기체 분석기(RGA)</td><td>사중극 질량 분석</td><td class="num">분압 &lt; 10⁻⁴</td><td>성분별</td><td>누설·오염 진단</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="로그 압력 축 위에 게이지별 측정 범위를 막대로 나타낸 그림">
+        <line x1="150" y1="230" x2="770" y2="230" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <g class="t t-dim" text-anchor="middle">
+          <text x="150" y="250">10⁻¹²</text><text x="253.3" y="250">10⁻⁹</text><text x="356.7" y="250">10⁻⁶</text><text x="460" y="250">10⁻³</text><text x="563.3" y="250">1</text><text x="666.7" y="250">10³</text><text x="770" y="266" text-anchor="end">압력 (Torr)</text>
+        </g>
+        <g stroke="var(--text-faint)"><line x1="253.3" y1="225" x2="253.3" y2="235"/><line x1="356.7" y1="225" x2="356.7" y2="235"/><line x1="460" y1="225" x2="460" y2="235"/><line x1="563.3" y1="225" x2="563.3" y2="235"/><line x1="666.7" y1="225" x2="666.7" y2="235"/></g>
+        <g class="t" text-anchor="end">
+          <text x="140" y="44">CDG (헤드 3종)</text><text x="140" y="76">피라니</text><text x="140" y="108">대류형 피라니</text><text x="140" y="140">냉음극</text><text x="140" y="172">열음극 B–A</text><text x="140" y="204">RGA (분압)</text>
+        </g>
+        <rect x="425.6" y="32" width="275.6" height="16" rx="4" fill="var(--accent)" opacity="0.8"/>
+        <rect x="460" y="64" width="137.8" height="16" rx="4" fill="var(--accent)" opacity="0.8"/>
+        <rect x="460" y="96" width="206.7" height="16" rx="4" fill="var(--accent)" opacity="0.5"/>
+        <rect x="253.3" y="128" width="241.1" height="16" rx="4" fill="var(--accent-2)" opacity="0.8"/>
+        <rect x="218.9" y="160" width="241.1" height="16" rx="4" fill="var(--accent-2)" opacity="0.8"/>
+        <rect x="150" y="192" width="275.6" height="16" rx="4" fill="var(--accent-2)" opacity="0.5"/>
+        <g class="t t-dim" text-anchor="middle"><text x="201" y="20">초고진공</text><text x="356.7" y="20">고진공</text><text x="540" y="20">중진공</text><text x="700" y="20">저진공</text></g>
+        <g stroke="var(--text-faint)" stroke-dasharray="3 4"><line x1="253.3" y1="24" x2="253.3" y2="225"/><line x1="460" y1="24" x2="460" y2="225"/><line x1="611" y1="24" x2="611" y2="225"/></g>
+      </svg>
+      <figcaption>게이지별 측정 범위(대표값). 주황은 힘·열전달, 파랑은 이온화 방식이다. 진공 영역의 이름은 저진공(760–25 Torr), 중진공(25–10⁻³), 고진공(10⁻³–10⁻⁹), 초고진공(10⁻⁹ 이하)으로 나누는 미국 진공 학회 구분을 따랐다. 한 장비에 보통 두세 종류가 함께 달린다.</figcaption>
+    </figure>
+    <p>피라니 게이지의 가는 선(수 µm 굵기)을 일정 온도로 데우면, 선이 잃는 열은 복사·지지대 전도(일정) + 기체 전도다. 기체 전도는 5절의 그림 그대로, 선과 벽 사이 거리보다 \(\lambda\)가 클 때 압력에 비례하고 \(\lambda\)가 작아지면 열전도도 \(\kappa\)에서 포화한다. 그래서 피라니는 \(10^{-3}\)–10 Torr에서 민감하다. 문제는 기체 종류다. 질소로 보정한 피라니에 아르곤을 넣으면 아르곤은 무겁고(느리고) 열전도도가 작아 열을 덜 가져가므로 <b>실제보다 낮게</b> 읽는다.</p>
+    <div class="predict" data-for="sim-gauge">
+      <p>질소로 보정한 피라니 게이지만 보며 챔버를 아르곤으로 벤트(채움)하고 있다. 챔버가 실제로 대기압(760 Torr)에 이르렀을 때 피라니는 얼마를 가리킬까?</p>
+      <div class="opts"><button class="opt">760 Torr — 압력은 압력이니까</button><button class="opt">범위를 넘어 최댓값에 고정된다</button><button class="opt" data-correct>20 Torr 안팎 — 아직 한참 남은 것처럼 보인다</button><button class="opt">0 근처</button></div>
+      <div class="quiz-exp">아르곤의 열전도도는 질소의 0.68배라 포화된 열손실도 0.68배다. 질소 보정 곡선에서 이 열손실은 약 20 Torr에 해당한다. 운전자가 벤트를 계속하면 챔버가 대기압을 넘어 과압이 되고, 창이나 밸브가 상할 수 있다. 벤트 끝은 기체와 무관한 CDG나 압력 스위치로 판단한다.</div>
+    </div>
+    <div class="sim" id="sim-gauge">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>세 게이지로 같은 챔버 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-gauge"></canvas><span class="hint top">흰 원을 좌우로 끌어 실제 압력 바꾸기</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>챔버 기체</span><div class="seg" id="gauge-gas"><button data-value="N2" class="on">N₂</button><button data-value="Ar">Ar</button><button data-value="He">He</button><button data-value="H2">H₂</button></div></div>
+          <p class="kv-note">게이지는 모두 N₂로 보정되어 있다.</p>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">실제 압력</span><span class="v" id="gauge-true">—</span></div>
+        <div class="stat"><span class="k">CDG (1000 Torr 헤드)</span><span class="v" id="gauge-cdg">—</span></div>
+        <div class="stat"><span class="k">CDG (1 Torr 헤드)</span><span class="v" id="gauge-cdg1">—</span></div>
+        <div class="stat"><span class="k">피라니</span><span class="v" id="gauge-pir">—</span></div>
+        <div class="stat"><span class="k">이온 게이지</span><span class="v" id="gauge-ion">—</span></div>
+      </div>
+      <div class="sim-note">위: 피라니 선의 기체 열손실(N₂ 포화값으로 규격화한 로그 눈금, 빨간 띠는 선의 복사·전도 손실 요동에 묻혀 잴 수 없는 바닥) — 파랑이 N₂ 보정 곡선, 주황이 지금 기체다. 게이지는 주황 곡선의 높이를 파란 곡선에서 거꾸로 읽어 압력으로 보인다(점선 화살표). 아래: 게이지별 범위와 현재 압력. 모형은 \(H = \kappa_g\,x/(1+x)\), \(x = a_gP/(\kappa_gP_t)\)로, 저압 감도 \(a_g\)와 열전도도 비 \(\kappa_g\)는 대표값이다(실제 보정은 제조사 표). 이온 게이지 감도 계수 \(S_g\): Ar 1.29, He 0.18, H₂ 0.46. 해볼 것: ① N₂에서 세 게이지가 겹치는 구간을 찾는다. ② Ar에서 0.1 Torr와 760 Torr일 때 피라니 값을 읽는다. ③ He는 이온 게이지가 실제의 5분의 1 정도로 읽는다 — 헬륨 누설 검사 때 주의할 점이다.</div>
+    </div>
+    <div class="example" data-title="기체 감도 보정">
+      <p>(a) 질소로 보정한 B–A 이온 게이지가 순수 아르곤 분위기에서 \(2.0\times10^{-6}\) Torr를 가리킨다. Ar의 감도 계수는 1.29다. 실제 압력은? (b) 같은 챔버의 피라니가 질소 보정이고, 저압 영역에서 Ar에 대한 상대 감도가 약 0.63이라면 실제 0.10 Torr의 아르곤에서 피라니는 대략 얼마를 가리키는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 이온 게이지의 지시값 = \(S_g\times\)실제 압력. 피라니도 분자류 영역에서는 지시값 ≈ \(a_g\times\)실제 압력.</div>
+        <div class="step"><b>풀이</b> (a) \(P = 2.0\times10^{-6}/1.29 = 1.55\times10^{-6}\) Torr. (b) 지시값 ≈ \(0.63\times0.10 = 0.063\) Torr. (이 장의 모형으로 정확히 계산하면 0.0628 Torr.)</div>
+        <div class="answer">(a) \(1.55\times10^{-6}\) Torr (b) 약 0.063 Torr</div>
+        <div class="step"><b>검토</b> 아르곤은 이온화 단면적이 질소보다 커서 이온 게이지에서는 높게, 열을 덜 가져가서 피라니에서는 낮게 읽힌다. 같은 기체가 게이지마다 반대로 치우친다. 공정 압력을 CDG로 제어하는 이유다(<a href="https://semi.euiyun.com/etch/chapters/reactors.html">EtchBook · 반응기</a>의 압력 제어).</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ 요약 -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>맥스웰–볼츠만 분포</b> \(f(v) = 4\pi(m/2\pi kT)^{3/2}v^2e^{-mv^2/2kT}\)는 성분별 정규 분포(분산 \(kT/m\))와 껍질 부피 \(4\pi v^2\)의 곱이다. \(v_\mathrm{mp} = \sqrt{2kT/m}\), \(\bar v = \sqrt{8kT/\pi m}\), \(v_\mathrm{rms} = \sqrt{3kT/m}\)(비 1 : 1.128 : 1.225). \(v^*\) 이상 비율 \(\operatorname{erfc}x+\tfrac2{\sqrt\pi}xe^{-x^2}\). 무작위 충돌은 어떤 처음 분포든 이 분포로 이끈다.</li>
+      <li><b>압력과 플럭스</b>: \(P = nm\langle v_x^2\rangle = nkT\), \(\Phi = \tfrac14n\bar v = P/\sqrt{2\pi mkT}\) (\(=3.51\times10^{22}P_\mathrm{Torr}/\sqrt{MT}\) cm⁻²s⁻¹). 단분자층 시간 \(\tau = n_s/s\Phi\): 10⁻⁶ Torr에서 약 2–3초(1 랭뮤어 ≈ 한 층).</li>
+      <li><b>평균 자유 행로</b> \(\lambda = kT/\sqrt2\pi d^2P\)(공기 상온 \(\lambda[\mathrm{cm}]\approx5\times10^{-3}/P[\mathrm{Torr}]\)), 자유 행로는 지수 분포. <b>크누센 수</b> \(\mathrm{Kn} = \lambda/L\): 작으면 점성류, 크면 분자류. 식각·스퍼터의 mTorr 압력은 시스·간격에 대한 Kn으로 정해진다.</li>
+      <li><b>분출</b>(구멍 ≪ \(\lambda\)): 속도 \(\Phi A\propto1/\sqrt M\)(그레이엄), 분리 계수 \(\alpha = \sqrt{M_2/M_1}\), 단 수 \(n = \ln(R_n/R_0)/\ln\alpha\). 구멍이 \(\lambda\)보다 크면 점성류가 되어 분리가 사라진다.</li>
+      <li><b>수송 계수</b>: \(\eta = \tfrac13nm\bar v\lambda\), \(\kappa = \tfrac13nc_v\bar v\lambda\), \(D = \tfrac13\bar v\lambda\). \(n\lambda\)가 상수라 \(\eta,\kappa\)는 압력과 무관하고 \(\sqrt T\)에 비례하며, \(D\propto T^{3/2}/P\). \(\lambda\)가 간격보다 커지면 전달이 압력에 비례한다(피라니, 정전척 He 냉각, 진공 단열).</li>
+      <li><b>컨덕턴스와 배기</b>: 분자류 \(C_\text{구멍} = \tfrac14\bar vA\)(공기 11.6 L/s·cm²), \(C_\text{긴 관} = \tfrac{\pi}{12}\bar vd^3/L\)(12.1 \(d^3/L\) L/s), 직렬은 \(1/C\)의 합, \(S_\mathrm{eff} = SC/(S+C)<\min(S,C)\). 배기 곡선 \(P = (P_0-P_u)e^{-St/V}+P_u\), 시정수 \(V/S\), 베이스 \(Q/S\).</li>
+      <li><b>게이지</b>: CDG(힘, 기체 무관, 공정 제어), 피라니(열전도, 10⁻³–10 Torr, 기체 의존 — Ar 벤트 과압 주의), 이온 게이지(10⁻¹⁰–10⁻³ Torr, 감도 계수로 보정). 범위가 겹치게 두세 종류를 함께 쓴다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 문제 -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>따로 말이 없으면 \(T = 300\) K, \(k = 1.381\times10^{-23}\) J/K, 1 Torr = 133.32 Pa이고, 분자 지름은 He 2.18, N₂ 3.78, Ar 3.67, H₂O 4.68 Å을 쓴다. 답이 ±1% 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="대표 속력" data-answer="1367" data-label="v_rms =" data-unit="m/s">
+        <div class="prob-q"><p>300 K 헬륨(4.0026 g/mol)의 제곱 평균 제곱근 속력을 구하라.</p></div>
+        <div class="prob-sol"><p>\(v_\mathrm{rms} = \sqrt{3RT/M} = \sqrt{3\times8.314\times300/0.0040026} = 1367\) m/s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="벽 충돌 플럭스">
+        <div class="prob-q"><p>같은 온도·같은 압력의 H₂, N₂, Ar, Xe 중 단위 넓이의 벽에 매초 가장 많이 부딪히는 분자는?</p></div>
+        <div class="prob-choices"><button data-correct>H₂</button><button>N₂</button><button>Xe</button><button>모두 같다 — 같은 압력이니까</button></div>
+        <div class="prob-sol"><p>같은 \(P, T\)이면 수밀도 \(n\)은 같고, \(\Phi = \tfrac14n\bar v\propto1/\sqrt m\)이다. 가장 가벼운 H₂가 가장 자주 때린다(N₂의 3.7배). 압력이 같은 것은 무거운 분자가 덜 자주 부딪히는 대신 한 번에 운동량을 더 많이 주기 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="분포의 꼬리" data-answer="0.0460" data-label="비율 =">
+        <div class="prob-q"><p>맥스웰–볼츠만 분포에서 속력이 최빈 속력의 2배를 넘는 분자의 비율을 구하라. 이 비율은 기체 종류와 온도에 따라 달라지는가?</p></div>
+        <div class="prob-hint">\(x = 2\)를 \(\operatorname{erfc}(x) + \tfrac2{\sqrt\pi}xe^{-x^2}\)에 넣는다. \(\operatorname{erfc}(2) = 0.004678\).</div>
+        <div class="prob-sol"><p>\(0.004678 + 1.1284\times2\times e^{-4} = 0.004678 + 0.04133 = 0.0460\). \(x = v/v_\mathrm{mp}\)로만 쓰여 있으므로 기체와 온도에 무관하다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수밀도" data-answer="3.22e19" data-label="n =" data-unit="m⁻³">
+        <div class="prob-q"><p>300 K, 1 mTorr의 기체 수밀도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(n = P/kT = 0.13332/(1.381\times10^{-23}\times300) = 3.22\times10^{19}\) m⁻³ (= 3.2×10¹³ cm⁻³).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="단분자층 시간" data-answer="4.78e13; 20.9" data-label="Φ =; τ =" data-unit="cm⁻²s⁻¹; s">
+        <div class="prob-q"><p>300 K, \(1.0\times10^{-7}\) Torr의 수증기(18.015 g/mol)가 실리콘 표면에 부딪히는 플럭스(cm⁻²s⁻¹)와, 부착 계수 1·표면 자리 \(10^{15}\) cm⁻²일 때 단분자층 형성 시간을 구하라.</p></div>
+        <div class="prob-hint">실용식 \(\Phi = 3.51\times10^{22}P[\mathrm{Torr}]/\sqrt{MT}\).</div>
+        <div class="prob-sol"><p>\(\Phi = 3.513\times10^{22}\times10^{-7}/\sqrt{18.015\times300} = 3.513\times10^{15}/73.51 = 4.78\times10^{13}\) cm⁻²s⁻¹. \(\tau = 10^{15}/4.78\times10^{13} = 20.9\) s.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="평균 자유 행로" data-answer="0.489" data-label="λ =" data-unit="cm">
+        <div class="prob-q"><p>300 K, 10 mTorr의 N₂ 속 평균 자유 행로를 cm로 구하라.</p></div>
+        <div class="prob-sol"><p>\(\lambda = kT/(\sqrt2\pi d^2P) = 4.142\times10^{-21}/(1.4142\times\pi\times1.4288\times10^{-19}\times1.3332) = 4.89\times10^{-3}\) m = 0.489 cm. 경험칙 \(5\times10^{-3}/0.01 = 0.5\) cm와 맞는다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="크누센 수" data-answer="0.519" data-label="P =" data-unit="mTorr">
+        <div class="prob-q"><p>지름 10 cm 관 속 300 K 아르곤이 \(\mathrm{Kn} = \lambda/d = 1\)이 되는 압력을 mTorr로 구하라.</p></div>
+        <div class="prob-sol"><p>\(P = kT/(\sqrt2\pi d_\mathrm{Ar}^2\lambda) = 4.142\times10^{-21}/(5.984\times10^{-19}\times0.10) = 0.0692\) Pa = 0.519 mTorr. 이보다 낮으면 관 속 흐름은 분자류다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="흐름 영역">
+        <div class="prob-q"><p>300 K, 1 Torr의 질소가 지름 1 cm 관을 흐른다. 흐름 영역은?</p></div>
+        <div class="prob-choices"><button data-correct>점성류 (Kn ≈ 0.005)</button><button>전이류 (Kn ≈ 0.1)</button><button>분자류 (Kn ≈ 5)</button><button>압력만으로는 알 수 없다</button></div>
+        <div class="prob-sol"><p>1 Torr에서 \(\lambda\approx49\) µm, \(\mathrm{Kn} = 0.0049/1 = 0.0049<0.01\)이므로 점성류다. 로드락 배기 초반 대부분이 점성류인 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="그레이엄 법칙" data-answer="3.16" data-label="비 =">
+        <div class="prob-q"><p>같은 온도·압력의 He(4.0026 g/mol)와 Ar(39.948 g/mol)이 같은 작은 구멍으로 분출한다. He의 분출 속도는 Ar의 몇 배인가?</p></div>
+        <div class="prob-sol"><p>\(\sqrt{39.948/4.0026} = \sqrt{9.981} = 3.16\)배.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="다단 분리" data-answer="926" data-label="n =" data-unit="단">
+        <div class="prob-q"><p>천연 실리콘의 ²⁸Si 비율은 92.23%다. ²⁸SiF₄(103.97 g/mol)와 그보다 1 g/mol 무거운 SiF₄(104.97 g/mol, 다른 동위 원소를 모두 이것으로 본다)를 분출로 분리해 ²⁸Si를 99.9%로 농축하려면 이상적인 단이 몇 개 필요한가?</p></div>
+        <div class="prob-hint">\(R = x/(1-x)\): \(R_0 = 0.9223/0.0777\), \(R_n = 0.999/0.001\).</div>
+        <div class="prob-sol"><p>\(\alpha = \sqrt{104.97/103.97} = 1.004798\), \(\ln\alpha = 4.787\times10^{-3}\). \(R_0 = 11.87\), \(R_n = 999\), \(\ln(R_n/R_0) = \ln84.16 = 4.433\). \(n = 4.433/4.787\times10^{-3} = 926\)단. 실제로는 분리 계수가 큰 원심 분리를 쓴다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="점성 계수" data-answer="21.7" data-label="η =" data-unit="µPa·s">
+        <div class="prob-q"><p>강체 구 이론 \(\eta = \tfrac5{16}\sqrt{\pi mkT}/\pi d^2\)로 300 K 아르곤(39.948 g/mol, \(d = 3.67\) Å)의 점성 계수를 µPa·s로 구하라.</p></div>
+        <div class="prob-sol"><p>\(m = 6.634\times10^{-26}\) kg, \(\sqrt{\pi mkT} = \sqrt{\pi\times6.634\times10^{-26}\times4.142\times10^{-21}} = 2.939\times10^{-23}\). \(\pi d^2 = 4.231\times10^{-19}\). \(\eta = 0.3125\times2.939\times10^{-23}/4.231\times10^{-19} = 2.17\times10^{-5}\) Pa·s = 21.7 µPa·s (실측 22.7).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="구멍 컨덕턴스" data-answer="231" data-label="C =" data-unit="L/s">
+        <div class="prob-q"><p>20 °C의 N₂에 대해 지름 5.0 cm인 얇은 구멍의 분자류 컨덕턴스를 L/s로 구하라.</p></div>
+        <div class="prob-sol"><p>\(\bar v = 470.7\) m/s, \(A = \pi(0.025)^2 = 1.963\times10^{-3}\) m². \(C = \tfrac14\bar vA = 0.231\) m³/s = 231 L/s.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="포어라인 병목" data-answer="0.947; 0.918" data-label="C =; S_eff =" data-unit="L/s; L/s">
+        <div class="prob-q"><p>배기 속도 30 L/s인 펌프를 지름 2.5 cm, 길이 2.0 m인 관으로 연결했다. 20 °C 공기의 분자류에서 긴 관 공식 \(C = 12.1\,d^3/L\) L/s(\(d, L\)은 cm)로 관의 컨덕턴스와 유효 배기 속도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(C = 12.12\times2.5^3/200 = 12.12\times15.625/200 = 0.947\) L/s. \(S_\mathrm{eff} = 30\times0.947/30.947 = 0.918\) L/s. 펌프 성능의 3%만 쓴다. 저압에서 가는 관은 사실상 막힌 관이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="배기 시간" data-answer="0.00500; 28.8" data-label="P_u =; t =" data-unit="Pa; s">
+        <div class="prob-q"><p>부피 50 L인 챔버를 일정한 유효 배기 속도 20 L/s로 \(1.0\times10^5\) Pa에서 퍼낸다. 탈기체가 0.10 Pa·L/s이면 베이스 압력과 1.0 Pa까지 걸리는 시간을 구하라.</p></div>
+        <div class="prob-sol"><p>\(P_u = Q/S = 0.10/20 = 0.0050\) Pa. \(\tau = 50/20 = 2.5\) s, \(t = 2.5\ln\frac{10^5-0.005}{1-0.005} = 2.5\ln(1.005\times10^5) = 2.5\times11.518 = 28.8\) s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="게이지 고르기">
+        <div class="prob-q"><p>이온 주입기 빔 라인의 베이스 압력 \(5\times10^{-8}\) Torr를 확인하려 한다. 알맞은 게이지는?</p></div>
+        <div class="prob-choices"><button>피라니 게이지</button><button>1000 Torr 헤드 CDG</button><button data-correct>열음극 이온 게이지</button><button>부르동관 압력계</button></div>
+        <div class="prob-sol"><p>10⁻⁸ Torr대는 이온화 방식만 잰다(B–A 10⁻¹⁰–10⁻³ Torr). 피라니의 하한은 10⁻³ Torr, CDG 1000 Torr 헤드는 0.1 Torr 근처가 하한이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="감도 계수" data-answer="2.0e-6" data-label="P =" data-unit="Torr">
+        <div class="prob-q"><p>질소 보정 이온 게이지가 헬륨만 있는 챔버에서 \(3.6\times10^{-7}\) Torr를 가리킨다. He 감도 계수가 0.18이면 실제 압력은?</p></div>
+        <div class="prob-sol"><p>\(P = 3.6\times10^{-7}/0.18 = 2.0\times10^{-6}\) Torr. 헬륨은 이온화가 어려워 실제의 18%로만 읽힌다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 퀴즈 -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>연속체 영역(\(\mathrm{Kn}\ll1\))에서 기체의 점성 계수가 압력과 무관한 이유는?</p><div class="opts">
+        <button class="opt">압력이 낮아도 분자의 속력이 그대로이기 때문</button><button class="opt" data-correct>운동량을 나르는 분자 수(\(\propto P\))와 한 분자가 나르는 거리(\(\lambda\propto1/P\))가 상쇄되기 때문</button><button class="opt">점성은 분자 지름만으로 정해지기 때문</button><button class="opt">사실은 압력에 비례하지만 변화가 작아서</button>
+      </div><div class="quiz-exp">\(\eta = \tfrac13nm\bar v\lambda\)에서 \(n\lambda = 1/\sqrt2\pi d^2\)이다. 이 상쇄는 \(\lambda\)가 장치 크기보다 작을 때만 성립하고, 분자류에서는 깨져 전달이 압력에 비례한다.</div></div>
+      <div class="quiz-q"><p>압력을 일정하게 두고 기체의 절대 온도를 두 배로 올리면 평균 자유 행로는?</p><div class="opts">
+        <button class="opt">그대로</button><button class="opt">√2배</button><button class="opt" data-correct>2배</button><button class="opt">절반</button>
+      </div><div class="quiz-exp">\(\lambda = 1/\sqrt2n\pi d^2\)이고 압력이 일정하면 \(n = P/kT\)가 절반이 된다. 따라서 \(\lambda = kT/\sqrt2\pi d^2P\)는 두 배다. (부피를 고정하고 데우면 \(n\)이 그대로라 \(\lambda\)도 그대로다.)</div></div>
+      <div class="quiz-q"><p>배기 속도 \(S\)인 펌프에 컨덕턴스가 정확히 \(S\)인 관을 달았다. 유효 배기 속도는?</p><div class="opts">
+        <button class="opt">\(2S\)</button><button class="opt">\(S\)</button><button class="opt" data-correct>\(S/2\)</button><button class="opt">\(S/4\)</button>
+      </div><div class="quiz-exp">\(1/S_\mathrm{eff} = 1/S+1/S = 2/S\). 직렬 저항처럼 반이 된다. 펌프 성능을 80% 이상 쓰려면 \(C\ge4S\)여야 한다.</div></div>
+      <div class="quiz-q"><p>구멍이 평균 자유 행로보다 훨씬 큰 칸막이를 지나 기체가 흘러갈 때 동위 원소 분리가 거의 일어나지 않는 이유는?</p><div class="opts">
+        <button class="opt">큰 구멍에서는 분자의 온도가 내려가서</button><button class="opt" data-correct>분자들이 서로 부딪히며 덩어리로 흘러(점성류) 가벼운 분자와 무거운 분자가 같은 속도로 실려 가기 때문</button><button class="opt">무거운 분자가 더 빨라져서</button><button class="opt">구멍이 크면 플럭스가 0이 되어서</button>
+      </div><div class="quiz-exp">분출의 분리는 "구멍에 찾아오는 빈도가 \(\bar v\)에 비례"하는 데서 온다. \(\mathrm{Kn}\ll1\)이면 압력 차가 기체 전체를 흐름 속도로 밀고, 그 흐름이 성분을 가리지 않는다.</div></div>
+      <div class="quiz-q"><p>질소 보정 피라니 게이지를 아르곤 벤트의 끝 판단에 쓰면 위험한 이유는?</p><div class="opts">
+        <button class="opt">아르곤이 선을 산화시켜서</button><button class="opt">실제보다 높게 읽어 벤트를 너무 일찍 멈추게 되어서</button><button class="opt" data-correct>실제보다 훨씬 낮게 읽어 챔버가 대기압을 넘어 과압될 수 있어서</button><button class="opt">아르곤에서는 피라니가 작동하지 않아서</button>
+      </div><div class="quiz-exp">아르곤의 열전도도가 질소보다 작아 같은 압력에서 열을 덜 가져간다. 실제 760 Torr에서 약 20 Torr로 읽힌다. 벤트 끝은 기체와 무관한 CDG나 대기압 스위치로 판단한다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, Th = Thermo, U = Th.unit, kB = Th.C.kB, DIA = Th.diameter, MM = Th.molarMass;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const font = (px, mono, bold) => (bold ? "600 " : "") + px + "px " + SB.color(mono ? "mono" : "font");
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = (s) => String(s).split("").map((c) => SUP[c] || c).join("");
+  /** 유효숫자 d자리, 아주 크거나 작으면 a×10ⁿ */
+  function sci(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "×10" + sup(e);
+  }
+  /** TeX용 a\times10^{n} */
+  function sciT(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "\\times10^{" + e + "}";
+  }
+  function tfmt(s) {
+    if (!isFinite(s) || s < 0) return "∞";
+    if (s < 1e-6) return sci(s * 1e9) + " ns";
+    if (s < 1e-3) return sci(s * 1e6) + " µs";
+    if (s < 1) return sci(s * 1e3) + " ms";
+    if (s < 120) return sci(s) + " s";
+    if (s < 7200) return sci(s / 60) + " 분";
+    if (s < 172800) return sci(s / 3600) + " 시간";
+    if (s < 6.3e7) return sci(s / 86400) + " 일";
+    return sci(s / 3.156e7) + " 년";
+  }
+  function lfmt(m) {
+    if (!isFinite(m)) return "—";
+    if (m < 1e-6) return sci(m * 1e9) + " nm";
+    if (m < 1e-3) return sci(m * 1e6) + " µm";
+    if (m < 1e-2) return sci(m * 1e3) + " mm";
+    if (m < 1) return sci(m * 100) + " cm";
+    if (m < 1e3) return sci(m) + " m";
+    return sci(m / 1e3) + " km";
+  }
+  const torrFmt = (t) => (t >= 1 ? sci(t) + " Torr" : t >= 1e-3 ? sci(t * 1e3) + " mTorr" : sci(t) + " Torr");
+  const pfmt = (Pa) => torrFmt(Pa / U.torr);
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  function line(ctx, pts, col, w = 2, dash) { if (!pts.length) return; ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.restore(); }
+  function toggleBtn(id, st, key = "playing", cb) {
+    const b = $(id);
+    const sync = () => (b.textContent = st[key] ? "❚❚ 정지" : "▶ 재생");
+    b.addEventListener("click", () => { st[key] = !st[key]; sync(); cb && cb(); });
+    sync();
+    return sync;
+  }
+  const narrowOf = (w) => w < 560;
+  /** 세계 좌표(W×H)를 상자 B 안에 맞춘다 */
+  const wfit = (B, W, H) => { const s = Math.min(B.w / W, B.h / H); return { x: B.x + (B.w - W * s) / 2, y: B.y + (B.h - H * s) / 2, s, w: W * s, h: H * s, X: function (v) { return this.x + v * this.s; }, Y: function (v) { return this.y + v * this.s; } }; };
+  const logTicks = (a, b, step = 1) => { const o = []; for (let e = Math.ceil(Math.log10(a) - 1e-9); e <= Math.log10(b) + 1e-9; e += step) o.push(Math.pow(10, e)); return o; };
+  const pow10Fmt = (v) => { const e = Math.round(Math.log10(v)); return e === 0 ? "1" : e === 1 ? "10" : "10" + sup(e); };
+  /** 원판 그리기 */
+  function disks(ctx, F, ps, colorOf, rad) {
+    for (const q of ps) { ctx.fillStyle = colorOf(q); ctx.beginPath(); ctx.arc(F.X(q.x), F.Y(q.y), Math.max(1.6, (rad || q.r) * F.s), 0, 2 * PI); ctx.fill(); }
+  }
+  /** 실용 단위 */
+  const LPS = 1e-3; // L/s → m³/s
+  const fluxCm = (Ptorr, TK, M) => Th.flux(Ptorr * U.torr, TK, M) * 1e-4;
+  const rpick = (a) => a[Math.floor(Math.random() * a.length)];
+
+  /* ================================================================ 머리: 펌프가 붙은 2D 챔버 */
+  {
+    const W = 520, H = 260, N0 = 170, R = 3, KT = 4e4, GAP = [60, 200];
+    const vbar = Math.sqrt(PI * KT / 2), A = (W - 2 * R) * (H - 2 * R), tau = (PI * A) / (vbar * (GAP[1] - GAP[0]));
+    const st = { G: null, phase: "pump", t: 0, hist: [], tr: null, trail: [], hold: 0, rot: 0, flashes: [], sample: 0 };
+    const pickTr = () => { let best = null, bd = Infinity; for (const q of st.G.p) { const d = Math.abs(Math.hypot(q.vx, q.vy) - vbar) + (q.x > W * 0.7 ? 1e3 : 0); if (d < bd) { bd = d; best = q; } } st.tr = best; st.trail = []; };
+    function fresh() { st.G = Th.gas2d({ W, H, n: N0, r: R, m: 1, T: KT, seed: 21 }); st.t = 0; st.hist = [[0, N0]]; st.phase = "pump"; pickTr(); }
+    function vent() { const G = st.G, k = N0 - G.p.length; if (k > 0) G.add({ n: k, m: 1, r: R, tag: 0 }, KT, [0, W]); st.phase = "closed"; st.hold = 70; if (!st.tr || !G.p.includes(st.tr)) pickTr(); }
+    function open() { st.phase = "pump"; st.t = 0; st.hist = [[0, st.G.p.length]]; st.sample = 0; }
+    fresh();
+    function step(dt) {
+      const G = st.G;
+      if (st.phase === "pump") {
+        const keep = [];
+        for (const q of G.p) {
+          if (q.vx > 0 && q.x + q.vx * dt > W - q.r && q.y > GAP[0] && q.y < GAP[1]) { st.flashes.push({ y: q.y, life: 1 }); if (q === st.tr) st.tr = null; }
+          else keep.push(q);
+        }
+        G.p = keep;
+      }
+      G.step(dt);
+      if (!st.tr && G.p.length) pickTr();
+      if (st.tr) { st.trail.push([st.tr.x, st.tr.y]); if (st.trail.length > 420) st.trail.shift(); }
+      if (st.phase === "pump") { st.t += dt; st.sample += dt; if (st.sample >= 0.25) { st.sample = 0; st.hist.push([st.t, G.p.length]); } }
+    }
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), G = st.G;
+      const B1 = narrow ? { x: 10, y: 10, w: w - 20, h: Math.round(h * 0.58) } : { x: 12, y: 12, w: Math.round(w * 0.6), h: h - 24 };
+      const B2 = narrow ? { x: 52, y: B1.y + B1.h + 24, w: w - 70, h: h - (B1.y + B1.h + 24) - 50 } : { x: B1.x + B1.w + 62, y: 30, w: w - (B1.x + B1.w + 62) - 16, h: h - 30 - 50 };
+      const F = wfit({ x: B1.x, y: B1.y + 18, w: B1.w - 64, h: B1.h - 22 }, W, H);
+      self._F = F;
+      // 챔버 벽
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(F.X(W), F.Y(GAP[0])); ctx.lineTo(F.X(W), F.Y(0)); ctx.lineTo(F.X(0), F.Y(0)); ctx.lineTo(F.X(0), F.Y(H)); ctx.lineTo(F.X(W), F.Y(H)); ctx.lineTo(F.X(W), F.Y(GAP[1])); ctx.stroke();
+      // 펌프 덕트와 로터
+      const px = F.X(W) + 34, py = F.Y((GAP[0] + GAP[1]) / 2), pr = Math.min(24, (GAP[1] - GAP[0]) * F.s * 0.45);
+      ctx.strokeStyle = P.faint; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(F.X(W), F.Y(GAP[0])); ctx.lineTo(px, py - pr); ctx.moveTo(F.X(W), F.Y(GAP[1])); ctx.lineTo(px, py + pr); ctx.stroke();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, pr, 0, 2 * PI); ctx.stroke();
+      for (let k = 0; k < 4; k++) { const a = st.rot + (k * PI) / 2; line(ctx, [[px, py], [px + Math.cos(a) * pr * 0.85, py + Math.sin(a) * pr * 0.85]], P.accent2, 2); }
+      if (st.phase !== "pump") { ctx.fillStyle = P.dim; ctx.fillRect(F.X(W) - 2, F.Y(GAP[0]), 4, (GAP[1] - GAP[0]) * F.s); }
+      // 섬광(구멍으로 나간 분자)
+      st.flashes.forEach((f) => withA(ctx, f.life, () => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(F.X(W) + (1 - f.life) * 30, F.Y(f.y), 3, 0, 2 * PI); ctx.fill(); }));
+      // 자취
+      if (st.trail.length > 1) withA(ctx, 0.75, () => line(ctx, st.trail.map(([x, y]) => [F.X(x), F.Y(y)]), P.text, 1.2));
+      disks(ctx, F, G.p, () => P.accent);
+      if (st.tr) { ctx.fillStyle = "#fff"; ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(F.X(st.tr.x), F.Y(st.tr.y), Math.max(3, 4.5 * F.s), 0, 2 * PI); ctx.fill(); ctx.stroke(); }
+      SB.label(ctx, `분자 수 N = ${G.p.length}`, B1.x + 6, B1.y + 8, { align: "left", bold: true, size: 13 });
+      SB.label(ctx, st.phase === "pump" ? "밸브 열림 · 배기 중" : "밸브 닫힘 · 벤트", B1.x + B1.w - 4, B1.y + 8, { align: "right", size: 12, color: st.phase === "pump" ? P.accent2 : P.dim });
+      // 그래프 N(t)
+      const tmax = Math.max(4 * tau, st.t + 2);
+      const C = SB.chart(ctx, B2, { x: [0, tmax], y: [1, 300], logY: true, yTicks: [1, 10, 100],
+        series: [{ data: Array.from({ length: 60 }, (_, i) => { const t = (tmax * i) / 59; return [t, (st.hist.length ? st.hist[0][1] : N0) * Math.exp(-t / tau)]; }), color: P.accent2, width: 2, dash: [6, 4] },
+                 { data: st.hist.concat([[st.t, Math.max(1, G.p.length)]]), color: P.accent, width: 2.2 }] });
+      SB.label(ctx, "분자 수 N(t) · 로그 눈금 · 가로: 시간(s)", C.box.x + 4, C.box.y - 10, { align: "left", size: 12, bold: true });
+      SB.label(ctx, `이론 e^(−t/τ), τ = πA/(v̄w) ≈ ${tau.toFixed(0)} s`, C.box.x + C.box.w - 2, C.box.y + 10, { align: "right", size: 11, color: P.accent2 });
+    }, { aspect: 0.4, minHeight: 360, maxHeight: 430 });
+    SB.drag(cv, { free: true, handles: () => [], down: () => { if (st.phase === "pump") { vent(); st.hold = -1; } else open(); }, move: () => {} });
+    SB.loop("cv-hero", () => {
+      for (let s = 0; s < 4; s++) step(1 / 120);
+      if (st.phase === "pump") st.rot += 0.25;
+      st.flashes.forEach((f) => (f.life -= 0.04)); st.flashes = st.flashes.filter((f) => f.life > 0);
+      if (st.phase === "pump" && st.G.p.length <= 8) { st.phase = "wait"; st.hold = 60; }
+      else if (st.phase === "wait") { if (--st.hold <= 0) vent(); }
+      else if (st.phase === "closed" && st.hold > 0) { if (--st.hold === 0) open(); }
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절: 3D 속력 분포 */
+  {
+    const GAS = { H2: ["H₂", 2.016], He: ["He", 4.0026], H2O: ["H₂O", 18.015], N2: ["N₂", 28.014], Ar: ["Ar", 39.948], Xe: ["Xe", 131.29] };
+    const st = { g: "N2", T: 300, vc: 1000 };
+    const vmaxOf = (M) => 3.0 * Th.speeds(M, 1500).vmp;
+    const cv = SB.canvas("cv-mb", (ctx, w, h, self) => {
+      const P = pal(), M = GAS[st.g][1], vmax = vmaxOf(M), sp = Th.speeds(M, st.T), sr = Th.speeds(M, 300);
+      st.vc = Math.min(st.vc, vmax * 0.98);
+      const peak = Th.mbSpeed(sp.vmp, M, st.T), fmax = Math.max(peak, $("mb-ref").checked ? Th.mbSpeed(sr.vmp, M, 300) : 0) * 1.4;
+      const box = { x: 58, y: 24, w: w - 58 - 18, h: h - 24 - 50 };
+      const curve = (TK) => Array.from({ length: 241 }, (_, i) => { const v = (vmax * i) / 240; return [v, Th.mbSpeed(v, M, TK)]; });
+      const tail = curve(st.T).filter(([v]) => v >= st.vc); tail.unshift([st.vc, Th.mbSpeed(st.vc, M, st.T)]);
+      const series = [];
+      if ($("mb-ref").checked) series.push({ data: curve(300), color: P.accent2, width: 1.8, dash: [6, 4] });
+      series.push({ data: tail, color: P.accent, width: 0.1, fill: SB.color("accent-soft") });
+      series.push({ data: curve(st.T), color: P.accent, width: 2.6 });
+      const C = SB.chart(ctx, box, { x: [0, vmax], y: [0, fmax], series, xLabel: "속력 v (m/s)", yLabel: "f(v) (10⁻³ s/m)", yFmt: (v) => String(Number((v * 1e3).toPrecision(3))),
+        vlines: [{ x: sp.vmp, color: P.dim, label: narrowOf(w) ? "" : "v_mp", row: 1 }, { x: sp.vmean, color: P.dim, label: narrowOf(w) ? "" : "v̄", row: 2 }, { x: sp.vrms, color: P.dim, label: narrowOf(w) ? "" : "v_rms", row: 3 }] });
+      self._C = C; self._vmax = vmax;
+      const hx = C.X(sp.vmp), hy = C.Y(peak);
+      handle(ctx, hx, hy, P.accent, 9);
+      SB.label(ctx, `${st.T} K`, hx + 14, hy - 14, { align: "left", bold: true, color: P.accent });
+      const cx = C.X(st.vc), cy = box.y + box.h;
+      SB.dashLine(ctx, cx, box.y, cx, cy, P.text, [3, 3]);
+      handle(ctx, cx, cy - 12, P.text, 9);
+      SB.label(ctx, `v* = ${Math.round(st.vc)} m/s`, Math.min(cx + 6, box.x + box.w - 70), cy - 32, { align: "left", size: 12 });
+      SB.stat("mb-vmp", Math.round(sp.vmp) + " m/s");
+      SB.stat("mb-vbar", Math.round(sp.vmean) + " m/s");
+      SB.stat("mb-vrms", Math.round(sp.vrms) + " m/s");
+      const fr = Th.mbFracAbove(st.vc, M, st.T);
+      SB.stat("mb-frac", (fr >= 1e-3 ? (fr * 100).toPrecision(3) + " %" : sci(fr * 100, 2) + " %"));
+    }, { aspect: 0.56, minHeight: 320, maxHeight: 440 });
+    const gT = SB.range("mb-T", (v) => v + " K", (v) => { st.T = v; cv.redraw(); });
+    SB.seg("mb-gas", (v) => { const old = vmaxOf(GAS[st.g][1]); st.g = v; st.vc = (st.vc / old) * vmaxOf(GAS[v][1]); cv.redraw(); });
+    $("mb-ref").addEventListener("change", () => cv.redraw());
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; if (!C) return []; const M = GAS[st.g][1], sp = Th.speeds(M, st.T); return [{ id: "T", x: C.X(sp.vmp), y: C.Y(Th.mbSpeed(sp.vmp, M, st.T)), r: 14 }, { id: "c", x: C.X(st.vc), y: C.box.y + C.box.h - 12, r: 14 }]; },
+      move: (id, x) => {
+        const C = cv._C; if (!C) return;
+        const v = SB.clamp(((x - C.box.x) / C.box.w) * cv._vmax, 1, cv._vmax * 0.98), M = GAS[st.g][1];
+        if (id === "T") { st.T = SB.clamp(Math.round((M * 1e-3 * v * v) / (2 * Th.C.R) / 5) * 5, 20, 1500); gT.set(st.T, true); }
+        if (id === "c") st.vc = v;
+      },
+    });
+  }
+
+  /* ================================================================ 1절 tangle: 대표 속력 */
+  SB.tangle("tg-speed", (v) => {
+    const s = Th.speeds(v.M, v.T), E = 1.5 * kB * v.T;
+    return { vmp: Math.round(s.vmp) + " m/s", vbar: Math.round(s.vmean) + " m/s", vrms: Math.round(s.vrms) + " m/s", E: sci(E / Th.C.e, 3) + " eV", frac: (() => { const f = Th.mbFracAbove(1000, v.M, v.T); return f > 0.001 ? (f * 100).toPrecision(3) + "%" : sci(f * 100, 2) + "%"; })() };
+  });
+
+  /* ================================================================ 1절 미니: 기체별 분포 */
+  {
+    const L = [["H₂", 2.016], ["He", 4.0026], ["H₂O", 18.015], ["N₂", 28.014], ["Ar", 39.948], ["Xe", 131.29]];
+    let T = 300;
+    const cv = SB.canvas("cv-mass", (ctx, w, h) => {
+      const P = pal(), cols = [P.accent, P.warn, P.ok, P.accent2, P.bad, P.dim], vmax = 3000;
+      let fm = 0; L.forEach(([, M]) => (fm = Math.max(fm, Th.mbSpeed(Th.speeds(M, T).vmp, M, T))));
+      const series = L.map(([, M], i) => ({ data: Array.from({ length: 201 }, (_, k) => { const v = (vmax * k) / 200; return [v, Th.mbSpeed(v, M, T)]; }), color: cols[i], width: 2 }));
+      const C = SB.chart(ctx, { x: 50, y: 14, w: w - 50 - 14, h: h - 14 - 44 }, { x: [0, vmax], y: [0, fm * 1.15], series, xLabel: "속력 v (m/s)", yFmt: (v) => String(Number((v * 1e3).toPrecision(2))) });
+      L.forEach(([nm, M], i) => { const s = Th.speeds(M, T), y = Th.mbSpeed(s.vmean, M, T); if (s.vmean > vmax) return; ctx.fillStyle = cols[i]; ctx.beginPath(); ctx.arc(C.X(s.vmean), C.Y(y), 4, 0, 2 * PI); ctx.fill(); SB.label(ctx, nm, Math.min(C.X(s.vmp) + 4, C.box.x + C.box.w - 20), C.Y(Th.mbSpeed(s.vmp, M, T)) - 12, { color: cols[i], bold: true, size: 12 }); });
+      SB.stat("mass-r", `v̄: H₂ ${Math.round(Th.speeds(2.016, T).vmean)} · N₂ ${Math.round(Th.speeds(28.014, T).vmean)} · Xe ${Math.round(Th.speeds(131.29, T).vmean)} m/s`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 320 });
+    SB.range("mass-T", (v) => v + " K", (v) => { T = v; cv.redraw(); });
+  }
+
+  /* ================================================================ 1절: 2D 기체의 속력 분포 */
+  {
+    const W = 360, H = 300, N = 220, R = 3, KT0 = 4e4, NB = 36, VMAX = 1100;
+    const st = { G: null, playing: true, init: "one", hist: new Float64Array(NB), wall: false, Tw: KT0, c0: 0 };
+    const bin = (v) => Math.min(NB - 1, Math.floor((v / VMAX) * NB));
+    function make() {
+      const G = Th.gas2d({ W, H, n: N, r: R, m: 1, T: KT0, seed: 11 }), rng = Th.rng(12);
+      if (st.init !== "mb") G.p.forEach((q, i) => { const v = st.init === "one" ? Math.sqrt(2 * KT0) : Math.sqrt(2 * KT0 * (i % 2 ? 0.35 : 1.65)); const a = 2 * PI * rng(); q.vx = v * Math.cos(a); q.vy = v * Math.sin(a); });
+      else G.setT(KT0);
+      G.walls = st.wall ? { left: { T: st.Tw } } : {};
+      st.G = G; st.hist.fill(0); G.speeds().forEach((v) => st.hist[bin(v)]++);
+    }
+    make();
+    const TwY = (B, T) => B.y + B.h - ((Math.log(T / KT0) - Math.log(0.25)) / (Math.log(4) - Math.log(0.25))) * B.h;
+    const cv = SB.canvas("cv-gas", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), G = st.G;
+      const B1 = narrow ? { x: 34, y: 34, w: w - 44, h: Math.round(h * 0.45) } : { x: 40, y: 12, w: Math.round(w * 0.46), h: h - 24 };
+      const F = wfit(B1, W, H); self._F = F;
+      ctx.strokeStyle = st.wall ? P.accent : P.border; ctx.lineWidth = 2; ctx.strokeRect(F.x, F.y, F.w, F.h);
+      if (st.wall) { ctx.strokeStyle = P.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(F.x, F.y); ctx.lineTo(F.x, F.y + F.h); ctx.stroke(); }
+      const kT = G.kT(), vr = Math.sqrt(2 * kT);
+      disks(ctx, F, G.p, (q) => (Math.hypot(q.vx, q.vy) > vr ? P.accent : P.accent2));
+      // 온도계(열벽)
+      const TB = { x: F.x - 22, y: F.y + 10, w: 8, h: F.h - 20 };
+      self._TB = TB;
+      if (st.wall) {
+        ctx.fillStyle = P.surface; ctx.fillRect(TB.x, TB.y, TB.w, TB.h); ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.strokeRect(TB.x, TB.y, TB.w, TB.h);
+        const y = TwY(TB, st.Tw); ctx.fillStyle = P.accent; ctx.fillRect(TB.x, y, TB.w, TB.y + TB.h - y);
+        handle(ctx, TB.x + TB.w / 2, y, P.accent, 9);
+        SB.label(ctx, `벽 ${(st.Tw / KT0).toFixed(2)}T₀`, F.x + 6, F.y + 12, { align: "left", size: 11, color: P.accent, bold: true });
+      }
+      // 히스토그램
+      const B2 = narrow ? { x: 46, y: B1.y + B1.h + 22, w: w - 60, h: h - (B1.y + B1.h + 22) - 42 } : { x: B1.x + B1.w + 56, y: 50, w: w - (B1.x + B1.w + 56) - 14, h: h - 50 - 46 };
+      let tot = 0; st.hist.forEach((c) => (tot += c));
+      const bw = VMAX / NB, dens = Array.from(st.hist, (c) => c / (tot * bw));
+      const fpk = 1 / Math.sqrt(kT) * Math.exp(-0.5);
+      const ymax = Math.min(Math.max(fpk * 1.4, ...dens) * 1.05, fpk * 6);
+      const C = SB.chart(ctx, B2, { x: [0, VMAX], y: [0, ymax], xLabel: "속력 v (px/s)", yFmt: () => "", yTicks: [],
+        series: [{ data: Array.from({ length: 121 }, (_, i) => { const v = (VMAX * i) / 120; return [v, Th.mb2d(v, 1, kT)]; }), color: P.accent2, width: 2.4 }] });
+      ctx.save(); ctx.beginPath(); ctx.rect(C.box.x, C.box.y, C.box.w, C.box.h); ctx.clip();
+      ctx.fillStyle = P.accent;
+      dens.forEach((d, i) => withA(ctx, 0.55, () => { const x0 = C.X(i * bw), x1 = C.X((i + 1) * bw), y = C.Y(Math.min(d, ymax)); ctx.fillRect(x0 + 0.5, y, x1 - x0 - 1, C.box.y + C.box.h - y); }));
+      ctx.restore();
+      line(ctx, Array.from({ length: 121 }, (_, i) => { const v = (VMAX * i) / 120; return [C.X(v), C.Y(Th.mb2d(v, 1, kT))]; }), P.accent2, 2.4);
+      SB.label(ctx, "속력 분포 · 파랑: f₂D(v) (측정 kT)", C.box.x, C.box.y - 10, { align: "left", size: 11, color: P.dim });
+      // 읽기
+      let kl = 0; const pr = Array.from(st.hist, (c) => c / tot);
+      pr.forEach((p, i) => { if (p <= 0) return; const a = i * bw, b = (i + 1) * bw, q = Math.max(1e-9, Math.exp(-a * a / (2 * kT)) - Math.exp(-b * b / (2 * kT))); kl += p * Math.log(p / q); });
+      SB.stat("gas-coll", ((2 * (G.collisions - st.c0)) / N).toFixed(1));
+      SB.stat("gas-kt", (kT / KT0).toFixed(3));
+      SB.stat("gas-kl", kl.toFixed(3));
+    }, { aspect: 0.5, minHeight: 360, maxHeight: 440 });
+    SB.seg("gas-init", (v) => { st.init = v; st.c0 = 0; make(); cv.redraw(); });
+    $("gas-wall").addEventListener("change", (e) => { st.wall = e.target.checked; st.G.walls = st.wall ? { left: { T: st.Tw } } : {}; cv.redraw(); });
+    toggleBtn("gas-play", st);
+    $("gas-reset").addEventListener("click", () => { st.c0 = 0; make(); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (st.wall && cv._TB ? [{ id: "tw", x: cv._TB.x + cv._TB.w / 2, y: TwY(cv._TB, st.Tw), r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "tw") return; const TB = cv._TB, f = SB.clamp((TB.y + TB.h - y) / TB.h, 0, 1); st.Tw = KT0 * Math.exp(Math.log(0.25) + f * (Math.log(4) - Math.log(0.25))); st.G.walls = { left: { T: st.Tw } }; },
+    });
+    SB.loop("cv-gas", () => {
+      if (!st.playing) return;
+      for (let s = 0; s < 2; s++) st.G.step(1 / 480);
+      for (let i = 0; i < NB; i++) st.hist[i] *= 0.92;
+      st.G.speeds().forEach((v) => (st.hist[bin(v)] += 0.08));
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절 드릴 */
+  SB.drill("drill-speed", () => {
+    const gs = [["H₂", 2.016], ["He", 4.0026], ["N₂", 28.014], ["O₂", 31.999], ["Ar", 39.948], ["CO₂", 44.009], ["Xe", 131.29]];
+    const [nm, M] = rpick(gs), T = 100 + 50 * Math.floor(Math.random() * 25);
+    const k = rpick(["vmp", "vmean", "vrms"]), s = Th.speeds(M, T);
+    const name = { vmp: "최빈 속력 \\(v_\\mathrm{mp} = \\sqrt{2RT/M}\\)", vmean: "평균 속력 \\(\\bar v = \\sqrt{8RT/\\pi M}\\)", vrms: "제곱 평균 제곱근 속력 \\(v_\\mathrm{rms} = \\sqrt{3RT/M}\\)" }[k];
+    const fac = { vmp: "2", vmean: "8/\\pi", vrms: "3" }[k];
+    return { q: `<p>${T} K의 ${nm}(\\(M = ${M}\\) g/mol)에서 ${name}을 구하라.</p>`, answer: s[k], label: "v =", unit: "m/s", tol: "1.5%",
+      sol: `\\(RT/M = 8.314\\times${T}/${(M / 1000).toPrecision(5)} = ${sciT((Th.C.R * T) / (M / 1000), 4)}\\) m²/s², \\(v = \\sqrt{${fac}\\times RT/M} = ${Math.round(s[k])}\\) m/s` };
+  });
+
+  /* ================================================================ 2절: 벽 충돌로 압력 재기 */
+  {
+    const H = 300, R = 3, KT0 = 4e4, WMIN = 140, WMAX = 560;
+    const st = { W: 400, N: 150, G: null, playing: true, hits: 0, imp0: 0, t: 0, flashes: [] };
+    function make() {
+      st.G = Th.gas2d({ W: WMAX, H, r: R, m: 1, T: KT0, seed: 4, species: [{ n: st.N, m: 1, r: R, tag: 0, region: [0, st.W] }], walls: { top: { T: KT0 }, bottom: { T: KT0 } } });
+      st.G.W = st.W; resetM();
+    }
+    function resetM() { st.G.resetImpulse(); st.hits = 0; st.t = 0; }
+    make();
+    function step(dt) {
+      const G = st.G, Wc = G.W;
+      for (const q of G.p) {
+        const nx = q.x + q.vx * dt;
+        if (nx < q.r) { st.hits++; if (st.flashes.length < 60) st.flashes.push({ side: 0, y: q.y, life: 1 }); }
+        else if (nx > Wc - q.r) { st.hits++; if (st.flashes.length < 60) st.flashes.push({ side: 1, y: q.y, life: 1 }); }
+      }
+      G.step(dt); st.t += dt;
+    }
+    const cv = SB.canvas("cv-wall", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), G = st.G;
+      const B1 = narrow ? { x: 10, y: 34, w: w - 20, h: Math.round(h * 0.5) } : { x: 12, y: 14, w: Math.round(w * 0.66), h: h - 28 };
+      const F = wfit(B1, WMAX, H); self._F = F;
+      ctx.fillStyle = P.surface; withA(ctx, 0.5, () => ctx.fillRect(F.x, F.y, F.w, F.h));
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(F.X(0), F.Y(0)); ctx.lineTo(F.X(G.W), F.Y(0)); ctx.moveTo(F.X(0), F.Y(H)); ctx.lineTo(F.X(G.W), F.Y(H)); ctx.stroke();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(F.X(0), F.Y(0)); ctx.lineTo(F.X(0), F.Y(H)); ctx.moveTo(F.X(G.W), F.Y(0)); ctx.lineTo(F.X(G.W), F.Y(H)); ctx.stroke();
+      st.flashes.forEach((f) => withA(ctx, f.life, () => { ctx.strokeStyle = P.accent; ctx.lineWidth = 3; const x = f.side ? F.X(G.W) : F.X(0); ctx.beginPath(); ctx.moveTo(x, F.Y(f.y) - 5); ctx.lineTo(x, F.Y(f.y) + 5); ctx.stroke(); }));
+      disks(ctx, F, G.p, () => P.accent2);
+      handle(ctx, F.X(G.W), F.Y(H / 2), P.text, 10);
+      SB.label(ctx, "열벽 kT₀", F.X(G.W / 2), F.Y(0) + 10, { size: 11, color: P.accent });
+      // 막대: 측정 vs 이론
+      const kT = G.kT(), Aeff = (G.W - 2 * R) * (H - 2 * R), n = G.p.length / Aeff;
+      const Pm = st.t > 0 ? (st.G.impulse.left + st.G.impulse.right) / (2 * (H - 2 * R) * st.G.impT) : 0;
+      const Pt = n * kT, vb = Math.sqrt((PI * kT) / 2), Fm = st.t > 0 ? st.hits / (2 * (H - 2 * R) * st.t) : 0, Ft = (n * vb) / PI;
+      const B2 = narrow ? { x: 20, y: B1.y + B1.h + 18, w: w - 40, h: h - (B1.y + B1.h + 18) - 12 } : { x: B1.x + B1.w + 24, y: 30, w: w - (B1.x + B1.w + 24) - 14, h: h - 60 };
+      const bars = [["압력", Pm, Pt], ["플럭스", Fm, Ft]];
+      const rowH = B2.h / 2;
+      bars.forEach(([nm, m, t], i) => {
+        const y0 = B2.y + i * rowH, ref = t * 1.6 || 1, bw = B2.w - 8;
+        SB.label(ctx, nm, B2.x, y0 + 8, { align: "left", bold: true, size: 12 });
+        ctx.fillStyle = P.accent; ctx.fillRect(B2.x, y0 + 20, Math.min(bw, (m / ref) * bw), Math.min(14, rowH * 0.17));
+        ctx.fillStyle = P.accent2; ctx.fillRect(B2.x, y0 + 22 + Math.min(14, rowH * 0.17), Math.min(bw, (t / ref) * bw), Math.min(14, rowH * 0.17));
+        SB.label(ctx, `측정/이론 = ${t > 0 && m > 0 ? (m / t).toFixed(3) : "—"}`, B2.x, y0 + 30 + 2 * Math.min(14, rowH * 0.17), { align: "left", size: 11, color: P.dim, baseline: "top" });
+      });
+      SB.stat("wall-p", sci(Pm, 3));
+      SB.stat("wall-pt", sci(Pt, 3));
+      SB.stat("wall-f", sci(Fm, 3));
+      SB.stat("wall-ft", sci(Ft, 3));
+    }, { aspect: 0.5, minHeight: 380, maxHeight: 440 });
+    SB.range("wall-n", (v) => String(v), (v) => { st.N = v; make(); cv.redraw(); });
+    toggleBtn("wall-play", st);
+    $("wall-reset").addEventListener("click", () => { resetM(); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (cv._F ? [{ id: "w", x: cv._F.X(st.G.W), y: cv._F.Y(H / 2), r: 15 }] : []),
+      move: (id, x) => { if (id !== "w") return; const nw = SB.clamp((x - cv._F.x) / cv._F.s, WMIN, WMAX); st.W = nw; st.G.W = nw; resetM(); },
+    });
+    SB.loop("cv-wall", () => {
+      if (!st.playing) return;
+      for (let s = 0; s < 2; s++) step(1 / 120);
+      st.flashes.forEach((f) => (f.life -= 0.08)); st.flashes = st.flashes.filter((f) => f.life > 0);
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 2절 미니: 단분자층 시간 */
+  {
+    const st = { P: 1e-6, s: 1 };
+    const tml = (Pt, M, s) => Th.monolayerTime(Pt * U.torr, 300, M, s);
+    const cv = SB.canvas("cv-mono", (ctx, w, h, self) => {
+      const P = pal(), xs = logTicks(1e-11, 1e-3, 0.1);
+      const mk = (M) => xs.map((p) => [p, tml(p, M, st.s)]);
+      const C = SB.chart(ctx, { x: 64, y: 16, w: w - 64 - 16, h: h - 16 - 46 }, { x: [1e-11, 1e-3], y: [1e-3, 1e9], logX: true, logY: true, xLabel: "압력 (Torr)",
+        xTicks: [1e-11, 1e-9, 1e-7, 1e-5, 1e-3], yTicks: [1e-3, 1, 1e3, 1e6, 1e9], xFmt: pow10Fmt, yFmt: (v) => ({ "-3": "1 ms", 0: "1 s", 3: "17 분", 6: "12 일", 9: "32 년" })[Math.round(Math.log10(v))],
+        hlines: [{ y: 3600, color: P.faint, label: "1 시간" }, { y: 86400, color: P.faint, label: "1 일" }],
+        series: [{ data: mk(2.016), color: P.dim, width: 1.6, dash: [4, 4] }, { data: mk(28.014), color: P.accent2, width: 2 }, { data: mk(18.015), color: P.accent, width: 2.6 }] });
+      self._C = C;
+      const x = C.X(st.P), y = C.Y(tml(st.P, 18.015, st.s));
+      handle(ctx, x, y, P.accent, 9);
+      SB.label(ctx, "H₂O", C.X(1e-10), C.Y(tml(1e-10, 18.015, st.s)) - 14, { color: P.accent, bold: true });
+      $("mono-r").textContent = `P = ${sci(st.P, 2)} Torr · H₂O ${tfmt(tml(st.P, 18.015, st.s))} · N₂ ${tfmt(tml(st.P, 28.014, st.s))}`;
+    }, { aspect: 0.5, minHeight: 260, maxHeight: 340 });
+    SB.range("mono-s", (v) => sci(Math.pow(10, v), 2), (v) => { st.s = Math.pow(10, v); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; return C ? [{ id: "p", x: C.X(st.P), y: C.Y(tml(st.P, 18.015, st.s)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; const f = SB.clamp((x - C.box.x) / C.box.w, 0, 1); st.P = Math.pow(10, -11 + 8 * f); },
+    });
+  }
+
+  /* ================================================================ 2절 tangle: 단분자층 */
+  SB.tangle("tg-mono", (v) => {
+    const Pt = Math.pow(10, v.x), Pa = Pt * U.torr, M = 18.015;
+    return { n: sci(Th.numberDensity(Pa, v.T) * 1e-6, 3) + " cm⁻³", F: sci(Th.flux(Pa, v.T, M) * 1e-4, 3) + " cm⁻²s⁻¹", t: tfmt(Th.monolayerTime(Pa, v.T, M)), lam: lfmt(Th.mfp(Pa, v.T, DIA.H2O)) };
+  }, { fmt: { x: (x) => x.toFixed(1) } });
+
+  /* ================================================================ 2절 드릴 */
+  SB.drill("drill-flux", () => {
+    const gs = [["N₂", 28.014], ["H₂O", 18.015], ["Ar", 39.948], ["H₂", 2.016], ["O₂", 31.999]];
+    const [nm, M] = rpick(gs), mant = rpick([1, 2, 3, 5]), e = -9 + Math.floor(Math.random() * 5), Pt = mant * Math.pow(10, e), T = rpick([300, 300, 350, 400]);
+    const F = fluxCm(Pt, T, M), tau = 1e15 / F;
+    return { q: `<p>${T} K, \\(${mant}\\times10^{${e}}\\) Torr의 ${nm}(\\(M = ${M}\\) g/mol)에 대해 벽 충돌 플럭스(cm⁻²s⁻¹)와, 부착 계수 1·표면 자리 \\(10^{15}\\) cm⁻²일 때의 단분자층 형성 시간을 구하라.</p>`,
+      answer: [F, tau], label: ["Φ =", "τ ="], unit: ["cm⁻²s⁻¹", "s"], tol: "2%",
+      sol: `\\(\\Phi = 3.513\\times10^{22}\\,P/\\sqrt{MT} = 3.513\\times10^{22}\\times${sciT(Pt, 2)}/\\sqrt{${M}\\times${T}} = ${sciT(F)}\\) cm⁻²s⁻¹, \\(\\tau = 10^{15}/\\Phi = ${sciT(tau)}\\) s` };
+  });
+
+  /* ================================================================ 3절: 자유 행로 추적 */
+  {
+    const W = 600, H = 300, R = 3, KT0 = 4e4, NB = 24;
+    const st = { N: 120, G: null, tr: null, dist: 0, paths: [], trail: [], hits: [], playing: true, c0: 0, D: 0, t: 0 };
+    function track(q) { st.tr = q; st.dist = 0; st.trail = [[q.x, q.y]]; st.hits = []; }
+    function make() {
+      const G = Th.gas2d({ W, H, n: st.N, r: R, m: 1, T: KT0, seed: 8 });
+      G.onCollide = (a, b) => { if (a === st.tr || b === st.tr) { st.paths.push(st.dist); st.dist = 0; st.hits.push([st.tr.x, st.tr.y]); if (st.hits.length > 10) st.hits.shift(); } };
+      st.G = G; st.paths = []; st.D = 0; st.t = 0; st.c0 = 0; track(G.p[0]);
+    }
+    make();
+    const theory = () => { const n = st.N / ((W - 2 * R) * (H - 2 * R)); return 1 / (2 * Math.SQRT2 * n * 2 * R); };
+    function step(dt) {
+      const G = st.G; G.step(dt);
+      let s = 0; for (const q of G.p) s += Math.hypot(q.vx, q.vy) * dt;
+      st.D += s; st.t += dt;
+      if (st.tr) { st.dist += Math.hypot(st.tr.vx, st.tr.vy) * dt; st.trail.push([st.tr.x, st.tr.y]); if (st.trail.length > 700) st.trail.shift(); }
+    }
+    const cv = SB.canvas("cv-mfp", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), G = st.G, lam = theory();
+      const B1 = narrow ? { x: 8, y: 34, w: w - 16, h: Math.round(h * 0.46) } : { x: 10, y: 12, w: Math.round(w * 0.64), h: h - 24 };
+      const F = wfit(B1, W, H); self._F = F;
+      ctx.strokeStyle = P.border; ctx.lineWidth = 2; ctx.strokeRect(F.x, F.y, F.w, F.h);
+      disks(ctx, F, G.p, () => P.accent2);
+      if (st.trail.length > 1) line(ctx, st.trail.map(([x, y]) => [F.X(x), F.Y(y)]), P.accent, 1.8);
+      ctx.fillStyle = P.text; st.hits.forEach(([x, y]) => { ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), 3, 0, 2 * PI); ctx.fill(); });
+      if (st.tr) { ctx.fillStyle = "#fff"; ctx.strokeStyle = P.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(F.X(st.tr.x), F.Y(st.tr.y), Math.max(4, (R + 1.5) * F.s), 0, 2 * PI); ctx.fill(); ctx.stroke(); }
+      // λ 눈금 막대
+      const lx = F.x + 10, ly = F.y + F.h - 12, lp = Math.min(lam * F.s, F.w - 20);
+      line(ctx, [[lx, ly], [lx + lp, ly]], P.text, 2.5); line(ctx, [[lx, ly - 5], [lx, ly + 5]], P.text, 2); line(ctx, [[lx + lp, ly - 5], [lx + lp, ly + 5]], P.text, 2);
+      SB.label(ctx, `λ(이론) = ${lam.toFixed(0)} px`, lx + 4, ly - 13, { align: "left", size: 11, bold: true });
+      // 히스토그램
+      const B2 = narrow ? { x: 46, y: B1.y + B1.h + 22, w: w - 62, h: h - (B1.y + B1.h + 22) - 42 } : { x: B1.x + B1.w + 50, y: 50, w: w - (B1.x + B1.w + 50) - 12, h: h - 50 - 46 };
+      const cnt = new Float64Array(NB), xmax = 4; st.paths.forEach((l) => { const j = Math.floor((l / lam / xmax) * NB); if (j >= 0 && j < NB) cnt[j]++; });
+      const bw = xmax / NB, tot = st.paths.length;
+      const C = SB.chart(ctx, B2, { x: [0, xmax], y: [0, 1.25], xLabel: "자유 행로 / λ", xTicks: [0, 1, 2, 3, 4], yTicks: [0, 0.5, 1],
+        series: [{ data: Array.from({ length: 81 }, (_, i) => { const x = (xmax * i) / 80; return [x, Math.exp(-x)]; }), color: P.accent2, width: 2.4 }] });
+      if (tot) { ctx.save(); ctx.beginPath(); ctx.rect(C.box.x, C.box.y, C.box.w, C.box.h); ctx.clip(); ctx.fillStyle = P.accent; cnt.forEach((c, i) => withA(ctx, 0.55, () => { const d = c / (tot * bw), x0 = C.X(i * bw), x1 = C.X((i + 1) * bw), y = C.Y(Math.min(d, 1.25)); ctx.fillRect(x0 + 0.5, y, x1 - x0 - 1, C.box.y + C.box.h - y); })); ctx.restore(); }
+      SB.label(ctx, `자유 행로 ${tot}개 · 파랑 e^(−x/λ)/λ`, C.box.x, C.box.y - 12, { align: "left", size: 11, color: P.dim });
+      const lt = tot ? st.paths.reduce((a, b) => a + b, 0) / tot : NaN, coll = G.collisions - st.c0, la = coll > 0 ? st.D / (2 * coll) : NaN;
+      SB.stat("mfp-lt", isFinite(lt) ? `${lt.toFixed(0)} px (${tot})` : "—");
+      SB.stat("mfp-la", isFinite(la) ? la.toFixed(0) + " px" : "—");
+      SB.stat("mfp-th", lam.toFixed(0) + " px");
+      SB.stat("mfp-z", st.t > 0 && coll > 0 ? ((2 * coll) / (st.N * st.t)).toFixed(2) + " /s" : "—");
+    }, { aspect: 0.48, minHeight: 360, maxHeight: 440 });
+    SB.range("mfp-n", (v) => String(v), (v) => { st.N = v; make(); cv.redraw(); });
+    toggleBtn("mfp-play", st);
+    $("mfp-reset").addEventListener("click", () => { st.paths = []; st.D = 0; st.t = 0; st.c0 = st.G.collisions; cv.redraw(); });
+    SB.drag(cv, { free: true, handles: () => [], move: () => {},
+      down: (id, x, y) => { const F = cv._F; if (!F) return; const wx = (x - F.x) / F.s, wy = (y - F.y) / F.s; let best = null, bd = 20 / F.s; st.G.p.forEach((q) => { const d = Math.hypot(q.x - wx, q.y - wy); if (d < bd) { bd = d; best = q; } }); if (best) track(best); } });
+    SB.loop("cv-mfp", () => { if (!st.playing) return; for (let s = 0; s < 2; s++) step(1 / 120); cv.redraw(); });
+  }
+
+  /* ================================================================ 3절 미니: 크누센 수 */
+  {
+    const st = { g: "N2", L: 0.05, P: 5e-3 };
+    const lamOf = (Pt) => Th.mfp(Pt * U.torr, 300, DIA[st.g]);
+    const PofLam = (lam) => (kB * 300) / (Math.SQRT2 * PI * DIA[st.g] ** 2 * lam) / U.torr;
+    const cv = SB.canvas("cv-kn", (ctx, w, h, self) => {
+      const P = pal(), xs = logTicks(1e-7, 1e3, 0.1), Pm = PofLam(0.5 * st.L), Pv = PofLam(0.01 * st.L);
+      const C = SB.chart(ctx, { x: 64, y: 16, w: w - 64 - 16, h: h - 16 - 46 }, { x: [1e-7, 1e3], y: [1e-8, 1e3], logX: true, logY: true, xLabel: "압력 (Torr)",
+        xTicks: [1e-7, 1e-5, 1e-3, 1e-1, 10, 1e3], xFmt: pow10Fmt, yTicks: [1e-8, 1e-6, 1e-4, 1e-2, 1, 100], yFmt: (v) => lfmt(v).replace(".0 ", " "),
+        bands: [{ x0: 1e-7, x1: SB.clamp(Pm, 1e-7, 1e3), color: SB.color("accent-2-soft") }, { x0: SB.clamp(Pv, 1e-7, 1e3), x1: 1e3, color: SB.color("accent-soft") }],
+        hlines: [{ y: st.L, color: P.text, label: "L = " + lfmt(st.L) }],
+        series: [{ data: xs.map((p) => [p, lamOf(p)]), color: P.accent, width: 2.6 }] });
+      self._C = C;
+      const lam = lamOf(st.P), x = C.X(st.P), y = C.Y(lam);
+      handle(ctx, x, y, P.accent, 9);
+      if (Pm > 2e-7) SB.label(ctx, "분자류", C.X(Math.sqrt(1e-7 * Math.min(Pm, 1e3))), C.box.y + C.box.h - 12, { color: P.accent2, bold: true, size: 12 });
+      if (Pv < 5e2) SB.label(ctx, "점성류", C.X(Math.sqrt(Math.max(Pv, 1e-7) * 1e3)), C.box.y + C.box.h - 12, { color: P.accent, bold: true, size: 12 });
+      const k = Th.knudsen(lam, st.L);
+      $("kn-r").textContent = `P = ${torrFmt(st.P)} · λ = ${lfmt(lam)} · Kn = ${sci(k.Kn, 2)} → ${k.regime}`;
+    }, { aspect: 0.5, minHeight: 270, maxHeight: 340 });
+    SB.seg("kn-gas", (v) => { st.g = v; cv.redraw(); });
+    SB.seg("kn-L", (v) => { st.L = Number(v); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; return C ? [{ id: "p", x: C.X(st.P), y: C.Y(lamOf(st.P)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.P = Math.pow(10, -7 + 10 * SB.clamp((x - C.box.x) / C.box.w, 0, 1)); },
+    });
+  }
+
+  /* ================================================================ 3절 tangle */
+  SB.tangle("tg-mfp", (v) => {
+    const lam = Th.mfp(v.P * U.mtorr, v.T, DIA.Ar), L = v.L / 100, k = Th.knudsen(lam, L), pass = Math.exp(-L / lam);
+    return { lam: lfmt(lam), kn: sci(k.Kn, 2), reg: k.regime, pass: pass > 1e-3 ? (pass * 100).toPrecision(3) + "%" : sci(pass * 100, 2) + "%" };
+  });
+
+  /* ================================================================ 3절 드릴 */
+  SB.drill("drill-mfp", () => {
+    const gs = [["N₂", "N2"], ["Ar", "Ar"], ["He", "He"], ["O₂", "O2"]];
+    const [nm, key] = rpick(gs), Pm = rpick([0.5, 1, 2, 5, 10, 20, 50, 100]), T = rpick([300, 300, 350, 400]), Lc = rpick([1, 5, 10, 30]);
+    const lam = Th.mfp(Pm * U.mtorr, T, DIA[key]), Kn = lam / (Lc / 100);
+    return { q: `<p>${T} K, ${Pm} mTorr의 ${nm}(지름 \\(d = ${(DIA[key] * 1e10).toFixed(2)}\\) Å) 속 평균 자유 행로를 cm로 구하고, 특성 길이 ${Lc} cm에 대한 크누센 수를 구하라.</p>`,
+      answer: [lam * 100, Kn], label: ["λ =", "Kn ="], unit: ["cm", ""], tol: "2%",
+      sol: `\\(\\lambda = \\dfrac{kT}{\\sqrt2\\pi d^2P} = \\dfrac{1.381\\times10^{-23}\\times${T}}{\\sqrt2\\pi(${sciT(DIA[key], 3)})^2\\times${sciT(Pm * U.mtorr, 4)}} = ${sciT(lam * 100)}\\) cm, \\(\\mathrm{Kn} = ${sciT(Kn)}\\) (${Th.knudsen(lam, Lc / 100).regime})` };
+  });
+
+  /* ================================================================ 4절: 분출과 분리 */
+  {
+    const W = 600, H = 300, R = 3, KT0 = 4e4, XP = 300;
+    const st = { N: 120, gap: 16, G: null, cnt: [0, 0], ghosts: [], speed: 4, playing: true, rng: Th.rng(77) };
+    function make() {
+      st.G = Th.gas2d({ W, H, T: KT0, seed: 9, species: [{ n: st.N / 2, m: 1, r: R, tag: 0, region: [0, XP] }, { n: st.N / 2, m: 4, r: R, tag: 1, region: [0, XP] }], partition: { x: XP, gap: [H / 2 - st.gap / 2, H / 2 + st.gap / 2] } });
+      st.cnt = [0, 0]; st.ghosts = []; st.rng = Th.rng(77);
+    }
+    make();
+    const setGap = (g) => { st.gap = g; st.G.partition.gap = [H / 2 - g / 2, H / 2 + g / 2]; st.cnt = [0, 0]; };
+    function step(dt) {
+      st.G.step(dt);
+      for (const q of st.G.p) if (q.x > XP + q.r + 1) {
+        st.cnt[q.tag]++;
+        if (st.ghosts.length < 80) st.ghosts.push({ x: q.x, y: q.y, vx: q.vx, vy: q.vy, tag: q.tag, life: 1 });
+        const sd = Math.sqrt(KT0 / q.m);
+        q.x = R + 2 + st.rng() * (XP - 2 * R - 6); q.y = R + 2 + st.rng() * (H - 2 * R - 4); q.vx = sd * st.rng.normal(); q.vy = sd * st.rng.normal();
+      }
+    }
+    const lamL = () => { const n = st.N / ((XP - 2 * R) * (H - 2 * R)); return 1 / (2 * Math.SQRT2 * n * 2 * R); };
+    const cv = SB.canvas("cv-eff", (ctx, w, h, self) => {
+      const P = pal(), F = wfit({ x: 10, y: 12, w: w - 20, h: h - 24 }, W, H), G = st.G; self._F = F;
+      ctx.strokeStyle = P.border; ctx.lineWidth = 2; ctx.strokeRect(F.x, F.y, F.w, F.h);
+      withA(ctx, 0.35, () => { ctx.fillStyle = P.surface; ctx.fillRect(F.X(XP), F.y, F.w / 2, F.h); });
+      const g0 = G.partition.gap[0], g1 = G.partition.gap[1];
+      ctx.strokeStyle = P.text; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(F.X(XP), F.Y(0)); ctx.lineTo(F.X(XP), F.Y(g0)); ctx.moveTo(F.X(XP), F.Y(g1)); ctx.lineTo(F.X(XP), F.Y(H)); ctx.stroke();
+      st.ghosts.forEach((q) => withA(ctx, q.life, () => { ctx.fillStyle = q.tag ? P.accent2 : P.accent; ctx.beginPath(); ctx.arc(F.X(q.x), F.Y(q.y), Math.max(1.6, R * F.s), 0, 2 * PI); ctx.fill(); }));
+      disks(ctx, F, G.p, (q) => (q.tag ? P.accent2 : P.accent), R + 0.3);
+      handle(ctx, F.X(XP), F.Y(g0), P.text, 10);
+      SB.label(ctx, `구멍 w = ${st.gap.toFixed(0)} px`, F.X(XP) + 16, F.Y(g0) - 14, { align: "left", size: 12, bold: true });
+      SB.label(ctx, "원료 (같은 수, 같은 온도)", F.X(XP / 2), F.y + F.h - 12, { size: 12, color: P.dim });
+      if (!narrowOf(w)) SB.label(ctx, "펌프로 계속 비움 →", F.x + F.w - 6, F.y + F.h - 12, { align: "right", size: 12, color: P.dim });
+      SB.label(ctx, "● 질량 1", F.X(XP) + 14, F.y + F.h - 30, { align: "left", size: 12, color: P.accent, bold: true });
+      SB.label(ctx, "● 질량 4", F.X(XP) + 14, F.y + F.h - 12, { align: "left", size: 12, color: P.accent2, bold: true });
+      const [a, b] = st.cnt, lam = lamL(), k = Th.knudsen(lam, st.gap);
+      SB.stat("eff-cnt", `${a} / ${b}`);
+      SB.stat("eff-ratio", b > 0 && a > 0 ? `${(a / b).toFixed(2)} ± ${((a / b) * Math.sqrt(1 / a + 1 / b)).toFixed(2)}` : "—");
+      SB.stat("eff-kn", `${(lam / st.gap).toFixed(2)} (λ ${lam.toFixed(0)} px)`);
+      SB.stat("eff-reg", k.regime);
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 400 });
+    SB.range("eff-n", (v) => String(v), (v) => { st.N = v; make(); cv.redraw(); });
+    SB.seg("eff-speed", (v) => (st.speed = Number(v)));
+    toggleBtn("eff-play", st);
+    $("eff-reset").addEventListener("click", () => { st.cnt = [0, 0]; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => (cv._F ? [{ id: "g", x: cv._F.X(XP), y: cv._F.Y(st.G.partition.gap[0]), r: 15 }] : []),
+      move: (id, x, y) => { if (id !== "g") return; const wy = (y - cv._F.y) / cv._F.s; setGap(Math.round(SB.clamp(2 * (H / 2 - wy), 4, 240))); },
+    });
+    SB.loop("cv-eff", () => {
+      if (!st.playing) return;
+      for (let s = 0; s < 2 * st.speed; s++) step(1 / 120);
+      st.ghosts.forEach((q) => { q.x += q.vx / 60; q.y += q.vy / 60; q.life -= 0.02; });
+      st.ghosts = st.ghosts.filter((q) => q.life > 0 && q.x < W && q.y > 0 && q.y < H);
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 4절 tangle: 다단 분리 */
+  SB.tangle("tg-stage", (v) => {
+    const a = Math.sqrt((v.M + v.dM) / v.M), x0 = Math.min(v.x0, 99.9) / 100, x1 = v.x1 / 100;
+    const n = x1 <= x0 ? 0 : Math.log((x1 / (1 - x1)) / (x0 / (1 - x0))) / Math.log(a);
+    return { a: a.toFixed(5), n: x1 <= x0 ? "0단(이미 도달)" : Math.ceil(n).toLocaleString("en-US") + "단" };
+  });
+
+  /* ================================================================ 5절 미니: 점성의 압력 무관성 */
+  {
+    const st = { L: 0.01, P: 1 };
+    const lamOf = (Pt) => Th.mfp(Pt * U.torr, 300, DIA.N2);
+    const etaR = (Pt) => 1 / (1 + 2 * lamOf(Pt) / st.L);
+    const cv = SB.canvas("cv-visc", (ctx, w, h, self) => {
+      const P = pal(), xs = logTicks(1e-5, 1e3, 0.05);
+      const C = SB.chart(ctx, { x: 52, y: 18, w: w - 52 - 16, h: h - 18 - 46 }, { x: [1e-5, 1e3], y: [0, 1.15], logX: true, xLabel: "압력 (Torr)", xTicks: [1e-5, 1e-3, 1e-1, 10, 1e3], xFmt: pow10Fmt, yTicks: [0, 0.5, 1],
+        series: [{ data: xs.map((p) => [p, etaR(p)]), color: P.accent, width: 2.8 }] });
+      self._C = C;
+      // n, λ (로그 눈금, 질적)
+      const ly = (v) => C.box.y + C.box.h - ((Math.log10(v) + 8) / 16) * C.box.h;
+      const Pk = (kB * 300) / (Math.SQRT2 * PI * DIA.N2 ** 2 * st.L) / U.torr; // Kn = 1
+      line(ctx, xs.map((p) => [C.X(p), ly(p / Pk)]), P.dim, 1.4, [5, 4]);
+      line(ctx, xs.map((p) => [C.X(p), ly(Pk / p)]), P.accent2, 1.4, [5, 4]);
+      SB.label(ctx, "n ∝ P", C.X(300), ly(300 / Pk) + 12, { size: 11, color: P.dim });
+      SB.label(ctx, "λ ∝ 1/P", C.X(3e-5), Math.max(C.box.y + 10, ly(Pk / 3e-5) - 14), { size: 11, color: P.accent2, align: "left" });
+      if (Pk > 1e-5 && Pk < 1e3) { SB.dashLine(ctx, C.X(Pk), C.box.y, C.X(Pk), C.box.y + C.box.h, P.faint); SB.label(ctx, "Kn = 1", C.X(Pk) + 4, C.box.y + C.box.h - 12, { align: "left", size: 11, color: P.dim }); }
+      SB.label(ctx, "η_eff / η", C.box.x + 4, C.box.y - 8, { align: "left", size: 12, bold: true, color: P.accent });
+      handle(ctx, C.X(st.P), C.Y(etaR(st.P)), P.accent, 9);
+      const lam = lamOf(st.P);
+      $("visc-r").textContent = `P = ${torrFmt(st.P)} · n = ${sci(Th.numberDensity(st.P * U.torr, 300), 2)} m⁻³ · λ = ${lfmt(lam)} · Kn = ${sci(lam / st.L, 2)} · η_eff/η = ${etaR(st.P).toFixed(3)}`;
+    }, { aspect: 0.5, minHeight: 270, maxHeight: 340 });
+    SB.seg("visc-L", (v) => { st.L = Number(v); cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; return C ? [{ id: "p", x: C.X(st.P), y: C.Y(etaR(st.P)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.P = Math.pow(10, -5 + 8 * SB.clamp((x - C.box.x) / C.box.w, 0, 1)); },
+    });
+  }
+
+  /* ================================================================ 5절 tangle: 수송 계수 */
+  SB.tangle("tg-visc", (v) => {
+    const d = v.d * 1e-10, m = (v.M * 1e-3) / Th.C.NA, eta = Th.viscosityHS(v.T, v.M, d), kap = 3.75 * (kB / m) * eta;
+    const n = 101325 / (kB * v.T), D = (0.375 * Math.sqrt((PI * kB * v.T) / m)) / (n * PI * d * d);
+    return { eta: (eta * 1e6).toPrecision(3) + " µPa·s", k: kap.toPrecision(3) + " W/(m·K)", D: (D * 1e4).toPrecision(3) + " cm²/s" };
+  });
+
+  /* ================================================================ 6절 tangle: 컨덕턴스 */
+  SB.tangle("tg-cond", (v) => {
+    const C = Th.conductance.tube(v.d / 100, v.L / 100, 293.15, 28.014), Se = Th.Seff(v.S * LPS, C);
+    return { C: sci(C / LPS, 3) + " L/s", Se: sci(Se / LPS, 3) + " L/s", pct: ((100 * Se) / (v.S * LPS)).toPrecision(3) + "%" };
+  });
+
+  /* ================================================================ 6절 미니: 유효 배기 속도 */
+  {
+    const st = { S: 200 };
+    let gC = () => 200;
+    const cv = SB.canvas("cv-seff", (ctx, w, h, self) => {
+      const P = pal(), C0 = gC(), smax = 5 * C0;
+      st.S = Math.min(st.S, smax);
+      const xs = Array.from({ length: 121 }, (_, i) => (smax * i) / 120);
+      const C = SB.chart(ctx, { x: 58, y: 16, w: w - 58 - 16, h: h - 16 - 46 }, { x: [0, smax], y: [0, 1.25 * C0], xLabel: "펌프 배기 속도 S (L/s)",
+        hlines: [{ y: C0, color: P.accent2, label: "상한 C", dash: [] }],
+        series: [{ data: xs.map((s) => [s, s]), color: P.faint, width: 1.4, dash: [4, 4] }, { data: xs.map((s) => [s, Th.Seff(s, C0)]), color: P.accent, width: 2.8 }] });
+      self._C = C; self._smax = smax;
+      const se = Th.Seff(st.S, C0);
+      handle(ctx, C.X(st.S), C.Y(se), P.accent, 9);
+      SB.label(ctx, "S_eff (L/s)", C.box.x + 4, C.box.y - 6, { align: "left", size: 12, bold: true, color: P.accent });
+      $("seff-r").textContent = `S = ${st.S.toFixed(0)} L/s → S_eff = ${se.toFixed(0)} L/s (S의 ${((100 * se) / st.S).toFixed(0)}%, C의 ${((100 * se) / C0).toFixed(0)}%)`;
+    }, { aspect: 0.48, minHeight: 250, maxHeight: 320 });
+    gC = SB.range("seff-c", (v) => v + " L/s", () => cv.redraw());
+    cv.redraw();
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; return C ? [{ id: "s", x: C.X(st.S), y: C.Y(Th.Seff(st.S, gC())), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.S = SB.clamp(((x - C.box.x) / C.box.w) * cv._smax, 1, cv._smax); },
+    });
+  }
+
+  /* ================================================================ 6절: 배기 곡선 */
+  {
+    const P0 = 1e5, PT = 10 * U.mtorr, TMAX = 150;
+    const st = { V: 0.05, S: 0.010, Q: 5e-3, tA: 20 };
+    const Pt = (t, Q = st.Q) => Th.pumpdown(t, P0, st.S, st.V, Q);
+    function solveS(t, Ptarget) {
+      let lo = Math.log(1e-4), hi = Math.log(2);
+      for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2, S = Math.exp(mid); if (Th.pumpdown(t, P0, S, st.V, st.Q) > Ptarget) lo = mid; else hi = mid; }
+      return Math.exp((lo + hi) / 2);
+    }
+    const yr = [1e-4, 2e3];
+    const cv = SB.canvas("cv-pump", (ctx, w, h, self) => {
+      const P = pal(), ts = Array.from({ length: 301 }, (_, i) => (TMAX * i) / 300);
+      const Pu = st.Q / st.S;
+      const series = [];
+      if ($("pump-noQ").checked) series.push({ data: ts.map((t) => [t, Pt(t, 0) / U.torr]), color: P.dim, width: 1.6, dash: [5, 4] });
+      series.push({ data: ts.map((t) => [t, Pt(t) / U.torr]), color: P.accent, width: 2.8 });
+      const C = SB.chart(ctx, { x: 64, y: 16, w: w - 64 - 18, h: h - 16 - 46 }, { x: [0, TMAX], y: yr, logY: true, xLabel: "시간 t (s)", yTicks: [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100, 1e3], yFmt: (v) => (v >= 1 ? String(v) : v >= 1e-3 ? v * 1e3 + "m" : pow10Fmt(v)),
+        hlines: [{ y: PT / U.torr, color: P.ok, label: "목표 10 mTorr" }, { y: Pu / U.torr, color: P.accent2, label: "Pu = Q/S", dash: [2, 3] }], series });
+      self._C = C;
+      SB.label(ctx, "P (Torr)", C.box.x + 4, C.box.y - 6, { align: "left", size: 12, bold: true });
+      const tt = Pu >= PT ? Infinity : (st.V / st.S) * Math.log((P0 - Pu) / (PT - Pu));
+      if (isFinite(tt) && tt < TMAX) { ctx.fillStyle = P.ok; ctx.beginPath(); ctx.arc(C.X(tt), C.Y(PT / U.torr), 5, 0, 2 * PI); ctx.fill(); SB.label(ctx, tt.toFixed(1) + " s", C.X(tt) + 8, C.Y(PT / U.torr) + 14, { align: "left", size: 12, color: P.ok, bold: true }); }
+      handle(ctx, C.X(st.tA), C.Y(Pt(st.tA) / U.torr), P.accent, 9);
+      handle(ctx, C.X(TMAX - 30), C.Y(SB.clamp(Pu / U.torr, yr[0], yr[1])), P.accent2, 9);
+      SB.stat("pump-S", sci(st.S / LPS, 3) + " L/s");
+      SB.stat("pump-tau", sci(st.V / st.S, 3) + " s");
+      SB.stat("pump-Q", sci(st.Q / LPS, 3) + " Pa·L/s");
+      SB.stat("pump-Pu", pfmt(Pu));
+      SB.stat("pump-t", isFinite(tt) ? tt.toFixed(1) + " s" : "도달 불가");
+    }, { aspect: 0.52, minHeight: 320, maxHeight: 440 });
+    SB.range("pump-V", (v) => v + " L", (v) => { st.V = v * LPS; cv.redraw(); });
+    $("pump-noQ").addEventListener("change", () => cv.redraw());
+    $("pump-reset").addEventListener("click", () => { st.S = 0.010; st.Q = 5e-3; st.tA = 20; cv.redraw(); });
+    const yInv = (C, y) => Math.pow(10, Math.log10(yr[0]) + ((C.box.y + C.box.h - y) / C.box.h) * (Math.log10(yr[1]) - Math.log10(yr[0])));
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; if (!C) return []; return [{ id: "a", x: C.X(st.tA), y: C.Y(Pt(st.tA) / U.torr), r: 14 }, { id: "b", x: C.X(TMAX - 30), y: C.Y(SB.clamp(st.Q / st.S / U.torr, yr[0], yr[1])), r: 14 }]; },
+      move: (id, x, y) => {
+        const C = cv._C; if (!C) return;
+        const Ptorr = SB.clamp(yInv(C, y), 2e-4, 700);
+        if (id === "a") { st.tA = SB.clamp(((x - C.box.x) / C.box.w) * TMAX, 2, TMAX - 20); const Pa = Ptorr * U.torr; if (Pa > st.Q / 2 + 1e-9) st.S = SB.clamp(solveS(st.tA, Pa), 1e-4, 2); }
+        if (id === "b") { const Pu = SB.clamp(Ptorr * U.torr, 1e-3, 60); st.Q = Pu * st.S; }
+      },
+    });
+  }
+
+  /* ================================================================ 6절 게임: 로드락 배기 설계 */
+  {
+    const V = 0.040, Q = 2e-3, PULT = 0.1, PT = 10 * U.mtorr, TT = 40, P0 = 1e5, TK = 293.15, MA = 28.97, LMAX = 10, LMIN = 1.5;
+    const eta = Th.viscosityHS(TK, MA, DIA.air);
+    const PC = { 8: 1.0, 16: 1.5, 30: 2.4, 60: 4.0 };
+    const cost = (S0, d, L) => PC[S0] + 0.0025 * d * L + (L < 4 ? 1.5 : 0);
+    const Ct = (dm, L, Pb) => Th.conductance.tube(dm, L, TK, MA) + Th.conductance.viscousTube(dm, L, Pb, eta);
+    const Sp = (S0, Pp) => (Pp > PULT ? S0 * LPS * (1 - PULT / Pp) : 0);
+    function through(P, dm, L, S0) {
+      let lo = 0, hi = P;
+      for (let i = 0; i < 46; i++) { const Pp = (lo + hi) / 2; if (Ct(dm, L, (P + Pp) / 2) * (P - Pp) - Sp(S0, Pp) * Pp > 0) lo = Pp; else hi = Pp; }
+      const Pp = (lo + hi) / 2; return Sp(S0, Pp) * Pp;
+    }
+    function run(S0, dmm, L, rec) {
+      const dm = dmm / 1000; let P = P0, t = 0, hit = null; const pts = rec ? [[0, P0 / U.torr]] : null;
+      while (t < 120) {
+        const q = through(P, dm, L, S0), dPdt = (Q - q) / V;
+        if (hit == null && P <= PT) { hit = t; if (!rec) break; }
+        if (dPdt >= 0) { if (rec) pts.push([120, P / U.torr]); break; }
+        const dt = Math.min((0.04 * P) / Math.abs(dPdt), 1.0);
+        P += dPdt * dt; t += dt;
+        if (rec) pts.push([t, P / U.torr]);
+      }
+      return { t: hit, pts };
+    }
+    function base(S0, dmm, L) { let lo = Math.log(PULT * 1.0001), hi = Math.log(P0); for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (through(Math.exp(m), dmm / 1000, L, S0) > Q) hi = m; else lo = m; } return Math.exp((lo + hi) / 2); }
+    let best = null;
+    function findBest() {
+      best = { c: Infinity };
+      for (const S0 of [8, 16, 30, 60]) for (const d of [16, 25, 40, 50, 63]) for (let L = LMIN; L <= LMAX + 1e-9; L += 0.5) {
+        const c = cost(S0, d, L); if (c >= best.c) continue;
+        const r = run(S0, d, L, false); if (r.t != null && r.t <= TT) best = { c, S0, d, L, t: r.t };
+      }
+    }
+    const st = { S0: 30, d: 25, L: 6, res: null };
+    const recompute = () => { st.res = run(st.S0, st.d, st.L, true); st.base = base(st.S0, st.d, st.L); };
+    recompute();
+    const cv = SB.canvas("cv-design", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w);
+      // 배치도
+      const T = { x: 16, y: 30, w: w - 32, h: 96 }, cx1 = T.x + (narrow ? 64 : 90), x0 = cx1 + 6, x1 = T.x + T.w - 30, Lx = (L) => x0 + ((L - 0) / LMAX) * (x1 - x0);
+      self._Lx = Lx; self._T = T; self._x0 = x0; self._x1 = x1;
+      ctx.fillStyle = P.surface; ctx.strokeStyle = P.dim; ctx.lineWidth = 1.5; ctx.fillRect(T.x, T.y + 10, cx1 - T.x, 62); ctx.strokeRect(T.x, T.y + 10, cx1 - T.x, 62);
+      SB.label(ctx, "로드락 40 L", (T.x + cx1) / 2, T.y + 41, { size: 12, bold: true });
+      const xb = Lx(4);
+      SB.dashLine(ctx, xb, T.y, xb, T.y + T.h, P.faint);
+      SB.label(ctx, "클린룸", xb - 6, T.y + T.h - 6, { align: "right", size: 11, color: P.dim });
+      SB.label(ctx, "서브팹", xb + 6, T.y + T.h - 6, { align: "left", size: 11, color: P.dim });
+      const thick = 2 + ((st.d - 16) / (63 - 16)) * 12, px = Lx(st.L);
+      ctx.strokeStyle = P.dim; ctx.lineWidth = thick; ctx.lineCap = "butt"; ctx.beginPath(); ctx.moveTo(cx1, T.y + 41); ctx.lineTo(px, T.y + 41); ctx.stroke();
+      SB.label(ctx, `⌀${st.d} mm × ${st.L.toFixed(1)} m`, (cx1 + px) / 2, T.y + 41 - thick / 2 - 12, { size: 12 });
+      ctx.fillStyle = P.bg; ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(px, T.y + 41, 17, 0, 2 * PI); ctx.fill(); ctx.stroke();
+      SB.label(ctx, String(st.S0), px, T.y + 41, { size: 11, bold: true, color: P.accent2 });
+      handle(ctx, px, T.y + 72, P.accent2, 9);
+      // 배기 곡선
+      const B = { x: 64, y: T.y + T.h + 24, w: w - 64 - 18, h: h - (T.y + T.h + 24) - 46 };
+      const series = [];
+      if ($("des-opt").checked && best && isFinite(best.c)) series.push({ data: run(best.S0, best.d, best.L, true).pts, color: P.ok, width: 1.8, dash: [6, 4] });
+      series.push({ data: st.res.pts, color: P.accent, width: 2.6 });
+      const C = SB.chart(ctx, B, { x: [0, 120], y: [1e-3, 1e3], logY: true, xLabel: "시간 (s)", yTicks: [1e-3, 1e-2, 0.1, 1, 10, 100, 1e3], yFmt: (v) => (v >= 1 ? String(v) : v * 1e3 + "m"),
+        bands: [], series, hlines: [{ y: PT / U.torr, color: P.ok, label: "10 mTorr" }], vlines: [{ x: TT, color: P.ok, label: "40 s" }] });
+      withA(ctx, 0.5, () => { ctx.fillStyle = SB.color("ok-soft"); ctx.fillRect(C.box.x, C.Y(PT / U.torr), C.X(TT) - C.box.x, C.box.y + C.box.h - C.Y(PT / U.torr)); });
+      SB.label(ctx, "P (Torr)", C.box.x + 4, C.box.y - 8, { align: "left", size: 12, bold: true });
+      const ok = st.res.t != null && st.res.t <= TT, c = cost(st.S0, st.d, st.L);
+      if (st.res.t != null && st.res.t <= 120) { ctx.fillStyle = ok ? P.ok : P.bad; ctx.beginPath(); ctx.arc(C.X(st.res.t), C.Y(PT / U.torr), 5.5, 0, 2 * PI); ctx.fill(); }
+      const seff = through(PT, st.d / 1000, st.L, st.S0) / PT / LPS;
+      SB.stat("des-t", st.res.t != null ? st.res.t.toFixed(1) + " s" : "120 s 넘음");
+      SB.stat("des-base", pfmt(st.base));
+      SB.stat("des-seff", sci(seff, 3) + " L/s");
+      SB.stat("des-cost", c.toFixed(2) + (best && isFinite(best.c) ? ` <small>(최소 ${best.c.toFixed(2)})</small>` : ""));
+      let verdict;
+      if (ok) { const r = best ? c / best.c : 2; verdict = r <= 1.05 ? `<span style="color:var(--ok)">★★★ 최적</span>` : r <= 1.25 ? `<span style="color:var(--ok)">★★ 성공</span>` : `<span style="color:var(--ok)">★ 성공</span> <small>더 싸게?</small>`; }
+      else verdict = `<span style="color:var(--bad)">${st.base > PT ? "베이스가 목표보다 높음" : "시간 초과"}</span>`;
+      SB.stat("des-ok", verdict);
+    }, { aspect: 0.62, minHeight: 400, maxHeight: 500 });
+    SB.seg("des-S", (v) => { st.S0 = Number(v); recompute(); cv.redraw(); });
+    SB.seg("des-d", (v) => { st.d = Number(v); recompute(); cv.redraw(); });
+    $("des-opt").addEventListener("change", () => cv.redraw());
+    SB.drag(cv, {
+      handles: () => (cv._Lx ? [{ id: "L", x: cv._Lx(st.L), y: cv._T.y + 41, r: 18 }, { id: "L", x: cv._Lx(st.L), y: cv._T.y + 72, r: 14 }] : []),
+      move: (id, x) => { if (id !== "L") return; const L = Math.round(SB.clamp(((x - cv._x0) / (cv._x1 - cv._x0)) * LMAX, LMIN, LMAX) * 2) / 2; if (L !== st.L) { st.L = L; recompute(); } },
+    });
+    setTimeout(() => { findBest(); cv.redraw(); }, 60);
+  }
+
+  /* ================================================================ 6절 드릴 */
+  SB.drill("drill-cond", () => {
+    const kind = rpick(["orifice", "tube", "pump"]);
+    const vb = Th.speeds(28.97, 293.15).vmean;
+    if (kind === "orifice") {
+      const d = rpick([1, 2, 2.5, 4, 5, 8, 10, 15]), A = (PI * d * d) / 4, C = (0.25 * vb * A * 1e-4) / LPS;
+      return { q: `<p>20 °C 공기의 분자류에서 지름 ${d} cm인 얇은 구멍의 컨덕턴스(L/s)는?</p>`, answer: C, label: "C =", unit: "L/s", tol: "2%", sol: `\\(A = \\pi d^2/4 = ${A.toPrecision(4)}\\) cm², \\(C = 11.6\\,A = ${C.toPrecision(3)}\\) L/s` };
+    }
+    if (kind === "tube") {
+      const d = rpick([1.6, 2.5, 4, 5, 10]), L = rpick([50, 100, 200, 300, 500]), S = rpick([10, 30, 100, 300, 1000]);
+      const C = Th.conductance.longTube(d / 100, L / 100, 293.15, 28.97) / LPS, Se = (S * C) / (S + C);
+      return { q: `<p>배기 속도 ${S} L/s인 펌프를 지름 ${d} cm, 길이 ${L} cm인 긴 관으로 연결했다(20 °C 공기, 분자류, 긴 관 공식만 사용). 관의 컨덕턴스와 유효 배기 속도는?</p>`, answer: [C, Se], label: ["C =", "S_eff ="], unit: ["L/s", "L/s"], tol: "2%",
+        sol: `\\(C = 12.1\\,d^3/L = 12.1\\times${d}^3/${L} = ${C.toPrecision(3)}\\) L/s, \\(S_\\mathrm{eff} = SC/(S+C) = ${Se.toPrecision(3)}\\) L/s` };
+    }
+    const V = rpick([20, 30, 50, 100]), S = rpick([5, 10, 20, 40]), Pf = rpick([100, 10, 1]), t = (V / S) * Math.log(1e5 / Pf);
+    return { q: `<p>부피 ${V} L인 챔버를 일정한 배기 속도 ${S} L/s로 \\(1.0\\times10^5\\) Pa에서 ${Pf} Pa까지 퍼내는 데 걸리는 시간은(탈기체 무시)?</p>`, answer: t, label: "t =", unit: "s", tol: "1.5%",
+      sol: `\\(\\tau = V/S = ${(V / S).toPrecision(3)}\\) s, \\(t = \\tau\\ln(P_0/P) = ${(V / S).toPrecision(3)}\\times${Math.log(1e5 / Pf).toFixed(3)} = ${t.toPrecision(3)}\\) s` };
+  });
+
+  /* ================================================================ 7절: 진공 게이지 */
+  {
+    const GAS = { N2: { a: 1, k: 1, S: 1 }, Ar: { a: 0.63, k: 0.683, S: 1.29 }, He: { a: 1.1, k: 5.98, S: 0.18 }, H2: { a: 1.5, k: 7.2, S: 0.46 } };
+    const PTR = 10, EPS = 1e-4;
+    const st = { g: "N2", P: 1 };
+    const Hg = (P, g) => { const G = GAS[g], x = (G.a * P) / (G.k * PTR); return (G.k * x) / (1 + x); };
+    const pirani = (P, g) => { const H = Hg(P, g); if (H < EPS) return { lo: true }; if (H >= 0.995) return { hi: true }; return { v: (H / (1 - H)) * PTR }; };
+    const XR = [1e-11, 1e3];
+    const cv = SB.canvas("cv-gauge", (ctx, w, h, self) => {
+      const P = pal(), xs = logTicks(XR[0], XR[1], 0.05), G = GAS[st.g];
+      const top = { x: 58, y: 44, w: w - 58 - 16, h: Math.round((h - 44 - 46) * 0.55) };
+      const C = SB.chart(ctx, top, { x: XR, y: [1e-6, 10], logX: true, logY: true, xTicks: [1e-11, 1e-8, 1e-5, 1e-2, 10], xFmt: pow10Fmt, yTicks: [1e-6, 1e-4, 1e-2, 1], yFmt: pow10Fmt, hbands: [{ y0: 1e-6, y1: EPS, color: SB.color("bad-soft") }],
+        series: [{ data: xs.map((p) => [p, Hg(p, "N2")]), color: P.accent2, width: 2.2 }].concat(st.g === "N2" ? [] : [{ data: xs.map((p) => [p, Hg(p, st.g)]), color: P.accent, width: 2.6 }]) });
+      self._C = C;
+      SB.label(ctx, "피라니 열손실 (N₂ 포화값 = 1, 로그) · 빨간 띠: 잡음 바닥", C.box.x + 4, C.box.y - 8, { align: "left", size: 11, color: P.dim });
+      const Hn = Hg(st.P, st.g), hx = C.X(st.P), hy = C.Y(SB.clamp(Hn, 1e-6, 10));
+      const rd = pirani(st.P, st.g);
+      if (rd.v && st.g !== "N2") { const xi = C.X(SB.clamp(rd.v, XR[0], XR[1])); SB.arrow(ctx, hx, hy, xi, hy, { color: P.dim, width: 1.4, dash: [4, 3], head: 7 }); SB.dashLine(ctx, xi, hy, xi, C.box.y + C.box.h, P.dim); }
+      // 범위 막대
+      const bot = { x: top.x, y: top.y + top.h + 30, w: top.w, h: h - (top.y + top.h + 30) - 30 };
+      const X = (p) => bot.x + ((Math.log10(p) - Math.log10(XR[0])) / (Math.log10(XR[1]) - Math.log10(XR[0]))) * bot.w;
+      const rows = [["CDG 1000", 0.1, 1000, P.accent], ["CDG 1", 1e-4, 1, P.accent], ["피라니", 1e-3, 10, P.accent], ["이온 B–A", 1e-10, 1e-3, P.accent2]];
+      const rh = bot.h / rows.length;
+      rows.forEach(([nm, a, b, col], i) => { const y = bot.y + i * rh; withA(ctx, 0.7, () => { ctx.fillStyle = col; ctx.fillRect(X(a), y + 3, X(b) - X(a), rh - 8); }); SB.label(ctx, nm, X(a) + 4, y + rh / 2 - 1, { align: "left", size: 11, bold: true, bg: col, color: "#fff" }); });
+      ctx.fillStyle = P.dim; ctx.font = font(11, true); ctx.textAlign = "center"; ctx.textBaseline = "top";
+      [1e-11, 1e-8, 1e-5, 1e-2, 10].forEach((p) => ctx.fillText(pow10Fmt(p), X(p), bot.y + bot.h + 4));
+      ctx.textAlign = "right"; ctx.fillText("Torr", bot.x + bot.w, bot.y + bot.h + 16);
+      SB.dashLine(ctx, hx, C.box.y, hx, bot.y + bot.h, P.text, [3, 3]);
+      handle(ctx, hx, hy, P.accent, 9);
+      // 읽기
+      const p = st.P;
+      SB.stat("gauge-true", sci(p, 3) + " Torr");
+      SB.stat("gauge-cdg", p < 0.1 ? "하한 미만" : p > 1000 ? "범위 초과" : sci(p, 3) + " Torr");
+      SB.stat("gauge-cdg1", p < 1e-4 ? "하한 미만" : p > 1 ? "범위 초과" : sci(p, 3) + " Torr");
+      SB.stat("gauge-pir", rd.lo ? "&lt; 10⁻³ (하한)" : rd.hi ? "범위 초과" : sci(rd.v, 3) + " Torr");
+      const ion = G.S * p;
+      SB.stat("gauge-ion", p > 1e-3 ? "꺼짐(과압)" : ion < 1e-10 ? "&lt; 10⁻¹⁰ (X선 한계)" : sci(ion, 3) + " Torr");
+    }, { aspect: 0.6, minHeight: 380, maxHeight: 480 });
+    SB.seg("gauge-gas", (v) => { st.g = v; cv.redraw(); });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; return C ? [{ id: "p", x: C.X(st.P), y: C.Y(SB.clamp(Hg(st.P, st.g), 1e-6, 10)), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C; if (!C) return; st.P = Math.pow(10, -11 + 14 * SB.clamp((x - C.box.x) / C.box.w, 0, 1)); },
+    });
+  }
+})();
+</script>
+</body>
+</html>
