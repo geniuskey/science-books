@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "이상 기체",
       "판데르발스"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "first-law",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "내부 에너지",
       "엔탈피"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "second-law",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "엔트로피",
       "카르노 효율"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "free-energy",
@@ -63,8 +60,7 @@ SB.registerCourse({
      "tags": [
       "깁스 자유 에너지",
       "맥스웰 관계식"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "겹침수",
       "볼츠만 엔트로피"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "boltzmann",
@@ -92,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "볼츠만 인자",
       "분배 함수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "quantum-statistics",
@@ -104,8 +98,7 @@ SB.registerCourse({
      "tags": [
       "페르미–디랙",
       "플랑크 법칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "kinetic-theory-vacuum",
@@ -275,8 +268,93 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "equations-of-state": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 10,
+   "drills": 5,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "first-law": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 12,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "second-law": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 11,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "free-energy": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 9,
+   "drills": 4,
+   "minis": 4,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "microstates": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "boltzmann": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 6,
+   "hero": 1
+  },
+  "quantum-statistics": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  }
+ },
+ "published": 7,
  "total": 19,
  "url": "https://science.euiyun.com/thermal-physics/"
 });

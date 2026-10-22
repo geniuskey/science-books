@@ -200,12 +200,12 @@ SB.registerCatalog({
    "level": "대학 2–3학년 · 반도체 기초",
    "description": "온도와 상태 방정식, 열역학 제1·2법칙, 자유 에너지에서 출발해 미시 상태와 볼츠만 분포, 양자 통계, 기체 운동론과 진공, 상전이와 이성분 상태도, 화학 평형과 반응 속도, 표면·흡착과 박막 성장, 전기화학, 확산과 열전달까지 — 분자를 직접 부딪치고 에너지를 나눠 주며 공정 챔버 속 열과 물질의 움직임을 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/thermal-physics/",
-   "published": 0,
+   "published": 7,
    "total": 19,
    "color": "#c2410c",
    "colorDark": "#fb923c",
-   "sims": 0,
-   "problems": 0
+   "sims": 45,
+   "problems": 112
   }
  ]
 });
