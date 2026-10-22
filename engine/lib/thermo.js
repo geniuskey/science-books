@@ -203,10 +203,13 @@
     const P = (V) => T.vdwReduced(Tr, V);
     const dP = (V) => (-24 * Tr) / ((3 * V - 1) ** 2) + 6 / (V * V * V);
     const vmin = T.bisect(dP, 0.34, 1), vmax = T.bisect(dP, 1, 50);
-    const plo = Math.max(P(vmin), 1e-9), phi = P(vmax);
+    const plo = Math.max(P(vmin), 1e-12), phi = P(vmax);
+    // 근은 단조 구간마다 이분법으로(3차식 공식은 아주 낮은 압력에서 기체 근의 정밀도를 잃는다)
     const roots = (p) => {
-      // 환산 3차식: 3pV³ − (p + 8Tr)V² + 9V − 3 = 0 → V³ − (p+8Tr)/(3p) V² + 3/p V − 1/p
-      return cubicReal(-(p + 8 * Tr) / (3 * p), 3 / p, -1 / p).filter((v) => v > 1 / 3).sort((x, y) => x - y);
+      const vl = T.bisect((V) => P(V) - p, 1 / 3 + 1e-12, vmin, 1e-14);
+      let hiV = vmax * 2; while (P(hiV) > p && hiV < 1e12) hiV *= 2;
+      const vg = T.bisect((V) => P(V) - p, vmax, hiV, 1e-14);
+      return isFinite(vl) && isFinite(vg) ? [vl, NaN, vg] : [];
     };
     const area = (p) => {
       const r = roots(p); if (r.length < 3) return NaN;
@@ -817,6 +820,7 @@
    * opt = {n, W, H, r, m, T(kT), seed, species:[{n, m, r, tag}], partition:{x, gap:[y0,y1] | null}}
    * 벽: walls.{left,right,top,bottom} = null(탄성 반사) | {T}(열벽: 반사 때 속도를 그 온도로 다시 뽑음)
    * piston: {x, v, M, F} 를 주면 오른쪽 벽이 움직이는 피스톤(질량 M, 바깥 힘 F).
+   *   피스톤이 정해진 속도로 움직여야 하면(준정적 압축 등) M을 아주 크게(예: 1e9) 두고 매 step 전에 piston.v를 다시 정한다.
    * → G {p[], step(dt), kT(filter), speeds(filter), impulse(벽에 준 운동량 누적), pressure(), reset}
    */
   T.gas2d = function (opt) {
