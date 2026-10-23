@@ -229,7 +229,7 @@ SB.registerCatalog({
    "color": "#4338ca",
    "colorDark": "#818cf8",
    "sims": 120,
-   "problems": 273
+   "problems": 272
   }
  ]
 });

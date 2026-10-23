@@ -452,7 +452,7 @@ SB.registerCourse({
    "hero": 1
   },
   "thermal-optical-properties": {
-   "problems": 17,
+   "problems": 16,
    "examples": 8,
    "sims": 7,
    "figures": 13,
