@@ -136,8 +136,7 @@ SB.registerCourse({
      "tags": [
       "조성적 과냉",
       "구조 영역 모형"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -218,8 +217,7 @@ SB.registerCourse({
      "tags": [
       "열팽창",
       "굴절률"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "degradation-reliability",
@@ -386,9 +384,33 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 6,
    "hero": 1
+  },
+  "solidification-growth": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "thermal-optical-properties": {
+   "problems": 0,
+   "examples": 6,
+   "sims": 4,
+   "figures": 8,
+   "drills": 2,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 9,
+ "published": 11,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
