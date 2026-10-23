@@ -263,7 +263,9 @@
   M.densityFrom = (n, A, Vc_nm3) => (n * A) / (Vc_nm3 * 1e-21 * C.NA);
   /** 구조 이름·원자 반지름(nm)·몰 질량으로 이론 밀도. HCP는 c/a(기본 이상값 1.633) */
   M.theoreticalDensity = function (struct, R, A, ca = sqrt(8 / 3)) {
-    const s = M.cells[struct], a = s.a(R);
+    const s = M.cells[struct];
+    // HCP: c/a < 이상값이면 층 사이 원자가 먼저 닿는다 → a = 2R/√(1/3 + (c/a)²/4)
+    const a = struct === "HCP" && ca < sqrt(8 / 3) ? (2 * R) / sqrt(1 / 3 + (ca * ca) / 4) : s.a(R);
     const Vc = struct === "HCP" ? ((3 * sqrt(3)) / 2) * a * a * (ca * a) : a ** 3;
     return M.densityFrom(s.n, A, Vc);
   };
