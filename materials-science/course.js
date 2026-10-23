@@ -152,8 +152,7 @@ SB.registerCourse({
      "tags": [
       "열처리",
       "배선 금속"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "ceramics-glasses",
@@ -228,8 +227,7 @@ SB.registerCourse({
      "tags": [
       "일렉트로마이그레이션",
       "블랙 식"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "characterization",
@@ -397,20 +395,44 @@ SB.registerCourse({
    "predicts": 4,
    "hero": 1
   },
+  "metals-alloys": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 6,
+   "figures": 15,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
   "thermal-optical-properties": {
+   "problems": 17,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "degradation-reliability": {
    "problems": 0,
-   "examples": 6,
-   "sims": 4,
-   "figures": 8,
+   "examples": 5,
+   "sims": 5,
+   "figures": 7,
    "drills": 2,
-   "minis": 4,
+   "minis": 2,
    "tangles": 3,
-   "steps": 2,
-   "predicts": 3,
+   "steps": 3,
+   "predicts": 4,
    "hero": 1
   }
  },
- "published": 11,
+ "published": 13,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
