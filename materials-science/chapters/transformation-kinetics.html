@@ -1,0 +1,1786 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>상변태 속도론 · 재료과학 · SciBook</title>
+<meta name="description" content="고체 속 균질·불균질 핵생성과 변형 에너지, 핵생성·성장 속도와 C 곡선, JMAK 식과 아브라미 지수, TTT·CCT 도표와 강의 열처리, 마르텐사이트, 석출 경화와 시효, 오스트발트 숙성, 스피노달 분해를 격자 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/materials-science/chapters/transformation-kinetics.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="상변태 속도론 · 재료과학 · SciBook">
+<meta property="og:description" content="고체 속 균질·불균질 핵생성과 변형 에너지, 핵생성·성장 속도와 C 곡선, JMAK 식과 아브라미 지수, TTT·CCT 도표와 강의 열처리, 마르텐사이트, 석출 경화와 시효, 오스트발트 숙성, 스피노달 분해를 격자 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/materials-science/chapters/transformation-kinetics.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "상변태 속도론 · 재료과학 · SciBook", "headline": "09 상변태 속도론", "url": "https://science.euiyun.com/materials-science/chapters/transformation-kinetics.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "고체 속 균질·불균질 핵생성과 변형 에너지, 핵생성·성장 속도와 C 곡선, JMAK 식과 아브라미 지수, TTT·CCT 도표와 강의 열처리, 마르텐사이트, 석출 경화와 시효, 오스트발트 숙성, 스피노달 분해를 격자 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 9, "dateModified": "2026-10-23", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/materials-science/#book", "name": "재료과학", "url": "https://science.euiyun.com/materials-science/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "재료과학", "item": "https://science.euiyun.com/materials-science/"}, {"@type": "ListItem", "position": 3, "name": "09 상변태 속도론", "item": "https://science.euiyun.com/materials-science/chapters/transformation-kinetics.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/materials.js"></script>
+<style>
+  .tk-note { font-size: 13.5px; color: var(--text-dim); margin: 0; }
+  .tk-task { font-size: 14px; margin: 0; line-height: 1.5; }
+</style>
+</head>
+<body data-chapter="transformation-kinetics">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="phase-diagrams-microstructure diffusion-in-materials">
+    <div class="eyebrow">Chapter 09</div>
+    <h1>상변태 속도론</h1>
+    <p class="lead">상태도는 "충분히 오래 기다리면 무엇이 되는가"를 알려 줄 뿐, "얼마나 걸리는가"는 말해 주지 않는다. 같은 0.8 wt% C 강도 천천히 식히면 연한 펄라이트가 되고, 물에 담그면 유리처럼 단단한 마르텐사이트가 된다. 알루미늄–구리 합금은 상온에 며칠 두기만 해도 강해지고, 너무 뜨겁게 오래 두면 다시 약해진다. 이 차이는 모두 <b>속도</b>에서 나온다. 새 상은 작은 핵으로 태어나야 하고(핵생성), 원자가 확산해 와야 자란다(성장). 둘 다 온도에 따라 정반대로 움직이므로, 변태는 중간 온도에서 가장 빠르다. 이 장은 고체 속 핵생성에서 출발해 존슨–멜–아브라미 식, TTT·CCT 도표와 강의 열처리, 확산 없는 마르텐사이트, 석출 경화와 오스트발트 숙성, 핵생성 장벽이 아예 없는 스피노달 분해까지 간다. 아래 격자에서 색 조각 하나하나가 새 상의 결정립이다. 핵이 무작위로 생기고 같은 속도로 자라다 서로 부딪혀 멈춘다. 오른쪽 곡선이 그렇게 만들어지는 S자 변태 분율이다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">누르면 그 자리에 핵을 심는다</span></div>
+    <ul class="objectives">
+      <li>고체 속 핵생성의 \(\Delta G(r)\)에 계면 에너지와 변형 에너지 \(\Delta G_s\)를 넣어 임계 반지름 \(r^*\)와 장벽 \(\Delta G^*\)를 계산하고, 결정립계·기판 위 불균질 핵생성의 형상 인자 \(S(\theta)\)를 구한다.</li>
+      <li>핵생성 속도와 성장 속도가 과냉도에 따라 반대로 변하는 이유를 설명하고, 그 곱이 TTT 도표의 C 곡선과 코를 만드는 과정을 보인다.</li>
+      <li>존슨–멜–아브라미(JMAK) 식 \(f = 1-\exp(-kt^n)\)을 확장 부피로 유도하고, 아브라미 그림에서 지수 \(n\)과 핵생성·성장 방식을 읽는다.</li>
+      <li>TTT·CCT 도표 위에서 냉각 경로를 그려 가산 법칙으로 변태 분율과 최종 조직(펄라이트·베이나이트·마르텐사이트)을 판정하고, 임계 냉각 속도를 구한다.</li>
+      <li>마르텐사이트 변태의 무확산 전단 기구, 베인 대응, 코이스티넨–마르부르거 식과 앤드루스 \(M_s\) 식으로 잔류 오스테나이트를 계산한다.</li>
+      <li>Al–Cu 합금의 용체화–급랭–시효와 시효 경화 곡선(자름→우회 전환, 과시효)을 설명하고, LSW 이론 \(\bar r^3-\bar r_0^3 = Kt\)로 석출물 조대화를 계산한다.</li>
+      <li>스피노달 분해와 핵생성–성장을 자유 에너지 곡률로 구별하고, 칸–힐리아드 식의 가장 빨리 자라는 파장 \(\lambda_m\)을 구한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="nucleation">
+    <h2>고체 속 핵생성: 계면 에너지와 변형 에너지</h2>
+    <p>상태도에서 어떤 온도의 평형 상이 바뀌어도 새 상이 곧바로 나타나지는 않는다. 새 상은 처음에 원자 수십–수백 개짜리 작은 덩어리, 곧 <span class="term">핵</span><span class="en">(nucleus)</span>으로 시작해야 하는데, 작은 덩어리는 부피에 비해 표면이 크다. 부피는 자유 에너지를 낮추지만(구동력) 새로 생긴 계면은 에너지를 올린다. 이 경쟁은 열·통계물리 책에서 액체 방울과 박막의 <a href="../../thermal-physics/chapters/surfaces-thin-films.html#nucleation">고전 핵생성</a>으로 이미 보았다. 고체 속에서는 항이 하나 더 붙는다. 새 상은 모상과 부피·격자 상수가 달라 주위 격자를 밀고 당기며, 그 탄성 에너지 \(\Delta G_s\)가 구동력을 깎는다.</p>
+    <div class="formula">$$\Delta G(r) = -\frac43\pi r^3\left(\Delta G_v-\Delta G_s\right) + 4\pi r^2\gamma,\qquad \Delta G_v = \frac{\Delta H_v\,\Delta T}{T_e}$$<div class="where">\(\Delta G_v\)[J/m³]는 단위 부피당 화학적 구동력(평형 온도 \(T_e\) 아래 과냉 \(\Delta T\)에 비례), \(\Delta G_s\)[J/m³]는 단위 부피당 변형 에너지, \(\gamma\)[J/m²]는 핵과 모상 사이의 계면 에너지다. 액체 속 핵생성에서는 \(\Delta G_s = 0\)이다.</div></div>
+    <p>\(d\Delta G/dr = 0\)에서 곡선의 꼭대기를 찾으면 <span class="term">임계 반지름</span><span class="en">(critical radius)</span>과 <span class="term">핵생성 장벽</span><span class="en">(nucleation barrier)</span>을 얻는다.</p>
+    <div class="formula">$$r^* = \frac{2\gamma}{\Delta G_v-\Delta G_s},\qquad \Delta G^* = \frac{16\pi\gamma^3}{3\left(\Delta G_v-\Delta G_s\right)^2}$$<div class="where">\(r^*\)보다 작은 덩어리(<span class="term">엠브리오</span><span class="en">(embryo)</span>)는 줄어드는 쪽이 에너지가 낮아 대부분 사라지고, \(r^*\)를 넘은 덩어리는 자랄수록 에너지가 낮아진다. \(\Delta G^*\)는 열 요동으로 넘어야 할 언덕이다. \(\Delta G_v\le\Delta G_s\)이면 아무리 과냉해도 그 모양의 핵은 생기지 않는다.</div></div>
+    <p>계면의 성격이 \(\gamma\)와 \(\Delta G_s\)를 함께 정한다. 두 격자의 원자면이 그대로 이어지는 <span class="term">정합 계면</span><span class="en">(coherent interface)</span>은 \(\gamma\)가 작지만(0.2 J/m² 이하) 격자 불일치를 탄성 변형으로 모두 받아 \(\Delta G_s\)가 크다. 불일치가 커지면 일정 간격마다 전위가 끼어드는 <span class="term">반정합 계면</span><span class="en">(semicoherent interface)</span>이 되고, 완전히 어긋나면 <span class="term">비정합 계면</span><span class="en">(incoherent interface)</span>이 된다. 비정합 계면은 변형 에너지는 작지만 \(\gamma\)가 0.5–1 J/m²로 크다. 그래서 고체 속 첫 석출물은 대개 정합 계면을 가진 작은 원반·판 모양이다. 원반은 같은 부피에서 변형 에너지가 가장 작은 모양이기 때문이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 270" role="img" aria-label="정합, 반정합, 비정합 계면의 원자 배열 비교">
+        <g id="ifc-grid">
+          <!-- 정합 -->
+          <g transform="translate(30,30)">
+            <rect x="0" y="0" width="220" height="190" class="f-surface" stroke="var(--border)"/>
+            <rect x="0" y="95" width="220" height="95" fill="var(--accent-soft, rgba(67,56,202,.10))"/>
+            <g fill="var(--text-dim)">
+              <circle cx="20" cy="18" r="6"/><circle cx="56" cy="18" r="6"/><circle cx="92" cy="18" r="6"/><circle cx="128" cy="18" r="6"/><circle cx="164" cy="18" r="6"/><circle cx="200" cy="18" r="6"/>
+              <circle cx="20" cy="50" r="6"/><circle cx="56" cy="50" r="6"/><circle cx="92" cy="50" r="6"/><circle cx="128" cy="50" r="6"/><circle cx="164" cy="50" r="6"/><circle cx="200" cy="50" r="6"/>
+              <circle cx="20" cy="82" r="6"/><circle cx="56" cy="82" r="6"/><circle cx="92" cy="82" r="6"/><circle cx="128" cy="82" r="6"/><circle cx="164" cy="82" r="6"/><circle cx="200" cy="82" r="6"/>
+            </g>
+            <g fill="var(--accent)">
+              <circle cx="20" cy="112" r="6"/><circle cx="56" cy="112" r="6"/><circle cx="92" cy="112" r="6"/><circle cx="128" cy="112" r="6"/><circle cx="164" cy="112" r="6"/><circle cx="200" cy="112" r="6"/>
+              <circle cx="20" cy="140" r="6"/><circle cx="56" cy="140" r="6"/><circle cx="92" cy="140" r="6"/><circle cx="128" cy="140" r="6"/><circle cx="164" cy="140" r="6"/><circle cx="200" cy="140" r="6"/>
+              <circle cx="20" cy="168" r="6"/><circle cx="56" cy="168" r="6"/><circle cx="92" cy="168" r="6"/><circle cx="128" cy="168" r="6"/><circle cx="164" cy="168" r="6"/><circle cx="200" cy="168" r="6"/>
+            </g>
+            <text class="t" x="110" y="215" text-anchor="middle" style="font-weight:700">정합</text>
+            <text class="t t-dim" x="110" y="236" text-anchor="middle">γ 작음 · 변형 에너지 큼</text>
+          </g>
+          <!-- 반정합 -->
+          <g transform="translate(290,30)">
+            <rect x="0" y="0" width="220" height="190" class="f-surface" stroke="var(--border)"/>
+            <rect x="0" y="95" width="220" height="95" fill="var(--accent-soft, rgba(67,56,202,.10))"/>
+            <g fill="var(--text-dim)">
+              <circle cx="14" cy="18" r="6"/><circle cx="46" cy="18" r="6"/><circle cx="78" cy="18" r="6"/><circle cx="110" cy="18" r="6"/><circle cx="142" cy="18" r="6"/><circle cx="174" cy="18" r="6"/><circle cx="206" cy="18" r="6"/>
+              <circle cx="14" cy="50" r="6"/><circle cx="46" cy="50" r="6"/><circle cx="78" cy="50" r="6"/><circle cx="110" cy="50" r="6"/><circle cx="142" cy="50" r="6"/><circle cx="174" cy="50" r="6"/><circle cx="206" cy="50" r="6"/>
+              <circle cx="14" cy="82" r="6"/><circle cx="46" cy="82" r="6"/><circle cx="78" cy="82" r="6"/><circle cx="110" cy="82" r="6"/><circle cx="142" cy="82" r="6"/><circle cx="174" cy="82" r="6"/><circle cx="206" cy="82" r="6"/>
+            </g>
+            <g fill="var(--accent)">
+              <circle cx="20" cy="112" r="6"/><circle cx="58" cy="112" r="6"/><circle cx="96" cy="112" r="6"/><circle cx="134" cy="112" r="6"/><circle cx="172" cy="112" r="6"/><circle cx="210" cy="112" r="6"/>
+              <circle cx="20" cy="140" r="6"/><circle cx="58" cy="140" r="6"/><circle cx="96" cy="140" r="6"/><circle cx="134" cy="140" r="6"/><circle cx="172" cy="140" r="6"/><circle cx="210" cy="140" r="6"/>
+              <circle cx="20" cy="168" r="6"/><circle cx="58" cy="168" r="6"/><circle cx="96" cy="168" r="6"/><circle cx="134" cy="168" r="6"/><circle cx="172" cy="168" r="6"/><circle cx="210" cy="168" r="6"/>
+            </g>
+            <path d="M110,70 L110,96 M100,96 L120,96" stroke="var(--bad)" stroke-width="3" fill="none"/>
+            <text class="t" x="128" y="66" fill="var(--bad)" style="font-size:12px">계면 전위</text>
+            <text class="t" x="110" y="215" text-anchor="middle" style="font-weight:700">반정합</text>
+            <text class="t t-dim" x="110" y="236" text-anchor="middle">불일치를 전위가 흡수</text>
+          </g>
+          <!-- 비정합 -->
+          <g transform="translate(550,30)">
+            <rect x="0" y="0" width="220" height="190" class="f-surface" stroke="var(--border)"/>
+            <rect x="0" y="95" width="220" height="95" fill="var(--accent-soft, rgba(67,56,202,.10))"/>
+            <g fill="var(--text-dim)">
+              <circle cx="20" cy="18" r="6"/><circle cx="56" cy="18" r="6"/><circle cx="92" cy="18" r="6"/><circle cx="128" cy="18" r="6"/><circle cx="164" cy="18" r="6"/><circle cx="200" cy="18" r="6"/>
+              <circle cx="20" cy="50" r="6"/><circle cx="56" cy="50" r="6"/><circle cx="92" cy="50" r="6"/><circle cx="128" cy="50" r="6"/><circle cx="164" cy="50" r="6"/><circle cx="200" cy="50" r="6"/>
+              <circle cx="20" cy="82" r="6"/><circle cx="56" cy="82" r="6"/><circle cx="92" cy="82" r="6"/><circle cx="128" cy="82" r="6"/><circle cx="164" cy="82" r="6"/><circle cx="200" cy="82" r="6"/>
+            </g>
+            <g fill="var(--accent)">
+              <circle cx="14" cy="116" r="6"/><circle cx="44" cy="108" r="6"/><circle cx="76" cy="118" r="6"/><circle cx="104" cy="106" r="6"/><circle cx="138" cy="116" r="6"/><circle cx="168" cy="108" r="6"/><circle cx="200" cy="118" r="6"/>
+              <circle cx="26" cy="142" r="6"/><circle cx="58" cy="136" r="6"/><circle cx="90" cy="146" r="6"/><circle cx="122" cy="136" r="6"/><circle cx="154" cy="144" r="6"/><circle cx="186" cy="136" r="6"/>
+              <circle cx="14" cy="170" r="6"/><circle cx="44" cy="164" r="6"/><circle cx="76" cy="174" r="6"/><circle cx="108" cy="164" r="6"/><circle cx="140" cy="172" r="6"/><circle cx="172" cy="164" r="6"/><circle cx="204" cy="172" r="6"/>
+            </g>
+            <text class="t" x="110" y="215" text-anchor="middle" style="font-weight:700">비정합</text>
+            <text class="t t-dim" x="110" y="236" text-anchor="middle">γ 큼 (0.5–1 J/m²) · 변형 작음</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption>석출물(아래, 남색)과 모상(위)의 계면. 정합 계면은 원자면이 그대로 이어져 계면 에너지가 작은 대신 격자가 늘거나 줄어 변형 에너지를 품는다. 불일치가 커지면 계면 전위가 끼어들고(반정합), 끝내 원자 배열이 이어지지 않는다(비정합).</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-nuc">
+      <p>정합 석출물이 주위 격자를 변형시켜 단위 부피당 변형 에너지 \(\Delta G_s\)가 화학 구동력 \(\Delta G_v\)의 1/3만큼 생겼다. 핵생성 장벽 \(\Delta G^*\)는 변형이 없을 때의 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">2/3배 — 구동력이 1/3 줄었으니</button><button class="opt">1.5배</button><button class="opt" data-correct>2.25배</button><button class="opt">그대로 — 변형은 계면 에너지와 무관하다</button></div>
+      <div class="quiz-exp">\(\Delta G^*\propto1/(\Delta G_v-\Delta G_s)^2\)이므로 \((3/2)^2 = 2.25\)배다. 핵생성 속도는 \(\exp(-\Delta G^*/kT)\)를 따르므로, 장벽이 60 kT에서 135 kT로 오르면 속도는 \(e^{-75}\approx10^{-33}\)배가 된다. 아래 시뮬레이터에서 \(\Delta G_s\)를 올려 곡선의 꼭대기가 어떻게 오르는지 보라.</div>
+    </div>
+    <div class="sim" id="sim-nuc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>ΔG(r) 곡선: 엠브리오를 끌어 자랄지 사라질지 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-nuc"></canvas><span class="hint top">곡선 위 흰 원(엠브리오 크기)을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>과냉 ΔT <output id="nuc-dT-out"></output></span><input type="range" id="nuc-dT" min="20" max="300" step="5" value="100"></label>
+          <label class="ctrl"><span>계면 에너지 γ <output id="nuc-g-out"></output></span><input type="range" id="nuc-g" min="0.04" max="0.4" step="0.01" value="0.1"></label>
+          <label class="ctrl"><span>변형 에너지 ΔG<sub>s</sub> <output id="nuc-s-out"></output></span><input type="range" id="nuc-s" min="0" max="1.2" step="0.05" value="0"></label>
+          <div class="ctrl"><span>핵생성 자리</span><div class="seg" id="nuc-site"><button data-value="hom" class="on">균질</button><button data-value="cap">기판 θ=60°</button><button data-value="gb">결정립계 θ=60°</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ΔG<sub>v</sub> − ΔG<sub>s</sub></span><span class="v" id="nuc-dg">—</span></div>
+        <div class="stat"><span class="k">r*</span><span class="v" id="nuc-r">—</span></div>
+        <div class="stat"><span class="k">ΔG*/kT</span><span class="v" id="nuc-b">—</span></div>
+        <div class="stat"><span class="k">엠브리오</span><span class="v" id="nuc-fate">—</span></div>
+      </div>
+      <div class="sim-note">평형 온도 \(T_e = 1000\) K, \(\Delta H_v = 1.5\times10^9\) J/m³(대표값)인 석출을 가정했다. 세로축은 \(\Delta G/kT\)(\(T = T_e-\Delta T\)), 띠는 핵생성이 눈에 띄게 시작되는 \(\Delta G^*\approx60\)–80 kT 영역이다. 해볼 것: ① 엠브리오를 \(r^*\) 왼쪽과 오른쪽에 놓아 화살표 방향이 바뀌는 것을 본다. ② 과냉을 두 배로 하면 \(r^*\)는 절반, \(\Delta G^*\)는 1/4 — \(\Delta T\)가 \(\Delta G^*\)를 \(1/\Delta T^2\)로 누른다. ③ \(\Delta G_s\)를 올리면 같은 과냉에서도 장벽이 띠 위로 올라가 핵생성이 멈춘다. 결정립계로 바꾸면 다시 내려온다.</div>
+    </div>
+    <div class="tangle" id="tg-nuc">
+      <p>계면 에너지 <span class="tn" data-var="g" data-min="0.04" data-max="0.5" data-step="0.01" data-unit=" J/m²">0.10</span>, 과냉 <span class="tn" data-var="dT" data-min="10" data-max="300" data-step="5" data-unit=" K">100</span>(\(T_e = 1000\) K, \(\Delta H_v = 1.5\times10^9\) J/m³)이면 \(r^* =\) <span class="tn-out" data-out="r"></span>, \(\Delta G^* =\) <span class="tn-out" data-out="G"></span>이다. 균질 핵생성 속도는 \(\exp(-\Delta G^*/kT)\) <span class="tn-out" data-out="E"></span>에 비례한다.</p>
+    </div>
+    <h3>불균질 핵생성: 결정립계·전위·기판</h3>
+    <p>실제 고체에서 핵은 대부분 결함 위에 생긴다. 결정립계·상 경계·전위·개재물·표면은 이미 에너지를 품고 있어서, 핵이 그 위에 앉으면 결함의 일부가 사라지며 그만큼 에너지를 돌려준다. 기판 위의 구형 모자(cap) 핵은 접촉각 \(\theta\)(영 식 \(\gamma_\mathrm{sm} = \gamma_\mathrm{sn}+\gamma\cos\theta\))로 모양이 정해지고, 결정립계 위의 렌즈 핵은 모자 두 개를 맞붙인 꼴로 \(\cos\theta = \gamma_\mathrm{gb}/2\gamma\)를 만족한다. 임계 반지름은 균질 핵과 같고 부피와 장벽만 줄어든다.</p>
+    <div class="formula">$$\Delta G^*_\text{het} = S(\theta)\,\Delta G^*_\text{hom},\qquad S_\text{기판}(\theta) = \frac{(2+\cos\theta)(1-\cos\theta)^2}{4},\qquad S_\text{입계}(\theta) = 2\,S_\text{기판}(\theta)$$<div class="where">\(\theta = 90°\)이면 기판 위 반구(\(S = 1/2\)), \(\theta\to0\)이면 \(S\to0\)으로 장벽이 사라진다(완전 젖음). 결정립계 모서리(세 결정립이 만나는 선)와 꼭짓점은 더 많은 계면을 없애 \(S\)가 더 작다. 대신 그런 자리의 수가 적어 전체 속도는 자리 밀도와 장벽의 절충으로 정해진다.</div></div>
+    <figure class="mini" id="mini-het">
+      <div class="mini-view" style="position:relative"><canvas id="cv-het"></canvas><span class="hint top">핵의 꼭대기를 위아래로 끈다</span></div>
+      <div class="mini-ctrl"><div class="seg" id="het-mode"><button data-value="cap" class="on">기판 위 모자</button><button data-value="gb">결정립계 렌즈</button></div><span class="readout" id="het-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>임계 반지름 \(r^*\)(점선 원)는 그대로이고, 접촉각이 작아질수록 핵이 차지하는 부피 — 곧 장벽 \(S(\theta)\) — 가 줄어든다. 결정립계에서는 \(\theta\)가 계면 에너지 비 \(\gamma_\mathrm{gb}/2\gamma\)로 정해진다.</figcaption>
+    </figure>
+    <div class="example" data-title="변형 에너지가 있는 석출의 핵생성 장벽">
+      <p>평형 온도 \(T_e = 1000\) K, \(\Delta H_v = 1.5\times10^9\) J/m³인 석출을 \(\Delta T = 100\) K 과냉한다. 계면 에너지 \(\gamma = 0.10\) J/m². (a) 변형 에너지가 없을 때 \(r^*\)와 \(\Delta G^*\), \(\Delta G^*/kT\)를 구하라. (b) 정합 변형으로 \(\Delta G_s = 5.0\times10^7\) J/m³가 생기면 어떻게 바뀌는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta G_v = \Delta H_v\Delta T/T_e\)를 구해 \(r^* = 2\gamma/(\Delta G_v-\Delta G_s)\), \(\Delta G^* = 16\pi\gamma^3/3(\Delta G_v-\Delta G_s)^2\)에 넣는다. \(T = 900\) K에서 \(kT = 1.243\times10^{-20}\) J.</div>
+        <div class="step"><b>풀이</b> (a) \(\Delta G_v = 1.5\times10^9\times100/1000 = 1.5\times10^8\) J/m³. \(r^* = 0.2/1.5\times10^8 = 1.33\) nm, \(\Delta G^* = 16\pi(0.1)^3/(3\times2.25\times10^{16}) = 7.45\times10^{-19}\) J \(= 59.9\,kT\). (b) \(\Delta G_v-\Delta G_s = 1.0\times10^8\): \(r^* = 2.00\) nm, \(\Delta G^* = 1.68\times10^{-18}\) J \(= 135\,kT\).</div>
+        <div class="answer">(a) r* = 1.33 nm, ΔG* = 7.4×10⁻¹⁹ J ≈ 60 kT &nbsp; (b) r* = 2.0 nm, ΔG* = 1.7×10⁻¹⁸ J ≈ 135 kT (2.25배)</div>
+        <div class="step"><b>검토</b> 지름 2.7 nm의 핵에는 원자가 수백 개 들어 있다(원자 부피 약 0.012 nm³). 장벽이 60 kT에서 135 kT로 오르면 \(\exp(-\Delta G^*/kT)\)는 \(10^{33}\)배 작아진다. 실제로는 이렇게 막힌 균질 핵생성 대신 결정립계나 전위 위의 불균질 핵생성이 일어난다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="결정립계 위의 렌즈 핵">
+      <p>결정립계 에너지가 \(\gamma_\mathrm{gb} = 0.50\) J/m², 석출물–모상 계면 에너지가 \(\gamma = 0.50\) J/m²다. 결정립계 위 렌즈 핵의 접촉각과 \(\Delta G^*_\text{gb}/\Delta G^*_\text{hom}\)을 구하라. 앞 예제 (a)의 조건이라면 \(\Delta G^*_\text{gb}/kT\)는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 결정립계 렌즈: \(\cos\theta = \gamma_\mathrm{gb}/2\gamma\), \(S_\text{입계} = \tfrac12(2+\cos\theta)(1-\cos\theta)^2\).</div>
+        <div class="step"><b>풀이</b> \(\cos\theta = 0.5/1.0 = 0.5\) → \(\theta = 60°\). \(S = \tfrac12(2.5)(0.5)^2 = 0.3125\). \(\Delta G^*_\text{gb} = 0.3125\times59.9\,kT = 18.7\,kT\).</div>
+        <div class="answer">θ = 60°, ΔG*<sub>gb</sub>/ΔG*<sub>hom</sub> = 0.313, 약 19 kT</div>
+        <div class="step"><b>검토</b> 장벽이 41 kT 낮아져 자리 하나당 핵생성 빈도가 \(e^{41}\approx10^{18}\)배 크다. 결정립계 자리는 전체 원자의 \(\delta/d\)(입계 두께/결정립 크기, 약 \(10^{-4}\)–\(10^{-5}\))밖에 안 되지만 그 손해를 압도한다. 그래서 과냉이 작을 때의 석출과 펄라이트는 거의 언제나 결정립계에서 시작한다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-nuc" data-title="임계 반지름과 핵생성 장벽 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="rates">
+    <h2>핵생성 속도와 성장 속도: C 곡선의 기원</h2>
+    <p>단위 부피·단위 시간에 생기는 핵의 수 \(\dot N\)(또는 \(I\))은 두 인자의 곱이다. 임계 핵이 열 요동으로 만들어질 확률 \(\exp(-\Delta G^*/kT)\)과, 원자가 모상에서 핵으로 건너가는 빈도 \(\exp(-Q/kT)\)다. 성장 속도 \(G = dr/dt\)도 같은 구조다. 계면을 넘는 원자의 알짜 흐름은 확산 빈도와 구동력의 곱이다.</p>
+    <div class="formula">$$\dot N = \omega\,C_0\exp\!\left(-\frac{\Delta G^*}{kT}\right)\exp\!\left(-\frac{Q_n}{kT}\right),\qquad \Delta G^*\propto\frac{1}{\Delta T^2};\qquad G\propto D(T)\,\left[1-\exp\!\left(-\frac{c\,\Delta T}{T}\right)\right]$$<div class="where">\(C_0\)는 핵생성 자리의 밀도, \(\omega\)는 원자 진동에 관련된 빈도 인자다. 과냉이 커지면 \(\Delta G^*\)가 작아져 첫 인자가 급격히 커지지만, 온도가 내려가 확산 인자 \(D\propto e^{-Q/kT}\)가 작아진다. 둘 다 0에서 시작해 0으로 끝나므로 중간 온도에 최댓값이 있다.</div></div>
+    <p>평형 온도 바로 아래에서는 구동력이 거의 없어 핵이 생기지 않고(장벽 무한대), 아주 낮은 온도에서는 구동력은 크지만 원자가 움직이지 못한다. 그래서 변태가 정해진 분율에 이르는 시간은 중간 온도에서 가장 짧다. 시간을 가로축(로그), 온도를 세로축으로 그리면 C자 모양이 되고, 가장 왼쪽으로 튀어나온 곳을 <span class="term">코</span><span class="en">(nose)</span>라 한다. 아래 단계별 그림이 이 C 곡선을 조립한다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 320" role="img" aria-label="핵생성 속도와 성장 속도의 온도 의존성이 곱해져 C 곡선이 되는 과정">
+        <line x1="70" y1="30" x2="70" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="280" x2="360" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="60" y="40" text-anchor="end">Tₑ</text>
+        <line x1="70" y1="40" x2="360" y2="40" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <text class="t t-dim" x="40" y="160" text-anchor="middle" transform="rotate(-90 40 160)">온도 T</text>
+        <text class="t t-dim" x="215" y="305" text-anchor="middle">속도 (로그)</text>
+        <path d="M72,42 C90,60 200,90 250,130 C290,165 200,230 90,276" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t t-acc" x="258" y="126" style="font-weight:700">핵생성 Ṅ</text>
+        <g data-step="2">
+          <path d="M72,42 C160,60 300,110 320,160 C335,200 260,250 120,276" fill="none" stroke="var(--accent-2)" stroke-width="3" stroke-dasharray="7 5"/>
+          <text class="t" x="292" y="196" fill="var(--accent-2)" style="font-weight:700">성장 G</text>
+        </g>
+        <g data-step="3">
+          <line x1="440" y1="30" x2="440" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <line x1="440" y1="280" x2="770" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <line x1="440" y1="40" x2="770" y2="40" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+          <text class="t t-dim" x="605" y="305" text-anchor="middle">시간 (로그)</text>
+          <path d="M760,46 C640,58 540,100 520,140 C505,175 560,230 700,276" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <path d="M770,62 C700,72 610,110 590,145 C578,180 630,232 760,270" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle cx="519" cy="148" r="6" fill="var(--bad)"/>
+          <text class="t" x="470" y="140" fill="var(--bad)" style="font-weight:700">코</text>
+          <text class="t t-acc" x="600" y="98">시작 (1 %)</text>
+          <text class="t t-dim" x="660" y="160">끝 (99 %)</text>
+          <path d="M370,150 L425,150" stroke="var(--text-dim)" stroke-width="2"/><polygon points="425,144 437,150 425,156" fill="var(--text-dim)"/>
+          <text class="t t-dim" x="400" y="138" text-anchor="middle">t ∝ (ṄG³)^(−1/4)</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>핵생성 속도는 \(T_e\)에서 0이고, 과냉과 함께 커지다가 확산이 얼어붙는 낮은 온도에서 다시 0이 된다.</li><li>성장 속도도 같은 꼴이지만, 장벽이 없어 \(T_e\) 가까이에서 핵생성보다 빨리 커진다(최댓값이 더 높은 온도).</li><li>정해진 분율에 이르는 시간은 \(t\propto(\dot NG^3)^{-1/4}\)(3절)이므로, 두 속도의 곱이 가장 큰 온도에서 시간이 가장 짧다 — C 곡선의 코.</li></ol>
+      <figcaption>C 곡선의 조립. 과냉이 작으면 핵생성이, 과냉이 크면 확산이 변태를 붙잡는다. 같은 원리로 반도체의 비정질 박막 결정화와 유리의 실투도 C 곡선을 그린다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-rates">
+      <div class="mini-view" style="position:relative"><canvas id="cv-rates"></canvas><span class="hint top">흰 원을 위아래로 끌어 온도를 고른다</span></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>성장의 활성화 에너지 Q<sub>g</sub> <output id="rt-q-out"></output></span><input type="range" id="rt-q" min="75" max="115" step="1" value="94"></label><span class="readout" id="rt-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>이 책의 정성 모형 <code>Mat.tttModel()</code>(평형 온도 727 °C, 강의 펄라이트와 비슷한 모양). 왼쪽은 최댓값으로 정규화한 \(\dot N\)과 \(G\)(로그), 오른쪽은 1 %·50 %·99 % 변태 시간이다. \(T_e\) 바로 아래에서는 \(G\)가 이미 크지만 \(\dot N\)은 장벽 때문에 꺼져 있고, 과냉이 크면 둘 다 확산이 얼어 줄어든다. \(Q_g\)를 키우면(합금 원소가 확산을 늦추면) 코가 오른쪽으로 물러난다 — 4절의 경화능.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-rate">
+      <p>균질 핵생성에서 \(\Delta G^*\propto1/\Delta T^2\)이다. 어떤 온도에서 \(\Delta G^* =\) <span class="tn" data-var="b" data-min="20" data-max="200" data-step="5" data-unit=" kT">80</span>일 때 과냉을 <span class="tn" data-var="x" data-min="1.05" data-max="2" data-step="0.05">1.2</span>배로 키우면 장벽은 <span class="tn-out" data-out="b2"></span>가 되고, 핵생성 속도의 장벽 인자는 <span class="tn-out" data-out="r"></span>배가 된다(온도 변화로 \(kT\)가 바뀌는 효과는 무시).</p>
+    </div>
+    <div class="example" data-title="핵생성·성장 속도에서 변태 시간">
+      <p>어떤 온도에서 3차원으로 일정하게 핵이 생기는 속도가 \(\dot N = 1.0\times10^3\) mm⁻³s⁻¹, 성장 속도가 \(G = 1.0\times10^{-3}\) mm/s다. 변태 분율 5 %, 50 %, 95 %에 이르는 시간을 구하라(JMAK, \(k = \pi\dot NG^3/3\), \(n = 4\)).</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 3절의 결과 \(f = 1-\exp(-kt^4)\)를 시간에 대해 풀면 \(t_f = [-\ln(1-f)/k]^{1/4}\).</div>
+        <div class="step"><b>풀이</b> \(k = \pi\times10^3\times10^{-9}/3 = 1.047\times10^{-6}\) s⁻⁴. \(t_{0.05} = (0.05129/1.047\times10^{-6})^{1/4} = 14.9\) s, \(t_{0.5} = (0.6931/1.047\times10^{-6})^{1/4} = 28.5\) s, \(t_{0.95} = (2.996/1.047\times10^{-6})^{1/4} = 41.1\) s.</div>
+        <div class="answer">약 14.9 s, 28.5 s, 41.1 s</div>
+        <div class="step"><b>검토</b> 5 %에서 95 %까지가 50 % 시간의 한 배도 안 된다. 지수 4의 S자 곡선은 가파르다. 시간은 \(k^{-1/4}\)에 비례하므로 \(\dot N\)을 10배 키워도 시간은 \(10^{-1/4} = 0.56\)배, 성장 속도를 10배 키우면 \(10^{-3/4} = 0.18\)배다 — 성장 속도가 더 세다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="jmak">
+    <h2>JMAK 식과 아브라미 지수</h2>
+    <p>핵생성 속도 \(\dot N\)과 성장 속도 \(G\)를 알면 변태 분율 \(f(t)\)는 어떻게 될까? 어려운 점은 <b>부딪힘</b>이다. 자라던 두 결정립이 만나면 그 경계에서는 더 자라지 못하고, 이미 변태한 곳에는 새 핵이 생길 수 없다. 존슨·멜·아브라미·콜모고로프는 이 문제를 교묘하게 풀었다. 먼저 부딪힘을 무시하고 모든 핵이 자유롭게 자란다고 할 때의 "확장" 부피 분율 \(X_\text{ext}\)를 센다. 그다음, 무작위로 흩어진 핵이라면 새로 늘어난 확장 부피 중 아직 변태하지 않은 곳에 떨어지는 몫은 \((1-f)\)뿐이라는 것을 쓴다.</p>
+    <div class="formula">$$df = (1-f)\,dX_\text{ext}\quad\Longrightarrow\quad f = 1-\exp(-X_\text{ext})$$<div class="where">핵이 무작위(포아송)로 흩어져 있으면 정확한 결과다. 3차원에서 일정 속도로 핵이 생기면 시각 \(\tau\)에 태어난 핵은 시각 \(t\)에 부피 \(\tfrac43\pi G^3(t-\tau)^3\)이므로 \(X_\text{ext} = \int_0^t\dot N\,\tfrac43\pi G^3(t-\tau)^3d\tau = \tfrac{\pi}{3}\dot NG^3t^4\)이다.</div></div>
+    <figure class="mini" id="mini-ext">
+      <div class="mini-view"><canvas id="cv-ext"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>원의 반지름(= 성장 시간) <output id="ext-r-out"></output></span><input type="range" id="ext-r" min="0" max="30" step="0.5" value="10"></label><span class="readout" id="ext-o"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>무작위 자리 60개(주기 경계)에서 원이 함께 자란다. 원 넓이를 그냥 더한 확장 분율 \(X_\text{ext}\)는 1을 넘어 끝없이 커지지만, 실제로 덮인 분율은 \(1-e^{-X_\text{ext}}\)를 따라 1에 다가간다. 겹친 곳(진한 색)이 둘의 차이다.</figcaption>
+    </figure>
+    <p>일반적으로 확장 분율은 시간의 거듭제곱이므로 변태 분율은 <span class="term">존슨–멜–아브라미 식</span><span class="en">(Johnson–Mehl–Avrami–Kolmogorov, JMAK equation)</span>이 된다.</p>
+    <div class="formula">$$f(t) = 1-\exp\!\left(-k\,t^{\,n}\right),\qquad t_{f} = \left[\frac{-\ln(1-f)}{k}\right]^{1/n},\qquad \ln\!\big[-\ln(1-f)\big] = \ln k + n\ln t$$<div class="where">\(n\)은 <span class="term">아브라미 지수</span><span class="en">(Avrami exponent)</span>, \(k\)는 온도에 민감한 속도 상수다. 마지막 식은 \(\ln[-\ln(1-f)]\)를 \(\ln t\)에 대해 그리면 기울기 \(n\)의 직선이 된다는 뜻이다. 이것이 <span class="term">아브라미 그림</span><span class="en">(Avrami plot)</span>이다. 50 % 시간 \(t_{0.5} = (\ln2/k)^{1/n}\)으로 속도를 나타내기도 한다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>핵생성·성장 방식</th><th>3차원</th><th>2차원(박막·판)</th><th>1차원(선)</th></tr></thead>
+      <tbody>
+        <tr><td>일정 속도 핵생성 + 계면 지배 성장(\(r\propto t\))</td><td class="num">4 &nbsp;(\(k = \pi\dot NG^3/3\))</td><td class="num">3 &nbsp;(\(\pi\dot NG^2/3\))</td><td class="num">2</td></tr>
+        <tr><td>자리 포화(처음에 \(N\)개) + 계면 지배 성장</td><td class="num">3 &nbsp;(\(4\pi NG^3/3\))</td><td class="num">2 &nbsp;(\(\pi NG^2\))</td><td class="num">1</td></tr>
+        <tr><td>일정 속도 핵생성 + 확산 지배 성장(\(r\propto\sqrt t\))</td><td class="num">2.5</td><td class="num">2</td><td class="num">1.5</td></tr>
+        <tr><td>자리 포화 + 확산 지배 성장</td><td class="num">1.5</td><td class="num">1</td><td class="num">0.5</td></tr>
+      </tbody>
+    </table></div>
+    <p>지수는 "핵생성이 시간에 따라 하나 더해 주는 1"과 "성장이 차원마다 더하는 1(확산 지배면 1/2)"의 합이다. 그래서 측정한 \(n\)으로 기구를 짐작한다. 결정립계에 핵이 이미 다 생긴 뒤의 판 성장, 박막의 결정화, 재결정은 \(n\)이 2–4 사이에 흩어진다. 다만 \(n\)이 같아도 기구가 다를 수 있으므로 현미경 관찰과 함께 쓴다. 6장의 재결정 분율(<code>recrystFraction</code>)도 같은 식이다(<a href="plasticity-strengthening.html">소성 변형과 강화 기구</a>).</p>
+    <div class="predict" data-for="sim-ng">
+      <p>2차원 격자에서 처음에 핵을 한꺼번에 뿌리고(자리 포화) 일정 속도로 키운다. 아브라미 그림의 기울기 \(n\)은 얼마일까?</p>
+      <div class="opts"><button class="opt">1</button><button class="opt" data-correct>2</button><button class="opt">3</button><button class="opt">4</button></div>
+      <div class="quiz-exp">새 핵이 더 생기지 않으니 시간 지수는 성장에서만 온다. 2차원에서 원 넓이는 \((Gt)^2\)이므로 \(X_\text{ext}\propto t^2\), \(n = 2\)다. "연속 핵생성"으로 바꾸면 핵 수가 \(t\)에 비례해 늘어 \(n = 3\)이 된다. 시뮬레이터에서 아브라미 직선을 맞춰 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-ng">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>핵생성–성장 격자와 아브라미 그림: 직선을 맞혀 n 읽기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-ng1"></canvas><span class="hint">누르면 핵을 심는다</span></div><div style="position:relative"><canvas id="cv-ng2"></canvas><span class="hint top">아브라미 그림의 흰 원 두 개를 끈다</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>핵생성 방식</span><div class="seg" id="ng-mode"><button data-value="cont" class="on">연속 핵생성</button><button data-value="sat">자리 포화</button></div></div>
+          <label class="ctrl"><span><span id="ng-a-lab">핵생성 속도 Ṅ</span> <output id="ng-a-out"></output></span><input type="range" id="ng-a" min="0" max="20" step="1" value="10"></label>
+          <label class="ctrl"><span>성장 속도 G <output id="ng-g-out"></output></span><input type="range" id="ng-g" min="0.25" max="1.5" step="0.05" value="0.6"></label>
+          <button class="btn" id="ng-play" type="button"></button>
+          <button class="btn" id="ng-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간 / 분율</span><span class="v" id="ng-tf">—</span></div>
+        <div class="stat"><span class="k">핵 수</span><span class="v" id="ng-n">—</span></div>
+        <div class="stat"><span class="k">맞춤 n (5–95 %)</span><span class="v" id="ng-fit">—</span></div>
+        <div class="stat"><span class="k">내 직선 기울기</span><span class="v" id="ng-user">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 120×120 칸 격자(가장자리는 열린 경계), 색 조각은 각 핵에서 자란 결정립이다. 오른쪽 위는 \(f(t)\)와 JMAK 이론(점선, \(k\)는 표의 2차원 식), 아래는 아브라미 그림이다. 해볼 것: ① 변태가 끝난 뒤 흰 원 두 개를 끌어 점들에 직선을 맞춘다. 맞춤 기울기와 0.15 이내면 성공. ② 연속 핵생성은 \(n\approx3\), 자리 포화는 \(n\approx2\)다. 가장자리에서는 이웃이 없어 늦게 채워지므로 지수가 조금 어긋난다. ③ 변태 도중 빈 곳을 눌러 핵을 몰아 심으면 그 순간 곡선이 꺾인다 — 핵이 무작위가 아니면 JMAK 가정이 깨진다.</div>
+    </div>
+    <div class="tangle" id="tg-jmak">
+      <p>아브라미 지수가 <span class="tn" data-var="n" data-min="1" data-max="4" data-step="0.5">3</span>이고 50 % 변태 시간이 <span class="tn" data-var="t" data-min="1" data-max="200" data-step="1" data-unit=" s">40</span>이면, 5 % 변태는 <span class="tn-out" data-out="a"></span>, 95 %는 <span class="tn-out" data-out="b"></span>, 99 %는 <span class="tn-out" data-out="c"></span>에 이른다. \(t_{0.95}/t_{0.5} = (\ln20/\ln2)^{1/n} =\) <span class="tn-out" data-out="q"></span> — 지수가 클수록 S자가 가파르다.</p>
+    </div>
+    <div class="example" data-title="두 측정점에서 아브라미 지수 구하기">
+      <p>어떤 합금의 재결정 분율을 같은 온도에서 측정했더니 20 s에서 0.10, 60 s에서 0.80이었다. 아브라미 지수 \(n\)과 \(k\), 그리고 95 % 재결정 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 두 점의 \(y = \ln[-\ln(1-f)]\)와 \(x = \ln t\)로 기울기 \(n\)을 구한 뒤 한 점에서 \(k\)를 구한다.</div>
+        <div class="step"><b>풀이</b> \(y_1 = \ln(-\ln0.9) = \ln0.10536 = -2.2504\), \(y_2 = \ln(-\ln0.2) = \ln1.6094 = 0.4759\). \(n = (0.4759+2.2504)/\ln3 = 2.7263/1.0986 = 2.48\). \(k = 0.10536/20^{2.48} = 6.22\times10^{-5}\) s\(^{-2.48}\). \(t_{0.95} = (2.9957/6.22\times10^{-5})^{1/2.48} = 77.1\) s.</div>
+        <div class="answer">n ≈ 2.48, k ≈ 6.2×10⁻⁵ s⁻ⁿ, t₀.₉₅ ≈ 77 s</div>
+        <div class="step"><b>검토</b> \(t_{0.5} = (\ln2/k)^{1/n} = 42.7\) s로 두 측정 시간 사이에 있다. \(n = 2.5\) 근처는 3차원 확산 지배 성장 또는 핵생성 속도가 줄어드는 경우와 맞는다. \(k\)의 단위가 \(n\)에 따라 바뀌므로 \(k\)끼리 비교할 때는 \(t_{0.5}\)를 쓰는 편이 안전하다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>비정질 실리콘의 고상 결정화와 레이저 결정화</strong><p>LPCVD로 550 °C 이하에서 쌓은 비정질 실리콘을 600 °C 근처에서 수 시간–수십 시간 어닐하면 막 속에서 무작위로 결정 핵이 생기고 자라 다결정이 된다. 이 <b>고상 결정화(SPC)</b>의 결정화 분율은 JMAK 식을 잘 따르며, 얇은 막에서는 결정립이 막 두께에서 막혀 2차원처럼 자라 \(n\approx3\)–4(핵생성이 계속되면)가 측정된다. 핵생성 속도가 작을수록 핵 사이 간격, 곧 최종 결정립이 커지므로(수 µm, 수지상) 일부러 낮은 온도에서 오래 결정화하기도 한다. 결정 실리콘 씨앗 위에서 비정질층이 평면으로 되돌아 자라는 이온 주입 후 <b>고상 에피 재성장(SPER)</b>은 핵생성이 없는 1차원 성장이라 분율이 시간에 비례한다. 디스플레이 백플레인의 LTPS는 엑시머 레이저로 막을 수십 ns 동안 녹였다 굳히는 액상 결정화(ELA)로 같은 일을 훨씬 빨리 한다. → <a href="https://semi.euiyun.com/display/chapters/tft.html">DisplayBook · TFT 백플레인</a></p></div>
+    <div class="drill" id="drill-jmak" data-title="JMAK 시간 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="ttt-cct">
+    <h2>TTT·CCT 도표와 강의 열처리</h2>
+    <p>공석 조성(0.76 wt% C) 강을 727 °C 위에서 오스테나이트(γ)로 만든 뒤 어떤 온도로 재빨리 옮겨 그 온도에 머물게 하면, 8장의 상태도가 약속한 α + Fe₃C(펄라이트)로의 변태가 JMAK 곡선을 따라 진행된다. 온도마다 1 %와 99 %에 이르는 시간을 이어 그린 것이 <span class="term">TTT 도표</span><span class="en">(time–temperature–transformation diagram, 항온 변태 도표)</span>다. 코 위에서는 결정립계에서 핵이 생겨 층상으로 자라는 <b>펄라이트</b>가, 코 아래(약 540 °C–\(M_s\))에서는 탄소가 짧은 거리만 확산해 페라이트 판 사이에 미세한 시멘타이트가 박힌 <span class="term">베이나이트</span><span class="en">(bainite)</span>가 생긴다. 변태 온도가 낮을수록 탄소가 멀리 못 가 조직이 미세해지고(조대 → 미세 펄라이트 → 상부 → 하부 베이나이트) 강하고 단단해진다. \(M_s\) 아래로 급히 내리면 확산 없이 마르텐사이트가 생긴다(5절).</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 340" role="img" aria-label="공석강 TTT 모식도 위의 세 가지 항온 열처리 경로">
+        <line x1="80" y1="20" x2="80" y2="300" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="80" y1="300" x2="770" y2="300" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <g class="t t-dim" style="font-size:12px" text-anchor="end">
+          <text x="72" y="38">800</text><text x="72" y="104">600</text><text x="72" y="170">400</text><text x="72" y="236">200</text><text x="72" y="302">0 °C</text>
+        </g>
+        <g class="t t-dim" style="font-size:12px" text-anchor="middle">
+          <text x="130" y="318">0.1</text><text x="230" y="318">1</text><text x="330" y="318">10</text><text x="430" y="318">10²</text><text x="530" y="318">10³</text><text x="630" y="318">10⁴</text><text x="730" y="318">10⁵ s</text>
+        </g>
+        <line x1="80" y1="61" x2="770" y2="61" stroke="var(--text-faint)" stroke-dasharray="5 4"/>
+        <text class="t t-dim" x="766" y="55" text-anchor="end" style="font-size:12px">727 °C (공석 온도)</text>
+        <!-- start / finish curves (schematic of real 1080: nose ~540 C at ~0.7 s) -->
+        <polyline points="630,64 530,67 408,71 300,87.5 230,104 214.5,124 230,137 260,153.5 300,170 347.6,186.5 408,203 460,219.5 490,229.4" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round"/>
+        <polyline points="740,64 640,67 530,71 400,87.5 320,104 308,124 320,137 360,153.5 420,170 478,186.5 548,203 608,219.5 630,229.4" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="7 5" stroke-linejoin="round"/>
+        <line x1="80" y1="229.4" x2="770" y2="229.4" stroke="var(--bad)" stroke-width="2"/>
+        <text class="t" x="766" y="246" text-anchor="end" fill="var(--bad)" style="font-size:12px">Mₛ ≈ 220 °C</text>
+        <text class="t t-dim" x="150" y="168" style="font-size:12px">A</text>
+        <text class="t t-acc" x="600" y="102" style="font-size:12px">P (펄라이트)</text>
+        <text class="t t-acc" x="640" y="150" style="font-size:12px">B (베이나이트)</text>
+        <text class="t" x="300" y="285" style="font-size:12px" fill="var(--bad)">M (마르텐사이트)</text>
+        <circle cx="214.5" cy="124" r="5" fill="var(--bad)"/><text class="t" x="118" y="120" style="font-size:12px">코 ≈ 540 °C</text>
+        <!-- path a: 350 C hold 1e4 s -->
+        <g data-step="2">
+          <path d="M84,40 L100,186.5 L630,186.5 L640,296" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+          <text class="t" x="764" y="180" text-anchor="end" fill="var(--accent-2)" style="font-weight:700">(a) 350 °C · 10⁴ s → 베이나이트 100 %</text>
+        </g>
+        <g data-step="3">
+          <path d="M84,40 L104,219.5 L430,219.5 L440,296" fill="none" stroke="var(--ok)" stroke-width="3"/>
+          <text class="t" x="250" y="250" fill="var(--ok)" style="font-weight:700">(b) 250 °C · 100 s → 마르텐사이트</text>
+        </g>
+        <g data-step="4">
+          <path d="M84,40 L96,87.5 L360,87.5 L372,296" fill="none" stroke="var(--warn)" stroke-width="3"/>
+          <text class="t" x="104" y="80" fill="var(--warn)" style="font-weight:700">(c) 650 °C · 20 s → 미세 펄라이트 50 % + 마르텐사이트 50 %</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>실제 공석강(1080) TTT의 모양: 코는 약 540 °C에서 1초 이내, 실선은 변태 시작, 점선은 끝, 빨간 선은 \(M_s\)다.</li><li>(a) 350 °C로 급랭해 10⁴ s 유지: 시작선과 끝선을 모두 지나 베이나이트로 변태를 마친다. 이후 담금질해도 바뀌지 않는다.</li><li>(b) 250 °C에서 100 s: 아직 베이나이트 시작선 왼쪽이라 오스테나이트 그대로다. 담금질하면 마르텐사이트가 된다.</li><li>(c) 650 °C에서 20 s: 펄라이트 변태가 절반쯤 진행됐을 때 담금질하면 남은 오스테나이트가 마르텐사이트로 바뀐다.</li></ol>
+      <figcaption>공석강 TTT 모식도와 세 가지 항온 경로(캘리스터 예제 10.2 유형). 곡선은 실측 도표의 모양을 본뜬 것이고, 아래 시뮬레이터의 정성 모형(코 ≈ 630 °C)과 위치가 조금 다르다.</figcaption>
+    </figure>
+    <p>시뮬레이터는 실측 도표 대신 이 책의 정성 모형 <code>Mat.tttModel()</code>을 쓴다. 코가 약 630 °C, 1 % 변태 시간이 약 1 s, \(n = 4\)이고 펄라이트와 베이나이트를 하나의 C 곡선으로 그린다. 모양과 크기 정도는 공석강과 비슷하지만 실측값(코 ≈ 540 °C)과는 다르다. 조직 이름은 변태가 일어난 온도로 붙인다: 620 °C 위는 조대 펄라이트, 540–620 °C는 미세 펄라이트, 540 °C–\(M_s\)는 베이나이트. 온도가 시간에 따라 바뀌는 경로에서는 <span class="term">가산 법칙</span><span class="en">(additivity rule)</span>을 쓴다. 조금씩 다른 온도에 머문 시간들의 효과를 "같은 분율에 이르는 등가 시간"으로 바꿔 이어 붙인다.</p>
+    <div class="formula">$$\sum_i\frac{\Delta t_i}{\tau_i(T_i)} = 1\;\;(\text{셰일 가산 법칙: 변태 시작}),\qquad t_\text{eq} = \left[\frac{-\ln(1-f)}{k(T_{i+1})}\right]^{1/n} + \Delta t$$<div class="where">\(\tau_i(T_i)\)는 그 온도의 TTT 시작 시간이다. 시작 시간의 몫을 다 쓰면 변태가 시작된다. 분율 전체는 현재 분율 \(f\)를 새 온도에서 같은 분율을 주는 등가 시간으로 바꾼 뒤 \(\Delta t\)만큼 진행시키며 이어 간다(<code>Mat.coolPath</code>). 핵생성과 성장의 온도 의존이 같은 꼴일 때 정확하다.</div></div>
+    <div class="sim" id="sim-ttt">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>TTT 위에 열처리 경로 그리기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-ttt"></canvas><span class="hint top">흰 원 네 개를 끌어 경로를 바꾼다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>미리 정한 경로</span><div class="seg" id="ttt-pre"><button data-value="iso650" class="on">650 °C 항온</button><button data-value="iso400">400 °C 항온</button><button data-value="split">반쯤 담금질</button><button data-value="quench">급랭</button></div></div>
+          <p class="tk-note">경로는 800 °C 오스테나이트에서 출발한다. 점 사이는 로그 시간에 대해 곧게 이었다. \(M_s\)(220 °C)를 지나면 남은 오스테나이트가 가장 낮은 온도에 따라 마르텐사이트가 된다.</p>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">펄라이트 (조대/미세)</span><span class="v" id="ttt-p">—</span></div>
+        <div class="stat"><span class="k">베이나이트</span><span class="v" id="ttt-b">—</span></div>
+        <div class="stat"><span class="k">마르텐사이트</span><span class="v" id="ttt-m">—</span></div>
+        <div class="stat"><span class="k">잔류 오스테나이트</span><span class="v" id="ttt-a">—</span></div>
+      </div>
+      <div class="sim-note">남색 실선은 1 %, 가는 점선은 50 %, 점선은 99 % 변태선, 빨간 선은 \(M_s\)다. 경로의 색은 그 순간까지의 변태 분율(흐린 색 0 → 진한 색 1)이다. 해볼 것: ① "650 °C 항온"에서 두 번째 점을 왼쪽으로 끌어 99 % 선 앞에서 담금질하면 펄라이트와 마르텐사이트가 섞인다. ② 400 °C에서 끝선을 넘기면 베이나이트 100 %. ③ 경로를 코 왼쪽으로 지나가게 하면 마르텐사이트 — 담금질의 핵심은 코를 피하는 것이다.</div>
+    </div>
+    <h3>연속 냉각 변태(CCT)와 임계 냉각 속도</h3>
+    <p>실제 열처리는 대부분 항온 유지가 아니라 연속 냉각이다. 일정한 속도로 식힐 때 변태가 시작·끝나는 점을 이은 것이 <span class="term">CCT 도표</span><span class="en">(continuous-cooling-transformation diagram)</span>다. 위에서 내려오는 경로는 변태가 느린 높은 온도를 지나며 "시간을 덜 저축"하므로 가산 법칙에 따라 시작이 늦어진다. 코를 스치지 않고 \(M_s\)에 닿는 가장 느린 냉각 속도가 <span class="term">임계 냉각 속도</span><span class="en">(critical cooling rate)</span>이고, 이보다 빨리 식히면 마르텐사이트만 남는다. 공석 탄소강의 임계 냉각 속도는 약 140 °C/s로 얇은 판도 물에 담가야 겨우 얻는다. 몰리브데넘·크로뮴·니켈 같은 합금 원소는 코를 오른쪽으로 밀어 임계 냉각 속도를 낮춘다. 이 성질이 <a href="metals-alloys.html">11장</a>의 경화능이다.</p>
+    <div class="predict" data-for="sim-cct">
+      <p>같은 강을 일정한 속도로 연속 냉각할 때, 펄라이트 변태가 시작되는 곳을 TTT 시작선과 비교하면?</p>
+      <div class="opts"><button class="opt">TTT 시작선 위에 정확히 놓인다</button><button class="opt">더 이른 시간, 더 높은 온도</button><button class="opt" data-correct>더 늦은 시간, 더 낮은 온도 — 곡선이 오른쪽 아래로 밀린다</button><button class="opt">연속 냉각에서는 펄라이트가 생기지 않는다</button></div>
+      <div class="quiz-exp">경로는 변태가 아주 느린 727 °C 근처에서 대부분의 시간을 보낸다. 그곳에서 쌓은 \(\Delta t/\tau\)는 작으므로, 몫의 합이 1이 되는 것은 경로가 이미 TTT 시작선을 지나 더 낮은 온도에 이른 뒤다. 아래에서 CCT 곡선(주황)이 TTT(흐린 남색)보다 오른쪽 아래에 그려지는 것을 보라.</div>
+    </div>
+    <div class="sim" id="sim-cct">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>CCT 도표: 냉각 곡선을 끌어 임계 냉각 속도 찾기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-cct"></canvas><span class="hint top">냉각 곡선 위 흰 원을 끈다</span></div>
+        <div class="sim-controls">
+          <label class="check"><input type="checkbox" id="cct-ttt" checked> TTT 곡선 함께 보기</label>
+          <label class="check"><input type="checkbox" id="cct-fan"> 대표 냉각 속도 여러 개 보기</label>
+          <p class="tk-note">냉각 곡선은 \(T = 800\,°\mathrm C - Rt\)이다. 로그 시간축에서는 곧은 선이 아니라 휜 곡선이 된다.</p>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">냉각 속도 R</span><span class="v" id="cct-r">—</span></div>
+        <div class="stat"><span class="k">펄라이트</span><span class="v" id="cct-p">—</span></div>
+        <div class="stat"><span class="k">마르텐사이트</span><span class="v" id="cct-m">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="cct-j">—</span></div>
+      </div>
+      <div class="sim-note">주황 실선·점선은 가산 법칙으로 계산한 CCT 변태 시작(1 %)·끝(99 %)선이다. 모형의 임계 냉각 속도(\(M_s\)에서 변태 분율 1 %)는 약 145 °C/s로, 공석강의 실측 대표값(약 140 °C/s)과 비슷하다. 해볼 것: ① 흰 원을 끌어 냉각 속도를 30 °C/s 아래로 내리면 펄라이트 100 %(노랭·공랭에 해당). ② 31–145 °C/s 사이에서는 펄라이트와 마르텐사이트가 섞인다. ③ CCT 끝선이 약 31 °C/s보다 빠른 곡선에서는 그려지지 않는다 — 변태가 끝나기 전에 \(M_s\)에 닿기 때문이다.</div>
+    </div>
+    <div class="tangle" id="tg-cool">
+      <p>공석강(모형)을 800 °C에서 상온까지 <span class="tn" data-var="R" data-min="5" data-max="300" data-step="5" data-unit=" °C/s">60</span>로 일정하게 식히면, 펄라이트가 <span class="tn-out" data-out="p"></span>, 마르텐사이트가 <span class="tn-out" data-out="m"></span>, 잔류 오스테나이트가 <span class="tn-out" data-out="a"></span>가 된다(<code>Mat.coolPath</code>, \(M_s = 220\) °C).</p>
+    </div>
+    <div class="example" data-title="항온 유지 뒤 담금질한 조직">
+      <p>모형 공석강을 650 °C로 급랭해 2.0 s 유지한 뒤 상온(25 °C)으로 담금질한다. 650 °C의 JMAK 상수는 \(k = 6.89\times10^{-3}\) s⁻⁴, \(n = 4\)이고, 마르텐사이트 분율은 \(f_M = 1-\exp[-0.011(M_s-T)]\), \(M_s = 220\) °C다. 최종 조직의 분율을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 유지 동안의 펄라이트 분율을 JMAK로 구하고, 남은 오스테나이트 중 상온까지 식으며 변하는 몫을 코이스티넨–마르부르거 식으로 구한다(5절). 급랭 동안의 변태는 무시한다.</div>
+        <div class="step"><b>풀이</b> \(f_P = 1-\exp(-6.89\times10^{-3}\times2^4) = 1-e^{-0.1102} = 0.104\). 남은 오스테나이트 0.896 중 \(f_M(25\,°\mathrm C) = 1-e^{-0.011\times195} = 0.883\)이 마르텐사이트가 된다: \(0.896\times0.883 = 0.791\). 나머지 \(0.896\times0.117 = 0.105\)는 잔류 오스테나이트.</div>
+        <div class="answer">조대 펄라이트 10 %, 마르텐사이트 79 %, 잔류 오스테나이트 10 %</div>
+        <div class="step"><b>검토</b> 650 °C의 50 % 시간은 \((\ln2/k)^{1/4} = 3.17\) s이므로 2 s에서 10 %는 S자 곡선의 앞부분으로 타당하다. 고탄소강은 \(M_s\)가 낮아 상온 담금질만으로는 오스테나이트가 꽤 남는다 — 서브제로 처리가 필요한 이유다.</div>
+      </details>
+    </div>
+    <h3>과제: 목표 조직을 만드는 열처리</h3>
+    <p>아래 과제는 열처리 엔지니어가 날마다 하는 일이다. 흰 원 하나가 항온 유지의 <b>온도와 끝나는 시각</b>을 정한다. 800 °C에서 그 온도까지는 500 °C/s로 급랭하고, 유지가 끝나면 고른 방식으로 최종 온도까지 식힌다. 과제의 조건을 만족하면 성공이다.</p>
+    <div class="sim" id="sim-heat">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>열처리 과제: 급랭·항온·서랭을 골라 목표 조직 만들기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view" style="position:relative"><canvas id="cv-heat"></canvas><span class="hint top">흰 원 = 항온 유지 온도와 끝 시각</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>과제</span><select id="heat-task"></select></label>
+          <p class="tk-task" id="heat-desc">—</p>
+          <div class="ctrl"><span>유지 뒤 냉각</span><div class="seg" id="heat-cool"><button data-value="300" class="on">물 담금질</button><button data-value="5">공랭</button><button data-value="0.05">노랭</button></div></div>
+          <div class="ctrl"><span>최종 온도</span><div class="seg" id="heat-end"><button data-value="25" class="on">상온 25 °C</button><button data-value="-80">서브제로 −80 °C</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">조직</span><span class="v" id="heat-mix">—</span></div>
+        <div class="stat"><span class="k">총 처리 시간</span><span class="v" id="heat-time">—</span></div>
+        <div class="stat"><span class="k">결과</span><span class="v" id="heat-res">—</span></div>
+        <div class="stat"><span class="k">달성한 과제</span><span class="v" id="heat-score">—</span></div>
+      </div>
+      <div class="sim-note">조직 이름은 변태가 일어난 온도로 정한다(조대 펄라이트 > 620 °C, 미세 펄라이트 540–620 °C, 베이나이트 540 °C–\(M_s\)). 물 담금질 약 300 °C/s, 공랭 약 5 °C/s, 노랭 약 0.05 °C/s(대표값). 해볼 것: ① "마르텐사이트 95 %"는 상온 담금질만으로는 안 된다 — 왜일까? ② "베이나이트 90 %"는 유지 온도를 낮출수록 오래 걸린다. 가장 짧은 처리 시간을 찾아보라. ③ 유지를 99 % 선 오른쪽까지 끌면 유지 뒤 냉각 방식을 바꿔도 결과가 그대로다 — 왜일까?</div>
+    </div>
+    <div class="callout semi"><strong>짧은 열처리와 상변화 메모리</strong><p>반도체 공정은 TTT 도표를 시간축의 왼쪽 끝에서 쓴다. 플래시 램프 어닐(ms)과 레이저 어닐(µs–ns)은 도펀트를 활성화할 만큼 뜨겁지만 확산과 결정립 성장, 실리사이드의 응집 같은 원치 않는 변태가 시작되기 전에 끝난다 — C 곡선의 코 왼쪽을 지나가는 담금질과 같은 생각이다. 상변화 메모리(PCM)는 이것을 저장 원리로 쓴다. Ge₂Sb₂Te₅(GST)를 수십 ns 펄스로 녹인 뒤 \(10^9\)–\(10^{10}\) K/s로 급랭하면 결정화 C 곡선의 코를 피해 비정질(RESET, 고저항)이 되고, 결정화 온도(약 150 °C) 위 코 근처에서 100 ns쯤 머물게 하면 결정(SET, 저저항)이 된다. GST의 결정화는 핵생성 지배라 JMAK 지수가 크고, AgInSbTe(AIST) 같은 도핑 Sb–Te 계열은 결정 경계에서 자라 들어오는 성장 지배라 SET이 더 빠르다. → <a href="https://semi.euiyun.com/memory/chapters/emerging.html">MemoryBook · 차세대 메모리</a></p></div>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="martensite">
+    <h2>마르텐사이트 변태</h2>
+    <p>오스테나이트를 코에 닿지 않게 \(M_s\) 아래로 내리면 탄소가 확산할 시간이 없다. 그래도 FCC γ는 그 온도에서 불안정하므로, 원자들이 이웃 관계를 그대로 유지한 채 한꺼번에 조금씩(원자 간격보다 훨씬 작게) 움직여 새 격자로 바뀐다. 이 <b>무확산·전단형</b> 변태가 <span class="term">마르텐사이트 변태</span><span class="en">(martensitic transformation)</span>다. 계면은 음속에 가까운 속도로 움직여 판 하나가 \(10^{-7}\) s 안에 생기고, 표면에는 판 모양의 기복이 솟는다. 원자가 대열을 유지한 채 움직인다고 "군대식 변태"라고도 부른다.</p>
+    <p>탄소는 γ의 팔면체 틈새에 있던 자리에 그대로 갇혀, 새 격자는 BCC가 아니라 한 축이 늘어난 <span class="term">체심 정방정</span><span class="en">(body-centered tetragonal, BCT)</span>이 된다. 베인은 FCC 두 칸 속에서 이미 BCT 칸 하나를 찾을 수 있음을 보였다. c축을 약 20 % 줄이고 a축을 약 12 % 늘이면 BCC가 된다(<span class="term">베인 변형</span><span class="en">(Bain strain)</span>). 탄소가 많을수록 c/a가 커지고 격자가 비틀려 전위가 움직이기 어렵다. 마르텐사이트가 단단하고 깨지기 쉬운 이유다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="FCC 두 단위 칸 속의 BCT 칸과 베인 변형">
+        <g transform="translate(40,30)">
+          <!-- two fcc cells side by side (projection) -->
+          <rect x="0" y="40" width="160" height="160" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <rect x="160" y="40" width="160" height="160" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+          <g fill="var(--text-dim)">
+            <circle cx="0" cy="40" r="7"/><circle cx="160" cy="40" r="7"/><circle cx="320" cy="40" r="7"/>
+            <circle cx="0" cy="200" r="7"/><circle cx="160" cy="200" r="7"/><circle cx="320" cy="200" r="7"/>
+            <circle cx="80" cy="120" r="7"/><circle cx="240" cy="120" r="7"/>
+          </g>
+          <g fill="var(--accent)">
+            <circle cx="80" cy="40" r="7" opacity=".55"/><circle cx="240" cy="40" r="7" opacity=".55"/><circle cx="80" cy="200" r="7" opacity=".55"/><circle cx="240" cy="200" r="7" opacity=".55"/>
+            <circle cx="0" cy="120" r="7" opacity=".55"/><circle cx="160" cy="120" r="7" opacity=".55"/><circle cx="320" cy="120" r="7" opacity=".55"/>
+          </g>
+          <polygon points="80,40 240,40 240,200 80,200" fill="none" stroke="var(--accent-2)" stroke-width="3" stroke-dasharray="7 4"/>
+          <text class="t" x="160" y="24" text-anchor="middle" fill="var(--accent-2)" style="font-weight:700">FCC 두 칸 속의 BCT 칸</text>
+          <text class="t t-dim" x="160" y="226" text-anchor="middle">c/a = √2 ≈ 1.41 (아직 FCC)</text>
+          <text class="t t-dim" x="160" y="246" text-anchor="middle">진한 점: 한 층, 흐린 점: 반 칸 위층</text>
+        </g>
+        <path d="M400,140 L470,140" stroke="var(--text-dim)" stroke-width="2.5"/><polygon points="470,132 486,140 470,148" fill="var(--text-dim)"/>
+        <text class="t t-dim" x="443" y="126" text-anchor="middle">베인 변형</text>
+        <text class="t t-dim" x="443" y="166" text-anchor="middle">c −20 %, a +12 %</text>
+        <g transform="translate(540,40)">
+          <rect x="0" y="40" width="170" height="150" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+          <g fill="var(--text-dim)"><circle cx="0" cy="40" r="7"/><circle cx="170" cy="40" r="7"/><circle cx="0" cy="190" r="7"/><circle cx="170" cy="190" r="7"/></g>
+          <circle cx="85" cy="115" r="7" fill="var(--accent)"/>
+          <circle cx="85" cy="40" r="4" fill="var(--bad)"/><circle cx="85" cy="190" r="4" fill="var(--bad)"/>
+          <text class="t" x="96" y="34" fill="var(--bad)" style="font-size:12px">C 원자 (c축 방향 틈새)</text>
+          <text class="t t-dim" x="85" y="214" text-anchor="middle">BCT 마르텐사이트</text>
+          <text class="t t-dim" x="85" y="234" text-anchor="middle">c/a = 1 + 0.045 (wt% C)</text>
+        </g>
+      </svg>
+      <figcaption>베인 대응. FCC 두 칸에서 고른 BCT 칸(점선)을 c축으로 줄이고 a축으로 늘이면 BCC에 가까운 마르텐사이트가 된다. 틈새의 탄소가 c축을 덜 줄어들게 막아 정방정이 남는다. 실제 변태는 여기에 격자 불변 전단(슬립·쌍정)이 더해져 모상과 맞닿은 판이 거시적으로 비틀리지 않는다.</figcaption>
+    </figure>
+    <figure class="mini" id="mini-bain">
+      <div class="mini-view"><canvas id="cv-bain"></canvas></div>
+      <div class="mini-ctrl"><label class="ctrl"><span>탄소 <output id="bain-c-out"></output></span><input type="range" id="bain-c" min="0" max="1.4" step="0.05" value="0.8"></label><span class="readout" id="bain-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>마르텐사이트의 격자 상수(로버츠 관계 \(c = 2.861+0.116x\), \(a = 2.861-0.013x\) Å, \(x\) wt% C). 왼쪽 칸은 정방성을 10배 과장해 그렸다. 탄소가 늘면 c/a와 경도가 함께 커진다(약 0.6 wt% C 이상에서는 잔류 오스테나이트 때문에 경도가 더 오르지 않는다).</figcaption>
+    </figure>
+    <p>마르텐사이트의 양은 시간이 아니라 <b>온도</b>로 정해진다. \(M_s\) 아래로 내려갈수록 판이 더 생기고, 한 온도에 오래 둬도 거의 늘지 않는다(<span class="term">무열 변태</span><span class="en">(athermal transformation)</span>). 탄소강에서 이 관계를 <span class="term">코이스티넨–마르부르거 식</span><span class="en">(Koistinen–Marburger equation)</span>이 잘 나타내고, \(M_s\)는 합금 원소로 내려가며 <span class="term">앤드루스 식</span><span class="en">(Andrews equation)</span>으로 추정한다.</p>
+    <div class="formula">$$f_M = 1-\exp\!\big[-\alpha_m\,(M_s-T)\big]\quad(T\le M_s,\;\alpha_m\approx0.011\;\mathrm{K^{-1}})$$
+    $$M_s\,[°\mathrm C] = 539-423\,C-30.4\,Mn-17.7\,Ni-12.1\,Cr-7.5\,Mo\quad(\text{wt}\%)$$<div class="where">\(f_M\)는 그 온도까지 내려왔을 때 오스테나이트 중 마르텐사이트로 바뀐 분율이다. \(M_s-T = 63\) K에서 50 %, 209 K에서 90 %다. 남은 오스테나이트를 <span class="term">잔류 오스테나이트</span><span class="en">(retained austenite)</span>라 하며, 고탄소강에서는 상온에서 수십 %가 남는다. 앤드루스 식은 실험식이라 ±25 °C쯤 어긋날 수 있다(공석강 실측 \(M_s\approx220\) °C, 식은 약 200 °C).</div></div>
+    <div class="predict" data-for="sim-mart">
+      <p>공석강을 \(M_s\)보다 100 K 낮은 온도로 담금질해 그대로 1시간 둔다. 1시간 동안 마르텐사이트 분율은?</p>
+      <div class="opts"><button class="opt">JMAK처럼 S자로 늘어 결국 100 %가 된다</button><button class="opt" data-correct>담금질 순간 정해진 값(약 67 %)에서 거의 늘지 않는다</button><button class="opt">시간이 지나면 다시 오스테나이트로 되돌아간다</button><button class="opt">확산이 일어나 펄라이트가 된다</button></div>
+      <div class="quiz-exp">무열 변태는 판이 생기는 데 필요한 구동력(과냉)이 판마다 달라, 온도가 내려가야 다음 판이 생긴다. \(1-e^{-0.011\times100} = 0.67\). 더 늘리려면 더 식혀야 한다(서브제로 처리). 다만 이 온도에서 아주 오래 두면 남은 오스테나이트가 베이나이트로 바뀌거나 안정화될 수 있다. 시뮬레이터에서 온도를 내렸다 올려 보라 — 분율이 줄지 않는다.</div>
+    </div>
+    <div class="sim" id="sim-mart">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>마르텐사이트 판: 온도를 끌어 내리며 잔류 오스테나이트 읽기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-mart1"></canvas></div><div style="position:relative"><canvas id="cv-mart2"></canvas><span class="hint top">흰 원(현재 온도)을 좌우로 끈다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>C <output id="mt-c-out"></output></span><input type="range" id="mt-c" min="0.1" max="1.4" step="0.05" value="0.8"></label>
+          <label class="ctrl"><span>Mn <output id="mt-mn-out"></output></span><input type="range" id="mt-mn" min="0" max="2" step="0.1" value="0.7"></label>
+          <label class="ctrl"><span>Ni <output id="mt-ni-out"></output></span><input type="range" id="mt-ni" min="0" max="5" step="0.1" value="0"></label>
+          <label class="ctrl"><span>Cr <output id="mt-cr-out"></output></span><input type="range" id="mt-cr" min="0" max="2" step="0.1" value="0"></label>
+          <button class="btn" id="mt-reset" type="button">다시 오스테나이트로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Mₛ (앤드루스)</span><span class="v" id="mt-ms">—</span></div>
+        <div class="stat"><span class="k">현재 / 최저 온도</span><span class="v" id="mt-t">—</span></div>
+        <div class="stat"><span class="k">마르텐사이트</span><span class="v" id="mt-f">—</span></div>
+        <div class="stat"><span class="k">잔류 오스테나이트</span><span class="v" id="mt-ra">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽은 오스테나이트 결정립(옅은 색)과 그 속에 생긴 렌즈 모양 마르텐사이트 판(진한 색)이다. 먼저 생긴 판이 결정립을 가로지르고, 나중 판은 남은 틈을 잘게 나눈다. 오른쪽은 코이스티넨–마르부르거 곡선이다. 해볼 것: ① 탄소를 1.2 wt%로 올리면 \(M_s\)가 상온 가까이 내려와 상온에서 절반 가까이 오스테나이트로 남는다. ② −80 °C(드라이아이스)나 −196 °C(액체 질소)까지 끌어 서브제로 처리 효과를 본다. ③ 온도를 다시 올려도 판은 사라지지 않는다 — 판의 수는 지나온 가장 낮은 온도가 정한다.</div>
+    </div>
+    <div class="tangle" id="tg-ms">
+      <p>탄소 <span class="tn" data-var="c" data-min="0.1" data-max="1.4" data-step="0.05" data-unit=" wt%">0.60</span>, 망가니즈 <span class="tn" data-var="mn" data-min="0" data-max="2" data-step="0.1" data-unit=" wt%">0.8</span>, 크로뮴 <span class="tn" data-var="cr" data-min="0" data-max="3" data-step="0.1" data-unit=" wt%">1.0</span>인 강의 \(M_s\)는 <span class="tn-out" data-out="ms"></span>이다. 상온(25 °C) 담금질 뒤 잔류 오스테나이트는 <span class="tn-out" data-out="ra"></span>, 이것을 5 % 아래로 줄이려면 <span class="tn-out" data-out="t95"></span> 아래까지 식혀야 한다.</p>
+    </div>
+    <div class="example" data-title="고탄소강의 잔류 오스테나이트와 서브제로 처리">
+      <p>1.0 wt% C 탄소강(다른 원소 무시)을 상온 25 °C로 담금질했다. (a) 앤드루스 식으로 \(M_s\)를 구하라. (b) 마르텐사이트 분율과 잔류 오스테나이트를 구하라. (c) −80 °C로 서브제로 처리하면 잔류 오스테나이트는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(M_s = 539-423C\), 이어서 \(f_M = 1-\exp[-0.011(M_s-T)]\).</div>
+        <div class="step"><b>풀이</b> (a) \(M_s = 539-423 = 116\) °C. (b) \(f_M = 1-e^{-0.011\times91} = 1-e^{-1.001} = 0.632\), 잔류 오스테나이트 36.8 %. (c) \(f_M = 1-e^{-0.011\times196} = 1-e^{-2.156} = 0.884\), 잔류 11.6 %.</div>
+        <div class="answer">(a) Mₛ ≈ 116 °C (b) 마르텐사이트 63 %, 잔류 오스테나이트 37 % (c) 약 12 %</div>
+        <div class="step"><b>검토</b> 잔류 오스테나이트는 무르고, 나중에 응력이나 저온을 만나 마르텐사이트로 바뀌며 부피가 늘어 치수가 변하고 균열을 만든다. 공구강·베어링강·게이지는 그래서 서브제로 처리를 한다. 담금질한 마르텐사이트는 너무 취약해 거의 언제나 뜨임(150–650 °C)으로 탄소를 미세 탄화물로 내보내 인성을 되찾는다 — <a href="metals-alloys.html">11장</a>.</div>
+      </details>
+    </div>
+    <p>마르텐사이트 변태는 강에만 있지 않다. Ni–Ti 같은 형상 기억 합금은 열탄성 마르텐사이트가 쌍정으로 변형을 받아 두었다가 가열하면 모상으로 되돌아가며 원래 모양을 되찾는다(<a href="metals-alloys.html">11장</a>). 지르코니아의 정방정→단사정 변태는 균열 끝에서 일어나 부피 팽창으로 균열을 닫는 변태 강인화에 쓰인다(<a href="ceramics-glasses.html">12장</a>). HfO₂ 강유전 박막의 상(사방정·단사정)도 같은 무확산 변태의 경쟁으로 정해진다.</p>
+    <div class="drill" id="drill-ms" data-title="Mₛ와 마르텐사이트 분율 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="precipitation">
+    <h2>석출 경화와 시효, 오스트발트 숙성</h2>
+    <p>8장의 Al–Cu 상태도에서 4 wt% Cu 합금은 약 500 °C 위에서 α 고용체 한 상이고, 그 아래에서는 고용 한계선(solvus)이 급히 내려가 θ(Al₂Cu)가 석출되어야 한다. 이 "온도가 내려가면 고용도가 줄어드는" 성질을 이용해 강도를 몇 배로 올리는 열처리가 <span class="term">석출 경화</span><span class="en">(precipitation hardening)</span>, 또는 시효 경화다. 핵심은 석출을 <b>일부러 늦게, 잘게</b> 일으키는 것이다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 320" role="img" aria-label="Al–Cu 상태도의 알루미늄 쪽과 용체화, 급랭, 시효 온도 이력">
+        <!-- phase diagram left -->
+        <line x1="70" y1="20" x2="70" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="70" y1="280" x2="360" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <g class="t t-dim" style="font-size:12px" text-anchor="end"><text x="64" y="30">700</text><text x="64" y="94">600</text><text x="64" y="158">500</text><text x="64" y="222">400</text><text x="64" y="284">300 °C</text></g>
+        <g class="t t-dim" style="font-size:12px" text-anchor="middle"><text x="70" y="298">0</text><text x="150" y="298">2</text><text x="230" y="298">4</text><text x="310" y="298">6 wt% Cu</text></g>
+        <!-- 액상선 660 → (6 wt%) 645 °C, 고상선 660 → 548 °C(5.65), 고용 한계선 5.65@548 → 4@500 → 2.5@450 → 1.5@400 → 0.45@300 -->
+        <path d="M70,55 L310,65" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+        <path d="M70,55 L170,81 L230,103 L296,126.5" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <path d="M296,126.5 L230,157 L170,189 L130,220.5 L88,284" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <line x1="296" y1="126.5" x2="360" y2="126.5" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-acc" x="110" y="150" style="font-weight:700">α</text>
+        <text class="t t-dim" x="250" y="230">α + θ</text>
+        <text class="t t-dim" x="110" y="46">L</text>
+        <text class="t t-dim" x="250" y="84">α + L</text>
+        <text class="t t-dim" x="304" y="119" style="font-size:11px">548 °C</text>
+        <line x1="230" y1="40" x2="230" y2="280" stroke="var(--accent-2)" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text class="t" x="234" y="270" fill="var(--accent-2)" style="font-size:12px">4 wt% Cu</text>
+        <!-- time-temperature schedule right -->
+        <line x1="440" y1="20" x2="440" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="440" y1="280" x2="770" y2="280" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="605" y="300" text-anchor="middle">시간 →</text>
+        <text class="t t-dim" x="430" y="30" text-anchor="end" style="font-size:12px">T</text>
+        <g data-step="1">
+          <circle cx="230" cy="132" r="7" fill="var(--accent)"/>
+          <path d="M440,250 L470,125 L560,125" fill="none" stroke="var(--accent)" stroke-width="3"/>
+          <text class="t t-acc" x="480" y="116" style="font-weight:700">① 용체화 ~540 °C</text>
+        </g>
+        <g data-step="2">
+          <path d="M560,125 L566,272" fill="none" stroke="var(--bad)" stroke-width="3"/>
+          <text class="t" x="574" y="200" fill="var(--bad)" style="font-weight:700">② 급랭</text>
+          <circle cx="230" cy="276" r="7" fill="var(--bad)"/>
+          <text class="t" x="240" y="254" fill="var(--bad)" style="font-size:12px">과포화 α</text>
+        </g>
+        <g data-step="3">
+          <path d="M566,272 L590,226 L760,226" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+          <text class="t" x="600" y="216" fill="var(--accent-2)" style="font-weight:700">③ 시효 150–200 °C</text>
+          <text class="t t-dim" x="600" y="250" style="font-size:12px">(상온이면 자연 시효)</text>
+        </g>
+        <g data-only="4" class="t">
+          <text x="600" y="60" style="font-weight:700">④ 석출 순서</text>
+          <text x="600" y="86">GP 영역 → θ″ → θ′ → θ</text>
+          <text x="600" y="110" class="t-dim" style="font-size:12px">정합 → 반정합 → 비정합</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>① 용체화: 4 wt% Cu 합금을 α 단상 영역(약 540 °C)에 두어 구리를 모두 녹인다.</li><li>② 급랭: 물에 담가 θ가 석출할 시간을 주지 않는다. 상온에서 구리가 평형보다 수십 배 녹아 있는 과포화 고용체가 되고, 담금질로 얼어붙은 공공이 많다.</li><li>③ 시효: 낮은 온도에서 유지하면 과포화된 구리가 미세한 석출물로 나온다. 확산이 느려 수 시간–수 일이 걸린다.</li><li>④ 평형 θ는 핵생성 장벽이 커서, 장벽이 작은 준안정 상이 먼저 차례로 나온다.</li></ol>
+      <figcaption>Al–4 wt% Cu의 석출 경화 열처리. 상태도(왼쪽, <code>Mat.diagrams.AlCu</code>를 본뜸)와 온도 이력(오른쪽).</figcaption>
+    </figure>
+    <p>과포화 고용체에서 평형 θ가 바로 나오지 않는 이유는 1절의 핵생성 장벽이다. θ는 정방정 구조로 α와 맞지 않아 비정합 계면(큰 \(\gamma\))을 가져야 한다. 대신 구리 원자가 {100}면에 한두 층으로 모인 <span class="term">GP 영역</span><span class="en">(Guinier–Preston zone)</span>은 격자가 그대로 이어져 \(\gamma\)가 아주 작고, 담금질 공공 덕에 상온에서도 생긴다. 그 뒤 정합 판 θ″, 반정합 판 θ′, 비정합 θ 순서로 더 안정하지만 장벽이 큰 상이 나타난다. 준안정 상이 먼저 나오는 이 경향을 <span class="term">오스트발트 단계 규칙</span><span class="en">(Ostwald step rule)</span>이라 한다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="Al–Cu 석출 순서의 자유 에너지 사다리와 석출물 모양">
+        <line x1="60" y1="20" x2="60" y2="230" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text class="t t-dim" x="40" y="125" text-anchor="middle" transform="rotate(-90 40 125)">자유 에너지 G</text>
+        <g stroke-width="4">
+          <line x1="80" y1="40" x2="190" y2="40" stroke="var(--text-dim)"/>
+          <line x1="210" y1="85" x2="320" y2="85" stroke="var(--accent)"/>
+          <line x1="340" y1="120" x2="450" y2="120" stroke="var(--accent)"/>
+          <line x1="470" y1="155" x2="580" y2="155" stroke="var(--accent)"/>
+          <line x1="600" y1="205" x2="760" y2="205" stroke="var(--accent-2)"/>
+        </g>
+        <g fill="none" stroke="var(--text-faint)" stroke-width="1.8" stroke-dasharray="4 3">
+          <path d="M190,40 Q200,30 210,85"/><path d="M320,85 Q330,70 340,120"/><path d="M450,120 Q460,100 470,155"/><path d="M580,155 Q590,125 600,205"/>
+        </g>
+        <g class="t" style="font-size:13px" text-anchor="middle">
+          <text x="135" y="30">과포화 α</text><text x="265" y="75" class="t-acc">α + GP 영역</text><text x="395" y="110" class="t-acc">α + θ″</text><text x="525" y="145" class="t-acc">α + θ′</text><text x="680" y="195" fill="var(--accent-2)">α + θ (평형)</text>
+        </g>
+        <g transform="translate(265,110)"><line x1="-24" y1="0" x2="24" y2="0" stroke="var(--accent)" stroke-width="2.5"/></g>
+        <g transform="translate(395,145)"><rect x="-26" y="-3" width="52" height="6" fill="var(--accent)" opacity=".8"/></g>
+        <g transform="translate(525,182)"><rect x="-30" y="-6" width="60" height="12" fill="var(--accent)" opacity=".6"/><path d="M-30,-6 L-30,6 M30,-6 L30,6" stroke="var(--bad)" stroke-width="2"/></g>
+        <g transform="translate(680,228)"><ellipse cx="0" cy="0" rx="26" ry="16" fill="var(--accent-2)" opacity=".7"/></g>
+        <g class="t t-dim" style="font-size:11.5px" text-anchor="middle">
+          <text x="265" y="132">Cu 원자층 원반 · 정합</text><text x="395" y="168">정합 판</text><text x="525" y="206">반정합 판 (계면 전위)</text><text x="680" y="254">비정합 · γ 큼</text>
+        </g>
+      </svg>
+      <figcaption>석출의 사다리. 왼쪽으로 갈수록 장벽(점선 언덕)이 작아 먼저 나오고, 오른쪽으로 갈수록 더 안정하다. 강도를 가장 많이 올리는 것은 정합·반정합 판(θ″·θ′)이 촘촘할 때다.</figcaption>
+    </figure>
+    <p>석출물이 전위를 막는 방식은 크기에 따라 바뀐다(6장의 석출 강화). 작고 정합인 석출물은 전위가 뚫고 지나가며 <b>자른다</b>. 자를 때 새 계면과 반위상 경계를 만드는 일이 저항이 되며, 그 저항은 석출물이 클수록 크다. 석출물이 커지고 간격이 벌어지면 전위가 석출물 사이로 휘어 나가며 고리를 남기고 <b>우회한다</b>(오로완 기구). 우회 저항은 간격 \(\lambda\)에 반비례해 석출물이 클수록 작다. 전위는 둘 중 쉬운 길을 택하므로 강도는 두 곡선 중 낮은 쪽이고, 두 곡선이 만나는 크기에서 최대가 된다.</p>
+    <div class="formula">$$\Delta\tau = \min\!\left(\underbrace{A\sqrt{f\,r}}_{\text{자름}},\;\underbrace{\frac{Gb}{\lambda}}_{\text{우회}}\right),\qquad \lambda\approx r_s\sqrt{\pi/f}-2r_s,\;\; r_s = \sqrt{2/3}\,r$$<div class="where">\(f\)는 석출물 부피 분율, \(r\)은 반지름, \(r_s\)는 미끄럼면이 자르는 평균 반지름이다(<code>Mat.precipStrength</code>). 자름 계수 \(A\)는 석출물 종류에 따른 모형값이다. 시효 시간이 지나면 \(f\)는 평형값에 다가가 멈추고 \(r\)은 계속 커지므로(조대화), 강도는 오르다가(<b>미시효</b>) 최대(<b>최대 시효</b>)를 지나 떨어진다(<span class="term">과시효</span><span class="en">(overaging)</span>).</div></div>
+    <div class="predict" data-for="sim-aging">
+      <p>같은 Al–4Cu 합금을 150 °C 대신 250 °C에서 시효하면 최대 강도에 이르는 시간과 최대 강도는?</p>
+      <div class="opts"><button class="opt">시간도 길어지고 강도도 커진다</button><button class="opt" data-correct>시간은 크게 줄고, 최대 강도는 같거나 조금 낮다</button><button class="opt">시간은 같고 강도만 커진다</button><button class="opt">온도와 무관하다</button></div>
+      <div class="quiz-exp">확산 계수가 \(Q\approx136\) kJ/mol로 아레니우스를 따르므로 150 °C에서 250 °C로 올리면 확산이 약 1600배 빨라진다. 같은 크기에 이르는 시간도 그만큼 줄어든다. 최대 강도는 석출 가능한 양 \(f\)로 정해지는데, 온도가 높으면 고용 한계가 올라가 \(f\)가 줄고, 실제 합금에서는 미세한 준안정 상(GP·θ″)이 덜 나와 최대 강도가 낮아진다. 그래서 실무는 생산성과 강도의 절충으로 시효 온도를 고른다.</div>
+    </div>
+    <div class="sim" id="sim-aging">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>시효 경화 곡선: 시간을 끌며 자름 → 우회 전환 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-age1"></canvas><span class="hint top">곡선 위 흰 원(시효 시간)을 좌우로 끈다</span></div><div><canvas id="cv-age2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>시효 온도 <output id="ag-t-out"></output></span><input type="range" id="ag-t" min="100" max="450" step="5" value="190"></label>
+          <label class="ctrl"><span>구리 함량 <output id="ag-c-out"></output></span><input type="range" id="ag-c" min="1" max="5.5" step="0.1" value="4"></label>
+          <label class="check"><input type="checkbox" id="ag-cmp" checked> 130 °C·250 °C 곡선 함께 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시효 시간</span><span class="v" id="ag-time">—</span></div>
+        <div class="stat"><span class="k">석출물 r / 분율 f</span><span class="v" id="ag-rf">—</span></div>
+        <div class="stat"><span class="k">기구</span><span class="v" id="ag-mech">—</span></div>
+        <div class="stat"><span class="k">항복 강도 / 최대</span><span class="v" id="ag-s">—</span></div>
+      </div>
+      <div class="sim-note">옅은 점선은 자름·우회 각각의 한계, 주황 점선은 130 °C·250 °C 곡선이다. 정성 모형(<code>Mat.agingCurve</code>, 자름 계수 \(A = 85\) MPa/√nm, \(\sigma_\mathrm y = 60\) MPa \(+\,3.06\Delta\tau\)). 석출물 반지름은 LSW 조대화 \(r^3 = r_0^3+Kt\), \(K\propto D_\text{Cu in Al}(T)\)(\(Q = 136\) kJ/mol, <code>Mat.diffData</code>), 평형 분율은 <code>Mat.diagrams.AlCu</code>의 지렛대로 정했다. 해볼 것: ① 흰 원을 최대 시효 양쪽으로 끌어 기구가 "자름"에서 "우회"로 바뀌는 지점이 곧 최대 강도임을 확인한다. ② 시효 온도를 고용 한계 위(4 wt% Cu면 약 500 °C)로 올리면 석출이 없다 — 이 모형은 450 °C까지만. ③ 구리를 2 wt%로 줄이면 최대 강도가 \(\sqrt f\)에 비례해 낮아진다.</div>
+    </div>
+    <h3>오스트발트 숙성: 큰 것이 작은 것을 먹는다</h3>
+    <p>석출이 끝나 부피 분율이 평형에 이른 뒤에도 미세조직은 멈추지 않는다. 작은 입자는 곡률이 커서 주위 용질 농도가 높다(<span class="term">깁스–톰슨 효과</span><span class="en">(Gibbs–Thomson effect)</span>, \(c(r) = c_\infty\exp(2\gamma V_m/rRT)\)). 그래서 작은 입자 둘레에서 큰 입자 둘레로 용질이 확산해, 작은 입자는 녹아 사라지고 큰 입자는 자란다. 계면 넓이를 줄이는 이 조대화를 <span class="term">오스트발트 숙성</span><span class="en">(Ostwald ripening)</span>이라 한다. 리프시츠·슬료조프·바그너(LSW)는 확산 지배일 때 평균 반지름이 시간의 세제곱근으로 자람을 보였다.</p>
+    <div class="formula">$$\bar r^{\,3}-\bar r_0^{\,3} = Kt,\qquad K = \frac{8\gamma\,D\,c_\infty V_m^2}{9RT}$$<div class="where">\(c_\infty\)[mol/m³]는 평평한 계면의 평형 용해도(몰분율 \(X_e = c_\infty V_m\)), \(V_m\)은 석출물의 몰 부피, \(D\)는 용질의 확산 계수다(<code>Mat.lswK</code>). 입자 수는 \(1/t\)로 줄고, 크기 분포 \(r/\bar r\)는 시간에 무관한 모양(최대 1.5)에 다가간다. 고온에서 쓰는 합금은 \(D\)와 \(c_\infty\)가 작은 석출물(예: 니켈 초합금의 γ′, 산화물 분산)로 조대화를 막는다.</div></div>
+    <div class="sim" id="sim-coarsen">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>석출물 조대화: 입자를 골라 지켜보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-co1"></canvas><span class="hint">입자를 누르면 그 입자를 따라간다</span></div><div><canvas id="cv-co2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>처음 크기 퍼짐 <output id="co-s-out"></output></span><input type="range" id="co-s" min="0.05" max="0.4" step="0.01" value="0.25"></label>
+          <button class="btn" id="co-play" type="button"></button>
+          <button class="btn" id="co-reset" type="button">다시</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간 t</span><span class="v" id="co-t">—</span></div>
+        <div class="stat"><span class="k">입자 수</span><span class="v" id="co-n">—</span></div>
+        <div class="stat"><span class="k">r̄³ 기울기 / LSW 4/9</span><span class="v" id="co-k">—</span></div>
+        <div class="stat"><span class="k">고른 입자</span><span class="v" id="co-p">—</span></div>
+      </div>
+      <div class="sim-note">LSW 평균장 모형(<code>Mat.coarsening</code>): 입자 2000개(그림은 그중 한 귀퉁이)가 \(dr/dt = (A/r)(1/\bar r-1/r)\)을 따른다(\(A = 1\), 무차원). 왼쪽은 입자의 단면 그림(위치는 고정), 오른쪽 위는 \(\bar r^3-\bar r_0^3\)와 LSW 직선(기울기 \(4A/9\)), 아래는 \(r/\bar r\) 분포와 LSW 정상 분포(점선)다. 해볼 것: ① 평균보다 작은 입자를 눌러 줄어들다 사라지는 것을 본다. 평균보다 큰 입자는 자란다. ② 입자가 줄어도 \(\bar r^3\)은 거의 직선으로 자란다. 처음 분포가 LSW 정상 분포로 다가가는 과도 구간에는 기울기가 4/9보다 조금 크고(0.5–0.6), 입자가 수십 개로 줄면 요동이 커진다. ③ 처음 퍼짐을 바꿔도 분포는 결국 같은 모양으로 간다.</div>
+    </div>
+    <div class="tangle" id="tg-lsw">
+      <p>평균 반지름 <span class="tn" data-var="r0" data-min="2" data-max="50" data-step="1" data-unit=" nm">10</span>인 석출물이 LSW 상수 \(K =\) <span class="tn" data-var="k" data-min="1" data-max="1000" data-step="1">100</span> nm³/h로 조대화하면, 반지름이 두 배가 되는 데 <span class="tn-out" data-out="t2"></span>, 100시간 뒤 반지름은 <span class="tn-out" data-out="r"></span>이다. 입자 수 밀도는 처음의 <span class="tn-out" data-out="n"></span>로 줄어든다(부피 분율 일정).</p>
+    </div>
+    <div class="example" data-title="θ 석출물의 조대화 속도">
+      <p>Al–Cu 합금을 350 °C에 둔다. θ와 α의 계면 에너지 \(\gamma = 0.5\) J/m², 이 온도의 구리 평형 몰분율 \(X_e = 4.2\times10^{-3}\)(약 0.98 wt%), 석출물 몰 부피 \(V_m = 1.0\times10^{-5}\) m³/mol, 알루미늄 속 구리의 확산 계수 \(D = 6.5\times10^{-5}\exp(-136\,\text{kJ/mol}/RT)\) m²/s다. LSW 상수 \(K\)와, 반지름 10 nm인 석출물이 50 nm가 되는 시간을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(T = 623.15\) K에서 \(D\)를 구하고 \(K = 8\gamma DX_eV_m/9RT\)(\(c_\infty V_m^2 = X_eV_m\))에 넣는다. 시간은 \(t = (r^3-r_0^3)/K\).</div>
+        <div class="step"><b>풀이</b> \(D = 6.5\times10^{-5}\,e^{-136000/(8.314\times623.15)} = 6.5\times10^{-5}\,e^{-26.25} = 2.59\times10^{-16}\) m²/s. \(K = 8\times0.5\times2.59\times10^{-16}\times4.2\times10^{-3}\times10^{-5}/(9\times8.314\times623.15) = 9.29\times10^{-28}\) m³/s \(= 0.929\) nm³/s. \(t = (50^3-10^3)/0.929 = 1.33\times10^5\) s \(= 37\) h.</div>
+        <div class="answer">K ≈ 9.3×10⁻²⁸ m³/s (≈ 3.3×10³ nm³/h), t ≈ 37 h</div>
+        <div class="step"><b>검토</b> 300 °C로 50 °C만 낮추면 \(D\)는 약 10배, \(X_e\)는 2배 이상 작아져 같은 성장에 700시간 넘게 걸린다. 조대화는 온도에 매우 민감하다. 이 시간은 최대 시효 뒤 강도가 떨어지는 시간 규모와 같은 정도다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>Al–Cu 배선과 석출</strong><p>구리 다마신 이전의 알루미늄 배선은 순수 Al이 아니라 Cu 0.5–4 wt%를 넣은 Al–Cu였다. 배선 공정의 열처리(400–450 °C) 뒤 식는 동안 Al₂Cu(θ)가 결정립계에 석출하고 구리가 입계에 모여, 일렉트로마이그레이션의 주 경로인 입계 확산을 늦춘다. 그 결과 EM 수명이 수십 배 늘었다. 반대로 θ 석출물이 너무 크게 조대화하면 그 둘레의 구리가 고갈되어 효과가 사라지고, 큰 θ 입자는 건식 식각에서 잘 제거되지 않는 잔류물이 되어 단락 불량을 만들었다. 그래서 Cu 함량과 열처리는 석출의 크기와 분포를 정하는 미세조직 설계였다. → <a href="https://semi.euiyun.com/process/chapters/metal.html">ProcessBook · 금속 배선</a></p></div>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="spinodal">
+    <h2>스피노달 분해: 장벽 없는 상분리</h2>
+    <p>지금까지의 변태는 모두 장벽을 넘어야 했다. 작은 핵은 손해였고, 임계 크기를 넘어야 이익이 났다. 그런데 혼화성 간극이 있는 고용체(8장, 열·통계물리의 <a href="../../thermal-physics/chapters/solutions.html#regular-solution">정규 용액과 스피노달</a>)를 간극 한가운데로 급랭하면 사정이 다르다. 자유 에너지 곡선이 위로 볼록한 곳(\(\partial^2f/\partial c^2<0\))에서는 조성이 아주 조금 오르내리기만 해도 평균 자유 에너지가 내려간다. 장벽이 없으니 핵생성을 기다릴 필요가 없고, 온 시편에서 조성 요동이 동시에 자란다. 이것이 <span class="term">스피노달 분해</span><span class="en">(spinodal decomposition)</span>이고, \(f''=0\)인 점들을 이은 선이 <span class="term">스피노달</span><span class="en">(spinodal)</span>이다.</p>
+    <div class="compare">
+      <div><h4>핵생성–성장 (\(f''>0\), 준안정)</h4><p>작은 요동은 자유 에너지를 올려 사라진다. 임계 크기 이상의 핵이 필요하다. 처음부터 거의 평형 조성의 입자가 생겨 크기만 자란다. 용질은 농도가 낮아지는 쪽으로 흐른다(보통 확산). 조직은 흩어진 물방울.</p></div>
+      <div><h4>스피노달 분해 (\(f''<0\), 불안정)</h4><p>무한히 작은 요동도 자란다. 장벽이 없다. 조성 차이가 처음에는 작다가 점점 커진다. 용질이 농도가 <b>높은</b> 쪽으로 흐른다(<span class="term">오르막 확산</span><span class="en">(uphill diffusion)</span>, 실효 \(D\propto f''<0\)). 평균 조성이 가운데면 두 상이 서로 얽힌 연결 조직.</p></div>
+    </div>
+    <p>요동의 파장이 짧으면 조성이 급히 바뀌는 곳마다 계면 비슷한 기울기 에너지 \(\kappa|\nabla c|^2\)가 든다. 칸과 힐리아드는 이 항을 넣은 확산 방정식을 세웠다.</p>
+    <div class="formula">$$\frac{\partial\phi}{\partial t} = M\nabla^2\mu,\qquad \mu = f'(\phi)-\kappa\nabla^2\phi;\qquad \delta\phi\propto e^{R(k)t},\;\; R(k) = -Mk^2\big(f''+\kappa k^2\big)$$<div class="where">\(\phi\)는 조성(질서 변수), \(M\)은 이동도, \(\kappa\)는 기울기 에너지 계수다(<code>Mat.cahnHilliard</code>: \(f = (\phi^2-1)^2/4\), 스피노달 \(|\phi| = 1/\sqrt3\)). \(f''<0\)이면 \(k^2<|f''|/\kappa\)인 파수가 모두 자라고, 가장 빨리 자라는 파장은 \(\lambda_m = 2\pi\sqrt{2\kappa/|f''|}\)이다(<code>Mat.spinodalWavelength</code>). 금속에서 \(\lambda_m\)은 수 nm다.</div></div>
+    <figure class="mini" id="mini-fcurve">
+      <div class="mini-view" style="position:relative"><canvas id="cv-fc"></canvas><span class="hint top">곡선 위 흰 원(평균 조성)을 좌우로 끈다</span></div>
+      <div class="mini-ctrl"><span class="readout" id="fc-r"></span></div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽은 \(f(\phi)\)와 스피노달(점선), 오른쪽은 그 조성에서 요동의 증폭률 \(R(k)\)이다. 스피노달 안에서는 \(R>0\)인 파수 띠가 생기고 꼭대기가 \(\lambda_m\)을 정한다. 스피노달 밖으로 나가면 띠가 사라진다 — 작은 요동은 모두 줄어든다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-ch">
+      <p>평균 조성 \(\phi_0 = 0.7\)(스피노달 \(0.577\) 밖, 혼화성 간극 안)에 작은 무작위 요동만 주고 칸–힐리아드 식을 오래 풀면?</p>
+      <div class="opts"><button class="opt">\(\phi_0 = 0\)과 같은 연결 조직이 생긴다</button><button class="opt">물방울이 무작위로 바로 생긴다</button><button class="opt" data-correct>아무 일도 일어나지 않는다 — 요동이 사그라든다</button><button class="opt">조성이 더 고르게 섞여 간극이 사라진다</button></div>
+      <div class="quiz-exp">\(f''(0.7) = 3(0.49)-1 = 0.47>0\)이므로 모든 파수의 \(R(k)\)가 음수다. 상분리가 이익인데도 시작하지 못하는 준안정 상태다. 이 식에는 열 요동이 없어서 스스로 핵이 생기지 않는다. 시뮬레이터에서 손으로 소수 상의 씨앗을 떨어뜨려 보라. 작은 씨앗은 녹고 큰 씨앗은 자란다 — 임계 핵이다(\(\phi_0\)이 0.85–0.93일 때 잘 보인다).</div>
+    </div>
+    <div class="sim" id="sim-ch">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>칸–힐리아드 격자: 연결 조직과 물방울, 씨앗 떨어뜨리기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div style="position:relative"><canvas id="cv-ch1"></canvas><span class="hint">누르거나 끌어 소수 상 씨앗을 떨어뜨린다</span></div><div><canvas id="cv-ch2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>평균 조성 φ₀ <output id="ch-p-out"></output></span><input type="range" id="ch-p" min="0" max="0.95" step="0.05" value="0"></label>
+          <label class="ctrl"><span>씨앗 반지름 <output id="ch-r-out"></output></span><input type="range" id="ch-r" min="1" max="8" step="0.5" value="4"></label>
+          <button class="btn" id="ch-play" type="button"></button>
+          <button class="btn" id="ch-reset" type="button">다시 (고른 조성 + 작은 요동)</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">시간 t</span><span class="v" id="ch-t">—</span></div>
+        <div class="stat"><span class="k">f″(φ₀) · 상태</span><span class="v" id="ch-st">—</span></div>
+        <div class="stat"><span class="k">특성 길이 L</span><span class="v" id="ch-L">—</span></div>
+        <div class="stat"><span class="k">λ<sub>m</sub> (선형 이론)</span><span class="v" id="ch-lm">—</span></div>
+      </div>
+      <div class="sim-note">64×64 칸, 주기 경계, \(\kappa = M = 1\), \(\Delta t = 0.015\)(무차원). 남색은 \(\phi\to-1\), 황동색은 \(\phi\to+1\) 상이다. 오른쪽은 특성 길이 \(L\)(계면 길이로 추정)의 시간 변화(로그–로그)와 \(t^{1/3}\) 기준선이다. 해볼 것: ① \(\phi_0 = 0\)이면 두 상이 얽힌 연결 조직, 0.4면 물방울이 된다. 둘 다 초기 무늬의 간격이 \(\lambda_m\approx8.9\)(\(\phi_0=0\))쯤이다. ② 오래 두면 무늬가 굵어지며 \(L\propto t^{1/3}\) — 6절의 오스트발트 숙성과 같은 지수다. ③ \(\phi_0 = 0.9\)에서 반지름 2와 6의 씨앗을 떨어뜨려 어느 쪽이 살아남는지 본다.</div>
+    </div>
+    <div class="tangle" id="tg-spin">
+      <p>기울기 에너지 계수 \(\kappa =\) <span class="tn" data-var="k" data-min="0.5" data-max="20" data-step="0.5">2</span>×10⁻¹¹ J/m, 자유 에너지 곡률 \(|f''| =\) <span class="tn" data-var="f" data-min="0.1" data-max="10" data-step="0.1">1.0</span>×10⁸ J/m³이면 가장 빨리 자라는 파장은 \(\lambda_m =\) <span class="tn-out" data-out="l"></span>이다. 곡률이 작아지는 스피노달 경계 쪽으로 가면 파장이 길어지고 성장도 느려진다.</p>
+    </div>
+    <div class="example" data-title="스피노달 분해의 파장">
+      <p>어떤 합금의 기울기 에너지 계수가 \(\kappa = 2.0\times10^{-11}\) J/m, 급랭한 조성에서 자유 에너지 곡률이 \(f'' = -1.0\times10^8\) J/m³다. 가장 빨리 자라는 조성 파장 \(\lambda_m\)을 구하라. 이 무늬를 X선 소각 산란이나 TEM으로 볼 수 있을까?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\lambda_m = 2\pi\sqrt{2\kappa/|f''|}\)(이 장의 칸–힐리아드 꼴).</div>
+        <div class="step"><b>풀이</b> \(2\kappa/|f''| = 4.0\times10^{-11}/1.0\times10^8 = 4.0\times10^{-19}\) m², \(\sqrt{\;} = 6.32\times10^{-10}\) m, \(\lambda_m = 2\pi\times0.632 = 3.97\) nm.</div>
+        <div class="answer">λₘ ≈ 4.0 nm</div>
+        <div class="step"><b>검토</b> 수 nm 주기의 조성 변조는 X선·중성자 소각 산란에서 원점 근처 고리(위성 봉우리)로 나타나고, 고분해능 TEM·원자 탐침(APT)으로 직접 보인다. Fe–Cr 스테인리스강의 475 °C 취화, 알니코 자석, 보로실리케이트 유리의 상분리(바이코어 유리)가 이런 미세 무늬다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>high-k 막의 결정화와 상분리</strong><p>게이트 절연막 HfO₂는 ALD로 쌓으면 비정질이지만 400–500 °C 근처에서 결정화가 시작된다. 결정립계는 누설 전류와 붕소·산소 확산의 빠른 길이 되고 막 두께 방향의 유전율도 흩어지므로, 소스·드레인 활성화 어닐(1000 °C 이상)을 겪는 게이트 퍼스트 공정에서는 Si·N·Al을 넣어 결정화 온도를 올렸다. 하프늄 실리케이트(HfSiO)는 고온 어닐에서 HfO₂가 많은 영역과 SiO₂가 많은 영역으로 나뉘는데, 수 nm 간격의 연결 무늬가 측정되어 스피노달 분해로 해석된다. 결정화는 핵생성–성장(JMAK), 상분리는 스피노달 — 이 장의 두 그림이 같은 막 안에서 경쟁한다. 결정상의 종류(단사정·정방정·사방정)가 강유전성 HfO₂의 성패를 정한다. → <a href="https://semi.euiyun.com/device/chapters/mos.html">DeviceBook · MOS 커패시터</a></p></div>
+  </section>
+
+  <!-- ============================================================ 정리 -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>고체 속 핵생성</b>: \(\Delta G(r) = -\tfrac43\pi r^3(\Delta G_v-\Delta G_s)+4\pi r^2\gamma\), \(r^* = 2\gamma/(\Delta G_v-\Delta G_s)\), \(\Delta G^* = 16\pi\gamma^3/3(\Delta G_v-\Delta G_s)^2\), \(\Delta G_v = \Delta H_v\Delta T/T_e\). 변형 에너지가 구동력을 깎는다. 정합 계면은 \(\gamma\)가 작고 변형이 크다. 불균질 핵생성: \(\Delta G^*_\text{het} = S(\theta)\Delta G^*_\text{hom}\), \(S = (2+\cos\theta)(1-\cos\theta)^2/4\)(기판), 결정립계 렌즈는 \(2S\), \(\cos\theta = \gamma_\mathrm{gb}/2\gamma\).</li>
+      <li><b>C 곡선</b>: 핵생성 속도 \(\propto e^{-\Delta G^*/kT}e^{-Q/kT}\)과 성장 속도 \(\propto D(T)\times\)구동력은 모두 중간 과냉에서 최대다. 변태 시간 \(\propto(\dot NG^3)^{-1/4}\)이 가장 짧은 온도가 코다.</li>
+      <li><b>JMAK</b>: \(f = 1-\exp(-X_\text{ext}) = 1-\exp(-kt^n)\). 3차원 연속 핵생성 \(k = \pi\dot NG^3/3\), \(n = 4\); 자리 포화 \(n = 3\); 2차원은 각각 3, 2; 확산 지배 성장은 차원당 1/2. 아브라미 그림 \(\ln[-\ln(1-f)]\) 대 \(\ln t\)의 기울기가 \(n\).</li>
+      <li><b>TTT·CCT</b>: 공석강 항온 변태의 시작·끝선, 코 위 펄라이트(낮을수록 미세), 코 아래 베이나이트, \(M_s\) 아래 마르텐사이트. 경로가 바뀌면 가산 법칙 \(\sum\Delta t_i/\tau_i = 1\). 연속 냉각은 곡선을 오른쪽 아래로 민다. 공석 탄소강 임계 냉각 속도 ≈ 140 °C/s, 합금 원소가 낮춘다.</li>
+      <li><b>마르텐사이트</b>: 무확산 전단 변태, 베인 대응, BCT \(c/a\approx1+0.045\,(\text{wt\% C})\). 무열 변태 \(f_M = 1-\exp[-0.011(M_s-T)]\), \(M_s = 539-423C-30.4Mn-17.7Ni-12.1Cr-7.5Mo\). 고탄소강은 잔류 오스테나이트가 많아 서브제로 처리·뜨임이 필요하다.</li>
+      <li><b>석출 경화와 숙성</b>: 용체화 → 급랭(과포화) → 시효. GP → θ″ → θ′ → θ(오스트발트 단계 규칙). 강도는 자름 \(A\sqrt{fr}\)과 우회 \(Gb/\lambda\) 중 작은 쪽이라 전환점에서 최대, 그 뒤 과시효. 조대화 \(\bar r^3-\bar r_0^3 = Kt\), \(K = 8\gamma Dc_\infty V_m^2/9RT\).</li>
+      <li><b>스피노달</b>: \(f''<0\)인 곳에서는 장벽 없이 요동이 자라고 오르막 확산이 일어난다. 칸–힐리아드 \(R(k) = -Mk^2(f''+\kappa k^2)\), \(\lambda_m = 2\pi\sqrt{2\kappa/|f''|}\)(수 nm). 가운데 조성은 연결 조직, 가장자리는 물방울, 스피노달 밖은 핵생성이 필요하다. 늦은 단계 조대화 \(L\propto t^{1/3}\).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 문제 -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>따로 말이 없으면 \(k_\mathrm B = 1.381\times10^{-23}\) J/K, \(R = 8.314\) J/(mol·K), 코이스티넨–마르부르거 계수 \(\alpha_m = 0.011\) K⁻¹을 쓴다. 섭씨는 켈빈으로 바꿔 계산한다(\(T = t+273.15\)). 답이 ±1–2 % 이내면 정답이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="균질 핵생성" data-answer="3.75; 8.84e-18" data-label="r* =; ΔG* =" data-unit="nm; J">
+        <div class="prob-q"><p>평형 온도 \(T_e = 900\) K, \(\Delta H_v = 1.2\times10^9\) J/m³, 계면 에너지 \(\gamma = 0.15\) J/m²인 석출을 \(\Delta T = 60\) K 과냉한다(변형 에너지 무시). 임계 반지름 \(r^*\)와 핵생성 장벽 \(\Delta G^*\)를 구하라.</p></div>
+        <div class="prob-hint">\(\Delta G_v = \Delta H_v\Delta T/T_e\)를 먼저 구한다.</div>
+        <div class="prob-sol"><p>\(\Delta G_v = 1.2\times10^9\times60/900 = 8.0\times10^7\) J/m³. \(r^* = 2(0.15)/8.0\times10^7 = 3.75\times10^{-9}\) m. \(\Delta G^* = 16\pi(0.15)^3/(3\times6.4\times10^{15}) = 8.84\times10^{-18}\) J. 840 K의 \(kT = 1.16\times10^{-20}\) J이므로 약 760 kT — 균질 핵생성은 사실상 일어나지 않는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="불균질 핵생성" data-answer="0.0581" data-label="S(θ) =">
+        <div class="prob-q"><p>평평한 기판 위의 구형 모자 핵이 접촉각 45°를 이룬다. 장벽의 감소 인자 \(S(\theta) = \Delta G^*_\text{het}/\Delta G^*_\text{hom}\)을 구하라.</p></div>
+        <div class="prob-sol"><p>\(\cos45° = 0.7071\). \(S = (2.7071)(0.2929)^2/4 = 2.7071\times0.08579/4 = 0.0581\). 장벽이 1/17로 줄어든다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="결정립계 핵생성" data-answer="53.1; 0.208" data-label="θ =; ΔG*gb/ΔG*hom =" data-unit="°; ">
+        <div class="prob-q"><p>결정립계 에너지가 석출물–모상 계면 에너지의 1.2배다(\(\gamma_\mathrm{gb} = 1.2\gamma\)). 결정립계 위 렌즈 핵의 접촉각과 \(\Delta G^*_\text{gb}/\Delta G^*_\text{hom}\)을 구하라.</p></div>
+        <div class="prob-hint">\(\cos\theta = \gamma_\mathrm{gb}/2\gamma\), 렌즈는 모자 두 개이므로 \(S_\text{입계} = \tfrac12(2+\cos\theta)(1-\cos\theta)^2\).</div>
+        <div class="prob-sol"><p>\(\cos\theta = 0.6\) → \(\theta = 53.1°\). \(S = \tfrac12(2.6)(0.4)^2 = 0.208\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="변형 에너지" data-answer="1.78" data-label="비 =">
+        <div class="prob-q"><p>화학 구동력 \(\Delta G_v = 1.2\times10^8\) J/m³인 석출이 정합 변형 때문에 \(\Delta G_s = 3.0\times10^7\) J/m³의 변형 에너지를 가진다. 같은 \(\gamma\)에서 변형이 있을 때와 없을 때의 \(\Delta G^*\) 비를 구하라.</p></div>
+        <div class="prob-sol"><p>\(\Delta G^*\propto(\Delta G_v-\Delta G_s)^{-2}\): \((1.2/0.9)^2 = 1.78\). 임계 반지름은 \(1.2/0.9 = 1.33\)배.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="C 곡선">
+        <div class="prob-q"><p>과냉이 커질수록 핵생성 속도가 처음에는 커지다가 다시 작아지는 가장 큰 이유는?</p></div>
+        <div class="prob-choices"><button>과냉이 크면 계면 에너지가 커져서</button><button data-correct>과냉이 크면 장벽 \(\Delta G^*\)는 작아지지만 온도가 낮아 원자의 확산(뜀 빈도)이 얼어붙어서</button><button>과냉이 크면 핵생성 자리가 없어져서</button><button>과냉이 크면 구동력 \(\Delta G_v\)가 작아져서</button></div>
+        <div class="prob-sol"><p>\(\dot N\propto e^{-\Delta G^*/kT}e^{-Q/kT}\). 첫 인자는 \(\Delta G^*\propto1/\Delta T^2\)이라 과냉과 함께 급히 커지고, 둘째 인자는 \(T\)가 낮아지며 작아진다. 곱이 중간 온도에서 최대가 되어 C 곡선이 생긴다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="JMAK" data-answer="59.7" data-label="t₀.₉ =" data-unit="s">
+        <div class="prob-q"><p>어떤 변태의 아브라미 지수가 3이고 50 % 변태 시간이 40 s다. 90 % 변태 시간은?</p></div>
+        <div class="prob-sol"><p>\(t_f/t_{0.5} = [\ln(1/(1-f))/\ln2]^{1/n}\). \(t_{0.9} = 40\,(\ln10/\ln2)^{1/3} = 40\times3.3219^{1/3} = 40\times1.492 = 59.7\) s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="아브라미 그림" data-answer="2.27; 75.0" data-label="n =; t₀.₉ =" data-unit="; min">
+        <div class="prob-q"><p>비정질 박막의 결정화 분율이 30분에 0.25, 60분에 0.75였다. 아브라미 지수 \(n\)과 90 % 결정화 시간을 구하라.</p></div>
+        <div class="prob-sol"><p>\(y = \ln[-\ln(1-f)]\): \(y_1 = \ln0.28768 = -1.2459\), \(y_2 = \ln1.3863 = 0.3266\). \(n = 1.5725/\ln2 = 2.27\). \(k = 0.28768/30^{2.27} = 1.28\times10^{-4}\) min⁻ⁿ, \(t_{0.9} = (2.3026/k)^{1/n} = 75.0\) min.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="핵생성 방식" data-answer="40.3; 29.8" data-label="연속: t₀.₅ =; 자리 포화: t₀.₅ =" data-unit="s; s">
+        <div class="prob-q"><p>3차원 변태에서 성장 속도가 \(G = 5.0\times10^{-4}\) mm/s다. (a) 핵이 일정한 속도 \(\dot N = 2.0\times10^3\) mm⁻³s⁻¹로 생길 때, (b) 처음에 핵 \(N = 5.0\times10^4\) mm⁻³가 한꺼번에 생기고 더 생기지 않을 때, 각각 50 % 변태 시간을 구하라.</p></div>
+        <div class="prob-hint">(a) \(k = \pi\dot NG^3/3\), \(n = 4\). (b) \(k = 4\pi NG^3/3\), \(n = 3\).</div>
+        <div class="prob-sol"><p>(a) \(k = \pi\times2000\times1.25\times10^{-10}/3 = 2.618\times10^{-7}\) s⁻⁴, \(t_{0.5} = (0.6931/2.618\times10^{-7})^{1/4} = 40.3\) s. (b) \(k = 4\pi\times5\times10^4\times1.25\times10^{-10}/3 = 2.618\times10^{-5}\) s⁻³, \(t_{0.5} = (0.6931/2.618\times10^{-5})^{1/3} = 29.8\) s.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="가산 법칙" data-answer="1.00" data-tol="2%" data-label="Σ Δt/τ =">
+        <div class="prob-q"><p>공석강(모형)이 냉각 중 700 °C 부근에 2.0 s, 650 °C 부근에 0.50 s, 600 °C 부근에 0.50 s 머물렀다. 각 온도의 TTT 시작(1 %) 시간은 17.2 s, 1.10 s, 1.17 s다. 셰일 합 \(\sum\Delta t_i/\tau_i\)를 구하고, 600 °C 단계 끝에서 변태가 시작됐는지 판단하라.</p></div>
+        <div class="prob-sol"><p>\(2.0/17.2+0.50/1.10+0.50/1.17 = 0.116+0.455+0.427 = 0.998\approx1\). 합이 거의 1에 이르러 600 °C 단계가 끝날 무렵 변태가 막 시작한다. 700 °C에서 머문 시간이 가장 길었지만 몫은 가장 작다 — CCT 곡선이 TTT보다 늦게 시작하는 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="CCT">
+        <div class="prob-q"><p>모형 공석강(\(M_s = 220\) °C, 임계 냉각 속도 약 145 °C/s, 펄라이트 100 %를 주는 가장 빠른 냉각 약 31 °C/s)을 800 °C에서 60 °C/s로 상온까지 식혔다. 조직은?</p></div>
+        <div class="prob-choices"><button>펄라이트 100 %</button><button>마르텐사이트 100 %</button><button data-correct>펄라이트 약 30 %, 나머지의 대부분은 마르텐사이트, 잔류 오스테나이트 조금</button><button>베이나이트 100 %</button></div>
+        <div class="prob-sol"><p>31–145 °C/s 사이의 냉각은 CCT 시작선만 지나고 끝선은 지나지 못한다. 가산 법칙 계산으로 \(M_s\)에서 펄라이트 약 29 %, 남은 71 % 중 88 %(25 °C의 \(f_M\))가 마르텐사이트(약 62 %), 나머지 약 8 %는 잔류 오스테나이트다. 4절 tangle에서 확인할 수 있다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="코이스티넨–마르부르거" data-answer="0.951" data-label="f_M =">
+        <div class="prob-q"><p>\(M_s = 300\) °C인 강을 25 °C로 담금질했다. 마르텐사이트로 바뀐 오스테나이트의 분율은?</p></div>
+        <div class="prob-sol"><p>\(f_M = 1-\exp(-0.011\times275) = 1-e^{-3.025} = 0.951\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="앤드루스 식" data-answer="249; -23.6" data-tol="1%; 1" data-label="Mₛ =; T₉₅ =" data-unit="°C; °C">
+        <div class="prob-q"><p>0.60C–0.80Mn–1.0Cr(wt%) 강의 \(M_s\)를 앤드루스 식으로 구하라. 마르텐사이트 분율을 95 %로 만들려면 몇 °C까지 식혀야 하는가?</p></div>
+        <div class="prob-sol"><p>\(M_s = 539-423(0.6)-30.4(0.8)-12.1(1.0) = 539-253.8-24.3-12.1 = 248.8\) °C. \(M_s-T = \ln20/0.011 = 272.3\) K → \(T = -23.6\) °C.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="LSW 조대화" data-answer="29.5" data-label="t =" data-unit="h">
+        <div class="prob-q"><p>석출물의 평균 반지름이 처음 20 nm에서 10시간 뒤 30 nm가 되었다. LSW 법칙을 따른다면 평균 반지름이 40 nm가 되는 것은 처음부터 몇 시간 뒤인가?</p></div>
+        <div class="prob-sol"><p>\(K = (30^3-20^3)/10 = 1900\) nm³/h. \(t = (40^3-20^3)/1900 = 56000/1900 = 29.5\) h.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="LSW 상수" data-answer="4.70e-29; 26.2" data-tol="2%; 2%" data-label="K =; r̄ =" data-unit="m³/s; nm">
+        <div class="prob-q"><p>Al–Cu 합금의 θ 석출물이 300 °C에서 조대화한다. \(\gamma = 0.5\) J/m², 구리의 평형 몰분율 \(X_e = 1.92\times10^{-3}\), \(V_m = 1.0\times10^{-5}\) m³/mol, \(D = 6.5\times10^{-5}\exp(-136\,\text{kJ/mol}/RT)\) m²/s다. LSW 상수 \(K = 8\gamma DX_eV_m/9RT\)와, 반지름 10 nm에서 100시간 뒤의 평균 반지름을 구하라.</p></div>
+        <div class="prob-sol"><p>\(T = 573.15\) K, \(D = 6.5\times10^{-5}e^{-28.54} = 2.62\times10^{-17}\) m²/s. \(K = 8\times0.5\times2.62\times10^{-17}\times1.92\times10^{-3}\times10^{-5}/(9\times8.314\times573.15) = 4.70\times10^{-29}\) m³/s \(= 0.0470\) nm³/s. \(\bar r^3 = 1000+0.0470\times3.6\times10^5 = 1.79\times10^4\) nm³ → \(\bar r = 26.2\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="스피노달 파장" data-answer="4.44" data-label="λₘ =" data-unit="nm">
+        <div class="prob-q"><p>기울기 에너지 계수 \(\kappa = 5.0\times10^{-11}\) J/m, 자유 에너지 곡률 \(f'' = -2.0\times10^8\) J/m³인 조성에서 가장 빨리 자라는 파장 \(\lambda_m = 2\pi\sqrt{2\kappa/|f''|}\)을 구하라.</p></div>
+        <div class="prob-sol"><p>\(2\kappa/|f''| = 1.0\times10^{-10}/2.0\times10^8 = 5.0\times10^{-19}\) m², \(\sqrt{\;} = 7.07\times10^{-10}\) m, \(\lambda_m = 4.44\) nm.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="과시효">
+        <div class="prob-q"><p>석출 경화 합금을 최대 시효보다 오래 시효하면 강도가 떨어진다. 가장 직접적인 원인은?</p></div>
+        <div class="prob-choices"><button>석출물이 다시 녹아 과포화 고용체로 돌아가서</button><button data-correct>석출물이 조대화해 간격이 넓어지면서 전위가 석출물 사이로 쉽게 우회해서(오로완)</button><button>결정립이 미세해져서</button><button>공공이 늘어나서</button></div>
+        <div class="prob-sol"><p>부피 분율은 평형값에 머물지만 오스트발트 숙성으로 \(r\)과 \(\lambda\)가 커진다. 우회 응력 \(Gb/\lambda\)가 자름 응력보다 작아진 뒤에는 \(r\)이 커질수록 강도가 떨어진다. 정합성을 잃는 것(θ″→θ′→θ)도 함께 일어난다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 퀴즈 -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>과냉이 작을 때 고체 속 석출이 거의 언제나 결정립계에서 먼저 시작하는 이유는?</p><div class="opts">
+        <button class="opt">결정립계에서는 확산이 느려서</button><button class="opt" data-correct>핵이 결정립계 일부를 없애며 에너지를 돌려줘 장벽이 \(S(\theta)\)배로 줄기 때문</button><button class="opt">결정립계에는 변형 에너지가 생기지 않아서</button><button class="opt">결정립계 원자가 더 많아서</button>
+      </div><div class="quiz-exp">과냉이 작으면 균질 장벽이 수백 kT라 균질 핵생성은 불가능하다. 결정립계는 자리 수는 적지만 장벽이 작아 핵생성 속도를 지배한다. 과냉이 커지면 장벽이 모두 작아져 자리가 많은 균질(또는 전위) 핵생성이 이긴다.</div></div>
+      <div class="quiz-q"><p>아브라미 그림의 기울기가 4에서 3으로 바뀌었다. 가장 그럴듯한 해석은?</p><div class="opts">
+        <button class="opt">성장이 계면 지배에서 확산 지배로 바뀌었다</button><button class="opt" data-correct>핵생성 자리가 포화되어 새 핵이 더 생기지 않는다(3차원)</button><button class="opt">변태가 2차원으로 바뀌었다</button><button class="opt">온도가 올라갔다</button>
+      </div><div class="quiz-exp">3차원 계면 지배 성장에서 연속 핵생성은 \(n = 4\), 자리 포화는 \(n = 3\)이다. 다만 2차원 연속 핵생성도 3이므로 미세조직 관찰과 함께 판단해야 한다.</div></div>
+      <div class="quiz-q"><p>TTT 도표를 그대로 써서 연속 냉각 결과를 예측하면 생기는 오차는?</p><div class="opts">
+        <button class="opt">변태가 실제보다 늦게 시작한다고 예측한다</button><button class="opt" data-correct>변태가 실제보다 일찍(더 높은 온도에서) 시작한다고 예측한다</button><button class="opt">오차가 없다</button><button class="opt">마르텐사이트를 펄라이트로 잘못 예측한다</button>
+      </div><div class="quiz-exp">연속 냉각은 느린 고온 구간에서 시간을 보내며 몫을 조금씩만 쌓으므로, 경로가 TTT 시작선과 만나는 점보다 늦게, 낮은 온도에서 변태가 시작한다. CCT 곡선은 TTT의 오른쪽 아래에 있다.</div></div>
+      <div class="quiz-q"><p>마르텐사이트 변태의 특징으로 옳지 <b>않은</b> 것은?</p><div class="opts">
+        <button class="opt">모상과 조성이 같다</button><button class="opt">원자가 이웃 관계를 유지하며 협동적으로 움직인다</button><button class="opt" data-correct>한 온도에 오래 둘수록 JMAK 식을 따라 분율이 늘어난다</button><button class="opt">탄소강에서는 탄소 때문에 BCT 격자가 된다</button>
+      </div><div class="quiz-exp">탄소강의 마르텐사이트는 무열 변태로 분율이 온도로만 정해진다(코이스티넨–마르부르거). 시간 의존(등온) 마르텐사이트는 일부 합금에만 있다.</div></div>
+      <div class="quiz-q"><p>스피노달 분해에서 용질이 농도가 높은 쪽으로 흐를 수 있는 이유는?</p><div class="opts">
+        <button class="opt">온도 기울기가 있어서</button><button class="opt">확산 계수 \(D_0\)가 음수라서</button><button class="opt" data-correct>확산의 구동력은 농도가 아니라 화학 퍼텐셜 기울기이고, \(f''<0\)이면 농도가 높은 곳의 화학 퍼텐셜이 더 낮기 때문</button><button class="opt">핵생성이 먼저 일어나서</button>
+      </div><div class="quiz-exp">플럭스는 \(J = -M\,\partial\mu/\partial x = -Mf''\,\partial c/\partial x\)이므로 실효 확산 계수가 \(Mf''\)다. 스피노달 안에서는 이것이 음수라 조성 차이가 커진다. 기울기 에너지 \(\kappa\)가 너무 짧은 파장을 막아 \(\lambda_m\)이 생긴다.</div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  /* ================================================================ 공통 도구 */
+  const PI = Math.PI, M = Mat, kB = M.C.kB, RG = M.C.R;
+  const pal = () => SB.palette();
+  const $ = (id) => document.getElementById(id);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = (s) => String(s).split("").map((c) => SUP[c] || c).join("");
+  function sci(x, d = 3) {
+    if (!isFinite(x)) return "—";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "×10" + sup(e);
+  }
+  function sciT(x, d = 3) {
+    if (!isFinite(x)) return "\\infty";
+    if (x === 0) return "0";
+    let e = Math.floor(Math.log10(Math.abs(x)));
+    if (e >= -2 && e <= 3) return String(Number(x.toPrecision(d)));
+    let ms = (x / Math.pow(10, e)).toPrecision(d);
+    if (Math.abs(Number(ms)) >= 10) { e += 1; ms = (x / Math.pow(10, e)).toPrecision(d); }
+    return ms + "\\times10^{" + e + "}";
+  }
+  function tfmt(s) {
+    if (!isFinite(s) || s < 0) return "∞";
+    if (s < 1e-3) return sci(s * 1e6) + " µs";
+    if (s < 1) return sci(s * 1e3) + " ms";
+    if (s < 120) return sci(s) + " s";
+    if (s < 7200) return sci(s / 60) + " 분";
+    if (s < 172800) return sci(s / 3600) + " 시간";
+    if (s < 6.3e7) return sci(s / 86400) + " 일";
+    return sci(s / 3.156e7) + " 년";
+  }
+  const hfmt = (h) => tfmt(h * 3600);
+  const pct = (x) => (x * 100 < 0.05 ? "0" : x * 100 < 9.95 ? (x * 100).toFixed(1) : (x * 100).toFixed(0)) + " %";
+  const withA = (ctx, a, fn) => { const g = ctx.globalAlpha; ctx.globalAlpha = g * a; fn(); ctx.globalAlpha = g; };
+  const narrowOf = (w) => w < 560;
+  const rpick = (a) => a[Math.floor(Math.random() * a.length)];
+  const rnd = (a, b, s) => Math.round((a + Math.random() * (b - a)) / s) * s;
+  function toggleBtn(id, st, key = "playing", cb) {
+    const b = $(id);
+    const sync = () => (b.textContent = st[key] ? "❚❚ 정지" : "▶ 재생");
+    b.addEventListener("click", () => { st[key] = !st[key]; sync(); cb && cb(); });
+    sync();
+    return sync;
+  }
+  /** CSS 색 → [r,g,b] */
+  const cc = document.createElement("canvas").getContext("2d");
+  function rgbOf(css) {
+    cc.fillStyle = "#000"; cc.fillStyle = css; const s = cc.fillStyle;
+    if (s[0] === "#") return [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+    const m = s.match(/[\d.]+/g); return m ? [+m[0], +m[1], +m[2]] : [128, 128, 128];
+  }
+  const hsl = (h, s_, l) => {
+    s_ /= 100; l /= 100; const k = (n) => (n + h / 30) % 12, a = s_ * Math.min(l, 1 - l);
+    const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return [255 * f(0), 255 * f(8), 255 * f(4)];
+  };
+  /** 결정립 색표(테마별): 라이트는 밝게, 다크는 어둡게 */
+  let LUT = null, LUTdark = null;
+  function grainLut() {
+    const dark = SB.isDark(); if (LUT && LUTdark === dark) return LUT; LUTdark = dark;
+    LUT = Array.from({ length: 400 }, (_, k) => hsl(M.grainHue(k), dark ? 38 : 48, dark ? 30 + (k % 3) * 4 : 72 + (k % 3) * 4));
+    return LUT;
+  }
+  /** 격자(N×N)를 그리는 오프스크린 캔버스 */
+  function offscreen(N) { const c = document.createElement("canvas"); c.width = N; c.height = N; const x = c.getContext("2d"); return { c, x, img: x.createImageData(N, N) }; }
+  function blit(ctx, off, x, y, s) { off.x.putImageData(off.img, 0, 0); ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(off.c, x, y, s, s); ctx.restore(); }
+  /** 핵생성–성장 격자에 핵 하나를 손으로 더한다(Mat.nucleationGrowth와 같은 도착 시간 규칙) */
+  function addNuc(NG, x, y, t0) {
+    const N = NG.N, k0 = Math.floor(y) * N + Math.floor(x);
+    if (k0 < 0 || k0 >= N * N || NG.arr[k0] <= t0) return false;
+    const id = NG.nuclei.length; NG.nuclei.push({ x, y, t0 });
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i, ta = t0 + Math.hypot(i - x, j - y) / NG.G;
+      if (ta < NG.arr[k]) { NG.arr[k] = ta; NG.own[k] = id; }
+    }
+    return true;
+  }
+  /** 핵생성–성장 격자 그리기 */
+  function paintNG(off, NG, t) {
+    const N = NG.N, d = off.img.data, lut = grainLut(), P = pal(), bg = rgbOf(P.surface), gb = rgbOf(P.text);
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i, q = 4 * k;
+      if (NG.arr[k] <= t) {
+        const o = NG.own[k], c = lut[o % 400];
+        const edge = (i < N - 1 && NG.arr[k + 1] <= t && NG.own[k + 1] !== o) || (j < N - 1 && NG.arr[k + N] <= t && NG.own[k + N] !== o);
+        const cc2 = edge ? [c[0] * 0.55 + gb[0] * 0.45, c[1] * 0.55 + gb[1] * 0.45, c[2] * 0.55 + gb[2] * 0.45] : c;
+        d[q] = cc2[0]; d[q + 1] = cc2[1]; d[q + 2] = cc2[2];
+      } else { d[q] = bg[0]; d[q + 1] = bg[1]; d[q + 2] = bg[2]; }
+      d[q + 3] = 255;
+    }
+  }
+  const fracNG = (NG, t) => { let c = 0; const A = NG.arr; for (let k = 0; k < A.length; k++) if (A[k] <= t) c++; return c / A.length; };
+
+  /* ================================================================ 머리: 핵생성–성장 격자 */
+  {
+    const N = 96, off = offscreen(N);
+    const st = { NG: null, mode: "cont", hist: [], hold: 0, t: 0, view: null, run: 0 };
+    function mk() {
+      st.run++;
+      st.NG = M.nucleationGrowth(st.mode === "cont" ? { N, G: 0.5, I: 1.2e-4, seed: 11 } : { N, G: 0.5, I: 0, siteSaturated: 36, seed: 12 });
+      st.t = 0; st.hist = [[0, 0]]; st.hold = 0;
+    }
+    mk();
+    const kTh = () => (st.mode === "cont" ? M.jmakK(1.2e-4, 0.5, "continuous", 2) : M.jmakK(36 / (N * N), 0.5, "sat", 2));
+    const cv = SB.canvas("cv-hero", (ctx, w, h) => {
+      const P = pal(), narrow = narrowOf(w);
+      const side = Math.min(h - 40, narrow ? w * 0.5 : w * 0.42), bx = 10, by = 30;
+      st.view = { bx, by, side };
+      paintNG(off, st.NG, st.t); blit(ctx, off, bx, by, side);
+      ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+      SB.label(ctx, st.mode === "cont" ? "연속 핵생성 (2D → n = 3)" : "자리 포화 (2D → n = 2)", bx, 14, { align: "left", bold: true, size: narrow ? 11 : 13, color: P.accent });
+      // 오른쪽: f(t)
+      const x0 = bx + side + (narrow ? 34 : 64), box = { x: x0, y: by, w: w - x0 - 12, h: side - (narrow ? 34 : 40) };
+      const tmax = Math.max(60, st.hist.length ? st.hist[st.hist.length - 1][0] : 1) * 1.05;
+      const k = kTh(), n = st.mode === "cont" ? 3 : 2;
+      const th = []; for (let i = 0; i <= 80; i++) { const t = (tmax * i) / 80; th.push([t, M.jmak(k, n, t)]); }
+      SB.chart(ctx, box, { x: [0, tmax], y: [0, 1], xTicks: [], yTicks: [0, 0.5, 1], xLabel: narrow ? "" : "시간 →", yLabel: narrow ? "" : "변태 분율 f",
+        series: [{ data: th, color: P.accent2, width: 1.6, dash: [5, 4] }, { data: st.hist, color: P.accent, width: 2.6 }] });
+      const f = st.hist.length ? st.hist[st.hist.length - 1][1] : 0;
+      SB.label(ctx, `f = ${(f * 100).toFixed(0)} %`, box.x + 6, box.y + 12, { align: "left", bold: true, color: P.accent });
+      SB.label(ctx, narrow ? `핵 ${st.NG.nuclei.length}개` : `핵 ${st.NG.nuclei.length}개 · 점선: JMAK 1 − exp(−ktⁿ)`, box.x + box.w, box.y + 12, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 420 });
+    SB.drag(cv, {
+      free: true, handles: () => [],
+      down: (id, x, y) => {
+        const v = st.view; if (!v) return;
+        const gx = ((x - v.bx) / v.side) * N, gy = ((y - v.by) / v.side) * N;
+        if (gx < 0 || gy < 0 || gx >= N || gy >= N) { st.mode = st.mode === "cont" ? "sat" : "cont"; mk(); return; }
+        if (st.hold > 0) { mk(); return; }
+        addNuc(st.NG, gx, gy, st.t);
+      },
+      move: () => {},
+    });
+    SB.loop("cv-hero", (dt) => {
+      if (st.hold > 0) { st.hold += dt; if (st.hold > 1.8) { st.mode = st.mode === "cont" ? "sat" : "cont"; mk(); } cv.redraw(); return; }
+      st.t += dt * 9; st.NG.advance(st.t);
+      const f = fracNG(st.NG, st.t); st.hist.push([st.t, f]);
+      if (f > 0.999) st.hold = 0.001;
+      cv.redraw();
+    });
+  }
+
+  /* ================================================================ 1절: ΔG(r) 곡선 */
+  const TE = 1000, DHV = 1.5e9;
+  {
+    const st = { r: 1.0, site: "hom", anim: 0 };
+    const gDT = SB.range("nuc-dT", (v) => v + " K", () => cv.redraw());
+    const gG = SB.range("nuc-g", (v) => v.toFixed(2) + " J/m²", () => cv.redraw());
+    const gS = SB.range("nuc-s", (v) => (v === 0 ? "0" : v.toFixed(2) + "×10⁸ J/m³"), () => cv.redraw());
+    let cv = null;
+    const fac = () => (st.site === "hom" ? 1 : st.site === "cap" ? M.hetFactor(60) : 2 * M.hetFactor(60));
+    SB.seg("nuc-site", (v) => { st.site = v; cv && cv.redraw(); });
+    const RMAX = 5, YMIN = -150, YMAX = 300;
+    cv = SB.canvas("cv-nuc", (ctx, w, h, self) => {
+      const P = pal(), dT = gDT(), g = gG(), dGs = gS() * 1e8, T = TE - dT, kT = kB * T, S = fac();
+      const b = M.nucleusBarrier(g, DHV, dT, TE, dGs), dgv = b.dGv;
+      const dG = (r) => S * (-(4 / 3) * PI * r ** 3 * dgv + 4 * PI * r * r * g) / kT; // r in m
+      const data = []; for (let i = 0; i <= 240; i++) { const r = (RMAX * i) / 240; data.push([r, dG(r * 1e-9)]); }
+      const C = SB.chart(ctx, { x: 58, y: 18, w: w - 58 - 16, h: h - 18 - 46 }, { x: [0, RMAX], y: [YMIN, YMAX], xLabel: "핵 반지름 r (nm)", yLabel: "ΔG / kT",
+        hbands: [{ y0: 60, y1: 80, color: SB.color("accent-soft") || "rgba(67,56,202,.12)" }],
+        hlines: [{ y: 0, color: P.axis, dash: [2, 3] }],
+        series: [{ data, color: P.accent, width: 2.8 }] });
+      self._C = C;
+      SB.label(ctx, "핵생성 띠 60–80 kT", C.box.x + C.box.w - 4, C.Y(70), { align: "right", size: 11, color: P.dim });
+      // 임계점
+      if (isFinite(b.r)) {
+        const rs = b.r * 1e9, Gs = S * b.dG / kT;
+        if (rs < RMAX) {
+          SB.dashLine(ctx, C.X(rs), C.Y(0), C.X(rs), C.Y(Math.min(Gs, YMAX)), P.dim);
+          if (Gs < YMAX) { ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(C.X(rs), C.Y(Gs), 5, 0, 2 * PI); ctx.fill(); SB.label(ctx, `ΔG* = ${Gs.toFixed(0)} kT`, C.X(rs) + 8, C.Y(Gs) - 12, { align: "left", bold: true, color: P.bad }); }
+          else SB.label(ctx, `꼭대기가 그림 위 (ΔG* = ${sci(Gs)} kT)`, C.box.x + 8, C.box.y + 12, { align: "left", bold: true, color: P.bad });
+          SB.label(ctx, "r*", C.X(rs), C.Y(0) + 12, { color: P.dim, bold: true });
+        } else SB.label(ctx, `r* = ${rs.toFixed(1)} nm (그림 밖)`, C.box.x + 8, C.box.y + 12, { align: "left", bold: true, color: P.bad });
+      } else SB.label(ctx, "ΔGᵥ ≤ ΔGₛ: 이 모양의 핵은 생기지 않는다", C.box.x + 8, C.box.y + 12, { align: "left", bold: true, color: P.bad });
+      // 엠브리오 핸들과 방향 화살표
+      const r = st.r, y = SB.clamp(dG(r * 1e-9), YMIN, YMAX), hx = C.X(r), hy = C.Y(y);
+      const grow = isFinite(b.r) && r > b.r * 1e9;
+      const dir = grow ? 1 : -1, r2 = SB.clamp(r + dir * 0.35, 0.02, RMAX), y2 = SB.clamp(dG(r2 * 1e-9), YMIN, YMAX);
+      SB.arrow(ctx, hx, hy, C.X(r2), C.Y(y2), { color: grow ? P.ok : P.bad, width: 3 });
+      handle(ctx, hx, hy, P.accent, 9);
+      // 핵 그림(오른쪽 위)
+      const ix = C.box.x + C.box.w - 46, iy = C.box.y + 76, rp = Math.min(30, 6 * r);
+      ctx.save(); ctx.strokeStyle = P.border; ctx.fillStyle = P.surface; ctx.fillRect(ix - 40, iy - 38, 80, 76); ctx.strokeRect(ix - 40, iy - 38, 80, 76);
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.8;
+      if (st.site === "hom") { ctx.beginPath(); ctx.arc(ix, iy, rp, 0, 2 * PI); ctx.fill(); }
+      else {
+        const c = Math.cos(PI / 3), yb = iy + 6;
+        ctx.save(); ctx.beginPath(); ctx.rect(ix - 40, iy - 38, 80, yb - (iy - 38)); ctx.clip(); ctx.beginPath(); ctx.arc(ix, yb + rp * c, rp, 0, 2 * PI); ctx.fill(); ctx.restore();
+        if (st.site === "gb") { ctx.save(); ctx.beginPath(); ctx.rect(ix - 40, yb, 80, 40); ctx.clip(); ctx.beginPath(); ctx.arc(ix, yb - rp * c, rp, 0, 2 * PI); ctx.fill(); ctx.restore(); }
+        ctx.globalAlpha = 1; ctx.strokeStyle = P.text; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ix - 40, yb); ctx.lineTo(ix + 40, yb); ctx.stroke();
+      }
+      ctx.restore();
+      SB.stat("nuc-dg", isFinite(dgv) ? (dgv / 1e8).toFixed(2) + "×10⁸ J/m³" : "—");
+      SB.stat("nuc-r", isFinite(b.r) ? (b.r * 1e9).toFixed(2) + " nm" : "∞");
+      SB.stat("nuc-b", isFinite(b.r) ? sci(S * b.dG / kT) + (S < 1 ? ` (×${S.toFixed(3)})` : "") : "∞");
+      SB.stat("nuc-fate", !isFinite(b.r) ? "늘 줄어든다" : grow ? `<span style="color:var(--ok)">r > r* → 자란다</span>` : `<span style="color:var(--bad)">r &lt; r* → 줄어든다</span>`);
+    }, { aspect: 0.62, minHeight: 320, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; if (!C) return []; const dT = gDT(), S = fac(), b = M.nucleusBarrier(gG(), DHV, dT, TE, gS() * 1e8), kT = kB * (TE - dT);
+        const y = SB.clamp(S * (-(4 / 3) * PI * (st.r * 1e-9) ** 3 * b.dGv + 4 * PI * (st.r * 1e-9) ** 2 * gG()) / kT, YMIN, YMAX); return [{ id: "r", x: C.X(st.r), y: C.Y(y), r: 14 }]; },
+      move: (id, x) => { const C = cv._C; if (!C || id == null) return; st.r = SB.clamp(SB.map(x, C.box.x, C.box.x + C.box.w, 0, RMAX), 0.05, RMAX); },
+    });
+  }
+
+  /* ================================================================ 1절 미니: 접촉각과 형상 인자 */
+  {
+    const st = { th: 60, mode: "cap" };
+    let cv = null;
+    SB.seg("het-mode", (v) => { st.mode = v; if (v === "gb") st.th = Math.min(st.th, 90); cv && cv.redraw(); });
+    cv = SB.canvas("cv-het", (ctx, w, h, self) => {
+      const P = pal(), R = Math.min(64, h * 0.24), cx = Math.min(w * 0.36, 200), yb = h * 0.62, c = Math.cos((st.th * PI) / 180);
+      // 바탕
+      if (st.mode === "cap") { ctx.fillStyle = P.surface; ctx.fillRect(0, yb, w, h - yb); ctx.strokeStyle = P.border; for (let x = -h; x < w; x += 12) { ctx.beginPath(); ctx.moveTo(x, h); ctx.lineTo(x + (h - yb), yb); ctx.stroke(); } }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, yb); ctx.lineTo(w, yb); ctx.stroke(); ctx.lineWidth = 1;
+      SB.label(ctx, st.mode === "cap" ? "기판·개재물" : "결정립 2", 10, yb + 18, { align: "left", size: 12, color: P.dim });
+      SB.label(ctx, st.mode === "cap" ? "모상 α" : "결정립 1", 10, yb - 16, { align: "left", size: 12, color: P.dim });
+      // 균질 핵 (점선 원)
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = P.dim; ctx.beginPath(); ctx.arc(cx, yb - R - 4, R, 0, 2 * PI); ctx.stroke(); ctx.setLineDash([]);
+      // 모자
+      ctx.save(); ctx.fillStyle = P.accent; ctx.globalAlpha = 0.75;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, yb); ctx.clip(); ctx.beginPath(); ctx.arc(cx, yb + R * c, R, 0, 2 * PI); ctx.fill(); ctx.restore();
+      if (st.mode === "gb") { ctx.save(); ctx.beginPath(); ctx.rect(0, yb, w, h - yb); ctx.clip(); ctx.beginPath(); ctx.arc(cx, yb - R * c, R, 0, 2 * PI); ctx.fill(); ctx.restore(); }
+      ctx.restore();
+      // 접촉각 표시
+      const s = Math.sqrt(Math.max(0, 1 - c * c)), xe = cx + R * s;
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(xe, yb, 22, PI, PI + (st.th * PI) / 180, false); ctx.stroke(); ctx.lineWidth = 1;
+      SB.label(ctx, `θ = ${st.th.toFixed(0)}°`, xe + 26, yb - 14, { align: "left", bold: true, color: P.accent2 });
+      const ytop = yb + R * c - R;
+      self._top = [cx, ytop];
+      handle(ctx, cx, ytop, P.accent, 9);
+      // 막대: S
+      const S = st.mode === "cap" ? M.hetFactor(st.th) : 2 * M.hetFactor(st.th);
+      const bx = Math.max(cx + R + 70, w * 0.62), bw = Math.min(150, w - bx - 16), bh = 16, by = h * 0.3;
+      if (bw > 110) {
+        ctx.fillStyle = P.grid; ctx.fillRect(bx, by, bw, bh); ctx.fillStyle = P.accent; ctx.fillRect(bx, by, bw * Math.min(1, S), bh);
+        SB.label(ctx, `S = ${S.toFixed(3)}`, bx, by - 12, { align: "left", bold: true });
+        SB.label(ctx, "ΔG*het / ΔG*hom", bx, by + bh + 14, { align: "left", size: 11, color: P.dim });
+      }
+      $("het-r").innerHTML = `θ = ${st.th.toFixed(0)}°, S(θ) = ${S.toFixed(3)}` + (st.mode === "gb" ? ` · γ<sub>gb</sub>/γ = 2cosθ = ${(2 * c).toFixed(2)}` : ` · cosθ = ${c.toFixed(2)}`);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 300 });
+    SB.drag(cv, {
+      handles: () => (cv._top ? [{ id: "t", x: cv._top[0], y: cv._top[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        if (id == null) return;
+        const h = cv.h, R = Math.min(64, h * 0.24), yb = h * 0.62, hh = SB.clamp(yb - y, 2, 2 * R - 2);
+        st.th = SB.clamp((Math.acos(SB.clamp(1 - hh / R, -1, 1)) * 180) / PI, 5, st.mode === "gb" ? 90 : 175);
+      },
+    });
+  }
+
+  /* ================================================================ 1절 tangle·드릴 */
+  SB.tangle("tg-nuc", (v) => {
+    const b = M.nucleusBarrier(v.g, DHV, v.dT, TE, 0), kT = kB * (TE - v.dT), x = b.dG / kT;
+    return { r: (b.r * 1e9).toFixed(2) + " nm", G: sci(b.dG) + " J (" + sci(x) + " kT)", E: "≈ 10" + sup(Math.round(-x / Math.LN10)) };
+  });
+  SB.drill("drill-nuc", () => {
+    const g = rnd(0.05, 0.3, 0.01), H = rnd(0.8, 2.0, 0.1), Te = rnd(700, 1200, 50), dT = rnd(20, 150, 5);
+    const b = M.nucleusBarrier(g, H * 1e9, dT, Te, 0), r = b.r * 1e9;
+    return { q: `<p>평형 온도 \\(T_e = ${Te}\\) K, \\(\\Delta H_v = ${H.toFixed(1)}\\times10^9\\) J/m³, 계면 에너지 \\(\\gamma = ${g.toFixed(2)}\\) J/m²인 석출을 \\(\\Delta T = ${dT}\\) K 과냉한다(변형 에너지 무시). 임계 반지름 \\(r^*\\)(nm)와 핵생성 장벽 \\(\\Delta G^*\\)(J)를 구하라.</p>`,
+      answer: [r, b.dG], label: ["r* =", "ΔG* ="], unit: ["nm", "J"], tol: "2%",
+      sol: `\\(\\Delta G_v = ${H.toFixed(1)}\\times10^9\\times${dT}/${Te} = ${sciT(b.dGv)}\\) J/m³. \\(r^* = 2\\gamma/\\Delta G_v = ${sciT(b.r)}\\) m \\(= ${r.toFixed(3)}\\) nm. \\(\\Delta G^* = 16\\pi\\gamma^3/3\\Delta G_v^2 = ${sciT(b.dG)}\\) J \\((= ${(b.dG / (kB * (Te - dT))).toFixed(0)}\\,kT)\\).` };
+  });
+
+  /* ================================================================ 2절 미니: 핵생성·성장 속도와 C 곡선 */
+  {
+    const st = { T: 600 };
+    let cv = null, model = M.tttModel();
+    const gQ = SB.range("rt-q", (v) => v + " kJ/mol", (v) => { model = M.tttModel({ Qg: v }); cv && cv.redraw(); });
+    model = M.tttModel({ Qg: gQ() });
+    const T0 = 250, T1 = 727;
+    cv = SB.canvas("cv-rates", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), gap = narrow ? 8 : 24, lw = narrow ? (w - 50 - gap - 12) * 0.42 : (w - 58 - gap - 16) * 0.42;
+      const B1 = { x: narrow ? 46 : 58, y: 22, w: lw, h: h - 22 - 46 }, B2 = { x: B1.x + lw + gap, y: 22, w: w - (B1.x + lw + gap) - 12, h: h - 22 - 46 };
+      // 정규화한 속도
+      const Is = [], Gs = []; let Imax = 0, Gmax = 0;
+      for (let T = T0; T < T1; T += 2) { const r = model.rate(T); Is.push([T, r.I]); Gs.push([T, r.G]); Imax = Math.max(Imax, r.I); Gmax = Math.max(Gmax, r.G); }
+      const nI = Is.map(([T, v]) => [Math.max(1e-6, v / Imax), T]), nG = Gs.map(([T, v]) => [Math.max(1e-6, v / Gmax), T]);
+      const C1 = SB.chart(ctx, B1, { x: [1e-4, 1], y: [T0, 760], logX: true, xTicks: narrow ? [1e-4, 1e-2] : [1e-4, 1e-2, 1], xFmt: (v) => (v === 1 ? "1" : "10" + sup(Math.round(Math.log10(v)))), yTicks: [300, 400, 500, 600, 700], xLabel: narrow ? "속도/최대" : "속도 / 최댓값", yLabel: "온도 (°C)",
+        hlines: [{ y: 727, color: P.dim }], series: [{ data: nI, color: P.accent, width: 2.4 }, { data: nG, color: P.accent2, width: 2.4, dash: [6, 4] }] });
+      SB.label(ctx, "Ṅ", C1.X(0.9e-3) , C1.Y(700), { color: P.accent, bold: true });
+      SB.label(ctx, "G", C1.X(0.2), C1.Y(712), { color: P.accent2, bold: true });
+      const cur = (f) => { const out = []; for (let T = T0; T < 724; T += 2) { const t = model.t(T, f); if (isFinite(t) && t < 1e7) out.push([t, T]); } return out; };
+      const C2 = SB.chart(ctx, B2, { x: [1e-2, 1e6], y: [T0, 760], logX: true, xTicks: narrow ? [1, 1e2, 1e4, 1e6] : [1e-2, 1, 1e2, 1e4, 1e6], xFmt: (v) => (v === 1 ? "1" : "10" + sup(Math.round(Math.log10(v)))), yTicks: [300, 400, 500, 600, 700], yFmt: () => "", xLabel: "시간 (s)",
+        hlines: [{ y: 727, color: P.dim }],
+        series: [{ data: cur(0.01), color: P.accent, width: 2.4 }, { data: cur(0.5), color: P.accent, width: 1.2, dash: [2, 3] }, { data: cur(0.99), color: P.accent, width: 2, dash: [6, 4] }] });
+      // 온도선과 핸들
+      const y = C1.Y(st.T);
+      SB.dashLine(ctx, B1.x, y, B2.x + B2.w, y, P.bad, [5, 4]);
+      const r = model.rate(st.T), t1 = model.t(st.T, 0.01);
+      if (isFinite(t1) && t1 < 1e6) { ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(C2.X(Math.max(1e-2, t1)), y, 4.5, 0, 2 * PI); ctx.fill(); }
+      self._h = [B1.x + B1.w, y]; handle(ctx, B1.x + B1.w, y, P.bad, 9);
+      $("rt-r").innerHTML = `${st.T.toFixed(0)} °C · Ṅ/Ṅ<sub>max</sub> = ${sci(r.I / Imax, 2)}, G/G<sub>max</sub> = ${sci(r.G / Gmax, 2)} · 1 % 시간 ${tfmt(t1)}`;
+      self._C1 = C1;
+    }, { aspect: 0.5, minHeight: 300, maxHeight: 400 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "T", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id == null || !cv._C1) return; const b = cv._C1.box; st.T = SB.clamp(Math.round(SB.map(y, b.y + b.h, b.y, T0, 760)), T0 + 5, 724); },
+    });
+  }
+  SB.tangle("tg-rate", (v) => { const b2 = v.b / (v.x * v.x); return { b2: b2.toFixed(1) + " kT", r: sci(Math.exp(v.b - b2), 2) }; });
+
+  /* ================================================================ 3절 미니: 확장 분율 */
+  {
+    const NC = 60, L = 100, rg = M.rng(8), C = Array.from({ length: NC }, () => [rg() * L, rg() * L]);
+    let cv = null;
+    const gR = SB.range("ext-r", (v) => v.toFixed(1), () => cv && cv.redraw());
+    function cover(r) {
+      const n = 90; let c = 0;
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+        const x = ((i + 0.5) * L) / n, y = ((j + 0.5) * L) / n;
+        for (const [cx, cy] of C) { let dx = Math.abs(x - cx), dy = Math.abs(y - cy); if (dx > L / 2) dx = L - dx; if (dy > L / 2) dy = L - dy; if (dx * dx + dy * dy <= r * r) { c++; break; } }
+      }
+      return c / (n * n);
+    }
+    cv = SB.canvas("cv-ext", (ctx, w, h) => {
+      const P = pal(), r = gR(), side = Math.min(h - 20, w * 0.45), bx = 10, by = 10, s = side / L;
+      ctx.fillStyle = P.surface; ctx.fillRect(bx, by, side, side);
+      ctx.save(); ctx.beginPath(); ctx.rect(bx, by, side, side); ctx.clip();
+      ctx.fillStyle = P.accent;
+      withA(ctx, 0.28, () => { for (const [cx, cy] of C) for (const ox of [-L, 0, L]) for (const oy of [-L, 0, L]) { const x = cx + ox, y = cy + oy; if (x < -r || x > L + r || y < -r || y > L + r) continue; ctx.beginPath(); ctx.arc(bx + x * s, by + y * s, r * s, 0, 2 * PI); ctx.fill(); } });
+      ctx.fillStyle = P.text; for (const [cx, cy] of C) { ctx.beginPath(); ctx.arc(bx + cx * s, by + cy * s, 1.6, 0, 2 * PI); ctx.fill(); }
+      ctx.restore(); ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+      // 오른쪽 그래프: X_ext, 실제, 1-exp(-X)
+      const x0 = bx + side + 52, B = { x: x0, y: 14, w: w - x0 - 14, h: h - 14 - 40 };
+      if (B.w > 60) {
+        const rs = M.linspace(0, 30, 61), th = rs.map((q) => [q, 1 - Math.exp(-(NC * PI * q * q) / (L * L))]), ex = rs.map((q) => [q, (NC * PI * q * q) / (L * L)]);
+        const Cc = SB.chart(ctx, B, { x: [0, 30], y: [0, 1.6], xLabel: "반지름", yTicks: [0, 0.5, 1, 1.5], series: [{ data: ex, color: P.accent2, width: 2, dash: [6, 4] }, { data: th, color: P.accent, width: 2.4 }],
+          hlines: [{ y: 1, color: P.dim }] });
+        const f = cover(r), X = (NC * PI * r * r) / (L * L);
+        ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(Cc.X(r), Cc.Y(f), 5, 0, 2 * PI); ctx.fill();
+        SB.label(ctx, "X_ext", Cc.X(Math.min(27, Math.sqrt((1.45 * L * L) / (NC * PI)))), Cc.Y(1.5), { color: P.accent2, size: 11, bold: true, align: "right" });
+        SB.label(ctx, "1 − e^(−X)", Cc.X(28), Cc.Y(0.93), { color: P.accent, size: 11, bold: true, align: "right" });
+        $("ext-o").innerHTML = `X<sub>ext</sub> = ${X.toFixed(2)} · 실제 덮인 분율 ${f.toFixed(3)} · 1 − e<sup>−X</sup> = ${(1 - Math.exp(-X)).toFixed(3)}`;
+      } else { const f = cover(r), X = (NC * PI * r * r) / (L * L); $("ext-o").innerHTML = `X<sub>ext</sub> = ${X.toFixed(2)} · 실제 ${f.toFixed(3)} · 1 − e<sup>−X</sup> = ${(1 - Math.exp(-X)).toFixed(3)}`; }
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ================================================================ 3절: 핵생성–성장 격자와 아브라미 그림 */
+  {
+    const N = 120, off = offscreen(N);
+    const st = { mode: "cont", NG: null, t: 0, hist: [], playing: true, view: null, u: null, done: false, ok: false };
+    const aVal = () => Number($("ng-a").value);
+    const Iof = () => Math.pow(10, -5.5 + aVal() * 0.1);
+    const Nof = () => Math.round(10 * Math.pow(10, aVal() * 0.075));
+    const Gof = () => Number($("ng-g").value);
+    const kTh = () => (st.mode === "cont" ? M.jmakK(Iof(), Gof(), "continuous", 2) : M.jmakK(Nof() / (N * N), Gof(), "sat", 2));
+    const nTh = () => (st.mode === "cont" ? 3 : 2);
+    const t99 = () => M.jmakTime(kTh(), nTh(), 0.99);
+    function setLabel() {
+      $("ng-a-lab").textContent = st.mode === "cont" ? "핵생성 속도 Ṅ" : "처음 핵 수 N";
+      gA.set(aVal(), true);
+    }
+    let cv1 = null, cv2 = null, sync = null;
+    function reset() {
+      st.NG = M.nucleationGrowth(st.mode === "cont" ? { N, G: Gof(), I: Iof(), seed: 11 } : { N, G: Gof(), I: 0, siteSaturated: Nof(), seed: 11 });
+      st.t = 0; st.hist = []; st.done = false; st.ok = false; st.playing = true; sync && sync();
+      const T = t99(); st.u = [[Math.log(T / 8), -3.5], [Math.log(T), 0.5]];
+      setLabel();
+    }
+    SB.seg("ng-mode", (v) => { st.mode = v; reset(); });
+    const gA = SB.range("ng-a", () => (st.mode === "cont" ? sci(Iof(), 2) + " /칸·시간" : Nof() + "개"), () => reset());
+    SB.range("ng-g", (v) => v.toFixed(2) + " 칸/시간", () => reset());
+    reset();
+    sync = toggleBtn("ng-play", st);
+    $("ng-reset").addEventListener("click", () => reset());
+    function fit() {
+      const sel = st.hist.filter(([, f]) => f > 0.05 && f < 0.95);
+      if (sel.length < 4) return null;
+      return M.avramiFit(sel.map((p) => p[0]), sel.map((p) => p[1]));
+    }
+    cv1 = SB.canvas("cv-ng1", (ctx, w, h, self) => {
+      const P = pal(), side = Math.min(w - 16, h - 16), bx = (w - side) / 2, by = 8;
+      st.view = { bx, by, side };
+      paintNG(off, st.NG, st.t); blit(ctx, off, bx, by, side);
+      ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+    }, { aspect: 1, minHeight: 240, maxHeight: 360 });
+    SB.drag(cv1, { free: true, handles: () => [], down: (id, x, y) => { const v = st.view; if (!v) return; const gx = ((x - v.bx) / v.side) * N, gy = ((y - v.by) / v.side) * N; if (gx >= 0 && gy >= 0 && gx < N && gy < N && addNuc(st.NG, gx, gy, st.t)) { if (st.done) { st.done = false; st.playing = true; sync(); } } }, move: () => {} });
+    cv2 = SB.canvas("cv-ng2", (ctx, w, h, self) => {
+      const P = pal(), T = t99() * 1.25, k = kTh(), n = nTh();
+      const H1 = Math.round((h - 20) * 0.4);
+      const B1 = { x: 50, y: 30, w: w - 50 - 12, h: H1 - 44 }, B2 = { x: 50, y: H1 + 18, w: w - 50 - 12, h: h - H1 - 18 - 44 };
+      const th = []; for (let i = 0; i <= 80; i++) { const t = (T * i) / 80; th.push([t, M.jmak(k, n, t)]); }
+      SB.chart(ctx, B1, { x: [0, T], y: [0, 1], yTicks: [0, 0.5, 1], xFmt: (v) => v.toFixed(0), series: [{ data: th, color: P.accent2, width: 1.6, dash: [5, 4] }, { data: st.hist, color: P.accent, width: 2.4 }] });
+      SB.label(ctx, "f(t)", B1.x + 6, B1.y + 10, { align: "left", size: 11, bold: true, color: P.accent });
+      // 아브라미 그림
+      const xl = [Math.log(T / 25), Math.log(T)], yl = [-5, 2];
+      const pts = st.hist.filter(([t, f]) => t > 0 && f > 0.005 && f < 0.995).map(([t, f]) => [Math.log(t), Math.log(-Math.log(1 - f))]);
+      const F = fit();
+      const ser = [];
+      if (F) { const a = Math.log(F.k), b = F.n; ser.push({ data: [[xl[0], a + b * xl[0]], [xl[1], a + b * xl[1]]], color: P.accent2, width: 1.6, dash: [5, 4] }); }
+      const [u0, u1] = st.u, su = (u1[1] - u0[1]) / (u1[0] - u0[0] || 1e-9);
+      ser.push({ data: [[xl[0], u0[1] + su * (xl[0] - u0[0])], [xl[1], u0[1] + su * (xl[1] - u0[0])]], color: st.ok ? P.ok : P.text, width: 2 });
+      const C2 = SB.chart(ctx, B2, { x: xl, y: yl, xLabel: "ln t", yLabel: "ln[−ln(1−f)]", xFmt: (v) => v.toFixed(1), yTicks: [-4, -2, 0, 2], series: ser });
+      ctx.fillStyle = P.accent;
+      const step = Math.max(1, Math.floor(pts.length / 60));
+      for (let i = 0; i < pts.length; i += step) { const [x, y] = pts[i]; if (x < xl[0] || x > xl[1]) continue; ctx.beginPath(); ctx.arc(C2.X(x), C2.Y(y), 2.6, 0, 2 * PI); ctx.fill(); }
+      self._C2 = C2;
+      handle(ctx, C2.X(u0[0]), C2.Y(u0[1]), P.accent, 8); handle(ctx, C2.X(u1[0]), C2.Y(u1[1]), P.accent, 8);
+      SB.stat("ng-tf", `${st.t.toFixed(0)} / ${(st.hist.length ? st.hist[st.hist.length - 1][1] * 100 : 0).toFixed(0)} %`);
+      SB.stat("ng-n", String(st.NG.nuclei.length));
+      SB.stat("ng-fit", F ? F.n.toFixed(2) + ` (이론 ${n})` : "—");
+      st.ok = !!(F && st.done && Math.abs(su - F.n) < 0.15);
+      SB.stat("ng-user", su.toFixed(2) + (st.ok ? ` <span style="color:var(--ok)">✔ 맞음</span>` : F && st.done ? ` (차이 ${Math.abs(su - F.n).toFixed(2)})` : ""));
+    }, { aspect: 1, minHeight: 300, maxHeight: 400 });
+    SB.drag(cv2, {
+      handles: () => { const C = cv2._C2; if (!C) return []; return st.u.map((p, i) => ({ id: i, x: C.X(p[0]), y: C.Y(p[1]), r: 14 })); },
+      move: (id, x, y) => { const C = cv2._C2; if (id == null || !C) return; const b = C.box; st.u[id] = [SB.map(SB.clamp(x, b.x, b.x + b.w), b.x, b.x + b.w, Math.log(t99() * 1.25 / 25), Math.log(t99() * 1.25)), SB.map(SB.clamp(y, b.y, b.y + b.h), b.y + b.h, b.y, -5, 2)]; },
+    });
+    SB.loop("cv-ng1", (dt) => {
+      if (!st.playing || st.done) return;
+      st.t += (t99() * dt) / 8; st.NG.advance(st.t);
+      const f = fracNG(st.NG, st.t); st.hist.push([st.t, f]);
+      if (f > 0.999 || st.t > t99() * 1.25) { st.done = true; st.playing = false; sync(); }
+      cv1.redraw(); cv2.redraw();
+    });
+  }
+  SB.tangle("tg-jmak", (v) => {
+    const r = (f) => v.t * Math.pow(-Math.log(1 - f) / Math.LN2, 1 / v.n);
+    return { a: r(0.05).toFixed(1) + " s", b: r(0.95).toFixed(1) + " s", c: r(0.99).toFixed(1) + " s", q: (r(0.95) / v.t).toFixed(2) };
+  });
+  SB.drill("drill-jmak", () => {
+    if (Math.random() < 0.5) {
+      const n = rpick([1.5, 2, 2.5, 3, 4]), t5 = rnd(10, 200, 5), f = rpick([0.1, 0.2, 0.3, 0.8, 0.9, 0.95, 0.99]);
+      const k = Math.LN2 / Math.pow(t5, n), t = M.jmakTime(k, n, f);
+      return { q: `<p>아브라미 지수 \\(n = ${n}\\), 50 % 변태 시간 \\(t_{0.5} = ${t5}\\) s인 변태가 분율 ${f}에 이르는 시간은?</p>`, answer: t, label: "t =", unit: "s", tol: "1.5%",
+        sol: `\\(t_f = t_{0.5}\\left[\\ln\\tfrac{1}{1-f}/\\ln2\\right]^{1/n} = ${t5}\\times(${(-Math.log(1 - f)).toFixed(4)}/0.6931)^{1/${n}} = ${t.toFixed(2)}\\) s` };
+    }
+    const n = rnd(1.5, 4, 0.1), t5 = rnd(20, 300, 10), k = Math.LN2 / Math.pow(t5, n), f1 = rpick([0.1, 0.15, 0.2, 0.3]), f2 = rpick([0.7, 0.8, 0.9]);
+    const t1 = Number(M.jmakTime(k, n, f1).toPrecision(3)), t2 = Number(M.jmakTime(k, n, f2).toPrecision(3));
+    const nn = (Math.log(-Math.log(1 - f2)) - Math.log(-Math.log(1 - f1))) / Math.log(t2 / t1);
+    return { q: `<p>등온 변태 분율이 \\(t = ${t1}\\) s에서 ${f1}, \\(t = ${t2}\\) s에서 ${f2}였다. 아브라미 지수 \\(n\\)은?</p>`, answer: nn, label: "n =", tol: "2%",
+      sol: `\\(n = \\dfrac{\\ln[-\\ln(1-${f2})]-\\ln[-\\ln(1-${f1})]}{\\ln(${t2}/${t1})} = \\dfrac{${Math.log(-Math.log(1 - f2)).toFixed(4)}-(${Math.log(-Math.log(1 - f1)).toFixed(4)})}{${Math.log(t2 / t1).toFixed(4)}} = ${nn.toFixed(3)}\\)` };
+  });
+
+  /* ================================================================ 4절: TTT 모형 공용 엔진 */
+  const MS = 220, TAUS = 800, TTT = M.tttModel(), NA = TTT.p.n;
+  const kOf = (T) => TTT.rate(T).k;
+  /** 가산 법칙 적분(Mat.coolPath와 같은 규칙, 표본 시각을 직접 받는다). samples = [[t, T°C], …] */
+  function integrate(samples) {
+    let f = 0, fc = 0, ff = 0, fb = 0, Tmin = Infinity, frozen = false;
+    const tr = [[samples[0][0], samples[0][1], 0]];
+    for (let i = 1; i < samples.length; i++) {
+      const [t0, T0] = samples[i - 1], [t1, T1] = samples[i], dt = t1 - t0, Tm = 0.5 * (T0 + T1);
+      if (!frozen && Tm > MS && dt > 0) {
+        const k = kOf(Tm);
+        if (k > 0 && f < 0.999999) {
+          const tau = Math.pow(-Math.log(1 - f) / k, 1 / NA) + dt, nf = 1 - Math.exp(-k * Math.pow(tau, NA)), df = nf - f; f = nf;
+          if (Tm >= 620) fc += df; else if (Tm >= 540) ff += df; else fb += df;
+        }
+      }
+      if (T1 <= MS) frozen = true;
+      Tmin = Math.min(Tmin, T1);
+      tr.push([t1, T1, f]);
+    }
+    const km = M.martensite(Math.min(Tmin, MS), MS);
+    return { f, fc, ff, fb, fM: (1 - f) * km, fA: (1 - f) * (1 - km), tr, Tmin };
+  }
+  /** 로그 간격 표본: a→b 사이 T(t) */
+  function logSamples(out, a, b, Tf, n) { const la = Math.log(a), lb = Math.log(b); for (let i = 1; i <= n; i++) { const t = Math.exp(la + ((lb - la) * i) / n); out.push([t, Tf(t)]); } }
+  /** 일정 속도 R로 T0에서 T1까지(시각 ts 출발) — 출발 직후를 촘촘히 */
+  function rampSamples(out, ts, T0, T1, R, n = 160) {
+    const D = Math.abs(T0 - T1) / R; if (D <= 0) return ts;
+    for (let i = 1; i <= n; i++) { const s = Math.pow(10, -4 + (4 * i) / n), t = ts + s * D; out.push([t, T0 + (T1 - T0) * s]); }
+    return ts + D;
+  }
+  function linearCool(R, Tend = 25) { const s = [[0, TAUS]]; rampSamples(s, 0, TAUS, Tend, R, 400); return integrate(s); }
+  const tttLine = (f) => { const o = []; for (let T = MS; T <= 724; T += 2) { const t = TTT.t(T, f); if (isFinite(t) && t < 1e7) o.push([t, T]); } return o; };
+  const TTT1 = tttLine(0.01), TTT50 = tttLine(0.5), TTT99 = tttLine(0.99);
+  const xFmtLog = (v) => (v === 1 ? "1" : v === 10 ? "10" : v === 0.1 ? "0.1" : "10" + sup(Math.round(Math.log10(v))));
+  /** TTT 평면 그리기 → chart */
+  function tttPlane(ctx, w, h, o = {}) {
+    const P = pal(), narrow = narrowOf(w);
+    const box = { x: narrow ? 46 : 58, y: 16, w: w - (narrow ? 46 : 58) - 14, h: h - 16 - 46 };
+    const xr = o.x || [0.1, 1e5], yr = o.y || [0, 850];
+    const ticks = []; for (let e = Math.ceil(Math.log10(xr[0])); e <= Math.log10(xr[1]); e++) ticks.push(Math.pow(10, e));
+    const a = o.faint ? 0.35 : 1;
+    const C = SB.chart(ctx, box, { x: xr, y: yr, logX: true, xTicks: narrow ? ticks.filter((_, i) => i % 2 === 0) : ticks, xFmt: xFmtLog, yTicks: [0, 200, 400, 600, 800].filter((v) => v >= yr[0]), xLabel: "시간 (s, 로그)", yLabel: "온도 (°C)",
+      hlines: [{ y: 727, color: P.dim, label: narrow ? "" : "727 °C" }, { y: MS, color: P.bad, width: 1.6, dash: [], label: "Mₛ 220 °C" }],
+      bands: [], series: o.noTTT ? [] : [] });
+    if (!o.noTTT) withA(ctx, a, () => {
+      const line = (d, wd, ds) => { ctx.save(); ctx.strokeStyle = P.accent; ctx.lineWidth = wd; ctx.setLineDash(ds || []); ctx.beginPath(); let s = false; for (const [t, T] of d) { if (t < xr[0] || t > xr[1]) { s = false; continue; } const x = C.X(t), y = C.Y(T); s ? ctx.lineTo(x, y) : ctx.moveTo(x, y); s = true; } ctx.stroke(); ctx.restore(); };
+      line(TTT1, 2.4); line(TTT50, 1.1, [2, 3]); line(TTT99, 2, [6, 4]);
+    });
+    if (!o.noLabels && !narrow) {
+      SB.label(ctx, "A (오스테나이트)", C.X(0.3), C.Y(470), { size: 11, color: P.dim, align: "left" });
+      SB.label(ctx, "P", C.X(300), C.Y(660), { size: 12, bold: true, color: P.accent });
+      SB.label(ctx, "B", C.X(3000), C.Y(400), { size: 12, bold: true, color: P.accent });
+      SB.label(ctx, "M", C.X(1e4), C.Y(110), { size: 12, bold: true, color: P.bad });
+    }
+    return C;
+  }
+  /** 경로 그리기(분율에 따라 진하게) */
+  function drawTrace(ctx, C, tr, col) {
+    ctx.save(); ctx.lineWidth = 3.2; ctx.strokeStyle = col; ctx.lineCap = "round";
+    const x0 = C.box.x;
+    for (let i = 1; i < tr.length; i++) {
+      const [ta, Ta] = tr[i - 1], [tb, Tb, f] = tr[i];
+      const xa = Math.max(x0, C.X(Math.max(ta, 1e-9))), xb = Math.max(x0, C.X(Math.max(tb, 1e-9)));
+      if (xb > C.box.x + C.box.w + 2) break;
+      ctx.globalAlpha = 0.3 + 0.7 * f; ctx.beginPath(); ctx.moveTo(xa, C.Y(Ta)); ctx.lineTo(xb, C.Y(Tb)); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  const mixHtml = (r) => {
+    const parts = [];
+    if (r.fc > 0.005) parts.push(`조대 P ${pct(r.fc)}`); if (r.ff > 0.005) parts.push(`미세 P ${pct(r.ff)}`); if (r.fb > 0.005) parts.push(`B ${pct(r.fb)}`);
+    if (r.fM > 0.005) parts.push(`M ${pct(r.fM)}`); if (r.fA > 0.005) parts.push(`A<sub>잔류</sub> ${pct(r.fA)}`);
+    return parts.join(" · ") || "—";
+  };
+
+  /* ================================================================ 4절: TTT 위 경로 그리기 */
+  {
+    const PRE = {
+      iso650: [[0.3, 650], [30, 650], [60, 25], [1e5, 25]],
+      iso400: [[0.3, 400], [300, 400], [600, 25], [1e5, 25]],
+      split: [[0.3, 650], [2.5, 650], [3.0, 25], [1e5, 25]],
+      quench: [[0.15, 600], [0.2, 300], [0.3, 25], [1e5, 25]],
+    };
+    const st = { p: PRE.iso650.map((q) => q.slice()) };
+    let cv = null;
+    SB.seg("ttt-pre", (v) => { st.p = PRE[v].map((q) => q.slice()); cv && cv.redraw(); });
+    const path = () => {
+      const pts = [[0.1, TAUS], ...st.p], s = [[0.1, TAUS]];
+      for (let i = 1; i < pts.length; i++) { const [ta, Ta] = pts[i - 1], [tb, Tb] = pts[i], la = Math.log(ta), lb = Math.log(tb); logSamples(s, ta, tb, (t) => Ta + ((Tb - Ta) * (Math.log(t) - la)) / (lb - la || 1), 90); }
+      return s;
+    };
+    cv = SB.canvas("cv-ttt", (ctx, w, h, self) => {
+      const P = pal(), C = tttPlane(ctx, w, h); self._C = C;
+      const r = integrate(path());
+      drawTrace(ctx, C, r.tr, P.accent2);
+      st.p.forEach(([t, T]) => handle(ctx, C.X(t), C.Y(T), P.accent2, 9));
+      SB.stat("ttt-p", `${pct(r.fc)} / ${pct(r.ff)}`); SB.stat("ttt-b", pct(r.fb)); SB.stat("ttt-m", pct(r.fM)); SB.stat("ttt-a", pct(r.fA));
+    }, { aspect: 0.62, minHeight: 340, maxHeight: 470 });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C; if (!C) return []; return st.p.map(([t, T], i) => ({ id: i, x: C.X(t), y: C.Y(T), r: 14 })); },
+      move: (id, x, y) => {
+        const C = cv._C; if (id == null || !C) return; const b = C.box;
+        let t = Math.pow(10, SB.map(SB.clamp(x, b.x, b.x + b.w), b.x, b.x + b.w, -1, 5)), T = SB.clamp(SB.map(y, b.y + b.h, b.y, 0, 850), 25, 800);
+        const lo = id === 0 ? 0.11 : st.p[id - 1][0] * 1.08, hi = id === st.p.length - 1 ? 1e5 : st.p[id + 1][0] / 1.08;
+        t = SB.clamp(t, lo, Math.max(lo, hi)); st.p[id] = [t, Math.round(T)];
+      },
+    });
+  }
+
+  /* ================================================================ 4절: CCT */
+  const CCT = (() => {
+    const rates = M.logspace(0.3, 400, 70), s1 = [], s99 = [];
+    for (const R of rates) {
+      const s = [[0, TAUS]]; rampSamples(s, 0, TAUS, MS, R, 500);
+      const r = integrate(s);
+      const find = (ff) => { for (let i = 1; i < r.tr.length; i++) if (r.tr[i][2] >= ff) { const [ta, Ta, fa] = r.tr[i - 1], [tb, Tb, fb] = r.tr[i], u = (ff - fa) / (fb - fa || 1); return [ta + u * (tb - ta), Ta + u * (Tb - Ta)]; } return null; };
+      const a = find(0.01), b = find(0.99); if (a) s1.push(a); if (b) s99.push(b);
+    }
+    const fAt = (R) => { const s = [[0, TAUS]]; rampSamples(s, 0, TAUS, MS, R, 500); return integrate(s).f; };
+    let lo = 10, hi = 2000; for (let i = 0; i < 50; i++) { const m = Math.sqrt(lo * hi); if (fAt(m) > 0.01) lo = m; else hi = m; }
+    let lo2 = 1, hi2 = 500; for (let i = 0; i < 50; i++) { const m = Math.sqrt(lo2 * hi2); if (fAt(m) > 0.99) lo2 = m; else hi2 = m; }
+    return { s1: s1.sort((p, q) => p[0] - q[0]), s99: s99.sort((p, q) => p[0] - q[0]), Rc: hi, Rp: lo2 };
+  })();
+  {
+    const st = { R: 60, Th: 450 };
+    let cv = null;
+    const showT = () => $("cct-ttt").checked, showF = () => $("cct-fan").checked;
+    $("cct-ttt").addEventListener("change", () => cv.redraw()); $("cct-fan").addEventListener("change", () => cv.redraw());
+    const curve = (R) => { const o = []; for (let i = 0; i <= 200; i++) { const t = Math.pow(10, -1 + (6 * i) / 200), T = TAUS - R * t; if (T < 0) { o.push([(TAUS) / R, 0]); break; } o.push([t, T]); } return o; };
+    cv = SB.canvas("cv-cct", (ctx, w, h, self) => {
+      const P = pal(), C = tttPlane(ctx, w, h, { faint: true, noTTT: !showT(), noLabels: true }); self._C = C;
+      const L = (d, col, wd, ds) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.setLineDash(ds || []); ctx.beginPath(); d.forEach(([t, T], i) => (i ? ctx.lineTo(C.X(t), C.Y(T)) : ctx.moveTo(C.X(t), C.Y(T)))); ctx.stroke(); ctx.restore(); };
+      ctx.save(); ctx.beginPath(); ctx.rect(C.box.x, C.box.y, C.box.w, C.box.h); ctx.clip();
+      L(CCT.s1, P.accent2, 2.8); L(CCT.s99, P.accent2, 2.2, [7, 5]);
+      if (showF()) for (const R of [0.1, 1, 10, CCT.Rp, CCT.Rc, 1000]) { L(curve(R), P.dim, 1, [3, 3]); }
+      L(curve(CCT.Rc), P.bad, 1.4, [6, 3]);
+      const r = linearCool(st.R);
+      ctx.restore();
+      drawTrace(ctx, C, r.tr, P.text);
+      const tx = SB.clamp((TAUS - st.Th) / st.R, 0.1, 1e5);
+      self._h = [C.X(tx), C.Y(st.Th)]; handle(ctx, self._h[0], self._h[1], P.accent2, 9);
+      if (!narrowOf(w)) {
+        SB.label(ctx, `임계 냉각 속도 ${CCT.Rc.toFixed(0)} °C/s`, C.X(0.12), C.Y(140), { align: "left", size: 11, color: P.bad, bold: true });
+        const q6 = CCT.s1.reduce((a, b) => (Math.abs(b[1] - 640) < Math.abs(a[1] - 640) ? b : a));
+        SB.label(ctx, "CCT 시작", C.X(q6[0]) + 8, C.Y(q6[1]) + 12, { align: "left", size: 11, color: P.accent2, bold: true });
+      }
+      SB.stat("cct-r", `${sci(st.R, 3)} °C/s`); SB.stat("cct-p", pct(r.f)); SB.stat("cct-m", pct(r.fM) + ` (A<sub>잔류</sub> ${pct(r.fA)})`);
+      SB.stat("cct-j", st.R >= CCT.Rc ? `<span style="color:var(--ok)">임계 속도 이상 → 마르텐사이트</span>` : r.f > 0.99 ? "펄라이트 100 %" : "펄라이트 + 마르텐사이트 혼합");
+    }, { aspect: 0.62, minHeight: 340, maxHeight: 470 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        const C = cv._C; if (id == null || !C) return; const b = C.box;
+        const t = Math.pow(10, SB.map(SB.clamp(x, b.x, b.x + b.w), b.x, b.x + b.w, -1, 5)), T = SB.clamp(SB.map(y, b.y + b.h, b.y, 0, 850), 100, 700);
+        st.Th = T; st.R = SB.clamp((TAUS - T) / t, 0.01, 3000);
+      },
+    });
+  }
+  SB.tangle("tg-cool", (v) => {
+    const p = M.coolPath(TTT, (t) => TAUS - v.R * t, (TAUS - MS) / v.R, 3000), f = p[p.length - 1][2], km = M.martensite(25, MS);
+    return { p: pct(f), m: pct((1 - f) * km), a: pct((1 - f) * (1 - km)) };
+  });
+
+  /* ================================================================ 4절: 열처리 과제(게임) */
+  {
+    const TASKS = [
+      { id: "m85", name: "마르텐사이트 85 % 이상", desc: "담금질로 단단한 조직을 만든다. 코를 피해 \\(M_s\\) 아래까지 빨리 내려야 한다.", ok: (r) => r.fM >= 0.85 },
+      { id: "m95", name: "마르텐사이트 95 % 이상", desc: "잔류 오스테나이트를 5 % 아래로. 상온 담금질만으로 될까?", ok: (r) => r.fM >= 0.95 },
+      { id: "cp", name: "조대 펄라이트 99 % 이상", desc: "가장 무르고 가공하기 쉬운 조직(풀림). 변태가 620 °C 위에서 일어나야 한다.", ok: (r) => r.fc >= 0.99 },
+      { id: "fp", name: "미세 펄라이트 90 % 이상", desc: "강도와 인성의 절충(레일·와이어). 540–620 °C에서 변태를 끝낸다.", ok: (r) => r.ff >= 0.9 },
+      { id: "b", name: "베이나이트 90 % 이상, 10분 이내", desc: "오스템퍼링. 540 °C와 \\(M_s\\) 사이에서 유지하되 총 처리 시간을 600 s 안에.", ok: (r, tt) => r.fb >= 0.9 && tt <= 600 },
+      { id: "mix", name: "펄라이트 40–60 % + 마르텐사이트 35 % 이상", desc: "변태 도중에 담금질해 두 조직을 섞는다.", ok: (r) => r.fc + r.ff >= 0.4 && r.fc + r.ff <= 0.6 && r.fM >= 0.35 },
+    ];
+    const sel = $("heat-task"); TASKS.forEach((t, i) => { const o = document.createElement("option"); o.value = i; o.textContent = `${i + 1}. ${t.name}`; sel.append(o); });
+    const st = { th: 3, Th: 500, cool: 300, end: 25, task: 0, done: new Set(), touched: false };
+    let cv = null;
+    const showTask = () => { $("heat-desc").innerHTML = TASKS[st.task].desc; SB.math($("heat-desc")); };
+    sel.addEventListener("change", () => { st.task = Number(sel.value); showTask(); cv.redraw(); });
+    SB.seg("heat-cool", (v) => { st.cool = Number(v); st.touched = true; cv.redraw(); });
+    SB.seg("heat-end", (v) => { st.end = Number(v); st.touched = true; cv.redraw(); });
+    function run() {
+      const s = [[0, TAUS]], tq = Math.max(0, (TAUS - st.Th) / 500);
+      let t = rampSamples(s, 0, TAUS, st.Th, 500, 160);
+      const th = Math.max(st.th, t * 1.05);
+      if (th > t) { logSamples(s, Math.max(t, 1e-4), th, () => st.Th, 160); t = th; }
+      if (st.Th > st.end) t = rampSamples(s, t, st.Th, st.end, st.cool, 240);
+      void tq;
+      return { r: integrate(s), total: t };
+    }
+    cv = SB.canvas("cv-heat", (ctx, w, h, self) => {
+      const P = pal(), C = tttPlane(ctx, w, h, { x: [0.1, 1e6], y: [-100, 850] }); self._C = C;
+      SB.dashLine(ctx, C.box.x, C.Y(25), C.box.x + C.box.w, C.Y(25), P.faint, [2, 3]);
+      const { r, total } = run(), task = TASKS[st.task], ok = task.ok(r, total);
+      drawTrace(ctx, C, r.tr, ok ? P.ok : P.accent2);
+      self._h = [C.X(SB.clamp(Math.max(st.th, (TAUS - st.Th) / 500), 0.1, 1e6)), C.Y(st.Th)]; handle(ctx, self._h[0], self._h[1], ok ? P.ok : P.accent2, 9);
+      if (ok) { if (st.touched) st.done.add(task.id); SB.label(ctx, "✔ 성공", C.box.x + C.box.w - 6, C.box.y + C.box.h - 16, { align: "right", bold: true, size: 15, color: P.ok }); }
+      SB.stat("heat-mix", mixHtml(r)); SB.stat("heat-time", tfmt(total));
+      SB.stat("heat-res", ok ? `<span style="color:var(--ok)">✔ 성공</span>` : "아직");
+      SB.stat("heat-score", `${st.done.size} / ${TASKS.length}` + (st.done.size === TASKS.length ? " 🏅" : ""));
+    }, { aspect: 0.62, minHeight: 340, maxHeight: 470 });
+    SB.drag(cv, {
+      handles: () => (cv._h ? [{ id: "h", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x, y) => {
+        const C = cv._C; if (id == null || !C) return; const b = C.box;
+        st.touched = true; st.th = Math.pow(10, SB.map(SB.clamp(x, b.x, b.x + b.w), b.x, b.x + b.w, -1, 6));
+        st.Th = Math.round(SB.clamp(SB.map(y, b.y + b.h, b.y, -100, 850), 25, 720) / 5) * 5;
+      },
+    });
+    showTask();
+  }
+
+  /* ================================================================ 5절: 마르텐사이트 판 */
+  {
+    const NN = 120, NGR = 14, vor = M.voronoi(NN, NGR, 7), lab = vor.labels, off = offscreen(NN);
+    const cover = new Int32Array(NN * NN).fill(-1), cum = [];
+    (function build() {
+      const rg = M.rng(21), ang = Array.from({ length: NGR }, () => rg() * PI);
+      let covered = 0, id = 0, tries = 0;
+      while (covered < 0.995 * NN * NN && id < 6000 && tries < 400000) {
+        tries++;
+        const i = rg.int(NN * NN); if (cover[i] >= 0) continue;
+        const x0 = i % NN, y0 = (i / NN) | 0, g = lab[i];
+        const a = ang[g] + [0, PI / 3, (2 * PI) / 3][rg.int(3)] + (rg() - 0.5) * 0.12, dx = Math.cos(a), dy = Math.sin(a);
+        const march = (s) => { let L = 0; for (let k = 1; k < NN; k++) { const x = Math.round(x0 + s * dx * k), y = Math.round(y0 + s * dy * k); if (x < 0 || y < 0 || x >= NN || y >= NN) break; const j = y * NN + x; if (lab[j] !== g || cover[j] >= 0) break; L = k; } return L; };
+        const L1 = march(1), L2 = march(-1), L = (L1 + L2) / 2 + 0.5, cx = x0 + (dx * (L1 - L2)) / 2, cy = y0 + (dy * (L1 - L2)) / 2, W = Math.max(0.7, 0.13 * L);
+        let added = 0; const R = Math.ceil(L + 1);
+        for (let y = Math.max(0, Math.floor(cy - R)); y <= Math.min(NN - 1, Math.ceil(cy + R)); y++) for (let x = Math.max(0, Math.floor(cx - R)); x <= Math.min(NN - 1, Math.ceil(cx + R)); x++) {
+          const u = (x - cx) * dx + (y - cy) * dy, v = -(x - cx) * dy + (y - cy) * dx;
+          if (Math.abs(u) > L) continue;
+          if (Math.abs(v) > W * Math.sqrt(Math.max(0, 1 - (u / L) ** 2))) continue;
+          const j = y * NN + x; if (lab[j] !== g || cover[j] >= 0) continue; cover[j] = id; added++;
+        }
+        if (!added) { cover[i] = id; added = 1; }
+        covered += added; cum.push(covered); id++;
+      }
+      for (let j = 0; j < NN * NN; j++) if (cover[j] < 0) cover[j] = id;
+      cum.push(NN * NN);
+    })();
+    const plateCount = (f) => { const target = f * NN * NN; let lo = 0, hi = cum.length; while (lo < hi) { const m = (lo + hi) >> 1; if (cum[m] <= target) lo = m + 1; else hi = m; } return lo; };
+    const st = { T: 400, Tmin: 400 };
+    let cv1 = null, cv2 = null;
+    const comp = () => ({ C: gC(), Mn: gMn(), Ni: gNi(), Cr: gCr() });
+    const Ms = () => M.andrewsMs(comp());
+    const fNow = () => M.martensite(st.Tmin, Ms());
+    const upd = () => { st.Tmin = st.T; cv1 && cv1.redraw(); cv2 && cv2.redraw(); };
+    const gC = SB.range("mt-c", (v) => v.toFixed(2) + " wt%", upd), gMn = SB.range("mt-mn", (v) => v.toFixed(1) + " wt%", upd), gNi = SB.range("mt-ni", (v) => v.toFixed(1) + " wt%", upd), gCr = SB.range("mt-cr", (v) => v.toFixed(1) + " wt%", upd);
+    $("mt-reset").addEventListener("click", () => { st.T = 400; st.Tmin = 400; cv1.redraw(); cv2.redraw(); });
+    cv1 = SB.canvas("cv-mart1", (ctx, w, h) => {
+      const P = pal(), side = Math.min(w - 16, h - 16), bx = (w - side) / 2, by = 8, d = off.img.data, lut = grainLut();
+      const J = plateCount(fNow()), m1 = rgbOf(P.accent), m2 = rgbOf(P.text), dark = SB.isDark();
+      for (let k = 0; k < NN * NN; k++) {
+        const q = 4 * k, pid = cover[k];
+        let c;
+        if (pid < J) { const s = (pid * 2654435761 >>> 0) % 5 / 10; c = dark ? [m1[0] * (0.55 + s), m1[1] * (0.55 + s), m1[2] * (0.55 + s)] : [m1[0] * (0.6 + s * 0.6) + m2[0] * 0.1, m1[1] * (0.6 + s * 0.6) + m2[1] * 0.1, m1[2] * (0.6 + s * 0.6) + m2[2] * 0.1]; }
+        else { c = lut[lab[k] * 7 % 400]; const x = k % NN, y = (k / NN) | 0; if ((x < NN - 1 && lab[k + 1] !== lab[k]) || (y < NN - 1 && lab[k + NN] !== lab[k])) c = [c[0] * 0.6, c[1] * 0.6, c[2] * 0.6]; }
+        d[q] = Math.min(255, c[0]); d[q + 1] = Math.min(255, c[1]); d[q + 2] = Math.min(255, c[2]); d[q + 3] = 255;
+      }
+      blit(ctx, off, bx, by, side); ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+    }, { aspect: 1, minHeight: 240, maxHeight: 360 });
+    const XT = [400, 300, 200, 100, 0, -100, -200];
+    cv2 = SB.canvas("cv-mart2", (ctx, w, h, self) => {
+      const P = pal(), ms = Ms(), data = []; for (let T = 420; T >= -200; T -= 4) data.push([T, M.martensite(T, ms)]);
+      const C = SB.chart(ctx, { x: 50, y: 36, w: w - 50 - 14, h: h - 36 - 46 }, { x: [420, -200], y: [0, 1], xTicks: XT, yTicks: [0, 0.25, 0.5, 0.75, 1], xLabel: "온도 (°C) — 오른쪽으로 냉각", yLabel: "마르텐사이트 분율",
+        vlines: [{ x: ms, color: P.bad, label: "Mₛ", dash: [] }, { x: 25, color: P.dim, label: "25", row: 1 }, { x: -80, color: P.dim, label: "−80", row: 2 }, { x: -196, color: P.dim }],
+        series: [{ data, color: P.accent, width: 2.6 }] });
+      self._C = C;
+      const f = fNow();
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(C.X(st.Tmin), C.Y(f), 5, 0, 2 * PI); ctx.fill();
+      self._h = [C.X(st.T), C.Y(M.martensite(st.T, ms))]; handle(ctx, self._h[0], self._h[1], P.accent2, 9);
+      SB.stat("mt-ms", ms.toFixed(0) + " °C"); SB.stat("mt-t", `${st.T.toFixed(0)} / ${st.Tmin.toFixed(0)} °C`);
+      SB.stat("mt-f", pct(f)); SB.stat("mt-ra", `${pct(1 - f)} (25 °C에서 ${pct(1 - M.martensite(25, ms))})`);
+    }, { aspect: 0.9, minHeight: 280, maxHeight: 380 });
+    SB.drag(cv2, {
+      handles: () => (cv2._h ? [{ id: "T", x: cv2._h[0], y: cv2._h[1], r: 14 }] : []),
+      move: (id, x) => { const C = cv2._C; if (id == null || !C) return; const b = C.box; st.T = Math.round(SB.clamp(SB.map(x, b.x, b.x + b.w, 420, -200), -200, 420)); st.Tmin = Math.min(st.Tmin, st.T); cv1.redraw(); },
+    });
+  }
+
+  /* ================================================================ 5절 미니: 베인 격자 */
+  {
+    let cv = null;
+    const gC = SB.range("bain-c", (v) => v.toFixed(2) + " wt%", () => cv && cv.redraw());
+    const ac = (x) => ({ a: 2.861 - 0.013 * x, c: 2.861 + 0.116 * x });
+    cv = SB.canvas("cv-bain", (ctx, w, h) => {
+      const P = pal(), x = gC(), { a, c } = ac(x), ca = c / a, vis = 1 + 10 * (ca - 1);
+      const cw = Math.min(110, w * 0.25), chh = cw * vis, x0 = 30, y0 = h / 2 + chh / 2 - 6;
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.strokeRect(x0, y0 - chh, cw, chh); ctx.lineWidth = 1;
+      ctx.fillStyle = P.dim; for (const [u, v] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { ctx.beginPath(); ctx.arc(x0 + u * cw, y0 - v * chh, 7, 0, 2 * PI); ctx.fill(); }
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(x0 + cw / 2, y0 - chh / 2, 7, 0, 2 * PI); ctx.fill();
+      if (x > 0) { ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(x0 + cw / 2, y0 - chh, 4, 0, 2 * PI); ctx.fill(); ctx.beginPath(); ctx.arc(x0 + cw / 2, y0, 4, 0, 2 * PI); ctx.fill(); }
+      SB.label(ctx, "c", x0 + cw + 12, y0 - chh / 2, { bold: true, color: P.accent2 }); SB.label(ctx, "a", x0 + cw / 2, y0 + 16, { bold: true, color: P.accent2 });
+      SB.label(ctx, "정방성 ×10 과장", x0 + cw / 2, 12, { size: 11, color: P.dim });
+      const bx = x0 + cw + 70, B = { x: bx, y: 14, w: w - bx - 14, h: h - 14 - 40 };
+      if (B.w > 80) {
+        const xs = M.linspace(0, 1.4, 29);
+        const C = SB.chart(ctx, B, { x: [0, 1.4], y: [2.8, 3.05], xLabel: "탄소 (wt%)", yTicks: [2.8, 2.9, 3.0], xTicks: [0, 0.4, 0.8, 1.2],
+          series: [{ data: xs.map((q) => [q, ac(q).c]), color: P.accent2, width: 2.4 }, { data: xs.map((q) => [q, ac(q).a]), color: P.accent, width: 2.4 }],
+          vlines: [{ x, color: P.bad, dash: [4, 3] }] });
+        SB.label(ctx, "c (Å)", C.X(1.3), C.Y(ac(1.3).c) - 12, { color: P.accent2, size: 11, bold: true });
+        SB.label(ctx, "a (Å)", C.X(1.3), C.Y(ac(1.3).a) + 12, { color: P.accent, size: 11, bold: true });
+      }
+      $("bain-r").innerHTML = `a = ${a.toFixed(3)} Å, c = ${c.toFixed(3)} Å, c/a = ${ca.toFixed(4)}`;
+    }, { aspect: 0.4, minHeight: 220, maxHeight: 280 });
+  }
+  SB.tangle("tg-ms", (v) => {
+    const ms = M.andrewsMs({ C: v.c, Mn: v.mn, Cr: v.cr }), ra = 1 - M.martensite(25, ms);
+    return { ms: ms.toFixed(0) + " °C", ra: ms <= 25 ? "100 % (Mₛ가 상온 아래)" : pct(ra), t95: (ms - Math.log(20) / 0.011).toFixed(0) + " °C" };
+  });
+  SB.drill("drill-ms", () => {
+    let C, Mn, Ni, Cr, Mo, ms, T;
+    do { C = rnd(0.2, 1.0, 0.05); Mn = rnd(0.3, 1.5, 0.1); Ni = rpick([0, 0, 1, 2, 3.5]); Cr = rpick([0, 0, 0.5, 1, 1.5]); Mo = rpick([0, 0, 0.2, 0.25]); ms = M.andrewsMs({ C, Mn, Ni, Cr, Mo }); T = rpick([25, 0, -40, -80]); } while (ms < T + 60 || ms < 80);
+    const fm = M.martensite(T, ms);
+    const comp = `${C.toFixed(2)}C–${Mn.toFixed(1)}Mn` + (Ni ? `–${Ni}Ni` : "") + (Cr ? `–${Cr}Cr` : "") + (Mo ? `–${Mo}Mo` : "");
+    return { q: `<p>${comp}(wt%) 강의 \\(M_s\\)를 앤드루스 식으로 구하고, ${T} °C까지 담금질했을 때 오스테나이트 중 마르텐사이트로 바뀐 분율 \\(f_M\\)을 구하라(\\(\\alpha_m = 0.011\\) K⁻¹).</p>`,
+      answer: [ms, fm], label: ["Mₛ =", "f_M ="], unit: ["°C", ""], tol: "2%",
+      sol: `\\(M_s = 539-423(${C.toFixed(2)})-30.4(${Mn.toFixed(1)})-17.7(${Ni})-12.1(${Cr})-7.5(${Mo}) = ${ms.toFixed(1)}\\) °C. \\(f_M = 1-\\exp[-0.011(${ms.toFixed(1)}-(${T}))] = ${fm.toFixed(4)}\\)` };
+  });
+
+  /* ================================================================ 6절: 시효 경화 곡선 */
+  {
+    const AL = M.diagrams.AlCu, QD = M.diffData["Cu in Al"].Q * 1e3, A_CUT = 85, S0 = 60, TAYLOR = 3.06;
+    const fTheta = (c0, TC) => { const r = AL.phaseAt(c0, TC), q = r.phases.find((p) => p.name === "θ"); return q ? q.frac : 0; };
+    const FREF = fTheta(4, 150);
+    const scale = (TC) => 650 * Math.exp((-QD / RG) * (1 / (TC + 273.15) - 1 / 463.15)); // 모형 시간 단위/시간
+    const model = (th, TC, c0) => { const f = (0.05 * fTheta(c0, TC)) / FREF; if (f <= 1e-6) return { r: 0.5, f: 0, cut: 0, bypass: 0, tau: 0, mech: "석출 없음" }; return M.agingCurve(th * scale(TC), { r0: 0.5, K: 1, f, tn: 300, A: A_CUT }); };
+    const sig = (q) => S0 + TAYLOR * q.tau;
+    const TS = M.logspace(0.01, 1e4, 220);
+    const st = { th: 3 };
+    let cv1 = null, cv2 = null;
+    const rd = () => { cv1 && cv1.redraw(); cv2 && cv2.redraw(); };
+    const gT = SB.range("ag-t", (v) => v + " °C", rd), gCu = SB.range("ag-c", (v) => v.toFixed(1) + " wt%", rd);
+    $("ag-cmp").addEventListener("change", rd);
+    const peak = (TC, c0) => { let best = [0, 0]; for (const t of TS) { const s = sig(model(t, TC, c0)); if (s > best[1]) best = [t, s]; } return best; };
+    cv1 = SB.canvas("cv-age1", (ctx, w, h, self) => {
+      const P = pal(), TC = gT(), c0 = gCu();
+      const cur = TS.map((t) => { const q = model(t, TC, c0); return [t, sig(q), q]; });
+      const ser = [];
+      if ($("ag-cmp").checked) for (const T2 of [130, 250]) ser.push({ data: TS.map((t) => [t, sig(model(t, T2, c0))]), color: P.accent2, width: 1.6, dash: [6, 4] });
+      ser.push({ data: cur.map(([t, , q]) => [t, S0 + TAYLOR * q.cut]), color: P.faint, width: 1.2, dash: [2, 3] });
+      ser.push({ data: cur.map(([t, , q]) => [t, S0 + TAYLOR * Math.min(q.bypass, 2000)]), color: P.faint, width: 1.2, dash: [2, 3] });
+      ser.push({ data: cur.map(([t, s]) => [t, s]), color: P.accent, width: 2.8 });
+      const C = SB.chart(ctx, { x: 52, y: 34, w: w - 52 - 12, h: h - 34 - 46 }, { x: [0.01, 1e4], y: [0, 400], logX: true, xTicks: [0.01, 0.1, 1, 10, 100, 1000, 1e4], xFmt: (v) => (v >= 1000 ? "10" + sup(Math.round(Math.log10(v))) : String(v)), yTicks: [0, 100, 200, 300, 400], xLabel: "시효 시간 (h)", yLabel: "항복 강도 (MPa)", series: ser });
+      self._C = C;
+      const pk = peak(TC, c0);
+      if (pk[1] > S0 + 1) { ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(C.X(pk[0]), C.Y(pk[1]), 4.5, 0, 2 * PI); ctx.fill(); }
+      if ($("ag-cmp").checked && !narrowOf(w * 2)) { SB.label(ctx, "130 °C", C.X(3000), C.Y(sig(model(3000, 130, c0))) - 12, { size: 11, color: P.accent2, bold: true }); SB.label(ctx, "250 °C", C.X(0.05), C.Y(sig(model(0.05, 250, c0))) - 12, { size: 11, color: P.accent2, bold: true }); }
+      const q = model(st.th, TC, c0), s = sig(q);
+      self._h = [C.X(st.th), C.Y(Math.min(400, s))]; handle(ctx, self._h[0], self._h[1], P.accent, 9);
+      SB.stat("ag-time", hfmt(st.th));
+      SB.stat("ag-rf", q.f > 0 ? `${q.r.toFixed(1)} nm / ${(q.f * 100).toFixed(1)} %` : "— (고용 한계 위)");
+      SB.stat("ag-mech", q.f > 0 ? (q.mech === "자름" ? "자름 (미시효)" : "우회 (과시효 쪽)") : "석출 없음");
+      SB.stat("ag-s", `${s.toFixed(0)} / ${pk[1].toFixed(0)} MPa` + (pk[1] > S0 + 1 ? ` (${hfmt(pk[0])})` : ""));
+      st.q = q;
+    }, { aspect: 0.85, minHeight: 300, maxHeight: 400 });
+    SB.drag(cv1, {
+      handles: () => (cv1._h ? [{ id: "t", x: cv1._h[0], y: cv1._h[1], r: 14 }] : []),
+      move: (id, x) => { const C = cv1._C; if (id == null || !C) return; const b = C.box; st.th = Math.pow(10, SB.map(SB.clamp(x, b.x, b.x + b.w), b.x, b.x + b.w, -2, 4)); cv2.redraw(); },
+    });
+    const rg = M.rng(31), POS = Array.from({ length: 700 }, () => [rg(), rg()]);
+    cv2 = SB.canvas("cv-age2", (ctx, w, h) => {
+      const P = pal(), q = st.q || model(st.th, gT(), gCu()), W = 400, side = Math.min(w - 16, h - 40), bx = (w - side) / 2, by = 8, s = side / W;
+      ctx.fillStyle = P.surface; ctx.fillRect(bx, by, side, side);
+      ctx.save(); ctx.beginPath(); ctx.rect(bx, by, side, side); ctx.clip();
+      const n = q.f > 0 ? Math.min(POS.length, Math.max(1, Math.round((q.f * W * W) / (PI * q.r * q.r)))) : 0, rp = Math.max(1.1, q.r * s);
+      const yL = by + side * 0.5, hit = [];
+      ctx.fillStyle = P.accent2;
+      for (let i = 0; i < n; i++) { const x = bx + POS[i][0] * side, y = by + POS[i][1] * side; if (Math.abs(y - yL) < rp) hit.push([x, y]); ctx.beginPath(); ctx.arc(x, y, rp, 0, 2 * PI); ctx.fill(); }
+      // 전위선
+      ctx.strokeStyle = P.bad; ctx.lineWidth = 2.4;
+      if (q.mech === "우회" && hit.length) {
+        hit.sort((a, b) => a[0] - b[0]);
+        ctx.beginPath(); ctx.moveTo(bx, yL); let px = bx;
+        for (const [x] of hit) { const mid = (px + x) / 2, bow = Math.min(40, (x - px) * 0.45); ctx.quadraticCurveTo(mid, yL + bow, x, yL); px = x; }
+        ctx.quadraticCurveTo((px + bx + side) / 2, yL + Math.min(40, (bx + side - px) * 0.45), bx + side, yL); ctx.stroke();
+        ctx.lineWidth = 1.6; for (const [x, y] of hit) { ctx.beginPath(); ctx.arc(x, y, rp + 3, 0, 2 * PI); ctx.stroke(); }
+      } else if (n) {
+        ctx.beginPath(); ctx.moveTo(bx, yL); ctx.lineTo(bx + side, yL); ctx.stroke();
+        ctx.fillStyle = P.surface; for (const [x] of hit) ctx.fillRect(x - rp - 1, yL - 1, 2 * rp + 2, 2);
+      }
+      ctx.restore(); ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+      SB.label(ctx, n ? (q.mech === "우회" ? "전위가 휘어 돌아간다 (오로완 고리)" : "전위가 석출물을 자르며 지나간다") : "과포화 고용체 (석출물 없음)", w / 2, by + side + 14, { size: 11.5, bold: true, color: P.bad });
+      SB.label(ctx, "400 nm", bx + side - 4, by + 12, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 1, minHeight: 260, maxHeight: 380 });
+  }
+
+  /* ================================================================ 6절: 석출물 조대화(LSW) */
+  {
+    const VW = 45, st = { CO: null, pos: null, hist: [], r03: 1, playing: true, pick: -1, view: null, deadAt: -1 };
+    let cv1 = null, cv2 = null, sync = null;
+    const gS = SB.range("co-s", (v) => v.toFixed(2), () => reset());
+    function reset() {
+      st.CO = M.coarsening({ n: 2000, r0: 1, spread: gS(), seed: 5 }); const rg = M.rng(9); st.pos = st.CO.radii.map(() => [rg() * 100, rg() * 100]);
+      st.r03 = Math.pow(st.CO.mean(), 3); st.hist = [[0, 0]]; st.pick = -1; st.deadAt = -1; st.playing = true; sync && sync();
+      cv1 && cv1.redraw(); cv2 && cv2.redraw();
+    }
+    reset();
+    sync = toggleBtn("co-play", st);
+    $("co-reset").addEventListener("click", reset);
+    // LSW 정상 분포(ρ = r/r̄)
+    const lswH = (p) => (p <= 0 || p >= 1.5 ? 0 : (4 / 9) * p * p * Math.pow(3 / (3 + p), 7 / 3) * Math.pow(1.5 / (1.5 - p), 11 / 3) * Math.exp(-p / (1.5 - p)));
+    const LS = M.linspace(0, 1.5, 151), LZ = M.trapz ? M.trapz(LS, LS.map(lswH)) : LS.reduce((s, p) => s + lswH(p) * 0.01, 0);
+    cv1 = SB.canvas("cv-co1", (ctx, w, h) => {
+      const P = pal(), side = Math.min(w - 16, h - 16), bx = (w - side) / 2, by = 8, s = side / VW, CO = st.CO;
+      st.view = { bx, by, s };
+      ctx.fillStyle = P.surface; ctx.fillRect(bx, by, side, side);
+      ctx.save(); ctx.beginPath(); ctx.rect(bx, by, side, side); ctx.clip();
+      const rm = CO.mean();
+      CO.radii.forEach((r, i) => { if (r <= 0 || st.pos[i][0] > VW + 3 || st.pos[i][1] > VW + 3) return; ctx.fillStyle = i === st.pick ? P.bad : r > rm ? P.accent : P.accent2; ctx.beginPath(); ctx.arc(bx + st.pos[i][0] * s, by + st.pos[i][1] * s, Math.max(0.8, r * s * 1.2), 0, 2 * PI); ctx.fill(); });
+      if (st.pick >= 0) { const [x, y] = st.pos[st.pick]; ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(bx + x * s, by + y * s, Math.max(6, CO.radii[st.pick] * s * 1.2 + 5), 0, 2 * PI); ctx.stroke(); }
+      ctx.restore(); ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+    }, { aspect: 1, minHeight: 240, maxHeight: 360 });
+    SB.drag(cv1, { free: true, handles: () => [], down: (id, x, y) => {
+      const v = st.view; if (!v) return; let best = -1, bd = Infinity;
+      st.CO.radii.forEach((r, i) => { if (r <= 0 || st.pos[i][0] > VW || st.pos[i][1] > VW) return; const d = Math.hypot(v.bx + st.pos[i][0] * v.s - x, v.by + st.pos[i][1] * v.s - y) - r * v.s * 1.2; if (d < bd) { bd = d; best = i; } });
+      if (bd < 10) { st.pick = best; st.deadAt = -1; }
+    }, move: () => {} });
+    cv2 = SB.canvas("cv-co2", (ctx, w, h) => {
+      const P = pal(), CO = st.CO, H1 = Math.round((h - 20) * 0.5);
+      const B1 = { x: 50, y: 12, w: w - 50 - 12, h: H1 - 34 }, B2 = { x: 50, y: H1 + 14, w: w - 50 - 12, h: h - H1 - 14 - 42 };
+      const tmax = Math.max(10, CO.t * 1.1), ymax = Math.max(4, (st.hist.length ? st.hist[st.hist.length - 1][1] : 1) * 1.25);
+      SB.chart(ctx, B1, { x: [0, tmax], y: [0, ymax], xFmt: (v) => v.toFixed(0), yLabel: "r̄³ − r̄₀³",
+        series: [{ data: [[0, 0], [tmax, (4 / 9) * tmax]], color: P.accent2, width: 1.6, dash: [6, 4] }, { data: st.hist, color: P.accent, width: 2.4 }] });
+      SB.label(ctx, "LSW 4t/9", B1.x + B1.w - 4, B1.y + 10, { align: "right", size: 11, color: P.accent2, bold: true });
+      // 분포
+      const rm = CO.mean(), bins = new Array(20).fill(0); let n = 0;
+      for (const r of CO.radii) if (r > 0) { const k = Math.floor((r / rm) / 0.1); if (k >= 0 && k < 20) bins[k]++; n++; }
+      const C2 = SB.chart(ctx, B2, { x: [0, 2], y: [0, 2.6], xLabel: "r / r̄", xTicks: [0, 0.5, 1, 1.5, 2], yTicks: [0, 1, 2], series: [{ data: LS.map((p) => [p, lswH(p) / LZ]), color: P.accent2, width: 2, dash: [5, 4] }] });
+      ctx.fillStyle = P.accent; withA(ctx, 0.55, () => bins.forEach((c, k) => { const d = n ? c / (n * 0.1) : 0; const x0 = C2.X(k * 0.1), x1 = C2.X((k + 1) * 0.1); ctx.fillRect(x0 + 1, C2.Y(Math.min(2.6, d)), x1 - x0 - 2, C2.Y(0) - C2.Y(Math.min(2.6, d))); }));
+      // 통계
+      SB.stat("co-t", CO.t.toFixed(1)); SB.stat("co-n", String(CO.alive()));
+      const sel = st.hist.filter(([t]) => t > 4);
+      if (sel.length > 5) { const F = M.linfit(sel.map((p) => p[0]), sel.map((p) => p[1])); SB.stat("co-k", `${F.b.toFixed(3)} / 0.444`); } else SB.stat("co-k", "—");
+      if (st.pick >= 0) { const r = CO.radii[st.pick]; SB.stat("co-p", r > 0 ? `r = ${r.toFixed(2)} (r̄ ${rm.toFixed(2)}) → ${r > rm ? "자람" : "줄어듦"}` : `사라짐 (t = ${st.deadAt.toFixed(1)})`); }
+      else SB.stat("co-p", "입자를 누르세요");
+    }, { aspect: 1, minHeight: 300, maxHeight: 400 });
+    SB.loop("cv-co1", () => {
+      if (!st.playing) return;
+      const CO = st.CO; CO.step(0.01, 5);
+      st.hist.push([CO.t, Math.pow(CO.mean(), 3) - st.r03]);
+      if (st.pick >= 0 && CO.radii[st.pick] <= 0 && st.deadAt < 0) st.deadAt = CO.t;
+      if (CO.alive() < 60 || CO.t > 60) { st.playing = false; sync(); }
+      cv1.redraw(); cv2.redraw();
+    });
+  }
+  SB.tangle("tg-lsw", (v) => { const r3 = v.r0 ** 3, r = Math.cbrt(r3 + 100 * v.k); return { t2: hfmt((7 * r3) / v.k), r: r.toFixed(1) + " nm", n: sci((v.r0 / r) ** 3, 3) + "배" }; });
+
+  /* ================================================================ 7절 미니: f(φ)와 증폭률 */
+  {
+    const st = { p: 0.3 };
+    const f = (p) => (p * p - 1) ** 2 / 4, f2 = (p) => 3 * p * p - 1, SP = 1 / Math.sqrt(3);
+    const cv = SB.canvas("cv-fc", (ctx, w, h, self) => {
+      const P = pal(), narrow = narrowOf(w), gap = narrow ? 10 : 30, lw = (w - 46 - gap - 12) * 0.5;
+      const B1 = { x: 46, y: 22, w: lw, h: h - 22 - 44 }, B2 = { x: 46 + lw + gap + (narrow ? 0 : 10), y: 22, w: w - (46 + lw + gap + (narrow ? 0 : 10)) - 12, h: h - 22 - 44 };
+      const xs = M.linspace(-1.3, 1.3, 131);
+      const C1 = SB.chart(ctx, B1, { x: [-1.3, 1.3], y: [-0.05, 0.4], xTicks: [-1, -0.5, 0, 0.5, 1], yTicks: [0, 0.2, 0.4], xLabel: "조성 φ", yLabel: "f(φ)",
+        bands: [{ x0: -SP, x1: SP, color: SB.color("accent-2-soft") || "rgba(161,98,7,.12)" }],
+        vlines: [{ x: -SP, color: P.accent2 }, { x: SP, color: P.accent2, label: narrow ? "" : "스피노달" }],
+        series: [{ data: xs.map((p) => [p, f(p)]), color: P.accent, width: 2.6 }] });
+      self._C1 = C1;
+      const p = st.p, c2 = f2(p);
+      // 접선
+      const s = p * p * p - p; SB.dashLine(ctx, C1.X(p - 0.35), C1.Y(f(p) - 0.35 * s), C1.X(p + 0.35), C1.Y(f(p) + 0.35 * s), P.dim, [3, 3]);
+      handle(ctx, C1.X(p), C1.Y(f(p)), c2 < 0 ? P.bad : P.ok, 9);
+      // 증폭률
+      const ks = M.linspace(0, 1.6, 161), Rk = (k) => -k * k * (c2 + k * k);
+      const C2 = SB.chart(ctx, B2, { x: [0, 1.6], y: [-0.6, 0.3], xTicks: [0, 0.5, 1, 1.5], yTicks: [-0.5, 0, 0.25], xLabel: "파수 k", yLabel: narrow ? "" : "R(k)",
+        hlines: [{ y: 0, color: P.axis, dash: [] }], series: [{ data: ks.map((k) => [k, Rk(k)]), color: c2 < 0 ? P.bad : P.ok, width: 2.4 }] });
+      if (c2 < 0) { const km = Math.sqrt(-c2 / 2); ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(C2.X(km), C2.Y(Rk(km)), 4.5, 0, 2 * PI); ctx.fill(); SB.label(ctx, "kₘ", C2.X(km), C2.Y(Rk(km)) - 12, { color: P.bad, bold: true, size: 11 }); }
+      $("fc-r").innerHTML = `φ₀ = ${p.toFixed(2)} · f″ = ${c2.toFixed(3)} · ` + (c2 < 0 ? `불안정: λ<sub>m</sub> = 2π√(2κ/|f″|) = ${(2 * PI * Math.sqrt(2 / -c2)).toFixed(1)} (κ = 1)` : "준안정: 모든 k에서 R &lt; 0 (핵생성 필요)");
+    }, { aspect: 0.42, minHeight: 240, maxHeight: 320 });
+    SB.drag(cv, {
+      handles: () => { const C = cv._C1; return C ? [{ id: "p", x: C.X(st.p), y: C.Y((st.p * st.p - 1) ** 2 / 4), r: 14 }] : []; },
+      move: (id, x) => { const C = cv._C1; if (id == null || !C) return; st.p = SB.clamp(SB.map(x, C.box.x, C.box.x + C.box.w, -1.3, 1.3), -0.98, 0.98); },
+    });
+  }
+
+  /* ================================================================ 7절: 칸–힐리아드 격자 */
+  {
+    const N = 64, off = offscreen(N);
+    const st = { CH: null, playing: true, hist: [], view: null, frame: 0 };
+    let cv1 = null, cv2 = null, sync = null;
+    const gP = SB.range("ch-p", (v) => v.toFixed(2), () => reset()), gR = SB.range("ch-r", (v) => v.toFixed(1) + " 칸");
+    function reset() { st.CH = M.cahnHilliard({ N, phi0: gP(), noise: 0.05, dt: 0.015, seed: 3 }); st.hist = []; st.frame = 0; st.playing = true; sync && sync(); cv1 && cv1.redraw(); cv2 && cv2.redraw(); }
+    reset();
+    sync = toggleBtn("ch-play", st);
+    $("ch-reset").addEventListener("click", reset);
+    function paint() {
+      const P = pal(), a = rgbOf(P.accent), b = rgbOf(P.accent2), m = rgbOf(P.surface), d = off.img.data, ph = st.CH.phi;
+      for (let k = 0; k < N * N; k++) {
+        const v = SB.clamp(ph[k], -1, 1), q = 4 * k;
+        const c = v < 0 ? [m[0] + (a[0] - m[0]) * -v, m[1] + (a[1] - m[1]) * -v, m[2] + (a[2] - m[2]) * -v] : [m[0] + (b[0] - m[0]) * v, m[1] + (b[1] - m[1]) * v, m[2] + (b[2] - m[2]) * v];
+        d[q] = c[0]; d[q + 1] = c[1]; d[q + 2] = c[2]; d[q + 3] = 255;
+      }
+    }
+    cv1 = SB.canvas("cv-ch1", (ctx, w, h) => {
+      const P = pal(), side = Math.min(w - 16, h - 16), bx = (w - side) / 2, by = 8;
+      st.view = { bx, by, side }; paint(); blit(ctx, off, bx, by, side);
+      ctx.strokeStyle = P.border; ctx.strokeRect(bx, by, side, side);
+    }, { aspect: 1, minHeight: 240, maxHeight: 360 });
+    const seed = (x, y) => {
+      const v = st.view; if (!v) return; const gx = ((x - v.bx) / v.side) * N, gy = ((y - v.by) / v.side) * N, R = gR();
+      if (gx < 0 || gy < 0 || gx >= N || gy >= N) return;
+      for (let j = Math.floor(gy - R - 1); j <= gy + R + 1; j++) for (let i = Math.floor(gx - R - 1); i <= gx + R + 1; i++) { if ((i + 0.5 - gx) ** 2 + (j + 0.5 - gy) ** 2 > R * R) continue; st.CH.phi[((j + N) % N) * N + ((i + N) % N)] = -1; }
+      if (!st.playing) { st.playing = true; sync(); }
+    };
+    SB.drag(cv1, { free: true, handles: () => [], down: (id, x, y) => seed(x, y), move: (id, x, y, e) => { if (e && e.buttons) seed(x, y); } });
+    cv2 = SB.canvas("cv-ch2", (ctx, w, h) => {
+      const P = pal(), p0 = gP(), c2 = 3 * p0 * p0 - 1, s = st.CH.stats();
+      const C = SB.chart(ctx, { x: 50, y: 16, w: w - 50 - 12, h: h - 16 - 46 }, { x: [1, 3000], y: [2, 64], logX: true, logY: true, xTicks: [1, 10, 100, 1000], yTicks: [2, 4, 8, 16, 32, 64], yFmt: (v) => String(v), xFmt: (v) => String(v), xLabel: "시간 t", yLabel: "특성 길이 L",
+        hlines: c2 < 0 ? [{ y: 2 * PI * Math.sqrt(2 / -c2), color: P.accent2, label: "λₘ" }] : [],
+        series: [{ data: st.hist, color: P.accent, width: 2.4 }] });
+      if (st.hist.length > 5) { const [t1, L1] = st.hist[st.hist.length - 1]; const ref = [[t1 / 30, L1 / Math.cbrt(30)], [t1, L1]]; ctx.save(); ctx.strokeStyle = P.dim; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(C.X(ref[0][0]), C.Y(ref[0][1]) + 14); ctx.lineTo(C.X(ref[1][0]), C.Y(ref[1][1]) + 14); ctx.stroke(); ctx.restore(); SB.label(ctx, "∝ t^(1/3)", C.X(ref[0][0]), C.Y(ref[0][1]) + 26, { align: "left", size: 11, color: P.dim }); }
+      SB.stat("ch-t", st.CH.t.toFixed(0));
+      SB.stat("ch-st", `${c2.toFixed(2)} · ` + (c2 < 0 ? "불안정 (스피노달 안)" : "준안정 (핵생성 필요)"));
+      SB.stat("ch-L", s.var > 0.02 ? s.L.toFixed(1) + " 칸" : "— (거의 고름)");
+      SB.stat("ch-lm", c2 < 0 ? (2 * PI * Math.sqrt(2 / -c2)).toFixed(1) + " 칸" : "없음");
+    }, { aspect: 1, minHeight: 260, maxHeight: 360 });
+    SB.loop("cv-ch1", () => {
+      if (!st.playing) return;
+      st.CH.step(120); st.frame++;
+      if (st.frame % 6 === 0) { const s = st.CH.stats(); if (s.var > 0.02 && st.CH.t >= 1) st.hist.push([st.CH.t, SB.clamp(s.L, 2, 64)]); }
+      if (st.CH.t > 3000) { st.playing = false; sync(); }
+      cv1.redraw(); if (st.frame % 3 === 0) cv2.redraw();
+    });
+  }
+  SB.tangle("tg-spin", (v) => ({ l: (2 * PI * Math.sqrt((2 * v.k * 1e-11) / (v.f * 1e8)) * 1e9).toFixed(2) + " nm" }));
+})();
+</script>
+</body>
+</html>
