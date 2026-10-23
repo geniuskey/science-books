@@ -234,8 +234,7 @@ SB.registerCourse({
      "tags": [
       "XRD",
       "SIMS"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -252,8 +251,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "자료표"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -474,9 +472,33 @@ SB.registerCourse({
    "steps": 4,
    "predicts": 5,
    "hero": 1
+  },
+  "characterization": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "materials-data": {
+   "problems": 15,
+   "examples": 0,
+   "sims": 17,
+   "figures": 8,
+   "drills": 0,
+   "minis": 8,
+   "tangles": 4,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 0
   }
  },
- "published": 17,
+ "published": 19,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
