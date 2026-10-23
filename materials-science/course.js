@@ -49,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "전위",
       "결정립계"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "diffusion-in-materials",
@@ -305,6 +304,18 @@ SB.registerCourse({
    "predicts": 6,
    "hero": 1
   },
+  "defects": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 12,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
   "diffusion-in-materials": {
    "problems": 16,
    "examples": 8,
@@ -366,7 +377,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 7,
+ "published": 8,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
