@@ -1081,7 +1081,7 @@
     const t = (thDeg * PI) / 180, c = Math.cos(t), s = Math.sin(t);
     return 1 / (c ** 4 / E1 + (1 / G12 - (2 * nu12) / E1) * s * s * c * c + s ** 4 / E2);
   };
-  /** 혼합 법칙 섬유 방향 E1, 횡방향(로이스) E2, ν12, G12 */
+  /** UD 판: 섬유 방향 E1(보이트 혼합 법칙), 횡방향 E2·G12(할핀–차이, ξ = 2·1), ν12(혼합 법칙) */
   M.udPly = (Ef, Em, nuf, num, Vf) => {
     const Gf = Ef / (2 * (1 + nuf)), Gm = Em / (2 * (1 + num));
     return { E1: M.voigt(Ef, Em, Vf), E2: M.halpinTsai(Ef, Em, Vf, 2), nu12: Vf * nuf + (1 - Vf) * num, G12: M.halpinTsai(Gf, Gm, Vf, 1) };
@@ -1099,7 +1099,8 @@
   M.kMaxwell = (kp, km, Vf) => (km * (kp + 2 * km + 2 * Vf * (kp - km))) / (kp + 2 * km - Vf * (kp - km));
   M.kLewisNielsen = function (kp, km, Vf, A = 1.5, phim = 0.637) {
     const B = (kp / km - 1) / (kp / km + A), psi = 1 + ((1 - phim) / (phim * phim)) * Vf;
-    return (km * (1 + A * B * Vf)) / (1 - B * psi * Vf);
+    const den = 1 - B * psi * Vf;
+    return den > 0 ? (km * (1 + A * B * Vf)) / den : NaN; // 최대 충진 분율 φm 근처·이상에서는 정의되지 않음
   };
   /** 무게 분율 → 부피 분율 (충전재 밀도 ρf, 기지 ρm) */
   M.wt2vol = (wf, rhof, rhom) => wf / rhof / (wf / rhof + (1 - wf) / rhom);
