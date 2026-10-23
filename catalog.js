@@ -224,12 +224,12 @@ SB.registerCatalog({
    "level": "대학 2–3학년 · 반도체 기초",
    "description": "원자 결합과 결정 구조, 결함과 확산에서 출발해 탄성·소성·파괴·피로·크리프, 상태도와 미세조직, 상변태 속도론, 응고와 박막 미세조직, 금속·세라믹·고분자·복합재료, 전기·유전·열·광학 성질, 열화와 신뢰성, 재료 분석까지 — 결정립을 키우고 전위를 움직이고 균열을 자라게 하며 칩 속 재료가 왜 그렇게 고르고 다듬어졌는지 익히는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/materials-science/",
-   "published": 0,
+   "published": 7,
    "total": 20,
    "color": "#4338ca",
    "colorDark": "#818cf8",
-   "sims": 0,
-   "problems": 0
+   "sims": 50,
+   "problems": 112
   }
  ]
 });

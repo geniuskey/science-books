@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "애시비 도표",
       "성능 지수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "bonding-crystal-structure",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "FCC·BCC·HCP",
       "배위수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "defects",
@@ -63,8 +61,7 @@ SB.registerCourse({
      "tags": [
       "커켄달 효과",
       "확산 방벽"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -80,8 +77,7 @@ SB.registerCourse({
      "tags": [
       "훅 법칙",
       "스토니 식"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "plasticity-strengthening",
@@ -104,8 +100,7 @@ SB.registerCourse({
      "tags": [
       "파괴 인성",
       "와이블 강도"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +116,7 @@ SB.registerCourse({
      "tags": [
       "공정 조직",
       "Fe–C 상태도"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "transformation-kinetics",
@@ -133,8 +127,7 @@ SB.registerCourse({
      "tags": [
       "JMAK 식",
       "TTT 도표"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "solidification-growth",
@@ -287,8 +280,93 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "materials-selection": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 11,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 5,
+   "hero": 1
+  },
+  "bonding-crystal-structure": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "diffusion-in-materials": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 14,
+   "drills": 5,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "elasticity": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 14,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "fracture-fatigue-creep": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 15,
+   "drills": 5,
+   "minis": 8,
+   "tangles": 8,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "phase-diagrams-microstructure": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "transformation-kinetics": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  }
+ },
+ "published": 7,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
