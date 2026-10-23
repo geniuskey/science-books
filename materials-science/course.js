@@ -163,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "유리 전이",
       "소결"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "polymers",
@@ -407,6 +406,18 @@ SB.registerCourse({
    "predicts": 4,
    "hero": 1
   },
+  "ceramics-glasses": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 6,
+   "figures": 13,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 4,
+   "predicts": 6,
+   "hero": 1
+  },
   "thermal-optical-properties": {
    "problems": 17,
    "examples": 8,
@@ -421,18 +432,18 @@ SB.registerCourse({
   },
   "degradation-reliability": {
    "problems": 0,
-   "examples": 5,
-   "sims": 5,
-   "figures": 7,
-   "drills": 2,
-   "minis": 2,
-   "tangles": 3,
+   "examples": 6,
+   "sims": 6,
+   "figures": 9,
+   "drills": 3,
+   "minis": 3,
+   "tangles": 4,
    "steps": 3,
    "predicts": 4,
    "hero": 1
   }
  },
- "published": 13,
+ "published": 14,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
