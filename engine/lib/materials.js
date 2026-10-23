@@ -883,13 +883,14 @@
     };
     return { p: q, rate, t: (TC, f) => { const r = rate(TC); return r.k > 0 ? pow(-ln(1 - f) / r.k, 1 / q.n) : Infinity; } };
   };
-  /** 냉각 경로를 따라 JMAK 가산 법칙으로 변태 분율 적분. path(t)→T°C, model=tttModel(), tEnd s → [[t, T, f]] */
-  M.coolPath = function (model, path, tEnd, steps = 600) {
+  /** 냉각 경로를 따라 JMAK 가산 법칙으로 변태 분율 적분. path(t)→T°C, model=tttModel(), tEnd s → [[t, T, f]]
+   *  stopBelow(°C, 선택): 이 온도(예: Ms) 아래에서는 확산 변태를 더 적분하지 않는다 */
+  M.coolPath = function (model, path, tEnd, steps = 600, stopBelow = -Infinity) {
     const n = model.p.n, out = [];
     let f = 0, tPrev = 0;
     for (let i = 0; i <= steps; i++) {
       const t = (tEnd * i) / steps, TC = path(t), k = model.rate(TC).k;
-      if (i > 0 && k > 0 && f < 0.999999) {
+      if (i > 0 && k > 0 && f < 0.999999 && TC >= stopBelow) {
         const tau = pow(-ln(1 - f) / k, 1 / n) + (t - tPrev);
         f = 1 - exp(-k * pow(tau, n));
       }
