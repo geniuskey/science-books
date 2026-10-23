@@ -217,7 +217,7 @@ SB.registerCatalog({
    "id": "materials-science",
    "code": "MS",
    "field": "materials",
-   "status": "writing",
+   "status": "published",
    "manifest": "materials-science/course.json",
    "title": "재료과학",
    "en": "Materials Science and Engineering",
