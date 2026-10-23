@@ -87,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "슈미트 법칙",
       "홀–페치"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "fracture-fatigue-creep",
@@ -340,6 +339,18 @@ SB.registerCourse({
    "predicts": 6,
    "hero": 1
   },
+  "plasticity-strengthening": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
   "fracture-fatigue-creep": {
    "problems": 16,
    "examples": 8,
@@ -377,7 +388,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 8,
+ "published": 9,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
