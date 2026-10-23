@@ -174,8 +174,7 @@ SB.registerCourse({
      "tags": [
       "유리 전이",
       "점탄성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "composites",
@@ -203,8 +202,7 @@ SB.registerCourse({
      "tags": [
       "마티센 규칙",
       "유전 완화"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "thermal-optical-properties",
@@ -418,6 +416,30 @@ SB.registerCourse({
    "predicts": 6,
    "hero": 1
   },
+  "polymers": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 11,
+   "drills": 4,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "electrical-properties": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 13,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
   "thermal-optical-properties": {
    "problems": 17,
    "examples": 8,
@@ -431,19 +453,19 @@ SB.registerCourse({
    "hero": 1
   },
   "degradation-reliability": {
-   "problems": 0,
-   "examples": 6,
-   "sims": 6,
-   "figures": 9,
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 12,
    "drills": 3,
-   "minis": 3,
-   "tangles": 4,
-   "steps": 3,
-   "predicts": 4,
+   "minis": 5,
+   "tangles": 7,
+   "steps": 4,
+   "predicts": 5,
    "hero": 1
   }
  },
- "published": 14,
+ "published": 16,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
