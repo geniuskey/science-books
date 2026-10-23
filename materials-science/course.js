@@ -185,8 +185,7 @@ SB.registerCourse({
      "tags": [
       "혼합 법칙",
       "충전재"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -428,6 +427,18 @@ SB.registerCourse({
    "predicts": 4,
    "hero": 1
   },
+  "composites": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
   "electrical-properties": {
    "problems": 16,
    "examples": 8,
@@ -465,7 +476,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 16,
+ "published": 17,
  "total": 20,
  "url": "https://science.euiyun.com/materials-science/"
 });
