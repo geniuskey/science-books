@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>각운동량 · 양자역학 · SciBook</title>
+<meta name="description" content="궤도 각운동량 연산자와 교환 관계, 사다리 연산자로 구하는 고유값, 구면 조화 함수, 벡터 모형과 측정, 회전 연산자와 위그너 d 행렬, 강체 회전자와 분자 회전 스펙트럼을 행렬 계산기와 끌어 돌리는 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/angular-momentum.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="각운동량 · 양자역학 · SciBook">
+<meta property="og:description" content="궤도 각운동량 연산자와 교환 관계, 사다리 연산자로 구하는 고유값, 구면 조화 함수, 벡터 모형과 측정, 회전 연산자와 위그너 d 행렬, 강체 회전자와 분자 회전 스펙트럼을 행렬 계산기와 끌어 돌리는 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/angular-momentum.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "각운동량 · 양자역학 · SciBook", "headline": "08 각운동량", "url": "https://science.euiyun.com/quantum-mechanics/chapters/angular-momentum.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "궤도 각운동량 연산자와 교환 관계, 사다리 연산자로 구하는 고유값, 구면 조화 함수, 벡터 모형과 측정, 회전 연산자와 위그너 d 행렬, 강체 회전자와 분자 회전 스펙트럼을 행렬 계산기와 끌어 돌리는 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 8, "dateModified": "2026-10-24", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "08 각운동량", "item": "https://science.euiyun.com/quantum-mechanics/chapters/angular-momentum.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .mat-out { overflow-x: auto; padding: 14px 16px; min-height: 120px; font-size: 15px; }
+  .mat-out .mrow { margin: 6px 0; white-space: nowrap; }
+  .mat-out .mres { margin-top: 10px; font-weight: 600; }
+</style>
+</head>
+<body data-chapter="angular-momentum">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="measurement ladder-operators symmetry">
+    <div class="eyebrow">Chapter 08</div>
+    <h1>각운동량</h1>
+    <p class="lead">현대물리학에서는 수소 원자를 풀다가 각운동량이 \(L^2 = l(l+1)\hbar^2\), \(L_z = m\hbar\)로 양자화된다는 사실을 미분 방정식의 경계 조건에서 얻었다. 이 장은 같은 결과를 <strong>교환 관계 세 줄</strong>에서 다시 얻는다. 미분 방정식을 하나도 풀지 않고 사다리 연산자만으로 고유값이 나오고, 그 대수가 곧 <em>회전</em>의 대수라는 것을 보게 된다. 아래 곡면은 구면 조화 함수 \(Y_l^m\)이다. 중심에서의 거리가 \(|Y_l^m|\), 색이 복소 위상이다. \(m \ne 0\)이면 색이 \(z\)축 둘레를 \(m\)번 감는다 — 그것이 \(L_z = m\hbar\)의 모습이다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">끌어서 돌려 보세요</span><div class="hero-ctrl"><button class="btn" id="hero-l" type="button">l ↑</button><button class="btn" id="hero-m" type="button">m ↑</button><button class="btn" id="hero-mode" type="button">실수 오비탈</button></div></div>
+    <ul class="objectives">
+      <li>\(\hat{\mathbf L} = \hat{\mathbf r}\times\hat{\mathbf p}\)에서 교환 관계 \([\hat L_i, \hat L_j] = i\hbar\,\varepsilon_{ijk}\hat L_k\), \([\hat L^2, \hat L_i] = 0\)을 유도하고, 각운동량 성분 사이의 불확정성 관계를 계산한다.</li>
+      <li>사다리 연산자 \(\hat J_\pm\)만으로 \(\hat J^2\), \(\hat J_z\)의 고유값 \(j(j+1)\hbar^2\), \(m\hbar\)와 \(2j\)가 정수라는 조건, 행렬 원소 \(\hbar\sqrt{j(j+1)-m(m\pm1)}\)을 얻는다.</li>
+      <li>구면 조화 함수를 \(\hat L_+ Y_l^l = 0\)과 \(\hat L_-\)로 만들고, 직교성·패리티·실수 오비탈(\(p_x\), \(d_{xy}\) …)과의 관계를 쓴다.</li>
+      <li>벡터 모형으로 \(|\mathbf L|\), \(L_z\), \(\langle L_x^2\rangle\)를 해석하고, 임의의 축으로 각운동량을 잴 때의 확률 \(|d^{\,l}_{m'm}(\theta)|^2\)을 계산한다.</li>
+      <li>회전 연산자 \(e^{-i\alpha\,\hat{\mathbf n}\cdot\hat{\mathbf J}/\hbar}\)와 위그너 \(D\)·\(d\) 행렬로 상태와 오비탈을 돌린다.</li>
+      <li>강체 회전자 \(E_J = hcBJ(J+1)\)로 이원자 분자의 회전 스펙트럼(선 간격 \(2B\))과 온도에 따른 선 세기를 계산하고, 스펙트럼에서 결합 길이와 회전 온도를 구한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="operators">
+    <h2>궤도 각운동량 연산자와 교환 관계</h2>
+    <p>고전 역학의 각운동량은 \(\mathbf L = \mathbf r\times\mathbf p\)이다. 양자역학에서는 위치와 운동량을 연산자로 바꾸면 된다. 곱의 순서가 걱정되지만 \(\hat L_x = \hat y\hat p_z - \hat z\hat p_y\)에서 \(\hat y\)와 \(\hat p_z\)는 서로 다른 좌표라 교환하므로 순서는 문제가 되지 않고, 세 성분 모두 에르미트 연산자다.</p>
+    <div class="formula">$$\hat L_x = \hat y\hat p_z - \hat z\hat p_y,\qquad \hat L_y = \hat z\hat p_x - \hat x\hat p_z,\qquad \hat L_z = \hat x\hat p_y - \hat y\hat p_x$$<div class="where">이것이 <span class="term">궤도 각운동량</span><span class="en">(orbital angular momentum)</span> 연산자다. 위치 표현에서는 \(\hat p_x = -i\hbar\,\partial/\partial x\) 등을 넣는다. 기본 재료는 정준 교환 관계 \([\hat x_i, \hat p_j] = i\hbar\,\delta_{ij}\) 하나뿐이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 260" role="img" aria-label="L = r × p 벡터 그림과 교환 관계의 순환 x → y → z">
+        <defs>
+          <marker id="am-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+          <marker id="am-ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="am-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker>
+        </defs>
+        <line x1="150" y1="200" x2="150" y2="40" class="s-axis" marker-end="url(#am-ar)"/><text class="t" x="158" y="46">z</text>
+        <line x1="150" y1="200" x2="330" y2="200" class="s-axis" marker-end="url(#am-ar)"/><text class="t" x="334" y="214">y</text>
+        <line x1="150" y1="200" x2="70" y2="250" class="s-axis" marker-end="url(#am-ar)"/><text class="t" x="56" y="250">x</text>
+        <ellipse cx="190" cy="196" rx="86" ry="26" fill="none" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <line x1="150" y1="200" x2="262" y2="210" stroke="var(--accent-2)" stroke-width="2.4" marker-end="url(#am-a2)"/><text class="t" x="214" y="232" style="fill:var(--accent-2)">r</text>
+        <line x1="268" y1="210" x2="262" y2="160" stroke="var(--warn)" stroke-width="2.4" marker-end="url(#am-ar)"/><text class="t" x="272" y="170" style="fill:var(--warn)">p</text>
+        <line x1="150" y1="200" x2="150" y2="96" stroke="var(--accent)" stroke-width="3.2" marker-end="url(#am-ac)"/><text class="t-acc" x="160" y="104">L = r × p</text>
+        <text class="t-dim" x="40" y="30">고전: 세 성분이 모두 정해진 한 벡터</text>
+        <rect x="430" y="28" width="340" height="206" rx="12" class="f-surface" stroke="var(--border)"/>
+        <circle cx="600" cy="128" r="62" fill="none" stroke="var(--border)"/>
+        <text class="t" x="600" y="62" text-anchor="middle" style="font-weight:700">L̂x</text>
+        <text class="t" x="660" y="170" text-anchor="middle" style="font-weight:700">L̂y</text>
+        <text class="t" x="540" y="170" text-anchor="middle" style="font-weight:700">L̂z</text>
+        <path d="M622,72 A62,62 0 0 1 660,140" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#am-ac)"/>
+        <path d="M640,178 A62,62 0 0 1 560,178" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#am-ac)"/>
+        <path d="M540,140 A62,62 0 0 1 578,72" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#am-ac)"/>
+        <text class="t-mono" x="600" y="122" text-anchor="middle">[L̂x, L̂y] = iħ L̂z</text>
+        <text class="t-mono" x="600" y="142" text-anchor="middle">순환: x → y → z</text>
+        <text class="t-dim" x="600" y="222" text-anchor="middle">거꾸로 돌면 부호가 바뀐다: [L̂y, L̂x] = −iħ L̂z</text>
+      </svg>
+      <figcaption>왼쪽: 고전 각운동량은 공간의 한 벡터다. 오른쪽: 양자역학에서는 세 성분이 서로 교환하지 않고, 교환자는 순환 순서(\(x\to y\to z\to x\))를 따라 다음 성분이 된다. 이 순환 구조가 이 장 전체의 출발점이다.</figcaption>
+    </figure>
+    <p>세 성분의 교환자를 계산해 보자(예제 8.1). 결과는 놀랄 만큼 간단하다.</p>
+    <div class="formula">$$[\hat L_x, \hat L_y] = i\hbar\hat L_z,\quad [\hat L_y, \hat L_z] = i\hbar\hat L_x,\quad [\hat L_z, \hat L_x] = i\hbar\hat L_y \;\;\Longleftrightarrow\;\; [\hat L_i, \hat L_j] = i\hbar\,\varepsilon_{ijk}\hat L_k$$<div class="where">\(\varepsilon_{ijk}\)는 레비-치비타 기호(\(xyz\)의 짝순열 +1, 홀순열 −1, 같은 지표가 있으면 0). 이 세 식을 각운동량의 <span class="term">교환 관계</span><span class="en">(commutation relations)</span>라 부른다. 같은 방법으로 \([\hat L_i, \hat x_j] = i\hbar\,\varepsilon_{ijk}\hat x_k\), \([\hat L_i, \hat p_j] = i\hbar\,\varepsilon_{ijk}\hat p_k\)도 나온다 — \(\hat{\mathbf r}\), \(\hat{\mathbf p}\)처럼 이 꼴의 교환 관계를 따르는 것을 <span class="term">벡터 연산자</span><span class="en">(vector operator)</span>라 한다.</div></div>
+    <p>성분끼리는 교환하지 않지만 크기의 제곱 \(\hat L^2 = \hat L_x^2 + \hat L_y^2 + \hat L_z^2\)은 모든 성분과 교환한다. 예를 들어 \([\hat L^2, \hat L_z] = [\hat L_x^2, \hat L_z] + [\hat L_y^2, \hat L_z] = -i\hbar(\hat L_x\hat L_y + \hat L_y\hat L_x) + i\hbar(\hat L_y\hat L_x + \hat L_x\hat L_y) = 0\).</p>
+    <div class="formula">$$[\hat L^2, \hat L_x] = [\hat L^2, \hat L_y] = [\hat L^2, \hat L_z] = 0, \qquad \Delta L_x\,\Delta L_y \ge \frac{\hbar}{2}\,\bigl|\langle \hat L_z\rangle\bigr|$$<div class="where">둘째 식은 3장의 로버트슨 불확정성 관계 \(\Delta A\,\Delta B \ge \tfrac12|\langle[\hat A,\hat B]\rangle|\)에 교환 관계를 넣은 것이다. 결론: \(\hat L^2\)과 한 성분(관례상 \(\hat L_z\))은 동시에 정해진 값을 가질 수 있지만, 두 성분은 \(\langle\hat L_z\rangle = 0\)인 특별한 경우가 아니면 동시에 정해질 수 없다. 우리가 쓰는 기저 \(|l\,m\rangle\)은 \(\hat L^2\)과 \(\hat L_z\)의 동시 고유 상태다.</div></div>
+    <div class="example" data-title="[L_x, L_y] = iħL_z 유도">
+      <p>정준 교환 관계 \([\hat x_i, \hat p_j] = i\hbar\delta_{ij}\)만 써서 \([\hat L_x, \hat L_y] = i\hbar\hat L_z\)를 보여라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 정의를 넣어 네 항으로 펼치고, 교환하지 않는 짝(같은 좌표의 위치와 운동량)이 있는 항만 남긴다. 교환자의 곱 규칙 \([\hat A, \hat B\hat C] = [\hat A,\hat B]\hat C + \hat B[\hat A,\hat C]\)을 쓴다.</div>
+        <div class="step"><b>풀이</b> \([\hat L_x,\hat L_y] = [\hat y\hat p_z - \hat z\hat p_y,\; \hat z\hat p_x - \hat x\hat p_z] = [\hat y\hat p_z, \hat z\hat p_x] - [\hat y\hat p_z, \hat x\hat p_z] - [\hat z\hat p_y, \hat z\hat p_x] + [\hat z\hat p_y, \hat x\hat p_z]\). 가운데 두 항은 공통 좌표가 없거나(\(\hat y, \hat p_z, \hat x\)) 같은 좌표끼리만 있어(\(\hat z, \hat p_y, \hat p_x\)) 0이다. 첫 항: \(\hat y\,[\hat p_z, \hat z]\,\hat p_x = \hat y(-i\hbar)\hat p_x\). 넷째 항: \(\hat x\,[\hat z, \hat p_z]\,\hat p_y = \hat x(i\hbar)\hat p_y\). 합: \(i\hbar(\hat x\hat p_y - \hat y\hat p_x) = i\hbar\hat L_z\).</div>
+        <div class="answer">\([\hat L_x, \hat L_y] = i\hbar\hat L_z\) (나머지 둘은 \(x\to y\to z\to x\) 순환 치환)</div>
+        <div class="step"><b>검토</b> 고전 역학의 푸아송 괄호 \(\{L_x, L_y\} = L_z\)에 \(i\hbar\)를 곱한 꼴이다(디랙의 대응 규칙). 단위도 맞다: 좌변은 (J·s)², 우변은 J·s × J·s.</div>
+      </details>
+    </div>
+    <p>\(\hat L_z\)는 \(z\)축 둘레의 방위각 \(\phi\)로 쓰면 가장 간단하다. 구면 좌표로 바꾸면 \(\hat L_z = -i\hbar\,\partial/\partial\phi\)이고, \(\hat L^2\)은 라플라시안의 각도 부분이다(9장에서 \(\nabla^2 = \text{지름 부분} - \hat L^2/\hbar^2 r^2\)으로 쓴다).</p>
+    <div class="formula">$$\hat L_z = -i\hbar\frac{\partial}{\partial\phi}, \qquad \hat L^2 = -\hbar^2\left[\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right) + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\phi^2}\right]$$<div class="where">\(\hat L_z\)의 고유함수는 \(\Phi_m(\phi) = e^{im\phi}/\sqrt{2\pi}\), 고유값 \(m\hbar\). \(\phi\)와 \(\phi+2\pi\)는 같은 점이므로 \(m\)은 정수다. 고리 위의 입자(2차원 회전자) \(\hat H = \hat L_z^2/2I\)의 에너지는 \(m^2\hbar^2/2I\)로 \(\pm m\)이 축퇴한다.</div></div>
+    <figure class="mini" id="mini-ring">
+      <div class="mini-view"><canvas id="cv-ring"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>m₁ <output id="rg-m1-out"></output></span><input type="range" id="rg-m1" min="-3" max="3" step="1" value="1"></label>
+        <label class="ctrl"><span>m₂ <output id="rg-m2-out"></output></span><input type="range" id="rg-m2" min="-3" max="3" step="1" value="-2"></label>
+        <label class="ctrl"><span>|c₂|² <output id="rg-p-out"></output></span><input type="range" id="rg-p" min="0" max="1" step="0.01" value="0.3"></label>
+        <button class="btn" id="rg-play" type="button"></button>
+        <span class="readout" id="rg-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>고리 위의 파동함수 \(\Phi = c_1 e^{im_1\phi} + c_2 e^{im_2\phi}\) (규격화 생략). 고리 바깥으로 솟은 높이가 \(|\Phi|^2\), 색이 위상이다(오른쪽 위 고리 = 위상 범례). \(|c_2|^2 = 0\)이면 \(\hat L_z\) 고유 상태: 밀도는 고르고 위상만 \(m_1\)번 돈다. 섞으면 \(|m_1 - m_2|\)개의 봉우리가 생기고, 에너지 \(\propto m^2\)이 달라 시간이 흐르면 봉우리가 돈다. \(m_2 = -m_1\)이면 에너지가 같아 서 있는 무늬가 된다.</figcaption>
+    </figure>
+    <p>그러면 성분 셋을 행렬로 직접 만들어 교환 관계를 눈으로 확인하자. 다음 절에서 유도할 공식으로 \(l\)마다 \((2l+1)\times(2l+1)\) 행렬 \(L_x, L_y, L_z\)를 만들 수 있다(\(\hbar = 1\) 단위, 기저 순서 \(m = l, l-1, \dots, -l\)).</p>
+    <div class="predict" data-for="sim-comm">
+      <p>\([\hat L^2, \hat L_x]\)는 무엇일까?</p>
+      <div class="opts"><button class="opt">\(i\hbar\hat L_x\)</button><button class="opt" data-correct>0</button><button class="opt">\(i\hbar\hat L_z\)</button><button class="opt">\(\hbar^2\)에 비례하는 상수</button></div>
+      <div class="quiz-exp">\(\hat L^2\)은 회전해도 바뀌지 않는 양(스칼라)이라 모든 성분과 교환한다. 계산기에서 A = \(L^2\), B = \(L_x\)로 놓으면 교환자 행렬이 0이다. 그래서 \(\hat L^2\)의 고유값 \(l\)은 어느 축을 고르든 같은 좋은 양자수다.</div>
+    </div>
+    <div class="sim" id="sim-comm">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>교환자 계산기: 행렬로 확인하는 각운동량 대수</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="mat-out" id="cm-out"></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>각운동량 j</span><div class="seg" id="cm-j"><button data-value="0.5">1/2</button><button data-value="1" class="on">1</button><button data-value="1.5">3/2</button><button data-value="2">2</button></div></div>
+          <div class="ctrl"><span>연산자 A</span><div class="seg" id="cm-a"><button data-value="Lx" class="on">Lx</button><button data-value="Ly">Ly</button><button data-value="Lz">Lz</button><button data-value="L2">L²</button><button data-value="Lp">L₊</button><button data-value="Lm">L₋</button></div></div>
+          <div class="ctrl"><span>연산자 B</span><div class="seg" id="cm-b"><button data-value="Lx">Lx</button><button data-value="Ly" class="on">Ly</button><button data-value="Lz">Lz</button><button data-value="L2">L²</button><button data-value="Lp">L₊</button><button data-value="Lm">L₋</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">[A, B] =</span><span class="v" id="cm-res">—</span></div>
+        <div class="stat"><span class="k">A의 고유값 (ħ 단위)</span><span class="v" id="cm-eig">—</span></div>
+        <div class="stat"><span class="k">L² 대각 원소</span><span class="v" id="cm-l2">—</span></div>
+      </div>
+      <div class="sim-note">\(\hbar = 1\) 단위로 \(L_x, L_y, L_z\)를 만들고 \([A, B] = AB - BA\)를 곱셈으로 계산한 뒤, 결과가 어떤 연산자의 몇 배인지 자동으로 찾는다. j = 1/2, 3/2는 궤도 각운동량에는 없고 스핀(10장)에서 나오지만 대수는 똑같다. 해볼 것: ① j를 바꿔도 \([L_x, L_y] = i\hbar L_z\)가 그대로인지 본다. ② \(L_x\)의 고유값이 \(L_z\)의 대각 원소와 같은 \(\{j, \dots, -j\}\)임을 확인한다 — 축을 돌려도 스펙트럼은 같다. ③ \([L_z, L_+] = \hbar L_+\), \([L_+, L_-] = 2\hbar L_z\)를 찾아 다음 절을 미리 본다.</div>
+    </div>
+    <div class="tangle" id="tg-unc">
+      <p>상태 \(|l\,m\rangle\)에서 \(l\) = <span class="tn" data-var="l" data-min="0" data-max="6" data-step="1">2</span>, \(m\) = <span class="tn" data-var="m" data-min="-6" data-max="6" data-step="1">1</span>이면 \(\langle L_x\rangle = \langle L_y\rangle = 0\)이고 \(\Delta L_x = \Delta L_y = \hbar\sqrt{[l(l+1)-m^2]/2}\) = <span class="tn-out" data-out="dx"></span>. 곱 \(\Delta L_x\Delta L_y\) = <span class="tn-out" data-out="pr"></span>는 하한 \(\tfrac{\hbar}{2}|\langle L_z\rangle|\) = <span class="tn-out" data-out="lb"></span>보다 크거나 같다. <span data-out="msg"></span></p>
+    </div>
+    <div class="drill" id="drill-unc" data-title="성분의 불확정도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="ladder">
+    <h2>사다리 연산자로 구하는 고유값</h2>
+    <p>이제 미분 방정식을 잊고 교환 관계만 믿어 보자. 아래 논증은 \([\hat J_i, \hat J_j] = i\hbar\varepsilon_{ijk}\hat J_k\)만 쓰므로, 궤도 각운동량이든 스핀이든 둘의 합이든 똑같이 성립한다. 그래서 일반 각운동량을 \(\hat{\mathbf J}\)로 쓴다. 6장에서 조화 진동자를 \(\hat a\), \(\hat a^\dagger\)로 푼 것과 같은 전략이다.</p>
+    <div class="def"><span class="def-k">올림·내림 연산자</span>
+      <p>\(\hat J_\pm = \hat J_x \pm i\hat J_y\). 에르미트가 아니고 서로의 수반이다(\(\hat J_+^\dagger = \hat J_-\)). 교환 관계에서 곧바로 \([\hat J_z, \hat J_\pm] = \pm\hbar\hat J_\pm\), \([\hat J_+, \hat J_-] = 2\hbar\hat J_z\), \([\hat J^2, \hat J_\pm] = 0\), 그리고 \(\hat J_\mp\hat J_\pm = \hat J^2 - \hat J_z^2 \mp \hbar\hat J_z\)이 나온다. \(\hat J_+\)를 <span class="term">올림 연산자</span><span class="en">(raising operator)</span>, \(\hat J_-\)를 <span class="term">내림 연산자</span><span class="en">(lowering operator)</span>라 한다.</p>
+    </div>
+    <p>\(\hat J^2\)과 \(\hat J_z\)의 동시 고유 상태를 \(|\lambda, m\rangle\) (\(\hat J^2 \to \lambda\hbar^2\), \(\hat J_z \to m\hbar\))이라 하자. 논증은 네 걸음이다.</p>
+    <ol>
+      <li><b>사다리</b>: \(\hat J_z(\hat J_+|\lambda,m\rangle) = (\hat J_+\hat J_z + \hbar\hat J_+)|\lambda,m\rangle = (m+1)\hbar\,\hat J_+|\lambda,m\rangle\). \(\hat J_+\)는 \(m\)을 1 올리고 \(\lambda\)는 그대로 둔다(\([\hat J^2, \hat J_+] = 0\)). \(\hat J_-\)는 1 내린다.</li>
+      <li><b>끝이 있다</b>: \(\langle\hat J^2 - \hat J_z^2\rangle = \langle\hat J_x^2 + \hat J_y^2\rangle \ge 0\)이므로 \(m^2 \le \lambda\). 사다리는 위아래로 끝나야 한다. 맨 위 \(m_\text{max} \equiv j\)에서 \(\hat J_+|\lambda, j\rangle = 0\).</li>
+      <li><b>λ 결정</b>: 맨 위 상태에 \(\hat J_-\hat J_+ = \hat J^2 - \hat J_z^2 - \hbar\hat J_z\)를 걸면 \(0 = (\lambda - j^2 - j)\hbar^2\), 곧 \(\lambda = j(j+1)\). 같은 방법으로 맨 아래는 \(m_\text{min} = -j\).</li>
+      <li><b>양자화</b>: \(-j\)에서 \(j\)까지 정수 걸음으로 가야 하므로 \(2j\)가 0 이상의 정수다: \(j = 0, \tfrac12, 1, \tfrac32, \dots\), \(m = -j, -j+1, \dots, j\) (\(2j+1\)개).</li>
+    </ol>
+    <div class="formula">$$\hat J^2|j\,m\rangle = j(j+1)\hbar^2|j\,m\rangle,\qquad \hat J_z|j\,m\rangle = m\hbar|j\,m\rangle,\qquad \hat J_\pm|j\,m\rangle = \hbar\sqrt{j(j+1) - m(m\pm1)}\;|j\,m\pm1\rangle$$<div class="where">계수는 노름에서 나온다: \(\|\hat J_\pm|j\,m\rangle\|^2 = \langle j\,m|\hat J_\mp\hat J_\pm|j\,m\rangle = \hbar^2[j(j+1) - m(m\pm1)]\). 위상은 관례(<span class="term">콘던–쇼틀리 위상</span><span class="en">(Condon–Shortley phase)</span>)로 양의 실수를 고른다. 같은 계수를 \(\hbar\sqrt{(j\mp m)(j\pm m+1)}\)로도 쓴다.</div></div>
+    <figure class="diagram steps" data-steps="6">
+      <svg viewBox="0 0 800 300" role="img" aria-label="l=2 사다리에서 L+를 네 번 걸어 m=-2에서 m=2로 올라가는 과정">
+        <defs><marker id="am-lad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g class="t-mono">
+          <line x1="200" y1="50" x2="400" y2="50" class="s-axis" stroke-width="3"/><text class="t-mono" x="150" y="55" text-anchor="end">m = +2</text>
+          <line x1="200" y1="105" x2="400" y2="105" class="s-axis" stroke-width="3"/><text class="t-mono" x="150" y="110" text-anchor="end">m = +1</text>
+          <line x1="200" y1="160" x2="400" y2="160" class="s-axis" stroke-width="3"/><text class="t-mono" x="150" y="165" text-anchor="end">m = 0</text>
+          <line x1="200" y1="215" x2="400" y2="215" class="s-axis" stroke-width="3"/><text class="t-mono" x="150" y="220" text-anchor="end">m = −1</text>
+          <line x1="200" y1="270" x2="400" y2="270" class="s-axis" stroke-width="3"/><text class="t-mono" x="150" y="275" text-anchor="end">m = −2</text>
+        </g>
+        <text class="t-dim" x="300" y="24" text-anchor="middle">l = 2: L² = 6ħ² (모든 칸 공통)</text>
+        <g data-only="1"><circle cx="300" cy="270" r="11" fill="var(--accent)"/><text class="t-acc" x="470" y="275">|2, −2⟩ 에서 시작</text></g>
+        <g data-step="2"><path d="M420,266 Q450,242 420,219" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#am-lad)"/><text class="t-acc" x="458" y="247">×2ħ</text><text class="t-dim" x="520" y="247">√(6 − (−2)(−1)) = √4</text></g>
+        <g data-only="2"><circle cx="300" cy="215" r="11" fill="var(--accent)"/></g>
+        <g data-step="3"><path d="M420,211 Q450,187 420,164" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#am-lad)"/><text class="t-acc" x="458" y="192">×√6 ħ</text><text class="t-dim" x="520" y="192">√(6 − (−1)(0)) = √6</text></g>
+        <g data-only="3"><circle cx="300" cy="160" r="11" fill="var(--accent)"/></g>
+        <g data-step="4"><path d="M420,156 Q450,132 420,109" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#am-lad)"/><text class="t-acc" x="458" y="137">×√6 ħ</text><text class="t-dim" x="520" y="137">√(6 − 0·1) = √6</text></g>
+        <g data-only="4"><circle cx="300" cy="105" r="11" fill="var(--accent)"/></g>
+        <g data-step="5"><path d="M420,101 Q450,77 420,54" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#am-lad)"/><text class="t-acc" x="458" y="82">×2ħ</text><text class="t-dim" x="520" y="82">√(6 − 1·2) = √4</text></g>
+        <g data-step="5"><circle cx="300" cy="50" r="11" fill="var(--accent)"/></g>
+        <g data-only="6"><path d="M420,46 Q450,22 420,4" fill="none" stroke="var(--bad)" stroke-width="2.2" stroke-dasharray="5 4"/><text class="t" x="458" y="30" style="fill:var(--bad)">L₊|2, 2⟩ = √(6 − 2·3) ħ = 0</text></g>
+        <text class="t-dim" x="40" y="292" data-step="5">(L₊)⁴|2,−2⟩ = 2·√6·√6·2 ħ⁴ |2,2⟩ = 24ħ⁴ |2,2⟩</text>
+      </svg>
+      <ol class="steps-cap"><li>\(l = 2\)의 다섯 칸. 맨 아래 \(|2,-2\rangle\)에서 시작한다.</li><li>\(\hat L_+\)를 한 번: 계수 \(\hbar\sqrt{l(l+1) - m(m+1)} = \hbar\sqrt{6-2} = 2\hbar\).</li><li>두 번째: \(m = -1 \to 0\), 계수 \(\sqrt6\,\hbar\).</li><li>세 번째: \(m = 0 \to 1\), 계수 \(\sqrt6\,\hbar\). 가운데 칸 근처의 계수가 가장 크다.</li><li>네 번째: \(m = 1 \to 2\), 계수 \(2\hbar\). 계수는 \(m \leftrightarrow -m-1\)에 대해 대칭이다.</li><li>한 번 더 올리면 0 — 사다리의 끝이다. 계수 \(\sqrt{(l-m)(l+m+1)}\)이 \(m = l\)에서 저절로 0이 된다.</li></ol>
+      <figcaption>\(\hat L_+\)가 \(m\)을 한 칸씩 올린다. 칸의 높이(\(L_z\))만 바뀌고 \(L^2\)은 그대로다. 계수를 곱해 두면 \((\hat L_+)^4|2,-2\rangle = 24\hbar^4|2,2\rangle\)처럼 여러 번 올린 결과도 바로 쓸 수 있다.</figcaption>
+    </figure>
+    <p>4단계의 "\(2j\)는 정수"가 정말 피할 수 없는 조건인지 손으로 확인하자. \(j\)를 아무 실수로 가정하고 맨 위 \(m = j\)에서 \(\hat J_-\)로 내려가면, \(k\)번째 걸음의 노름 제곱 인자 \((j+m)(j-m+1)\)이 언제 0이 되는지 본다.</p>
+    <figure class="mini" id="mini-chain">
+      <div class="mini-view"><canvas id="cv-chain"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>가정한 j <output id="ch-j-out"></output></span><input type="range" id="ch-j" min="0" max="3" step="0.25" value="1.25"></label>
+        <span class="readout" id="ch-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>막대 높이 = \(\|\hat J_-|j\,m\rangle\|^2/\hbar^2 = (j+m)(j-m+1)\). 막대가 정확히 0에 닿으면(초록) 사다리가 거기서 끝난다. \(2j\)가 정수가 아니면 0을 건너뛰고 음수(빨강)가 된다 — 노름 제곱이 음수인 벡터는 없으므로 그런 \(j\)는 불가능하다.</figcaption>
+    </figure>
+    <p>행렬로 쓰면 \(\hat J_z\)는 대각, \(\hat J_\pm\)는 대각선 바로 위·아래에만 원소가 있다. 앞 절의 계산기는 이 공식으로 만든 것이다.</p>
+    <div class="formula">$$\langle j\,m'|\hat J_z|j\,m\rangle = m\hbar\,\delta_{m'm},\quad \langle j\,m'|\hat J_\pm|j\,m\rangle = \hbar\sqrt{j(j+1)-m(m\pm1)}\;\delta_{m',m\pm1},\quad \hat J_x = \tfrac12(\hat J_+ + \hat J_-),\; \hat J_y = \tfrac{1}{2i}(\hat J_+ - \hat J_-)$$</div>
+    <div class="example" data-title="j = 1 행렬과 J_x의 고유 상태">
+      <p>\(j = 1\)(기저 \(m = 1, 0, -1\))에서 \(J_+\), \(J_x\)를 행렬로 쓰고, \(J_x\)의 고유값과 고유값 \(+\hbar\)의 고유벡터를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 계수 \(\hbar\sqrt{2 - m(m+1)}\): \(m = 0\to1\)과 \(m = -1\to0\) 모두 \(\sqrt2\,\hbar\). \(J_x = (J_+ + J_-)/2\).</div>
+        <div class="step"><b>풀이</b> $$J_+ = \sqrt2\,\hbar\begin{pmatrix}0&1&0\\0&0&1\\0&0&0\end{pmatrix},\qquad J_x = \frac{\hbar}{\sqrt2}\begin{pmatrix}0&1&0\\1&0&1\\0&1&0\end{pmatrix}.$$ 특성 방정식 \(-\lambda^3 + \lambda\hbar^2 = 0\) → \(\lambda = \hbar, 0, -\hbar\). \(\lambda = \hbar\): \(b/\sqrt2 = a\), \((a+c)/\sqrt2 = b\), \(b/\sqrt2 = c\) → \((a,b,c) = (\tfrac12, \tfrac{1}{\sqrt2}, \tfrac12)\).</div>
+        <div class="answer">고유값 \(\hbar, 0, -\hbar\); \(|L_x = +\hbar\rangle = \tfrac12|1,1\rangle + \tfrac{1}{\sqrt2}|1,0\rangle + \tfrac12|1,-1\rangle\)</div>
+        <div class="step"><b>검토</b> 고유값이 \(J_z\)와 같다 — \(x\)축은 \(z\)축을 돌린 것일 뿐이다. 이 상태를 \(z\)로 재면 \(m = 1, 0, -1\)이 확률 \(\tfrac14, \tfrac12, \tfrac14\)로 나온다. 4절의 측정 시뮬레이터에서 \(\theta = 90^\circ\)로 놓으면 같은 숫자를 본다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-lad">
+      <p>\(j\) = <span class="tn" data-var="j" data-min="0.5" data-max="5" data-step="0.5">2</span>, \(m\) = <span class="tn" data-var="m" data-min="-5" data-max="5" data-step="0.5">0</span>에서 \(\hat J_+|j\,m\rangle\)의 계수는 <span class="tn-out" data-out="up"></span>, \(\hat J_-|j\,m\rangle\)의 계수는 <span class="tn-out" data-out="dn"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <p>계수를 외우기보다 직접 걸어 보는 편이 빠르다. 아래 놀이터에서 막대를 끌어 아무 상태나 만들고 연산자를 걸어 보라.</p>
+    <div class="predict" data-for="sim-ladder">
+      <p>맨 위 칸 \(|2, 2\rangle\)에 \(\hat J_+\)를 걸면?</p>
+      <div class="opts"><button class="opt">\(|2, 3\rangle\)</button><button class="opt">\(|3, 3\rangle\)</button><button class="opt" data-correct>0 (영벡터)</button><button class="opt">\(2\hbar|2, 2\rangle\)</button></div>
+      <div class="quiz-exp">계수 \(\hbar\sqrt{6 - 2\cdot3} = 0\). \(\hat J_+\)는 \(j\)를 바꾸지 못하므로(\([\hat J^2, \hat J_+] = 0\)) 칸이 더 없으면 결과는 영벡터다. 놀이터에서 맨 위 칸만 채우고 J₊를 눌러 보라.</div>
+    </div>
+    <div class="sim" id="sim-ladder">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>사다리 놀이터: 막대를 끌어 상태를 만들고 연산자를 건다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-ladder"></canvas><span class="hint top">흰 원을 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>j</span><div class="seg" id="ld-j"><button data-value="0.5">1/2</button><button data-value="1">1</button><button data-value="1.5">3/2</button><button data-value="2" class="on">2</button><button data-value="2.5">5/2</button><button data-value="3">3</button></div></div>
+          <div class="ctrl"><span>연산자 걸기</span><div class="ctrl-row"><button class="btn primary" id="ld-up" type="button">J₊</button><button class="btn primary" id="ld-dn" type="button">J₋</button><button class="btn" id="ld-z" type="button">J_z</button><button class="btn" id="ld-x" type="button">J_x</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="ld-norm" type="button">정규화</button><button class="btn" id="ld-reset" type="button">맨 아래 칸으로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">‖ψ‖ (ħ 단위 누적)</span><span class="v" id="ld-n">—</span></div>
+        <div class="stat"><span class="k">⟨J<sub>z</sub>⟩/ħ (정규화)</span><span class="v" id="ld-z-v">—</span></div>
+        <div class="stat"><span class="k">⟨J²⟩/ħ²</span><span class="v" id="ld-j2">—</span></div>
+        <div class="stat"><span class="k">마지막 연산</span><span class="v" id="ld-msg">—</span></div>
+      </div>
+      <div class="sim-note">막대 길이 = 그 칸의 진폭(실수, 오른쪽 + 자홍, 왼쪽 − 초록). 오른쪽 숫자는 그 칸에서 위 칸으로 가는 \(\hat J_+\) 계수(ħ 단위)다. 해볼 것: ① 맨 아래 칸에서 J₊를 \(2j\)번 눌러 맨 위에 도착할 때의 누적 노름을 예측해 본다(\(j = 2\)이면 24). ② 아무 상태에서나 J₊ 다음 J₋를 누르면 각 칸이 \(j(j+1) - m(m+1)\)배가 된다 — \(\hat J_-\hat J_+ = \hat J^2 - \hat J_z^2 - \hbar\hat J_z\). ③ J_x를 걸면 이웃 칸이 섞인다. 어떤 상태를 넣어도 \(\langle J^2\rangle/\hbar^2 = j(j+1)\)은 그대로다.</div>
+    </div>
+    <div class="callout"><strong>궤도 각운동량은 왜 정수만?</strong><p>대수만으로는 \(j = \tfrac12, \tfrac32, \dots\)도 허용된다. 그러나 궤도 각운동량 \(\hat L_z = -i\hbar\,\partial_\phi\)의 고유함수 \(e^{im\phi}\)는 \(\phi\)에 대해 한 값이어야 하므로 \(m\), 따라서 \(l\)은 정수다. 반정수는 공간 속 파동함수의 모양이 아닌 내부 자유도, 곧 <a href="spin.html">10장의 스핀</a>에서만 나타난다. 이 장에서 \(j\)는 일반 대수, \(l\)은 궤도(정수)를 뜻한다.</p></div>
+    <div class="drill" id="drill-lad" data-title="사다리 계수 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="harmonics">
+    <h2>구면 조화 함수</h2>
+    <p>대수가 준 \(|l\,m\rangle\)를 위치 표현으로 옮기면 각도의 함수 \(\langle\theta,\phi|l\,m\rangle = Y_l^m(\theta,\phi)\), 곧 <span class="term">구면 조화 함수</span><span class="en">(spherical harmonics)</span>가 된다. 현대물리학에서는 이것을 버금 르장드르 방정식의 해로 얻었다(<a href="../../modern-physics/chapters/hydrogen-atom.html">현대물리학 8장</a>). 여기서는 사다리로 만든다. 필요한 것은 구면 좌표의 올림·내림 연산자다.</p>
+    <div class="formula">$$\hat L_\pm = \pm\hbar\, e^{\pm i\phi}\left(\frac{\partial}{\partial\theta} \pm i\cot\theta\,\frac{\partial}{\partial\phi}\right)$$<div class="where">(그리피스 4.130). 맨 위 칸 조건 \(\hat L_+ Y_l^l = 0\)에 \(Y_l^l = f(\theta)e^{il\phi}\)를 넣으면 \(f' = l\cot\theta\, f\), 곧 \(f \propto \sin^l\theta\). 여기에 \(\hat L_-\)를 거듭 걸면 나머지 \(2l\)개가 모두 나온다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 250" role="img" aria-label="L-를 걸어 Y11에서 Y10, Y1-1을 만드는 과정">
+        <defs><marker id="am-gen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <rect x="20" y="30" width="230" height="110" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+        <text class="t" x="135" y="58" text-anchor="middle" style="font-weight:700">맨 위: Y₁¹</text>
+        <text class="t-mono" x="135" y="86" text-anchor="middle">L₊Y₁¹ = 0 → sinθ e^(iφ)</text>
+        <text class="t-mono" x="135" y="114" text-anchor="middle">Y₁¹ = −√(3/8π) sinθ e^(iφ)</text>
+        <g data-step="2">
+          <line x1="255" y1="85" x2="290" y2="85" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#am-gen)"/><text class="t" x="272" y="74" text-anchor="middle" style="fill:var(--accent-2)">L₋</text>
+          <rect x="295" y="30" width="230" height="110" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="410" y="58" text-anchor="middle" style="font-weight:700">Y₁⁰</text>
+          <text class="t-mono" x="410" y="86" text-anchor="middle">L₋Y₁¹ = √2 ħ Y₁⁰</text>
+          <text class="t-mono" x="410" y="114" text-anchor="middle">Y₁⁰ = √(3/4π) cosθ</text>
+        </g>
+        <g data-step="3">
+          <line x1="530" y1="85" x2="565" y2="85" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#am-gen)"/><text class="t" x="547" y="74" text-anchor="middle" style="fill:var(--accent-2)">L₋</text>
+          <rect x="570" y="30" width="210" height="110" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="675" y="58" text-anchor="middle" style="font-weight:700">Y₁⁻¹</text>
+          <text class="t-mono" x="675" y="86" text-anchor="middle">L₋Y₁⁰ = √2 ħ Y₁⁻¹</text>
+          <text class="t-mono" x="675" y="114" text-anchor="middle">+√(3/8π) sinθ e^(−iφ)</text>
+        </g>
+        <g data-step="4">
+          <text class="t" x="675" y="180" text-anchor="middle" style="fill:var(--bad)">L₋Y₁⁻¹ = 0 (맨 아래)</text>
+          <text class="t-dim" x="400" y="215" text-anchor="middle">결과: Y₁^(−1) = (−1)¹ (Y₁¹)* — 콘던–쇼틀리 위상에서 Y_l^(−m) = (−1)^m (Y_l^m)*</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>\(\hat L_+ Y_1^1 = 0\)에서 \(Y_1^1 \propto \sin\theta\,e^{i\phi}\). 규격화와 콘던–쇼틀리 부호 \((-1)^m\)를 붙인다.</li><li>\(\hat L_- = -\hbar e^{-i\phi}(\partial_\theta - i\cot\theta\,\partial_\phi)\)를 건다: \(-\sqrt{3/8\pi}\,\hbar\,(-\cos\theta - \cos\theta) = \sqrt2\,\hbar\,\sqrt{3/4\pi}\cos\theta\). 계수 \(\sqrt2\,\hbar\)는 대수가 예언한 \(\hbar\sqrt{l(l+1) - m(m-1)}\)과 같다.</li><li>한 번 더: \(\cos\theta\)를 미분해 \(\sin\theta\,e^{-i\phi}\)가 나온다.</li><li>세 번째 \(\hat L_-\)는 0 — 대수의 사다리와 미분 연산자의 결과가 정확히 일치한다.</li></ol>
+      <figcaption>미분 방정식을 풀지 않고 1계 미분만으로 \(l = 1\)의 세 함수를 모두 얻는다. 계수와 부호가 대수의 \(\hat J_\pm\) 공식과 같다는 것이 위치 표현과 추상 대수가 같은 이야기라는 증거다.</figcaption>
+    </figure>
+    <div class="formula">$$Y_l^m(\theta,\phi) = \sqrt{\frac{2l+1}{4\pi}\frac{(l-m)!}{(l+m)!}}\;P_l^m(\cos\theta)\,e^{im\phi}\quad(m\ge0),\qquad Y_l^{-m} = (-1)^m\,(Y_l^m)^*$$<div class="where">\(P_l^m\)은 콘던–쇼틀리 부호 \((-1)^m\)을 포함한 버금 르장드르 함수(그리피스 3판 관례, <code>QM.Ylm</code>도 같다). 성질: 규격 직교 \(\int Y_{l'}^{m'*}Y_l^m\,d\Omega = \delta_{l'l}\delta_{m'm}\), 완비성(구면 위의 어떤 함수도 \(Y_l^m\)으로 전개), <span class="term">패리티</span><span class="en">(parity)</span> \(Y_l^m(-\hat{\mathbf r}) = (-1)^l Y_l^m(\hat{\mathbf r})\).</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>\(l\)</th><th>\(m\)</th><th>\(Y_l^m(\theta,\phi)\)</th><th>직교 좌표 꼴 (\(\times r^l\))</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0</td><td class="num">0</td><td>\(\sqrt{1/4\pi}\)</td><td>상수</td></tr>
+        <tr><td class="num">1</td><td class="num">0</td><td>\(\sqrt{3/4\pi}\,\cos\theta\)</td><td>\(z\)</td></tr>
+        <tr><td class="num">1</td><td class="num">±1</td><td>\(\mp\sqrt{3/8\pi}\,\sin\theta\,e^{\pm i\phi}\)</td><td>\(\mp(x \pm iy)/\sqrt2\)</td></tr>
+        <tr><td class="num">2</td><td class="num">0</td><td>\(\sqrt{5/16\pi}\,(3\cos^2\theta - 1)\)</td><td>\(2z^2 - x^2 - y^2\)</td></tr>
+        <tr><td class="num">2</td><td class="num">±1</td><td>\(\mp\sqrt{15/8\pi}\,\sin\theta\cos\theta\,e^{\pm i\phi}\)</td><td>\(\mp z(x \pm iy)\)</td></tr>
+        <tr><td class="num">2</td><td class="num">±2</td><td>\(\sqrt{15/32\pi}\,\sin^2\theta\,e^{\pm 2i\phi}\)</td><td>\((x \pm iy)^2\)</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 230" role="img" aria-label="|Y_l^m|² 의 xz 단면 극좌표 그림 여섯 개">
+        <text class="t-dim" x="8" y="22">z ↑ (점선) · xz 단면</text>
+        <line x1="70" y1="52" x2="70" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M70.0,66.0 L72.3,66.0 L74.5,66.2 L76.8,66.4 L79.0,66.8 L81.3,67.2 L83.5,67.8 L85.6,68.4 L87.8,69.1 L89.9,70.0 L92.0,70.9 L94.0,71.9 L96.0,73.0 L97.9,74.1 L99.8,75.4 L101.7,76.7 L103.4,78.2 L105.1,79.7 L106.8,81.2 L108.3,82.9 L109.8,84.6 L111.3,86.3 L112.6,88.2 L113.9,90.1 L115.0,92.0 L116.1,94.0 L117.1,96.0 L118.0,98.1 L118.9,100.2 L119.6,102.4 L120.2,104.5 L120.8,106.7 L121.2,109.0 L121.6,111.2 L121.8,113.5 L122.0,115.7 L122.0,118.0 L122.0,120.3 L121.8,122.5 L121.6,124.8 L121.2,127.0 L120.8,129.3 L120.2,131.5 L119.6,133.6 L118.9,135.8 L118.0,137.9 L117.1,140.0 L116.1,142.0 L115.0,144.0 L113.9,145.9 L112.6,147.8 L111.3,149.7 L109.8,151.4 L108.3,153.1 L106.8,154.8 L105.1,156.3 L103.4,157.8 L101.7,159.3 L99.8,160.6 L97.9,161.9 L96.0,163.0 L94.0,164.1 L92.0,165.1 L89.9,166.0 L87.8,166.9 L85.6,167.6 L83.5,168.2 L81.3,168.8 L79.0,169.2 L76.8,169.6 L74.5,169.8 L72.3,170.0 L70.0,170.0 L67.7,170.0 L65.5,169.8 L63.2,169.6 L61.0,169.2 L58.7,168.8 L56.5,168.2 L54.4,167.6 L52.2,166.9 L50.1,166.0 L48.0,165.1 L46.0,164.1 L44.0,163.0 L42.1,161.9 L40.2,160.6 L38.3,159.3 L36.6,157.8 L34.9,156.3 L33.2,154.8 L31.7,153.1 L30.2,151.4 L28.7,149.7 L27.4,147.8 L26.1,145.9 L25.0,144.0 L23.9,142.0 L22.9,140.0 L22.0,137.9 L21.1,135.8 L20.4,133.6 L19.8,131.5 L19.2,129.3 L18.8,127.0 L18.4,124.8 L18.2,122.5 L18.0,120.3 L18.0,118.0 L18.0,115.7 L18.2,113.5 L18.4,111.2 L18.8,109.0 L19.2,106.7 L19.8,104.5 L20.4,102.4 L21.1,100.2 L22.0,98.1 L22.9,96.0 L23.9,94.0 L25.0,92.0 L26.1,90.1 L27.4,88.2 L28.7,86.3 L30.2,84.6 L31.7,82.9 L33.2,81.2 L34.9,79.7 L36.6,78.2 L38.3,76.7 L40.2,75.4 L42.1,74.1 L44.0,73.0 L46.0,71.9 L48.0,70.9 L50.1,70.0 L52.2,69.1 L54.4,68.4 L56.5,67.8 L58.7,67.2 L61.0,66.8 L63.2,66.4 L65.5,66.2 L67.7,66.0 L70.0,66.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="70" y="210" text-anchor="middle">|Y₀⁰|²</text>
+        <line x1="195" y1="52" x2="195" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M195.0,66.0 L197.3,66.1 L199.5,66.6 L201.7,67.3 L203.8,68.3 L205.7,69.6 L207.6,71.1 L209.2,72.9 L210.7,74.9 L212.0,77.0 L213.1,79.3 L213.9,81.7 L214.5,84.2 L214.9,86.8 L215.0,89.4 L214.9,92.0 L214.6,94.6 L214.1,97.2 L213.4,99.6 L212.5,102.0 L211.5,104.2 L210.3,106.3 L209.0,108.2 L207.7,109.9 L206.3,111.5 L204.8,112.9 L203.4,114.1 L202.0,115.1 L200.7,115.9 L199.5,116.6 L198.4,117.1 L197.4,117.5 L196.5,117.7 L195.9,117.9 L195.4,118.0 L195.1,118.0 L195.0,118.0 L195.1,118.0 L195.4,118.0 L195.9,118.1 L196.5,118.3 L197.4,118.5 L198.4,118.9 L199.5,119.4 L200.7,120.1 L202.0,120.9 L203.4,121.9 L204.8,123.1 L206.3,124.5 L207.7,126.1 L209.0,127.8 L210.3,129.7 L211.5,131.8 L212.5,134.0 L213.4,136.4 L214.1,138.8 L214.6,141.4 L214.9,144.0 L215.0,146.6 L214.9,149.2 L214.5,151.8 L213.9,154.3 L213.1,156.7 L212.0,159.0 L210.7,161.1 L209.2,163.1 L207.6,164.9 L205.7,166.4 L203.8,167.7 L201.7,168.7 L199.5,169.4 L197.3,169.9 L195.0,170.0 L192.7,169.9 L190.5,169.4 L188.3,168.7 L186.2,167.7 L184.3,166.4 L182.4,164.9 L180.8,163.1 L179.3,161.1 L178.0,159.0 L176.9,156.7 L176.1,154.3 L175.5,151.8 L175.1,149.2 L175.0,146.6 L175.1,144.0 L175.4,141.4 L175.9,138.8 L176.6,136.4 L177.5,134.0 L178.5,131.8 L179.7,129.7 L181.0,127.8 L182.3,126.1 L183.7,124.5 L185.2,123.1 L186.6,121.9 L188.0,120.9 L189.3,120.1 L190.5,119.4 L191.6,118.9 L192.6,118.5 L193.5,118.3 L194.1,118.1 L194.6,118.0 L194.9,118.0 L195.0,118.0 L194.9,118.0 L194.6,118.0 L194.1,117.9 L193.5,117.7 L192.6,117.5 L191.6,117.1 L190.5,116.6 L189.3,115.9 L188.0,115.1 L186.6,114.1 L185.2,112.9 L183.7,111.5 L182.3,109.9 L181.0,108.2 L179.7,106.3 L178.5,104.2 L177.5,102.0 L176.6,99.6 L175.9,97.2 L175.4,94.6 L175.1,92.0 L175.0,89.4 L175.1,86.8 L175.5,84.2 L176.1,81.7 L176.9,79.3 L178.0,77.0 L179.3,74.9 L180.8,72.9 L182.4,71.1 L184.3,69.6 L186.2,68.3 L188.3,67.3 L190.5,66.6 L192.7,66.1 L195.0,66.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="195" y="210" text-anchor="middle">|Y₁⁰|²</text>
+        <line x1="320" y1="52" x2="320" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M320.0,118.0 L320.0,117.9 L320.0,117.6 L320.1,117.1 L320.3,116.5 L320.5,115.6 L320.9,114.6 L321.4,113.5 L322.1,112.3 L322.9,111.0 L323.9,109.6 L325.1,108.2 L326.5,106.7 L328.1,105.3 L329.8,104.0 L331.7,102.7 L333.8,101.5 L336.0,100.5 L338.4,99.6 L340.8,98.9 L343.4,98.4 L346.0,98.1 L348.6,98.0 L351.2,98.1 L353.8,98.5 L356.3,99.1 L358.7,99.9 L361.0,101.0 L363.1,102.3 L365.1,103.8 L366.9,105.4 L368.4,107.3 L369.7,109.2 L370.7,111.3 L371.4,113.5 L371.9,115.7 L372.0,118.0 L371.9,120.3 L371.4,122.5 L370.7,124.7 L369.7,126.8 L368.4,128.7 L366.9,130.6 L365.1,132.2 L363.1,133.7 L361.0,135.0 L358.7,136.1 L356.3,136.9 L353.8,137.5 L351.2,137.9 L348.6,138.0 L346.0,137.9 L343.4,137.6 L340.8,137.1 L338.4,136.4 L336.0,135.5 L333.8,134.5 L331.7,133.3 L329.8,132.0 L328.1,130.7 L326.5,129.3 L325.1,127.8 L323.9,126.4 L322.9,125.0 L322.1,123.7 L321.4,122.5 L320.9,121.4 L320.5,120.4 L320.3,119.5 L320.1,118.9 L320.0,118.4 L320.0,118.1 L320.0,118.0 L320.0,118.1 L320.0,118.4 L319.9,118.9 L319.7,119.5 L319.5,120.4 L319.1,121.4 L318.6,122.5 L317.9,123.7 L317.1,125.0 L316.1,126.4 L314.9,127.8 L313.5,129.3 L311.9,130.7 L310.2,132.0 L308.3,133.3 L306.2,134.5 L304.0,135.5 L301.6,136.4 L299.2,137.1 L296.6,137.6 L294.0,137.9 L291.4,138.0 L288.8,137.9 L286.2,137.5 L283.7,136.9 L281.3,136.1 L279.0,135.0 L276.9,133.7 L274.9,132.2 L273.1,130.6 L271.6,128.7 L270.3,126.8 L269.3,124.7 L268.6,122.5 L268.1,120.3 L268.0,118.0 L268.1,115.7 L268.6,113.5 L269.3,111.3 L270.3,109.2 L271.6,107.3 L273.1,105.4 L274.9,103.8 L276.9,102.3 L279.0,101.0 L281.3,99.9 L283.7,99.1 L286.2,98.5 L288.8,98.1 L291.4,98.0 L294.0,98.1 L296.6,98.4 L299.2,98.9 L301.6,99.6 L304.0,100.5 L306.2,101.5 L308.3,102.7 L310.2,104.0 L311.9,105.3 L313.5,106.7 L314.9,108.2 L316.1,109.6 L317.1,111.0 L317.9,112.3 L318.6,113.5 L319.1,114.6 L319.5,115.6 L319.7,116.5 L319.9,117.1 L320.0,117.6 L320.0,117.9 L320.0,118.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="320" y="210" text-anchor="middle">|Y₁¹|²</text>
+        <line x1="470" y1="52" x2="470" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M470.0,66.0 L472.3,66.3 L474.4,67.4 L476.4,69.0 L478.2,71.3 L479.7,74.1 L480.9,77.4 L481.7,80.9 L482.1,84.8 L482.1,88.7 L481.8,92.7 L481.1,96.7 L480.2,100.4 L479.0,103.9 L477.7,107.1 L476.2,109.9 L474.8,112.2 L473.5,114.2 L472.3,115.7 L471.3,116.8 L470.6,117.5 L470.1,117.9 L470.0,118.0 L470.2,117.9 L470.7,117.6 L471.5,117.2 L472.5,116.8 L473.8,116.4 L475.1,116.1 L476.6,115.9 L478.0,115.9 L479.4,115.9 L480.6,116.1 L481.6,116.5 L482.4,116.9 L482.8,117.4 L483.0,118.0 L482.8,118.6 L482.4,119.1 L481.6,119.5 L480.6,119.9 L479.4,120.1 L478.0,120.1 L476.6,120.1 L475.1,119.9 L473.8,119.6 L472.5,119.2 L471.5,118.8 L470.7,118.4 L470.2,118.1 L470.0,118.0 L470.1,118.1 L470.6,118.5 L471.3,119.2 L472.3,120.3 L473.5,121.8 L474.8,123.8 L476.2,126.1 L477.7,128.9 L479.0,132.1 L480.2,135.6 L481.1,139.3 L481.8,143.3 L482.1,147.3 L482.1,151.2 L481.7,155.1 L480.9,158.6 L479.7,161.9 L478.2,164.7 L476.4,167.0 L474.4,168.6 L472.3,169.7 L470.0,170.0 L467.7,169.7 L465.6,168.6 L463.6,167.0 L461.8,164.7 L460.3,161.9 L459.1,158.6 L458.3,155.1 L457.9,151.2 L457.9,147.3 L458.2,143.3 L458.9,139.3 L459.8,135.6 L461.0,132.1 L462.3,128.9 L463.8,126.1 L465.2,123.8 L466.5,121.8 L467.7,120.3 L468.7,119.2 L469.4,118.5 L469.9,118.1 L470.0,118.0 L469.8,118.1 L469.3,118.4 L468.5,118.8 L467.5,119.2 L466.2,119.6 L464.9,119.9 L463.4,120.1 L462.0,120.1 L460.6,120.1 L459.4,119.9 L458.4,119.5 L457.6,119.1 L457.2,118.6 L457.0,118.0 L457.2,117.4 L457.6,116.9 L458.4,116.5 L459.4,116.1 L460.6,115.9 L462.0,115.9 L463.4,115.9 L464.9,116.1 L466.2,116.4 L467.5,116.8 L468.5,117.2 L469.3,117.6 L469.8,117.9 L470.0,118.0 L469.9,117.9 L469.4,117.5 L468.7,116.8 L467.7,115.7 L466.5,114.2 L465.2,112.2 L463.8,109.9 L462.3,107.1 L461.0,103.9 L459.8,100.4 L458.9,96.7 L458.2,92.7 L457.9,88.7 L457.9,84.8 L458.3,80.9 L459.1,77.4 L460.3,74.1 L461.8,71.3 L463.6,69.0 L465.6,67.4 L467.7,66.3 L470.0,66.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="470" y="210" text-anchor="middle">|Y₂⁰|²</text>
+        <line x1="600" y1="52" x2="600" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M600.0,118.0 L600.0,117.6 L600.1,116.4 L600.5,114.5 L601.1,112.0 L602.0,108.9 L603.4,105.4 L605.1,101.7 L607.3,97.8 L609.9,94.0 L612.9,90.3 L616.1,87.0 L619.5,84.2 L622.9,82.0 L626.3,80.4 L629.5,79.5 L632.4,79.4 L634.9,80.0 L636.8,81.2 L638.0,83.1 L638.6,85.6 L638.5,88.5 L637.6,91.7 L636.0,95.1 L633.8,98.5 L631.0,101.9 L627.7,105.1 L624.0,108.1 L620.2,110.7 L616.3,112.9 L612.6,114.6 L609.1,116.0 L606.0,116.9 L603.5,117.5 L601.6,117.9 L600.4,118.0 L600.0,118.0 L600.4,118.0 L601.6,118.1 L603.5,118.5 L606.0,119.1 L609.1,120.0 L612.6,121.4 L616.3,123.1 L620.2,125.3 L624.0,127.9 L627.7,130.9 L631.0,134.1 L633.8,137.5 L636.0,140.9 L637.6,144.3 L638.5,147.5 L638.6,150.4 L638.0,152.9 L636.8,154.8 L634.9,156.0 L632.4,156.6 L629.5,156.5 L626.3,155.6 L622.9,154.0 L619.5,151.8 L616.1,149.0 L612.9,145.7 L609.9,142.0 L607.3,138.2 L605.1,134.3 L603.4,130.6 L602.0,127.1 L601.1,124.0 L600.5,121.5 L600.1,119.6 L600.0,118.4 L600.0,118.0 L600.0,118.4 L599.9,119.6 L599.5,121.5 L598.9,124.0 L598.0,127.1 L596.6,130.6 L594.9,134.3 L592.7,138.2 L590.1,142.0 L587.1,145.7 L583.9,149.0 L580.5,151.8 L577.1,154.0 L573.7,155.6 L570.5,156.5 L567.6,156.6 L565.1,156.0 L563.2,154.8 L562.0,152.9 L561.4,150.4 L561.5,147.5 L562.4,144.3 L564.0,140.9 L566.2,137.5 L569.0,134.1 L572.3,130.9 L576.0,127.9 L579.8,125.3 L583.7,123.1 L587.4,121.4 L590.9,120.0 L594.0,119.1 L596.5,118.5 L598.4,118.1 L599.6,118.0 L600.0,118.0 L599.6,118.0 L598.4,117.9 L596.5,117.5 L594.0,116.9 L590.9,116.0 L587.4,114.6 L583.7,112.9 L579.8,110.7 L576.0,108.1 L572.3,105.1 L569.0,101.9 L566.2,98.5 L564.0,95.1 L562.4,91.7 L561.5,88.5 L561.4,85.6 L562.0,83.1 L563.2,81.2 L565.1,80.0 L567.6,79.4 L570.5,79.5 L573.7,80.4 L577.1,82.0 L580.5,84.2 L583.9,87.0 L587.1,90.3 L590.1,94.0 L592.7,97.8 L594.9,101.7 L596.6,105.4 L598.0,108.9 L598.9,112.0 L599.5,114.5 L599.9,116.4 L600.0,117.6 L600.0,118.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="600" y="210" text-anchor="middle">|Y₂¹|²</text>
+        <line x1="730" y1="52" x2="730" y2="184" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <path d="M730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,117.9 L730.1,117.8 L730.1,117.6 L730.2,117.3 L730.4,117.0 L730.7,116.5 L731.1,115.9 L731.6,115.2 L732.3,114.3 L733.2,113.4 L734.3,112.3 L735.7,111.2 L737.3,110.0 L739.2,108.8 L741.3,107.6 L743.7,106.5 L746.3,105.5 L749.2,104.6 L752.2,103.9 L755.3,103.4 L758.6,103.1 L761.8,103.2 L765.0,103.5 L768.1,104.1 L771.0,105.1 L773.7,106.3 L776.1,107.8 L778.2,109.5 L779.8,111.4 L781.0,113.5 L781.8,115.7 L782.0,118.0 L781.8,120.3 L781.0,122.5 L779.8,124.6 L778.2,126.5 L776.1,128.2 L773.7,129.7 L771.0,130.9 L768.1,131.9 L765.0,132.5 L761.8,132.8 L758.6,132.9 L755.3,132.6 L752.2,132.1 L749.2,131.4 L746.3,130.5 L743.7,129.5 L741.3,128.4 L739.2,127.2 L737.3,126.0 L735.7,124.8 L734.3,123.7 L733.2,122.6 L732.3,121.7 L731.6,120.8 L731.1,120.1 L730.7,119.5 L730.4,119.0 L730.2,118.7 L730.1,118.4 L730.1,118.2 L730.0,118.1 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.1 L729.9,118.2 L729.9,118.4 L729.8,118.7 L729.6,119.0 L729.3,119.5 L728.9,120.1 L728.4,120.8 L727.7,121.7 L726.8,122.6 L725.7,123.7 L724.3,124.8 L722.7,126.0 L720.8,127.2 L718.7,128.4 L716.3,129.5 L713.7,130.5 L710.8,131.4 L707.8,132.1 L704.7,132.6 L701.4,132.9 L698.2,132.8 L695.0,132.5 L691.9,131.9 L689.0,130.9 L686.3,129.7 L683.9,128.2 L681.8,126.5 L680.2,124.6 L679.0,122.5 L678.2,120.3 L678.0,118.0 L678.2,115.7 L679.0,113.5 L680.2,111.4 L681.8,109.5 L683.9,107.8 L686.3,106.3 L689.0,105.1 L691.9,104.1 L695.0,103.5 L698.2,103.2 L701.4,103.1 L704.7,103.4 L707.8,103.9 L710.8,104.6 L713.7,105.5 L716.3,106.5 L718.7,107.6 L720.8,108.8 L722.7,110.0 L724.3,111.2 L725.7,112.3 L726.8,113.4 L727.7,114.3 L728.4,115.2 L728.9,115.9 L729.3,116.5 L729.6,117.0 L729.8,117.3 L729.9,117.6 L729.9,117.8 L730.0,117.9 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0 L730.0,118.0Z" class="f-acc-soft" stroke="var(--accent)" stroke-width="1.8"/>
+        <text class="t" x="730" y="210" text-anchor="middle">|Y₂²|²</text>
+      </svg>
+      <figcaption>\(|Y_l^m|^2\)의 \(xz\) 단면(극좌표: 원점에서의 거리 = 그 방향의 확률 밀도, 그림마다 따로 규격). \(|Y_l^m|^2\)은 \(\phi\)에 의존하지 않아 모두 \(z\)축(점선) 둘레로 돌린 모양이다. \(|m|\)이 클수록 밀도가 적도로 몰린다 — \(L_z\)가 크면 각운동량 벡터가 \(z\)축 쪽을 향하고 궤도 운동은 \(xy\) 평면에 가까워진다.</figcaption>
+    </figure>
+    <div class="example" data-title="L₋로 만든 Y₁⁰의 규격화 확인">
+      <p>예제의 단계 그림에서 얻은 \(Y_1^0 = \sqrt{3/4\pi}\cos\theta\)가 규격화되어 있는지, 그리고 \(Y_1^1\)과 직교하는지 확인하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(d\Omega = \sin\theta\,d\theta\,d\phi\). \(\phi\) 적분이 직교성을 맡는다.</div>
+        <div class="step"><b>풀이</b> \(\int|Y_1^0|^2 d\Omega = \frac{3}{4\pi}\cdot 2\pi\int_0^\pi\cos^2\theta\sin\theta\,d\theta = \frac32\cdot\frac23 = 1\). \(\int Y_1^{1*}Y_1^0\,d\Omega \propto \int_0^{2\pi}e^{-i\phi}\,d\phi = 0\).</div>
+        <div class="answer">규격화됨(적분 = 1), \(\langle 1,1|1,0\rangle = 0\)</div>
+        <div class="step"><b>검토</b> \(\hat L_-\)가 규격화를 보존하는 것은 계수 \(\hbar\sqrt{l(l+1) - m(m-1)}\)로 나눴기 때문이다. 서로 다른 \(m\)의 직교성은 \(\hat L_z\)가 에르미트이고 고유값이 다르다는 사실에서 바로 나온다(2장).</div>
+      </details>
+    </div>
+    <p>이제 여러 \(l, m\)의 모양을 돌려 보자. 곡면의 반지름이 \(|Y_l^m|\)이고 색이 위상 \(\arg Y\)다. 복소 \(Y_l^m\)는 \(e^{im\phi}\) 때문에 \(z\)축 둘레로 색이 \(m\)번 감기고, 그 감김이 \(L_z = m\hbar\)다. 실수 오비탈로 바꾸면 위상은 0(빨강)과 π(청록) 두 값뿐이다.</p>
+    <div class="sim" id="sim-ylm">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>구면 조화 함수 뷰어: 끌어서 돌려 보기</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-ylm"></canvas><span class="hint top">끌어서 돌린다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>l</span><div class="seg" id="yl-l"><button data-value="0">0 (s)</button><button data-value="1">1 (p)</button><button data-value="2" class="on">2 (d)</button><button data-value="3">3 (f)</button><button data-value="4">4 (g)</button></div></div>
+          <label class="ctrl"><span>m <output id="yl-m-out"></output></span><input type="range" id="yl-m" min="-2" max="2" step="1" value="1"></label>
+          <div class="ctrl"><span>함수</span><div class="seg" id="yl-mode"><button data-value="c" class="on">복소 Y<sub>l</sub><sup>m</sup></button><button data-value="r">실수 오비탈</button></div></div>
+          <label class="check"><input type="checkbox" id="yl-sq"> 반지름을 |Y|² 로</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">함수</span><span class="v" id="yl-name">—</span></div>
+        <div class="stat"><span class="k">L²</span><span class="v" id="yl-L2">—</span></div>
+        <div class="stat"><span class="k">L<sub>z</sub></span><span class="v" id="yl-Lz">—</span></div>
+        <div class="stat"><span class="k">각 마디 · 패리티</span><span class="v" id="yl-nd">—</span></div>
+      </div>
+      <div class="sim-note">해볼 것: ① 복소 \(Y_2^{1}\)과 \(Y_2^{-1}\)을 비교한다 — 모양은 같고 색이 도는 방향만 반대다(\(L_z = \pm\hbar\)). ② 실수 오비탈로 바꾸면 \(m = \pm1\)이 \(d_{xz}\), \(d_{yz}\)가 된다. 둘은 \(z\)축 둘레로 90° 돌린 같은 모양이고, 둘 다 \(L_z\)가 정해지지 않는다. ③ 실수 오비탈에서 마디면(색이 바뀌는 곳)을 센다: \(z\)축을 품은 평면 \(|m|\)개 + 원뿔 \(l - |m|\)개 = 언제나 \(l\)개.</div>
+    </div>
+    <h3>실수 오비탈과 복소 \(Y_l^m\)</h3>
+    <p>화학과 소자 물리에서 쓰는 \(p_x, p_y, d_{xy}\) 같은 오비탈은 \(Y_l^{m}\)과 \(Y_l^{-m}\)을 더하고 뺀 <span class="term">실수 구면 조화 함수</span><span class="en">(real spherical harmonics)</span>다. 같은 \(l\)의 선형 결합이므로 \(\hat L^2\)의 고유 함수(같은 \(l\))지만 \(\hat L_z\)의 고유 함수는 아니다. \(L_z\)를 재면 \(+|m|\hbar\)와 \(-|m|\hbar\)가 반반 나온다.</p>
+    <div class="formula">$$p_x = \frac{Y_1^{-1} - Y_1^{1}}{\sqrt2} = \sqrt{\tfrac{3}{4\pi}}\frac{x}{r},\qquad p_y = \frac{i\,(Y_1^{-1} + Y_1^{1})}{\sqrt2} = \sqrt{\tfrac{3}{4\pi}}\frac{y}{r},\qquad d_{xy} = \frac{i\,(Y_2^{-2} - Y_2^{2})}{\sqrt2} = \sqrt{\tfrac{15}{4\pi}}\frac{xy}{r^2}$$<div class="where">일반적으로 \(m > 0\)이면 \(\tfrac{1}{\sqrt2}[(-1)^m Y_l^m + Y_l^{-m}] \propto P_l^{|m|}\cos m\phi\), \(m \lt 0\)이면 \(\tfrac{i}{\sqrt2}[Y_l^{m} - (-1)^{m}Y_l^{-m}] \propto P_l^{|m|}\sin|m|\phi\) (<code>QM.realY</code>와 같은 부호). 실수 오비탈은 원자가 다른 원자와 결합할 방향을 보여 주므로 결정장·결합 문제에 편하고, 복소 \(Y_l^m\)은 자기장(\(L_z\)) 문제에 편하다.</div></div>
+    <figure class="mini" id="mini-real">
+      <div class="mini-view"><canvas id="cv-real"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>짝</span><div class="seg" id="re-pair"><button data-value="1" class="on">Y₁^(±1)</button><button data-value="2">Y₂^(±2)</button></div></div>
+        <label class="ctrl"><span>|c₋|² <output id="re-w-out"></output></span><input type="range" id="re-w" min="0" max="1" step="0.01" value="0.5"></label>
+        <label class="ctrl"><span>상대 위상 χ <output id="re-x-out"></output></span><input type="range" id="re-x" min="0" max="360" step="5" value="0"></label>
+        <span class="readout" id="re-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(\psi = \sqrt{w}\,e^{i\chi/2}\,Y_l^{-m} + (-1)^m\sqrt{1-w}\,e^{-i\chi/2}\,Y_l^{m}\) (\(w = |c_-|^2\)). \(w = 0.5\), \(\chi = 0\)이면 \(p_x\)(또는 \(d_{x^2-y^2}\)), \(\chi\)를 키우면 같은 모양이 \(z\)축 둘레로 \(\chi/2m\)만큼 돈다 — 상대 위상이 곧 방향이다. \(w\)를 0이나 1로 보내면 위상이 감기는 복소 \(Y_l^{\pm m}\)로 돌아간다.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="vector-model">
+    <h2>벡터 모형과 각운동량의 측정</h2>
+    <p>\(|l\,m\rangle\) 상태에서 각운동량의 크기는 \(\hbar\sqrt{l(l+1)}\)로 \(z\) 성분의 최댓값 \(l\hbar\)보다 언제나 크다. \(\hat L_x\)와 \(\hat L_y\)는 정해지지 않지만 그 통계는 사다리 연산자로 정확히 계산된다. \(\hat L_x = (\hat L_+ + \hat L_-)/2\)는 \(m\)을 바꾸므로 \(\langle l\,m|\hat L_x|l\,m\rangle = 0\)이고, \(\hat L_x^2 + \hat L_y^2 = \hat L^2 - \hat L_z^2\)와 \(x \leftrightarrow y\) 대칭에서 다음을 얻는다.</p>
+    <div class="formula">$$\langle\hat L_x\rangle = \langle\hat L_y\rangle = 0,\qquad \langle\hat L_x^2\rangle = \langle\hat L_y^2\rangle = \frac{\hbar^2}{2}\left[l(l+1) - m^2\right],\qquad \cos\theta_L = \frac{m}{\sqrt{l(l+1)}}$$<div class="where">이것을 그림으로 그린 것이 <span class="term">벡터 모형</span><span class="en">(vector model)</span>이다. 길이 \(\hbar\sqrt{l(l+1)}\)인 벡터가 \(z\)축과 각 \(\theta_L\)을 이루는 원뿔 위 어딘가에 있고, 옆 성분의 크기 \(\hbar\sqrt{l(l+1) - m^2}\)는 정해져 있지만 방향(방위각)은 완전히 불확정이다. 원뿔 둘레를 "도는" 그림은 비유일 뿐 실제 운동이 아니다 — 정상 상태에서는 아무것도 움직이지 않는다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="l = 2 의 벡터 모형: 반지름 √6 원 위의 다섯 원뿔">
+        <defs><marker id="am-vm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <line x1="250" y1="280" x2="250" y2="20" class="s-axis"/><text class="t" x="258" y="28">z (L<tspan dy="4" font-size="10">z</tspan><tspan dy="-4">)</tspan></text>
+        <path d="M128,150 A122,122 0 0 1 372,150 A122,122 0 0 1 128,150" fill="none" stroke="var(--border)" stroke-dasharray="5 4"/>
+        <g stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="3 3">
+          <line x1="140" y1="50" x2="360" y2="50"/><line x1="140" y1="100" x2="360" y2="100"/><line x1="140" y1="150" x2="360" y2="150"/><line x1="140" y1="200" x2="360" y2="200"/><line x1="140" y1="250" x2="360" y2="250"/>
+        </g>
+        <g class="t-mono"><text class="t-mono" x="372" y="54">m = +2 (2ħ)</text><text class="t-mono" x="372" y="104">m = +1</text><text class="t-mono" x="372" y="154">m = 0</text><text class="t-mono" x="372" y="204">m = −1</text><text class="t-mono" x="372" y="254">m = −2</text></g>
+        <ellipse cx="250" cy="50" rx="70" ry="12" fill="var(--accent)" fill-opacity=".12" stroke="var(--accent)"/>
+        <line x1="250" y1="150" x2="320" y2="50" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#am-vm)"/>
+        <line x1="250" y1="150" x2="180" y2="50" stroke="var(--accent)" stroke-width="1.2" opacity=".5"/>
+        <ellipse cx="250" cy="100" rx="111" ry="16" fill="none" stroke="var(--accent-2)" opacity=".7"/>
+        <line x1="250" y1="150" x2="361" y2="100" stroke="var(--accent-2)" stroke-width="1.6" opacity=".8"/>
+        <ellipse cx="250" cy="150" rx="122" ry="18" fill="none" stroke="var(--text-dim)" opacity=".6"/>
+        <text class="t-acc" x="292" y="84">|L| = √6 ħ</text>
+        <path d="M250,110 A40,40 0 0 1 274,117" fill="none" stroke="var(--accent)" stroke-width="1.6"/><text class="t" x="262" y="104" style="fill:var(--accent)">35.3°</text>
+        <rect x="490" y="40" width="290" height="220" rx="12" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="510" y="70" style="font-weight:700">l = 2, m = 2 상태</text>
+        <text class="t-mono" x="510" y="100">|L| = √6 ħ ≈ 2.45ħ</text>
+        <text class="t-mono" x="510" y="126">L_z = 2ħ  (정해짐)</text>
+        <text class="t-mono" x="510" y="152">√(L_x²+L_y²) = √2 ħ</text>
+        <text class="t-mono" x="510" y="178">⟨L_x⟩ = ⟨L_y⟩ = 0</text>
+        <text class="t-mono" x="510" y="204">ΔL_x = ΔL_y = ħ</text>
+        <text class="t-dim" x="510" y="238">L은 z축과 나란할 수 없다</text>
+      </svg>
+      <figcaption>\(l = 2\)의 벡터 모형. 길이 \(\sqrt6\,\hbar\)인 벡터가 다섯 높이 \(m\hbar\) 가운데 하나에 걸린 원뿔 위에 있다. \(m = l\)이어도 \(\cos\theta_L = 2/\sqrt6\)로 35.3° 기울어져 있다 — 세 성분이 동시에 정해질 수 없다는 교환 관계의 기하학적 모습이다.</figcaption>
+    </figure>
+    <div class="sim" id="sim-cone">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>벡터 모형 원뿔: L의 끝을 끌어 m을 고른다</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-cone"></canvas><span class="hint top">흰 원 ↕ = m · 빈 곳 = 회전</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>l</span><div class="seg" id="co-l"><button data-value="1">1</button><button data-value="2" class="on">2</button><button data-value="3">3</button><button data-value="4">4</button></div></div>
+          <label class="check"><input type="checkbox" id="co-all" checked> 모든 원뿔 보기</label>
+          <label class="check"><input type="checkbox" id="co-cl"> 고전 벡터(아무 방향)와 비교</label>
+          <div class="ctrl-row"><button class="btn" id="co-play" type="button"></button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">|L|</span><span class="v" id="co-L">—</span></div>
+        <div class="stat"><span class="k">L<sub>z</sub> = mħ</span><span class="v" id="co-z">—</span></div>
+        <div class="stat"><span class="k">z축과의 각 θ<sub>L</sub></span><span class="v" id="co-th">—</span></div>
+        <div class="stat"><span class="k">ΔL<sub>x</sub> = ΔL<sub>y</sub></span><span class="v" id="co-dx">—</span></div>
+      </div>
+      <div class="sim-note">원뿔 둘레를 도는 화살표는 "\(L_x, L_y\)가 정해지지 않았다"를 보여 주는 비유다. 바닥의 초록 원은 옆 성분의 크기 \(\hbar\sqrt{l(l+1)-m^2}\). 해볼 것: ① \(l\)을 키우며 \(m = l\)의 원뿔 각이 줄어드는 것을 본다(\(l = 1\): 45°, \(l = 4\): 26.6°) — 큰 \(l\)에서 고전 극한. ② \(m = 0\)이면 벡터가 \(xy\) 평면에 눕고 \(\Delta L_x\)가 가장 크다. ③ 고전 비교를 켜면 고전 벡터는 \(z\)축에 나란할 수 있지만 양자 벡터는 그럴 수 없음을 확인한다.</div>
+    </div>
+    <h3>다른 축으로 재면</h3>
+    <p>상태 \(|l\,m\rangle\)를 \(z\)가 아닌 축 \(\hat{\mathbf n}\)(\(z\)축에서 \(\theta\) 기울어짐)으로 재면 무엇이 나올까? \(\hat L_n = \hat{\mathbf n}\cdot\hat{\mathbf L}\)도 각운동량의 한 성분이므로 가능한 값은 똑같이 \(m'\hbar\) (\(m' = -l, \dots, l\))다. 확률은 \(\hat L_n\)의 고유 상태 \(|l\,m'\rangle_n\)와의 겹침이고, 5절에서 보듯 \(|l\,m'\rangle_n\)은 \(|l\,m'\rangle\)를 \(y\)축 둘레로 \(\theta\) 돌린 것이다.</p>
+    <div class="formula">$$P(m') = \bigl|{}_n\langle l\,m'|l\,m\rangle\bigr|^2 = \bigl|d^{\,l}_{m'm}(\theta)\bigr|^2,\qquad \langle\hat L_n\rangle = m\hbar\cos\theta$$<div class="where">\(d^{\,l}_{m'm}(\theta) = \langle l\,m'|e^{-i\theta\hat L_y/\hbar}|l\,m\rangle\)는 다음 절의 위그너 작은 \(d\) 행렬이다(\(|d_{m'm}| = |d_{mm'}|\)이라 순서는 확률에 상관없다). \(l = 1\), \(m = 1\)이면 \(P(+1) = \bigl(\tfrac{1+\cos\theta}{2}\bigr)^2\), \(P(0) = \tfrac12\sin^2\theta\), \(P(-1) = \bigl(\tfrac{1-\cos\theta}{2}\bigr)^2\).</div></div>
+    <div class="example" data-title="|1,1⟩을 x축과 60° 축으로 재기">
+      <p>상태 \(|1,1\rangle\)에서 (a) \(L_x\)를 잴 때 \(+\hbar, 0, -\hbar\)의 확률, (b) \(z\)축에서 60° 기운 축으로 잴 때의 확률과 기댓값을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 위 공식에 \(\theta = 90^\circ\)(\(x\)축)와 \(60^\circ\)를 넣는다.</div>
+        <div class="step"><b>풀이</b> (a) \(\cos90^\circ = 0\): \(P = (\tfrac12)^2, \tfrac12, (\tfrac12)^2 = \tfrac14, \tfrac12, \tfrac14\). (b) \(\cos60^\circ = \tfrac12\): \(P(+1) = (\tfrac34)^2 = 0.5625\), \(P(0) = \tfrac12\cdot\tfrac34 = 0.375\), \(P(-1) = (\tfrac14)^2 = 0.0625\). \(\langle L_n\rangle = (0.5625 - 0.0625)\hbar = 0.5\hbar\).</div>
+        <div class="answer">(a) 1/4, 1/2, 1/4 (b) 0.5625, 0.375, 0.0625; \(\langle L_n\rangle = \hbar/2\)</div>
+        <div class="step"><b>검토</b> (a)는 예제 8.2의 \(|L_x = +\hbar\rangle\) 성분 제곱과 같다(\(\tfrac14, \tfrac12, \tfrac14\)의 대칭). (b)의 기댓값은 고전 벡터 \(\hbar\hat z\)의 사영 \(\hbar\cos60^\circ\)와 같지만, 한 번의 측정값은 언제나 정수 × ħ다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-meas">
+      <p>상태 \(|1,\)<span class="tn" data-var="m" data-min="-1" data-max="1" data-step="1">1</span>\(\rangle\)을 \(z\)축에서 <span class="tn" data-var="t" data-min="0" data-max="180" data-step="5" data-unit="°">60</span> 기운 축으로 재면 \(+\hbar, 0, -\hbar\)의 확률은 <span class="tn-out" data-out="P"></span>이고, 기댓값 \(\langle L_n\rangle = m\hbar\cos\theta\) = <span class="tn-out" data-out="E"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-meas">
+      <p>\(|1,1\rangle\) 상태(\(L_z = +\hbar\) 확정)에서 \(L_x\)를 재면 \(+\hbar\)가 나올 확률은?</p>
+      <div class="opts"><button class="opt">1 — 각운동량은 이미 정해져 있다</button><button class="opt">1/2</button><button class="opt">1/3 — 세 값이 똑같이</button><button class="opt" data-correct>1/4</button></div>
+      <div class="quiz-exp">\(|d^1_{11}(90^\circ)|^2 = (\tfrac{1+0}{2})^2 = \tfrac14\). 0이 1/2로 가장 잘 나온다. 아래에서 축을 90°로 끌어 놓고 여러 번 재 보라.</div>
+    </div>
+    <div class="sim" id="sim-meas">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>측정 실험: 축 n을 끌어 기울이고 L<sub>n</sub>을 잰다</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-meas"></canvas><span class="hint top">왼쪽 흰 원(축 n의 끝)을 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>l</span><div class="seg" id="me-l"><button data-value="1" class="on">1</button><button data-value="2">2</button></div></div>
+          <label class="ctrl"><span>준비한 상태의 m <output id="me-m-out"></output></span><input type="range" id="me-m" min="-1" max="1" step="1" value="1"></label>
+          <div class="ctrl-row"><button class="btn primary" id="me-1" type="button">1번 측정</button><button class="btn primary" id="me-100" type="button">100번 측정</button><button class="btn" id="me-clr" type="button">지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">축 기울기 θ</span><span class="v" id="me-th">—</span></div>
+        <div class="stat"><span class="k">측정 횟수</span><span class="v" id="me-n">—</span></div>
+        <div class="stat"><span class="k">평균 L<sub>n</sub> (측정 · 이론)</span><span class="v" id="me-avg">—</span></div>
+        <div class="stat"><span class="k">마지막 결과</span><span class="v" id="me-last">—</span></div>
+      </div>
+      <div class="sim-note">매번 새로 준비한 \(|l\,m\rangle\)를 축 \(\hat{\mathbf n}\)으로 한 번 잰다. 자홍 막대 = 측정 빈도, 초록 테두리 = 이론 \(|d^{\,l}_{m'm}(\theta)|^2\)(<code>QM.wignerd</code>). 첫 화면은 고정 시드로 미리 200번 잰 결과다. 해볼 것: ① \(\theta = 0\)이면 언제나 \(m\), \(\theta = 180^\circ\)이면 언제나 \(-m\)이 나온다. ② \(|1,0\rangle\)을 \(\theta = 90^\circ\)로 재면 0이 절대 나오지 않는다(\(d^1_{00} = \cos\theta\)). ③ 평균값이 \(m\hbar\cos\theta\)로 다가가는지 1000번쯤 재서 확인한다.</div>
+    </div>
+    <div class="drill" id="drill-d" data-title="기운 축 측정 확률 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="rotations">
+    <h2>회전 연산자와 위그너 d 행렬</h2>
+    <p>각운동량은 회전과 떼어 놓을 수 없다. 운동량 \(\hat p\)가 평행 이동 \(e^{-ia\hat p/\hbar}\)를 만들듯(7장), 각운동량은 회전을 만든다. 파동함수를 \(z\)축 둘레로 아주 작은 각 \(\varepsilon\)만큼 돌리면 새 함수는 \(\psi'(\mathbf r) = \psi(R^{-1}\mathbf r) = \psi(x + \varepsilon y,\, y - \varepsilon x,\, z) \approx \psi - \varepsilon(x\partial_y - y\partial_x)\psi = (1 - i\varepsilon\hat L_z/\hbar)\,\psi\)이다. 작은 회전을 거듭하면 지수 함수가 된다.</p>
+    <div class="formula">$$\hat R(\alpha, \hat{\mathbf n}) = \exp\!\left(-\frac{i\alpha\,\hat{\mathbf n}\cdot\hat{\mathbf J}}{\hbar}\right),\qquad \hat R_z(\alpha)\,Y_l^m = e^{-i\alpha\hat L_z/\hbar}\,Y_l^m = e^{-im\alpha}\,Y_l^m$$<div class="where">\(\hat R\)을 <span class="term">회전 연산자</span><span class="en">(rotation operator)</span>, \(\hat{\mathbf J}\)를 회전의 <span class="term">생성자</span><span class="en">(generator)</span>라 한다. \(\hat{\mathbf J}\)가 에르미트이므로 \(\hat R\)은 유니터리다. \(z\)축 둘레 회전은 \(Y_l^m\)에 위상 \(e^{-im\alpha}\)만 곱한다 — \(|Y_l^m|^2\)은 \(z\)축 둘레로 대칭이니 당연하다.</div></div>
+    <p>거꾸로, 교환 관계는 회전의 성질을 그대로 옮긴 것이다. \(x\)축 둘레 \(\varepsilon\), \(y\)축 둘레 \(\varepsilon\), 다시 거꾸로 \(-\varepsilon\), \(-\varepsilon\) 돌리면 처음으로 돌아오지 않고 \(z\)축 둘레로 \(\varepsilon^2\)만큼 돌아가 있다(책을 직접 돌려 보라). 이것을 생성자로 옮기면 정확히 \([\hat J_x, \hat J_y] = i\hbar\hat J_z\)다. 그래서 공간 회전에 반응하는 것은 무엇이든 — 궤도 운동이든 전자의 스핀이든 원자핵이든 — 같은 대수를 따른다.</p>
+    <figure class="mini" id="mini-rotz">
+      <div class="mini-view"><canvas id="cv-rotz"></canvas><span class="hint top">좌우로 끈다</span></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>상태</span><div class="seg" id="rz-s"><button data-value="c21" class="on">Y₂¹</button><button data-value="c33">Y₃³</button><button data-value="px">p<sub>x</sub></button><button data-value="dxy">d<sub>xy</sub></button></div></div>
+        <label class="ctrl"><span>회전각 α <output id="rz-a-out"></output></span><input type="range" id="rz-a" min="0" max="360" step="1" value="0"></label>
+        <span class="readout" id="rz-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(e^{-i\alpha\hat L_z/\hbar}\)로 함수를 \(z\)축 둘레로 \(\alpha\) 돌린다. 복소 \(Y_l^m\)은 모양(반지름)이 전혀 바뀌지 않고 색만 \(-m\alpha\)만큼 돈다 — 고유 상태는 회전에 대해 위상만 얻는다. 실수 오비탈은 모양이 실제로 돌고, 원래 함수와의 겹침이 \(\cos|m|\alpha\)로 줄었다 커진다. \(d_{xy}\)는 90°에서 −1(\(-d_{xy}\)), 180°에서 다시 자기 자신이다.</figcaption>
+    </figure>
+    <p>회전은 \(\hat J^2\)과 교환하므로 \(j\)를 바꾸지 못한다. 그래서 회전은 \(j\)마다 \((2j+1)\times(2j+1)\) 유니터리 행렬, 곧 <span class="term">위그너 D 행렬</span><span class="en">(Wigner D-matrix)</span>로 표현된다. 아무 회전이나 \(z\)–\(y\)–\(z\) <span class="term">오일러 각</span><span class="en">(Euler angles)</span> \((\alpha, \beta, \gamma)\)로 쪼갤 수 있고, \(z\) 회전은 위상뿐이니 실제 정보는 \(y\)축 둘레 회전에 있다.</p>
+    <div class="formula">$$D^{\,j}_{m'm}(\alpha,\beta,\gamma) = \langle j\,m'|e^{-i\alpha\hat J_z/\hbar}e^{-i\beta\hat J_y/\hbar}e^{-i\gamma\hat J_z/\hbar}|j\,m\rangle = e^{-im'\alpha}\,d^{\,j}_{m'm}(\beta)\,e^{-im\gamma}$$<div class="where">\(d^{\,j}_{m'm}(\beta) = \langle j\,m'|e^{-i\beta\hat J_y/\hbar}|j\,m\rangle\)가 <span class="term">위그너 작은 d 행렬</span><span class="en">(Wigner small d-matrix)</span>로, 실수다(사쿠라이 3.5절 관례, <code>QM.wignerd</code>). 회전한 구면 조화 함수는 \(Y_l^m(R^{-1}\hat{\mathbf r}) = \sum_{m'} Y_l^{m'}(\hat{\mathbf r})\,D^{\,l}_{m'm}(R)\) — 같은 \(l\)끼리만 섞인다.</div></div>
+    <div class="formula">$$d^{\,1/2}(\beta) = \begin{pmatrix}\cos\frac\beta2 & -\sin\frac\beta2\\[2pt] \sin\frac\beta2 & \cos\frac\beta2\end{pmatrix},\qquad d^{\,1}(\beta) = \begin{pmatrix}\frac{1+\cos\beta}{2} & -\frac{\sin\beta}{\sqrt2} & \frac{1-\cos\beta}{2}\\[2pt] \frac{\sin\beta}{\sqrt2} & \cos\beta & -\frac{\sin\beta}{\sqrt2}\\[2pt] \frac{1-\cos\beta}{2} & \frac{\sin\beta}{\sqrt2} & \frac{1+\cos\beta}{2}\end{pmatrix}$$<div class="where">행 \(m'\), 열 \(m\) 모두 \(+j\)부터 내림차순. \(d^{\,1/2}\)는 \(\beta = 2\pi\)에서 \(-1\)이 된다 — 반정수 각운동량은 한 바퀴 돌리면 부호가 바뀐다(10장). 정수 \(j\)는 \(+1\)로 돌아온다.</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 260" role="img" aria-label="p_z 오비탈을 y축 둘레로 90도 돌려 p_x 를 만드는 과정">
+        <defs><marker id="am-rt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <g transform="translate(130,135)">
+          <line x1="0" y1="95" x2="0" y2="-100" class="s-axis" marker-end="url(#am-rt)"/><text class="t" x="8" y="-92">z</text>
+          <line x1="-95" y1="0" x2="100" y2="0" class="s-axis" marker-end="url(#am-rt)"/><text class="t" x="94" y="16">x</text>
+          <g data-only="1"><ellipse cy="-36" rx="22" ry="34" fill="var(--accent)" opacity=".6"/><ellipse cy="36" rx="22" ry="34" fill="var(--accent-2)" opacity=".6"/><text class="t-acc" x="30" y="-60">p_z = Y₁⁰</text></g>
+          <g data-step="2" data-only="2"><ellipse cy="-36" rx="22" ry="34" fill="var(--accent)" opacity=".25"/><ellipse cy="36" rx="22" ry="34" fill="var(--accent-2)" opacity=".25"/><path d="M0,-80 A80,80 0 0 1 80,0" fill="none" stroke="var(--warn)" stroke-width="2.4" marker-end="url(#am-rt)"/><text class="t" x="52" y="-60" style="fill:var(--warn)">R_y(90°)</text></g>
+          <g data-step="3"><ellipse cx="36" rx="34" ry="22" fill="var(--accent)" opacity=".6"/><ellipse cx="-36" rx="34" ry="22" fill="var(--accent-2)" opacity=".6"/><text class="t-acc" x="24" y="-34">p_x</text></g>
+        </g>
+        <rect x="300" y="30" width="470" height="200" rx="12" class="f-surface" stroke="var(--border)"/>
+        <text class="t-mono" x="320" y="62">|ψ⟩ = |1,0⟩ : 성분 (m = 1, 0, −1) = (0, 1, 0)</text>
+        <g data-step="2"><text class="t-mono" x="320" y="100">d¹(90°)의 가운데 열 (m = 0):</text><text class="t-mono" x="320" y="126">  (−sin90°/√2, cos90°, sin90°/√2) = (−1/√2, 0, 1/√2)</text></g>
+        <g data-step="3"><text class="t-acc" x="320" y="166">R_y(90°)|1,0⟩ = (|1,−1⟩ − |1,1⟩)/√2</text><text class="t-mono" x="320" y="192">= (Y₁⁻¹ − Y₁¹)/√2 = p_x  ✓</text><text class="t-dim" x="320" y="216">z로 재면 m = 0은 결코 나오지 않는다 (d¹₀₀(90°) = 0)</text></g>
+      </svg>
+      <ol class="steps-cap"><li>\(p_z = Y_1^0\), 성분 \((0,1,0)\). \(L_z = 0\) 확정.</li><li>\(y\)축 둘레로 90° 돌린다. 결과 성분은 \(d^1(90^\circ)\)의 \(m = 0\) 열이다.</li><li>\((Y_1^{-1} - Y_1^1)/\sqrt2\) — 실수 오비탈 공식의 \(p_x\) 그대로다. 회전 행렬과 실수 오비탈 정의가 정확히 맞물린다.</li></ol>
+      <figcaption>위그너 \(d\) 행렬의 한 열은 "그 상태를 돌렸을 때의 성분"이다. \(p_z\)를 \(x\)쪽으로 눕히면 \(p_x\)가 되고, 그 성분은 \(m = \pm1\)뿐이다.</figcaption>
+    </figure>
+    <div class="example" data-title="p_x를 z축 둘레로 돌리기">
+      <p>\(p_x\)를 \(z\)축 둘레로 각 \(\alpha\) 돌린 함수가 \(\cos\alpha\,p_x + \sin\alpha\,p_y\)임을 \(e^{-i\alpha\hat L_z/\hbar}\)로 보여라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(p_x\)를 \(Y_1^{\pm1}\)로 펼치면 회전은 각 성분에 \(e^{-im\alpha}\)만 곱한다.</div>
+        <div class="step"><b>풀이</b> \(p_x = (Y_1^{-1} - Y_1^1)/\sqrt2 \to (e^{i\alpha}Y_1^{-1} - e^{-i\alpha}Y_1^1)/\sqrt2\). \(e^{\pm i\alpha} = \cos\alpha \pm i\sin\alpha\)로 나누면 \(\cos\alpha\,(Y_1^{-1} - Y_1^1)/\sqrt2 + \sin\alpha\cdot i(Y_1^{-1} + Y_1^1)/\sqrt2 = \cos\alpha\,p_x + \sin\alpha\,p_y\).</div>
+        <div class="answer">\(e^{-i\alpha\hat L_z/\hbar}p_x = \cos\alpha\,p_x + \sin\alpha\,p_y\) (90°이면 \(p_y\))</div>
+        <div class="step"><b>검토</b> \(p_x \propto x/r\)를 돌리면 \(x\cos\alpha + y\sin\alpha\) — 기하학으로도 같다. 겹침 \(\langle p_x|\hat R p_x\rangle = \cos\alpha\)는 위 미니 실험의 \(\cos|m|\alpha\)다.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-dmat">
+      <p>\(|1,0\rangle\)(\(p_z\))을 \(y\)축 둘레로 90° 돌린 뒤 \(L_z\)를 재면 0이 나올 확률은?</p>
+      <div class="opts"><button class="opt">1</button><button class="opt">1/2</button><button class="opt">1/3</button><button class="opt" data-correct>0</button></div>
+      <div class="quiz-exp">\(d^1_{00}(\beta) = \cos\beta\)이므로 90°에서 0이다. 돌린 상태는 \(p_x = (|1,-1\rangle - |1,1\rangle)/\sqrt2\)라 \(\pm\hbar\)만 반반 나온다. 아래에서 β를 90°로 끌어 가운데 칸을 보라.</div>
+    </div>
+    <div class="sim" id="sim-dmat">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>위그너 d 행렬: β를 끌어 돌리고 행렬 지수와 비교</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-dmat"></canvas><span class="hint top">왼쪽 원의 흰 손잡이를 돌린다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>j</span><div class="seg" id="dm-j"><button data-value="0.5">1/2</button><button data-value="1" class="on">1</button><button data-value="1.5">3/2</button><button data-value="2">2</button></div></div>
+          <label class="ctrl"><span>β <output id="dm-b-out"></output></span><input type="range" id="dm-b" min="0" max="720" step="1" value="60"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">max |e<sup>−iβJ<sub>y</sub></sup> − d|</span><span class="v" id="dm-err">—</span></div>
+        <div class="stat"><span class="k">유니터리 오차</span><span class="v" id="dm-u">—</span></div>
+        <div class="stat"><span class="k">대각합 Σ d<sub>mm</sub></span><span class="v" id="dm-tr">—</span></div>
+        <div class="stat"><span class="k">한 바퀴(360°)에서</span><span class="v" id="dm-2p">—</span></div>
+      </div>
+      <div class="sim-note">칸의 색 = \(d^{\,j}_{m'm}(\beta)\)의 값(빨강 +, 파랑 −), 숫자 = 값. 행렬은 <code>QM.wignerd</code>로 그리고, 옆에서 <code>QM.expm</code>으로 \(\exp(-i\beta J_y)\)를 따로 계산해 차이를 보인다(반올림 오차 수준이어야 한다). β는 0–720°. 해볼 것: ① \(j = 1\), β = 90°에서 가운데 칸 \(d^1_{00} = 0\)과 첫 열 \((\tfrac12, \tfrac{1}{\sqrt2}, \tfrac12)\)(\(L_x = +\hbar\) 고유 상태)를 확인한다. ② \(j = 1/2\)에서 β = 360°이면 행렬이 \(-I\), 720°에서야 \(+I\)다. ③ 대각합이 \(\sin[(j+\tfrac12)\beta]/\sin(\beta/2)\)를 따르는지 본다 — 회전각에만 의존하는 "지표"다.</div>
+    </div>
+    <div class="callout deep"><strong>덧셈 정리</strong><p>회전 공식을 두 방향 \(\hat{\mathbf r}\), \(\hat{\mathbf r}'\)에 쓰면 \(P_l(\hat{\mathbf r}\cdot\hat{\mathbf r}') = \frac{4\pi}{2l+1}\sum_{m}Y_l^{m*}(\hat{\mathbf r}')Y_l^m(\hat{\mathbf r})\)를 얻는다. 두 방향 사이의 각만으로 정해지는 양(쿨롱 \(1/|\mathbf r - \mathbf r'|\)의 다중극 전개, 산란 진폭의 부분파)을 구면 조화 함수의 곱으로 쪼개는 도구다. <a href="scattering.html">15장 산란</a>과 <a href="identical-particles.html">11장</a>의 헬륨 전자 반발 적분에서 다시 쓴다.</p></div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="rotor">
+    <h2>강체 회전자와 분자 회전 스펙트럼</h2>
+    <p>각운동량 대수가 가장 깨끗하게 드러나는 계는 회전하는 분자다. 이원자 분자를 두 질점이 길이 \(R\)인 막대에 고정된 <span class="term">강체 회전자</span><span class="en">(rigid rotor)</span>로 보면, 퍼텐셜이 없고 운동 에너지가 전부 회전이다. 고전 \(E = L^2/2I\)를 그대로 연산자로 바꾼다.</p>
+    <div class="formula">$$\hat H = \frac{\hat L^2}{2I},\quad I = \mu R^2,\quad E_J = \frac{\hbar^2}{2I}J(J+1) = hc\,B\,J(J+1),\quad B = \frac{h}{8\pi^2 c\,I}\ [\mathrm{cm^{-1}}]$$<div class="where">고유 함수는 분자 축 방향의 \(Y_J^M(\theta,\phi)\), 각 준위는 \(2J+1\)겹 축퇴(\(M = -J..J\)). 분광학 관례로 회전 양자수는 \(J\), 에너지는 파수(cm⁻¹, \(E/hc\))로 쓴다. \(B\)를 <span class="term">회전 상수</span><span class="en">(rotational constant)</span>라 한다. 1 cm⁻¹ = 29.98 GHz = 0.124 meV = 1.44 K × \(k_\mathrm{B}\). 상온 \(k_\mathrm{B}T\) = 208.5 cm⁻¹.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="강체 회전자 준위 E_J = BJ(J+1)와 ΔJ = +1 흡수선이 2B 간격으로 늘어선 스펙트럼">
+        <defs><marker id="am-rot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <line x1="60" y1="270" x2="60" y2="20" class="s-axis"/><text class="t-dim" x="66" y="30">E/hc</text>
+        <g stroke="var(--text)" stroke-width="2.4">
+          <line x1="90" y1="266" x2="330" y2="266"/><line x1="90" y1="254" x2="330" y2="254"/><line x1="90" y1="230" x2="330" y2="230"/><line x1="90" y1="194" x2="330" y2="194"/><line x1="90" y1="146" x2="330" y2="146"/><line x1="90" y1="86" x2="330" y2="86"/>
+        </g>
+        <g class="t-mono"><text class="t-mono" x="340" y="270">J=0  0</text><text class="t-mono" x="340" y="256">J=1  2B</text><text class="t-mono" x="340" y="234">J=2  6B</text><text class="t-mono" x="340" y="198">J=3  12B</text><text class="t-mono" x="340" y="150">J=4  20B</text><text class="t-mono" x="340" y="90">J=5  30B</text></g>
+        <g stroke="var(--accent)" stroke-width="2" marker-end="url(#am-rot)"><line x1="110" y1="266" x2="110" y2="257"/><line x1="150" y1="254" x2="150" y2="233"/><line x1="190" y1="230" x2="190" y2="197"/><line x1="230" y1="194" x2="230" y2="149"/><line x1="270" y1="146" x2="270" y2="89"/></g>
+        <g class="t" style="fill:var(--accent)"><text class="t" x="102" y="290" style="fill:var(--accent)">2B</text><text class="t" x="142" y="290" style="fill:var(--accent)">4B</text><text class="t" x="182" y="290" style="fill:var(--accent)">6B</text><text class="t" x="222" y="290" style="fill:var(--accent)">8B</text><text class="t" x="260" y="290" style="fill:var(--accent)">10B</text></g>
+        <line x1="470" y1="250" x2="780" y2="250" class="s-axis"/><text class="t-dim" x="700" y="276">파수 ν̃</text>
+        <g stroke="var(--accent)" stroke-width="4"><line x1="500" y1="250" x2="500" y2="196"/><line x1="550" y1="250" x2="550" y2="140"/><line x1="600" y1="250" x2="600" y2="112"/><line x1="650" y1="250" x2="650" y2="118"/><line x1="700" y1="250" x2="700" y2="160"/><line x1="750" y1="250" x2="750" y2="210"/></g>
+        <path d="M480,250 C520,170 560,100 620,100 S720,170 775,232" fill="none" stroke="var(--accent-2)" stroke-dasharray="5 4"/>
+        <text class="t" x="560" y="80" style="fill:var(--accent-2)">세기 ∝ (2J+1)e^(−E_J/kT)</text>
+        <path d="M550,262 L600,262" stroke="var(--text-dim)"/><text class="t-dim" x="575" y="282" text-anchor="middle">2B</text>
+        <text class="t-dim" x="470" y="40">J → J+1 흡수선</text><text class="t-mono" x="470" y="60">ν̃ = 2B(J+1)</text>
+      </svg>
+      <figcaption>강체 회전자의 준위는 \(J(J+1)\)로 벌어지지만, 이웃 준위 사이 간격 \(E_{J+1} - E_J = 2B(J+1)\)은 등차수열이라 흡수선은 \(2B\) 간격으로 고르게 늘어선다. 선 세기는 처음에 \(2J+1\) 축퇴로 커지다가 볼츠만 인자로 줄어든다.</figcaption>
+    </figure>
+    <p>빛이 회전을 일으키려면 분자가 영구 쌍극자를 가져야 하고(CO, HF, HCl은 있고 N₂, O₂, H₂는 없다), 쌍극자 연산자는 \(l = 1\)짜리 벡터 연산자라서 <span class="term">선택 규칙</span><span class="en">(selection rule)</span> \(\Delta J = \pm1\), \(\Delta M = 0, \pm1\)이 나온다(\(\int Y_{J'}^{M'*}\cos\theta\,Y_J^M\,d\Omega \ne 0\)은 \(J' = J\pm1\)일 때만; 증명은 <a href="time-dependent.html">14장</a>). 따라서 흡수선은</p>
+    <div class="formula">$$\tilde\nu_{J\to J+1} = E_{J+1} - E_J = 2B(J+1) = 2B,\ 4B,\ 6B,\ \dots \qquad(\text{간격 } 2B)$$<div class="where">실제 분자는 빨리 돌수록 늘어나(<span class="term">원심 뒤틀림</span><span class="en">(centrifugal distortion)</span>) \(E_J = BJ(J+1) - DJ^2(J+1)^2\)이고 높은 \(J\)에서 선 간격이 조금씩 좁아진다(CO: \(D \approx 6\times10^{-6}\) cm⁻¹). 대칭 이원자 분자 N₂는 마이크로파 흡수가 없지만 라만 산란(\(\Delta J = \pm2\), 스토크스 이동 \(4B(J + \tfrac32)\), 간격 \(4B\))이나 전자 띠의 회전 구조로 보인다.</div></div>
+    <div class="tangle" id="tg-B">
+      <p>환산 질량 \(\mu\) = <span class="tn" data-var="mu" data-min="0.5" data-max="20" data-step="0.01" data-unit=" u">6.86</span>, 결합 길이 \(R\) = <span class="tn" data-var="R" data-min="0.07" data-max="0.3" data-step="0.001" data-unit=" nm">0.113</span>인 분자의 회전 상수는 \(B\) = <span class="tn-out" data-out="B"></span>, 선 간격 \(2B\) = <span class="tn-out" data-out="sp"></span>이고, 300 K에서 가장 센 선은 \(J\) = <span class="tn-out" data-out="Jm"></span>에서 올라가는 선이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="CO의 회전 스펙트럼과 결합 길이">
+      <p>¹²C¹⁶O의 순수 회전 흡수선이 3.845 cm⁻¹ 간격으로 늘어서 있다. (a) 회전 상수, (b) \(J = 0\to1\) 선의 진동수(GHz), (c) 관성 모멘트와 결합 길이를 구하라. 원자 질량 12.000 u, 15.995 u.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 간격 = \(2B\). \(I = h/(8\pi^2cB)\), \(\mu = m_1m_2/(m_1+m_2)\), \(R = \sqrt{I/\mu}\).</div>
+        <div class="step"><b>풀이</b> (a) \(B = 1.9225\) cm⁻¹. (b) \(\nu = 2B\,c = 3.845 \times 29.979\ \text{GHz} = 115.27\) GHz. (c) \(I = \dfrac{6.626\times10^{-34}}{8\pi^2(2.998\times10^{10})(1.9225)} = 1.456\times10^{-46}\) kg·m². \(\mu = 12.000\times15.995/27.995 = 6.856\) u \(= 1.1385\times10^{-26}\) kg. \(R = \sqrt{1.456\times10^{-46}/1.1385\times10^{-26}} = 1.131\times10^{-10}\) m.</div>
+        <div class="answer">(a) \(B = 1.92\) cm⁻¹ (b) 115 GHz (λ = 2.60 mm) (c) \(I = 1.46\times10^{-46}\) kg·m², \(R = 0.113\) nm</div>
+        <div class="step"><b>검토</b> 전파 천문학에서 성간 분자운을 찾는 115.271 GHz CO 선이 바로 이것이다. 바닥 진동 상태의 평균 결합 길이(0.1131 nm)는 평형 길이 0.1128 nm보다 조금 길다(영점 진동의 비조화성).</div>
+      </details>
+    </div>
+    <h3>온도가 정하는 선 세기</h3>
+    <p>기체에서 회전 준위 \(J\)에 있는 분자의 비율은 볼츠만 분포에 축퇴도 \(2J+1\)을 곱한 것이다. 선 세기가 아래 준위의 점유수에 비례한다고 근사하면, 스펙트럼의 모양이 곧 온도계다.</p>
+    <div class="formula">$$\frac{N_J}{N} = \frac{(2J+1)\,e^{-hcBJ(J+1)/k_\mathrm{B}T}}{q_\text{rot}},\qquad q_\text{rot} \approx \frac{k_\mathrm{B}T}{hcB},\qquad J_\text{max} \approx \sqrt{\frac{k_\mathrm{B}T}{2hcB}} - \frac12$$<div class="where">\(q_\text{rot}\)는 회전 분배 함수(\(k_\mathrm{B}T \gg hcB\)일 때, <a href="../../thermal-physics/chapters/boltzmann.html">열·통계물리 볼츠만 분포</a>). \(J_\text{max}\)는 \(N_J\)를 \(J\)로 미분해 0으로 놓은 것이다. \(\ln[I_J/(2J+1)]\)을 \(E_J\)에 대해 그리면(볼츠만 그림) 기울기가 \(-1/k_\mathrm{B}T\)인 직선이 되고, 이렇게 구한 온도를 <span class="term">회전 온도</span><span class="en">(rotational temperature)</span>라 한다. 회전 준위는 몇 번의 충돌로 병진 운동과 평형을 이루므로 회전 온도는 기체 온도의 좋은 대리값이다.</div></div>
+    <div class="predict" data-for="sim-rot">
+      <p>CO 기체의 온도를 300 K에서 1200 K로 네 배 올리면 가장 센 흡수선의 \(J\)는 대략?</p>
+      <div class="opts"><button class="opt">그대로 (B가 같으므로)</button><button class="opt" data-correct>약 두 배</button><button class="opt">약 네 배</button><button class="opt">절반으로 줄어든다</button></div>
+      <div class="quiz-exp">\(J_\text{max} \approx \sqrt{k_\mathrm{B}T/2hcB} - \tfrac12 \propto \sqrt T\). 300 K에서 7, 1200 K에서 14쯤이다. 아래에서 봉우리 손잡이를 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-rot">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>회전 스펙트럼 실험실: 봉우리를 끌어 온도를 바꾼다</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-rot"></canvas><span class="hint top">아래 스펙트럼의 흰 손잡이(봉우리)를 좌우로 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>분자</span><div class="seg" id="ro-mol"><button data-value="CO" class="on">CO</button><button data-value="HCl">HCl</button><button data-value="HF">HF</button><button data-value="N2">N₂ (라만)</button></div></div>
+          <label class="ctrl"><span>온도 T <output id="ro-T-out"></output></span><input type="range" id="ro-T" min="80" max="3000" step="10" value="300"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">B · 선 간격</span><span class="v" id="ro-B">—</span></div>
+        <div class="stat"><span class="k">k<sub>B</sub>T</span><span class="v" id="ro-kT">—</span></div>
+        <div class="stat"><span class="k">가장 많은 J (계산 · 공식)</span><span class="v" id="ro-Jm">—</span></div>
+        <div class="stat"><span class="k">q<sub>rot</sub> (합 · 근사)</span><span class="v" id="ro-q">—</span></div>
+      </div>
+      <div class="sim-note">위: 준위별 점유 비율 \(N_J/N\). 아래: 스펙트럼(막대 높이 = 아래 준위 점유수에 비례하는 선 세기, 초록 점선 = 매끈한 포락선). 분자 자료는 바닥 진동 상태의 \(B_0\): CO 1.9225, HCl 10.44(H³⁵Cl), HF 20.56, N₂ 1.9896 cm⁻¹. N₂는 라만 스토크스 선(\(\Delta J = +2\), 간격 \(4B\))이고 핵스핀 통계 때문에 짝수 \(J\)가 홀수보다 두 배 세다(<a href="identical-particles.html">11장</a>). 해볼 것: ① HF는 \(B\)가 커서 상온에서도 선이 몇 개뿐이다. ② 온도를 네 배로 올리면 봉우리 \(J\)가 두 배쯤 된다. ③ \(q_\text{rot}\)의 정확한 합과 \(k_\mathrm{B}T/hcB\)를 비교한다(낮은 온도·큰 \(B\)에서 어긋난다).</div>
+    </div>
+    <div class="callout semi"><strong>플라스마의 기체 온도를 분자 회전으로 잰다</strong><p>식각·증착 플라스마의 기체 온도는 라디칼 반응 속도, 웨이퍼로 가는 열속, 가스 해리율을 바꾸지만 열전대를 넣을 수 없다. 대신 챔버 창으로 나오는 빛을 분광기로 받는 <b>발광 분광(OES)</b>에서 N₂ 2차 양성 띠(C→B, 337 nm)나 N₂⁺ 1차 음성 띠(B→X, 391.4 nm)의 회전 구조를 본다. 선 세기가 이 절의 \((2J+1)e^{-E_J/kT}\)꼴(정확히는 \(J'+J''+1\) 같은 횐–런던 인자가 곱해진다)이므로 볼츠만 그림이나 스펙트럼 맞춤으로 회전 온도를 얻고, 전자 충돌 들뜸이 \(J\)를 거의 바꾸지 않는다는 가정 아래 이를 기체 온도로 쓴다. ICP 식각 플라스마에서는 보통 400–1000 K가 나오고, 전력·압력에 따라 수백 K씩 움직인다. 아르곤에 N₂를 몇 % 섞어 "온도계 기체"로 쓰기도 한다. → <a href="https://semi.euiyun.com/etch/chapters/plasma.html">EtchBook · 플라스마: 식각의 재료</a></p></div>
+    <figure class="mini" id="mini-boltz">
+      <div class="mini-view"><canvas id="cv-boltz"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>실제 온도 <output id="bz-T-out"></output></span><input type="range" id="bz-T" min="200" max="2000" step="10" value="700"></label>
+        <label class="ctrl"><span>세기 잡음 <output id="bz-n-out"></output></span><input type="range" id="bz-n" min="0" max="25" step="1" value="8"></label>
+        <button class="btn" id="bz-new" type="button">새 측정</button>
+        <span class="readout" id="bz-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>볼츠만 그림: OES로 잰 회전선(\(B = 2.07\) cm⁻¹, N₂⁺ B 상태 근처) 세기를 \(\ln[I_J/(2J+1)]\) 대 \(E_J\)로 찍고(자홍 점) 직선을 맞춘다(초록). 기울기 \(-1/k_\mathrm{B}T\)에서 회전 온도가 나온다. 잡음을 키우면 약한 선(높은 \(J\))이 흩어져 오차가 커진다 — 실제로는 센 선에 무게를 두거나 스펙트럼 전체를 맞춘다.</figcaption>
+    </figure>
+    <div class="example" data-title="두 선의 세기비로 플라스마 회전 온도 구하기">
+      <p>OES 스펙트럼에서 회전 상수 \(B = 2.07\) cm⁻¹인 띠의 \(J = 6\) 선과 \(J = 18\) 선의 세기비가 \(I_{18}/I_6 = 0.80\)이었다. 선 세기 \(\propto (2J+1)e^{-hcBJ(J+1)/k_\mathrm{B}T}\)로 보고 회전 온도를 구하라. (\(k_\mathrm{B}/hc = 0.6950\) cm⁻¹/K)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 축퇴도로 나눈 세기비의 로그 = \(-(E_{18} - E_6)/k_\mathrm{B}T\).</div>
+        <div class="step"><b>풀이</b> \(E_6 = 2.07\times42 = 86.9\) cm⁻¹, \(E_{18} = 2.07\times342 = 707.9\) cm⁻¹, 차이 621.0 cm⁻¹. \(\dfrac{I_{18}/37}{I_6/13} = 0.80\times\dfrac{13}{37} = 0.2811\), \(\ln 0.2811 = -1.269\). \(k_\mathrm{B}T = 621.0/1.269 = 489.3\) cm⁻¹ → \(T = 489.3/0.6950 = 704\) K.</div>
+        <div class="answer">\(T_\text{rot} \approx 704\) K</div>
+        <div class="step"><b>검토</b> \(J_\text{max} = \sqrt{489/4.14} - 0.5 = 10.4\)이니 \(J = 6\)과 18은 봉우리의 양쪽이다. 세기비가 1에 가깝다는 것은 두 선이 봉우리를 사이에 두고 비슷한 높이라는 뜻이다. 실전에서는 두 선보다 여러 선의 직선 맞춤(미니 실험)이 훨씬 튼튼하다.</div>
+      </details>
+    </div>
+    <h3>도전: 스펙트럼을 보고 B와 온도 맞히기</h3>
+    <p>공정 가스 분석에서는 반대로 묻는다. 측정한 회전 스펙트럼 하나에서 어떤 분자인지(\(B\))와 얼마나 뜨거운지(\(T\))를 동시에 읽어야 한다. 선 간격은 \(B\)만, 봉우리 위치는 \(B\)와 \(T\)를 함께 정한다는 점을 이용하라.</p>
+    <div class="sim" id="sim-game">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>스펙트럼 맞히기 게임: 모형 손잡이 두 개로 B와 T를 찾아라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-game"></canvas><span class="hint top">□ = 선 간격(B) · ○ = 봉우리(T)</span></div>
+        <div class="sim-controls">
+          <div class="ctrl-row"><button class="btn primary" id="gm-new" type="button">새 스펙트럼</button><button class="btn" id="gm-show" type="button">정답 보기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">내 모형 B · T</span><span class="v" id="gm-guess">—</span></div>
+        <div class="stat"><span class="k">일치도</span><span class="v" id="gm-fit">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="gm-ok">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="gm-score">—</span></div>
+      </div>
+      <div class="sim-note">자홍 막대 = 측정 스펙트럼(잡음 포함, 가장 센 선을 1로), 초록 막대 = 내 모형(오른쪽에 살짝 비켜 그림). 사각 손잡이는 모형의 다섯째 선(\(\tilde\nu = 10B\))이고, 둥근 손잡이는 모형 포락선의 봉우리다. 성공: \(B\)가 1.5 %, \(T\)가 8 % 안. 점수는 성공한 판에서 정답 보기 없이 맞힌 수다. 요령: ① 먼저 사각 손잡이로 막대 간격을 맞춘다(\(T\)와 무관). ② 그다음 둥근 손잡이로 봉우리를 맞춘다. 같은 봉우리라도 \(B\)가 크면 온도가 높다(\(J_\text{max} \propto \sqrt{T/B}\)).</div>
+    </div>
+    <div class="callout semi"><strong>배기 가스의 FTIR: 회전선이 지문이다</strong><p>식각·챔버 세정 배기에는 HF, CO, COF₂, SiF₄와 남은 CF₄·NF₃·SF₆가 섞여 나온다. 스크러버 앞뒤에서 이를 실시간으로 재는 표준 도구가 <b>FTIR</b>(푸리에 변환 적외선 분광)이다. 이원자 분자의 진동 흡수는 회전 구조를 데리고 나온다: 띠 중심 \(\tilde\nu_0\)(CO 2143 cm⁻¹, HCl 2886, HF 3961) 양쪽으로 R 가지 \(\tilde\nu_0 + 2B(J+1)\)와 P 가지 \(\tilde\nu_0 - 2BJ\)가 \(2B\) 간격으로 늘어서고 가운데에 \(4B\)짜리 틈이 있다. HF는 \(B\)가 커서 선이 40 cm⁻¹ 간격으로 띄엄띄엄 서 있어 다른 가스와 겹치지 않고 ppm 이하까지 정량된다. 선 세기 분포가 이 절의 볼츠만 꼴이므로 가스 셀 온도를 맞춰야 농도가 맞는다. 과불화 화합물 분해 효율(DRE)도 같은 장비로 확인한다. → <a href="https://semi.euiyun.com/infra/chapters/exhaust.html">InfraBook · 배기와 스크러버</a></p></div>
+    <div class="callout semi"><strong>종말점 신호도 분자 띠다</strong><p>산화막 식각에서 막이 뚫리는 순간을 잡는 OES 종말점 검출은 CO(483, 520 nm 근처 옹스트룀 띠)나 SiF, CN 같은 반응 생성물의 띠 세기를 지켜본다. 이 띠들은 진동·회전 구조로 수 nm에 걸쳐 퍼져 있어서, 분광기 분해능과 플라스마 온도(회전 분포)에 따라 띠 모양이 바뀐다. 장비를 바꾸거나 전력을 올리면 같은 파장 창에서 읽는 세기가 회전 온도 때문에 달라질 수 있으므로 종말점 문턱을 다시 맞춘다. → <a href="https://semi.euiyun.com/etch/chapters/endpoint.html">EtchBook · 종말점과 균일도</a></p></div>
+    <div class="drill" id="drill-rot" data-title="회전 스펙트럼 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 정리 -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li><b>교환 관계</b>: \(\hat{\mathbf L} = \hat{\mathbf r}\times\hat{\mathbf p}\)에서 \([\hat L_i, \hat L_j] = i\hbar\varepsilon_{ijk}\hat L_k\), \([\hat L^2, \hat L_i] = 0\). 성분 둘은 동시에 정해지지 않고(\(\Delta L_x\Delta L_y \ge \tfrac\hbar2|\langle L_z\rangle|\)), \(\hat L^2\)과 \(\hat L_z\)의 동시 고유 상태 \(|l\,m\rangle\)를 기저로 쓴다. \(\hat L_z = -i\hbar\,\partial_\phi\).</li>
+      <li><b>사다리 대수</b>: \(\hat J_\pm = \hat J_x \pm i\hat J_y\), \([\hat J_z, \hat J_\pm] = \pm\hbar\hat J_\pm\). 교환 관계만으로 \(\hat J^2 \to j(j+1)\hbar^2\), \(\hat J_z \to m\hbar\), \(m = -j..j\), \(2j \in \{0,1,2,\dots\}\). \(\hat J_\pm|j\,m\rangle = \hbar\sqrt{j(j+1)-m(m\pm1)}\,|j\,m\pm1\rangle\). 궤도 각운동량은 단일값 조건으로 정수 \(l\)만.</li>
+      <li><b>구면 조화 함수</b>: \(Y_l^m \propto P_l^m(\cos\theta)e^{im\phi}\)는 \(\hat L_+Y_l^l = 0\)과 \(\hat L_-\)로 만든다. 규격 직교, 완비, 패리티 \((-1)^l\), \(Y_l^{-m} = (-1)^mY_l^{m*}\). 실수 오비탈은 \(Y_l^{\pm m}\)의 합·차(\(p_x = (Y_1^{-1}-Y_1^1)/\sqrt2\)): 같은 \(l\)이지만 \(L_z\)는 \(\pm|m|\hbar\) 반반.</li>
+      <li><b>벡터 모형</b>: \(|\mathbf L| = \hbar\sqrt{l(l+1)} > l\hbar\), \(\langle L_x\rangle = 0\), \(\langle L_x^2\rangle = \tfrac{\hbar^2}{2}[l(l+1)-m^2]\), \(\cos\theta_L = m/\sqrt{l(l+1)}\). \(\mathbf L\)은 \(z\)축과 나란할 수 없다.</li>
+      <li><b>기운 축의 측정</b>: 축 \(\hat{\mathbf n}\)(극각 \(\theta\))으로 재도 결과는 \(m'\hbar\)뿐이고 확률은 \(|d^{\,l}_{m'm}(\theta)|^2\), 기댓값 \(m\hbar\cos\theta\). \(|1,1\rangle\)을 \(x\)로 재면 \(\tfrac14, \tfrac12, \tfrac14\).</li>
+      <li><b>회전</b>: \(\hat R(\alpha,\hat{\mathbf n}) = e^{-i\alpha\hat{\mathbf n}\cdot\hat{\mathbf J}/\hbar}\) — 각운동량은 회전의 생성자이고 교환 관계는 회전의 비가환성이다. \(e^{-i\alpha\hat L_z/\hbar}Y_l^m = e^{-im\alpha}Y_l^m\). \(D^{\,j}_{m'm} = e^{-im'\alpha}d^{\,j}_{m'm}(\beta)e^{-im\gamma}\), 회전은 \(j\)를 바꾸지 않는다. 반정수 \(j\)는 360°에서 \(-1\).</li>
+      <li><b>강체 회전자</b>: \(E_J = hcBJ(J+1)\), \(B = h/8\pi^2cI\), \(I = \mu R^2\), 축퇴 \(2J+1\). 쌍극 선택 규칙 \(\Delta J = \pm1\) → 선 \(2B(J+1)\), 간격 \(2B\). 점유 \(\propto(2J+1)e^{-E_J/k_\mathrm{B}T}\), \(J_\text{max} \approx \sqrt{k_\mathrm{B}T/2hcB} - \tfrac12\): 선 간격이 결합 길이를, 세기 분포가 회전 온도를 준다(OES 기체 온도, FTIR 가스 분석).</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 문제 -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>각운동량은 따로 말이 없으면 \(\hbar\) 단위로 답한다(예: \(\sqrt6\,\hbar\)이면 2.45). 확률은 0–1 사이 소수로 쓴다. 상수: \(h = 6.626\times10^{-34}\) J·s, \(c = 2.998\times10^{10}\) cm/s, 1 u = \(1.6605\times10^{-27}\) kg, \(k_\mathrm{B}/hc = 0.6950\) cm⁻¹/K.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="벡터 연산자">
+        <div class="prob-q"><p>\([\hat L_z, \hat x]\)는?</p></div>
+        <div class="prob-choices"><button>0</button><button data-correct>\(i\hbar\hat y\)</button><button>\(-i\hbar\hat y\)</button><button>\(i\hbar\hat x\)</button></div>
+        <div class="prob-sol"><p>\([\hat x\hat p_y - \hat y\hat p_x, \hat x] = -\hat y[\hat p_x, \hat x] = -\hat y(-i\hbar) = i\hbar\hat y\). 일반식 \([\hat L_i, \hat x_j] = i\hbar\varepsilon_{ijk}\hat x_k\)에서 \(i = z, j = x\) → \(k = y\), \(\varepsilon_{zxy} = +1\). \(\hat L_z\)가 \(x\)를 \(y\) 쪽으로 돌리는 생성자라는 뜻이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="f 상태" data-answer="3.46; 7" data-label="|L| =; L_z 값의 개수 =" data-unit="ħ; 개">
+        <div class="prob-q"><p>\(l = 3\)(f) 상태의 각운동량 크기와 가능한 \(L_z\) 값의 개수를 구하라.</p></div>
+        <div class="prob-sol"><p>\(|L| = \sqrt{3\cdot4}\,\hbar = \sqrt{12}\,\hbar = 3.46\hbar\). \(m = -3, \dots, 3\)의 7개.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="올림 계수" data-answer="3.16" data-label="계수 =" data-unit="ħ">
+        <div class="prob-q"><p>\(\hat J_+|3, 1\rangle = c\,|3, 2\rangle\)에서 \(c\)를 구하라.</p></div>
+        <div class="prob-sol"><p>\(c = \hbar\sqrt{j(j+1) - m(m+1)} = \hbar\sqrt{12 - 2} = \sqrt{10}\,\hbar = 3.16\hbar\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="j = 3/2 행렬 원소" data-answer="1.00" data-label="⟨J_x⟩ 원소 =" data-unit="ħ">
+        <div class="prob-q"><p>\(j = 3/2\)에서 행렬 원소 \(\langle \tfrac32, \tfrac12|\hat J_x|\tfrac32, -\tfrac12\rangle\)를 구하라.</p></div>
+        <div class="prob-hint">\(\hat J_x = (\hat J_+ + \hat J_-)/2\). \(m = -\tfrac12 \to \tfrac12\)는 \(\hat J_+\)만 기여한다.</div>
+        <div class="prob-sol"><p>\(\tfrac12\hbar\sqrt{\tfrac{15}{4} - (-\tfrac12)(\tfrac12)} = \tfrac12\hbar\sqrt{\tfrac{16}{4}} = \tfrac12\cdot2\hbar = \hbar\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="성분의 불확정도" data-answer="2.35" data-label="ΔL_x =" data-unit="ħ">
+        <div class="prob-q"><p>상태 \(|3, -1\rangle\)에서 \(\Delta L_x\)를 구하고, \(\Delta L_x\Delta L_y\)가 로버트슨 하한을 만족하는지 확인하라.</p></div>
+        <div class="prob-hint">\(\langle L_x\rangle = 0\), \(\langle L_x^2\rangle = \tfrac{\hbar^2}{2}[l(l+1) - m^2]\).</div>
+        <div class="prob-sol"><p>\(\langle L_x^2\rangle = \tfrac{\hbar^2}{2}(12 - 1) = 5.5\hbar^2\), \(\Delta L_x = \sqrt{5.5}\,\hbar = 2.35\hbar\). \(\Delta L_x\Delta L_y = 5.5\hbar^2 \ge \tfrac\hbar2|\langle L_z\rangle| = 0.5\hbar^2\) — 넉넉히 만족한다. 등호는 \(|m| = l\)일 때만 성립한다: \(\Delta L_x\Delta L_y = \tfrac{\hbar^2}{2}[l(l+1) - l^2] = \tfrac{l\hbar^2}{2} = \tfrac\hbar2\cdot l\hbar\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="각도 확률" data-answer="0.323" data-label="P =">
+        <div class="prob-q"><p>각도 부분이 \(Y_1^0\)인 입자가 \(z\)축에서 45° 이내의 원뿔(\(0 \le \theta \le 45^\circ\)) 방향에서 발견될 확률은?</p></div>
+        <div class="prob-hint">\(P = \frac{3}{4\pi}\cdot2\pi\int_0^{\pi/4}\cos^2\theta\sin\theta\,d\theta\).</div>
+        <div class="prob-sol"><p>\(P = \tfrac32\cdot\tfrac13[1 - \cos^3(\pi/4)] = \tfrac12(1 - 0.3536) = 0.323\). 원뿔이 구 넓이의 14.6 %밖에 안 되지만 \(\cos^2\theta\)가 극 쪽에 몰려 있어 확률은 32 %다. 반대쪽 원뿔도 같으니 두 극 45° 이내에 65 %가 있다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="L_z 고유 함수">
+        <div class="prob-q"><p>다음 가운데 \(\hat L_z\)의 고유 함수는?</p></div>
+        <div class="prob-choices"><button>\(\sin\theta\cos\phi\)</button><button data-correct>\(\sin\theta\,e^{-i\phi}\)</button><button>\(\cos\theta\sin\phi\)</button><button>\(\sin^2\theta\cos2\phi\)</button></div>
+        <div class="prob-sol"><p>\(-i\hbar\,\partial_\phi(\sin\theta\,e^{-i\phi}) = -\hbar\sin\theta\,e^{-i\phi}\) → 고유값 \(-\hbar\). 나머지는 \(\cos\phi = (e^{i\phi} + e^{-i\phi})/2\)처럼 \(\pm m\)이 섞인 실수 함수(\(p_x\), \(p_y\) 꼴, \(d_{x^2-y^2}\))다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="중첩 상태의 기댓값" data-answer="4.67; -0.333" data-label="⟨L²⟩ =; ⟨L_z⟩ =" data-unit="ħ²; ħ">
+        <div class="prob-q"><p>\(\psi = \tfrac{1}{\sqrt3}Y_1^1 + \sqrt{\tfrac23}\,Y_2^{-1}\)에서 \(\langle L^2\rangle\)과 \(\langle L_z\rangle\)를 구하라. \(L^2\)을 한 번 재면 어떤 값들이 어떤 확률로 나오는가?</p></div>
+        <div class="prob-sol"><p>\(L^2 = 2\hbar^2\)(확률 1/3) 또는 \(6\hbar^2\)(2/3). \(\langle L^2\rangle = \tfrac13\cdot2 + \tfrac23\cdot6 = 4.67\hbar^2\). \(L_z = +\hbar\)(1/3) 또는 \(-\hbar\)(2/3) → \(\langle L_z\rangle = -0.333\hbar\). \(\langle L^2\rangle\)은 어떤 측정값(2나 6)과도 같지 않다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="기운 축 측정" data-answer="0.750; 0.125" data-label="P(0) =; P(+ħ) =">
+        <div class="prob-q"><p>\(|1, 0\rangle\) 상태를 \(z\)축에서 30° 기운 축으로 잴 때 결과가 0일 확률과 \(+\hbar\)일 확률을 구하라.</p></div>
+        <div class="prob-hint">\(d^1_{00}(\theta) = \cos\theta\), \(d^1_{\pm1,0}(\theta) = \pm\sin\theta/\sqrt2\).</div>
+        <div class="prob-sol"><p>\(P(0) = \cos^230^\circ = 0.750\), \(P(\pm\hbar) = \sin^230^\circ/2 = 0.125\)씩. 합 1, 기댓값 0(\(m = 0\)이므로 어느 축이든 0).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="행렬로 기댓값" data-answer="0.707" data-label="⟨L_x⟩ =" data-unit="ħ">
+        <div class="prob-q"><p>\(|\psi\rangle = (|1,1\rangle + |1,0\rangle)/\sqrt2\)에서 \(\langle L_x\rangle\)를 구하라. \(\langle L_y\rangle\)는 얼마인가?</p></div>
+        <div class="prob-hint">\(L_x = \frac{\hbar}{\sqrt2}\begin{pmatrix}0&1&0\\1&0&1\\0&1&0\end{pmatrix}\).</div>
+        <div class="prob-sol"><p>\(L_x\psi = \frac{\hbar}{\sqrt2}\cdot\frac{1}{\sqrt2}(1, 1, 1)^T\), \(\psi^\dagger L_x\psi = \frac{\hbar}{2}\cdot\frac{1}{\sqrt2}(1 + 1) = \hbar/\sqrt2 = 0.707\hbar\). \(L_y\)는 순허수 행렬이고 \(\psi\)가 실수라 \(\langle L_y\rangle = 0\). 벡터 모형으로는 \(z\)와 \(xy\) 평면 사이에서 \(x\)쪽으로 기운 각운동량이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="회전과 생존 확률" data-answer="65.5" data-tol="0.3" data-label="β =" data-unit="°">
+        <div class="prob-q"><p>\(|1,1\rangle\)을 \(y\)축 둘레로 각 \(\beta\) 돌린 뒤 \(L_z\)를 쟀더니 \(+\hbar\)가 나올 확률이 0.5였다. \(\beta\)(0–180°)를 구하라.</p></div>
+        <div class="prob-hint">생존 진폭은 \(d^1_{11}(\beta) = (1+\cos\beta)/2\).</div>
+        <div class="prob-sol"><p>\(\bigl(\tfrac{1+\cos\beta}{2}\bigr)^2 = 0.5\) → \(1 + \cos\beta = \sqrt2\) → \(\cos\beta = 0.4142\) → \(\beta = 65.5^\circ\). 스핀 1/2라면 \(\cos^2(\beta/2) = 0.5\)에서 90°였을 것이다 — \(j\)가 클수록 같은 각에서 상태가 더 빨리 "빠져나간다".</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="HCl 흡수선" data-answer="62.6" data-label="ν̃ =" data-unit="cm⁻¹">
+        <div class="prob-q"><p>H³⁵Cl(\(B = 10.44\) cm⁻¹)의 \(J = 2 \to 3\) 순수 회전 흡수선의 파수는?</p></div>
+        <div class="prob-sol"><p>\(\tilde\nu = 2B(J+1) = 2\times10.44\times3 = 62.6\) cm⁻¹ (원적외선, 파장 160 µm).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="결합 길이" data-answer="0.113" data-label="R =" data-unit="nm">
+        <div class="prob-q"><p>¹²C¹⁶O의 회전선 간격이 3.845 cm⁻¹이다. 결합 길이를 구하라(질량 12.000 u, 15.995 u).</p></div>
+        <div class="prob-sol"><p>\(B = 1.9225\) cm⁻¹, \(I = h/(8\pi^2cB) = 1.456\times10^{-46}\) kg·m². \(\mu = 6.856\) u \(= 1.1385\times10^{-26}\) kg. \(R = \sqrt{I/\mu} = 1.131\times10^{-10}\) m = 0.113 nm.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="가장 센 선" data-answer="2" data-label="J_max =">
+        <div class="prob-q"><p>500 K의 HF 기체(\(B = 20.56\) cm⁻¹)에서 가장 많이 채워진 회전 준위 \(J\)(정수)는?</p></div>
+        <div class="prob-hint">\(J_\text{max} \approx \sqrt{k_\mathrm{B}T/2hcB} - \tfrac12\)을 구해 가장 가까운 정수를 고르고, 이웃 \(J\)의 \(N_J\)를 비교해 확인한다.</div>
+        <div class="prob-sol"><p>\(k_\mathrm{B}T/hc = 347.5\) cm⁻¹, \(\sqrt{347.5/41.12} - 0.5 = 2.41\). \(N_J \propto (2J+1)e^{-20.56J(J+1)/347.5}\): \(J = 2\): \(5e^{-0.355} = 3.51\), \(J = 3\): \(7e^{-0.710} = 3.44\) → \(J = 2\)(근소한 차이).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="FTIR 회전 온도" data-answer="437" data-tol="2%" data-label="T =" data-unit="K">
+        <div class="prob-q"><p>배기 라인의 뜨거운 HCl(\(B = 10.44\) cm⁻¹)을 FTIR로 재었더니 \(J = 5\)에서 올라가는 선이 \(J = 1\)에서 올라가는 선보다 1.40배 셌다. 선 세기 \(\propto(2J+1)e^{-hcBJ(J+1)/k_\mathrm{B}T}\)로 보고 기체 온도를 구하라.</p></div>
+        <div class="prob-sol"><p>\(E_1 = 20.88\), \(E_5 = 313.2\) cm⁻¹, 차 292.3 cm⁻¹. \(\dfrac{I_5/11}{I_1/3} = 1.40\times\dfrac{3}{11} = 0.3818\), \(\ln = -0.9628\). \(k_\mathrm{B}T/hc = 292.3/0.9628 = 303.6\) cm⁻¹ → \(T = 437\) K. 높은 \(J\) 선이 더 세다는 것만으로 상온(300 K에서 비 0.90)보다 뜨겁다는 것을 바로 알 수 있다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="회전 분광 선택 규칙">
+        <div class="prob-q"><p>다음 가운데 순수 회전 흡수(마이크로파·원적외선) 스펙트럼이 <b>나타나지 않는</b> 분자는?</p></div>
+        <div class="prob-choices"><button>CO</button><button>HF</button><button data-correct>N₂</button><button>HCl</button></div>
+        <div class="prob-sol"><p>N₂는 대칭이라 영구 쌍극자가 없어 \(\Delta J = \pm1\) 쌍극 전이가 일어나지 않는다. 회전 구조는 라만(\(\Delta J = \pm2\))이나 전자 띠(OES의 N₂ 2차 양성 띠)에서 본다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 퀴즈 -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>\(|l\,m\rangle\) 상태의 각운동량 벡터가 \(z\)축과 정확히 나란할 수 없는 이유는?</p><div class="opts">
+        <button class="opt">\(m\)이 정수라서</button><button class="opt" data-correct>나란하면 \(L_x = L_y = 0\)이 되어 교환하지 않는 세 성분이 모두 정해지기 때문</button><button class="opt">원심력 때문에</button><button class="opt">\(\hat L^2\)이 에르미트가 아니라서</button>
+      </div><div class="quiz-exp">\(|\mathbf L|^2 = l(l+1)\hbar^2 > (l\hbar)^2\)인 것은 \(\langle L_x^2 + L_y^2\rangle = [l(l+1) - m^2]\hbar^2 \gt 0\)이기 때문이고, 이것은 교환 관계가 요구하는 최소한의 불확정성이다. 예외는 \(l = 0\)(모든 성분이 0)뿐이다.</div></div>
+      <div class="quiz-q"><p>사다리 논증에서 \(2j\)가 정수여야 하는 이유는?</p><div class="opts">
+        <button class="opt">파동함수가 한 바퀴 돌아 같은 값이 되어야 해서</button><button class="opt" data-correct>맨 위 \(m = j\)에서 맨 아래 \(m = -j\)까지 \(\hat J_-\)의 1씩 걸음으로 정확히 닿아야 해서</button><button class="opt">에너지가 양수여야 해서</button><button class="opt">\(\hat J_+\)가 에르미트라서</button>
+      </div><div class="quiz-exp">닿지 못하면 노름 제곱이 음수인 상태가 생긴다(미니 실험). 첫째 보기(단일값)는 궤도 각운동량에서 반정수를 추가로 없애는 조건이다.</div></div>
+      <div class="quiz-q"><p>\(Y_3^2\)를 \(z\)축 둘레로 60° 돌리면?</p><div class="opts">
+        <button class="opt">\(Y_3^1\)과 \(Y_3^3\)이 섞인다</button><button class="opt">\(|Y|^2\)의 모양이 60° 돈다</button><button class="opt" data-correct>위상 \(e^{-2i\cdot60^\circ} = e^{-2\pi i/3}\)만 곱해지고 \(|Y|^2\)은 그대로다</button><button class="opt">\(l\)이 바뀐다</button>
+      </div><div class="quiz-exp">\(\hat L_z\) 고유 상태는 \(z\) 회전의 고유 상태이기도 하다. 모양이 실제로 도는 것은 실수 오비탈(\(\pm m\) 섞임)이고, 어떤 회전도 \(l\)은 바꾸지 못한다.</div></div>
+      <div class="quiz-q"><p>\(|2, 0\rangle\) 상태를 \(x\)축 방향으로 재면 가능한 결과는?</p><div class="opts">
+        <button class="opt">0만</button><button class="opt">\(\pm\sqrt6\,\hbar\)</button><button class="opt" data-correct>\(-2\hbar, 0, 2\hbar\) (\(\pm\hbar\)는 나오지 않음)</button><button class="opt">\(-2\hbar\)부터 \(2\hbar\)까지 다섯 값이 같은 확률로</button>
+      </div><div class="quiz-exp">\(d^2_{\pm1,0}(90^\circ) \propto \sin\beta\cos\beta = 0\)이라 \(\pm\hbar\)는 확률 0이다. 확률은 \(P(\pm2) = 3/8\), \(P(0) = 1/4\) (\(d^2_{00} = (3\cos^2\beta - 1)/2 = -1/2\)). 측정 시뮬레이터에서 \(l = 2\), \(m = 0\), θ = 90°로 확인할 수 있다.</div></div>
+      <div class="quiz-q"><p>기체의 온도를 올리면 회전 흡수 스펙트럼은?</p><div class="opts">
+        <button class="opt">선 간격이 넓어진다</button><button class="opt" data-correct>선 간격은 그대로이고, 세기 봉우리가 높은 \(J\)(큰 파수) 쪽으로 \(\sqrt T\)에 비례해 옮겨 간다</button><button class="opt">새로운 선택 규칙 \(\Delta J = \pm2\)가 열린다</button><button class="opt">모든 선이 같은 비율로 세진다</button>
+      </div><div class="quiz-exp">선 위치 \(2B(J+1)\)은 분자 구조(\(B\))만으로 정해진다. 온도는 점유 분포 \((2J+1)e^{-E_J/k_\mathrm{B}T}\)를 바꿔 세기 모양만 바꾼다 — 그래서 간격에서 \(B\)를, 모양에서 \(T\)를 따로 읽을 수 있다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const TAU = 2 * Math.PI, DEG = Math.PI / 180;
+  const KCM = 0.6950348;          // k_B/hc (cm⁻¹/K)
+  const GHZ = 29.9792458;         // 1 cm⁻¹ → GHz
+  const cssRGB = (() => { const c = document.createElement("canvas").getContext("2d"); return (s) => { c.fillStyle = "#000"; c.fillStyle = String(s).trim(); const h = c.fillStyle; if (h[0] === "#") return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; const m = h.match(/[\d.]+/g).map(Number); return [m[0], m[1], m[2]]; }; })();
+  const handle = (ctx, x, y, col, r = 9, square = false) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); if (square) ctx.rect(x - r, y - r, 2 * r, 2 * r); else ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const jstr = (j) => (Math.abs(j - Math.round(j)) < 1e-9 ? String(Math.round(j)) : `${Math.round(2 * j)}/2`);
+  const mstr = (m) => (m < -1e-9 ? "−" : m > 1e-9 ? "+" : "") + jstr(Math.abs(m));
+  const jtex = (j) => { const a = Math.abs(j), s = j < -1e-9 ? "-" : ""; return s + (Math.abs(a - Math.round(a)) < 1e-9 ? String(Math.round(a)) : `\\tfrac{${Math.round(2 * a)}}{2}`); };
+  const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", "-": "⁻" }, SUB = { 0: "₀", 1: "₁", 2: "₂", 3: "₃", 4: "₄", 5: "₅" };
+  const ysym = (l, m) => "Y" + String(l).split("").map((c) => SUB[c]).join("") + String(m).split("").map((c) => SUP[c]).join("");
+  const RN = { "0,0": ["s", "s"], "1,0": ["p_z", "p<sub>z</sub>"], "1,1": ["p_x", "p<sub>x</sub>"], "1,-1": ["p_y", "p<sub>y</sub>"], "2,0": ["d_z²", "d<sub>z²</sub>"], "2,1": ["d_xz", "d<sub>xz</sub>"], "2,-1": ["d_yz", "d<sub>yz</sub>"], "2,2": ["d_x²−y²", "d<sub>x²−y²</sub>"], "2,-2": ["d_xy", "d<sub>xy</sub>"] };
+  const realName = (l, m, html) => { const r = RN[`${l},${m}`]; return r ? r[html ? 1 : 0] : `${"spdfg"[l]} (m = ${m})`; };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+
+  /* ---------------------------------------------------------- 3D 곡면 (정사영, 화가 알고리즘) */
+  function makeMesh(f, NT = 28, NP = 40, sq = false) {
+    const W = NP + 1, V = new Array((NT + 1) * W), C = new Array(NT * NP);
+    let rmax = 0;
+    for (let i = 0; i <= NT; i++) {
+      const th = (Math.PI * i) / NT, st = Math.sin(th), ct = Math.cos(th);
+      for (let j = 0; j <= NP; j++) {
+        const ph = (TAU * j) / NP, z = f(th, ph);
+        let r = Math.hypot(z[0], z[1]); if (sq) r *= r; if (r > rmax) rmax = r;
+        V[i * W + j] = [r * st * Math.cos(ph), r * st * Math.sin(ph), r * ct];
+      }
+    }
+    for (let i = 0; i < NT; i++) for (let j = 0; j < NP; j++) C[i * NP + j] = f((Math.PI * (i + 0.5)) / NT, (TAU * (j + 0.5)) / NP);
+    return { V, C, NT, NP, rmax: rmax || 1 };
+  }
+  const meshCache = {};
+  const ylmMesh = (l, m, real, sq) => { const k = `${l},${m},${real ? 1 : 0},${sq ? 1 : 0}`; return meshCache[k] || (meshCache[k] = makeMesh(real ? (t, p) => [QM.realY(l, m, t, p), 0] : (t, p) => QM.Ylm(l, m, t, p), 28, 40, sq)); };
+  function drawSurf(ctx, cx, cy, R, view, mesh, o = {}) {
+    const P = pal(), dark = SB.isDark(), s = R / mesh.rmax, { V, C, NT, NP } = mesh, W = NP + 1;
+    const pr = new Array(V.length);
+    for (let k = 0; k < V.length; k++) { const q = QM.blochProject(view, V[k]); pr[k] = [cx + s * q[0], cy - s * q[1], q[2]]; }
+    const cam = QM.blochPick(view, 0, 0, 1, 0, 0);
+    const Qd = [];
+    for (let i = 0; i < NT; i++) for (let j = 0; j < NP; j++) { const a = i * W + j; Qd.push([pr[a][2] + pr[a + 1][2] + pr[a + W][2] + pr[a + W + 1][2], a, i * NP + j]); }
+    Qd.sort((p, q) => p[0] - q[0]);
+    const cA = cssRGB(P.accent), cB = cssRGB(P.accent2);
+    ctx.save(); ctx.lineWidth = 0.8; ctx.lineJoin = "round";
+    for (const [, a, k] of Qd) {
+      const b = a + 1, c = a + W + 1, d = a + W, A = V[a], B = V[b], Cc = V[c], D = V[d];
+      const n = QM.v3.cross([Cc[0] - A[0], Cc[1] - A[1], Cc[2] - A[2]], [D[0] - B[0], D[1] - B[1], D[2] - B[2]]), nl = QM.v3.norm(n);
+      const sh = nl > 1e-14 ? Math.abs(QM.v3.dot(n, cam)) / nl : 0.6, z = C[k];
+      let rgb;
+      if (o.sign) { const base = z[0] >= 0 ? cA : cB, t = 0.5 + 0.5 * sh; rgb = [base[0] * t, base[1] * t, base[2] * t]; }
+      else rgb = QM.phaseRGB(z[0], z[1], dark ? 0.3 + 0.3 * sh : 0.28 + 0.32 * sh);
+      const col = `rgb(${rgb[0] | 0},${rgb[1] | 0},${rgb[2] | 0})`;
+      ctx.fillStyle = col; ctx.strokeStyle = col;
+      ctx.beginPath(); ctx.moveTo(pr[a][0], pr[a][1]); ctx.lineTo(pr[b][0], pr[b][1]); ctx.lineTo(pr[c][0], pr[c][1]); ctx.lineTo(pr[d][0], pr[d][1]); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawAxes(ctx, cx, cy, L, view) {
+    const P = pal();
+    ctx.save(); ctx.globalAlpha = 0.75;
+    [[[1, 0, 0], "x"], [[0, 1, 0], "y"], [[0, 0, 1], "z"]].forEach(([v, lab]) => {
+      const q = QM.blochProject(view, v);
+      SB.dashLine(ctx, cx, cy, cx + L * q[0], cy - L * q[1], P.dim, [3, 3]);
+      SB.label(ctx, lab, cx + (L + 12) * q[0], cy - (L + 12) * q[1], { color: P.dim, size: 12 });
+    });
+    ctx.restore();
+  }
+  function signLegend(ctx, x, y) {
+    const P = pal();
+    ctx.fillStyle = P.accent; ctx.fillRect(x, y - 6, 12, 12); SB.label(ctx, "+", x + 20, y, { align: "left", size: 12 });
+    ctx.fillStyle = P.accent2; ctx.fillRect(x + 36, y - 6, 12, 12); SB.label(ctx, "−", x + 56, y, { align: "left", size: 12 });
+  }
+  function rotDrag(cv, view) {
+    let d = null;
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x, y) => { d = { x, y, yaw: view.yaw, pitch: view.pitch }; },
+      move: (id, x, y) => { if (!d) return; view.yaw = d.yaw + (x - d.x) * 0.012; view.pitch = SB.clamp(d.pitch + (y - d.y) * 0.01, -1.45, 1.45); },
+      up: () => { d = null; } });
+    return () => d;
+  }
+
+  /* ---------------------------------------------------------- 머리 애니메이션: 회전하는 Y_l^m */
+  {
+    const seq = [[2, 1], [3, 2], [1, 1], [2, 0], [3, 3], [4, 2], [2, 2], [3, 1], [0, 0], [4, 3]];
+    let k = 0, l = 2, m = 1, real = false, t0 = 0;
+    const view = { yaw: -0.5, pitch: 0.38 };
+    const modeBtn = document.getElementById("hero-mode");
+    const cv = SB.canvas("cv-hero", (ctx, w, h) => {
+      const P = pal(), R = Math.min(h * 0.4, w * 0.3), cx = w * 0.5, cy = h * 0.5;
+      drawSurf(ctx, cx, cy, R, view, ylmMesh(l, m, real), { sign: real });
+      drawAxes(ctx, cx, cy, R * 1.15, view);
+      SB.label(ctx, real ? realName(l, m) : ysym(l, m), 14, 22, { align: "left", bold: true, size: 17 });
+      SB.label(ctx, `l = ${l}, m = ${m}`, 14, 44, { align: "left", color: P.dim, mono: true });
+      SB.label(ctx, `L² = ${l * (l + 1)}ħ²`, 14, 63, { align: "left", color: P.dim, mono: true });
+      SB.label(ctx, real ? (m ? `L_z = ±${Math.abs(m)}ħ 반반` : "L_z = 0") : `L_z = ${m}ħ`, 14, 82, { align: "left", color: P.dim, mono: true });
+      if (!real) { QM.drawPhaseWheel(ctx, w - 30, h - 58, 17); SB.label(ctx, "위상", w - 30, h - 30, { size: 11, color: P.dim }); }
+      else signLegend(ctx, w - 82, h - 40);
+    }, { aspect: 0.46, minHeight: 270, maxHeight: 360 });
+    const dragging = rotDrag(cv, view);
+    const sync = () => { modeBtn.textContent = real ? "복소 Y" : "실수 오비탈"; t0 = 0; cv.redraw(); };
+    document.getElementById("hero-l").addEventListener("click", () => { l = (l + 1) % 5; m = SB.clamp(m, -l, l); sync(); });
+    document.getElementById("hero-m").addEventListener("click", () => { m = m >= l ? -l : m + 1; sync(); });
+    modeBtn.addEventListener("click", () => { real = !real; sync(); });
+    SB.loop("hero", (dt) => {
+      if (!dragging()) view.yaw += dt * 0.35;
+      t0 += dt; if (t0 > 8) { k = (k + 1) % seq.length; [l, m] = seq[k]; t0 = 0; }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 미니: 고리 위 파동함수 */
+  {
+    let t = 0;
+    const g1 = SB.range("rg-m1", (v) => (v > 0 ? "+" : "") + v), g2 = SB.range("rg-m2", (v) => (v > 0 ? "+" : "") + v), gp = SB.range("rg-p", (v) => v.toFixed(2));
+    const rd = document.getElementById("rg-r");
+    const cv = SB.canvas("cv-ring", (ctx, w, h) => {
+      const P = pal(), m1 = g1(), m2 = g2(), p = gp(), same = m1 === m2;
+      const c1 = same ? 1 : Math.sqrt(1 - p), c2 = same ? 0 : Math.sqrt(p);
+      const cx = w * 0.42, cy = h * 0.5, r0 = Math.min(h * 0.27, w * 0.22), A = r0 * 0.6, mx = (c1 + c2) ** 2 || 1, N = 240;
+      ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r0, 0, TAU); ctx.stroke();
+      const pts = [];
+      for (let i = 0; i <= N; i++) {
+        const ph = (TAU * i) / N, a1 = m1 * ph - m1 * m1 * t, a2 = m2 * ph - m2 * m2 * t;
+        const re = c1 * Math.cos(a1) + c2 * Math.cos(a2), im = c1 * Math.sin(a1) + c2 * Math.sin(a2);
+        pts.push([ph, re, im, r0 + (A * (re * re + im * im)) / mx]);
+      }
+      for (let i = 0; i < N; i++) {
+        const [p0, re, im, r1] = pts[i], [q0, , , r2] = pts[i + 1];
+        ctx.fillStyle = QM.phaseColor(re, im, 0.9, SB.isDark() ? 58 : 50);
+        ctx.beginPath(); ctx.moveTo(cx + r0 * Math.cos(p0), cy - r0 * Math.sin(p0)); ctx.lineTo(cx + r1 * Math.cos(p0), cy - r1 * Math.sin(p0)); ctx.lineTo(cx + r2 * Math.cos(q0), cy - r2 * Math.sin(q0)); ctx.lineTo(cx + r0 * Math.cos(q0), cy - r0 * Math.sin(q0)); ctx.closePath(); ctx.fill();
+      }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 1.4; ctx.beginPath();
+      pts.forEach(([ph, , , r], i) => { const x = cx + r * Math.cos(ph), y = cy - r * Math.sin(ph); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+      SB.label(ctx, "φ = 0", cx + r0 + A + 26, cy, { size: 11, color: P.dim });
+      QM.drawPhaseWheel(ctx, w - 30, 30, 16);
+      SB.label(ctx, "위상", w - 30, 56, { size: 11, color: P.dim });
+      const Lz = same ? m1 : (1 - p) * m1 + p * m2;
+      rd.textContent = same ? `m₁ = m₂: L_z 고유 상태 (L_z = ${m1}ħ)` : p < 1e-9 || p > 1 - 1e-9 ? `L_z 고유 상태 (L_z = ${p < 0.5 ? m1 : m2}ħ)` : `P(${m1}ħ) = ${(1 - p).toFixed(2)}, P(${m2}ħ) = ${p.toFixed(2)} · ⟨L_z⟩ = ${Lz.toFixed(2)}ħ · 봉우리 ${Math.abs(m1 - m2)}개`;
+    }, { aspect: 0.55, minHeight: 230, maxHeight: 320 });
+    const loop = SB.loop("mini-ring", (dt) => { t += dt * 0.5; cv.redraw(); });
+    SB.play("rg-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 교환자 계산기 */
+  {
+    const out = document.getElementById("cm-out");
+    const NM = { Lx: "L_x", Ly: "L_y", Lz: "L_z", L2: "L^2", Lp: "L_+", Lm: "L_-" };
+    const fro = (M) => { let s = 0; for (let k = 0; k < M.re.length; k++) s += M.re[k] ** 2 + M.im[k] ** 2; return Math.sqrt(s); };
+    const num = (x) => { const a = Math.abs(x); return Math.abs(a - Math.round(a)) < 1e-6 ? String(Math.round(a)) : a.toFixed(3); };
+    const cfmt = (c) => {
+      const r = c[0], i = c[1];
+      if (Math.abs(i) < 1e-9) return (r < 0 ? "-" : "") + (Math.abs(Math.abs(r) - 1) < 1e-9 ? "" : num(r));
+      if (Math.abs(r) < 1e-9) return (i < 0 ? "-" : "") + (Math.abs(Math.abs(i) - 1) < 1e-9 ? "" : num(i)) + "i";
+      return `(${r < 0 ? "-" : ""}${num(r)}${i < 0 ? "-" : "+"}${num(i)}i)`;
+    };
+    const gj = SB.seg("cm-j", () => upd()), ga = SB.seg("cm-a", () => upd()), gb = SB.seg("cm-b", () => upd());
+    function upd() {
+      const j = Number(gj()), o = QM.spinOps(j), O = { Lx: o.Jx, Ly: o.Jy, Lz: o.Jz, L2: o.J2, Lp: o.Jp, Lm: o.Jm };
+      const a = ga(), b = gb(), A = O[a], B = O[b], Cm = QM.comm(A, B);
+      let res = null;
+      if (fro(Cm) < 1e-10) res = "0";
+      else for (const key of ["Lz", "Lx", "Ly", "Lp", "Lm"]) {
+        const X = O[key], nu = QM.trace(QM.mul(QM.dag(X), Cm)), de = QM.trace(QM.mul(QM.dag(X), X))[0];
+        if (de < 1e-12) continue;
+        const c = [nu[0] / de, nu[1] / de];
+        if (fro(QM.sub(Cm, QM.scale(X, c))) < 1e-9) { res = `${cfmt(c)}\\hbar\\, ${NM[key]}`; break; }
+      }
+      if (!res) res = "\\text{(한 연산자의 배수가 아님)}";
+      out.innerHTML = `<div class="mrow">\\(${NM[a]} = ${QM.tex(A, 2)}\\)</div><div class="mrow">\\(${NM[b]} = ${QM.tex(B, 2)}\\)</div><div class="mrow">\\([${NM[a]}, ${NM[b]}] = ${QM.tex(Cm, 2)}\\)</div><div class="mres">\\([${NM[a]}, ${NM[b]}] = ${res}\\)</div>`;
+      SB.math(out);
+      SB.stat("cm-res", SB.tex(res === "0" ? "0" : res));
+      if (QM.isHermitian(A)) { const E = QM.eigh(A).E.slice().reverse().map((e) => (Math.abs(e) < 1e-9 ? "0" : (e < 0 ? "−" : "") + num(e) )); SB.stat("cm-eig", E.join(", ")); }
+      else SB.stat("cm-eig", `에르미트 아님 (${a === "Lp" ? "L₊† = L₋" : "L₋† = L₊"})`);
+      SB.stat("cm-l2", `${num(j * (j + 1))} (모든 칸 같음 = j(j+1))`);
+    }
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: 성분 불확정도 */
+  SB.tangle("tg-unc", (v) => {
+    let { l, m } = v, note = "";
+    if (Math.abs(m) > l) { m = Math.sign(m) * l; note = `(|m| ≤ l이므로 m = ${m}로 계산) `; }
+    const x2 = (l * (l + 1) - m * m) / 2, lb = Math.abs(m) / 2;
+    let msg;
+    if (l === 0) msg = "l = 0: 모든 성분이 0 — 세 성분이 동시에 정해지는 유일한 경우다.";
+    else if (Math.abs(m) === l) msg = "|m| = l: 등호가 성립하는 최소 불확정 상태다.";
+    else if (m === 0) msg = "m = 0: 하한은 0이지만 옆 성분의 흔들림은 가장 크다.";
+    else msg = `하한보다 ${(x2 / lb).toFixed(1)}배 크다.`;
+    return { dx: Math.sqrt(x2).toFixed(3) + "ħ", pr: x2.toFixed(2) + "ħ²", lb: lb.toFixed(1) + "ħ²", msg: note + msg };
+  });
+  SB.drill("drill-unc", () => {
+    const l = randInt(1, 5), m = randInt(-l, l), x2 = (l * (l + 1) - m * m) / 2, v = Math.sqrt(x2);
+    return { q: `<p>상태 \\(|${l}, ${m}\\rangle\\)에서 \\(\\Delta L_x\\)를 \\(\\hbar\\) 단위로 구하라.</p>`, answer: v, label: "ΔL<sub>x</sub> =", unit: "ħ", tol: "1%",
+      sol: `\\(\\langle L_x\\rangle = 0\\), \\(\\Delta L_x = \\hbar\\sqrt{[l(l+1) - m^2]/2} = \\hbar\\sqrt{(${l * (l + 1)} - ${m * m})/2} = ${v.toFixed(3)}\\,\\hbar\\)` };
+  });
+
+  /* ---------------------------------------------------------- 사다리 놀이터 */
+  {
+    let j = 2, c = [], last = "—", frozen = null, cv = null;
+    const ms = () => Array.from({ length: c.length }, (_, k) => j - k);
+    const cUp = (m) => Math.sqrt(Math.max(0, j * (j + 1) - m * (m + 1)));
+    const cDn = (m) => Math.sqrt(Math.max(0, j * (j + 1) - m * (m - 1)));
+    const norm = () => Math.hypot(...c);
+    function reset() { const d = Math.round(2 * j + 1); c = new Array(d).fill(0); c[d - 1] = 1; last = `|${jstr(j)}, −${jstr(j)}⟩에서 시작`; cv && cv.redraw(); }
+    function apply(op) {
+      const d = c.length, M = ms(), n = new Array(d).fill(0), n0 = norm();
+      for (let k = 0; k < d; k++) {
+        const m = M[k], a = c[k]; if (!a) continue;
+        if (op === "up" && k > 0) n[k - 1] += cUp(m) * a;
+        if (op === "dn" && k < d - 1) n[k + 1] += cDn(m) * a;
+        if (op === "z") n[k] += m * a;
+        if (op === "x") { if (k > 0) n[k - 1] += 0.5 * cUp(m) * a; if (k < d - 1) n[k + 1] += 0.5 * cDn(m) * a; }
+      }
+      c = n;
+      const nn = norm(), nm = { up: "J₊", dn: "J₋", z: "J_z", x: "J_x" }[op];
+      last = nn < 1e-12 ? `${nm} → 0 (영벡터)${op === "up" || op === "dn" ? ": 사다리 끝" : ""}` : `${nm}: ‖ψ‖ ${n0.toFixed(3)} → ${nn.toFixed(3)}`;
+      cv.redraw();
+    }
+    SB.seg("ld-j", (v) => { j = Number(v); reset(); });
+    cv = SB.canvas("cv-ladder", (ctx, w, h, self) => {
+      const P = pal(), d = c.length, M = ms(), top = w < 520 ? 70 : 52, bot = h - 26, xl = 74, xr = w - 78, xc = (xl + xr) / 2;
+      const dy = d > 1 ? (bot - top) / (d - 1) : 0, Y = (k) => (d > 1 ? top + k * dy : (top + bot) / 2);
+      const mx = Math.max(1, ...c.map(Math.abs)), half = (xr - xl) / 2 - 16, sc = frozen || half / mx;
+      self._sc = sc; self._xc = xc; self._lim = half / sc; self._h = [];
+      SB.dashLine(ctx, xc, top - 16, xc, bot + 12, P.faint, [3, 3]);
+      ctx.font = "12px " + SB.color("mono"); ctx.textBaseline = "middle";
+      for (let k = 0; k < d; k++) {
+        const y = Y(k), v = c[k], xe = xc + v * sc, col = v >= 0 ? P.accent : P.accent2;
+        ctx.strokeStyle = P.axis; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xl, y); ctx.lineTo(xr, y); ctx.stroke();
+        ctx.fillStyle = P.dim; ctx.textAlign = "right"; ctx.fillText(`m=${mstr(M[k])}`, xl - 6, y);
+        if (Math.abs(v) > 1e-9) { ctx.fillStyle = col; ctx.globalAlpha = 0.85; ctx.fillRect(Math.min(xc, xe), y - 6, Math.abs(xe - xc), 12); ctx.globalAlpha = 1; }
+        handle(ctx, xe, y, col, 8);
+        self._h.push({ id: k, x: xe, y, r: 14 });
+        if (Math.abs(v) > 1e-9) SB.label(ctx, v.toFixed(2), xe + (v >= 0 ? 26 : -26), y - 13, { size: 11, color: col, mono: true });
+        if (k > 0) { const ym = (Y(k) + Y(k - 1)) / 2; ctx.fillStyle = P.dim; ctx.textAlign = "left"; ctx.fillText(`↑${cUp(M[k]).toFixed(2)}`, xr + 8, ym); }
+      }
+      SB.label(ctx, "J₊ 계수", xr + 38, top - 20, { size: 11, color: P.dim });
+      SB.label(ctx, `j = ${jstr(j)},  L² = ${jstr(j * (j + 1))}ħ²`, xl, top - 20, { align: "left", size: 12, color: P.dim, mono: true });
+      const nn = norm();
+      SB.stat("ld-n", nn.toFixed(3));
+      if (nn > 1e-12) { let ez = 0; c.forEach((v, k) => (ez += M[k] * v * v)); SB.stat("ld-z-v", (ez / (nn * nn)).toFixed(3)); SB.stat("ld-j2", jstr(j * (j + 1))); }
+      else { SB.stat("ld-z-v", "—"); SB.stat("ld-j2", "— (영벡터)"); }
+      SB.stat("ld-msg", last);
+    }, { aspect: 0.72, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { handles: () => cv._h || [],
+      down: () => { frozen = cv._sc; },
+      move: (id, x) => { if (id == null) return; c[id] = SB.clamp((x - cv._xc) / cv._sc, -cv._lim, cv._lim); if (Math.abs(c[id]) < 0.03) c[id] = 0; last = "막대를 끌어 상태를 바꿈"; },
+      up: () => { frozen = null; cv.redraw(); } });
+    document.getElementById("ld-up").addEventListener("click", () => apply("up"));
+    document.getElementById("ld-dn").addEventListener("click", () => apply("dn"));
+    document.getElementById("ld-z").addEventListener("click", () => apply("z"));
+    document.getElementById("ld-x").addEventListener("click", () => apply("x"));
+    document.getElementById("ld-norm").addEventListener("click", () => { const n = norm(); if (n > 1e-12) { c = c.map((v) => v / n); last = "정규화: ‖ψ‖ = 1"; } cv.redraw(); });
+    document.getElementById("ld-reset").addEventListener("click", reset);
+    reset();
+  }
+
+  /* ---------------------------------------------------------- 미니: 2j가 정수여야 하는 이유 */
+  {
+    const gj = SB.range("ch-j", (v) => v.toFixed(2), () => cv.redraw());
+    const rd = document.getElementById("ch-r");
+    const mfmt = (m) => { const r = Math.round(m * 100) / 100; return (r < 0 ? "−" : "") + String(Math.abs(r)); };
+    const cv = SB.canvas("cv-chain", (ctx, w, h) => {
+      const P = pal(), j = gj(), items = [];
+      for (let k = 0; k < 12; k++) { const m = j - k, f = (j + m) * (j - m + 1); items.push({ m, f }); if (f <= 1e-9) break; }
+      const fs = items.map((o) => o.f), fmax = Math.max(1, ...fs), fmin = Math.min(0, ...fs);
+      const ch = SB.chart(ctx, { x: 60, y: 18, w: w - 76, h: h - 66 }, { x: [-0.6, items.length - 0.4], y: [fmin < 0 ? fmin * 1.25 : -0.05 * fmax, fmax * 1.18], xTicks: items.map((_, i) => i), xFmt: (i) => mfmt(items[Math.round(i)] ? items[Math.round(i)].m : 0), xLabel: "J₋를 거는 칸 m", yLabel: "(j+m)(j−m+1)", hlines: [{ y: 0, color: P.axis, dash: [] }] });
+      items.forEach((o, i) => {
+        const zero = Math.abs(o.f) < 1e-9, col = zero ? P.ok : o.f < 0 ? P.bad : P.accent, x0 = ch.X(i - 0.3), x1 = ch.X(i + 0.3), y0 = ch.Y(0), y1 = ch.Y(o.f);
+        ctx.fillStyle = col; ctx.globalAlpha = 0.85; ctx.fillRect(x0, Math.min(y0, y1), x1 - x0, Math.max(2, Math.abs(y1 - y0))); ctx.globalAlpha = 1;
+        SB.label(ctx, zero ? "0 ✓" : o.f.toFixed(2), (x0 + x1) / 2, o.f >= 0 ? y1 - 10 : y1 + 12, { size: 11, color: col, bold: zero || o.f < 0 });
+      });
+      const tj = 2 * j, ok = Math.abs(tj - Math.round(tj)) < 1e-9, endO = items[items.length - 1];
+      rd.textContent = ok ? `2j = ${Math.round(tj)}: m = ${mfmt(-j)}에서 노름 0 → 사다리 끝 (${Math.round(tj) + 1}칸)` : `2j = ${tj.toFixed(1)}: m = ${mfmt(endO.m)}에서 노름² = ${endO.f.toFixed(2)} < 0 → 불가능`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자·드릴: 사다리 계수 */
+  SB.tangle("tg-lad", (v) => {
+    const { j, m } = v;
+    if (Math.abs(m) > j + 1e-9) return { up: "—", dn: "—", msg: `|m| ≤ j여야 한다(지금 |m| = ${jstr(Math.abs(m))} > j).` };
+    if (Math.abs(j - m - Math.round(j - m)) > 1e-9) return { up: "—", dn: "—", msg: "j − m은 정수여야 한다(정수 j에는 정수 m, 반정수 j에는 반정수 m)." };
+    const up = Math.sqrt(j * (j + 1) - m * (m + 1)), dn = Math.sqrt(j * (j + 1) - m * (m - 1));
+    return { up: up.toFixed(3) + "ħ", dn: dn.toFixed(3) + "ħ", msg: Math.abs(m - j) < 1e-9 ? "맨 위 칸: J₊는 0을 준다." : Math.abs(m + j) < 1e-9 ? "맨 아래 칸: J₋는 0을 준다." : Math.abs(m) <= 0.5 ? "가운데 칸이라 계수가 가장 크다(≈ jħ)." : "" };
+  }, { fmt: { j: (x) => jstr(x), m: (x) => mstr(x) } });
+  SB.drill("drill-lad", () => {
+    const tj = randInt(1, 6), j = tj / 2, k = randInt(0, tj - 1), up = Math.random() < 0.5, m = up ? -j + k : j - k, m2 = up ? m + 1 : m - 1;
+    const val = Math.sqrt(j * (j + 1) - m * (m + (up ? 1 : -1)));
+    return { q: `<p>\\(\\hat J_${up ? "+" : "-"}\\,|${jtex(j)}, ${jtex(m)}\\rangle = c\\,|${jtex(j)}, ${jtex(m2)}\\rangle\\)에서 \\(c\\)를 \\(\\hbar\\) 단위로 구하라.</p>`, answer: val, label: "c =", unit: "ħ", tol: "1%",
+      sol: `\\(c = \\hbar\\sqrt{j(j+1) - m(m${up ? "+" : "-"}1)} = \\hbar\\sqrt{${+(j * (j + 1)).toFixed(2)} - (${+m.toFixed(1)})(${+(m + (up ? 1 : -1)).toFixed(1)})} = ${val.toFixed(3)}\\,\\hbar\\)` };
+  });
+
+  /* ---------------------------------------------------------- 구면 조화 함수 뷰어 */
+  {
+    const view = { yaw: -0.55, pitch: 0.4 };
+    let l = 2;
+    const gm = SB.range("yl-m", (v) => (v > 0 ? "+" : "") + v, () => cv.redraw());
+    const gmode = SB.seg("yl-mode", () => cv.redraw());
+    const sq = document.getElementById("yl-sq");
+    SB.seg("yl-l", (v) => { l = Number(v); gm.el.min = -l; gm.el.max = l; gm.set(SB.clamp(gm(), -l, l), true); cv.redraw(); });
+    sq.addEventListener("change", () => cv.redraw());
+    const cv = SB.canvas("cv-ylm", (ctx, w, h) => {
+      const P = pal(), m = SB.clamp(gm(), -l, l), real = gmode() === "r", R = Math.min(h * 0.38, w * 0.36), cx = w * 0.5, cy = h * 0.52;
+      drawSurf(ctx, cx, cy, R, view, ylmMesh(l, m, real, sq.checked), { sign: real });
+      drawAxes(ctx, cx, cy, R * 1.12, view);
+      SB.label(ctx, real ? realName(l, m) : ysym(l, m), 14, 20, { align: "left", bold: true, size: 16 });
+      SB.label(ctx, sq.checked ? "반지름 = |Y|²" : "반지름 = |Y|", 14, 42, { align: "left", size: 11, color: P.dim });
+      if (real) signLegend(ctx, 14, h - 18); else { QM.drawPhaseWheel(ctx, 32, h - 32, 16); SB.label(ctx, "위상", 62, h - 32, { align: "left", size: 11, color: P.dim }); }
+      const am = Math.abs(m), par = l % 2 ? "홀(−)" : "짝(+)";
+      SB.stat("yl-name", real ? `${realName(l, m, true)} (l = ${l}, m = ${m})` : `Y<sub>${l}</sub><sup>${m}</sup>`);
+      SB.stat("yl-L2", `${l * (l + 1)}ħ²`);
+      SB.stat("yl-Lz", real ? (m ? `±${am}ħ 반반 (고유 상태 아님)` : "0") : `${m}ħ`);
+      SB.stat("yl-nd", real ? `평면 ${am} + 원뿔 ${l - am} = ${l} · ${par}` : `원뿔 ${l - am}개${am ? " + 극점" : ""} · ${par}`);
+    }, { aspect: 0.82, minHeight: 300, maxHeight: 460 });
+    rotDrag(cv, view);
+  }
+
+  /* ---------------------------------------------------------- 미니: 실수 오비탈 = Y^{±m} 섞기 */
+  {
+    const view = { yaw: -0.4, pitch: 0.95 };
+    const gpair = SB.seg("re-pair", () => cv.redraw());
+    const gw = SB.range("re-w", (v) => v.toFixed(2), () => cv.redraw());
+    const gx = SB.range("re-x", (v) => v + "°", () => cv.redraw());
+    const rd = document.getElementById("re-r");
+    let key = "", mesh = null;
+    const cv = SB.canvas("cv-real", (ctx, w, h) => {
+      const P = pal(), m = Number(gpair()), l = m, wv = gw(), chi = gx() * DEG, k = `${m},${wv},${gx()}`;
+      if (k !== key) {
+        key = k;
+        const a = Math.sqrt(wv), b = Math.sqrt(1 - wv) * (m % 2 ? -1 : 1), ea = [Math.cos(chi / 2), Math.sin(chi / 2)], eb = [Math.cos(chi / 2), -Math.sin(chi / 2)];
+        mesh = makeMesh((t, p) => { const u = QM.c.mul(ea, QM.Ylm(l, -m, t, p)), v = QM.c.mul(eb, QM.Ylm(l, m, t, p)); return [a * u[0] + b * v[0], a * u[1] + b * v[1]]; }, 26, 40);
+      }
+      const R = Math.min(h * 0.4, w * 0.3), cx = w * 0.5, cy = h * 0.5;
+      drawSurf(ctx, cx, cy, R, view, mesh);
+      drawAxes(ctx, cx, cy, R * 1.2, view);
+      QM.drawPhaseWheel(ctx, w - 28, 28, 15);
+      const bal = Math.abs(wv - 0.5) < 0.006, ang = (gx() / (2 * m)) % 180;
+      let nm = "";
+      if (bal) { const base = m === 1 ? ["p_x", "p_y"] : ["d_x²−y²", "d_xy"]; nm = Math.abs(ang) < 0.01 ? base[0] : Math.abs(ang - 90 / m) < 0.01 ? base[1] : `${base[0]}를 ${ang.toFixed(1)}° 돌린 모양`; }
+      SB.label(ctx, bal ? nm : wv < 0.004 ? ysym(l, m) : wv > 0.996 ? ysym(l, -m) : "복소 섞임", 14, 20, { align: "left", bold: true, size: 14 });
+      rd.textContent = `P(L_z = −${m}ħ) = ${wv.toFixed(2)}, P(+${m}ħ) = ${(1 - wv).toFixed(2)} · ⟨L_z⟩ = ${((1 - 2 * wv) * m).toFixed(2)}ħ${bal ? ` · 실수 함수, 방향 χ/2m = ${ang.toFixed(1)}°` : ""}`;
+    }, { aspect: 0.55, minHeight: 240, maxHeight: 340 });
+    rotDrag(cv, view);
+  }
+
+  /* ---------------------------------------------------------- 벡터 모형 원뿔 */
+  {
+    const view = { yaw: -0.6, pitch: 0.25 };
+    let l = 2, m = 2, phi = 0, dragV = null;
+    const all = document.getElementById("co-all"), cl = document.getElementById("co-cl");
+    SB.seg("co-l", (v) => { l = Number(v); m = SB.clamp(m, -l, l); cv.redraw(); });
+    [all, cl].forEach((e) => e.addEventListener("change", () => cv.redraw()));
+    const cv = SB.canvas("cv-cone", (ctx, w, h, self) => {
+      const P = pal(), Lm = Math.sqrt(l * (l + 1)), cx = w * 0.44, cy = h * 0.52, s = Math.min(h * 0.4, w * 0.32) / Lm;
+      const pr = (v) => { const q = QM.blochProject(view, v); return [cx + s * q[0], cy - s * q[1], q[2]]; };
+      const line = (a, b, col, wd, dash) => { const p = pr(a), q = pr(b); ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; if (dash) ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.restore(); };
+      const ring = (z, rho, col, wd, alpha = 1) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.globalAlpha = alpha; ctx.beginPath(); for (let i = 0; i <= 72; i++) { const t = (TAU * i) / 72, q = pr([rho * Math.cos(t), rho * Math.sin(t), z]); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); } ctx.stroke(); ctx.restore(); };
+      ctx.strokeStyle = P.border; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(cx, cy, s * Lm, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      line([0, 0, -Lm * 1.2], [0, 0, Lm * 1.2], P.dim, 1.2);
+      line([-Lm, 0, 0], [Lm, 0, 0], P.faint, 1, [3, 3]); line([0, -Lm, 0], [0, Lm, 0], P.faint, 1, [3, 3]);
+      const zl = pr([0, 0, Lm * 1.28]); SB.label(ctx, "z", zl[0], zl[1], { color: P.dim });
+      const xlab = pr([Lm * 1.12, 0, 0]), ylab = pr([0, Lm * 1.12, 0]); SB.label(ctx, "x", xlab[0], xlab[1], { color: P.faint, size: 11 }); SB.label(ctx, "y", ylab[0], ylab[1], { color: P.faint, size: 11 });
+      for (let mm = -l; mm <= l; mm++) {
+        const rho = Math.sqrt(Lm * Lm - mm * mm), sel = mm === m;
+        if (!all.checked && !sel) continue;
+        ring(mm, rho, sel ? P.accent : P.faint, sel ? 2 : 1, sel ? 1 : 0.8);
+        if (sel) for (let g = 0; g < 12; g++) { const t = (TAU * g) / 12; ctx.save(); ctx.globalAlpha = 0.25; line([0, 0, 0], [rho * Math.cos(t), rho * Math.sin(t), mm], P.accent, 1); ctx.restore(); }
+        const lp = pr([0, 0, mm]); SB.label(ctx, `m=${mm > 0 ? "+" : ""}${mm}`, cx + s * Lm + 30, lp[1], { size: 11, color: sel ? P.accent : P.dim, mono: true });
+        SB.dashLine(ctx, lp[0], lp[1], cx + s * Lm + 8, lp[1], P.faint, [1, 3]);
+      }
+      const rho = Math.sqrt(Lm * Lm - m * m), tip = [rho * Math.cos(phi), rho * Math.sin(phi), m], sh = [tip[0], tip[1], 0];
+      ring(0, rho, P.accent2, 1.6, 0.9);
+      line([0, 0, 0], sh, P.accent2, 2, [5, 4]); line(sh, tip, P.dim, 1, [2, 3]);
+      if (cl.checked) { const q = pr([0, 0, Lm]); SB.arrow(ctx, cx, cy, q[0], q[1], { color: P.dim, width: 2, dash: [6, 4] }); SB.label(ctx, "고전: z와 나란할 수 있다", q[0] + 8, q[1] - 12, { align: "left", size: 11, color: P.dim }); }
+      const tp = pr(tip), o = pr([0, 0, 0]);
+      SB.arrow(ctx, o[0], o[1], tp[0], tp[1], { color: P.accent, width: 3 });
+      handle(ctx, tp[0], tp[1], P.accent, 9);
+      self._tip = tp;
+      self._zy = (mm) => pr([Math.sqrt(Lm * Lm - mm * mm) * Math.cos(phi), Math.sqrt(Lm * Lm - mm * mm) * Math.sin(phi), mm])[1];
+      SB.label(ctx, `l = ${l}, m = ${m > 0 ? "+" : ""}${m}`, 12, 18, { align: "left", bold: true, size: 13 });
+      SB.stat("co-L", `√${l * (l + 1)} ħ = ${Lm.toFixed(3)}ħ`);
+      SB.stat("co-z", `${m}ħ`);
+      SB.stat("co-th", `${(Math.acos(m / Lm) / DEG).toFixed(1)}°`);
+      SB.stat("co-dx", `${Math.sqrt((l * (l + 1) - m * m) / 2).toFixed(3)}ħ`);
+    }, { aspect: 0.72, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { free: true, handles: () => (cv._tip ? [{ id: "tip", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []),
+      down: (id, x, y) => { dragV = id === "tip" ? null : { x, y, yaw: view.yaw, pitch: view.pitch }; },
+      move: (id, x, y) => {
+        if (id === "tip") { let best = m, bd = Infinity; for (let mm = -l; mm <= l; mm++) { const dd = Math.abs(cv._zy(mm) - y); if (dd < bd) { bd = dd; best = mm; } } m = best; }
+        else if (dragV) { view.yaw = dragV.yaw + (x - dragV.x) * 0.012; view.pitch = SB.clamp(dragV.pitch + (y - dragV.y) * 0.01, -1.2, 1.2); }
+      },
+      up: () => { dragV = null; } });
+    const loop = SB.loop("sim-cone", (dt) => { phi += dt * 1.1; cv.redraw(); });
+    SB.play("co-play", loop);
+  }
+
+  /* ---------------------------------------------------------- 드래그 숫자: 기운 축 측정 */
+  SB.tangle("tg-meas", (v) => {
+    const t = v.t * DEG, p = [1, 0, -1].map((mp) => QM.wignerd(1, mp, v.m, t) ** 2);
+    let msg = "";
+    if (v.t === 0) msg = "θ = 0: z축 그대로 — 언제나 처음 m이 나온다.";
+    else if (v.t === 180) msg = "θ = 180°: 축을 뒤집으면 언제나 −m이 나온다.";
+    else if (v.m === 0 && v.t === 90) msg = "|1,0⟩을 옆으로 재면 0은 절대 나오지 않는다.";
+    return { P: p.map((x) => x.toFixed(3)).join(", "), E: (Math.abs(v.m * Math.cos(t)) < 5e-4 ? "0" : (v.m * Math.cos(t)).toFixed(3)) + "ħ", msg };
+  }, { fmt: { m: (x) => (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x) } });
+
+  /* ---------------------------------------------------------- 측정 실험 */
+  {
+    let l = 1, m = 1, th = 60 * DEG, counts = [], N = 0, sum = 0, last = null, cv = null;
+    const rng = QM.rng(11);
+    const probs = () => { const p = []; for (let mp = l; mp >= -l; mp--) p.push(QM.wignerd(l, mp, m, th) ** 2); return p; };
+    function clear() { counts = new Array(2 * l + 1).fill(0); N = 0; sum = 0; last = null; cv && cv.redraw(); }
+    function shoot(n) { const p = probs(); for (let s = 0; s < n; s++) { let u = rng(), k = 0; while (k < p.length - 1 && u > p[k]) { u -= p[k]; k++; } counts[k]++; N++; sum += l - k; last = l - k; } cv.redraw(); }
+    const gm = SB.range("me-m", (v) => (v > 0 ? "+" : "") + v, () => { m = gm(); clear(); });
+    SB.seg("me-l", (v) => { l = Number(v); gm.el.min = -l; gm.el.max = l; gm.set(SB.clamp(gm(), -l, l), true); m = gm(); clear(); });
+    clear();
+    cv = SB.canvas("cv-meas", (ctx, w, h, self) => {
+      const P = pal(), narrow = w < 520, ph = narrow ? h * 0.4 : h, pw = narrow ? w : Math.min(w * 0.4, h), rr = narrow ? ph * 0.34 : Math.min(pw, h) * 0.36, cx = narrow ? w * 0.32 : pw * 0.5, cy = narrow ? ph * 0.58 : h * 0.55;
+      // 축 패널
+      ctx.strokeStyle = P.border; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.arc(cx, cy, rr, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      SB.arrow(ctx, cx, cy + rr * 1.05, cx, cy - rr * 1.18, { color: P.dim, width: 1.3, head: 7 }); SB.label(ctx, "z", cx + 10, cy - rr * 1.18, { color: P.dim, size: 12 });
+      SB.arrow(ctx, cx - rr * 1.05, cy, cx + rr * 1.18, cy, { color: P.faint, width: 1, head: 6 }); SB.label(ctx, "x", cx + rr * 1.18, cy + 12, { color: P.dim, size: 12 });
+      // 준비한 상태의 벡터 모형 (z 둘레 원뿔의 단면)
+      const Lm = Math.sqrt(l * (l + 1)), sc = (rr * 0.8) / Lm, rho = Math.sqrt(Lm * Lm - m * m);
+      ctx.strokeStyle = P.accent2; ctx.globalAlpha = 0.7; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + rho * sc, cy - m * sc); ctx.moveTo(cx, cy); ctx.lineTo(cx - rho * sc, cy - m * sc); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(cx, cy - m * sc, rho * sc, Math.max(2, rho * sc * 0.22), 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+      const tx = cx + rr * Math.sin(th), ty = cy - rr * Math.cos(th);
+      SB.arrow(ctx, cx, cy, tx, ty, { color: P.accent, width: 2.6 });
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, rr * 0.3, -Math.PI / 2, -Math.PI / 2 + th, false); ctx.stroke();
+      SB.label(ctx, `θ = ${Math.round(th / DEG)}°`, narrow ? w * 0.74 : cx, narrow ? ph * 0.5 : cy + rr * 1.05 + 20, { size: 13, color: P.accent, bold: true });
+      SB.label(ctx, "n̂", tx + 16 * Math.sin(th), ty - 16 * Math.cos(th), { color: P.accent, bold: true });
+      handle(ctx, tx, ty, P.accent, 9);
+      self._tip = [tx, ty]; self._c = [cx, cy];
+      SB.label(ctx, `준비: |${l}, ${m > 0 ? "+" : ""}${m}⟩`, 10, 16, { align: "left", size: 12, bold: true });
+      // 막대그래프
+      const p = probs(), bx = narrow ? 52 : pw + 46, box = narrow ? { x: bx, y: ph + 14, w: w - bx - 14, h: h - ph - 64 } : { x: bx, y: 30, w: w - bx - 14, h: h - 80 };
+      const ch = SB.chart(ctx, box, { x: [-l - 0.6, l + 0.6], y: [0, 1.05], xTicks: Array.from({ length: 2 * l + 1 }, (_, i) => i - l), yTicks: [0, 0.25, 0.5, 0.75, 1], xFmt: (v) => (v > 0 ? "+" : "") + v, xLabel: "측정값 m′ (ħ 단위)", yLabel: "확률" });
+      for (let k = 0; k <= 2 * l; k++) {
+        const mp = l - k, x0 = ch.X(mp - 0.32), x1 = ch.X(mp + 0.32), fr = N ? counts[k] / N : 0;
+        ctx.fillStyle = P.accent; ctx.globalAlpha = 0.75; ctx.fillRect(x0, ch.Y(fr), x1 - x0, ch.Y(0) - ch.Y(fr)); ctx.globalAlpha = 1;
+        ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.2; ctx.strokeRect(x0, ch.Y(p[k]), x1 - x0, ch.Y(0) - ch.Y(p[k]));
+        SB.label(ctx, p[k].toFixed(3), (x0 + x1) / 2, Math.max(ch.Y(Math.max(p[k], fr)) - 10, box.y + 6), { size: 11, color: P.accent2, mono: true });
+      }
+      SB.stat("me-th", `${Math.round(th / DEG)}°`);
+      SB.stat("me-n", String(N));
+      SB.stat("me-avg", N ? `${(sum / N).toFixed(3)} · ${(Math.abs(m * Math.cos(th)) < 5e-4 ? 0 : m * Math.cos(th)).toFixed(3)} ħ` : `— · ${(m * Math.cos(th)).toFixed(3)} ħ`);
+      SB.stat("me-last", last == null ? "—" : `${last > 0 ? "+" : ""}${last}ħ`);
+    }, { aspect: 0.5, minHeight: 380, maxHeight: 420 });
+    SB.drag(cv, { handles: () => (cv._tip ? [{ id: "n", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []),
+      move: (id, x, y) => { if (id !== "n") return; const t = Math.abs(Math.atan2(x - cv._c[0], -(y - cv._c[1]))); const tn = Math.round(t / DEG) * DEG; if (Math.abs(tn - th) > 1e-9) { th = SB.clamp(tn, 0, Math.PI); counts.fill(0); N = 0; sum = 0; last = null; } } });
+    document.getElementById("me-1").addEventListener("click", () => shoot(1));
+    document.getElementById("me-100").addEventListener("click", () => shoot(100));
+    document.getElementById("me-clr").addEventListener("click", clear);
+    shoot(200);
+  }
+  SB.drill("drill-d", () => {
+    const t = pick([30, 45, 60, 90, 120, 135, 150]), m = randInt(-1, 1), mp = randInt(-1, 1), d = QM.wignerd(1, mp, m, t * DEG), p = d * d;
+    const lab = mp === 0 ? "0" : (mp > 0 ? "+" : "-") + "\\hbar";
+    const form = { "1,1": "\\left(\\tfrac{1+\\cos\\theta}{2}\\right)^2", "-1,-1": "\\left(\\tfrac{1+\\cos\\theta}{2}\\right)^2", "1,-1": "\\left(\\tfrac{1-\\cos\\theta}{2}\\right)^2", "-1,1": "\\left(\\tfrac{1-\\cos\\theta}{2}\\right)^2", "0,0": "\\cos^2\\theta" }[`${mp},${m}`] || "\\tfrac12\\sin^2\\theta";
+    return { q: `<p>\\(|1, ${m}\\rangle\\) 상태를 \\(z\\)축에서 \\(${t}^\\circ\\) 기운 축으로 잴 때 결과가 \\(${lab}\\)일 확률은?</p>`, answer: p, label: "P =", tol: "0.005",
+      sol: `\\(P = |d^1_{${mp},${m}}(${t}^\\circ)|^2 = ${form} = ${p.toFixed(4)}\\)` };
+  });
+
+  /* ---------------------------------------------------------- 미니: z축 둘레 회전 */
+  {
+    const view = { yaw: -0.5, pitch: 0.7 };
+    const ST = { c21: { l: 2, m: 1, real: false }, c33: { l: 3, m: 3, real: false }, px: { l: 1, m: 1, real: true }, dxy: { l: 2, m: -2, real: true } };
+    const gs = SB.seg("rz-s", () => cv.redraw());
+    const ga = SB.range("rz-a", (v) => v + "°", () => cv.redraw());
+    const rd = document.getElementById("rz-r");
+    let key = "", mesh = null, dragA = null;
+    const cv = SB.canvas("cv-rotz", (ctx, w, h) => {
+      const P = pal(), st = ST[gs()], al = ga() * DEG, k = gs() + "," + ga();
+      if (k !== key) { key = k; mesh = makeMesh(st.real ? (t, p) => [QM.realY(st.l, st.m, t, p - al), 0] : (t, p) => QM.Ylm(st.l, st.m, t, p - al), 26, 40); }
+      const R = Math.min(h * 0.4, w * 0.3), cx = w * 0.5, cy = h * 0.52;
+      drawSurf(ctx, cx, cy, R, view, mesh, { sign: st.real });
+      drawAxes(ctx, cx, cy, R * 1.18, view);
+      if (st.real) signLegend(ctx, 14, h - 18); else { QM.drawPhaseWheel(ctx, 30, h - 30, 15); }
+      SB.label(ctx, `${st.real ? realName(st.l, st.m) : ysym(st.l, st.m)} 를 α = ${ga()}° 회전`, 14, 20, { align: "left", bold: true, size: 13 });
+      const mm = st.m;
+      if (st.real) { const ov = Math.cos(Math.abs(mm) * al); rd.textContent = `겹침 ⟨ψ|R̂ψ⟩ = cos(${Math.abs(mm)}α) = ${ov.toFixed(3)} — 모양이 실제로 돈다`; }
+      else { const c = Math.cos(mm * al), s = -Math.sin(mm * al); rd.textContent = `⟨ψ|R̂ψ⟩ = e^(−i${mm === 1 ? "" : mm}α) = ${c.toFixed(3)} ${s < 0 ? "−" : "+"} ${Math.abs(s).toFixed(3)}i · 크기 1 — 위상만 바뀜`; }
+    }, { aspect: 0.55, minHeight: 240, maxHeight: 340 });
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x) => { dragA = { x, a: ga() }; },
+      move: (id, x) => { if (!dragA) return; const a = ((Math.round(dragA.a + (x - dragA.x) * 0.8) % 360) + 360) % 360; ga.set(a, true); },
+      up: () => { dragA = null; } });
+  }
+
+  /* ---------------------------------------------------------- 위그너 d 행렬 */
+  {
+    let j = 1, cache = { key: "" }, turns = null;
+    const gb = SB.range("dm-b", (v) => v + "°", () => cv.redraw());
+    SB.seg("dm-j", (v) => { j = Number(v); cv.redraw(); });
+    const cv = SB.canvas("cv-dmat", (ctx, w, h, self) => {
+      const P = pal(), bdeg = gb(), b = bdeg * DEG, d = Math.round(2 * j + 1), M = Array.from({ length: d }, (_, k) => j - k);
+      const narrow = w < 560;
+      const dr = narrow ? Math.min(52, w * 0.15) : Math.min(h * 0.32, w * 0.14), dcx = narrow ? dr + 24 : w * 0.18, dcy = narrow ? dr + 30 : h * 0.5;
+      // 다이얼
+      ctx.strokeStyle = P.border; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(dcx, dcy, dr, 0, TAU); ctx.stroke();
+      SB.arrow(ctx, dcx, dcy, dcx, dcy - dr * 1.25, { color: P.faint, width: 1, head: 6 }); SB.label(ctx, "z", dcx + 9, dcy - dr * 1.25, { size: 11, color: P.dim });
+      SB.arrow(ctx, dcx, dcy, dcx + dr * 1.25, dcy, { color: P.faint, width: 1, head: 6 }); SB.label(ctx, "x", dcx + dr * 1.25, dcy + 11, { size: 11, color: P.dim });
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(dcx, dcy, dr * 0.45, -Math.PI / 2, -Math.PI / 2 + Math.min(b, TAU)); ctx.stroke();
+      if (b > TAU) { ctx.strokeStyle = P.warn; ctx.beginPath(); ctx.arc(dcx, dcy, dr * 0.6, -Math.PI / 2, -Math.PI / 2 + (b - TAU)); ctx.stroke(); }
+      const hx = dcx + dr * Math.sin(b), hy = dcy - dr * Math.cos(b);
+      SB.arrow(ctx, dcx, dcy, hx, hy, { color: P.accent, width: 2.4 });
+      handle(ctx, hx, hy, P.accent, 9);
+      self._h = [hx, hy]; self._c = [dcx, dcy];
+      SB.label(ctx, `β = ${bdeg}°`, dcx, dcy + dr + 18, { bold: true, size: 13, color: P.accent });
+      // 행렬 칸
+      const gx0 = narrow ? 34 : w * 0.4, gy0 = narrow ? 2 * dr + 78 : 40, avail = Math.min(w - gx0 - 12, h - gy0 - 14), cs = avail / d;
+      const SJ = { 0.5: "¹ᐟ²", 1: "¹", 1.5: "³ᐟ²", 2: "²" }[j];
+      SB.label(ctx, `d${SJ}(β): 행 m′, 열 m`, narrow ? (w + 2 * dr + 24) / 2 + 10 : gx0 + avail / 2, narrow ? dcy + 8 : 14, { bold: true, size: 13 });
+      ctx.font = `${cs > 46 ? 12 : 10}px ${SB.color("mono")}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      const dv = [];
+      for (let r = 0; r < d; r++) { dv.push([]); for (let c = 0; c < d; c++) {
+        const v = QM.wignerd(j, M[r], M[c], b); dv[r].push(v);
+        const rgb = QM.cmap("div", (v + 1) / 2); ctx.fillStyle = `rgb(${rgb[0] | 0},${rgb[1] | 0},${rgb[2] | 0})`;
+        ctx.fillRect(gx0 + c * cs + 1, gy0 + r * cs + 1, cs - 2, cs - 2);
+        ctx.fillStyle = Math.abs(v) > 0.6 && SB.isDark() ? "#fff" : P.text; ctx.fillText((Math.abs(v) < 5e-3 ? 0 : v).toFixed(2), gx0 + (c + 0.5) * cs, gy0 + (r + 0.5) * cs);
+      } }
+      ctx.fillStyle = P.dim; ctx.font = "11px " + SB.color("mono");
+      for (let k = 0; k < d; k++) { ctx.fillText(mstr(M[k]), gx0 + (k + 0.5) * cs, gy0 - 9); ctx.textAlign = "right"; ctx.fillText(mstr(M[k]), gx0 - 5, gy0 + (k + 0.5) * cs); ctx.textAlign = "center"; }
+      // 행렬 지수와 비교 (값이 바뀔 때만)
+      const key = j + "," + bdeg;
+      if (cache.key !== key) {
+        const o = QM.spinOps(j), U = QM.expm(QM.scale(o.Jy, [0, -b]));
+        let e = 0, u = 0;
+        for (let r = 0; r < d; r++) for (let c = 0; c < d; c++) { e = Math.max(e, Math.hypot(U.re[r * d + c] - dv[r][c], U.im[r * d + c])); let s = 0; for (let k = 0; k < d; k++) s += dv[k][r] * dv[k][c]; u = Math.max(u, Math.abs(s - (r === c ? 1 : 0))); }
+        let tr = 0; for (let k = 0; k < d; k++) tr += dv[k][k];
+        const sb = Math.sin(b / 2), chi = Math.abs(sb) < 1e-9 ? (Math.cos(b / 2) > 0 ? 1 : (d % 2 ? 1 : -1)) * d : Math.sin((j + 0.5) * b) / sb;
+        cache = { key, e, u, tr, chi };
+      }
+      SB.stat("dm-err", cache.e.toExponential(1));
+      SB.stat("dm-u", cache.u.toExponential(1));
+      SB.stat("dm-tr", `${cache.tr.toFixed(3)} · 공식 ${cache.chi.toFixed(3)}`);
+      SB.stat("dm-2p", (2 * j) % 2 ? "−I (부호 반전, 720°에서 +I)" : "+I (제자리)");
+    }, { aspect: 0.48, minHeight: 400, maxHeight: 440 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "b", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      down: () => { turns = gb() * DEG; },
+      move: (id, x, y) => {
+        if (id !== "b" || turns == null) return;
+        let a = Math.atan2(x - cv._c[0], -(y - cv._c[1])); if (a < 0) a += TAU;
+        let cur = turns, base = ((cur % TAU) + TAU) % TAU, diff = a - base;
+        if (diff > Math.PI) diff -= TAU; if (diff < -Math.PI) diff += TAU;
+        turns = SB.clamp(cur + diff, 0, 2 * TAU);
+        gb.set(Math.round(turns / DEG), true);
+      },
+      up: () => { turns = null; } });
+  }
+
+  /* ---------------------------------------------------------- 회전 분광 공통 */
+  const pop = (B, T, J) => (2 * J + 1) * Math.exp((-B * J * (J + 1)) / (KCM * T));
+  const MOL = { CO: { B: 1.9225, raman: false }, HCl: { B: 10.44, raman: false }, HF: { B: 20.56, raman: false }, N2: { B: 1.9896, raman: true } };
+  const nuOf = (M, J) => (M.raman ? M.B * (4 * J + 6) : 2 * M.B * (J + 1));
+  const jOfNu = (M, nu) => (M.raman ? (nu / M.B - 6) / 4 : nu / (2 * M.B) - 1);
+  const jTop = (M, T, frac) => { let mx = 0, J = 0; for (; J < 400; J++) { const p = pop(M.B, T, J); mx = Math.max(mx, p); if (J > 3 && p < frac * mx) break; } return J; };
+
+  SB.tangle("tg-B", (v) => {
+    const I = v.mu * 1.6605390666e-27 * (v.R * 1e-9) ** 2, B = 6.62607015e-34 / (8 * Math.PI ** 2 * 2.99792458e10 * I);
+    let Jm = 0, pm = 0; for (let J = 0; J < 300; J++) { const p = pop(B, 300, J); if (p > pm) { pm = p; Jm = J; } }
+    const ref = [["CO", 6.86, 0.1131], ["HCl", 0.980, 0.1284], ["HF", 0.957, 0.0926], ["N₂", 7.00, 0.1100]].find((r) => Math.abs(r[1] - v.mu) / r[1] < 0.03 && Math.abs(r[2] - v.R) < 0.0025);
+    return { B: B.toFixed(B < 10 ? 3 : 2) + " cm⁻¹", sp: `${(2 * B).toFixed(2)} cm⁻¹ (${(2 * B * GHZ).toFixed(1)} GHz)`, Jm: String(Jm), msg: ref ? `${ref[0]}에 가깝다.` : B > 15 ? "가벼운 수소 화합물처럼 B가 커서 상온에서도 몇 준위만 채워진다." : "" };
+  }, { fmt: { mu: (x) => x.toFixed(2), R: (x) => x.toFixed(3) } });
+
+  /* ---------------------------------------------------------- 회전 스펙트럼 실험실 */
+  {
+    let mol = "CO";
+    const gT = SB.range("ro-T", (v) => v + " K", () => cv.redraw());
+    SB.seg("ro-mol", (v) => { mol = v; cv.redraw(); });
+    const cv = SB.canvas("cv-rot", (ctx, w, h, self) => {
+      const P = pal(), M = MOL[mol], T = gT(), kT = KCM * T, Jhi = jTop(M, 1500, 0.01), xmax = nuOf(M, Jhi);
+      const Jv = Math.min(Jhi, jTop(M, T, 0.002) + 1);
+      let Z = 0; const pops = []; for (let J = 0; J <= Math.max(Jhi, 400); J++) { const p = pop(M.B, T, J); Z += p; if (J <= Jhi) pops.push(p); else if (p < 1e-12 * Z) break; }
+      const frac = pops.map((p) => p / Z), fmax = Math.max(...frac);
+      let jArg = 0; frac.forEach((f, J) => { if (f > frac[jArg]) jArg = J; });
+      const topH = Math.round(h * 0.36);
+      const c1 = SB.chart(ctx, { x: 58, y: 14, w: w - 74, h: topH - 40 }, { x: [-0.6, Jv + 0.6], y: [0, fmax * 1.2], xLabel: "", yLabel: "N_J/N", yTicks: [0, +(fmax / 2).toPrecision(1), +fmax.toPrecision(1)].filter((v, i, a) => a.indexOf(v) === i) });
+      for (let J = 0; J <= Jv; J++) { const x0 = c1.X(J - 0.38), x1 = c1.X(J + 0.38); ctx.fillStyle = J === jArg ? P.accent : P.accent2; ctx.globalAlpha = 0.75; ctx.fillRect(x0, c1.Y(frac[J]), x1 - x0, c1.Y(0) - c1.Y(frac[J])); ctx.globalAlpha = 1; }
+      SB.label(ctx, `J = 0 … ${Jv}`, w - 20, 22, { align: "right", size: 11, color: P.dim });
+      // 스펙트럼
+      const lines = []; for (let J = 0; J <= Jhi; J++) lines.push({ J, nu: nuOf(M, J), I: M.raman ? pops[J] * (J % 2 ? 3 : 6) / 4.5 : pops[J] });
+      const imax = Math.max(...lines.map((o) => o.I));
+      const c2 = SB.chart(ctx, { x: 58, y: topH + 10, w: w - 74, h: h - topH - 56 }, { x: [0, xmax], y: [0, 1.25], xLabel: M.raman ? "라만 이동 (cm⁻¹)" : "파수 ν̃ (cm⁻¹)", yLabel: "선 세기", yTicks: [0, 0.5, 1] });
+      ctx.strokeStyle = P.accent; ctx.lineWidth = Math.max(1.2, Math.min(3, (c2.X(nuOf(M, 1)) - c2.X(nuOf(M, 0))) * 0.4));
+      lines.forEach((o) => { const x = c2.X(o.nu); ctx.beginPath(); ctx.moveTo(x, c2.Y(0)); ctx.lineTo(x, c2.Y(o.I / imax)); ctx.stroke(); });
+      // 포락선 (연속 J)
+      const env = (J) => pop(M.B, T, J) * (M.raman ? 1 : 1);
+      const scaleE = M.raman ? (6 / 4.5) : 1;
+      ctx.strokeStyle = P.accent2; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6; ctx.beginPath();
+      for (let i = 0; i <= 200; i++) { const J = (i / 200) * Jhi, x = c2.X(nuOf(M, J)), y = c2.Y((env(J) * scaleE) / imax); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.setLineDash([]);
+      const Js = Math.max(0, Math.sqrt(kT / (2 * M.B)) - 0.5), hx = c2.X(nuOf(M, Js)), hy = c2.Y((env(Js) * scaleE) / imax);
+      handle(ctx, hx, hy, P.accent, 9);
+      self._h = [hx, hy]; self._ix = (px) => ((px - c2.box.x) / c2.box.w) * xmax;
+      SB.stat("ro-B", `${M.B} cm⁻¹ · ${M.raman ? "4B" : "2B"} = ${(M.raman ? 4 : 2) * M.B > 10 ? ((M.raman ? 4 : 2) * M.B).toFixed(1) : ((M.raman ? 4 : 2) * M.B).toFixed(2)} cm⁻¹ (${((M.raman ? 4 : 2) * M.B * GHZ).toFixed(0)} GHz)`);
+      SB.stat("ro-kT", `${kT.toFixed(0)} cm⁻¹ = ${(kT / M.B).toFixed(1)} B`);
+      SB.stat("ro-Jm", `${jArg} · ${Js.toFixed(2)}`);
+      SB.stat("ro-q", `${Z.toFixed(1)} · ${(kT / M.B).toFixed(1)}`);
+    }, { aspect: 0.62, minHeight: 380, maxHeight: 500 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "pk", x: cv._h[0], y: cv._h[1], r: 14 }] : []),
+      move: (id, x) => { if (id !== "pk") return; const M = MOL[mol], J = Math.max(0.02, jOfNu(M, cv._ix(x))); const T = SB.clamp(Math.round((2 * M.B * (J + 0.5) ** 2) / KCM / 10) * 10, 80, 3000); gT.set(T, true); } });
+  }
+
+  /* ---------------------------------------------------------- 미니: 볼츠만 그림 */
+  {
+    const B = 2.07; let seed = 5;
+    const gT = SB.range("bz-T", (v) => v + " K", () => cv.redraw()), gn = SB.range("bz-n", (v) => v + " %", () => cv.redraw());
+    const rd = document.getElementById("bz-r");
+    const cv = SB.canvas("cv-boltz", (ctx, w, h) => {
+      const P = pal(), T = gT(), sig = gn() / 100, rng = QM.rng(seed), pts = [];
+      let imax = 0;
+      for (let J = 1; J <= 32; J++) { const E = B * J * (J + 1), I = pop(B, T, J) * (1 + sig * rng.normal()); pts.push({ J, E, I }); imax = Math.max(imax, I); }
+      const used = pts.filter((o) => o.I > 0.04 * imax), all = pts.filter((o) => o.I > 0);
+      all.forEach((o) => (o.y = Math.log(o.I / (2 * o.J + 1))));
+      let sx = 0, sy = 0, sxx = 0, sxy = 0; const n = used.length;
+      used.forEach((o) => { sx += o.E; sy += o.y; sxx += o.E * o.E; sxy += o.E * o.y; });
+      const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx), icp = (sy - slope * sx) / n, Tfit = -1 / (slope * KCM);
+      const Emax = B * 32 * 33, ys = all.map((o) => o.y), y0 = Math.min(...ys) - 0.5, y1 = Math.max(...ys) + 0.5;
+      const ch = SB.chart(ctx, { x: 58, y: 16, w: w - 74, h: h - 62 }, { x: [0, Emax], y: [y0, y1], xLabel: "E_J (cm⁻¹)", yLabel: "ln[I/(2J+1)]" });
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 4]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(icp)); ctx.lineTo(ch.X(Emax), ch.Y(icp - Emax / (KCM * T))); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(icp)); ctx.lineTo(ch.X(Emax), ch.Y(icp + slope * Emax)); ctx.stroke();
+      all.forEach((o) => { const u = used.includes(o); ctx.beginPath(); ctx.arc(ch.X(o.E), ch.Y(o.y), 4, 0, TAU); if (u) { ctx.fillStyle = P.accent; ctx.fill(); } else { ctx.strokeStyle = P.accent; ctx.lineWidth = 1.3; ctx.stroke(); } });
+      SB.label(ctx, "● 맞춤에 씀  ○ 약한 선(제외)", w - 18, 26, { align: "right", size: 11, color: P.dim });
+      rd.textContent = `맞춘 T = ${Tfit.toFixed(0)} K (실제 ${T} K, 오차 ${(((Tfit - T) / T) * 100).toFixed(1)} %) · 사용한 선 ${n}개`;
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 320 });
+    document.getElementById("bz-new").addEventListener("click", () => { seed++; cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 게임: B와 T 맞히기 */
+  {
+    const rng = QM.rng(2024), XMAX = 300;
+    let tgt = { B: 5.0, T: 600 }, gB = 3.0, gTT = 300, revealed = false, solved = false, wins = 0, rounds = 0, noise = [], cv = null;
+    const spec = (B, T) => { const out = []; for (let J = 0; 2 * B * (J + 1) <= XMAX; J++) out.push({ nu: 2 * B * (J + 1), I: pop(B, T, J) }); const mx = Math.max(...out.map((o) => o.I)); out.forEach((o) => (o.I /= mx)); return out; };
+    function newRound(first) {
+      if (!first) tgt = { B: +(2 + rng() * 8).toFixed(2), T: Math.round(250 + rng() * 1250) };
+      noise = Array.from({ length: 200 }, () => Math.max(0.02, 1 + 0.06 * rng.normal()));
+      gB = 3.0; gTT = 300; revealed = false; solved = false; rounds++;
+      cv && cv.redraw();
+    }
+    newRound(true);
+    cv = SB.canvas("cv-game", (ctx, w, h, self) => {
+      const P = pal(), meas = spec(tgt.B, tgt.T).map((o, i) => ({ nu: o.nu, I: o.I * noise[i] }));
+      const mm = Math.max(...meas.map((o) => o.I)); meas.forEach((o) => (o.I /= mm));
+      const mod = spec(gB, gTT);
+      const ch = SB.chart(ctx, { x: 52, y: w < 520 ? 58 : 40, w: w - 66, h: h - (w < 520 ? 106 : 88) }, { x: [0, XMAX], y: [0, 1.22], xLabel: "파수 ν̃ (cm⁻¹)", yLabel: "세기 (최대 = 1)", yTicks: [0, 0.5, 1] });
+      const off = 2.5;
+      ctx.lineWidth = 3; ctx.strokeStyle = P.accent; meas.forEach((o) => { const x = ch.X(o.nu); ctx.beginPath(); ctx.moveTo(x, ch.Y(0)); ctx.lineTo(x, ch.Y(o.I)); ctx.stroke(); });
+      ctx.lineWidth = 2; ctx.strokeStyle = P.accent2; mod.forEach((o) => { const x = ch.X(o.nu) + off; ctx.beginPath(); ctx.moveTo(x, ch.Y(0)); ctx.lineTo(x, ch.Y(o.I)); ctx.stroke(); });
+      // 모형 포락선
+      let emax = 0; const Jmax = XMAX / (2 * gB) - 1; for (let i = 0; i <= 200; i++) emax = Math.max(emax, pop(gB, gTT, (i / 200) * Jmax));
+      ctx.strokeStyle = P.accent2; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.4; ctx.beginPath();
+      for (let i = 0; i <= 200; i++) { const J = -0.5 + (i / 200) * (Jmax + 0.5), nu = 2 * gB * (J + 1), y = ch.Y(Math.max(0, pop(gB, gTT, Math.max(J, 0))) / emax); i ? ctx.lineTo(ch.X(nu), y) : ctx.moveTo(ch.X(nu), y); }
+      ctx.stroke(); ctx.setLineDash([]);
+      const Js = Math.max(0, Math.sqrt((KCM * gTT) / (2 * gB)) - 0.5), px = ch.X(2 * gB * (Js + 1)), py = ch.Y(pop(gB, gTT, Js) / emax);
+      const bx = ch.X(10 * gB), by = ch.Y(0) - 14;
+      handle(ctx, bx, by, P.accent2, 9, true); handle(ctx, px, py, P.accent2, 9);
+      self._hB = [bx, by]; self._hT = [px, py]; self._ix = (x) => ((x - ch.box.x) / ch.box.w) * XMAX;
+      const eB = Math.abs(gB - tgt.B) / tgt.B, eT = Math.abs(gTT - tgt.T) / tgt.T, fit = 100 * Math.exp(-((eB / 0.03) ** 2) - (eT / 0.15) ** 2);
+      if (!solved && eB < 0.015 && eT < 0.08) { solved = true; if (!revealed) wins++; }
+      SB.label(ctx, `측정 스펙트럼 #${rounds}`, 12, w < 520 ? 38 : 16, { align: "left", bold: true, size: 13, color: P.accent });
+      if (revealed) SB.label(ctx, `정답: B = ${tgt.B} cm⁻¹, T = ${tgt.T} K`, w - 14, w < 520 ? 56 : 34, { align: "right", bold: true, size: 12, color: P.text });
+      else if (solved) SB.label(ctx, "✓ 맞혔다!", w - 14, w < 520 ? 38 : 34, { align: "right", bold: true, size: 13, color: P.ok });
+      SB.stat("gm-guess", `B = ${gB.toFixed(2)} cm⁻¹ · T = ${gTT.toFixed(0)} K`);
+      SB.stat("gm-fit", `${fit.toFixed(0)} %`);
+      SB.stat("gm-ok", solved ? `<span style="color:var(--ok)">✓ 성공${revealed ? " (정답 본 뒤)" : ""}</span>` : eB < 0.015 ? "B는 맞음 · T를 맞춰라" : "아직");
+      SB.stat("gm-score", `${wins} / ${rounds}판`);
+    }, { aspect: 0.5, minHeight: 300, maxHeight: 400 });
+    SB.drag(cv, { handles: () => (cv._hB ? [{ id: "B", x: cv._hB[0], y: cv._hB[1], r: 14 }, { id: "T", x: cv._hT[0], y: cv._hT[1], r: 14 }] : []),
+      move: (id, x) => {
+        if (id === "B") gB = SB.clamp(cv._ix(x) / 10, 1, 25);
+        else if (id === "T") { const J = Math.max(0.02, cv._ix(x) / (2 * gB) - 1); gTT = SB.clamp((2 * gB * (J + 0.5) ** 2) / KCM, 50, 5000); }
+      } });
+    document.getElementById("gm-new").addEventListener("click", () => newRound(false));
+    document.getElementById("gm-show").addEventListener("click", () => { revealed = true; cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 회전 스펙트럼 */
+  SB.drill("drill-rot", () => {
+    const [nm, B] = pick([["CO", 1.9225], ["HCl", 10.44], ["HF", 20.56], ["HBr", 8.35]]);
+    if (Math.random() < 0.5) {
+      const J = randInt(0, 9), nu = 2 * B * (J + 1);
+      return { q: `<p>${nm}(\\(B = ${B}\\) cm⁻¹)의 순수 회전 흡수선 \\(J = ${J} \\to ${J + 1}\\)의 파수는?</p>`, answer: nu, label: "ν̃ =", unit: "cm⁻¹", tol: "1%",
+        sol: `\\(\\tilde\\nu = 2B(J+1) = 2\\times${B}\\times${J + 1} = ${nu.toFixed(2)}\\) cm⁻¹` };
+    }
+    const T = pick([200, 300, 500, 800, 1000, 1500]), kT = KCM * T, Jm = Math.sqrt(kT / (2 * B)) - 0.5;
+    return { q: `<p>${T} K의 ${nm} 기체(\\(B = ${B}\\) cm⁻¹)에서 \\(J_\\text{max} = \\sqrt{k_\\mathrm{B}T/2hcB} - \\tfrac12\\)을 소수로 구하라. (\\(k_\\mathrm{B}/hc = 0.6950\\) cm⁻¹/K)</p>`, answer: Jm, label: "J<sub>max</sub> =", tol: "2%",
+      sol: `\\(k_\\mathrm{B}T/hc = ${kT.toFixed(1)}\\) cm⁻¹, \\(J_\\text{max} = \\sqrt{${kT.toFixed(1)}/${(2 * B).toFixed(2)}} - 0.5 = ${Jm.toFixed(2)}\\)` };
+  });
+})();
+</script>
+</body>
+</html>
