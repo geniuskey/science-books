@@ -93,6 +93,18 @@
       `<path d="M126 44v66" stroke="${W}" stroke-opacity=".35" stroke-dasharray="2 4"/>` +
       `<circle class="cv-fly" style="offset-path:path('${CURVE}');animation-duration:3.4s" r="4.5" fill="${W}"/>` +
       `<text x="112" y="18" fill="${W}" fill-opacity=".8" font-size="11" font-style="italic" font-family="serif">σ</text><text x="184" y="124" fill="${W}" fill-opacity=".8" font-size="11" font-style="italic" font-family="serif">ε</text>`),
+    // 블로흐 구 위에서 세차하는 스핀과, 장벽에 부딪혀 투과·반사로 갈라지는 파속
+    "quantum-mechanics": () => svg(
+      `<circle cx="50" cy="66" r="40" fill="none" stroke="${W}" stroke-width="2.4"/>` +
+      `<ellipse cx="50" cy="66" rx="40" ry="11" fill="none" stroke="${W}" stroke-width="1.4" stroke-opacity=".45" stroke-dasharray="3 3"/>` +
+      `<path d="M50 20v92" stroke="${W}" stroke-width="1.2" stroke-opacity=".4" stroke-dasharray="2 4"/>` +
+      `<path d="M50 66L22 38M50 66L78 38" stroke="${W}" stroke-width="1.2" stroke-opacity=".35"/>` +
+      `<ellipse cx="50" cy="38" rx="28" ry="7" fill="none" stroke="${W}" stroke-width="1.8" stroke-opacity=".7"/>` +
+      `<circle class="cv-fly" style="offset-path:path('M22 38a28 7 0 1 0 56 0a28 7 0 1 0 -56 0');animation-duration:2.4s;animation-timing-function:linear" r="5" fill="${W}"/>` +
+      `<circle cx="50" cy="66" r="3.4" fill="${W}"/>` +
+      `<path d="M104 104h88" stroke="${W}" stroke-width="2" stroke-opacity=".7"/><rect x="146" y="48" width="7" height="56" fill="${W}" fill-opacity=".55"/>` +
+      `<polyline points="${pts((x) => 82 - 26 * Math.exp(-((x - 124) ** 2) / 70) * Math.cos((x - 124) / 2.6), 104, 144, 1.5)}" fill="none" stroke="${W}" stroke-width="2.4"/>` +
+      `<polyline class="cv-pulse" points="${pts((x) => 82 - 13 * Math.exp(-((x - 174) ** 2) / 60) * Math.cos((x - 174) / 2.6), 156, 194, 1.5)}" fill="none" stroke="${W}" stroke-width="2"/>`),
   };
   document.querySelectorAll(".book[data-course]").forEach((el) => {
     const art = ART[el.dataset.course], slot = el.querySelector(".book-art");
