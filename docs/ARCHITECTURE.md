@@ -15,7 +15,7 @@ science.euiyun.com/general-physics/      ← (예정) 같은 엔진, 다른 콘�
 | 층 | 위치 | 내용 | 바뀌는 빈도 |
 |---|---|---|---|
 | **엔진(core)** | `engine/js/scibook.js`, `engine/css/scibook.css` | 과목과 무관한 레이아웃·내비게이션·검색·테마, 교과서 컴포넌트(자동 번호 절/예제/그림, 자동 채점 연습문제, 드릴, 퀴즈, 진도 저장), 시뮬레이터 헬퍼(canvas·chart·loop·three.js), KaTeX 로더 | 드묾. 모든 과목에 영향 |
-| **도메인 라이브러리(lib)** | `engine/lib/*.js` | 여러 과목이 함께 쓰는 분야별 계산·위젯. `elements.js`(원소 자료), `chem.js`(화학식 해석·몰 질량·반응식 균형·주기율표 위젯·VSEPR·3D 분자). 예정: `phys.js`(벡터·적분기·단위), `mech.js`(자유 물체도·보 해석) | 가끔. 해당 분야 과목에만 영향 |
+| **도메인 라이브러리(lib)** | `engine/lib/*.js` | 여러 과목이 함께 쓰는 분야별 계산·위젯. `elements.js`(원소 자료), `chem.js`(화학식 해석·몰 질량·반응식 균형·주기율표 위젯·VSEPR·3D 분자). 예정: `phys.js`(벡터·적분기·단위) | 가끔. 해당 분야 과목에만 영향 |
 | **콘텐츠(course)** | `<course-id>/` | `course.json`(매니페스트: 제목·색·부/장 목록), `index.html`(과목 홈), `chapters/*.html`(본문·그림·시뮬레이터·문제) | 자주 |
 
 규칙:

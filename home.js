@@ -35,17 +35,6 @@
       `<path d="M84.5 57l22 13 22-13 22 13 22-13" fill="none" stroke="${W}" stroke-width="3" stroke-linejoin="round"/><path d="M128.5 57V34M126 57V34" stroke="${W}" stroke-width="2.4"/>` +
       `<text x="121" y="28" fill="${W}" font-size="13" font-weight="700" font-family="sans-serif">O</text>` +
       `<path class="cv-pulse" d="M150 88q14 22-12 26" fill="none" stroke="${W}" stroke-width="2.2"/><path d="M142 108l-6 6 9 2" fill="none" stroke="${W}" stroke-width="2.2"/>`),
-    // 트러스 다리와 받침, 위에서 누르는 하중
-    statics: () => svg(
-      `<path d="M20 96h160M20 96l32-40 32 40 32-40 32 40 32-40M52 56h128" fill="none" stroke="${W}" stroke-width="3" stroke-linejoin="round"/>` +
-      `<path d="M20 96l-9 14h18zM180 96l-9 14h18z" fill="${W}" fill-opacity=".55"/><circle cx="171" cy="113" r="3" fill="${W}"/><circle cx="189" cy="113" r="3" fill="${W}"/>` +
-      `<g class="cv-pulse"><path d="M116 14v34" stroke="${W}" stroke-width="3"/><path d="M109 40l7 12 7-12z" fill="${W}"/></g>` +
-      [20, 52, 84, 116, 148, 180].map((x, i) => `<circle cx="${x}" cy="${i % 2 ? 56 : 96}" r="3.2" fill="${W}"/>`).join("")),
-    // 흔들리는 진자와 지나온 호
-    dynamics: () => svg(
-      `<path d="M60 8h80" stroke="${W}" stroke-width="3"/><path d="M58 98a96 96 0 0 0 84 0" fill="none" stroke="${W}" stroke-opacity=".45" stroke-dasharray="3 5"/>` +
-      `<g class="cv-swing"><path d="M100 8v92" stroke="${W}" stroke-width="2"/><circle cx="100" cy="104" r="12" fill="${W}" fill-opacity=".9"/></g>` +
-      `<path d="M100 8v100" stroke="${W}" stroke-opacity=".25" stroke-dasharray="2 4"/>`),
     // 원기둥을 돌아 흐르는 유선
     "fluid-mechanics": () => svg(
       [-46, -30, -16, -6, 6, 16, 30, 46].map((d) => { const y = (65 + Math.sign(d) * Math.hypot(d, 22)).toFixed(1); return `<path class="cv-flow" d="M4 ${65 + d}C60 ${65 + d} 70 ${y} 100 ${y}S140 ${65 + d} 196 ${65 + d}" fill="none" stroke="${W}" stroke-width="2" stroke-dasharray="10 10" stroke-opacity="${(0.4 + 12 / (Math.abs(d) + 20)).toFixed(2)}"/>`; }).join("") +

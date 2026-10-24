@@ -140,26 +140,6 @@ SB.registerCatalog({
    "description": "구조와 결합, 입체화학, 반응 메커니즘(치환·제거·첨가), 작용기별 반응, 분광학 — 화살표로 전자를 따라간다."
   },
   {
-   "id": "statics",
-   "code": "ST",
-   "field": "mechanics",
-   "status": "planned",
-   "title": "정역학",
-   "en": "Statics",
-   "level": "대학 2학년",
-   "description": "힘과 모멘트, 자유 물체도, 강체 평형, 트러스·프레임, 마찰, 도심과 관성 모멘트."
-  },
-  {
-   "id": "dynamics",
-   "code": "DY",
-   "field": "mechanics",
-   "status": "planned",
-   "title": "동역학",
-   "en": "Dynamics",
-   "level": "대학 2학년",
-   "description": "질점과 강체의 운동학·운동역학, 일–에너지, 충격–운동량, 상대 운동, 진동."
-  },
-  {
    "id": "fluid-mechanics",
    "code": "FM",
    "field": "mechanics",
