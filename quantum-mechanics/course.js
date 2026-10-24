@@ -27,8 +27,7 @@ SB.registerCourse({
      "tags": [
       "보른 규칙",
       "확률 흐름"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "state-space",
@@ -39,8 +38,7 @@ SB.registerCourse({
      "tags": [
       "브라–켓",
       "에르미트 연산자"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "measurement",
@@ -51,8 +49,7 @@ SB.registerCourse({
      "tags": [
       "교환자",
       "불확정성 관계"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "time-evolution",
@@ -63,8 +60,7 @@ SB.registerCourse({
      "tags": [
       "유니터리 전개",
       "하이젠베르크 묘사"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -80,8 +76,7 @@ SB.registerCourse({
      "tags": [
       "전달 행렬",
       "공명 터널링"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "ladder-operators",
@@ -92,8 +87,7 @@ SB.registerCourse({
      "tags": [
       "사다리 연산자",
       "결맞음 상태"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "symmetry",
@@ -104,8 +98,7 @@ SB.registerCourse({
      "tags": [
       "블로흐 정리",
       "패리티"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -121,8 +114,7 @@ SB.registerCourse({
      "tags": [
       "구면 조화 함수",
       "회전 연산자"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "central-potentials",
@@ -133,8 +125,7 @@ SB.registerCourse({
      "tags": [
       "지름 방정식",
       "엑시톤"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "spin",
@@ -287,8 +278,117 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "wave-function": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 12,
+   "drills": 6,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "state-space": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 14,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 4,
+   "steps": 4,
+   "predicts": 5,
+   "hero": 1
+  },
+  "measurement": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 9,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "time-evolution": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 13,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "one-dimensional": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 14,
+   "drills": 3,
+   "minis": 8,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "ladder-operators": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 11,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "symmetry": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 8,
+   "figures": 10,
+   "drills": 4,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "angular-momentum": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 8,
+   "figures": 12,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "central-potentials": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 14,
+   "drills": 4,
+   "minis": 7,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  }
+ },
+ "published": 9,
  "total": 20,
  "url": "https://science.euiyun.com/quantum-mechanics/"
 });
