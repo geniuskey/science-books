@@ -1,0 +1,1482 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>중심력과 수소 원자 · 양자역학 · SciBook</title>
+<meta name="description" content="지름 방정식과 유효 퍼텐셜, 구형 우물과 구형 양자점(브루스 식), 3차원 조화 진동자, 수소 원자의 엄밀해와 룽게–렌츠 벡터가 만드는 우연 축퇴, 수소꼴 이온과 리드베리 상태, 유효 질량 수소 모형(주개·받개·엑시톤)과 실리콘 도펀트 동결을 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/central-potentials.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="중심력과 수소 원자 · 양자역학 · SciBook">
+<meta property="og:description" content="지름 방정식과 유효 퍼텐셜, 구형 우물과 구형 양자점(브루스 식), 3차원 조화 진동자, 수소 원자의 엄밀해와 룽게–렌츠 벡터가 만드는 우연 축퇴, 수소꼴 이온과 리드베리 상태, 유효 질량 수소 모형(주개·받개·엑시톤)과 실리콘 도펀트 동결을 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/central-potentials.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "중심력과 수소 원자 · 양자역학 · SciBook", "headline": "09 중심력과 수소 원자", "url": "https://science.euiyun.com/quantum-mechanics/chapters/central-potentials.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "지름 방정식과 유효 퍼텐셜, 구형 우물과 구형 양자점(브루스 식), 3차원 조화 진동자, 수소 원자의 엄밀해와 룽게–렌츠 벡터가 만드는 우연 축퇴, 수소꼴 이온과 리드베리 상태, 유효 질량 수소 모형(주개·받개·엑시톤)과 실리콘 도펀트 동결을 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 9, "dateModified": "2026-10-24", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "09 중심력과 수소 원자", "item": "https://science.euiyun.com/quantum-mechanics/chapters/central-potentials.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .game-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+</style>
+</head>
+<body data-chapter="central-potentials">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="angular-momentum one-dimensional ladder-operators">
+    <div class="eyebrow">Chapter 09</div>
+    <h1>중심력과 수소 원자</h1>
+    <p class="lead">퍼텐셜이 거리 \(r\)에만 의존하면 각도 부분은 언제나 8장의 구면 조화 함수 \(Y_l^m\)이고, 문제 전체가 <strong>지름 방정식 하나</strong>로 줄어든다. 그 방정식 속에서 각운동량은 퍼텐셜에 더해지는 원심 장벽 \(\hbar^2 l(l+1)/2mr^2\)로만 나타난다. 아래 그림에서 \(l\)을 바꾸면 원심 장벽이 지름 함수 \(u(r)\)를 바깥으로 밀어낸다. 같은 틀로 구형 양자점, 3차원 진동자, 수소 원자, 그리고 실리콘 속 인(P) 원자와 엑시톤까지 한꺼번에 푼다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">좌우로 끌면 l · 누르면 쿨롱 ↔ 조화</span></div>
+    <ul class="objectives">
+      <li>중심력 해밀토니언을 \(\hat p_r^2/2m + \hat{\mathbf L}^2/2mr^2 + V(r)\)로 나누고, 지름 방정식·경계 조건 \(u(0)=0\)·원점 근처 \(u\propto r^{l+1}\)의 이유를 설명한다.</li>
+      <li>무한·유한 구형 우물을 구 베셀 함수로 풀고, 3차원 우물의 속박 임계 깊이와 구형 양자점의 크기–색 관계(브루스 식)를 계산한다.</li>
+      <li>3차원 조화 진동자를 직교·구면 두 좌표로 풀어 축퇴도 \((N+1)(N+2)/2\)와 \(l = N, N-2, \dots\) 구조를 유도한다.</li>
+      <li>수소 원자의 급수 풀이가 끊겨야 하는 이유로 \(E_n=-13.6\ \text{eV}/n^2\)을 얻고, \(\langle r\rangle\)·\(\langle 1/r\rangle\) 같은 기댓값과 룽게–렌츠 벡터가 만드는 우연 축퇴를 이해한다.</li>
+      <li>수소꼴 이온·리드베리 상태의 \(Z\)·\(n\) 스케일링과, 유효 질량 수소 모형으로 실리콘 얕은 도펀트·동결·엑시톤·양자점의 구속 영역을 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="radial">
+    <h2>지름 방정식과 유효 퍼텐셜</h2>
+    <p>퍼텐셜이 \(V(\mathbf r) = V(r)\)처럼 원점으로부터의 거리에만 의존하는 경우를 <span class="term">중심력 퍼텐셜</span><span class="en">(central potential)</span>이라 한다. 이때 해밀토니언은 모든 회전에 대해 불변이고, 회전의 생성자인 각운동량과 교환한다(<a href="angular-momentum.html">8장</a>).</p>
+    <div class="formula">$$[\hat H, \hat L_i] = 0, \qquad [\hat H, \hat{\mathbf L}^2] = 0, \qquad [\hat{\mathbf L}^2, \hat L_z] = 0$$<div class="where">세 연산자 \(\hat H, \hat{\mathbf L}^2, \hat L_z\)가 서로 교환하므로 동시 고유 켓 \(|E\,l\,m\rangle\)을 고를 수 있다. 위치 표현에서 \(\langle \mathbf r|E\,l\,m\rangle = R(r)\,Y_l^m(\theta,\phi)\)이고, 각도 부분은 퍼텐셜과 무관하게 언제나 구면 조화 함수다.</div></div>
+    <p>운동 에너지를 지름 방향과 각 방향으로 나누는 것이 핵심이다. 구면 좌표 라플라시안의 각도 부분은 정확히 \(-\hat{\mathbf L}^2/\hbar^2 r^2\)이므로</p>
+    <div class="formula">$$\hat H = \frac{\hat p_r^{\,2}}{2m} + \frac{\hat{\mathbf L}^2}{2mr^2} + V(r), \qquad \hat p_r = -i\hbar\,\frac1r\frac{\partial}{\partial r}\,r$$<div class="where">\(\hat p_r\)은 에르미트인 <span class="term">지름 운동량</span><span class="en">(radial momentum)</span> 연산자다(그냥 \(-i\hbar\,\partial_r\)은 \(r^2dr\) 측도에서 에르미트가 아니다). 둘째 항은 고전 역학의 회전 운동 에너지 \(L^2/2mr^2\)와 같다.</div></div>
+    <p>\(\hat{\mathbf L}^2\)에 고유값 \(l(l+1)\hbar^2\)를 넣고 \(u(r) = rR(r)\)로 바꾸면 1차원 슈뢰딩거 방정식과 똑같은 꼴이 된다. 이것이 <span class="term">지름 방정식</span><span class="en">(radial equation)</span>이다.</p>
+    <div class="formula">$$-\frac{\hbar^2}{2m}\frac{d^2u}{dr^2} + \underbrace{\left[V(r) + \frac{\hbar^2\,l(l+1)}{2mr^2}\right]}_{V_\text{eff}(r)} u = E\,u, \qquad \int_0^\infty |u|^2\,dr = 1$$<div class="where">괄호 안이 <span class="term">유효 퍼텐셜</span><span class="en">(effective potential)</span>이고, 둘째 항이 <span class="term">원심 장벽</span><span class="en">(centrifugal barrier)</span>이다. 정규화는 \(\int |\psi|^2 d^3r = \int |R|^2 r^2 dr \int |Y|^2 d\Omega = \int |u|^2 dr\)에서 나온다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="쿨롱 퍼텐셜, 원심 장벽, 그 합인 유효 퍼텐셜과 고전 전환점">
+        <defs><marker id="cpax" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <line x1="70" y1="285" x2="70" y2="20" class="s-axis" marker-end="url(#cpax)"/>
+        <line x1="70" y1="139" x2="480" y2="139" class="s-axis" marker-end="url(#cpax)"/>
+        <text class="t-dim" x="484" y="134">r</text><text class="t-dim" x="40" y="26">E</text><text class="t-dim" x="52" y="143">0</text>
+        <path d="M119,40 L125,60 L131,75 L138,86 L144,94 L150,101 L156,106 L162,110 L168,114 L174,117 L180,119 L186,121 L192,123 L198,124 L204,126 L210,127 L216,128 L222,129 L228,129 L234,130 L240,131 L246,131 L252,132 L258,132 L264,133 L271,133 L277,133 L283,134 L289,134 L295,134 L301,135 L307,135 L313,135 L319,135 L325,135 L331,136 L337,136 L343,136 L349,136 L355,136 L361,136 L367,136 L373,136 L379,137 L385,137 L391,137 L397,137 L404,137 L410,137 L416,137 L422,137 L428,137 L434,137 L440,137 L446,137 L452,137 L458,137 L464,138 L470,138" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="6 4"/>
+        <path d="M123,275 L129,262 L135,251 L141,242 L147,234 L153,227 L159,221 L164,216 L170,212 L176,208 L182,204 L188,201 L194,198 L200,195 L206,193 L211,190 L217,188 L223,187 L229,185 L235,183 L241,182 L247,180 L253,179 L258,178 L264,177 L270,175 L276,174 L282,173 L288,172 L294,172 L300,171 L305,170 L311,169 L317,169 L323,168 L329,167 L335,167 L341,166 L347,165 L352,165 L358,164 L364,164 L370,163 L376,163 L382,162 L388,162 L394,162 L399,161 L405,161 L411,160 L417,160 L423,160 L429,159 L435,159 L441,159 L446,158 L452,158 L458,158 L464,158 L470,157" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="3 3"/>
+        <path d="M95,42 L101,124 L108,161 L114,179 L120,188 L127,192 L133,193 L139,194 L146,193 L152,192 L159,190 L165,189 L171,187 L178,186 L184,184 L190,183 L197,181 L203,180 L209,179 L216,178 L222,176 L228,175 L235,174 L241,173 L248,172 L254,171 L260,171 L267,170 L273,169 L279,168 L286,168 L292,167 L298,166 L305,166 L311,165 L317,165 L324,164 L330,163 L337,163 L343,162 L349,162 L356,162 L362,161 L368,161 L375,160 L381,160 L387,160 L394,159 L400,159 L406,159 L413,158 L419,158 L426,158 L432,157 L438,157 L445,157 L451,157 L457,156 L464,156 L470,156" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+        <line x1="109" y1="166" x2="298" y2="166" stroke="var(--accent)" stroke-width="2.4"/>
+        <circle cx="109" cy="166" r="4" fill="var(--accent)"/><circle cx="298" cy="166" r="4" fill="var(--accent)"/>
+        <text class="t-acc" x="200" y="160" text-anchor="middle">E (허용 영역)</text>
+        <text class="t" x="150" y="62" style="fill:var(--warn)">원심 장벽 +ħ²l(l+1)/2mr²</text>
+        <text class="t" x="330" y="196" style="fill:var(--accent-2)">V(r) = −ke²/r</text>
+        <text class="t" x="300" y="150" style="fill:var(--accent-2)">V_eff</text>
+        <rect x="520" y="30" width="262" height="240" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="536" y="58" style="font-weight:700">읽는 법</text>
+        <text class="t" x="536" y="86">• r → 0: 1/r²이 1/r을 이긴다</text>
+        <text class="t-dim" x="548" y="106">→ l ≥ 1이면 원점이 막힌다</text>
+        <text class="t" x="536" y="134">• 점 두 개: 고전 전환점</text>
+        <text class="t-dim" x="548" y="154">V_eff(r) = E 인 안·바깥 반지름</text>
+        <text class="t" x="536" y="182">• r → ∞: V_eff → 0</text>
+        <text class="t-dim" x="548" y="202">E &lt; 0이면 속박, u ~ e^(−κr)</text>
+        <text class="t" x="536" y="230">• V_eff 최솟값 위치 ≈ 궤도 반지름</text>
+        <text class="t-dim" x="548" y="250">(쿨롱 l=1: r = a₀·l(l+1) = 2a₀)</text>
+      </svg>
+      <figcaption>쿨롱 퍼텐셜(초록 점선)에 원심 장벽(주황 점선, \(l=1\))을 더한 유효 퍼텐셜(초록 실선). 자홍 선은 \(n=2, l=1\) 준위다. 전자는 두 고전 전환점 사이에 주로 머물고, 바깥으로는 지수적으로 스며 나간다.</figcaption>
+    </figure>
+    <h3>경계 조건: 원점과 무한대</h3>
+    <p>지름 방정식은 반직선 \(0 \le r &lt; \infty\) 위의 1차원 문제다. 원점 근처에서는 원심 장벽이 \(1/r\)보다 덜 특이한 어떤 퍼텐셜도 이기므로, \(u'' \approx l(l+1)u/r^2\)를 풀면 두 해 \(u \sim r^{l+1}\)(정칙)과 \(u \sim r^{-l}\)(비정칙)이 나온다. 비정칙 해는 \(l \ge 1\)이면 정규화가 안 되고, \(l = 0\)이면 \(R \sim 1/r\)인데 \(\nabla^2(1/r) = -4\pi\delta^3(\mathbf r)\)라 원래 3차원 방정식을 만족하지 않는다. 그래서</p>
+    <div class="formula">$$u(0) = 0, \qquad u(r) \xrightarrow{r\to0} r^{l+1}, \qquad u(r) \xrightarrow{r\to\infty} e^{-\kappa r}, \quad \kappa = \frac{\sqrt{-2mE}}{\hbar}$$<div class="where">\(u(0)=0\)은 원점에 무한히 높은 벽이 있는 것과 같다. 그래서 \(l=0\) 지름 문제는 대칭 1차원 우물의 <em>홀</em> 상태만 골라낸 문제와 똑같다 — 아래 시뮬레이터에서 확인한다.</div></div>
+    <figure class="mini" id="mini-org">
+      <div class="mini-view"><canvas id="cv-org"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>궤도 양자수 l <output id="org-l-out"></output></span><input type="range" id="org-l" min="0" max="4" step="1" value="1"></label>
+        <span class="readout" id="org-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>수소의 \(|u(r)|\)를 로그–로그로 그렸다(실선 \(n=l+1\), 점선 \(n=l+2\)). 원점 근처 기울기는 \(n\)과 무관하게 \(l+1\)이다 — \(l\)이 클수록 전자가 원점을 피한다. 빨간 점선 \(r^{-l}\)은 경계 조건이 버리는 해다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-bar">
+      <p>유효 질량 <span class="tn" data-var="m" data-min="0.05" data-max="1" data-step="0.01" data-unit=" mₑ">1.00</span>인 전자가 \(l =\) <span class="tn" data-var="l" data-min="1" data-max="4" data-step="1">2</span> 상태로 원점에서 <span class="tn" data-var="r" data-min="0.1" data-max="5" data-step="0.1" data-unit=" nm">0.5</span> 떨어져 있으면 원심 장벽은 <span class="tn-out" data-out="V"></span>로, 상온 \(k_BT\)의 <span class="tn-out" data-out="x"></span>배다. <span data-out="msg"></span></p>
+    </div>
+    <h3>축퇴: 반드시 있는 것과 우연한 것</h3>
+    <p>지름 방정식에는 \(m\)이 들어 있지 않다. 따라서 모든 중심력에서 한 준위는 적어도 \(2l+1\)겹 축퇴한다. 연산자로 말하면 \([\hat H, \hat L_\pm] = 0\)이라 \(\hat L_\pm|E\,l\,m\rangle\)이 같은 에너지의 다른 \(m\) 상태다 — 회전 대칭이 보장하는 <span class="term">본질적 축퇴</span><span class="en">(essential degeneracy)</span>다. 반면 서로 다른 \(l\)의 준위가 겹치는 일은 보통 없다. 그런데 쿨롱과 조화 퍼텐셜에서는 겹친다. 이것을 <b>우연 축퇴</b>(accidental degeneracy, <a href="symmetry.html">7장</a>)라 부르지만, 실은 회전보다 큰 숨은 대칭 때문이다(3·4절).</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="3차원 해밀토니언에서 지름 방정식과 경계 조건이 나오는 네 단계">
+        <defs><marker id="cpst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="48" text-anchor="middle" style="font-weight:700">① 3차원 Ĥ</text>
+        <text class="t-mono" x="107" y="80" text-anchor="middle">Ĥ = p̂²/2m + V(r)</text>
+        <text class="t-mono" x="107" y="108" text-anchor="middle">p̂² = p̂_r² + L̂²/r²</text>
+        <text class="t-dim" x="107" y="140" text-anchor="middle">회전 불변 ⇒</text>
+        <text class="t-acc" x="107" y="164" text-anchor="middle">[Ĥ, L̂] = 0</text>
+        <g data-step="2">
+          <line x1="197" y1="120" x2="215" y2="120" stroke="var(--text-dim)" marker-end="url(#cpst)"/>
+          <rect x="218" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="48" text-anchor="middle" style="font-weight:700">② 각도 분리</text>
+          <text class="t-mono" x="305" y="80" text-anchor="middle">ψ = R(r) Y_l^m(θ,φ)</text>
+          <text class="t-mono" x="305" y="108" text-anchor="middle">L̂² → l(l+1)ħ²</text>
+          <text class="t-dim" x="305" y="140" text-anchor="middle">각도 부분은 8장 그대로</text>
+          <text class="t-acc" x="305" y="164" text-anchor="middle">m은 사라진다</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="120" x2="413" y2="120" stroke="var(--text-dim)" marker-end="url(#cpst)"/>
+          <rect x="416" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="503" y="48" text-anchor="middle" style="font-weight:700">③ u = rR</text>
+          <text class="t-mono" x="503" y="80" text-anchor="middle">−(ħ²/2m)u'' + V_eff u</text>
+          <text class="t-mono" x="503" y="102" text-anchor="middle">= E u</text>
+          <text class="t-dim" x="503" y="140" text-anchor="middle">1차원 문제와 같은 꼴</text>
+          <text class="t-acc" x="503" y="164" text-anchor="middle">V_eff = V + 원심 장벽</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="120" x2="611" y2="120" stroke="var(--text-dim)" marker-end="url(#cpst)"/>
+          <rect x="614" y="20" width="168" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="48" text-anchor="middle" style="font-weight:700">④ 경계 조건</text>
+          <text class="t-mono" x="698" y="80" text-anchor="middle">u(0) = 0, u ~ r^(l+1)</text>
+          <text class="t-mono" x="698" y="108" text-anchor="middle">u(∞) = 0</text>
+          <text class="t-dim" x="698" y="140" text-anchor="middle">양자수 (n_r, l, m)</text>
+          <text class="t-acc" x="698" y="164" text-anchor="middle">E는 n_r, l에만 의존</text>
+          <text class="t-dim" x="698" y="190" text-anchor="middle">⇒ 2l+1겹 축퇴</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">n_r = 지름 마디 수 (u가 0을 지나는 횟수, 원점 제외)</text>
+      </svg>
+      <ol class="steps-cap"><li>운동 에너지를 지름 운동량과 각운동량으로 나눈다. 회전 불변이면 \(\hat{\mathbf L}\)이 보존된다.</li><li>\(\hat{\mathbf L}^2\)의 고유 상태 \(Y_l^m\)을 곱해 두면 각도 미분이 숫자 \(l(l+1)\hbar^2\)로 바뀐다. \(m\)은 방정식에서 사라진다.</li><li>\(u = rR\)로 바꾸면 1계 미분 항이 없어지고 1차원 슈뢰딩거 방정식과 같은 꼴이 된다.</li><li>원점과 무한대의 조건이 에너지를 양자화한다. 에너지는 \(n_r\)과 \(l\)에만 의존하므로 각 준위는 \(2l+1\)겹 축퇴한다.</li></ol>
+      <figcaption>중심력 문제를 지름 방정식으로 줄이는 흐름. 어떤 \(V(r)\)이든 ①–④는 같고, 퍼텐셜마다 다른 것은 ③의 1차원 방정식을 푸는 일뿐이다.</figcaption>
+    </figure>
+    <h3>3차원 우물은 얕으면 아무것도 붙잡지 못한다</h3>
+    <p>반지름 \(a\), 깊이 \(V_0\)인 <span class="term">유한 구형 우물</span><span class="en">(finite spherical well)</span>의 \(l=0\) 문제는 \(u(0)=0\) 때문에 폭 \(2a\)인 1차원 우물의 홀 상태 문제와 같다. 1차원 대칭 우물은 아무리 얕아도 짝 상태 하나를 붙잡지만, 홀 상태는 \(z_0 = a\sqrt{2mV_0}/\hbar &gt; \pi/2\)일 때만 생긴다. 그래서 3차원에서는 속박에 임계 깊이가 있다.</p>
+    <div class="formula">$$V_0 a^2 &gt; \frac{\pi^2\hbar^2}{8m} \quad (l = 0), \qquad V_0a^2 &gt; \frac{\pi^2\hbar^2}{2m} \quad (l = 1)$$<div class="where">\(l\)번째 상태의 문턱은 \(E \to 0\)에서 안쪽 \(j_l(ka)\)와 바깥쪽 \(r^{-(l+1)}\)을 잇는 조건 \(j_{l-1}(ka) = 0\)이다(\(l=1\)이면 \(ka = \pi\)). 원심 장벽이 클수록 더 깊은 우물이 필요하다.</div></div>
+    <div class="predict" data-for="sim-veff">
+      <p>1차원 유한 우물은 아무리 얕아도 속박 상태가 하나는 있다. 반지름은 그대로 두고 3차원 구형 우물을 아주 얕게 만들면?</p>
+      <div class="opts"><button class="opt">역시 바닥 상태 하나는 남는다</button><button class="opt" data-correct>속박 상태가 하나도 없게 된다</button><button class="opt">l = 1 상태만 남는다</button><button class="opt">속박 상태가 무한히 많아진다</button></div>
+      <div class="quiz-exp">\(u(0)=0\)이 원점에 벽을 세우므로 \(l=0\) 상태도 1차원 우물의 홀 상태처럼 문턱이 있다. 아래에서 바닥(깊이) 손잡이를 끌어 올려 s 상태가 사라지는 깊이를 찾고, "임계 깊이" 값과 비교하라.</div>
+    </div>
+    <div class="sim" id="sim-veff">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>구형 우물 실험대: 벽과 바닥을 끌어 속박 상태를 세어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-veff"></canvas><span class="hint top">흰 원: 벽(반지름 a) · 바닥(깊이 V₀)</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>그릴 궤도 양자수 l</span><div class="seg" id="veff-l"><button data-value="0" class="on">s (0)</button><button data-value="1">p (1)</button><button data-value="2">d (2)</button><button data-value="3">f (3)</button></div></div>
+          <label class="check"><input type="checkbox" id="veff-u" checked> u(r) 그리기</label>
+          <label class="check"><input type="checkbox" id="veff-1d"> 폭 2a 1차원 우물 준위와 비교</label>
+          <button class="btn" id="veff-reset" type="button">처음 값으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">a · V₀ · z₀</span><span class="v" id="veff-p">—</span></div>
+        <div class="stat"><span class="k">속박 상태 수 (s · p · d · f)</span><span class="v" id="veff-n">—</span></div>
+        <div class="stat"><span class="k">이 l의 준위 (eV)</span><span class="v" id="veff-E">—</span></div>
+        <div class="stat"><span class="k">임계 깊이 s · p</span><span class="v" id="veff-c">—</span></div>
+      </div>
+      <div class="sim-note">자유 전자(\(m = m_\mathrm{e}\)). 초록 실선은 \(V(r)\), 초록 점선은 고른 \(l\)의 \(V_\text{eff}\), 자홍은 지름 방정식을 유한 차분으로 푼 준위와 \(u(r)\)이다. 해볼 것: ① 바닥을 끌어 올려 s 상태가 사라지는 깊이가 \(\pi^2\hbar^2/8ma^2\)인지 확인한다. ② "1차원 비교"를 켜고 s 준위가 1차원 우물의 <em>홀</em> 상태(초록 눈금 "홀")와 겹치는 것을 본다. ③ 같은 깊이에서 \(l\)을 올리면 준위가 위로 밀리고 \(u(r)\)의 봉우리가 벽 쪽으로 간다.</div>
+    </div>
+    <div class="example" data-title="GaAs 구형 우물의 속박 문턱">
+      <p>GaAs 속 전자(\(m^* = 0.067m_\mathrm{e}\))를 반지름 \(a = 5\) nm인 구형 우물에 가둔다. (a) s 상태가 하나라도 생기려면 깊이 \(V_0\)가 얼마 이상이어야 하나? (b) p 상태는? (\(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm²)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(l=0\): \(z_0 = \pi/2\), 즉 \(V_0 = \pi^2\hbar^2/(8m^*a^2)\). \(l=1\): \(ka = \pi\), 즉 \(V_0 = \pi^2\hbar^2/(2m^*a^2)\).</div>
+        <div class="step"><b>풀이</b> \(\hbar^2/2m^* = 0.0381/0.067 = 0.569\) eV·nm². (a) \(V_0 = (\pi^2/4)(0.569)/25 = 0.0561\) eV. (b) 네 배인 \(\pi^2(0.569)/25 = 0.225\) eV.</div>
+        <div class="answer">(a) 56.1 meV 이상 (b) 225 meV 이상</div>
+        <div class="step"><b>검토</b> 상온 \(k_BT\)(25.9 meV)의 두 배쯤인 깊이다. 확인: \(z_0 = 5\sqrt{0.0561/0.569} = 1.571 = \pi/2\). 얕은 우물·작은 결정에서는 p 상태가 아예 없을 수 있고, 이것이 작은 나노 결정의 흡수 스펙트럼에서 선이 몇 개뿐인 이유다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="spherical-well">
+    <h2>구형 우물과 구형 양자점</h2>
+    <p>반지름 \(a\)인 <span class="term">무한 구형 우물</span><span class="en">(infinite spherical well)</span> 안에서 \(V=0\)이면 지름 방정식은 \(u'' = [l(l+1)/r^2 - k^2]u\), \(k = \sqrt{2mE}/\hbar\)이다. 해는 <span class="term">구 베셀 함수</span><span class="en">(spherical Bessel function)</span> \(j_l\)과 구 노이만 함수 \(n_l\)인데, \(n_l\)은 원점에서 발산하므로 버린다.</p>
+    <div class="formula">$$u(r) = A\,r\,j_l(kr), \qquad j_l(x_{nl}) = 0 \;\Rightarrow\; E_{nl} = \frac{\hbar^2 x_{nl}^2}{2ma^2}$$<div class="where">\(x_{nl}\)은 \(j_l\)의 \(n\)번째 영점. \(j_0(x) = \sin x/x\)이므로 \(x_{n0} = n\pi\)(1차원 우물과 같다). \(j_1(x) = \sin x/x^2 - \cos x/x\)의 첫 영점은 4.493이다. 여기서 \(n\)은 "그 \(l\)에서 몇 번째"라는 뜻이라 수소처럼 \(l &lt; n\) 제한이 없다(1s, 1p, 1d, 2s …).</div></div>
+    <figure class="mini" id="mini-jl">
+      <div class="mini-view"><canvas id="cv-jl"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>l <output id="jl-l-out"></output></span><input type="range" id="jl-l" min="0" max="5" step="1" value="1"></label>
+        <span class="readout" id="jl-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>구 베셀 함수 \(j_l(x)\)(자홍)와 그 영점 \(x_{nl}\). 벽 \(r=a\)가 영점에 오도록 \(k\)를 고르는 것이 양자화다. \(l\)이 커지면 \(j_l\)이 원점에서 \(x^l\)로 납작해지고 첫 영점이 뒤로 밀린다 — 원심 장벽이 에너지를 올린다.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>상태</th><th class="num">\(x_{nl}\)</th><th class="num">\(E/E_{1s}\)</th><th class="num">겹침 \(2(2l+1)\)</th><th class="num">누적 전자 수</th></tr></thead>
+      <tbody>
+        <tr><td>1s</td><td class="num">3.142</td><td class="num">1.00</td><td class="num">2</td><td class="num">2</td></tr>
+        <tr><td>1p</td><td class="num">4.493</td><td class="num">2.05</td><td class="num">6</td><td class="num">8</td></tr>
+        <tr><td>1d</td><td class="num">5.763</td><td class="num">3.37</td><td class="num">10</td><td class="num">18</td></tr>
+        <tr><td>2s</td><td class="num">6.283</td><td class="num">4.00</td><td class="num">2</td><td class="num">20</td></tr>
+        <tr><td>1f</td><td class="num">6.988</td><td class="num">4.95</td><td class="num">14</td><td class="num">34</td></tr>
+        <tr><td>2p</td><td class="num">7.725</td><td class="num">6.05</td><td class="num">6</td><td class="num">40</td></tr>
+        <tr><td>1g</td><td class="num">8.183</td><td class="num">6.78</td><td class="num">18</td><td class="num">58</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 300" role="img" aria-label="무한 구형 우물의 준위를 차례로 채워 닫힌 껍질 수 2, 8, 18, 20, 34, 40, 58을 세는 그림">
+        <line x1="90" y1="285" x2="90" y2="20" class="s-axis"/><text class="t-dim" x="60" y="26">E</text>
+        <text class="t-dim" x="150" y="296" text-anchor="middle">s</text><text class="t-dim" x="250" y="296" text-anchor="middle">p</text><text class="t-dim" x="350" y="296" text-anchor="middle">d</text><text class="t-dim" x="450" y="296" text-anchor="middle">f</text><text class="t-dim" x="550" y="296" text-anchor="middle">g</text>
+        <g data-step="1"><line x1="120" y1="262" x2="180" y2="262" stroke="var(--accent)" stroke-width="3"/><text class="t" x="150" y="254" text-anchor="middle">1s</text><text class="t-acc" x="640" y="266">2</text></g>
+        <g data-step="2"><line x1="220" y1="239" x2="280" y2="239" stroke="var(--accent)" stroke-width="3"/><text class="t" x="250" y="231" text-anchor="middle">1p</text><text class="t-acc" x="640" y="243">8</text>
+          <line x1="320" y1="207" x2="380" y2="207" stroke="var(--accent)" stroke-width="3"/><text class="t" x="350" y="199" text-anchor="middle">1d</text><text class="t-acc" x="640" y="211">18</text></g>
+        <g data-step="3"><line x1="120" y1="193" x2="180" y2="193" stroke="var(--accent)" stroke-width="3"/><text class="t" x="150" y="185" text-anchor="middle">2s</text><text class="t-acc" x="640" y="197">20</text>
+          <line x1="420" y1="171" x2="480" y2="171" stroke="var(--accent)" stroke-width="3"/><text class="t" x="450" y="163" text-anchor="middle">1f</text><text class="t-acc" x="640" y="175">34</text></g>
+        <g data-step="4"><line x1="220" y1="146" x2="280" y2="146" stroke="var(--accent)" stroke-width="3"/><text class="t" x="250" y="138" text-anchor="middle">2p</text><text class="t-acc" x="640" y="150">40</text>
+          <line x1="520" y1="129" x2="580" y2="129" stroke="var(--accent)" stroke-width="3"/><text class="t" x="550" y="121" text-anchor="middle">1g</text><text class="t-acc" x="640" y="133">58</text>
+          <rect x="600" y="30" width="190" height="70" rx="8" class="f-acc2-soft" stroke="var(--accent-2)"/><text class="t" x="612" y="56">Na 원자 무리 실측</text><text class="t-mono" x="612" y="82">8 · 20 · 40 · 58 · 92</text></g>
+        <text class="t-dim" x="640" y="290">누적(스핀 포함)</text>
+      </svg>
+      <ol class="steps-cap"><li>가장 낮은 1s(\(x = \pi\)). 스핀까지 2개 상태.</li><li>1p(\(E = 2.05E_{1s}\))와 1d(3.37). 같은 \(n\)이라도 \(l\)이 크면 높다 — \(l\)에 따른 축퇴가 없다.</li><li>2s(\(4E_{1s}\))가 1f보다 낮다. 껍질이 닫힐 때마다 누적 수 20, 34.</li><li>2p, 1g까지 채우면 40, 58. 소듐 원자 무리(클러스터)의 질량 스펙트럼에서 유난히 많은 크기 8, 20, 40, 58이 바로 이 "구 상자 속 자유 전자" 껍질이다.</li></ol>
+      <figcaption>무한 구형 우물의 준위 순서(높이는 \(x_{nl}^2\)에 비례). 수소와 달리 에너지가 \(n\)과 \(l\) 둘 다에 의존한다. 실제 금속 무리의 퍼텐셜은 구 상자와 조화 우물 사이라서 18·34의 껍질은 약하게만 보인다.</figcaption>
+    </figure>
+    <div class="example" data-title="CdSe 양자점 속 전자의 1S·1P 준위">
+      <p>반지름 \(R = 2.0\) nm인 CdSe 양자점 속 전자(\(m_e^* = 0.13m_\mathrm{e}\))를 무한 구형 우물로 본다. 1S와 1P 준위의 구속 에너지와 그 간격을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E_{nl} = (\hbar^2/2m_\mathrm{e})\,x_{nl}^2/(m^*R^2)\), \(x_{10} = \pi\), \(x_{11} = 4.493\).</div>
+        <div class="step"><b>풀이</b> \(\hbar^2/(2m^*R^2) = 0.0381/(0.13\times4.00) = 0.0733\) eV. \(E_{1S} = 0.0733\times9.870 = 0.723\) eV, \(E_{1P} = 0.0733\times20.19 = 1.48\) eV. 간격 \(0.756\) eV.</div>
+        <div class="answer">\(E_{1S} = 0.723\) eV, \(E_{1P} = 1.48\) eV, 간격 0.756 eV (파장 1.64 µm)</div>
+        <div class="step"><b>검토</b> 띠 간격 1.74 eV에 견줄 만큼 크다 — 강한 구속이다. 1S→1P 띠 안 전이는 근·중적외선에 있어, 같은 양자점이 띠 사이 전이로는 가시광을, 띠 안 전이로는 적외선을 다룬다. 실제로는 장벽이 유한하고 띠가 비포물선이라 이 값보다 30% 남짓 작다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-intra">
+      <p>유효 질량 <span class="tn" data-var="m" data-min="0.03" data-max="0.5" data-step="0.01" data-unit=" mₑ">0.13</span>인 전자를 반지름 <span class="tn" data-var="R" data-min="1" data-max="10" data-step="0.1" data-unit=" nm">3.0</span>의 구형 양자점에 가두면 1S→1P 띠 안 간격은 <span class="tn-out" data-out="dE"></span>이고 흡수 파장은 <span class="tn-out" data-out="lam"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>구형 양자점: 전자와 정공을 함께 가두기</h3>
+    <p>콜로이드 <span class="term">양자점</span><span class="en">(quantum dot)</span>은 지름 2–10 nm의 반도체 나노 결정이다. 빛을 흡수하면 전도대의 전자와 가전자대의 정공이 생기고, 둘 다 결정 안에 갇힌다. 반지름 \(R\)이 <span class="term">엑시톤 보어 반지름</span><span class="en">(exciton Bohr radius)</span> \(a_B = \varepsilon_r a_0\,m_\mathrm{e}/\mu\)(6절)보다 작은 <span class="term">강한 구속</span><span class="en">(strong confinement)</span>에서는 전자와 정공을 각각 무한 구형 우물의 1S에 넣고, 둘 사이 쿨롱 인력은 1차 섭동(<a href="perturbation.html">12장</a>)으로 더한다. 이것이 <span class="term">브루스 식</span><span class="en">(Brus equation)</span>이다.</p>
+    <div class="formula">$$E_\text{발광} \approx E_g + \frac{\hbar^2\pi^2}{2R^2}\left(\frac{1}{m_e^*} + \frac{1}{m_h^*}\right) - \frac{1.786\,e^2}{4\pi\varepsilon_0\varepsilon_r R}$$<div class="where">둘째 항: 전자·정공의 구속(운동) 에너지, \(R^{-2}\). 셋째 항: \(\langle 1S_e 1S_h|\,e^2/4\pi\varepsilon_0\varepsilon_r|\mathbf r_e - \mathbf r_h|\,|1S_e1S_h\rangle\), \(R^{-1}\). 작은 \(R\)에서는 구속 항이 이기므로 점이 작을수록 푸른빛을 낸다. 반대로 \(R \gg a_B\)인 <span class="term">약한 구속</span><span class="en">(weak confinement)</span>에서는 엑시톤 전체(질량 \(M = m_e^* + m_h^*\))가 갇힌다: \(E \approx E_g - Ry^* + \hbar^2\pi^2/2MR^2\).</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 290" role="img" aria-label="코어–셸 양자점의 단면과 띠 정렬, 갇힌 전자와 정공 준위">
+        <circle cx="150" cy="145" r="110" fill="var(--accent-2)" opacity=".14" stroke="var(--accent-2)"/>
+        <circle cx="150" cy="145" r="70" fill="var(--accent)" opacity=".22" stroke="var(--accent)" stroke-width="2"/>
+        <text class="t" x="150" y="140" text-anchor="middle" style="font-weight:700">CdSe 코어</text><text class="t-dim" x="150" y="160" text-anchor="middle">R ≈ 2–3 nm</text>
+        <text class="t" x="150" y="62" text-anchor="middle" style="fill:var(--accent-2)">ZnS 셸</text>
+        <g stroke="var(--text-dim)" stroke-width="1.4"><line x1="56" y1="70" x2="44" y2="58"/><line x1="244" y1="70" x2="256" y2="58"/><line x1="56" y1="220" x2="44" y2="232"/><line x1="244" y1="220" x2="256" y2="232"/><line x1="150" y1="35" x2="150" y2="20"/></g>
+        <text class="t-dim" x="262" y="56">리간드</text>
+        <line x1="330" y1="40" x2="420" y2="40" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="420" y1="40" x2="420" y2="90" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="420" y1="90" x2="600" y2="90" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="600" y1="90" x2="600" y2="40" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="600" y1="40" x2="690" y2="40" stroke="var(--accent-2)" stroke-width="2.5"/>
+        <line x1="330" y1="260" x2="420" y2="260" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="420" y1="260" x2="420" y2="220" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="420" y1="220" x2="600" y2="220" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="600" y1="220" x2="600" y2="260" stroke="var(--accent-2)" stroke-width="2.5"/><line x1="600" y1="260" x2="690" y2="260" stroke="var(--accent-2)" stroke-width="2.5"/>
+        <text class="t-dim" x="340" y="34">E_c (ZnS)</text><text class="t-dim" x="440" y="106">E_c (CdSe)</text><text class="t-dim" x="440" y="214">E_v (CdSe)</text><text class="t-dim" x="340" y="278">E_v (ZnS)</text>
+        <line x1="430" y1="72" x2="590" y2="72" stroke="var(--accent)" stroke-width="2.5"/><text class="t-acc" x="610" y="76">1S_e</text>
+        <line x1="430" y1="234" x2="590" y2="234" stroke="var(--accent)" stroke-width="2.5"/><text class="t-acc" x="610" y="238">1S_h</text>
+        <line x1="510" y1="76" x2="510" y2="226" stroke="var(--warn)" stroke-width="2.2"/><path d="M510,230 l-6,-12 h12 z" fill="var(--warn)"/>
+        <text class="t" x="520" y="160" style="fill:var(--warn)">hν = E_g + 구속 − 쿨롱</text>
+        <text class="t-dim" x="700" y="150">I형 정렬:</text><text class="t-dim" x="700" y="170">둘 다 코어에</text>
+      </svg>
+      <figcaption>코어–셸 양자점. 넓은 띠 간격의 ZnS 셸이 CdSe 코어의 전자(1S\(_e\))와 정공(1S\(_h\))을 함께 가두고(I형 정렬), 표면 결함을 덮어 발광 효율을 높인다. 1S\(_e\)–1S\(_h\) 사이 간격이 발광 에너지다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-dot">
+      <p>CdSe 양자점의 반지름을 3 nm에서 2 nm로 줄이면 전자·정공의 구속 에너지(브루스 식 둘째 항)는 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">1.5배</button><button class="opt" data-correct>2.25배</button><button class="opt">3.4배</button><button class="opt">그대로 — 띠 간격만 중요하다</button></div>
+      <div class="quiz-exp">구속 항은 \(R^{-2}\)이므로 \((3/2)^2 = 2.25\)배, 쿨롱 항은 \(R^{-1}\)이라 1.5배만 커진다. 그래서 작을수록 구속이 이겨 파장이 짧아진다. 아래에서 반지름을 끌어 목표 색을 맞혀 보라.</div>
+    </div>
+    <div class="sim" id="sim-dot">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>양자점 색 맞히기: 반지름을 끌어 목표 파장을 내라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-dot"></canvas><span class="hint top">흰 원을 끌어 반지름 R</span></div><div><canvas id="cv-dotE"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>재료</span><div class="seg" id="dot-mat"><button data-value="cdse" class="on">CdSe</button><button data-value="inp">InP</button><button data-value="pbs">PbS</button></div></div>
+          <label class="check"><input type="checkbox" id="dot-coul" checked> 쿨롱 보정 −1.786e²/4πεR</label>
+          <div class="ctrl"><span>도전: 목표 파장 ±4 nm</span><div class="game-row"><button class="btn primary" id="dot-new" type="button">새 목표</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">반지름 (지름)</span><span class="v" id="dot-R">—</span></div>
+        <div class="stat"><span class="k">구속 e + h · 쿨롱</span><span class="v" id="dot-c">—</span></div>
+        <div class="stat"><span class="k">발광</span><span class="v" id="dot-L">—</span></div>
+        <div class="stat"><span class="k">R / a_B · 영역</span><span class="v" id="dot-reg">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="dot-goal">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="dot-score">0</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 양자점(색 = 발광색, 근적외선이면 회색)과 엑시톤 보어 반지름 \(a_B\)(점선 원). 오른쪽: 벌크 띠 끝(초록)과 갇힌 1S·1P 준위(자홍), 아래 띠는 스펙트럼과 목표 구간이다. 물성: CdSe \(E_g\) 1.74 eV, \(m_e^*\) 0.13, \(m_h^*\) 0.45, \(\varepsilon_r\) 10.6 · InP 1.344, 0.077, 0.60, 12.5 · PbS 0.41, 0.085, 0.085, 17.2. 해볼 것: ① CdSe로 초록(530 nm)과 빨강(630 nm)을 내는 반지름을 찾는다. ② 같은 색을 InP로 내려면 점이 더 커야 하는가? ③ PbS는 \(a_B \approx 21\) nm라 어떤 크기든 강한 구속이다. 유효 질량 근사는 작은 점에서 구속 에너지를 과대평가한다(띠 비포물성) — 실제 CdSe는 같은 색을 내는 반지름이 이보다 조금 작다.</div>
+    </div>
+    <div class="example" data-title="브루스 식으로 구한 CdSe 양자점의 발광색">
+      <p>반지름 2.5 nm인 CdSe 양자점(\(E_g = 1.74\) eV, \(m_e^* = 0.13\), \(m_h^* = 0.45\), \(\varepsilon_r = 10.6\))의 발광 에너지와 파장을 브루스 식으로 구하라. (\(e^2/4\pi\varepsilon_0 = 1.440\) eV·nm)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 구속 항 \((\hbar^2\pi^2/2m_\mathrm{e}R^2)(1/0.13 + 1/0.45)\), 쿨롱 항 \(1.786\times1.440/(10.6R)\).</div>
+        <div class="step"><b>풀이</b> \(\hbar^2\pi^2/2m_\mathrm{e}R^2 = 0.0381\times9.870/6.25 = 0.0602\) eV. 괄호 \(= 7.69 + 2.22 = 9.91\) → 구속 0.597 eV. 쿨롱 \(2.572/26.5 = 0.0970\) eV. \(E = 1.74 + 0.597 - 0.097 = 2.24\) eV, \(\lambda = 1239.8/2.24 = 554\) nm.</div>
+        <div class="answer">\(E \approx 2.24\) eV, \(\lambda \approx 554\) nm (노랑–초록)</div>
+        <div class="step"><b>검토</b> 지름 5 nm CdSe의 실측 발광은 590 nm 근처로, 모형이 구속을 조금 과대평가한다. 그래도 크기 하나로 색을 400–700 nm에서 고르는 원리는 그대로다. \(R/a_B = 2.5/5.6 = 0.45\)이라 강한 구속 가정도 맞다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>양자점 디스플레이의 색 순도는 크기 분포가 정한다</strong><p>QD 필름·QD-OLED는 청색 광원 위에 적·녹 양자점을 올려 색을 바꾼다. 발광 피크는 브루스 식이 정하고, 선폭은 크기 분포가 정한다: 구속 항이 \(R^{-2}\)이므로 반지름 산포 5%가 구속 에너지에 약 10%의 산포를 만든다. 녹색 CdSe에서 구속 0.6 eV의 10%는 60 meV, 곧 반치폭 15 nm 남짓이고, 그래서 합성 공정은 크기 산포를 5% 이하로 관리해 반치폭 20–30 nm를 얻는다. Cd 규제(RoHS) 때문에 상용 제품은 InP로 옮겨 갔는데, InP는 띠 간격이 작아 같은 색을 내려면 더 큰 구속 에너지가 필요하므로 같은 크기 산포에도 선폭이 넓어지기 쉽다 → <a href="https://semi.euiyun.com/display/chapters/backlight.html">DisplayBook · 백라이트·미니LED·양자점</a></p></div>
+    <div class="drill" id="drill-sph" data-title="구형 우물 준위 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="oscillator-3d">
+    <h2>3차원 조화 진동자와 축퇴 패턴</h2>
+    <p>등방 3차원 조화 진동자 \(V = \tfrac12 m\omega^2 r^2\)은 두 가지 방법으로 풀린다. 직교 좌표로 쓰면 해밀토니언이 세 1차원 진동자의 합 \(\hat H = \hat H_x + \hat H_y + \hat H_z\)이므로 <a href="ladder-operators.html">6장</a>의 사다리 연산자를 세 번 쓰면 끝난다.</p>
+    <div class="formula">$$E_N = \hbar\omega\left(N + \tfrac32\right), \qquad N = n_x + n_y + n_z, \qquad g_N = \frac{(N+1)(N+2)}{2}$$<div class="where">\(N\)을 세 음이 아닌 정수의 합으로 쓰는 방법의 수가 축퇴도다. \(N = 0, 1, 2, 3\)이면 1, 3, 6, 10.</div></div>
+    <p>같은 문제를 구면 좌표에서 지름 방정식으로 풀면 \(u(r) = r^{l+1}e^{-r^2/2b^2}L_{n_r}^{(l+1/2)}(r^2/b^2)\)(\(b = \sqrt{\hbar/m\omega}\), \(L\)은 버금 라게르 다항식)이고 에너지는</p>
+    <div class="formula">$$E = \hbar\omega\left(2n_r + l + \tfrac32\right) \;\Rightarrow\; N = 2n_r + l, \qquad l = N, N-2, \dots, 1 \text{ 또는 } 0$$<div class="where">지름 마디 하나가 \(l\)을 2만큼 올리는 것과 같은 에너지를 든다. 그래서 한 준위에는 \(N\)과 홀짝이 같은 \(l\)만 있고, 패리티는 \((-1)^l = (-1)^N\)이다. 확인: \(\sum_{l}(2l+1) = (N+1)(N+2)/2\).</div></div>
+    <figure class="mini" id="mini-hoc">
+      <div class="mini-view"><canvas id="cv-hoc"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>N <output id="hoc-N-out"></output></span><input type="range" id="hoc-N" min="0" max="6" step="1" value="3"></label>
+        <span class="readout" id="hoc-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>같은 준위를 두 기저로 센다. 왼쪽: 직교 기저 \((n_x, n_y)\) 점 하나가 상태 하나(\(n_z = N - n_x - n_y\)). 오른쪽: 구면 기저에서 \(l\)마다 \(2l+1\)칸. 두 개수가 언제나 같다 — 같은 부분 공간의 두 기저일 뿐이다.</figcaption>
+    </figure>
+    <p>\(l\)이 다른 상태가 같은 에너지를 갖는 것은 회전 대칭만으로는 설명되지 않는다. 3차원 진동자에는 \(\hat a_i^\dagger \hat a_j\)(\(i,j = x,y,z\)) 아홉 개의 연산자가 모두 \(\hat H\)와 교환하는 더 큰 대칭(SU(3))이 있다. 이 중 반대칭 조합 셋이 \(\hat{\mathbf L}\)이고, 나머지 대칭 조합(사중극 텐서)이 서로 다른 \(l\)을 섞는다. 스핀까지 넣어 껍질을 채우면 닫힌 수가 2, 8, 20, 40, 70이 되는데, 원자핵 껍질 모형의 출발점이고, 2차원 판에서는(2, 6, 12, 20) 포물선 구속 양자점 — "인공 원자" — 의 전자 채움 순서가 된다(<a href="em-fields.html">16장</a> 포크–다윈 준위).</p>
+    <div class="tangle" id="tg-deg">
+      <p>수소의 주 양자수 <span class="tn" data-var="n" data-min="1" data-max="8" data-step="1">3</span> 준위에는 \(\sum_{l=0}^{n-1}(2l+1)\) = <span class="tn-out" data-out="h"></span>개의 궤도 상태가 있고, 3차원 조화 진동자의 <span class="tn" data-var="N" data-min="0" data-max="8" data-step="1">2</span> 준위에는 <span class="tn-out" data-out="o"></span>개가 있다. 스핀을 넣고 이 준위까지 진동자 껍질을 다 채우면 전자 <span class="tn-out" data-out="c"></span>개가 들어간다.</p>
+    </div>
+    <h3>퍼텐셜 모양이 축퇴 패턴을 정한다</h3>
+    <p>이제 같은 지름 방정식을 여러 퍼텐셜로 풀어 준위를 \(l\)별 열로 늘어놓아 보자. 퍼텐셜 모양이 준위의 순서와 축퇴를 어떻게 바꾸는지 한눈에 보인다.</p>
+    <div class="predict" data-for="sim-lv">
+      <p>3차원 조화 진동자에서 2s(\(n_r = 1, l = 0\)) 준위와 정확히 같은 에너지를 갖는 상태는?</p>
+      <div class="opts"><button class="opt">1p (\(n_r = 0, l = 1\))</button><button class="opt" data-correct>1d (\(n_r = 0, l = 2\))</button><button class="opt">2p (\(n_r = 1, l = 1\))</button><button class="opt">없다 — l이 다르면 에너지도 다르다</button></div>
+      <div class="quiz-exp">\(N = 2n_r + l\)이므로 2s는 \(N = 2\), 1d도 \(N = 2\)다. 수소에서는 \(n = n_r + l + 1\)이라 2s가 2p와 겹친다. 아래 준위 도표에서 두 퍼텐셜의 겹침 선(초록 점선)이 어떻게 다르게 그어지는지 보라.</div>
+    </div>
+    <div class="sim" id="sim-lv">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>중심력 준위 비교기: 퍼텐셜을 바꾸고 손잡이를 끌어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-lvV"></canvas><span class="hint top">흰 원을 끌어 매개변수</span></div><div><canvas id="cv-lvL"></canvas><span class="hint top">준위를 누르면 왼쪽에 u(r)</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>퍼텐셜</span><div class="seg" id="lv-pot"><button data-value="box">무한 구형</button><button data-value="well">유한 구형</button><button data-value="ho" class="on">3D 조화</button><button data-value="coul">쿨롱</button><button data-value="scr">차폐 쿨롱</button></div></div>
+          <label class="check"><input type="checkbox" id="lv-an" checked> 해석해 눈금(초록) 보기</label>
+          <label class="check"><input type="checkbox" id="lv-link" checked> 축퇴 연결선 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">퍼텐셜 · 매개변수</span><span class="v" id="lv-p">—</span></div>
+        <div class="stat"><span class="k">고른 상태</span><span class="v" id="lv-s">—</span></div>
+        <div class="stat"><span class="k">축퇴 규칙</span><span class="v" id="lv-d">—</span></div>
+        <div class="stat"><span class="k">수치 − 해석 (최대)</span><span class="v" id="lv-e">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: \(V(r)\)(초록), 고른 상태의 \(V_\text{eff}\)(초록 점선)와 \(u(r)\)(자홍). 오른쪽: \(l = 0\)–4 열의 준위(자홍 = 유한 차분 수치해, 초록 눈금 = 해석해 <code>QM.sphBoxE</code>·<code>QM.sphWellE</code>·<code>QM.ho3D</code>·\(-Z^2/n^2\)). 쿨롱·차폐 쿨롱은 \(a_0\)·Ry 단위, 나머지는 nm·eV(자유 전자). 해볼 것: ① 조화에서는 2s=1d, 쿨롱에서는 2s=2p — 연결선의 기울기가 다르다. ② 쿨롱 → 차폐 쿨롱으로 바꾸고 차폐 길이 손잡이를 줄이면 \(l\) 축퇴가 깨지고(s가 가장 깊게) 위쪽 준위가 사라진다. ③ 무한·유한 구형 우물에는 \(m\) 축퇴밖에 없다.</div>
+    </div>
+    <div class="example" data-title="조화 구속 속 전자의 껍질">
+      <p>전자가 \(\hbar\omega = 20\) meV인 등방 조화 퍼텐셜에 갇혀 있다. (a) 가장 낮은 세 준위의 에너지와 각 준위에 들어 있는 \(l\) 값, 축퇴도(스핀 제외)를 구하라. (b) 스핀을 넣으면 껍질이 닫히는 전자 수는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E_N = \hbar\omega(N + 3/2)\), \(l = N, N-2, \dots\), \(g_N = (N+1)(N+2)/2\).</div>
+        <div class="step"><b>풀이</b> \(N=0\): 30 meV, \(l = 0\), 1개. \(N=1\): 50 meV, \(l = 1\), 3개. \(N=2\): 70 meV, \(l = 2, 0\), 5 + 1 = 6개. (b) 스핀 2배: 2, 2 + 6 = 8, 8 + 12 = 20.</div>
+        <div class="answer">(a) 30 meV(1s, 1개), 50 meV(1p, 3개), 70 meV(1d+2s, 6개) (b) 2, 8, 20</div>
+        <div class="step"><b>검토</b> 축퇴도 1, 3, 6은 \((N+1)(N+2)/2\)와 맞는다. 바닥 에너지 \(\tfrac32\hbar\omega\)는 1차원 영점 에너지 \(\tfrac12\hbar\omega\)의 세 배 — 세 방향 각각의 영점 운동이다.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="hydrogen">
+    <h2>수소 원자의 엄밀해와 우연 축퇴</h2>
+    <p>쿨롱 퍼텐셜 \(V = -e^2/4\pi\varepsilon_0 r\)에서 지름 방정식을 해석적으로 푼다(그리피스 4.2절의 길). 속박 상태 \(E &lt; 0\)에 대해 \(\kappa = \sqrt{-2mE}/\hbar\), \(\rho = \kappa r\), \(\rho_0 = me^2/(2\pi\varepsilon_0\hbar^2\kappa)\)로 두면 방정식은 단위 없는 꼴이 된다.</p>
+    <div class="formula">$$\frac{d^2u}{d\rho^2} = \left[1 - \frac{\rho_0}{\rho} + \frac{l(l+1)}{\rho^2}\right]u$$</div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="수소 지름 방정식의 급수 풀이가 끊기며 에너지가 양자화되는 네 단계">
+        <defs><marker id="cpsr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="210" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="46" text-anchor="middle" style="font-weight:700">① 양 끝 모양</text>
+        <text class="t-mono" x="107" y="78" text-anchor="middle">ρ → ∞: u ~ e^(−ρ)</text>
+        <text class="t-mono" x="107" y="104" text-anchor="middle">ρ → 0: u ~ ρ^(l+1)</text>
+        <text class="t-dim" x="107" y="140" text-anchor="middle">두 모양을 떼어 낸다</text>
+        <text class="t-acc" x="107" y="170" text-anchor="middle">u = ρ^(l+1) e^(−ρ) v(ρ)</text>
+        <g data-step="2">
+          <line x1="197" y1="125" x2="215" y2="125" stroke="var(--text-dim)" marker-end="url(#cpsr)"/>
+          <rect x="218" y="20" width="175" height="210" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="46" text-anchor="middle" style="font-weight:700">② 급수 v = Σ c_j ρ^j</text>
+          <text class="t-mono" x="305" y="80" text-anchor="middle">c_(j+1) =</text>
+          <text class="t-mono" x="305" y="102" text-anchor="middle">2(j+l+1) − ρ₀</text>
+          <text class="t-mono" x="305" y="118" text-anchor="middle">────────────</text>
+          <text class="t-mono" x="305" y="136" text-anchor="middle">(j+1)(j+2l+2)</text>
+          <text class="t-dim" x="305" y="172" text-anchor="middle">점화식 하나로 다 정해진다</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="125" x2="413" y2="125" stroke="var(--text-dim)" marker-end="url(#cpsr)"/>
+          <rect x="416" y="20" width="175" height="210" rx="10" class="f-acc-soft" stroke="var(--bad)"/>
+          <text class="t" x="503" y="46" text-anchor="middle" style="font-weight:700">③ 끊기지 않으면?</text>
+          <text class="t-mono" x="503" y="80" text-anchor="middle">큰 j: c_(j+1) ≈ 2c_j / j</text>
+          <text class="t-mono" x="503" y="106" text-anchor="middle">v ~ e^(2ρ)</text>
+          <text class="t" x="503" y="140" text-anchor="middle" style="fill:var(--bad)">u ~ ρ^(l+1) e^(+ρ)</text>
+          <text class="t-dim" x="503" y="172" text-anchor="middle">정규화 불가 ✗</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="125" x2="611" y2="125" stroke="var(--text-dim)" marker-end="url(#cpsr)"/>
+          <rect x="614" y="20" width="168" height="210" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="46" text-anchor="middle" style="font-weight:700">④ 끊겨야 한다</text>
+          <text class="t-mono" x="698" y="80" text-anchor="middle">ρ₀ = 2(j_max + l + 1)</text>
+          <text class="t-mono" x="698" y="106" text-anchor="middle">≡ 2n</text>
+          <text class="t-acc" x="698" y="140" text-anchor="middle">E_n = −13.6 eV / n²</text>
+          <text class="t-dim" x="698" y="172" text-anchor="middle">l만이 아니라</text>
+          <text class="t-dim" x="698" y="192" text-anchor="middle">n_r + l 합에만 의존</text>
+        </g>
+        <text class="t-dim" x="400" y="256" text-anchor="middle">j_max = n_r (지름 마디 수),  n = n_r + l + 1</text>
+      </svg>
+      <ol class="steps-cap"><li>먼 곳과 원점 근처의 거동을 떼어 내면 남은 \(v(\rho)\)는 다항식이 되기를 기대할 수 있다.</li><li>\(v\)를 거듭제곱 급수로 넣으면 계수 사이 점화식이 나온다.</li><li>급수가 끝없이 이어지면 계수가 \(2^j/j!\)처럼 커져 \(v \sim e^{2\rho}\), 곧 \(u\)가 발산한다.</li><li>그래서 어떤 \(j_\text{max}\)에서 분자가 0이 되어야 한다: \(\rho_0 = 2n\). 이 조건이 에너지를 양자화하고, \(E\)가 \(n_r + l\)의 합에만 의존한다는 사실이 곧 \(l\) 축퇴다.</li></ol>
+      <figcaption>급수 풀이의 흐름. 1차원 조화 진동자(6장)에서 에르미트 급수가 끊겨야 했던 것과 같은 논리다. 남은 다항식은 버금 라게르 다항식 \(L_{n-l-1}^{2l+1}(2r/na_0)\)이다.</figcaption>
+    </figure>
+    <p>\(\rho_0 = 2n\)을 에너지로 바꾸면 보어 공식이 나온다. 정규화된 지름 함수는</p>
+    <div class="formula">$$E_n = -\frac{m}{2\hbar^2}\left(\frac{e^2}{4\pi\varepsilon_0}\right)^2\frac1{n^2} = -\frac{13.6\ \text{eV}}{n^2}, \qquad R_{nl}(r) = \sqrt{\left(\frac{2}{na_0}\right)^3\frac{(n-l-1)!}{2n\,(n+l)!}}\;e^{-r/na_0}\left(\frac{2r}{na_0}\right)^l L_{n-l-1}^{2l+1}\!\left(\frac{2r}{na_0}\right)$$<div class="where">\(n = 1, 2, \dots\), \(l = 0, \dots, n-1\), \(m = -l, \dots, l\). 축퇴도 \(\sum_{l=0}^{n-1}(2l+1) = n^2\) (스핀 포함 \(2n^2\)). 장 안 계산은 <code>QM.radialH(n, l, r)</code>를 쓴다.</div></div>
+    <p>지름 함수가 손에 있으니 기댓값을 정확히 구할 수 있다. 섭동 계산(<a href="perturbation.html">12장</a>의 미세 구조)에 그대로 쓰이는 목록이다(\(a = a_0\)).</p>
+    <div class="formula">$$\langle r\rangle = \frac a2\left[3n^2 - l(l+1)\right], \quad \langle r^2\rangle = \frac{a^2n^2}{2}\left[5n^2 + 1 - 3l(l+1)\right], \quad \Big\langle \frac1r\Big\rangle = \frac{1}{n^2a}, \quad \Big\langle\frac1{r^2}\Big\rangle = \frac{1}{(l+\frac12)\,n^3a^2}$$<div class="where">\(\langle 1/r\rangle = 1/n^2a\)에서 \(\langle V\rangle = -e^2/(4\pi\varepsilon_0 n^2 a) = 2E_n\), 따라서 \(\langle T\rangle = -E_n\)이다 — \(1/r\) 퍼텐셜의 <span class="term">비리얼 정리</span><span class="en">(virial theorem)</span> \(2\langle T\rangle = -\langle V\rangle\). \(\langle 1/r^2\rangle\)은 \(l\)을 연속 매개변수로 보고 헬만–파인만 정리 \(\partial E_n/\partial l = \langle \partial \hat H/\partial l\rangle\)를 쓰면 한 줄로 나온다.</div></div>
+    <figure class="mini" id="mini-pr">
+      <div class="mini-view"><canvas id="cv-pr"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>n</span><div class="seg" id="pr-n"><button data-value="1">1</button><button data-value="2">2</button><button data-value="3" class="on">3</button><button data-value="4">4</button><button data-value="5">5</button></div></div>
+        <label class="ctrl"><span>l <output id="pr-l-out"></output></span><input type="range" id="pr-l" min="0" max="4" step="1" value="0"></label>
+        <span class="readout" id="pr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>지름 확률 밀도 \(P(r) = r^2|R_{nl}|^2\)(자홍)와 수치 적분한 \(\langle r\rangle\)(자홍 세로선), 공식값(초록 눈금), \(\langle r\rangle \pm \Delta r\) 띠. 같은 \(n\)에서 \(l\)이 클수록 \(\langle r\rangle\)이 조금 작고 퍼짐 \(\Delta r\)이 크게 줄어든다 — 원에 가까운 궤도다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-r">
+      <p>수소꼴 원자(\(Z =\) <span class="tn" data-var="Z" data-min="1" data-max="6" data-step="1">1</span>)의 \(n =\) <span class="tn" data-var="n" data-min="1" data-max="10" data-step="1">3</span>, \(l =\) <span class="tn" data-var="l" data-min="0" data-max="9" data-step="1">2</span> 상태: \(\langle r\rangle\) = <span class="tn-out" data-out="r"></span>, \(\langle 1/r\rangle\) = <span class="tn-out" data-out="ir"></span>, \(\langle V\rangle\) = <span class="tn-out" data-out="V"></span> = \(2E_n\). <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="2p 상태의 기댓값과 비리얼 정리">
+      <p>수소 2p 상태에서 \(\langle r\rangle\), \(\langle 1/r\rangle\), \(\langle V\rangle\), \(\langle T\rangle\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 공식에 \(n=2, l=1\)을 넣는다. \(e^2/4\pi\varepsilon_0 a_0 = 2\times13.606 = 27.21\) eV(하트리).</div>
+        <div class="step"><b>풀이</b> \(\langle r\rangle = (a_0/2)(12 - 2) = 5a_0 = 0.265\) nm. \(\langle 1/r\rangle = 1/4a_0\). \(\langle V\rangle = -27.21/4 = -6.80\) eV \(= 2E_2\). \(\langle T\rangle = E_2 - \langle V\rangle = -3.40 + 6.80 = 3.40\) eV.</div>
+        <div class="answer">\(\langle r\rangle = 5a_0\), \(\langle 1/r\rangle = 1/(4a_0)\), \(\langle V\rangle = -6.80\) eV, \(\langle T\rangle = +3.40\) eV</div>
+        <div class="step"><b>검토</b> \(1/\langle r\rangle = 1/5a_0 \ne \langle 1/r\rangle = 1/4a_0\) — 평균의 역수와 역수의 평균은 다르다. 위 MINI LAB에서 \(n=2, l=1\)을 고르면 같은 \(\langle r\rangle\)이 나온다.</div>
+      </details>
+    </div>
+    <h3>사격법: 에너지를 끌어 고유값을 찾기</h3>
+    <p>급수가 끊겨야 한다는 조건은 수치적으로 이렇게 보인다. 아무 \(E\)나 골라 원점에서 \(u \propto r^{l+1}\)로 출발해 바깥으로 적분하면, 거의 언제나 큰 \(r\)에서 \(u\)가 \(+\infty\)나 \(-\infty\)로 달아난다. 고유값을 가로지를 때마다 달아나는 방향이 뒤집힌다 — 이것이 <b>사격법</b>(<a href="one-dimensional.html">5장</a>)이다. 에너지 대신 <span class="term">유효 양자수</span><span class="en">(effective quantum number)</span> \(\nu = 1/\sqrt{-E/\mathrm{Ry}}\)를 끌면 고유값이 정수 자리에 온다.</p>
+    <div class="predict" data-for="sim-shoot">
+      <p>수소 \(l = 0\)에서 \(\nu\)를 1보다 아주 조금 크게(에너지를 \(E_1\)보다 조금 높게) 잡고 바깥으로 적분하면, 큰 \(r\)에서 \(u\)는?</p>
+      <div class="opts"><button class="opt">0으로 잘 수렴한다</button><button class="opt" data-correct>마디를 하나 만든 뒤 반대 부호로 발산한다</button><button class="opt">마디 없이 같은 부호로 발산한다</button><button class="opt">일정한 진폭으로 진동한다</button></div>
+      <div class="quiz-exp">고유값보다 높은 에너지는 곡률이 조금 더 커서 꼬리가 0을 지나 반대쪽으로 달아난다. \(\nu\)가 1을 지나는 순간 발산 방향이 뒤집히고, 그 사이 정확히 \(\nu = 1\)에서만 꼬리가 0에 붙는다.</div>
+    </div>
+    <div class="sim" id="sim-shoot">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>사격법: ν 손잡이를 끌어 숨은 준위를 모두 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-shoot"></canvas><span class="hint top">왼쪽 눈금자의 흰 원을 위아래로</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>궤도 양자수 l</span><div class="seg" id="sh-l"><button data-value="0" class="on">s</button><button data-value="1">p</button><button data-value="2">d</button></div></div>
+          <div class="ctrl"><span>퍼텐셜</span><div class="seg" id="sh-pot"><button data-value="h" class="on">수소 −e²/4πε₀r</button><button data-value="li">리튬꼴(가려진 핵)</button></div></div>
+          <label class="check"><input type="checkbox" id="sh-ans"> 답 눈금 보기</label>
+          <div class="ctrl-row"><button class="btn" id="sh-reset" type="button">찾은 것 지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ν · E</span><span class="v" id="sh-nu">—</span></div>
+        <div class="stat"><span class="k">마디 수 · 꼬리</span><span class="v" id="sh-tail">—</span></div>
+        <div class="stat"><span class="k">상태</span><span class="v" id="sh-st">—</span></div>
+        <div class="stat"><span class="k">찾은 준위</span><span class="v" id="sh-found">—</span></div>
+      </div>
+      <div class="sim-note">\(u'' = [l(l+1)/r^2 + V(r) - \varepsilon]\,u\)(\(r\)은 \(a_0\), 에너지는 Ry)를 누메로프 방법으로 \(r = 70a_0\)까지 적분한다. 꼬리가 빨갛게 달아나면 고유값이 아니다. 고유값 근처(\(|\Delta\nu| &lt; 0.015\))에 놓으면 그 준위가 "찾은 준위"에 기록된다. 해볼 것: ① 수소에서 \(\nu = 1, 2, 3, 4\)를 찾고, \(l\)을 바꾸면 \(\nu = l + 1\)부터 시작하는 것을 확인한다. ② 리튬꼴(\(V = -\frac{2}{r}[1 + 2e^{-2r}]\))에서는 s 준위가 정수에서 0.4쯤 벗어나고(양자 결손), p는 조금, d는 거의 안 벗어난다. 맨 아래 \(\nu &lt; 1\)인 깊은 s 상태는 핵심 전자 1s² 자리다.</div>
+    </div>
+    <h3>우연 축퇴의 정체: 룽게–렌츠 벡터</h3>
+    <p>\(E_n\)이 \(l\)에 의존하지 않는 것은 \(1/r\) 퍼텐셜만의 성질이다. 고전 케플러 문제에는 각운동량 말고도 보존되는 벡터가 하나 더 있다: 궤도 장축을 따라 근일점을 가리키는 <span class="term">룽게–렌츠 벡터</span><span class="en">(Runge–Lenz vector)</span>다. 양자역학에서는 에르미트가 되도록 대칭화해 쓴다.</p>
+    <div class="formula">$$\hat{\mathbf A} = \frac{1}{2m}\left(\hat{\mathbf p}\times\hat{\mathbf L} - \hat{\mathbf L}\times\hat{\mathbf p}\right) - \frac{e^2}{4\pi\varepsilon_0}\frac{\hat{\mathbf r}}{r}, \qquad [\hat H, \hat{\mathbf A}] = 0, \qquad [\hat{\mathbf L}^2, \hat{\mathbf A}] \ne 0$$<div class="where">\(\hat{\mathbf A}\)는 \(\hat H\)와 교환하지만 \(\hat{\mathbf L}^2\)와는 교환하지 않으므로, 같은 \(n\) 안에서 \(l\)이 다른 상태를 서로 잇는다. \(\hat{\mathbf L}\)과 (크기를 맞춘) \(\hat{\mathbf A}\)는 4차원 회전군 SO(4)를 이루고, 파울리(1926)는 이 대수만으로 \(E_n\)과 \(n^2\) 축퇴를 슈뢰딩거 방정식 없이 구했다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="닫힌 케플러 타원과 고정된 룽게–렌츠 벡터, 그리고 차폐 쿨롱에서 세차하는 장미꼴 궤도">
+        <defs><marker id="cprl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <ellipse cx="177" cy="160" rx="71" ry="67" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+        <circle cx="200" cy="160" r="5" fill="var(--warn)"/>
+        <line x1="200" y1="160" x2="246" y2="160" stroke="var(--accent)" stroke-width="3" marker-end="url(#cprl)"/>
+        <text class="t-acc" x="226" y="150">A</text>
+        <circle cx="248" cy="160" r="4" fill="var(--accent-2)"/>
+        <text class="t-dim" x="252" y="182">근일점</text>
+        <text class="t" x="177" y="52" text-anchor="middle" style="font-weight:700">쿨롱 1/r: 닫힌 타원</text>
+        <text class="t-dim" x="177" y="262" text-anchor="middle">A 고정 → l 축퇴 (n² 겹)</text>
+        <path d="M638,160 L637,152 L636,144 L633,136 L630,129 L626,122 L621,116 L616,111 L611,106 L605,102 L599,98 L593,96 L587,93 L581,92 L575,91 L569,90 L563,90 L557,90 L552,90 L547,91 L542,92 L537,93 L532,95 L527,96 L523,98 L519,101 L515,103 L512,105 L508,108 L505,111 L502,114 L499,117 L496,120 L494,123 L491,126 L489,130 L487,133 L486,136 L484,140 L483,143 L482,147 L481,150 L480,154 L479,157 L479,161 L479,165 L479,168 L479,172 L479,175 L479,179 L480,182 L481,186 L482,189 L483,193 L484,196 L486,199 L487,202 L489,205 L491,209 L493,211 L496,214 L498,217 L501,220 L504,222 L507,225 L510,227 L513,229 L516,232 L520,233 L524,235 L527,237 L531,238 L536,240 L540,241 L544,241 L549,242 L554,242 L558,242 L563,242 L568,242 L573,241 L578,240 L584,238 L589,237 L594,234 L599,232 L604,229 L609,225 L614,221 L619,216 L623,211 L627,206 L631,199 L634,193 L637,186 L638,178 L639,170 L639,162 L638,154 L636,146 L633,138 L629,131 L624,125 L618,119 L612,114 L606,109 L599,106 L592,103 L585,101 L578,100 L572,99 L565,99 L559,100 L553,101 L547,102 L541,104 L536,106 L531,108 L526,111 L522,113 L518,116 L514,120 L510,123 L507,126 L503,130 L501,133 L498,137 L496,141 L494,145 L492,148 L490,152 L489,156 L487,160 L486,164 L486,168 L485,171 L485,175 L484,179 L484,183 L485,187 L485,190 L485,194 L486,197 L487,201 L488,204 L489,208 L491,211 L492,214 L494,217 L496,220 L498,223 L500,226 L502,229 L504,232 L507,234 L509,237 L512,239 L515,241 L518,243 L521,245 L525,247 L528,248 L532,250 L535,251 L539,252 L543,253 L547,254 L551,254 L555,255 L559,255 L563,255 L567,254 L572,254 L576,253 L580,252 L585,251 L589,249 L594,247 L598,245 L603,243 L607,240 L611,237 L616,233 L620,230 L624,225 L627,221 L631,216 L634,210 L637,205 L639,198 L641,192 L642,185 L643,178 L643,170 L642,163 L641,155 L638,147 L634,140 L630,133 L625,127 L619,121 L612,116 L605,113 L597,110 L590,108 L582,107 L575,106 L567,107 L560,108 L554,110 L547,112 L541,114 L536,117 L531,121 L526,124 L522,128 L518,132 L514,136 L511,140 L508,145 L505,149 L503,153 L501,158 L499,162 L498,167 L497,171 L496,175 L495,180 L495,184 L494,188 L494,192 L495,196 L495,200 L496,204 L496,208 L497,212 L499,216 L500,219 L501,223 L503,226 L505,229 L507,232 L509,235 L511,238 L513,241 L516,243 L518,246 L521,248 L524,250 L527,253 L530,254 L533,256 L536,258 L539,259 L542,261 L546,262 L549,263 L553,264 L556,264 L560,265 L564,265 L568,265 L571,265 L575,265 L579,264 L583,264 L587,263 L591,262 L595,260 L599,259 L602,257 L606,255 L610,253 L614,250 L617,248 L621,245 L625,241 L628,238 L631,234 L634,230 L637,226 L640,221 L642,216 L645,211 L646,205 L648,199 L649,193 L650,187 L650,181 L650,174 L649,167 L647,160 L645,153 L641,146 L637,140 L633,133 L627,128 L621,122 L614,118 L606,115 L598,112 L590,111 L582,111 L574,111 L566,112 L559,115 L552,118 L546,121 L540,125 L535,129 L530,134 L526,138 L522,143 L519,148 L516,153 L514,159 L512,164 L510,169 L509,174 L508,179" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/>
+        <circle cx="590" cy="160" r="5" fill="var(--warn)"/>
+        <text class="t" x="590" y="40" text-anchor="middle" style="font-weight:700">차폐 쿨롱: 장미꼴</text>
+        <text class="t-dim" x="590" y="290" text-anchor="middle">A가 돈다 → l 축퇴 깨짐</text>
+        <line x1="400" y1="40" x2="400" y2="280" stroke="var(--border)"/>
+      </svg>
+      <figcaption>왼쪽: 쿨롱 퍼텐셜의 고전 궤도는 닫힌 타원이고 룽게–렌츠 벡터 \(\mathbf A\)(근일점 방향)가 보존된다. 오른쪽: 핵 전하가 가려진 퍼텐셜(\(-e^{-r/\lambda}/r\))에서는 근일점이 한 바퀴마다 돌아가 궤도가 장미꼴이 된다. 고전 궤도의 세차와 양자 준위의 \(l\) 축퇴 깨짐은 같은 사실의 두 얼굴이다.</figcaption>
+    </figure>
+    <p><span class="term">베르트랑 정리</span><span class="en">(Bertrand's theorem)</span>에 따르면 모든 속박 궤도가 닫히는 중심력은 \(1/r\)과 \(r^2\) 둘뿐이다. 바로 이 두 퍼텐셜이 우연 축퇴를 가진다(조화 진동자의 타원은 중심이 원점이다). 실제 수소에서는 상대론 효과(미세 구조, <a href="perturbation.html">12장</a>)와 양자 전기역학(램 이동)이 \(1/r\)을 조금 바꿔 \(l\) 축퇴를 아주 약하게 깬다.</p>
+    <div class="sim" id="sim-orb">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>닫힌 궤도와 룽게–렌츠 벡터: 처음 속도를 끌어라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-orb"></canvas><span class="hint top">흰 원(처음 속도 화살표 끝)을 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>힘</span><div class="seg" id="orb-pot"><button data-value="coul" class="on">쿨롱 −1/r</button><button data-value="scr">차폐 쿨롱</button><button data-value="ho">조화 r²/2</button></div></div>
+          <label class="ctrl"><span>차폐 길이 λ <output id="orb-lam-out"></output></span><input type="range" id="orb-lam" min="1" max="12" step="0.1" value="4"></label>
+          <div class="ctrl-row"><button class="btn" id="orb-play" type="button"></button><button class="btn" id="orb-reset" type="button">처음 조건으로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">에너지 · 각운동량</span><span class="v" id="orb-EL">—</span></div>
+        <div class="stat"><span class="k">룽게–렌츠 |A| · 방향</span><span class="v" id="orb-A">—</span></div>
+        <div class="stat"><span class="k">근점 사이 각</span><span class="v" id="orb-p">—</span></div>
+      </div>
+      <div class="sim-note">질량 1, 힘 상수 1인 고전 입자(속도 베를레 적분). 자홍 화살표는 \(\mathbf A = \mathbf v\times\mathbf L - \hat{\mathbf r}\)이고 흐린 점은 그 끝의 자취다. 해볼 것: ① 쿨롱에서 속도를 바꿔도 \(\mathbf A\)는 한 점에 머문다(근점 사이 각 360°). ② 차폐 쿨롱에서 λ를 줄이면 근일점이 앞으로 돌고 \(\mathbf A\)의 끝이 원을 그린다. ③ 조화 퍼텐셜은 중심이 원점인 타원 — 근점이 반 바퀴마다 와서 180°이고, 역시 닫힌다.</div>
+    </div>
+    <div class="drill" id="drill-r" data-title="수소꼴 기댓값 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="rydberg">
+    <h2>수소꼴 이온과 리드베리 상태</h2>
+    <p>전자 하나에 전하 \(Ze\)인 핵 — He⁺, Li²⁺, … — 을 <span class="term">수소꼴 이온</span><span class="en">(hydrogen-like ion)</span>이라 한다. 지름 방정식에서 \(e^2 \to Ze^2\)만 바꾸면 되므로 에너지는 \(Z^2\)배, 길이는 \(1/Z\)배다. 핵이 무한히 무겁지 않으면 전자 질량 대신 <span class="term">환산 질량</span><span class="en">(reduced mass)</span> \(\mu = m_\mathrm{e}M/(m_\mathrm{e} + M)\)을 쓴다(2체 문제를 질량 중심과 상대 좌표로 분리한 결과).</p>
+    <div class="formula">$$E_n = -\frac{\mu}{m_\mathrm{e}}\frac{Z^2}{n^2}\,13.6\ \text{eV}, \qquad a_\mu = \frac{m_\mathrm{e}}{\mu}\frac{a_0}{Z}, \qquad \langle r\rangle_{nl} = \frac{a_\mu}{2}\left[3n^2 - l(l+1)\right]$$<div class="where">수소 \(\mu/m_\mathrm{e} = 0.99946\), 중수소 0.99973 — 이 0.03% 차이로 1932년 유리(Urey)가 중수소의 발머선을 0.18 nm 떨어진 곳에서 찾았다. 양전자와 전자의 <span class="term">포지트로늄</span><span class="en">(positronium)</span>은 \(\mu = m_\mathrm{e}/2\)라 결합 에너지가 6.80 eV다.</div></div>
+    <figure class="mini" id="mini-Z">
+      <div class="mini-view"><canvas id="cv-Z"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>핵 전하 Z <output id="Z-Z-out"></output></span><input type="range" id="Z-Z" min="1" max="10" step="1" value="3"></label>
+        <span class="readout" id="Z-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>1s 지름 확률 \(P(r)\): 수소(초록 점선)와 수소꼴 이온(자홍). \(Z\)배 강한 끌림이 전자를 \(1/Z\)로 끌어당기고 에너지를 \(Z^2\)배 깊게 한다. 라이먼 α선이 자외선에서 극자외선(EUV)·연X선으로 옮겨 간다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-iso">
+      <p>핵 질량 \(M =\) <span class="tn" data-var="M" data-min="0.1" data-max="10" data-step="0.1" data-unit=" mₚ">2.0</span>인 수소꼴 원자(\(Z=1\))의 환산 질량은 \(\mu/m_\mathrm{e}\) = <span class="tn-out" data-out="mu"></span>이고, 발머 Hα(3→2)선의 진공 파장은 <span class="tn-out" data-out="lam"></span>로 보통 수소(656.47 nm)와 <span class="tn-out" data-out="d"></span>.</p>
+    </div>
+    <h3>리드베리 상태: 거대한 원자</h3>
+    <p>\(n\)이 수십–수백인 상태를 <span class="term">리드베리 상태</span><span class="en">(Rydberg state)</span>라 한다. 반지름은 \(n^2\)으로 자라 \(n = 100\)이면 0.5–0.8 µm로 바이러스보다 크고, 결합 에너지 \(\mathrm{Ry}/n^2\)은 1.4 meV에 불과하다. 성질이 모두 \(n\)의 거듭제곱으로 정해진다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>물리량</th><th>\(n\) 의존</th><th>\(n = 100\) 수소</th></tr></thead>
+      <tbody>
+        <tr><td>크기 \(\langle r\rangle\)</td><td>\(n^2\)</td><td>0.53 µm (원 궤도) – 0.79 µm (s)</td></tr>
+        <tr><td>결합 에너지</td><td>\(n^{-2}\)</td><td>1.36 meV</td></tr>
+        <tr><td>이웃 준위 간격</td><td>\(n^{-3}\)</td><td>6.7 GHz (마이크로파)</td></tr>
+        <tr><td>전이 쌍극자</td><td>\(n^2\)</td><td>\(\sim 10^4\,ea_0\)</td></tr>
+        <tr><td>편극률</td><td>\(n^7\)</td><td>바닥 상태의 \(10^{14}\)배</td></tr>
+        <tr><td>복사 수명</td><td>\(n^3\) (낮은 \(l\)) – \(n^5\) (원 궤도)</td><td>~0.1–1 ms (낮은 \(l\)), 원 궤도는 훨씬 길다</td></tr>
+      </tbody>
+    </table></div>
+    <p>알칼리 원자의 리드베리 준위는 핵심 전자가 가린 핵 때문에 \(E_{nl} = -\mathrm{Ry}/(n - \delta_l)^2\)으로 쓴다. <span class="term">양자 결손</span><span class="en">(quantum defect)</span> \(\delta_l\)은 핵심을 파고드는 s에서 크고 원심 장벽에 막힌 큰 \(l\)에서 0에 가깝다 — 4절 사격법의 리튬꼴 퍼텐셜이 바로 이것이다. 리드베리 원자 둘 사이의 반데르발스 상호작용은 \(n^{11}\)로 커져 한 원자가 들뜨면 수 µm 안의 이웃이 못 들뜨는 "리드베리 봉쇄"가 생기고, 이것이 중성 원자 양자 컴퓨터의 얽힘 게이트다(<a href="quantum-information.html">18장</a>). 반도체에도 리드베리 상태가 있다: Cu₂O의 엑시톤은 \(n = 25\)까지 관측되어 크기가 µm에 이르고, 실리콘 속 인 주개의 들뜬 상태(2p, 3p, …)는 THz 대역의 리드베리 계열이다(6절).</p>
+    <figure class="mini" id="mini-ryd">
+      <div class="mini-view"><canvas id="cv-ryd"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>주 양자수 n <output id="ryd-n-out"></output></span><input type="range" id="ryd-n" min="1" max="150" step="1" value="50"></label>
+        <span class="readout" id="ryd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>로그 눈금 위에서 리드베리 원자의 크기 \(\langle r\rangle\)(s 상태 자홍, 원 궤도 \(l = n-1\) 초록)를 실리콘 격자 상수·트랜지스터 게이트·바이러스·가시광 파장과 견준다.</figcaption>
+    </figure>
+    <div class="example" data-title="n = 100 리드베리 수소">
+      <p>수소의 \(n = 100\) 상태에서 (a) s 상태와 원 궤도 상태(\(l = 99\))의 \(\langle r\rangle\), (b) \(n = 100 \to 99\) 전이의 진동수를 구하라. (\(a_0 = 0.05292\) nm, Ry = 13.606 eV, \(h = 4.1357\times10^{-15}\) eV·s)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\langle r\rangle = (a_0/2)[3n^2 - l(l+1)]\). \(\Delta E = \mathrm{Ry}(1/99^2 - 1/100^2)\), \(f = \Delta E/h\).</div>
+        <div class="step"><b>풀이</b> (a) s: \((a_0/2)(30000) = 15000a_0 = 794\) nm. 원 궤도: \((a_0/2)(30000 - 9900) = 10050a_0 = 532\) nm. (b) \(\Delta E = 13.606\times(1.0203 - 1.0000)\times10^{-4} = 2.762\times10^{-5}\) eV → \(f = 6.68\) GHz.</div>
+        <div class="answer">(a) 794 nm (s), 532 nm (원 궤도) (b) 6.68 GHz</div>
+        <div class="step"><b>검토</b> 근사식 \(2\mathrm{Ry}/hn^3 = 6.58\) GHz와 1.5% 차이다(\(n\)이 클수록 더 가깝다). 마이크로파 공진기 하나로 리드베리 원자를 조작하는 공진기 QED 실험(아로슈, 2012 노벨상)의 진동수 영역이다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-ion" data-title="리드베리 상태 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="effective-mass">
+    <h2>유효 질량 수소 모형: 주개·받개·엑시톤</h2>
+    <p>실리콘에 인(P)을 넣으면 다섯째 가전자 하나가 남고, 핵 자리에는 +e 하나가 남는다. 결정 속 전자는 띠 바닥 근처에서 유효 질량 \(m^*\)인 자유 입자처럼 움직이고(<a href="symmetry.html">7장</a>), 쿨롱 인력은 결정의 비유전율 \(\varepsilon_r\)만큼 가려진다. 파동함수를 블로흐 함수(빠르게 진동)와 천천히 변하는 <span class="term">포락 함수</span><span class="en">(envelope function)</span> \(F(\mathbf r)\)의 곱으로 쓰면 \(F\)는 수소 원자 방정식을 그대로 따른다.</p>
+    <div class="formula">$$\psi(\mathbf r) \approx F(\mathbf r)\,u_{c,\mathbf k_0}(\mathbf r), \qquad \left[-\frac{\hbar^2\nabla^2}{2m^*} - \frac{e^2}{4\pi\varepsilon_0\varepsilon_r r}\right]F = (E - E_c)\,F$$<div class="where">결과: \(E_c - E_d = Ry^* = 13.6\ \text{eV}\times\dfrac{m^*/m_\mathrm{e}}{\varepsilon_r^2}\), \(a_B^* = a_0\,\dfrac{\varepsilon_r}{m^*/m_\mathrm{e}}\) (<code>QM.hydrogenic(m, εr)</code>). 근사가 맞으려면 \(a_B^*\)가 격자 상수보다 훨씬 커서 \(\varepsilon_r\)로 가리는 연속 매질 그림이 통해야 한다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="실리콘 격자 위에 넓게 퍼진 주개 포락 함수와 띠 그림 속 주개·받개 준위">
+        <g fill="var(--text-faint)">
+          <circle cx="40" cy="40" r="3"/><circle cx="80" cy="40" r="3"/><circle cx="120" cy="40" r="3"/><circle cx="160" cy="40" r="3"/><circle cx="200" cy="40" r="3"/><circle cx="240" cy="40" r="3"/><circle cx="280" cy="40" r="3"/><circle cx="320" cy="40" r="3"/><circle cx="360" cy="40" r="3"/><circle cx="400" cy="40" r="3"/>
+          <circle cx="40" cy="80" r="3"/><circle cx="80" cy="80" r="3"/><circle cx="120" cy="80" r="3"/><circle cx="160" cy="80" r="3"/><circle cx="200" cy="80" r="3"/><circle cx="240" cy="80" r="3"/><circle cx="280" cy="80" r="3"/><circle cx="320" cy="80" r="3"/><circle cx="360" cy="80" r="3"/><circle cx="400" cy="80" r="3"/>
+          <circle cx="40" cy="120" r="3"/><circle cx="80" cy="120" r="3"/><circle cx="120" cy="120" r="3"/><circle cx="160" cy="120" r="3"/><circle cx="200" cy="120" r="3"/><circle cx="240" cy="120" r="3"/><circle cx="280" cy="120" r="3"/><circle cx="320" cy="120" r="3"/><circle cx="360" cy="120" r="3"/><circle cx="400" cy="120" r="3"/>
+          <circle cx="40" cy="160" r="3"/><circle cx="80" cy="160" r="3"/><circle cx="120" cy="160" r="3"/><circle cx="160" cy="160" r="3"/><circle cx="240" cy="160" r="3"/><circle cx="280" cy="160" r="3"/><circle cx="320" cy="160" r="3"/><circle cx="360" cy="160" r="3"/><circle cx="400" cy="160" r="3"/>
+          <circle cx="40" cy="200" r="3"/><circle cx="80" cy="200" r="3"/><circle cx="120" cy="200" r="3"/><circle cx="160" cy="200" r="3"/><circle cx="200" cy="200" r="3"/><circle cx="240" cy="200" r="3"/><circle cx="280" cy="200" r="3"/><circle cx="320" cy="200" r="3"/><circle cx="360" cy="200" r="3"/><circle cx="400" cy="200" r="3"/>
+          <circle cx="40" cy="240" r="3"/><circle cx="80" cy="240" r="3"/><circle cx="120" cy="240" r="3"/><circle cx="160" cy="240" r="3"/><circle cx="200" cy="240" r="3"/><circle cx="240" cy="240" r="3"/><circle cx="280" cy="240" r="3"/><circle cx="320" cy="240" r="3"/><circle cx="360" cy="240" r="3"/><circle cx="400" cy="240" r="3"/>
+          <circle cx="40" cy="280" r="3"/><circle cx="80" cy="280" r="3"/><circle cx="120" cy="280" r="3"/><circle cx="160" cy="280" r="3"/><circle cx="200" cy="280" r="3"/><circle cx="240" cy="280" r="3"/><circle cx="280" cy="280" r="3"/><circle cx="320" cy="280" r="3"/><circle cx="360" cy="280" r="3"/><circle cx="400" cy="280" r="3"/>
+        </g>
+        <circle cx="200" cy="160" r="120" fill="var(--accent)" opacity=".10"/><circle cx="200" cy="160" r="80" fill="var(--accent)" opacity=".12"/><circle cx="200" cy="160" r="40" fill="var(--accent)" opacity=".16"/>
+        <circle cx="200" cy="160" r="9" fill="var(--warn)"/><text class="t" x="200" y="165" text-anchor="middle" style="font-weight:700;fill:#fff">P⁺</text>
+        <line x1="200" y1="160" x2="300" y2="160" stroke="var(--accent)" stroke-width="2"/><text class="t-acc" x="232" y="152">a_B* ≈ 2.4 nm</text>
+        <text class="t-dim" x="40" y="22">Si 원자 간격 0.235 nm — 구름 안에 원자 ~3000개</text>
+        <line x1="480" y1="60" x2="770" y2="60" stroke="var(--accent-2)" stroke-width="2.5"/><text class="t" x="780" y="64" text-anchor="end" style="fill:var(--accent-2)">E_c</text>
+        <line x1="480" y1="250" x2="770" y2="250" stroke="var(--accent-2)" stroke-width="2.5"/><text class="t" x="780" y="244" text-anchor="end" style="fill:var(--accent-2)">E_v</text>
+        <g stroke="var(--accent)" stroke-width="3"><line x1="500" y1="74" x2="530" y2="74"/><line x1="545" y1="74" x2="575" y2="74"/><line x1="590" y1="74" x2="620" y2="74"/></g>
+        <text class="t-acc" x="640" y="80">주개 E_d (P 45.6 meV)</text>
+        <g stroke="var(--warn)" stroke-width="3"><line x1="500" y1="236" x2="530" y2="236"/><line x1="545" y1="236" x2="575" y2="236"/><line x1="590" y1="236" x2="620" y2="236"/></g>
+        <text class="t" x="640" y="232" style="fill:var(--warn)">받개 E_a (B 45 meV)</text>
+        <text class="t-dim" x="625" y="160" text-anchor="middle">E_g = 1.12 eV (축척 아님)</text>
+        <path d="M600,140 v-60" stroke="var(--text-dim)" stroke-dasharray="4 4"/><path d="M600,180 v56" stroke="var(--text-dim)" stroke-dasharray="4 4"/>
+      </svg>
+      <figcaption>실리콘 속 인 주개. 포락 함수(자홍 구름)는 반지름 \(a_B^* \approx 2.4\) nm로 수천 개의 원자를 덮으므로 연속 매질 그림이 대체로 맞는다. 띠 그림에서 주개 준위는 전도대 바로 아래, 받개 준위는 가전자대 바로 위에 있다(간격은 과장).</figcaption>
+    </figure>
+    <p>단순 모형(\(m^* = 0.26\), \(\varepsilon_r = 11.7\))은 25.8 meV를 주는데, 실리콘 P의 실측은 45.6 meV다. 차이의 출처는 둘이다. ① 실리콘 전도대는 여섯 개의 이방성 골(\(m_l = 0.92\), \(m_t = 0.19\))이라, 이방성 포락 함수로 변분 계산하면(콘–러틴저) 31.3 meV가 된다. ② 1s 포락 함수는 핵 자리에서 0이 아니므로 연속 매질 가정이 깨지는 불순물 바로 근처를 느낀다 — <span class="term">중심 세포 보정</span><span class="en">(central-cell correction)</span>. 그래서 1s는 원소마다 다르고(Sb 42.7, P 45.6, As 53.8, Bi 71.0 meV), 여섯 골이 섞여 세 준위(A₁ 45.6, T₂ 33.9, E 32.6 meV, P)로 갈라진다(골–궤도 갈라짐). 반면 핵 자리에서 0인 2p 상태는 원소와 무관하게 유효 질량 이론값(2p± 6.40 meV)과 실측이 소수점까지 맞는다 — 리드베리 원자에서 p의 양자 결손이 작았던 것과 같은 이유다.</p>
+    <div class="example" data-title="실리콘 속 P: 모형과 실측, 그리고 동결 온도">
+      <p>(a) \(m^* = 0.26m_\mathrm{e}\), \(\varepsilon_r = 11.7\)인 수소 모형으로 실리콘 주개의 결합 에너지와 보어 반지름을 구하라. (b) 실측 \(E_d = 45.6\) meV, \(N_D = 10^{16}\) cm⁻³, \(N_c = 2.8\times10^{19}(T/300)^{3/2}\) cm⁻³, 주개 겹침 인자 \(g = 2\)일 때 주개의 절반이 이온화되는 온도는? (정공 무시)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(Ry^* = 13.606\times0.26/11.7^2\), \(a_B^* = 0.05292\times11.7/0.26\). (b) 이온화 주개 \(N_D^+ = n\), \(n = N_D/[1 + g(n/N_c)e^{E_d/k_BT}]\). \(n = N_D/2\)를 넣으면 \(g\,N_D\,e^{E_d/k_BT} = 2N_c\)이고, \(g = 2\)이므로 \(N_c(T) = N_D\,e^{E_d/k_BT}\)이다.</div>
+        <div class="step"><b>풀이</b> (a) \(Ry^* = 25.8\) meV, \(a_B^* = 2.38\) nm. (b) \(2.8\times10^{19}(T/300)^{1.5} = 10^{16}e^{529.2/T}\)를 수치로 풀면 \(T = 87\) K.</div>
+        <div class="answer">(a) 25.8 meV, 2.38 nm (b) 약 87 K (모형값 25.8 meV를 쓰면 55 K)</div>
+        <div class="step"><b>검토</b> 상온(300 K)에서는 99.6%가 이온화되고 77 K(액체 질소)에서는 35%만 남는다. 아래 시뮬레이터에서 같은 값을 읽을 수 있다. 결합 에너지의 작은 차이가 동결 온도를 30 K 넘게 바꾼다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-fz">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>도펀트 동결: 준위와 온도를 끌어 이온화를 보라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-fzB"></canvas><span class="hint top">흰 원: 도펀트 준위 깊이</span></div><div><canvas id="cv-fzT"></canvas><span class="hint top">곡선 위 흰 원: 온도</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>도펀트 (Si)</span><div class="seg" id="fz-dop"><button data-value="P" class="on">P</button><button data-value="As">As</button><button data-value="Sb">Sb</button><button data-value="H">모형</button><button data-value="B">B</button><button data-value="In">In</button></div></div>
+          <label class="ctrl"><span>농도 log₁₀N (cm⁻³) <output id="fz-N-out"></output></span><input type="range" id="fz-N" min="14" max="18" step="0.1" value="16"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">준위 깊이</span><span class="v" id="fz-E">—</span></div>
+        <div class="stat"><span class="k">온도 · 이온화율</span><span class="v" id="fz-f">—</span></div>
+        <div class="stat"><span class="k">다수 캐리어 농도</span><span class="v" id="fz-n">—</span></div>
+        <div class="stat"><span class="k">50% 이온화 온도</span><span class="v" id="fz-T50">—</span></div>
+        <div class="stat"><span class="k">영역</span><span class="v" id="fz-reg">—</span></div>
+      </div>
+      <div class="sim-note">전하 중성 \(n + N_A^- = p + N_D^+\)를 페르미 준위에 대해 풀었다(\(N_c = 2.8\times10^{19}\), \(N_v = 1.04\times10^{19}\) cm⁻³ at 300 K, \(\propto T^{3/2}\); \(E_g(T)\) 바르시니 식; 주개 \(g = 2\), 받개 \(g = 4\)). 오른쪽 자홍 = 다수 캐리어/도펀트 농도, 초록 점선 = 같은 농도의 수소 모형(25.8 meV) 주개. 해볼 것: ① P와 모형의 50% 이온화 온도를 비교한다. ② In(157 meV)은 상온에서도 다 이온화되지 않는다 — 그래서 실리콘 받개는 B를 쓴다. ③ 높은 온도에서 곡선이 1 위로 치솟는 진성 영역을 찾는다. 높은 농도(\(\gtrsim 10^{18}\))에서는 실제 준위가 얕아지고 결국 모트 전이로 동결이 사라지는데, 이 단순 모형은 그것을 넣지 않았다.</div>
+    </div>
+    <div class="callout semi"><strong>극저온 CMOS와 도펀트 동결</strong><p>양자 컴퓨터 제어 회로처럼 4 K에서 도는 CMOS에서는 채널 아래 기판(\(10^{15}\)–\(10^{17}\) cm⁻³)의 도펀트가 얼어붙어 우물 저항이 수십 배로 뛰고, 기판 바이어스가 먹히지 않으며 문턱 전압이 오른다. 반면 \(10^{20}\) cm⁻³ 넘게 도핑한 소스·드레인은 모트 농도를 넘은 축퇴 반도체라 얼지 않는다. 이온 주입으로 넣은 도펀트도 활성화 어닐로 격자 자리에 들어가야 이 수소 모형 준위를 갖는다 → <a href="https://semi.euiyun.com/device/chapters/carriers.html">DeviceBook · 캐리어 통계</a>, <a href="https://semi.euiyun.com/doping/chapters/doping.html">DopingBook · 도핑이란</a></p></div>
+    <h3>엑시톤: 전자와 정공의 수소 원자</h3>
+    <p>빛이 만든 전자와 정공은 서로 끌어 수소 원자처럼 묶일 수 있다. 이것이 <span class="term">엑시톤</span><span class="en">(exciton)</span>이다. 두 질량이 비슷하므로 2체 문제를 질량 중심(\(M = m_e^* + m_h^*\))과 상대 좌표(환산 질량 \(\mu\))로 나누면, 상대 운동이 수소 문제가 된다.</p>
+    <div class="formula">$$E_{n,\mathbf K} = E_g - \frac{Ry^*}{n^2} + \frac{\hbar^2K^2}{2M}, \qquad Ry^* = 13.6\ \text{eV}\,\frac{\mu/m_\mathrm{e}}{\varepsilon_r^2}, \qquad a_B = a_0\frac{\varepsilon_r}{\mu/m_\mathrm{e}}$$<div class="where">GaAs: \(\mu = 0.058\) → 모형 4.8 meV(실측 4.2 meV), \(a_B = 11.7\) nm. GaN(\(\approx\)25 meV)이나 페로브스카이트는 상온 \(k_BT\)(25.9 meV)에 맞먹는다.</div></div>
+    <p>전자와 정공을 얇은 양자 우물 같은 2차원에 가두면 결합이 훨씬 세진다. 2차원 수소 문제를 풀면 \(E_n = -Ry^*/(n - \frac12)^2\)이므로 1s 결합 에너지가 3차원의 <strong>4배</strong>, 반지름이 절반이다. 실제 우물은 폭이 유한해 2–3배에 그치지만, 유전 가림까지 약한 단층 MoS₂ 같은 2차원 반도체에서는 결합이 수백 meV에 이른다.</p>
+    <div class="predict" data-for="mini-exc">
+      <p>같은 물질의 엑시톤을 이상적인 2차원 층에 가두면 1s 결합 에너지는 3차원의 몇 배가 될까?</p>
+      <div class="opts"><button class="opt">1/2배</button><button class="opt">같다</button><button class="opt">2배</button><button class="opt" data-correct>4배</button></div>
+      <div class="quiz-exp">2차원에서는 \(E_n = -Ry^*/(n-\tfrac12)^2\)이라 \(n = 1\)에서 \(1/(1/2)^2 = 4\)배다. 아래에서 두 계열을 나란히 비교하라.</div>
+    </div>
+    <figure class="mini" id="mini-exc">
+      <div class="mini-view"><canvas id="cv-exc"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>환산 질량 μ <output id="exc-mu-out"></output></span><input type="range" id="exc-mu" min="0.02" max="0.4" step="0.002" value="0.058"></label>
+        <label class="ctrl"><span>비유전율 εr <output id="exc-er-out"></output></span><input type="range" id="exc-er" min="4" max="16" step="0.1" value="12.9"></label>
+        <span class="readout" id="exc-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>엑시톤 준위: 3차원 계열 \(-Ry^*/n^2\)(초록)과 2차원 계열 \(-Ry^*/(n-\frac12)^2\)(자홍). 점선은 상온 열에너지 \(k_BT\) — 결합이 이보다 깊어야 상온에서 엑시톤이 살아남는다.</figcaption>
+    </figure>
+    <div class="example" data-title="GaAs 엑시톤: 3차원과 2차원">
+      <p>GaAs(\(m_e^* = 0.067\), \(m_h^* = 0.45\), \(\varepsilon_r = 12.9\))에서 엑시톤의 환산 질량, 결합 에너지, 보어 반지름을 구하라. 이상적인 2차원 우물에서는 어떻게 되나?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\mu = m_em_h/(m_e + m_h)\), \(Ry^* = 13.606\,\mu/\varepsilon_r^2\), \(a_B = 0.05292\,\varepsilon_r/\mu\). 2차원은 결합 ×4, 반지름 ×½.</div>
+        <div class="step"><b>풀이</b> \(\mu = 0.0302/0.517 = 0.0583\). \(Ry^* = 13.606\times0.0583/166.4 = 4.77\) meV, \(a_B = 0.6826/0.0583 = 11.7\) nm. 2차원: 19.1 meV, 5.85 nm.</div>
+        <div class="answer">\(\mu = 0.0583m_\mathrm{e}\), \(E_b = 4.77\) meV, \(a_B = 11.7\) nm; 2D: 19.1 meV, 5.85 nm</div>
+        <div class="step"><b>검토</b> 3차원 GaAs 엑시톤은 \(k_BT\)의 1/5이라 상온에서 바로 깨지지만, 양자 우물 엑시톤은 상온 흡수 스펙트럼에도 뚜렷한 봉우리를 남긴다. 이것을 전기장으로 옮기는 양자 구속 슈타르크 효과가 광 변조기의 원리다.</div>
+      </details>
+    </div>
+    <h3>엑시톤 보어 반지름과 양자점 크기</h3>
+    <p>2절의 양자점을 이 눈으로 다시 보면, 구속 운동 에너지 \(\hbar^2\pi^2/2\mu R^2\)과 엑시톤 결합 \(Ry^*\)의 비는 정확히 \(\pi^2(a_B/R)^2\)이다. \(R \ll a_B\)이면 구속이 이겨 전자·정공을 따로 가두고(강한 구속, 브루스 식), \(R \gg a_B\)이면 엑시톤이 먼저 묶이고 그 질량 중심이 갇힌다(약한 구속).</p>
+    <div class="tangle" id="tg-reg">
+      <p>양자점 반지름 <span class="tn" data-var="R" data-min="1" data-max="30" data-step="0.5" data-unit=" nm">3.0</span>, 엑시톤 환산 질량 <span class="tn" data-var="mu" data-min="0.02" data-max="0.5" data-step="0.005" data-unit=" mₑ">0.100</span>, 비유전율 <span class="tn" data-var="er" data-min="4" data-max="20" data-step="0.1">10.6</span>이면 \(a_B\) = <span class="tn-out" data-out="aB"></span>, \(R/a_B\) = <span class="tn-out" data-out="x"></span>이다. 구속 에너지 <span class="tn-out" data-out="Ec"></span> 대 엑시톤 결합 <span class="tn-out" data-out="Eb"></span> → <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>양자점 이미지 센서와 엑시톤 해리</strong><p>PbS 양자점은 \(a_B \approx 20\) nm라 어떤 크기에서도 강한 구속이고, 크기만으로 흡수 끝을 1–2 µm의 단파 적외선(SWIR)에 맞출 수 있다. 실리콘 ROIC 위에 양자점 막을 코팅한 SWIR 이미지 센서는 InGaAs보다 싸게 만들 수 있지만, 빛이 만든 엑시톤을 전자와 정공으로 갈라 전극까지 보내야 신호가 된다. 그래서 리간드를 짧게 바꿔 점 사이 결합을 키우고 내부 전기장을 걸어 엑시톤을 해리한다. OLED에서는 반대로 유기 분자의 큰 엑시톤 결합(수백 meV)이 발광을 돕는다 → <a href="https://semi.euiyun.com/sensor/chapters/advanced.html">SensorBook · 최신 센서 기술</a>, <a href="https://semi.euiyun.com/display/chapters/oled.html">DisplayBook · OLED 소자 물리</a></p></div>
+    <div class="drill" id="drill-don" data-title="유효 질량 수소 모형 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>중심력에서는 \([\hat H, \hat{\mathbf L}] = 0\)이라 \(\psi = R(r)Y_l^m\)이고, \(u = rR\)은 유효 퍼텐셜 \(V + \hbar^2l(l+1)/2mr^2\) 속의 1차원 방정식을 따른다. 경계 조건은 \(u(0) = 0\)(원점 근처 \(u \propto r^{l+1}\))과 \(u(\infty) = 0\)이며, 모든 준위가 적어도 \(2l+1\)겹 축퇴한다.</li>
+      <li>\(u(0) = 0\) 때문에 3차원 우물은 얕으면 속박 상태가 없다: s는 \(V_0a^2 &gt; \pi^2\hbar^2/8m\), p는 \(\pi^2\hbar^2/2m\)이 필요하다. 무한 구형 우물은 \(E_{nl} = \hbar^2x_{nl}^2/2ma^2\)(구 베셀 영점)으로 1s, 1p, 1d, 2s … 순서이고 \(l\) 축퇴가 없다.</li>
+      <li>구형 양자점의 발광은 브루스 식 \(E_g + (\hbar^2\pi^2/2R^2)(1/m_e^* + 1/m_h^*) - 1.786e^2/4\pi\varepsilon_0\varepsilon_rR\)으로 어림한다. \(R \ll a_B\)이면 강한 구속, \(R \gg a_B\)이면 엑시톤 질량 중심의 약한 구속이다.</li>
+      <li>3차원 조화 진동자는 \(E = \hbar\omega(N + 3/2)\), \(N = 2n_r + l\), 축퇴도 \((N+1)(N+2)/2\)이다. 수소는 \(E_n = -13.6\ \text{eV}/n^2\), \(n = n_r + l + 1\), 축퇴도 \(n^2\)이다. 두 경우의 \(l\) 축퇴는 숨은 대칭(SU(3), 룽게–렌츠 벡터의 SO(4))에서 오며, 고전적으로는 닫힌 궤도(베르트랑 정리)에 대응한다.</li>
+      <li>수소 기댓값: \(\langle r\rangle = (a/2)[3n^2 - l(l+1)]\), \(\langle 1/r\rangle = 1/n^2a\)(비리얼 \(\langle V\rangle = 2E_n\)), \(\langle 1/r^2\rangle = 1/[(l+\frac12)n^3a^2]\). 수소꼴 이온은 에너지 \(Z^2\mu/m_\mathrm{e}\)배, 길이 \(1/Z\)배이고, 리드베리 상태는 크기 \(n^2\), 간격 \(n^{-3}\), 편극률 \(n^7\)로 자란다.</li>
+      <li>유효 질량 수소 모형 \(Ry^* = 13.6\ \text{eV}\,(m^*/m_\mathrm{e})/\varepsilon_r^2\), \(a_B^* = a_0\varepsilon_r/(m^*/m_\mathrm{e})\)은 실리콘 주개(모형 25.8, 실측 P 45.6 meV — 이방성 질량과 중심 세포 보정), 동결 온도, 엑시톤(2차원에서 결합 4배)을 설명한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>필요하면 \(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm², \(e^2/4\pi\varepsilon_0 = 1.440\) eV·nm, \(a_0 = 0.05292\) nm, Ry = 13.606 eV, \(hc = 1239.8\) eV·nm, \(k_B = 8.617\times10^{-5}\) eV/K를 쓴다. 구 베셀 영점: \(x_{10} = \pi\), \(x_{11} = 4.493\), \(x_{12} = 5.763\), \(x_{20} = 2\pi\).</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="원심 장벽" data-answer="0.914" data-label="V_c =" data-unit="eV">
+        <div class="prob-q"><p>자유 전자가 \(l = 2\) 상태로 원점에서 0.50 nm 떨어져 있을 때 원심 장벽 \(\hbar^2l(l+1)/2mr^2\)의 크기는?</p></div>
+        <div class="prob-hint">\(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm²에 \(l(l+1) = 6\)을 곱하고 \(r^2\)으로 나눈다.</div>
+        <div class="prob-sol"><p>\(V_c = 0.0381\times6/0.25 = 0.914\) eV. 상온 열에너지의 35배라 d 전자는 이 거리 안쪽으로 거의 들어오지 못한다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="무한 구형 우물" data-answer="0.624; 1.28" data-label="E_1s =; E_1p =" data-unit="eV; eV">
+        <div class="prob-q"><p>유효 질량 \(0.067m_\mathrm{e}\)인 전자를 반지름 3.0 nm의 무한 구형 우물에 가둔다. 1s와 1p 준위의 에너지는?</p></div>
+        <div class="prob-hint">\(E_{nl} = (\hbar^2/2m^*)\,x_{nl}^2/a^2\).</div>
+        <div class="prob-sol"><p>\(\hbar^2/2m^*a^2 = 0.0381/(0.067\times9) = 0.0632\) eV. \(E_{1s} = 0.0632\times\pi^2 = 0.624\) eV, \(E_{1p} = 0.0632\times4.493^2 = 1.28\) eV.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="조화 진동자 축퇴">
+        <div class="prob-q"><p>3차원 등방 조화 진동자에서 2s(\(n_r = 1, l = 0\)) 상태와 같은 에너지를 갖는 상태는?</p></div>
+        <div class="prob-choices"><button>1p</button><button data-correct>1d</button><button>2p</button><button>1f</button></div>
+        <div class="prob-sol"><p>\(E = \hbar\omega(2n_r + l + 3/2)\). 2s는 \(N = 2\)이고 1d(\(n_r = 0, l = 2\))도 \(N = 2\)다. 1p는 \(N = 1\), 2p와 1f는 \(N = 3\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수소 기댓값" data-answer="10.5" data-label="⟨r⟩ =" data-unit="a₀">
+        <div class="prob-q"><p>수소 3d 상태의 \(\langle r\rangle\)을 \(a_0\) 단위로 구하라.</p></div>
+        <div class="prob-hint">\(\langle r\rangle = (a_0/2)[3n^2 - l(l+1)]\).</div>
+        <div class="prob-sol"><p>\((a_0/2)(27 - 6) = 10.5a_0 = 0.556\) nm. 가장 그럴듯한 반지름 \(n^2a_0 = 9a_0\)보다 조금 크다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="수소꼴 이온" data-answer="164" data-label="λ =" data-unit="nm">
+        <div class="prob-q"><p>He⁺ 이온의 \(n = 3 \to 2\) 전이에서 나오는 빛의 파장은? (핵의 움직임 무시)</p></div>
+        <div class="prob-hint">에너지가 \(Z^2 = 4\)배이므로 파장은 수소 Hα의 1/4.</div>
+        <div class="prob-sol"><p>\(\Delta E = 4\times13.606\times(1/4 - 1/9) = 7.559\) eV, \(\lambda = 1239.8/7.559 = 164\) nm(진공 자외선).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="속박 문턱" data-answer="1.40" data-label="V₀ =" data-unit="eV">
+        <div class="prob-q"><p>유효 질량 \(0.067m_\mathrm{e}\)인 전자가 반지름 2.0 nm 구형 우물에 있다. p(\(l = 1\)) 속박 상태가 하나라도 생기기 위한 최소 깊이 \(V_0\)는?</p></div>
+        <div class="prob-hint">\(E \to 0\) 문턱에서 바깥 해는 \(r^{-(l+1)}\)이고, 맞붙임 조건은 \(j_{l-1}(ka) = 0\)이 된다. \(l = 1\)이면 \(j_0(ka) = 0\), 곧 \(ka = \pi\).</div>
+        <div class="prob-sol"><p>문턱(\(E = 0\))에서 \(\hbar^2k^2/2m^* = V_0\)이고 \(ka = \pi\)이므로 \(V_0 = (\hbar^2/2m^*)\pi^2/a^2 = (0.0381/0.067)\times9.870/4.00 = 1.40\) eV. 같은 우물의 s 문턱(\(ka = \pi/2\))은 그 1/4인 0.351 eV다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="브루스 식" data-answer="2.62; 473" data-label="E =; λ =" data-unit="eV; nm">
+        <div class="prob-q"><p>반지름 2.0 nm인 InP 양자점(\(E_g = 1.344\) eV, \(m_e^* = 0.077\), \(m_h^* = 0.60\), \(\varepsilon_r = 12.5\))의 발광 에너지와 파장을 브루스 식으로 어림하라.</p></div>
+        <div class="prob-hint">구속 항 \((\hbar^2\pi^2/2m_\mathrm{e}R^2)(1/m_e^* + 1/m_h^*)\), 쿨롱 항 \(1.786\times1.440/(\varepsilon_rR)\).</div>
+        <div class="prob-sol"><p>\(0.0381\times9.870/4.00 = 0.0940\) eV, 괄호 \(12.99 + 1.67 = 14.65\) → 구속 1.377 eV. 쿨롱 \(2.572/25.0 = 0.103\) eV. \(E = 1.344 + 1.377 - 0.103 = 2.62\) eV, \(\lambda = 473\) nm. 같은 크기의 CdSe(486 nm)보다 푸르다 — 전자 질량이 작아 구속이 세다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="진동자 껍질" data-answer="40" data-label="상태 수 =" data-unit="개">
+        <div class="prob-q"><p>3차원 등방 조화 진동자에서 에너지가 \(4.5\hbar\omega\) 이하인 상태는 스핀까지 세어 모두 몇 개인가?</p></div>
+        <div class="prob-hint">\(E_N = (N + 3/2)\hbar\omega \le 4.5\hbar\omega\)이면 \(N \le 3\).</div>
+        <div class="prob-sol"><p>\(g_N = 1, 3, 6, 10\) (\(N = 0\)–3), 합 20, 스핀 2배로 40. 이것이 원자핵 껍질 모형의 스핀–궤도 결합 전 마법수 40이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="⟨1/r²⟩" data-answer="0.0833" data-label="⟨1/r²⟩ =" data-unit="a₀⁻²">
+        <div class="prob-q"><p>수소 2p 상태의 \(\langle 1/r^2\rangle\)을 \(a_0^{-2}\) 단위로 구하라. 이 값은 12장 상대론 보정에 쓰인다.</p></div>
+        <div class="prob-hint">\(\langle 1/r^2\rangle = 1/[(l + \frac12)n^3a^2]\).</div>
+        <div class="prob-sol"><p>\(1/(1.5\times8) = 1/12 = 0.0833\,a_0^{-2}\). 직접 적분으로 확인: \(R_{21} \propto re^{-r/2a}\), \(\int r^2e^{-r}\,dr/\int r^4e^{-r}\,dr\)의 비 \(2!/4! = 1/12\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="리드베리 크기" data-answer="113" data-label="n =" data-unit="">
+        <div class="prob-q"><p>수소의 s 상태 리드베리 원자의 \(\langle r\rangle\)이 1 µm 이상이 되는 가장 작은 주 양자수 \(n\)은?</p></div>
+        <div class="prob-hint">\(l = 0\)이면 \(\langle r\rangle = \frac32n^2a_0\).</div>
+        <div class="prob-sol"><p>\(n^2 \ge 1000/(1.5\times0.05292) = 1.260\times10^4\) → \(n \ge 112.2\). \(n = 112\)는 996 nm, \(n = 113\)은 1014 nm이므로 113.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="환산 질량" data-answer="-2.53; 0.285" data-label="E₁ =; a =" data-unit="keV; pm">
+        <div class="prob-q"><p>뮤온(\(m_\mu = 206.77m_\mathrm{e}\))이 양성자(\(1836.15m_\mathrm{e}\))에 묶인 뮤온 수소의 바닥 에너지와 보어 반지름은?</p></div>
+        <div class="prob-hint">\(\mu = m_\mu m_p/(m_\mu + m_p)\), \(E_1 = -13.606\,(\mu/m_\mathrm{e})\) eV, \(a = a_0\,m_\mathrm{e}/\mu\).</div>
+        <div class="prob-sol"><p>\(\mu = 206.77\times1836.15/2042.92 = 185.84m_\mathrm{e}\). \(E_1 = -13.606\times185.84 = -2528\) eV \(= -2.53\) keV, \(a = 52.92\ \text{pm}/185.84 = 0.285\) pm. 양성자 반지름(0.84 fm)의 340배라 뮤온은 양성자 크기를 민감하게 느낀다 — 2010년 뮤온 수소 램 이동이 "양성자 반지름 수수께끼"를 낳은 이유다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="베르트랑 정리">
+        <div class="prob-q"><p>모든 속박 고전 궤도가 닫히고, 양자역학에서 서로 다른 \(l\)의 준위가 겹치는(우연 축퇴) 중심력 퍼텐셜의 조합은?</p></div>
+        <div class="prob-choices"><button>\(1/r\)과 \(1/r^2\)</button><button data-correct>\(1/r\)과 \(r^2\)</button><button>\(r^2\)과 \(r^4\)</button><button>모든 거듭제곱 \(r^k\)</button></div>
+        <div class="prob-sol"><p>베르트랑 정리: 닫힌 궤도는 쿨롱(\(-1/r\))과 조화(\(r^2\))뿐이다. 각각 룽게–렌츠 벡터(SO(4))와 사중극 텐서(SU(3))라는 추가 보존량이 있어, 고전적으로는 근점이 세차하지 않고 양자적으로는 \(l\) 축퇴가 생긴다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="중심 세포 보정">
+        <div class="prob-q"><p>실리콘 속 P 주개의 1s 결합 에너지 실측(45.6 meV)이 단순 수소 모형(25.8 meV)보다 큰 주된 이유로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>상온에서는 결합 에너지가 열에너지만큼 커진다</button><button>2p 상태가 1s와 섞여서</button><button data-correct>이방성 다중 골 질량과, 1s가 불순물 핵 근처에서 연속 매질 가정이 깨지는 중심 세포 보정</button><button>실리콘의 비유전율이 실제로는 1에 가까워서</button></div>
+        <div class="prob-sol"><p>이방성 질량으로 변분하면 31.3 meV, 나머지 14 meV는 1s 포락 함수가 핵 자리에서 0이 아니어서 생기는 중심 세포 보정(원소마다 다르다)이다. 핵 자리에서 0인 2p 상태는 유효 질량 이론과 실측이 잘 맞는다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="도펀트 동결" data-answer="0.134" data-tol="2%" data-label="N_D⁺/N_D =" data-unit="">
+        <div class="prob-q"><p>실리콘에 P를 \(N_D = 10^{17}\) cm⁻³ 넣었다(\(E_d = 45\) meV, \(g = 2\)). \(N_c = 2.8\times10^{19}(T/300)^{3/2}\) cm⁻³일 때 77 K에서 이온화된 주개의 비율은? (정공 무시)</p></div>
+        <div class="prob-hint">\(n = N_D^+\)이고 \(n = N_D/[1 + g(n/N_c)e^{E_d/k_BT}]\). 정리하면 \(a n^2 + n - N_D = 0\), \(a = g\,e^{E_d/k_BT}/N_c\).</div>
+        <div class="prob-hint">77 K: \(N_c = 3.64\times10^{18}\) cm⁻³, \(E_d/k_BT = 6.782\), \(e^{6.782} = 882\).</div>
+        <div class="prob-sol"><p>\(a = 2\times882/3.64\times10^{18} = 4.84\times10^{-16}\) cm³. \(n = [-1 + \sqrt{1 + 4aN_D}]/2a = [-1 + \sqrt{194.7}]/(9.69\times10^{-16}) = 1.34\times10^{16}\) cm⁻³, 비율 0.134. 같은 온도에서 \(10^{16}\)이면 35% — 진할수록 더 잘 언다(질량 작용).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="크기로 색 맞추기" data-answer="2.37" data-label="R =" data-unit="nm">
+        <div class="prob-q"><p>CdSe 양자점(\(E_g = 1.74\) eV, \(m_e^* = 0.13\), \(m_h^* = 0.45\), \(\varepsilon_r = 10.6\))이 브루스 식으로 2.30 eV(539 nm)의 빛을 내려면 반지름이 얼마여야 하나?</p></div>
+        <div class="prob-hint">\(x = 1/R\)로 두면 \(0.3760\times9.915\,x^2 - 0.2426\,x = 0.56\)의 2차 방정식이다(\(0.3760 = 0.0381\pi^2\), \(0.2426 = 1.786\times1.440/10.6\)).</div>
+        <div class="prob-sol"><p>\(3.728x^2 - 0.2426x - 0.56 = 0\) → \(x = [0.2426 + \sqrt{0.0589 + 8.351}]/7.456 = 0.4215\) nm⁻¹, \(R = 2.37\) nm. 위 시뮬레이터에서 539 nm를 목표로 확인할 수 있다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="유한 구형 우물" data-answer="1; 0; -30.0" data-tol="0; 0; 3%" data-label="s 상태 수 =; p 상태 수 =; E_1s =" data-unit="개; 개; meV">
+        <div class="prob-q"><p>유효 질량 \(0.067m_\mathrm{e}\)인 전자가 반지름 2.0 nm, 깊이 0.50 eV인 구형 우물에 있다. (a) s 속박 상태와 (b) p 속박 상태는 각각 몇 개인가? (c) 바닥 상태 에너지(우물 밖 0 기준)는?</p></div>
+        <div class="prob-hint">\(z_0 = a\sqrt{2m^*V_0}/\hbar = 2.0\sqrt{0.50/0.5687} = 1.875\). s 상태 수는 \(z_0\)보다 작은 \(\pi/2, 3\pi/2, \dots\)의 개수, p 문턱은 \(z_0 = \pi\).</div>
+        <div class="prob-hint">s 상태는 1차원 홀 상태 조건 \(z\cot z = -\sqrt{z_0^2 - z^2}\)를 \(z = ka\)에 대해 푼다.</div>
+        <div class="prob-sol"><p>(a) \(\pi/2 = 1.571 &lt; 1.875 &lt; 3\pi/2\)이므로 s 1개. (b) \(1.875 &lt; \pi\)이므로 p는 없다. (c) \(z\cot z = -\sqrt{3.517 - z^2}\)를 풀면 \(z = 1.818\), \(E = -V_0 + 0.5687z^2/a^2 = -0.50 + 0.470 = -0.0300\) eV. 문턱 가까이라 겨우 30 meV로 묶여 있다(<code>QM.sphWellE</code>로 확인).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>지름 함수 \(u = rR\)에 \(u(0) = 0\)을 요구하는 이유로 가장 정확한 것은?</p><div class="opts">
+        <button class="opt">원점에서는 퍼텐셜이 무한대이기 때문에</button>
+        <button class="opt" data-correct>\(u(0) \ne 0\)이면 \(R \sim 1/r\)인데 \(\nabla^2(1/r)\)이 델타 함수를 만들어 3차원 방정식을 만족하지 않기 때문에</button>
+        <button class="opt">\(l \ge 1\)일 때만 필요한 조건이라서</button>
+        <button class="opt">정규화 적분 \(\int|u|^2dr\)이 발산하기 때문에</button>
+      </div><div class="quiz-exp">\(l = 0\)에서 \(u \to\) 상수(곧 \(R \sim 1/r\))는 정규화는 되지만 \(\nabla^2(1/r) = -4\pi\delta^3(\mathbf r)\) 때문에 원래 방정식의 해가 아니다. 이 조건은 퍼텐셜이 유한한 구형 우물에서도 필요하다.</div></div>
+      <div class="quiz-q"><p>수소 \(n = 3\) 준위의 9겹 축퇴 가운데 회전 대칭만으로 설명되는 부분은?</p><div class="opts">
+        <button class="opt">9겹 전부</button>
+        <button class="opt" data-correct>각 \(l\) 안의 \(2l+1\)겹(\(m\) 축퇴)뿐이고, 3s·3p·3d가 겹치는 것은 룽게–렌츠 벡터의 숨은 대칭 때문이다</button>
+        <button class="opt">3s만</button>
+        <button class="opt">아무것도 — 모두 우연이다</button>
+      </div><div class="quiz-exp">\([\hat H, \hat L_\pm] = 0\)이 \(m\) 축퇴를 보장한다. \(l\)이 다른 상태를 잇는 연산자는 \(\hat{\mathbf A}\)이고, \(\hat{\mathbf L}\)과 함께 SO(4)를 이룬다.</div></div>
+      <div class="quiz-q"><p>핵 근처의 쿨롱 인력을 핵심 전자가 가리지 못해 퍼텐셜이 \(r\to0\)에서 더 깊어지면, 가장 크게 내려가는 준위는?</p><div class="opts">
+        <button class="opt" data-correct>s 준위</button>
+        <button class="opt">p 준위</button>
+        <button class="opt">d 준위</button>
+        <button class="opt">모두 똑같이</button>
+      </div><div class="quiz-exp">원심 장벽이 없는 s만 원점 근처에 확률이 있어(\(u \propto r\)) 깊어진 퍼텐셜을 느낀다. 그래서 알칼리 원자의 s 양자 결손이 크고, 실리콘 주개의 1s만 중심 세포 보정을 크게 받는다.</div></div>
+      <div class="quiz-q"><p>CdSe 양자점(\(a_B \approx 5.6\) nm)의 반지름을 1.5 nm에서 15 nm로 키울 때 옳은 설명은?</p><div class="opts">
+        <button class="opt">처음부터 끝까지 브루스 식의 강한 구속 근사가 맞는다</button>
+        <button class="opt" data-correct>강한 구속에서 약한 구속으로 넘어가며, 큰 쪽에서는 엑시톤이 먼저 묶이고 그 질량 중심이 갇힌다</button>
+        <button class="opt">반지름이 커질수록 발광 에너지가 띠 간격보다 커진다</button>
+        <button class="opt">엑시톤 보어 반지름이 양자점 크기를 따라 커진다</button>
+      </div><div class="quiz-exp">구속 대 결합의 비는 \(\pi^2(a_B/R)^2\)이다. \(R = 1.5\) nm이면 약 140배로 강한 구속, 15 nm이면 1.4배로 엑시톤 결합이 비슷해지고 더 크면 약한 구속이다. 발광은 띠 간격 − 엑시톤 결합으로 다가간다.</div></div>
+      <div class="quiz-q"><p>이상적인 2차원 층에 가둔 엑시톤의 1s 결합 에너지와 반지름은 3차원과 비교해 어떻게 되나?</p><div class="opts">
+        <button class="opt">결합 2배, 반지름 같음</button>
+        <button class="opt" data-correct>결합 4배, 반지름 1/2</button>
+        <button class="opt">결합 1/4, 반지름 2배</button>
+        <button class="opt">달라지지 않는다</button>
+      </div><div class="quiz-exp">2차원 수소 문제는 \(E_n = -Ry^*/(n - \frac12)^2\)라 1s에서 4배, 반지름은 \(a_B/2\)다. 실제 양자 우물은 폭이 유한해 2–3배에 그친다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const K = QM.K, C = K.C, A0 = K.a0, RY = K.Ry, HC = K.hc, KE = 1.439964547, KB = K.kBev;
+  const pal = () => SB.palette();
+  const LN = "spdfghik";
+  const fx = (x, d = 2) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const fmtE = (E) => { const a = Math.abs(E); return a >= 1 ? fx(E, 2) + " eV" : fx(E * 1000, a >= 0.01 ? 1 : 2) + " meV"; };
+  const sup = (e) => String(e).replace(/-/g, "⁻").replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+  const sci = (x, d = 2) => { if (!(x > 0)) return "0"; const e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); return `${m.toFixed(d)}×10${sup(e)}`; };
+  const fill = (ctx, ch, xs, ys, base, col, alpha) => { ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(ch.X(xs[0]), ch.Y(base)); for (let i = 0; i < xs.length; i++) ctx.lineTo(ch.X(xs[i]), ch.Y(ys[i])); ctx.lineTo(ch.X(xs[xs.length - 1]), ch.Y(base)); ctx.closePath(); ctx.fill(); ctx.restore(); };
+  const line = (ctx, ch, xs, ys, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let st = false; for (let i = 0; i < xs.length; i++) { const y = ys[i]; if (!isFinite(y)) { st = false; continue; } const px = ch.X(xs[i]), py = ch.Y(y); st ? ctx.lineTo(px, py) : ctx.moveTo(px, py); st = true; } ctx.stroke(); ctx.restore(); };
+
+  /* ---------------------------------------------------------- 머리: 원심 장벽이 u(r)를 밀어낸다 */
+  {
+    const CF = {
+      coul: { r: [0, 36], E: [-1.15, 0.35], V: (r, l) => -2 / r + (l * (l + 1)) / (r * r), E0: (l) => -1 / ((l + 1) * (l + 1)), u: (r, l) => Math.exp((l + 1) * Math.log(r) - r / (l + 1)), pk: (l) => (l + 1) * (l + 1), amp: 0.24, name: "쿨롱 V = −e²/4πε₀r", ur: "r (a₀)", ue: "Ry" },
+      ho: { r: [0, 4.6], E: [0, 7.6], V: (r, l) => (r * r) / 2 + (l * (l + 1)) / (2 * r * r), E0: (l) => l + 1.5, u: (r, l) => Math.exp((l + 1) * Math.log(r) - (r * r) / 2), pk: (l) => Math.sqrt(l + 1), amp: 1.1, name: "3D 조화 V = ½mω²r²", ur: "r (√(ħ/mω))", ue: "ħω" },
+    };
+    let l = 0, mode = "coul", drag = null, idle = 99, t = 0;
+    const cv = SB.canvas("cv-hero", (ctx, w, h) => {
+      const P = pal(), c = CF[mode];
+      const ch = SB.chart(ctx, { x: 52, y: 50, w: w - 70, h: h - 102 }, { x: c.r, y: c.E, yLabel: "E (" + c.ue + ")", yTicks: mode === "coul" ? [-1, -0.5, 0] : [0, 2, 4, 6] });
+      const N = 360, xs = [], ys = [];
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      for (let k = 0; k <= 4; k++) {
+        const vs = []; xs.length = 0;
+        for (let i = 1; i <= N; i++) { const r = c.r[0] + ((c.r[1] - c.r[0]) * i) / N; xs.push(r); vs.push(c.V(r, k)); }
+        line(ctx, ch, xs, vs, P.accent2, 1, [3, 4]);
+      }
+      const E0 = c.E0(l); let um = 0; const uu = [];
+      xs.length = 0;
+      for (let i = 1; i <= N; i++) { const r = c.r[0] + ((c.r[1] - c.r[0]) * i) / N; xs.push(r); ys.push(c.V(r, l)); const u = c.u(r, l); uu.push(u); um = Math.max(um, u); }
+      line(ctx, ch, xs, ys, P.accent2, 3);
+      const uy = uu.map((u) => E0 + (c.amp * u) / um);
+      fill(ctx, ch, xs, uy, E0, P.accent, 0.22);
+      line(ctx, ch, xs, uy, P.accent, 2.4);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(ch.X(c.r[0]), ch.Y(E0)); ctx.lineTo(ch.X(c.r[1]), ch.Y(E0)); ctx.stroke(); ctx.setLineDash([]);
+      const pk = c.pk(l);
+      ctx.strokeStyle = P.dim; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(ch.X(pk), ch.Y(E0)); ctx.lineTo(ch.X(pk), ch.Y(E0 + c.amp)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.restore();
+      SB.label(ctx, `${c.name} · l = ${l.toFixed(2)}`, 12, 16, { align: "left", bold: true, size: 13 });
+      SB.label(ctx, `${c.ur} · 바닥 E = ${mode === "coul" ? fx(E0, 3) + " Ry" : E0.toFixed(2) + " ħω"} · u 봉우리 ${mode === "coul" ? pk.toFixed(1) : pk.toFixed(2)}`, 12, 34, { align: "left", color: P.dim, size: 11, mono: true });
+    }, { aspect: 0.42, minHeight: 240, maxHeight: 340 });
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x) => { drag = { x0: x, l0: l, moved: false }; },
+      move: (id, x) => { if (!drag) return; if (Math.abs(x - drag.x0) > 4) drag.moved = true; l = SB.clamp(drag.l0 + ((x - drag.x0) / Math.max(200, cv.w)) * 6, 0, 4); },
+      up: () => { if (drag && !drag.moved) mode = mode === "coul" ? "ho" : "coul"; drag = null; idle = 0; t = Math.acos(SB.clamp((2 - l) / 2, -1, 1)) / 0.45; cv.redraw(); } });
+    SB.loop("hero", (dt) => { if (drag) return; idle += dt; if (idle > 2.5) { t += dt; l = 2 - 2 * Math.cos(0.45 * t); } cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 미니: 원점 근처 u ~ r^(l+1) */
+  {
+    const getL = SB.range("org-l", (v) => String(v), () => cv.redraw());
+    const cv = SB.canvas("cv-org", (ctx, w, h) => {
+      const P = pal(), l = getL();
+      const y0 = Math.floor(Math.min(Math.log10(Math.abs(QM.radialH(l + 1, l, 1e-3) * 1e-3)), Math.log10(Math.abs(QM.radialH(l + 2, l, 1e-3) * 1e-3)))) - 1;
+      const ch = SB.chart(ctx, { x: 56, y: 24, w: w - 74, h: h - 66 }, { x: [-3, 1.3], y: [y0, 1], xLabel: "log₁₀(r/a₀)", yLabel: "log₁₀|u|", xTicks: [-3, -2, -1, 0, 1] });
+      const xs = [], y1 = [], y2 = [], ref = [], irr = [];
+      for (let i = 0; i <= 200; i++) {
+        const lx = -3 + (4.3 * i) / 200, r = Math.pow(10, lx); xs.push(lx);
+        y1.push(Math.log10(Math.abs(QM.radialH(l + 1, l, r) * r) + 1e-300));
+        y2.push(Math.log10(Math.abs(QM.radialH(l + 2, l, r) * r) + 1e-300));
+        ref.push((l + 1) * lx + Math.log10(Math.abs(QM.radialH(l + 1, l, 1e-3) * 1e-3)) - (l + 1) * -3);
+        irr.push(0.5 - l * (lx + 3));
+      }
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      line(ctx, ch, xs, irr, P.bad, 1.6, [5, 4]);
+      line(ctx, ch, xs, ref, P.dim, 1.2, [2, 3]);
+      line(ctx, ch, xs, y2, P.accent, 2, [6, 4]);
+      line(ctx, ch, xs, y1, P.accent, 2.6);
+      ctx.restore();
+      SB.label(ctx, `기울기 ${l + 1} = l + 1`, ch.X(-1.6), ch.Y((l + 1) * -1.6 + ref[0] + (l + 1) * 3) - 14, { color: P.dim, size: 11 });
+      SB.label(ctx, `r^(−${l}) 버림`, ch.X(-2.55), ch.Y(0.5 - l * 0.45) + 14, { color: P.bad, size: 11, align: "left" });
+      const s = (Math.log10(Math.abs(QM.radialH(l + 1, l, 0.01) * 0.01)) - Math.log10(Math.abs(QM.radialH(l + 1, l, 0.001) * 0.001)));
+      document.getElementById("org-r").textContent = `실측 기울기 ${s.toFixed(3)} (n=${l + 1}) · l+1 = ${l + 1}`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 원심 장벽 */
+  SB.tangle("tg-bar", (v) => {
+    const V = (C * v.l * (v.l + 1)) / (v.m * v.r * v.r), x = V / 0.025852;
+    return { V: fmtE(V), x: x >= 10 ? x.toFixed(0) : x.toFixed(2), msg: x > 10 ? "이 반지름 안으로는 거의 들어오지 못한다." : x > 1 ? "열에너지보다 크지만 넘사벽은 아니다." : "이 거리에서는 원심 장벽이 열에너지보다 작다." };
+  });
+
+  /* ---------------------------------------------------------- 구형 우물 실험대 */
+  {
+    const st = { a: 0.6, V0: 1.5, l: 0 };
+    const RM = 2.5, EY = [-4.2, 1.2];
+    const showU = document.getElementById("veff-u"), show1 = document.getElementById("veff-1d");
+    let res = null;
+    function solve() {
+      const { a, V0, l } = st;
+      const r = QM.radialEigen((x) => (x < a ? -V0 : 0), l, { N: 500, rmax: Math.max(RM + 0.5, a + 2.2), n: 9, Emax: -1e-6 });
+      const cnt = [0, 1, 2, 3].map((k) => (V0 > 0.005 ? QM.sphWellE(k, V0, a).length : 0));
+      const z0 = a * Math.sqrt(V0 / C);
+      const one = [];
+      if (show1.checked && V0 > 0.005) {
+        const fe = (z) => z * Math.sin(z) - Math.sqrt(Math.max(0, z0 * z0 - z * z)) * Math.cos(z), fo = (z) => z * Math.cos(z) + Math.sqrt(Math.max(0, z0 * z0 - z * z)) * Math.sin(z);
+        QM.roots(fe, 1e-6, z0 - 1e-9, 400).forEach((z) => one.push({ E: -V0 + (C * z * z) / (a * a), p: "짝" }));
+        QM.roots(fo, 1e-6, z0 - 1e-9, 400).forEach((z) => one.push({ E: -V0 + (C * z * z) / (a * a), p: "홀" }));
+      }
+      res = { r, cnt, z0, one };
+    }
+    solve();
+    const stats = () => {
+      const { a, V0, l } = st;
+      SB.stat("veff-p", `${a.toFixed(2)} nm · ${V0.toFixed(2)} eV · ${res.z0.toFixed(2)}`);
+      SB.stat("veff-n", res.cnt.join(" · "));
+      SB.stat("veff-E", res.r.E.length ? res.r.E.map((e) => fx(e, 3)).join(", ") : `${LN[l]} 속박 상태 없음`);
+      SB.stat("veff-c", `${((Math.PI * Math.PI) / 4 * C / (a * a)).toFixed(3)} · ${((Math.PI * Math.PI) * C / (a * a)).toFixed(3)} eV`);
+    };
+    const cv = SB.canvas("cv-veff", (ctx, w, h, self) => {
+      const P = pal(), { a, V0, l } = st;
+      const ch = SB.chart(ctx, { x: 52, y: 32, w: w - 66, h: h - 74 }, { x: [0, RM], y: EY, xLabel: "r (nm)", yLabel: "E (eV)" });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(-V0)); ctx.lineTo(ch.X(a), ch.Y(-V0)); ctx.lineTo(ch.X(a), ch.Y(0)); ctx.lineTo(ch.X(RM), ch.Y(0)); ctx.stroke();
+      if (l > 0) { const xs = [], ys = []; for (let i = 1; i <= 300; i++) { const r = (RM * i) / 300; xs.push(r); ys.push((r < a ? -V0 : 0) + (C * l * (l + 1)) / (r * r)); } line(ctx, ch, xs, ys, P.accent2, 1.8, [5, 4]); }
+      const R = res.r;
+      R.E.forEach((E, k) => {
+        ctx.strokeStyle = P.accent; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(E)); ctx.lineTo(ch.X(RM), ch.Y(E)); ctx.stroke();
+        if (showU.checked) {
+          const u = R.u[k]; let um = 0; for (let i = 0; i < u.length; i++) um = Math.max(um, Math.abs(u[i]));
+          const xs = [], ys = []; for (let i = 0; i < u.length; i += 2) { if (R.r[i] > RM) break; xs.push(R.r[i]); ys.push(E + (0.42 * u[i]) / um); }
+          fill(ctx, ch, xs, ys, E, P.accent, 0.18); line(ctx, ch, xs, ys, P.accent, 2);
+        }
+        SB.label(ctx, `${k + 1}${LN[l]}`, ch.X(RM) - 14, ch.Y(E) - 9, { color: P.accent, size: 11, bold: true });
+      });
+      res.one.forEach((o) => { ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(ch.X(RM) - 46, ch.Y(o.E)); ctx.lineTo(ch.X(RM) - 30, ch.Y(o.E)); ctx.stroke(); SB.label(ctx, o.p, ch.X(RM) - 58, ch.Y(o.E), { color: P.accent2, size: 10 }); });
+      ctx.restore();
+      if (!R.E.length) SB.label(ctx, `${LN[l]} 속박 상태 없음 — 더 깊게·넓게`, ch.X(RM * 0.62), ch.Y(-0.5), { color: P.bad, bold: true });
+      const hw = [ch.X(a), ch.Y(-V0 / 2)], hf = [ch.X(Math.min(a / 2, RM)), ch.Y(-V0)];
+      handle(ctx, hw[0], hw[1], P.accent2); handle(ctx, hf[0], hf[1], P.accent2);
+      self._h = { hw, hf, ch };
+      SB.label(ctx, `l = ${l} (${LN[l]}) · 2l+1 = ${2 * l + 1}겹`, 12, 14, { align: "left", bold: true });
+    }, { aspect: 0.66, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, {
+      handles: () => [{ id: "w", x: cv._h.hw[0], y: cv._h.hw[1], r: 14 }, { id: "f", x: cv._h.hf[0], y: cv._h.hf[1], r: 14 }],
+      move: (id, x, y) => { const ch = cv._h.ch, X = (px) => ((px - ch.box.x) / ch.box.w) * RM, Y = (py) => EY[1] - ((py - ch.box.y) / ch.box.h) * (EY[1] - EY[0]); if (id === "w") st.a = SB.clamp(X(x), 0.2, 2.0); if (id === "f") st.V0 = SB.clamp(-Y(y), 0, 4); solve(); stats(); },
+    });
+    SB.seg("veff-l", (v) => { st.l = Number(v); solve(); stats(); cv.redraw(); });
+    showU.addEventListener("change", () => cv.redraw());
+    show1.addEventListener("change", () => { solve(); cv.redraw(); });
+    document.getElementById("veff-reset").addEventListener("click", () => { st.a = 0.6; st.V0 = 1.5; solve(); stats(); cv.redraw(); });
+    solve(); stats(); cv.redraw();
+  }
+
+  /* ---------------------------------------------------------- 미니: 구 베셀 함수 영점 */
+  {
+    const getL = SB.range("jl-l", (v) => String(v), () => cv.redraw());
+    const cv = SB.canvas("cv-jl", (ctx, w, h) => {
+      const P = pal(), l = getL();
+      const ch = SB.chart(ctx, { x: 50, y: 22, w: w - 66, h: h - 62 }, { x: [0, 16], y: [-0.35, 1.05], xLabel: "x = kr", yLabel: "j_l(x)", yTicks: [0, 0.5, 1] });
+      const xs = [], ys = [];
+      for (let i = 0; i <= 400; i++) { const x = (16 * i) / 400; xs.push(x); ys.push(QM.sphJ(l, x)); }
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(0)); ctx.lineTo(ch.X(16), ch.Y(0)); ctx.stroke();
+      line(ctx, ch, xs, ys, P.accent, 2.6);
+      const zs = []; for (let n = 1; n <= 4; n++) { const z = QM.sphJZero(l, n); if (z && z < 16) zs.push(z); }
+      zs.forEach((z, k) => { ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(z), ch.Y(0), 5, 0, 7); ctx.fill(); SB.label(ctx, `x${k + 1}${l} = ${z.toFixed(3)}`, ch.X(z), ch.Y(0) + (k % 2 ? 26 : -16), { color: P.accent2, size: 11, mono: true }); });
+      SB.label(ctx, `j_${l}(x)`, 12, 12, { align: "left", bold: true });
+      document.getElementById("jl-r").textContent = `E/E₁ₛ = ${zs.slice(0, 3).map((z) => ((z / Math.PI) ** 2).toFixed(2)).join(", ")}`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 띠 안 1S→1P */
+  SB.tangle("tg-intra", (v) => {
+    const dE = (C * (4.493409457909064 ** 2 - Math.PI ** 2)) / (v.m * v.R * v.R), lam = HC / dE / 1000;
+    return { dE: (dE * 1000).toFixed(0) + " meV", lam: lam.toFixed(2) + " µm", msg: lam > 3 && lam < 8 ? "중적외선 대기 창(3–5 µm·8–12 µm) 근처 — 띠 안 전이 양자점 적외선 검출기의 영역." : lam >= 8 ? "장파 적외선이다." : "근적외선이다." };
+  });
+
+  /* ---------------------------------------------------------- 양자점 색 맞히기 */
+  {
+    const MAT = {
+      cdse: { name: "CdSe", Eg: 1.74, me: 0.13, mh: 0.45, er: 10.6, R: [1.5, 6], T: [470, 640], sp: [380, 780], R0: 2.5 },
+      inp: { name: "InP", Eg: 1.344, me: 0.077, mh: 0.6, er: 12.5, R: [1.4, 5], T: [480, 700], sp: [380, 780], R0: 2.2 },
+      pbs: { name: "PbS", Eg: 0.41, me: 0.085, mh: 0.085, er: 17.2, R: [2.5, 10], T: [950, 1800], sp: [700, 2600], R0: 4 },
+    };
+    const X11 = 4.493409457909064;
+    const st = { k: "cdse", R: 2.5, coul: true, tgt: null, hit: false, hits: 0, tries: 0 };
+    const rng = QM.rng(11);
+    const coulBox = document.getElementById("dot-coul");
+    const calc = () => {
+      const m = MAT[st.k], R = st.R, ee = (C * Math.PI * Math.PI) / (m.me * R * R), eh = (C * Math.PI * Math.PI) / (m.mh * R * R), ec = (1.786 * KE) / (m.er * R);
+      const mu = (m.me * m.mh) / (m.me + m.mh), aB = (A0 * m.er) / mu, E = m.Eg + ee + eh - (st.coul ? ec : 0);
+      return { m, R, ee, eh, ec, E, lam: HC / E, aB, mu };
+    };
+    const lamColor = (lam) => (lam >= 380 && lam <= 780 ? SB.wl2rgb(lam) : pal().dim);
+    const stats = () => {
+      const c = calc(), x = c.R / c.aB;
+      SB.stat("dot-R", `${c.R.toFixed(2)} nm (${(2 * c.R).toFixed(1)} nm)`);
+      SB.stat("dot-c", `${(c.ee + c.eh).toFixed(3)} · ${st.coul ? "−" + c.ec.toFixed(3) : "(끔)"} eV`);
+      SB.stat("dot-L", `${c.E.toFixed(3)} eV · ${c.lam.toFixed(0)} nm`);
+      SB.stat("dot-reg", `${x.toFixed(2)} · ${x < 0.5 ? "강한 구속" : x < 2 ? "중간" : "약한 구속"}`);
+      if (st.tgt) {
+        const d = c.lam - st.tgt;
+        if (Math.abs(d) <= 4 && !st.hit) { st.hit = true; st.hits++; }
+        SB.stat("dot-goal", st.hit ? `✓ ${st.tgt} nm 맞힘!` : `${st.tgt} nm · 지금 ${d > 0 ? "+" : "−"}${Math.abs(d).toFixed(0)} nm`);
+      } else SB.stat("dot-goal", "‘새 목표’를 누르세요");
+      SB.stat("dot-score", `${st.hits} / ${st.tries}`);
+    };
+    let cvE = null;
+    const cv = SB.canvas("cv-dot", (ctx, w, h, self) => {
+      const P = pal(), c = calc(), m = c.m;
+      const cx = w * 0.5, cy = h * 0.46, s = (Math.min(w, h) * 0.36) / m.R[1];
+      const col = lamColor(c.lam);
+      ctx.save();
+      if (c.aB * s < Math.max(w, h)) { ctx.strokeStyle = P.dim; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.arc(cx, cy, c.aB * s, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]); }
+      const rr = c.R * s;
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(cx, cy, rr + 7, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1;
+      const g = ctx.createRadialGradient(cx - rr * 0.3, cy - rr * 0.3, rr * 0.1, cx, cy, rr);
+      g.addColorStop(0, "#fff"); g.addColorStop(0.35, col); g.addColorStop(1, col);
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 2 * Math.PI); ctx.fill();
+      ctx.strokeStyle = P.text; ctx.lineWidth = 1; ctx.stroke();
+      ctx.restore();
+      const hx = cx + rr * Math.cos(-Math.PI / 4), hy = cy + rr * Math.sin(-Math.PI / 4);
+      handle(ctx, hx, hy, P.accent, 9);
+      self._h = [hx, hy]; self._c = [cx, cy, s];
+      SB.label(ctx, `${m.name} · R = ${c.R.toFixed(2)} nm`, 12, 14, { align: "left", bold: true });
+      SB.label(ctx, c.aB * s < Math.max(w, h) ? `점선 원: a_B = ${c.aB.toFixed(1)} nm` : `a_B = ${c.aB.toFixed(1)} nm (화면 밖)`, 12, h - 30, { align: "left", color: P.dim, size: 11 });
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(w - 16 - s, h - 14); ctx.lineTo(w - 16, h - 14); ctx.stroke();
+      SB.label(ctx, "1 nm", w - 16 - s / 2, h - 26, { size: 11, color: P.dim });
+      SB.label(ctx, c.lam >= 380 && c.lam <= 780 ? "가시광" : "근적외선", 12, h - 12, { align: "left", color: P.dim, size: 11 });
+    }, { aspect: 0.8, minHeight: 260, maxHeight: 360 });
+    cvE = SB.canvas("cv-dotE", (ctx, w, h) => {
+      const P = pal(), c = calc(), m = c.m;
+      const top = 30, bot = h - 74, Ey = [-0.9, m.Eg + 1.7], Y = (E) => bot - ((E - Ey[0]) / (Ey[1] - Ey[0])) * (bot - top);
+      const xb = 46, xq = w * 0.46, xe = w - 16;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, top - 4, w, bot - top + 8); ctx.clip();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(xb, Y(m.Eg)); ctx.lineTo(xe, Y(m.Eg)); ctx.moveTo(xb, Y(0)); ctx.lineTo(xe, Y(0)); ctx.stroke();
+      const lv = [[m.Eg + c.ee, "1S_e"], [m.Eg + c.ee * (X11 / Math.PI) ** 2, "1P_e"], [-c.eh, "1S_h"], [-c.eh * (X11 / Math.PI) ** 2, "1P_h"]];
+      lv.forEach(([E, nm], k) => { ctx.strokeStyle = P.accent; ctx.lineWidth = k % 2 ? 1.6 : 3; if (k % 2) ctx.setLineDash([5, 3]); ctx.beginPath(); ctx.moveTo(xq, Y(E)); ctx.lineTo(xe - 40, Y(E)); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, nm, k % 2 ? xq - 22 : xe - 20, Y(E), { color: P.accent, size: 11 }); });
+      const yE = Y(m.Eg + c.ee) + 3, yH = Y(-c.eh) - 3, xm = (xq + xe - 40) / 2;
+      SB.arrow(ctx, xm, yE, xm, yH, { color: lamColor(c.lam), width: 3 });
+      ctx.restore();
+      SB.label(ctx, "E_c", xb - 18, Y(m.Eg), { color: P.accent2, size: 11 });
+      SB.label(ctx, "E_v", xb - 18, Y(0), { color: P.accent2, size: 11 });
+      SB.label(ctx, `벌크 E_g = ${m.Eg} eV`, (xb + xq) / 2, (Y(m.Eg) + Y(0)) / 2, { color: P.dim, size: 11 });
+      SB.label(ctx, `hν = ${c.E.toFixed(2)} eV`, xm, (yE + yH) / 2, { bold: true, size: 12 });
+      // 스펙트럼 띠
+      const sy = h - 52, sh = 16, [l0, l1] = m.sp, LX = (lam) => xb + ((lam - l0) / (l1 - l0)) * (xe - xb);
+      for (let x = xb; x < xe; x++) { const lam = l0 + ((x - xb) / (xe - xb)) * (l1 - l0); ctx.fillStyle = lam >= 380 && lam <= 780 ? SB.wl2rgb(lam) : P.faint; ctx.fillRect(x, sy, 1.5, sh); }
+      if (st.tgt) { ctx.strokeStyle = st.hit ? P.ok : P.text; ctx.lineWidth = 2; ctx.strokeRect(LX(st.tgt - 4), sy - 4, Math.max(3, LX(st.tgt + 4) - LX(st.tgt - 4)), sh + 8); }
+      const xl = SB.clamp(LX(c.lam), xb, xe);
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.moveTo(xl, sy - 2); ctx.lineTo(xl - 6, sy - 12); ctx.lineTo(xl + 6, sy - 12); ctx.closePath(); ctx.fill();
+      SB.label(ctx, `${l0}`, xb, sy + sh + 12, { size: 10, color: P.dim, align: "left" });
+      SB.label(ctx, `${l1} nm`, xe, sy + sh + 12, { size: 10, color: P.dim, align: "right" });
+      SB.label(ctx, `λ = ${c.lam.toFixed(0)} nm`, SB.clamp(xl, xb + 40, xe - 40), sy + sh + 12, { size: 11, bold: true });
+      SB.label(ctx, "에너지 준위 (eV)", 12, 14, { align: "left", bold: true });
+    }, { aspect: 0.8, minHeight: 260, maxHeight: 360 });
+    SB.drag(cv, { handles: () => [{ id: "R", x: cv._h[0], y: cv._h[1], r: 14 }], move: (id, x, y) => { const [cx, cy, s] = cv._c, m = MAT[st.k]; st.R = SB.clamp(Math.hypot(x - cx, y - cy) / s, m.R[0], m.R[1]); stats(); cvE.redraw(); } });
+    SB.seg("dot-mat", (v) => { st.k = v; st.R = MAT[v].R0; st.tgt = null; st.hit = false; stats(); cv.redraw(); cvE.redraw(); });
+    coulBox.addEventListener("change", () => { st.coul = coulBox.checked; stats(); cv.redraw(); cvE.redraw(); });
+    document.getElementById("dot-new").addEventListener("click", () => { const m = MAT[st.k]; st.tgt = Math.round(m.T[0] + rng() * (m.T[1] - m.T[0])); st.hit = false; st.tries++; stats(); cvE.redraw(); });
+    stats(); cvE.redraw();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 구형 우물 */
+  SB.drill("drill-sph", () => {
+    const ST = [["1s", Math.PI], ["1p", 4.493409457909064], ["1d", 5.763459196894550], ["2s", 2 * Math.PI]];
+    const MS = [0.067, 0.13, 0.26, 0.45, 1];
+    const [nm, x] = ST[Math.floor(Math.random() * ST.length)], m = MS[Math.floor(Math.random() * MS.length)], a = (2 + Math.floor(Math.random() * 9) * 0.5);
+    const E = (C * x * x) / (m * a * a) * 1000;
+    return { q: `<p>유효 질량 \\(${m}m_\\mathrm{e}\\)인 입자를 반지름 \\(a = ${a.toFixed(1)}\\) nm의 무한 구형 우물에 가둔다. ${nm} 준위의 에너지를 meV로 구하라. (\\(\\hbar^2/2m_\\mathrm{e} = 0.0381\\) eV·nm², 영점 \\(x = ${x.toFixed(3)}\\))</p>`, answer: E, label: `E<sub>${nm}</sub> =`, unit: "meV", tol: "1.5%",
+      sol: `\\(E = \\dfrac{\\hbar^2}{2m_\\mathrm{e}}\\dfrac{x^2}{(m^*/m_\\mathrm{e})a^2} = \\dfrac{0.0381\\times${(x * x).toFixed(3)}}{${m}\\times${(a * a).toFixed(2)}} = ${(E / 1000).toFixed(4)}\\) eV \\(= ${E.toFixed(1)}\\) meV` };
+  });
+
+  /* ---------------------------------------------------------- 미니: 진동자 상태 세기 */
+  {
+    const getN = SB.range("hoc-N", (v) => String(v), () => cv.redraw());
+    const cv = SB.canvas("cv-hoc", (ctx, w, h) => {
+      const P = pal(), N = getN();
+      const lw = w * 0.46, s = Math.min((lw - 40) / 6.6, (h - 74) / 6.6);
+      const ox = 30, oy = h - 30;
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + s * 6.6, oy); ctx.moveTo(ox, oy); ctx.lineTo(ox, oy - s * 6.6); ctx.stroke();
+      SB.label(ctx, "n_x", ox + s * 6.6, oy + 12, { size: 11, color: P.dim });
+      SB.label(ctx, "n_y", ox + 14, oy - s * 6.6 - 6, { size: 11, color: P.dim });
+      let cnt = 0;
+      for (let i = 0; i <= N; i++) for (let j = 0; i + j <= N; j++) { cnt++; ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ox + s * (i + 0.3), oy - s * (j + 0.3), Math.min(6, s * 0.3), 0, 7); ctx.fill(); }
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ox + s * (N + 0.3), oy - s * 0.3); ctx.lineTo(ox + s * 0.3, oy - s * (N + 0.3)); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, `직교: ${cnt}개`, ox + 4, 14, { align: "left", bold: true });
+      const rx = w * 0.54, ls = []; for (let l = N; l >= 0; l -= 2) ls.push(l);
+      const bw = Math.min(14, (w - rx - 20) / 13), colW = (w - rx - 10) / Math.max(ls.length, 1);
+      ls.forEach((l, k) => {
+        const x0 = rx + k * colW; SB.label(ctx, `l=${l}`, x0 + colW / 2, oy + 12, { size: 11, color: P.dim });
+        for (let q = 0; q < 2 * l + 1; q++) { const col = q % 2, row = Math.floor(q / 2); ctx.fillStyle = P.accent2; ctx.fillRect(x0 + colW / 2 - bw - 1 + col * (bw + 2), oy - 6 - (row + 1) * (bw + 2), bw, bw); }
+      });
+      SB.label(ctx, `구면: ${ls.map((l) => 2 * l + 1).join(" + ")} = ${ls.reduce((s, l) => s + 2 * l + 1, 0)}`, rx, 14, { align: "left", bold: true });
+      document.getElementById("hoc-r").textContent = `g = (N+1)(N+2)/2 = ${((N + 1) * (N + 2)) / 2} · E = ${(N + 1.5).toFixed(1)} ħω · 패리티 ${N % 2 ? "홀" : "짝"}`;
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 축퇴도 */
+  SB.tangle("tg-deg", (v) => ({ h: String(v.n * v.n), o: String(((v.N + 1) * (v.N + 2)) / 2), c: String(((v.N + 1) * (v.N + 2) * (v.N + 3)) / 3) }));
+
+  /* ---------------------------------------------------------- 중심력 준위 비교기 */
+  {
+    const POT = {
+      box: { name: "무한 구형 우물", p: 1.0, pr: [0.5, 2], unit: "eV", lu: "nm", m: 1,
+        V: (r, p) => (r < p ? 0 : NaN), rmax: (p) => p, Emax: (p) => (C * 100) / (p * p), y: (p) => [-0.05 * (C * 100) / (p * p), (C * 100) / (p * p)], xr: (p) => [0, 2.2],
+        an: (l, p) => { const o = []; for (let n = 1; n <= 4; n++) { const E = QM.sphBoxE(n, l, p); if (E < (C * 100) / (p * p)) o.push(E); } return o; },
+        h: (p) => [p, 0], set: (x, y, p) => SB.clamp(x, 0.5, 2), rule: "l마다 다름 — m 축퇴(2l+1)뿐", pl: (p) => `a = ${p.toFixed(2)} nm` },
+      well: { name: "유한 구형 우물", p: 3.0, pr: [0.3, 6], unit: "eV", lu: "nm", m: 1,
+        V: (r, p) => (r < 1 ? -p : 0), rmax: () => 5, Emax: () => -1e-6, y: (p) => [-6.2, 0.6], xr: () => [0, 2.6],
+        an: (l, p) => QM.sphWellE(l, p, 1), h: (p) => [0.5, -p], set: (x, y) => SB.clamp(-y, 0.3, 6), rule: "l마다 다름 — m 축퇴뿐, 위쪽은 끊긴다", pl: (p) => `a = 1 nm, V₀ = ${p.toFixed(2)} eV` },
+      ho: { name: "3D 조화 진동자", p: 0.5, pr: [0.2, 1], unit: "eV", lu: "nm", m: 1,
+        V: (r, p) => (p * p * r * r) / (4 * C), rmax: (p) => 9 * Math.sqrt((2 * C) / p), Emax: (p) => 6.6 * p, y: (p) => [0, 7 * p], xr: (p) => [0, 3.6 * Math.sqrt((2 * C) / p)],
+        an: (l, p) => { const o = []; for (let nr = 0; 2 * nr + l <= 5; nr++) o.push(p * (2 * nr + l + 1.5)); return o; },
+        h: (p) => [0.8, (p * p * 0.64) / (4 * C)], set: (x, y) => SB.clamp(Math.sqrt((Math.max(y, 0.01) * 4 * C) / 0.64), 0.2, 1),
+        rule: "N = 2n_r + l 이 같으면 축퇴 (2s = 1d, 2p = 1f …)", pl: (p) => `ħω = ${p.toFixed(3)} eV` },
+      coul: { name: "쿨롱 −Ze²/4πε₀r", p: 1, pr: [1, 3], unit: "Ry", lu: "a₀", m: C,
+        V: (r, p) => (-2 * p) / r, rmax: (p) => 90 / p, Emax: () => -1e-6, y: (p) => [-1.1 * p * p, 0.1 * p * p], xr: (p) => [0, 40 / p],
+        an: (l, p) => { const o = []; for (let n = l + 1; n <= 5; n++) o.push((-p * p) / (n * n)); return o; },
+        h: (p) => [8 / p, (-2 * p) / (8 / p)], set: (x, y) => SB.clamp(Math.sqrt(Math.max(-y, 0) * 4), 1, 3), rule: "n = n_r + l + 1 이 같으면 축퇴 (우연 축퇴, n²겹)", pl: (p) => `Z = ${p.toFixed(2)}` },
+      scr: { name: "차폐 쿨롱 −(2/r)e^(−r/λ)", p: 12, pr: [1.2, 40], unit: "Ry", lu: "a₀", m: C,
+        V: (r, p) => (-2 / r) * Math.exp(-r / p), rmax: () => 90, Emax: () => -1e-6, y: () => [-1.1, 0.1], xr: () => [0, 40],
+        an: () => [], h: (p) => [SB.clamp(p, 1.2, 38), (-2 / SB.clamp(p, 1.2, 38)) * Math.exp(-SB.clamp(p, 1.2, 38) / p)], set: (x) => SB.clamp(x, 1.2, 40),
+        rule: "l 축퇴가 깨진다: 같은 n에서 s가 가장 깊다", pl: (p) => `λ = ${p.toFixed(1)} a₀` },
+    };
+    const st = { k: "ho", sel: [0, 0], lv: null };
+    for (const k in POT) POT[k].cur = POT[k].p;
+    const anBox = document.getElementById("lv-an"), linkBox = document.getElementById("lv-link");
+    const solve = () => {
+      const P0 = POT[st.k], p = P0.cur, out = [];
+      for (let l = 0; l <= 4; l++) {
+        const res = QM.radialEigen((r) => { const v = P0.V(r, p); return isFinite(v) ? v : 1e6; }, l, { m: P0.m, N: 700, rmax: P0.rmax(p), n: 6, Emax: P0.Emax(p) });
+        out.push({ E: res.E, u: res.u, r: res.r, an: P0.an(l, p) });
+      }
+      st.lv = out;
+      if (!out[st.sel[0]] || st.sel[1] >= out[st.sel[0]].E.length) st.sel = [0, 0];
+    };
+    solve();
+    const stats = () => {
+      const P0 = POT[st.k], [l, k] = st.sel, L = st.lv[l];
+      SB.stat("lv-p", `${P0.name} · ${P0.pl(P0.cur)}`);
+      SB.stat("lv-s", L && L.E.length > k ? `n_r = ${k}, l = ${l} (${st.k === "coul" || st.k === "scr" ? (k + l + 1) + LN[l] : (k + 1) + LN[l]}) · E = ${fx(L.E[k], 4)} ${P0.unit}` : "—");
+      SB.stat("lv-d", P0.rule);
+      let mx = 0, any = false;
+      st.lv.forEach((L) => L.an.forEach((e, i) => { if (i < L.E.length) { any = true; mx = Math.max(mx, Math.abs(L.E[i] - e)); } }));
+      SB.stat("lv-e", any ? `${mx.toFixed(4)} ${P0.unit}` : "해석해 없음");
+    };
+    let cvL = null;
+    const cvV = SB.canvas("cv-lvV", (ctx, w, h, self) => {
+      const P = pal(), P0 = POT[st.k], p = P0.cur, xr = P0.xr(p), yr = P0.y(p), [l, k] = st.sel;
+      const ch = SB.chart(ctx, { x: 52, y: 30, w: w - 66, h: h - 70 }, { x: xr, y: yr, xLabel: `r (${P0.lu})`, yLabel: `E (${P0.unit})` });
+      ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip();
+      const xs = [], vs = [], ve = [];
+      for (let i = 1; i <= 400; i++) { const r = xr[0] + ((xr[1] - xr[0]) * i) / 400; xs.push(r); const v = P0.V(r, p); vs.push(isFinite(v) ? v : NaN); ve.push(isFinite(v) ? v + ((P0.m === 1 ? C : 1) * l * (l + 1)) / (r * r) : NaN); }
+      if (st.k === "box") { ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(0)); ctx.lineTo(ch.X(p), ch.Y(0)); ctx.lineTo(ch.X(p), ch.Y(yr[1])); ctx.stroke(); }
+      else line(ctx, ch, xs, vs, P.accent2, 3);
+      if (l > 0) line(ctx, ch, xs, ve, P.accent2, 1.6, [5, 4]);
+      const L = st.lv[l];
+      if (L && L.E.length > k) {
+        const E = L.E[k], u = L.u[k]; let um = 0; for (let i = 0; i < u.length; i++) um = Math.max(um, Math.abs(u[i]));
+        const amp = 0.13 * (yr[1] - yr[0]), ux = [], uy = [];
+        for (let i = 0; i < u.length; i += 2) { if (L.r[i] > xr[1]) break; ux.push(L.r[i]); uy.push(E + (amp * u[i]) / um); }
+        ctx.strokeStyle = P.accent; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(ch.X(xr[0]), ch.Y(E)); ctx.lineTo(ch.X(xr[1]), ch.Y(E)); ctx.stroke(); ctx.setLineDash([]);
+        fill(ctx, ch, ux, uy, E, P.accent, 0.2); line(ctx, ch, ux, uy, P.accent, 2.2);
+      }
+      ctx.restore();
+      const hp = P0.h(p), hx = ch.X(hp[0]), hy = ch.Y(SB.clamp(hp[1], yr[0], yr[1]));
+      handle(ctx, hx, hy, P.accent2); self._h = [hx, hy]; self._ch = ch;
+      SB.label(ctx, P0.name, 12, 14, { align: "left", bold: true });
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 380 });
+    cvL = SB.canvas("cv-lvL", (ctx, w, h, self) => {
+      const P = pal(), P0 = POT[st.k], yr = P0.y(P0.cur);
+      const ch = SB.chart(ctx, { x: 52, y: 30, w: w - 62, h: h - 70 }, { x: [-0.5, 4.5], y: yr, xTicks: [0, 1, 2, 3, 4], xFmt: (v) => LN[v] || "", xLabel: "l", yLabel: `E (${P0.unit})` });
+      const hw = Math.min(22, ch.box.w / 12), spots = [];
+      const tol = 0.004 * (yr[1] - yr[0]);
+      if (linkBox.checked) {
+        ctx.save(); ctx.strokeStyle = P.ok; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.4;
+        st.lv.forEach((L, l) => L.E.forEach((E) => { for (let l2 = l + 1; l2 <= 4; l2++) st.lv[l2].E.forEach((E2) => { if (Math.abs(E2 - E) < tol) { ctx.beginPath(); ctx.moveTo(ch.X(l) + hw, ch.Y(E)); ctx.lineTo(ch.X(l2) - hw, ch.Y(E2)); ctx.stroke(); } }); }));
+        ctx.restore();
+      }
+      st.lv.forEach((L, l) => {
+        if (anBox.checked) L.an.forEach((E) => { if (E > yr[0] && E < yr[1]) { ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.X(l) + hw + 2, ch.Y(E)); ctx.lineTo(ch.X(l) + hw + 9, ch.Y(E)); ctx.stroke(); } });
+        L.E.forEach((E, k) => {
+          if (E < yr[0] || E > yr[1]) return;
+          const on = st.sel[0] === l && st.sel[1] === k;
+          ctx.strokeStyle = P.accent; ctx.lineWidth = on ? 5 : 3; ctx.beginPath(); ctx.moveTo(ch.X(l) - hw, ch.Y(E)); ctx.lineTo(ch.X(l) + hw, ch.Y(E)); ctx.stroke();
+          spots.push({ l, k, x: ch.X(l), y: ch.Y(E) });
+        });
+      });
+      self._spots = spots;
+      SB.label(ctx, `준위 (2l+1겹씩) · ${st.k === "coul" || st.k === "scr" ? "a₀·Ry" : "nm·eV"}`, 12, 14, { align: "left", bold: true });
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 380 });
+    SB.drag(cvV, { handles: () => [{ id: "p", x: cvV._h[0], y: cvV._h[1], r: 14 }], move: (id, x, y) => { const ch = cvV._ch, P0 = POT[st.k], xr = P0.xr(P0.cur), yr = P0.y(P0.cur); const X = xr[0] + ((x - ch.box.x) / ch.box.w) * (xr[1] - xr[0]), Y = yr[1] - ((y - ch.box.y) / ch.box.h) * (yr[1] - yr[0]); P0.cur = P0.set(X, Y, P0.cur); solve(); stats(); cvL.redraw(); } });
+    SB.drag(cvL, { free: true, handles: () => [], down: (id, x, y) => { let best = null, bd = 30; (cvL._spots || []).forEach((s) => { const d = Math.hypot(s.x - x, s.y - y); if (d < bd) { bd = d; best = s; } }); if (best) { st.sel = [best.l, best.k]; stats(); cvV.redraw(); } } });
+    SB.seg("lv-pot", (v) => { st.k = v; st.sel = [0, 0]; solve(); stats(); cvV.redraw(); cvL.redraw(); });
+    anBox.addEventListener("change", () => cvL.redraw()); linkBox.addEventListener("change", () => cvL.redraw());
+    solve(); stats(); cvV.redraw(); cvL.redraw();
+  }
+
+  /* ---------------------------------------------------------- 미니: 지름 확률 분포 */
+  {
+    let n = 3;
+    const getL = SB.range("pr-l", (v) => String(v), () => cv.redraw());
+    SB.seg("pr-n", (v) => { n = Number(v); if (getL() > n - 1) getL.set(n - 1, true); cv.redraw(); });
+    const cv = SB.canvas("cv-pr", (ctx, w, h) => {
+      const P = pal(); let l = Math.min(getL(), n - 1);
+      const rmax = Math.max(6, 2.6 * n * n + 6), xs = [], ys = [];
+      let pm = 0, s0 = 0, s1 = 0, s2 = 0; const NN = 600, dr = rmax / NN;
+      for (let i = 0; i <= NN; i++) { const r = i * dr, R = QM.radialH(n, l, r), p = r * r * R * R; xs.push(r); ys.push(p); pm = Math.max(pm, p); s0 += p * dr; s1 += p * r * dr; s2 += p * r * r * dr; }
+      const mean = s1 / s0, sd = Math.sqrt(Math.max(0, s2 / s0 - mean * mean)), an = (3 * n * n - l * (l + 1)) / 2;
+      const ch = SB.chart(ctx, { x: 50, y: 26, w: w - 64, h: h - 66 }, { x: [0, rmax], y: [0, pm * 1.18], xLabel: "r (a₀)", yLabel: "P(r)", yFmt: () => "", bands: [{ x0: Math.max(0, mean - sd), x1: mean + sd, color: SB.color("accent-soft") }] });
+      fill(ctx, ch, xs, ys, 0, P.accent, 0.15); line(ctx, ch, xs, ys, P.accent, 2.4);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(ch.X(mean), ch.Y(0)); ctx.lineTo(ch.X(mean), ch.Y(pm * 1.1)); ctx.stroke();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(an), ch.Y(pm * 1.1) - 8); ctx.lineTo(ch.X(an), ch.Y(pm * 1.1) + 4); ctx.stroke();
+      SB.label(ctx, `⟨r⟩ = ${mean.toFixed(2)} a₀`, SB.clamp(ch.X(mean) + 6, 60, w - 70), ch.Y(pm * 1.13) - 2, { align: "left", size: 11, color: P.accent });
+      SB.label(ctx, `${n}${LN[l]}`, 12, 14, { align: "left", bold: true });
+      document.getElementById("pr-r").textContent = `⟨r⟩ = ${an.toFixed(1)} a₀ (공식) · Δr = ${sd.toFixed(2)} a₀ · ⟨1/r⟩ = 1/${n * n} a₀⁻¹ · 마디 ${n - l - 1}`;
+    }, { aspect: 0.48, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 기댓값 */
+  SB.tangle("tg-r", (v) => {
+    const Z = v.Z, n = v.n, l = Math.min(v.l, n - 1);
+    const r = ((3 * n * n - l * (l + 1)) / (2 * Z)) * A0, ir = (Z / (n * n)), V = -2 * RY * Z * Z / (n * n);
+    return { r: `${(r * 1000).toFixed(1)} pm`, ir: `${ir.toFixed(4)} a₀⁻¹`, V: `${fx(V, 3)} eV`, msg: v.l > n - 1 ? `(l ≤ n − 1이므로 l = ${l}로 계산)` : `⟨T⟩ = ${(-V / 2).toFixed(3)} eV = −E_n.` };
+  });
+
+  /* ---------------------------------------------------------- 사격법 */
+  {
+    const H = 0.01, RMAX = 70, NU = [0.86, 4.6];
+    const pots = { h: (r) => -2 / r, li: (r) => (-2 / r) * (1 + 2 * Math.exp(-2 * r)) };
+    const st = { l: 0, pot: "h", nu: 1.32, eig: [], found: new Set() };
+    const integ = (nu, l, Vf, keep) => {
+      const eps = -1 / (nu * nu), N = Math.round(RMAX / H), g = (r) => (l * (l + 1)) / (r * r) + Vf(r) - eps;
+      let r1 = H, r2 = 2 * H, u1 = Math.pow(r1, l + 1) * (1 - r1 / (l + 1)), u2 = Math.pow(r2, l + 1) * (1 - r2 / (l + 1)), g1 = g(r1), g2 = g(r2);
+      const out = keep ? [[0, 0], [r1, u1], [r2, u2]] : null; let sc = 1;
+      for (let i = 3; i <= N; i++) {
+        const r3 = i * H, g3 = g(r3), u3 = (2 * u2 * (1 + (5 * H * H * g2) / 12) - u1 * (1 - (H * H * g1) / 12)) / (1 - (H * H * g3) / 12);
+        u1 = u2; u2 = u3; g1 = g2; g2 = g3;
+        if (Math.abs(u2) > 1e60) { u1 /= 1e60; u2 /= 1e60; sc *= 1e60; if (out) out.forEach((p) => (p[1] /= 1e60)); }
+        if (out && i % 4 === 0) out.push([r3, u2]);
+      }
+      return keep ? out : u2;
+    };
+    const findEig = () => {
+      const Vf = pots[st.pot], l = st.l, out = []; let p = NU[0], sp = Math.sign(integ(p, l, Vf));
+      for (let nu = NU[0] + 0.01; nu <= NU[1] + 1e-9; nu += 0.01) { const s = Math.sign(integ(nu, l, Vf)); if (s !== sp && s !== 0) out.push(QM.bisect((x) => integ(x, l, Vf), nu - 0.01, nu, 1e-6)); sp = s; }
+      st.eig = out;
+    };
+    const ansBox = document.getElementById("sh-ans");
+    const nOf = (k) => (st.pot === "li" && st.l === 0 ? 2 : st.l + 1) + k, nameOf = (k) => `${nOf(k)}${LN[st.l]}`;
+    const stats = (curve) => {
+      const nu = st.nu, E = -RY / (nu * nu);
+      SB.stat("sh-nu", `ν = ${nu.toFixed(3)} · E = ${fx(E, 3)} eV`);
+      let nodes = 0, tail = "";
+      const lim = curve.find((p) => Math.abs(p[1]) > 1.2 * curve.scale), rcut = Math.min(40, curve.rt * 1.6 + 2);
+      for (let i = 2; i < curve.length; i++) { if ((lim && curve[i][0] >= lim[0]) || curve[i][0] > rcut) break; if (curve[i][1] * curve[i - 1][1] < 0) nodes++; }
+      const last = curve[curve.length - 1][1];
+      tail = Math.abs(last) < 1e-3 * curve.scale ? "0으로 수렴" : last > 0 ? "+∞로 발산" : "−∞로 발산";
+      SB.stat("sh-tail", `${nodes} · ${tail}`);
+      const k = st.eig.findIndex((e) => Math.abs(e - nu) < 0.015);
+      if (k >= 0) { st.found.add(st.pot + st.l + ":" + k); SB.stat("sh-st", `✓ 고유값! ${nameOf(k)} (ν = ${st.eig[k].toFixed(3)}${st.pot === "li" ? `, 양자 결손 δ = ${(nOf(k) - st.eig[k]).toFixed(2)}` : ""})`); }
+      else SB.stat("sh-st", "고유값 아님 — 꼬리가 달아난다");
+      const tot = st.eig.length, got = st.eig.filter((_, i) => st.found.has(st.pot + st.l + ":" + i)).length;
+      SB.stat("sh-found", `${got} / ${tot} ${st.eig.map((e, i) => (st.found.has(st.pot + st.l + ":" + i) ? nameOf(i) + "✓" : "")).filter(Boolean).join(" ")}${got === tot && tot ? " · 모두 찾음! ★" : ""}`);
+    };
+    const cv = SB.canvas("cv-shoot", (ctx, w, h, self) => {
+      const P = pal(), l = st.l, Vf = pots[st.pot];
+      const sx = 46, box = { x: 92, y: 30, w: w - 106, h: h - 72 };
+      const rt = (() => { let r = 40; for (let rr = 40; rr > 0.05; rr -= 0.05) { if ((l * (l + 1)) / (rr * rr) + Vf(rr) < -1 / (st.nu * st.nu)) { r = rr; break; } } return r; })();
+      const rin = (() => { for (let rr = 0.02; rr < rt; rr += 0.02) if ((l * (l + 1)) / (rr * rr) + Vf(rr) < -1 / (st.nu * st.nu)) return rr; return 0; })();
+      const ch = SB.chart(ctx, box, { x: [0, 40], y: [-1.6, 1.6], xLabel: "r (a₀)", yLabel: "", yTicks: [0], yFmt: () => "0", bands: [{ x0: rin, x1: Math.min(40, rt), color: SB.color("accent-soft") }] });
+      const curve = integ(st.nu, l, Vf, true);
+      let sc = 0; for (const p of curve) if (p[0] <= Math.min(40, rt * 1.25 + 1)) sc = Math.max(sc, Math.abs(p[1]));
+      curve.scale = sc || 1; curve.rt = rt;
+      ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
+      ctx.lineWidth = 2.6;
+      let prevBad = null;
+      for (let i = 1; i < curve.length; i++) {
+        const [r0, u0] = curve[i - 1], [r1, u1] = curve[i]; if (r0 > 40) break;
+        const y0 = u0 / curve.scale, y1 = u1 / curve.scale, bad = Math.abs(y1) > 1.05;
+        if (bad !== prevBad) { ctx.strokeStyle = bad ? P.bad : P.accent; prevBad = bad; }
+        ctx.beginPath(); ctx.moveTo(ch.X(r0), ch.Y(SB.clamp(y0, -1.7, 1.7))); ctx.lineTo(ch.X(r1), ch.Y(SB.clamp(y1, -1.7, 1.7))); ctx.stroke();
+      }
+      ctx.restore();
+      // ν 눈금자
+      const Y = (nu) => box.y + box.h - ((nu - NU[0]) / (NU[1] - NU[0])) * box.h;
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx, box.y); ctx.lineTo(sx, box.y + box.h); ctx.stroke();
+      for (let n = 1; n <= 4; n++) { ctx.strokeStyle = P.dim; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sx - 6, Y(n)); ctx.lineTo(sx + 6, Y(n)); ctx.stroke(); SB.label(ctx, `${n}`, sx - 18, Y(n), { size: 11, color: P.dim, mono: true }); }
+      if (ansBox.checked) st.eig.forEach((e) => { ctx.strokeStyle = P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx + 6, Y(e)); ctx.lineTo(sx + 18, Y(e)); ctx.stroke(); });
+      st.eig.forEach((e, i) => { if (st.found.has(st.pot + st.l + ":" + i)) SB.label(ctx, "✓", sx + 22, Y(e), { color: P.ok, bold: true }); });
+      SB.label(ctx, "ν", sx, box.y - 12, { color: P.dim, bold: true });
+      handle(ctx, sx, Y(st.nu), P.accent, 10);
+      self._h = [sx, Y(st.nu)]; self._box = box;
+      SB.label(ctx, `u(r), l = ${l} · 음영 = 고전 허용 영역`, box.x + 8, 14, { align: "left", bold: true });
+      stats(curve);
+    }, { aspect: 0.6, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, { handles: () => [{ id: "nu", x: cv._h[0], y: cv._h[1], r: 16 }], move: (id, x, y) => { const b = cv._box; st.nu = SB.clamp(NU[0] + ((b.y + b.h - y) / b.h) * (NU[1] - NU[0]), NU[0], NU[1]); },
+      up: () => { const e = st.eig.find((v) => Math.abs(v - st.nu) < 0.015); if (e) { st.nu = e; cv.redraw(); } } });
+    SB.seg("sh-l", (v) => { st.l = Number(v); findEig(); cv.redraw(); });
+    SB.seg("sh-pot", (v) => { st.pot = v; findEig(); cv.redraw(); });
+    ansBox.addEventListener("change", () => cv.redraw());
+    document.getElementById("sh-reset").addEventListener("click", () => { st.found.clear(); cv.redraw(); });
+    findEig(); cv.redraw();
+  }
+
+  /* ---------------------------------------------------------- 고전 궤도와 룽게–렌츠 벡터 */
+  {
+    const getLam = SB.range("orb-lam", (v) => v.toFixed(1), () => reset());
+    const st = { pot: "coul", v0: [0, 1.15], x: [1, 0], v: [0, 1.15], trail: [], atr: [], rp: [], peri: [], t: 0, esc: false };
+    const force = (x, y) => {
+      const r = Math.hypot(x, y) || 1e-9;
+      if (st.pot === "ho") return [-x, -y];
+      if (st.pot === "scr") { const L = getLam(), f = Math.exp(-r / L) * (1 / (r * r) + 1 / (L * r)); return [(-f * x) / r, (-f * y) / r]; }
+      const f = 1 / (r * r); return [(-f * x) / r, (-f * y) / r];
+    };
+    const pot = (r) => (st.pot === "ho" ? (r * r) / 2 : st.pot === "scr" ? -Math.exp(-r / getLam()) / r : -1 / r);
+    function reset() { st.x = [1, 0]; st.v = st.v0.slice(); st.trail = []; st.atr = []; st.rp = []; st.peri = []; st.t = 0; st.esc = false; if (cv) cv.redraw(); }
+    const Avec = () => { const [x, y] = st.x, [vx, vy] = st.v, r = Math.hypot(x, y), L = x * vy - y * vx; return [vy * L - x / r, -vx * L - y / r]; };
+    const step = (n) => {
+      const dt = 0.002;
+      for (let i = 0; i < n; i++) {
+        let a = force(st.x[0], st.x[1]);
+        st.v[0] += 0.5 * dt * a[0]; st.v[1] += 0.5 * dt * a[1];
+        st.x[0] += dt * st.v[0]; st.x[1] += dt * st.v[1];
+        a = force(st.x[0], st.x[1]);
+        st.v[0] += 0.5 * dt * a[0]; st.v[1] += 0.5 * dt * a[1];
+        const r = Math.hypot(st.x[0], st.x[1]);
+        st.rp.push(r); if (st.rp.length > 3) st.rp.shift();
+        if (st.rp.length === 3 && st.rp[1] < st.rp[0] && st.rp[1] <= st.rp[2]) st.peri.push(Math.atan2(st.x[1], st.x[0]));
+        if (i % 6 === 0) { st.trail.push([st.x[0], st.x[1]]); if (st.trail.length > 5000) st.trail.shift(); }
+        if (r > 12) { st.esc = true; break; }
+      }
+      const A = Avec(); st.atr.push(A); if (st.atr.length > 900) st.atr.shift();
+    };
+    const cv = SB.canvas("cv-orb", (ctx, w, h, self) => {
+      const P = pal(), cx = w * 0.5, cy = h * 0.5, s = Math.min(w, h) * 0.16;
+      const X = (x) => cx + s * x, Y = (y) => cy - s * y;
+      ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.6; ctx.beginPath(); st.trail.forEach((p, i) => (i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1])))); ctx.stroke();
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.35; st.atr.forEach((A, i) => { if (i % 3) return; ctx.beginPath(); ctx.arc(X(A[0] * 1.5), Y(A[1] * 1.5), 1.6, 0, 7); ctx.fill(); }); ctx.globalAlpha = 1;
+      ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 7); ctx.fill();
+      const A = Avec(); SB.arrow(ctx, cx, cy, X(A[0] * 1.5), Y(A[1] * 1.5), { color: P.accent, width: 2.6, label: "A" });
+      ctx.fillStyle = P.text; ctx.beginPath(); ctx.arc(X(st.x[0]), Y(st.x[1]), 5, 0, 7); ctx.fill();
+      const sx = X(1), sy = Y(0), tx = X(1 + st.v0[0] * 1.6), ty = Y(st.v0[1] * 1.6);
+      SB.arrow(ctx, sx, sy, tx, ty, { color: P.dim, width: 2, dash: [4, 3] });
+      handle(ctx, tx, ty, P.accent, 9); self._h = [tx, ty]; self._T = [cx, cy, s];
+      if (st.esc) SB.label(ctx, "속박되지 않음 — 속도를 줄여라", cx, 18, { color: P.bad, bold: true });
+      SB.label(ctx, st.pot === "coul" ? "−1/r" : st.pot === "scr" ? `−e^(−r/${getLam().toFixed(1)})/r` : "r²/2", 12, h - 14, { align: "left", color: P.dim, mono: true, size: 11 });
+      const r = Math.hypot(st.x[0], st.x[1]), E = 0.5 * (st.v[0] ** 2 + st.v[1] ** 2) + pot(r), L = st.x[0] * st.v[1] - st.x[1] * st.v[0];
+      SB.stat("orb-EL", `E = ${fx(E, 3)} · L = ${L.toFixed(3)}`);
+      SB.stat("orb-A", `${Math.hypot(A[0], A[1]).toFixed(3)} · ${((Math.atan2(A[1], A[0]) * 180) / Math.PI).toFixed(1)}°`);
+      let pr = "—";
+      if (st.peri.length >= 2) { const base = st.pot === "ho" ? Math.PI : 2 * Math.PI; let d = st.peri[st.peri.length - 1] - st.peri[st.peri.length - 2] - base; d = Math.atan2(Math.sin(d), Math.cos(d)); const deg = ((base + d) * 180) / Math.PI, dd = (d * 180) / Math.PI; pr = `${deg.toFixed(1)}° ${Math.abs(dd) < 0.6 ? "· 닫힌 궤도 ✓" : `· 근점 ${dd > 0 ? "전진" : "후퇴"} ${Math.abs(dd).toFixed(1)}°/회`}`; }
+      SB.stat("orb-p", pr);
+    }, { aspect: 0.7, minHeight: 300, maxHeight: 420 });
+    SB.drag(cv, { handles: () => [{ id: "v", x: cv._h[0], y: cv._h[1], r: 14 }], move: (id, x, y) => { const [cx, cy, s] = cv._T; st.v0 = [SB.clamp((x - cx) / s - 1, -1.5, 1.5) / 1.6, SB.clamp(-(y - cy) / s, -2.2, 2.2) / 1.6]; reset(); } });
+    SB.seg("orb-pot", (v) => { st.pot = v; st.v0 = v === "ho" ? [0, 0.6] : [0, 1.15]; reset(); });
+    document.getElementById("orb-reset").addEventListener("click", () => { st.v0 = st.pot === "ho" ? [0, 0.6] : [0, 1.15]; reset(); });
+    const loop = SB.loop("sim-orb", () => { if (!st.esc) step(220); cv.redraw(); });
+    SB.play("orb-play", loop, { play: "▶ 계속", pause: "❚❚ 멈춤" });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 기댓값 */
+  SB.drill("drill-r", () => {
+    const Z = 1 + Math.floor(Math.random() * 3), n = 1 + Math.floor(Math.random() * 5), l = Math.floor(Math.random() * n);
+    const r = ((3 * n * n - l * (l + 1)) / (2 * Z)) * A0 * 1000, ir = Z / (n * n);
+    const nm = ["H", "He⁺", "Li²⁺"][Z - 1];
+    return { q: `<p>${nm}(\\(Z = ${Z}\\))의 \\(n = ${n}, l = ${l}\\) 상태에서 \\(\\langle r\\rangle\\)(pm)과 \\(\\langle 1/r\\rangle\\)(\\(a_0^{-1}\\) 단위)을 구하라. (\\(a_0 = 52.92\\) pm)</p>`, answer: [r, ir], label: ["⟨r⟩ =", "⟨1/r⟩ ="], unit: ["pm", "a₀⁻¹"], tol: "1%",
+      sol: `\\(\\langle r\\rangle = \\dfrac{a_0}{2Z}[3n^2 - l(l+1)] = \\dfrac{52.92}{${2 * Z}}\\times${3 * n * n - l * (l + 1)} = ${r.toFixed(1)}\\) pm, \\(\\langle 1/r\\rangle = Z/n^2a_0 = ${ir.toFixed(4)}\\,a_0^{-1}\\)` };
+  });
+
+  /* ---------------------------------------------------------- 미니: Z 스케일링 */
+  {
+    const getZ = SB.range("Z-Z", (v) => String(v), () => cv.redraw());
+    const cv = SB.canvas("cv-Z", (ctx, w, h) => {
+      const P = pal(), Z = getZ(), rm = 4, xs = [], yh = [], yz = [];
+      for (let i = 0; i <= 400; i++) { const r = (rm * i) / 400; xs.push(r * A0 * 1000); yh.push(4 * r * r * Math.exp(-2 * r)); yz.push(4 * Z * Z * Z * r * r * Math.exp(-2 * Z * r)); }
+      const ym = (4 * Z) / Math.E ** 2 * 1.12;
+      const ch = SB.chart(ctx, { x: 50, y: 24, w: w - 64, h: h - 64 }, { x: [0, rm * A0 * 1000], y: [0, ym], xLabel: "r (pm)", yLabel: "P(r) (a₀⁻¹)" });
+      fill(ctx, ch, xs, yz, 0, P.accent, 0.15); line(ctx, ch, xs, yz, P.accent, 2.4); line(ctx, ch, xs, yh, P.accent2, 2, [5, 4]);
+      const lam = HC / (RY * Z * Z * 0.75);
+      SB.label(ctx, `Z = ${Z}`, 12, 12, { align: "left", bold: true });
+      document.getElementById("Z-r").textContent = `E₁ = ${fx(-RY * Z * Z, 1)} eV · ⟨r⟩ = ${((1.5 * A0 * 1000) / Z).toFixed(1)} pm · Lyα ${lam.toFixed(lam < 10 ? 2 : 1)} nm (${lam > 100 ? "자외선" : lam > 10 ? "극자외선" : "연X선"})`;
+    }, { aspect: 0.46, minHeight: 210, maxHeight: 290 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 동위원소 이동 */
+  SB.tangle("tg-iso", (v) => {
+    const mu = 1 / (1 + 1 / (1836.15267 * v.M)), lamInf = HC / (RY * (1 / 4 - 1 / 9)), lam = lamInf / mu, lamH = lamInf * (1 + 1 / 1836.15267);
+    const d = (lamH - lam) * 1000; return { mu: mu.toFixed(6), lam: lam.toFixed(3) + " nm", d: Math.abs(d) < 0.5 ? "거의 같다" : `${Math.abs(d).toFixed(0)} pm ${d > 0 ? "짧다" : "길다"}` };
+  });
+
+  /* ---------------------------------------------------------- 미니: 리드베리 크기 */
+  {
+    const getN = SB.range("ryd-n", (v) => String(v), () => cv.redraw());
+    const REF = [[0.0529, "a₀"], [0.543, "Si 격자"], [12, "게이트 길이"], [100, "바이러스"], [550, "가시광 λ"], [7000, "적혈구"]];
+    const cv = SB.canvas("cv-ryd", (ctx, w, h) => {
+      const P = pal(), n = getN();
+      const rs = (A0 / 2) * 3 * n * n, rc = (A0 / 2) * (3 * n * n - n * (n - 1));
+      const ch = SB.chart(ctx, { x: 24, y: 30, w: w - 48, h: h - 74 }, { x: [0.02, 20000], y: [0, 1], logX: true, yTicks: [], xLabel: "크기 (nm, 로그)", xFmt: (v) => (v >= 1000 ? v / 1000 + " µm" : String(v)) });
+      REF.forEach(([x, t], i) => { ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(x), ch.Y(0)); ctx.lineTo(ch.X(x), ch.Y(0.85)); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, t, ch.X(x), ch.Y(i % 2 ? 0.62 : 0.86), { size: 11, color: P.dim }); });
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(rc), ch.Y(0.25), 7, 0, 7); ctx.fill();
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(rs), ch.Y(0.38), 8, 0, 7); ctx.fill();
+      SB.label(ctx, `n = ${n}`, 12, 14, { align: "left", bold: true });
+      const df = n > 1 ? (RY * (1 / (n - 1) ** 2 - 1 / (n * n))) / 4.135667696e-15 : 0;
+      document.getElementById("ryd-r").textContent = `⟨r⟩ s ${rs >= 1000 ? (rs / 1000).toFixed(2) + " µm" : rs.toFixed(rs < 1 ? 3 : 1) + " nm"} · E = −${((RY / (n * n)) * 1000).toFixed(n > 30 ? 2 : 0)} meV · n→n−1 ${n > 1 ? (df > 1e12 ? (df / 1e12).toFixed(1) + " THz" : (df / 1e9).toFixed(2) + " GHz") : "—"}`;
+    }, { aspect: 0.36, minHeight: 190, maxHeight: 250 });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 리드베리 */
+  SB.drill("drill-ion", () => {
+    const n = 30 + Math.floor(Math.random() * 91);
+    const f = (RY * (1 / (n - 1) ** 2 - 1 / (n * n))) / 4.135667696e-15 / 1e9, r = (1.5 * n * n * A0) / 1000;
+    return { q: `<p>수소 리드베리 상태 \\(n = ${n}\\)(s 상태)의 크기 \\(\\langle r\\rangle\\)(µm)과 \\(n \\to n-1\\) 전이 진동수(GHz)를 구하라. (Ry = 13.606 eV, \\(h = 4.1357\\times10^{-15}\\) eV·s, \\(a_0 = 0.05292\\) nm)</p>`, answer: [r, f], label: ["⟨r⟩ =", "f ="], unit: ["µm", "GHz"], tol: "1%",
+      sol: `\\(\\langle r\\rangle = \\tfrac32n^2a_0 = 1.5\\times${n * n}\\times0.05292\\) nm \\(= ${r.toFixed(3)}\\) µm. \\(f = \\dfrac{\\mathrm{Ry}}{h}\\left[\\dfrac1{${n - 1}^2} - \\dfrac1{${n}^2}\\right] = ${f.toFixed(2)}\\) GHz (근사 \\(2\\mathrm{Ry}/hn^3 = ${((2 * RY) / n ** 3 / 4.135667696e-15 / 1e9).toFixed(2)}\\) GHz)` };
+  });
+
+  /* ---------------------------------------------------------- 도펀트 동결 */
+  {
+    const DOP = { P: [0.0456, "d", "P"], As: [0.0538, "d", "As"], Sb: [0.0427, "d", "Sb"], H: [0.0258, "d", "수소 모형"], B: [0.045, "a", "B"], In: [0.157, "a", "In"] };
+    const st = { k: "P", Ed: 0.0456, type: "d", T: 77 };
+    const getN = SB.range("fz-N", (v) => sci(Math.pow(10, v), 1), () => upd());
+    const maj = (N, Ed, type, T) => {
+      const kT = KB * T, Nc = 2.8e19 * Math.pow(T / 300, 1.5), Nv = 1.04e19 * Math.pow(T / 300, 1.5), Eg = 1.17 - (4.73e-4 * T * T) / (T + 636);
+      const ni2 = Nc * Nv * Math.exp(-Eg / kT), g = type === "d" ? 2 : 4, Nm = type === "d" ? Nc : Nv, ex = Math.exp(Math.min(700, Ed / kT));
+      const f = (lx) => { const x = Math.pow(10, lx); return x - ni2 / x - N / (1 + (g * x * ex) / Nm); };
+      let a = -30, b = 23; for (let i = 0; i < 80; i++) { const m = 0.5 * (a + b); if (f(m) > 0) b = m; else a = m; }
+      const x = Math.pow(10, 0.5 * (a + b)); return { x, ion: N / (1 + (g * x * ex) / Nm), ni: Math.sqrt(ni2) };
+    };
+    const T50 = (N, Ed, type) => { let a = 3, b = 900; for (let i = 0; i < 60; i++) { const m = 0.5 * (a + b); if (maj(N, Ed, type, m).ion / N > 0.5) b = m; else a = m; } return 0.5 * (a + b); };
+    let curve = [], model = [], t50 = 0;
+    const recalc = () => { const N = Math.pow(10, getN()); curve = []; model = []; for (let T = 5; T <= 700; T += 5) { curve.push([T, maj(N, st.Ed, st.type, T).x / N]); model.push([T, maj(N, 0.0258, "d", T).x / N]); } t50 = T50(N, st.Ed, st.type); };
+    const stats = () => {
+      const N = Math.pow(10, getN()), r = maj(N, st.Ed, st.type, st.T), fr = r.ion / N;
+      SB.stat("fz-E", `${(st.Ed * 1000).toFixed(1)} meV (${st.type === "d" ? "주개" : "받개"} ${DOP[st.k] && Math.abs(DOP[st.k][0] - st.Ed) < 1e-6 ? DOP[st.k][2] : "사용자"})`);
+      SB.stat("fz-f", `${st.T.toFixed(0)} K · ${(fr * 100).toFixed(fr < 0.01 ? 3 : 1)}%`);
+      SB.stat("fz-n", `${sci(r.x, 2)} cm⁻³ (${st.type === "d" ? "전자" : "정공"})`);
+      SB.stat("fz-T50", t50 > 895 ? "> 900 K" : `${t50.toFixed(0)} K`);
+      SB.stat("fz-reg", r.x > 1.5 * N ? "진성 (n_i가 도핑을 넘음)" : fr < 0.9 ? "동결 (부분 이온화)" : "외인성 (완전 이온화)");
+    };
+    let cvT = null;
+    const cvB = SB.canvas("cv-fzB", (ctx, w, h, self) => {
+      const P = pal(), N = Math.pow(10, getN()), r = maj(N, st.Ed, st.type, st.T), fr = Math.min(1, r.ion / N);
+      const top = 50, bot = h - 40, x0 = 40, x1 = w - 20, sc = (bot - top) / 0.55;
+      const yC = top, yV = bot, yD = st.type === "d" ? yC + st.Ed * sc : yV - st.Ed * sc;
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(x0, 8, x1 - x0, yC - 8); ctx.fillRect(x0, yV, x1 - x0, h - 8 - yV);
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x0, yC); ctx.lineTo(x1, yC); ctx.moveTo(x0, yV); ctx.lineTo(x1, yV); ctx.stroke();
+      SB.label(ctx, "E_c", x0 - 18, yC, { color: P.accent2, size: 11 }); SB.label(ctx, "E_v", x0 - 18, yV, { color: P.accent2, size: 11 });
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(x0, (yC + yV) / 2 - 8); ctx.lineTo(x1, (yC + yV) / 2 + 8); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "(띠 간격 축척 아님)", (x0 + x1) / 2, (yC + yV) / 2 + 22, { size: 10, color: P.dim });
+      const M = 12, nion = Math.round(M * fr), rng = QM.rng(5);
+      for (let i = 0; i < M; i++) {
+        const x = x0 + 20 + ((x1 - x0 - 70) * (i + 0.5)) / M;
+        ctx.strokeStyle = st.type === "d" ? P.accent : P.warn; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 7, yD); ctx.lineTo(x + 7, yD); ctx.stroke();
+        if (i < nion) { SB.label(ctx, st.type === "d" ? "+" : "−", x, yD + (st.type === "d" ? 12 : -12), { size: 13, bold: true, color: st.type === "d" ? P.accent : P.warn }); const cy = st.type === "d" ? 10 + rng() * (yC - 22) : yV + 8 + rng() * (h - 20 - yV); ctx.fillStyle = st.type === "d" ? P.accent : "#fff"; ctx.strokeStyle = P.warn; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x + (rng() - 0.5) * 12, cy, 4.5, 0, 7); ctx.fill(); if (st.type !== "d") ctx.stroke(); }
+        else { ctx.fillStyle = st.type === "d" ? P.accent : "#fff"; ctx.strokeStyle = P.warn; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yD + (st.type === "d" ? -7 : 7), 4.5, 0, 7); ctx.fill(); if (st.type !== "d") ctx.stroke(); }
+      }
+      const hx = x1 - 22; handle(ctx, hx, yD, st.type === "d" ? P.accent : P.warn); self._h = [hx, yD]; self._g = { yC, yV, sc };
+      SB.label(ctx, `${st.T.toFixed(0)} K · 이온화 ${(fr * 100).toFixed(0)}%`, 12, h - 14, { align: "left", bold: true, size: 12 });
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 380 });
+    cvT = SB.canvas("cv-fzT", (ctx, w, h, self) => {
+      const P = pal(), N = Math.pow(10, getN());
+      const ch = SB.chart(ctx, { x: 50, y: 30, w: w - 64, h: h - 72 }, { x: [0, 700], y: [0, 2], xLabel: "T (K)", yLabel: st.type === "d" ? "n / N_D" : "p / N_A", series: [{ data: model, color: P.accent2, width: 1.6, dash: [5, 4] }, { data: curve, color: P.accent, width: 2.6 }], vlines: [{ x: 300, color: P.faint, label: "300 K" }, { x: 77, color: P.faint, label: "77 K", row: 1 }], hlines: [{ y: 1, color: P.faint }] });
+      const fr = maj(N, st.Ed, st.type, st.T).x / N, hx = ch.X(st.T), hy = ch.Y(Math.min(2, fr));
+      ctx.fillStyle = P.ok; ctx.beginPath(); ctx.arc(ch.X(t50), ch.Y(0.5), 4, 0, 7); ctx.fill();
+      handle(ctx, hx, hy, P.accent); self._h = [hx, hy]; self._ch = ch;
+    }, { aspect: 0.8, minHeight: 280, maxHeight: 380 });
+    function upd() { recalc(); stats(); cvB.redraw(); cvT.redraw(); }
+    SB.drag(cvB, { handles: () => [{ id: "E", x: cvB._h[0], y: cvB._h[1], r: 14 }], move: (id, x, y) => { const g = cvB._g; const E = st.type === "d" ? (y - g.yC) / g.sc : (g.yV - y) / g.sc; st.Ed = SB.clamp(E, 0.005, 0.25); recalc(); stats(); cvT.redraw(); } });
+    SB.drag(cvT, { handles: () => [{ id: "T", x: cvT._h[0], y: cvT._h[1], r: 14 }], free: true, move: (id, x) => { const ch = cvT._ch; st.T = SB.clamp(((x - ch.box.x) / ch.box.w) * 700, 5, 700); stats(); cvB.redraw(); } });
+    SB.seg("fz-dop", (v) => { st.k = v; st.Ed = DOP[v][0]; st.type = DOP[v][1]; upd(); });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 3D·2D 엑시톤 */
+  {
+    const gMu = SB.range("exc-mu", (v) => v.toFixed(3) + " mₑ", () => cv.redraw());
+    const gEr = SB.range("exc-er", (v) => v.toFixed(1), () => cv.redraw());
+    const cv = SB.canvas("cv-exc", (ctx, w, h) => {
+      const P = pal(), mu = gMu(), er = gEr(), Ry = (RY * mu) / (er * er) * 1000, aB = (A0 * er) / mu;
+      const ymin = -4.4 * Ry;
+      const ch = SB.chart(ctx, { x: 58, y: 24, w: w - 72, h: h - 52 }, { x: [0, 2], y: [ymin, 0.12 * -ymin], xTicks: [], yLabel: "E − E_g (meV)" });
+      const draw = (x0, x1, E, col, lab) => { if (E < ymin) return; ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(ch.X(x0), ch.Y(E)); ctx.lineTo(ch.X(x1), ch.Y(E)); ctx.stroke(); if (lab) SB.label(ctx, lab, ch.X(x1) + 14, ch.Y(E), { size: 10, color: col }); };
+      for (let n = 1; n <= 6; n++) { draw(0.15, 0.8, -Ry / (n * n), P.accent2, n <= 2 ? `${n}s` : ""); draw(1.15, 1.8, -Ry / ((n - 0.5) ** 2), P.accent, n <= 2 ? `${n}s` : ""); }
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(ch.box.x, ch.Y(0.12 * -ymin), ch.box.w, ch.Y(0) - ch.Y(0.12 * -ymin));
+      if (-25.85 > ymin) { ctx.strokeStyle = P.dim; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(-25.85)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(-25.85)); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, "−k_BT (300 K)", ch.box.x + ch.box.w - 4, ch.Y(-25.85) - 8, { align: "right", size: 10, color: P.dim }); }
+      SB.label(ctx, "3D", ch.X(0.47), ch.box.y + ch.box.h + 14, { bold: true, color: P.accent2 }); SB.label(ctx, "2D", ch.X(1.47), ch.box.y + ch.box.h + 14, { bold: true, color: P.accent });
+      document.getElementById("exc-r").textContent = `Ry* = ${Ry.toFixed(2)} meV · a_B = ${aB.toFixed(1)} nm · 2D: ${(4 * Ry).toFixed(1)} meV, ${(aB / 2).toFixed(1)} nm`;
+    }, { aspect: 0.5, minHeight: 240, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 구속 영역 */
+  SB.tangle("tg-reg", (v) => {
+    const aB = (A0 * v.er) / v.mu, Ry = (RY * v.mu) / (v.er * v.er), Ec = (C * Math.PI * Math.PI) / (v.mu * v.R * v.R), x = v.R / aB;
+    return { aB: aB.toFixed(1) + " nm", x: x.toFixed(2), Ec: (Ec * 1000).toFixed(0) + " meV", Eb: (Ry * 1000).toFixed(1) + " meV", msg: x < 0.5 ? "강한 구속 — 전자·정공을 따로 가두고 쿨롱은 섭동(브루스 식)." : x < 2 ? "중간 영역 — 두 에너지가 비슷해 변분 계산이 필요하다." : "약한 구속 — 엑시톤이 먼저 묶이고 질량 중심이 갇힌다." };
+  });
+
+  /* ---------------------------------------------------------- 드릴: 유효 질량 수소 */
+  SB.drill("drill-don", () => {
+    if (Math.random() < 0.5) {
+      const m = +(0.05 + Math.random() * 0.4).toFixed(2), er = +(5 + Math.random() * 11).toFixed(1), r = QM.hydrogenic(m, er);
+      return { q: `<p>유효 질량 \\(m^* = ${m}m_\\mathrm{e}\\), 비유전율 \\(\\varepsilon_r = ${er}\\)인 반도체의 얕은 주개 결합 에너지(meV)와 유효 보어 반지름(nm)을 수소 모형으로 구하라.</p>`, answer: [r.Eb * 1000, r.aB], label: ["E_b =", "a_B* ="], unit: ["meV", "nm"], tol: "1%",
+        sol: `\\(E_b = 13.606\\times${m}/${er}^2 = ${(r.Eb * 1000).toFixed(2)}\\) meV, \\(a_B^* = 0.05292\\times${er}/${m} = ${r.aB.toFixed(2)}\\) nm` };
+    }
+    const me = +(0.05 + Math.random() * 0.25).toFixed(3), mh = +(0.3 + Math.random() * 0.7).toFixed(2), er = +(6 + Math.random() * 8).toFixed(1), mu = (me * mh) / (me + mh), r = QM.hydrogenic(mu, er);
+    return { q: `<p>\\(m_e^* = ${me}\\), \\(m_h^* = ${mh}\\), \\(\\varepsilon_r = ${er}\\)인 반도체에서 3차원 엑시톤의 결합 에너지(meV)와 이상적 2차원 엑시톤의 결합 에너지(meV)를 구하라.</p>`, answer: [r.Eb * 1000, 4 * r.Eb * 1000], label: ["3D E_b =", "2D E_b ="], unit: ["meV", "meV"], tol: "1%",
+      sol: `\\(\\mu = ${me}\\times${mh}/${(me + mh).toFixed(3)} = ${mu.toFixed(4)}\\), \\(Ry^* = 13.606\\,\\mu/\\varepsilon_r^2 = ${(r.Eb * 1000).toFixed(2)}\\) meV, 2D: \\(4Ry^* = ${(4 * r.Eb * 1000).toFixed(2)}\\) meV` };
+  });
+})();
+</script>
+</body>
+</html>
