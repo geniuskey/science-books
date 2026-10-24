@@ -1,0 +1,294 @@
+/* 생성 파일 — course.json을 고치고 python3 tools/build.py 를 실행하세요. */
+SB.registerCourse({
+ "id": "quantum-mechanics",
+ "title": "양자역학",
+ "en": "Quantum Mechanics",
+ "field": "physics",
+ "level": "대학 3–4학년 · 반도체 기초",
+ "status": "writing",
+ "description": "파동함수와 확률, 디랙 표기와 측정, 시간 전개에서 출발해 1차원 퍼텐셜과 공명 터널링, 사다리 연산자와 결맞음 상태, 대칭과 블로흐 정리, 각운동량과 수소 원자, 스핀과 각운동량 합성, 동일 입자, 섭동·변분·WKB 근사, 빛–물질 상호작용, 산란, 란다우 준위와 양자 홀 효과, 밀도 행렬과 결어긋남, 큐비트와 얽힘까지 — 파동함수를 직접 흘려 보내고 블로흐 구 위의 스핀을 돌리며 소자 속 양자 현상을 계산하는 인터랙티브 교과서.",
+ "accent": {
+  "light": "#be185d",
+  "dark": "#f472b6",
+  "light2": "#4d7c0f",
+  "dark2": "#a3e635"
+ },
+ "mark": "<circle cx=\"16\" cy=\"16\" r=\"10.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\"/><ellipse cx=\"16\" cy=\"16\" rx=\"10.5\" ry=\"3.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-opacity=\".7\"/><path d=\"M16 16L22.4 8.4\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"22.4\" cy=\"8.4\" r=\"2.3\" fill=\"#fff\"/><circle cx=\"16\" cy=\"16\" r=\"1.6\" fill=\"#fff\"/>",
+ "parts": [
+  {
+   "title": "제1부 양자역학의 틀",
+   "chapters": [
+    {
+     "slug": "wave-function",
+     "num": "01",
+     "title": "파동함수와 확률",
+     "en": "Wave Functions and Probability",
+     "desc": "보른 규칙과 정규화, 확률 밀도와 확률 흐름(연속 방정식), 위치·운동량 연산자와 기댓값, 운동량 공간 파동함수와 푸리에 변환, 가우스 파속의 퍼짐과 군속도, 에렌페스트 정리와 고전 극한 — 전자 빔의 결맞음과 전자 현미경.",
+     "tags": [
+      "보른 규칙",
+      "확률 흐름"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "state-space",
+     "num": "02",
+     "title": "상태 공간과 디랙 표기",
+     "en": "State Space and Dirac Notation",
+     "desc": "상태 벡터와 힐베르트 공간, 브라–켓과 내적, 직교 정규 기저와 완비성, 선형 연산자의 행렬 표현, 에르미트·유니터리 연산자, 고유값 문제와 스펙트럼 정리, 사영 연산자, 기저 변환, 위치·운동량 표현과 연속 기저, 텐서곱 — 유한 차분 해밀토니언 행렬과 TCAD 양자 해석.",
+     "tags": [
+      "브라–켓",
+      "에르미트 연산자"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "measurement",
+     "num": "03",
+     "title": "측정과 불확정성",
+     "en": "Measurement and Uncertainty",
+     "desc": "측정 공준과 상태 붕괴, 확률 진폭과 간섭, 교환자와 동시 측정 가능성, 일반화된 불확정성 관계(로버트슨), 최소 불확정 상태, 에너지–시간 관계와 선폭, 연속 슈테른–게를라흐 실험, 2준위 계와 광자 편광 — 계측의 양자 한계와 단일 광자 검출.",
+     "tags": [
+      "교환자",
+      "불확정성 관계"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "time-evolution",
+     "num": "04",
+     "title": "시간 전개",
+     "en": "Time Evolution",
+     "desc": "시간 전개 연산자와 해밀토니언, 정상 상태 중첩과 양자 맥놀이, 슈뢰딩거·하이젠베르크 묘사, 보존량과 교환자, 두 준위 결합과 터널 진동(이중 양자점·암모니아), 전파 인자, 수치 시간 전개(크랭크–니콜슨·분할 연산자) — 이중 양자점 전하 큐비트와 펨토초 분광.",
+     "tags": [
+      "유니터리 전개",
+      "하이젠베르크 묘사"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제2부 정확히 풀리는 계와 대칭",
+   "chapters": [
+    {
+     "slug": "one-dimensional",
+     "num": "05",
+     "title": "1차원 퍼텐셜",
+     "en": "One-Dimensional Potentials",
+     "desc": "속박 상태의 일반 성질(마디 정리·비축퇴), 델타 우물과 델타 장벽, 이중 우물과 터널 분리, 산란 상태와 투과·반사 진폭, S 행렬, 전달 행렬과 다중 장벽, 공명 터널링과 초격자 미니띠, 수치 풀이(사격법·유한 차분) — 공명 터널 다이오드, 초격자, 양자 폭포 레이저.",
+     "tags": [
+      "전달 행렬",
+      "공명 터널링"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "ladder-operators",
+     "num": "06",
+     "title": "조화 진동자와 사다리 연산자",
+     "en": "Harmonic Oscillator and Ladder Operators",
+     "desc": "올림·내림 연산자로 푸는 조화 진동자, 수 상태와 행렬 요소, 결맞음 상태와 고전 진동, 압축 상태, 강제 진동자와 변위 연산자, 위상 공간과 위그너 함수, 장의 양자화와 광자·포논 — 포논과 열잡음, 압축광 계측.",
+     "tags": [
+      "사다리 연산자",
+      "결맞음 상태"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "symmetry",
+     "num": "07",
+     "title": "대칭과 보존 법칙",
+     "en": "Symmetry and Conservation Laws",
+     "desc": "대칭 변환과 유니터리 연산자, 생성자와 보존량, 병진·회전 대칭, 이산 병진 대칭과 블로흐 정리, 반전성(패리티)과 선택 규칙, 시간 반전과 크라머스 축퇴, 대칭에 의한 축퇴와 군론 맛보기 — 실리콘 전도띠의 골짜기 축퇴와 변형에 의한 분리.",
+     "tags": [
+      "블로흐 정리",
+      "패리티"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제3부 각운동량과 3차원 문제",
+   "chapters": [
+    {
+     "slug": "angular-momentum",
+     "num": "08",
+     "title": "각운동량",
+     "en": "Angular Momentum",
+     "desc": "궤도 각운동량 연산자와 교환 관계, 사다리 연산자로 구하는 고유값, 구면 조화 함수, 각운동량의 벡터 모형과 측정, 회전 연산자와 위그너 d 행렬, 강체 회전자와 분자 회전 스펙트럼 — 플라스마 속 분자 분광과 공정 가스 진단.",
+     "tags": [
+      "구면 조화 함수",
+      "회전 연산자"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "central-potentials",
+     "num": "09",
+     "title": "중심력과 수소 원자",
+     "en": "Central Potentials and the Hydrogen Atom",
+     "desc": "지름 방정식과 유효 퍼텐셜, 3차원 구형 우물과 구형 양자점, 3차원 조화 진동자, 수소 원자의 엄밀해와 우연 축퇴, 수소꼴 이온과 리드베리 상태, 유효 질량 수소 모형(주개·받개·엑시톤) — 실리콘의 얕은 도펀트 준위와 양자점 발광.",
+     "tags": [
+      "지름 방정식",
+      "엑시톤"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "spin",
+     "num": "10",
+     "title": "스핀과 각운동량 합성",
+     "en": "Spin and Addition of Angular Momenta",
+     "desc": "스핀 1/2와 파울리 행렬, 블로흐 구, 자기장 속 라모어 세차와 자기 공명, 라비 진동, 각운동량 합성(삼중항·단일항), 클레브시–고르단 계수, 스핀–궤도 결합과 j 상태, 스핀 1과 일반 스핀 — MRAM과 스핀 큐비트, ESR 결함 분석.",
+     "tags": [
+      "파울리 행렬",
+      "클레브시–고르단"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "identical-particles",
+     "num": "11",
+     "title": "동일 입자",
+     "en": "Identical Particles",
+     "desc": "교환 대칭과 보손·페르미온, 파울리 배타 원리와 슬레이터 행렬식, 교환 상호작용과 헬륨 원자(파라·오르토), 교환 힘과 공유 결합, 다전자 원자와 훈트 규칙, 제2양자화 입문(생성·소멸 연산자) — 자성 교환 결합과 자기 터널 접합.",
+     "tags": [
+      "교환 대칭",
+      "슬레이터 행렬식"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제4부 근사법",
+   "chapters": [
+    {
+     "slug": "perturbation",
+     "num": "12",
+     "title": "시간 무관 섭동 이론",
+     "en": "Time-Independent Perturbation Theory",
+     "desc": "비축퇴 섭동 1·2차, 축퇴 섭동과 대칭 깨짐, 슈타르크 효과와 양자 구속 슈타르크 효과, 수소의 미세 구조, 제만 효과(약한 장·강한 장), k·p 섭동과 유효 질량 — 전계 흡수 변조기와 변형 실리콘의 유효 질량.",
+     "tags": [
+      "섭동 이론",
+      "슈타르크 효과"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "variational-wkb",
+     "num": "13",
+     "title": "변분법과 WKB 근사",
+     "en": "Variational Method and WKB Approximation",
+     "desc": "변분 원리와 시험 함수, 헬륨 바닥 상태, H₂⁺ 분자 이온과 결합, 레일리–리츠 행렬법, WKB 파동함수와 연결 공식, 보어–조머펠트 양자화, 터널링 수명과 알파 붕괴, 삼각 장벽과 파울러–노드하임 터널링 — 반전층 양자화와 플래시 터널 절연막.",
+     "tags": [
+      "변분법",
+      "WKB"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "time-dependent",
+     "num": "14",
+     "title": "시간 의존 섭동과 빛–물질 상호작용",
+     "en": "Time-Dependent Perturbation and Light–Matter Interaction",
+     "desc": "상호작용 묘사, 2준위 계와 라비 공식, 1차 시간 의존 섭동, 페르미 황금률, 쌍극자 근사와 선택 규칙, 흡수·유도 방출·자발 방출과 아인슈타인 계수, 선폭과 수명, 반도체 띠간 흡수와 결합 상태 밀도 — 포토다이오드 흡수와 LED 발광 속도.",
+     "tags": [
+      "페르미 황금률",
+      "선택 규칙"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "scattering",
+     "num": "15",
+     "title": "산란 이론",
+     "en": "Scattering Theory",
+     "desc": "산란 단면적과 산란 진폭, 리프먼–슈윙거 식과 보른 근사, 러더퍼드·차폐 쿨롱 산란, 부분파 전개와 위상 이동, 광학 정리, 저에너지 산란과 산란 길이, 공명 산란 — 이온화 불순물 산란과 이동도, 이온 주입의 핵 산란.",
+     "tags": [
+      "보른 근사",
+      "위상 이동"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "제5부 현대 양자역학과 양자 소자",
+   "chapters": [
+    {
+     "slug": "em-fields",
+     "num": "16",
+     "title": "전자기장 속의 양자역학",
+     "en": "Quantum Mechanics in Electromagnetic Fields",
+     "desc": "최소 결합과 게이지 불변성, 란다우 준위와 자기 길이, 아하로노프–봄 효과, 정수 양자 홀 효과와 폰 클리칭 상수, 슈브니코프–드하스 진동, 자속 양자화와 초전도 고리, 포크–다윈 준위 — 2차원 전자 기체의 이동도·농도 측정과 저항 표준.",
+     "tags": [
+      "란다우 준위",
+      "양자 홀 효과"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "density-matrix",
+     "num": "17",
+     "title": "밀도 행렬과 결어긋남",
+     "en": "Density Matrix and Decoherence",
+     "desc": "순수 상태와 혼합 상태, 밀도 행렬과 블로흐 벡터, 부분 대각합과 축약 상태, 열평형 상태와 엔트로피, 결어긋남과 환경, T₁·T₂와 블로흐 방정식, 스핀 에코, 린드블라드 주 방정식 — 큐비트 결맞음 시간과 NMR·ESR 측정.",
+     "tags": [
+      "밀도 행렬",
+      "결어긋남"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "quantum-information",
+     "num": "18",
+     "title": "양자 정보와 큐비트",
+     "en": "Quantum Information and Qubits",
+     "desc": "큐비트와 양자 게이트, 다큐비트 상태와 얽힘, 벨 부등식(CHSH), 복제 불가 정리와 양자 순간이동, 양자 키 분배(BB84), 도이치–조사·그로버 알고리즘, 오류와 오류 정정 맛보기, 큐비트 구현(초전도·실리콘 스핀·이온·광자) — 실리콘 스핀 큐비트와 극저온 CMOS.",
+     "tags": [
+      "얽힘",
+      "양자 게이트"
+     ],
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "title": "부록",
+   "appendix": true,
+   "chapters": [
+    {
+     "slug": "math-tools",
+     "num": "A",
+     "title": "수학 도구와 물리 상수",
+     "en": "Mathematical Tools and Constants",
+     "desc": "복소수·선형대수·푸리에 변환·특수 함수(에르미트·라게르·르장드르·구면 조화·구 베셀)·클레브시–고르단 표와 물리 상수·단위 환산을 계산기와 함께 한곳에 모았다.",
+     "tags": [
+      "부록",
+      "공식"
+     ],
+     "status": "planned"
+    },
+    {
+     "slug": "glossary",
+     "num": "B",
+     "title": "용어집과 종합 문제",
+     "en": "Glossary and Review",
+     "desc": "핵심 용어를 검색하고 장별 종합 문제로 실력을 점검한다.",
+     "tags": [
+      "부록",
+      "정리"
+     ],
+     "status": "planned"
+    }
+   ]
+  }
+ ],
+ "stats": {},
+ "published": 0,
+ "total": 20,
+ "url": "https://science.euiyun.com/quantum-mechanics/"
+});

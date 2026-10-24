@@ -210,6 +210,24 @@ SB.registerCatalog({
    "colorDark": "#818cf8",
    "sims": 144,
    "problems": 373
+  },
+  {
+   "id": "quantum-mechanics",
+   "code": "QM",
+   "field": "physics",
+   "status": "writing",
+   "manifest": "quantum-mechanics/course.json",
+   "title": "양자역학",
+   "en": "Quantum Mechanics",
+   "level": "대학 3–4학년 · 반도체 기초",
+   "description": "파동함수와 확률, 디랙 표기와 측정, 시간 전개에서 출발해 1차원 퍼텐셜과 공명 터널링, 사다리 연산자와 결맞음 상태, 대칭과 블로흐 정리, 각운동량과 수소 원자, 스핀과 각운동량 합성, 동일 입자, 섭동·변분·WKB 근사, 빛–물질 상호작용, 산란, 란다우 준위와 양자 홀 효과, 밀도 행렬과 결어긋남, 큐비트와 얽힘까지 — 파동함수를 직접 흘려 보내고 블로흐 구 위의 스핀을 돌리며 소자 속 양자 현상을 계산하는 인터랙티브 교과서.",
+   "url": "https://science.euiyun.com/quantum-mechanics/",
+   "published": 0,
+   "total": 20,
+   "color": "#be185d",
+   "colorDark": "#f472b6",
+   "sims": 0,
+   "problems": 0
   }
  ]
 });
