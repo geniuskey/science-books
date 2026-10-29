@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<!-- 공유 미리보기 이미지(og.png, 1200×630)의 원본. 서가 홈의 표지 그림(home.js)을 그대로 쓴다.
+     다시 만들기: python3 tools/og/render.py -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<link rel="stylesheet" href="../../home.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../../catalog.js"></script>
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0b1220; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .sb-topbar, .sb-footer, footer { display: none !important; }
+  .library.og { position: absolute; inset: 0; padding: 0; }
+  .og-copy { position: absolute; left: 72px; top: 0; bottom: 0; width: 500px; display: flex; flex-direction: column; justify-content: center; }
+  .og-brand { display: flex; align-items: center; gap: 12px; font: 700 22px var(--font); letter-spacing: -.02em; color: #fff; }
+  .og-brand img { width: 40px; height: 40px; }
+  .og-brand small { margin-left: 2px; color: #7fe3cf; font: 600 12px var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+  .og-copy h1 { margin: 34px 0 0; font-size: 70px; line-height: 1.12; letter-spacing: -.055em; font-weight: 800; }
+  .og-copy h1 em { font-style: normal; background: linear-gradient(100deg, #5fe0c6, #8fb4ff 55%, #ffab73); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .og-copy p { margin: 24px 0 0; color: var(--lib-dim); font-size: 22px; line-height: 1.5; letter-spacing: -.02em; }
+  .og-stats { display: flex; gap: 10px; margin-top: 30px; }
+  .og-stats span { padding: 7px 14px; border: 1px solid #ffffff26; border-radius: 999px; background: #ffffff0d; color: var(--lib-dim); font-size: 15px; white-space: nowrap; }
+  .og-stats b { margin-right: 3px; color: #fff; font: 700 17px var(--mono); }
+  .og-url { position: absolute; left: 72px; bottom: 40px; color: var(--lib-faint); font: 600 14px var(--mono); letter-spacing: .12em; }
+  .og-shelf { position: absolute; right: 56px; top: 50%; width: 560px; transform: translateY(-50%) perspective(1600px) rotateY(-14deg); transform-origin: right center; }
+  .og-shelf .bookcase { --gap: 22px; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 40px; margin-top: 0; }
+  .og-shelf .book-cover { box-shadow: 0 18px 30px rgba(0, 0, 0, .45); }
+  .og-shelf .book-label { display: none; }
+  .og-glow { position: absolute; right: -80px; top: 50%; width: 760px; height: 560px; transform: translateY(-50%); background: radial-gradient(closest-side, rgba(127, 227, 207, .14), transparent); pointer-events: none; }
+</style>
+</head>
+<body data-page="site-home">
+<main class="home">
+  <section class="library og">
+    <div class="og-glow"></div>
+    <div class="og-copy">
+      <div class="og-brand"><img src="../../favicon.svg" alt="">SciBook<small>Interactive Science</small></div>
+      <h1>대학 과목 하나,<br><em>교과서 한 권.</em></h1>
+      <p>읽고, 수식으로 따라가고,<br>시뮬레이터로 직접 실험하는 과학 교과서</p>
+      <div class="og-stats" id="og-stats"></div>
+    </div>
+    <div class="og-url">SCIENCE.EUIYUN.COM</div>
+    <div class="og-shelf"><div class="bookcase" id="og-grid"></div></div>
+  </section>
+  <!-- home.js가 찾는 요소(쓰지 않음) -->
+  <div hidden><p id="stats"></p><div id="filters"></div><input id="book-search"><span id="book-count"></span><p id="empty"></p><div id="experiments"></div></div>
+</main>
+<script>
+  // index.html 서가에서 표지 8권을 골라 같은 마크업으로 세운다(색은 build.py가 쓴 --c를 따른다).
+  (function () {
+    const PICK = ["general-physics", "electromagnetics", "modern-physics", "general-chemistry",
+                  "fluid-mechanics", "probability-statistics", "materials-science", "thermal-physics"];
+    const cat = SB.catalog, fields = new Map(cat.fields.map((f) => [f.id, f]));
+    const byId = new Map(cat.courses.map((c) => [c.id, c]));
+    document.getElementById("og-grid").innerHTML = PICK.map((id) => {
+      const c = byId.get(id), f = fields.get(c.field);
+      return `<article class="book published" data-course="${id}" style="--c:${c.color || f.color}"><div class="book-stand"><div class="book-cover">` +
+        `<span class="book-top"><small>${f.name}</small></span><strong>${c.title}</strong><span class="book-art"></span>` +
+        `<span class="book-foot"><span>${c.en}</span><span>${c.code}</span></span></div></div></article>`;
+    }).join("");
+    const live = cat.courses.filter((c) => c.status !== "planned");
+    const sum = (k) => live.reduce((n, c) => n + (c[k] || 0), 0);
+    document.getElementById("og-stats").innerHTML =
+      `<span><b>${live.length}</b>권</span><span><b>${sum("sims").toLocaleString("ko-KR")}</b>개 시뮬레이터</span><span><b>${sum("problems").toLocaleString("ko-KR")}</b>개 연습문제</span>`;
+  })();
+</script>
+<script defer src="../../home.js"></script>
+</body>
+</html>
