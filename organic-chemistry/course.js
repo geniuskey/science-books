@@ -28,8 +28,7 @@ SB.registerCourse({
      "tags": [
       "혼성 오비탈",
       "골격 구조식"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "acids-bases",
@@ -51,8 +50,7 @@ SB.registerCourse({
      "tags": [
       "뉴먼 투영",
       "의자 형태"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "stereochemistry",
@@ -355,6 +353,18 @@ SB.registerCourse({
   }
  ],
  "stats": {
+  "structure-bonding": {
+   "problems": 15,
+   "examples": 11,
+   "sims": 7,
+   "figures": 11,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "acids-bases": {
    "problems": 16,
    "examples": 9,
@@ -365,6 +375,18 @@ SB.registerCourse({
    "tangles": 3,
    "steps": 2,
    "predicts": 4,
+   "hero": 1
+  },
+  "alkanes": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
    "hero": 1
   },
   "reactions": {
@@ -404,7 +426,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 4,
+ "published": 6,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
