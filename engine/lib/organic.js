@@ -1462,7 +1462,7 @@
    * 캔버스에 분자 그리기.
    *   Org.draw(ctx, "CC(=O)O", { x, y (중심 px), scale(결합 px), fit:{x,y,w,h}(상자에 맞춤), maxScale,
    *     layout:{rotate,flipX,flipY}, showC, lonePairs:true|[i], numbers, notes:{i:'δ+'}, highlight:{atoms,bonds,color},
-   *     labels:{i:'Nu'}, arrows:"lp1>a2", mode:'mono', alpha, hideAtoms:[i] })
+   *     labels:{i:'Nu'}, arrows:"lp1>a2", mode:'mono', alpha, hideAtoms:[i], origin:[px,py](배치 좌표 원점 고정; layout.coords와 함께) })
    *   → view { pos(i)→[px,py], s, m, bbox }  (원자 번호 i는 0부터)
    */
   Org.draw = function (ctx, mol, o = {}) {
@@ -1485,6 +1485,8 @@
   }
   Org.extent = (m) => molExtent(prepMol(m, {}));
   function fitPlacement(P, m, o) {
+    // origin:[px,py] → 좌표 (0,0)을 그 픽셀에 고정(외곽 상자로 다시 가운데 맞추지 않음)
+    if (o.origin) return { scale: o.scale || 30, ox: o.origin[0], oy: o.origin[1] };
     const ex = molExtent(m);
     let s = o.scale || 30;
     if (o.fit) {
