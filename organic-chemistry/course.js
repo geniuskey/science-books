@@ -354,7 +354,7 @@ SB.registerCourse({
  "stats": {
   "structure-bonding": {
    "problems": 15,
-   "examples": 11,
+   "examples": 8,
    "sims": 7,
    "figures": 11,
    "drills": 3,
