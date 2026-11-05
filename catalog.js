@@ -133,7 +133,7 @@ SB.registerCatalog({
    "id": "organic-chemistry",
    "code": "OC",
    "field": "chemistry",
-   "status": "writing",
+   "status": "published",
    "manifest": "organic-chemistry/course.json",
    "title": "유기화학",
    "en": "Organic Chemistry",
