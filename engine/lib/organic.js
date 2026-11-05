@@ -583,6 +583,7 @@
       fixClashes(m, atomsC);
       enforceEZ(m, atomsC);
       fixClashes(m, atomsC, true);
+      enforceEZ(m, atomsC); // 겹침 고치기의 회전이 이중 결합 치환체를 넘기는 경우 되돌림
       if (opts.orient !== false) orientComponent(m, atomsC, ci);
       boxes.push(atomsC);
     });
@@ -890,7 +891,7 @@
           const s2 = clashScore(m, atomsC);
           if (s2 + 1e-9 < score) { score = s2; } else side.forEach((i, k) => (m.xy[i] = save[k]));
           // 회전 시도(±60°)
-          if (score > 1e-6) {
+          if (score > 1e-6 && !m.adj[f].some((e) => e.b.order >= 1.5 || e.b.arom)) {
             for (const ang of [Math.PI / 3, -Math.PI / 3]) {
               const save2 = side.map((i) => m.xy[i].slice());
               const [cx, cy] = m.xy[f], c = Math.cos(ang), s = Math.sin(ang);
