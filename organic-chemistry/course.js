@@ -134,8 +134,7 @@ SB.registerCourse({
      "tags": [
       "연쇄 반응",
       "결합 해리 에너지"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -446,9 +445,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 3,
    "hero": 1
+  },
+  "radicals": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 12,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 8,
+ "published": 9,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
