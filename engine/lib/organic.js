@@ -348,12 +348,13 @@
     m = Org.parse(m);
     const a = m.atoms[i];
     if (a.el === "*" || !EL[a.el] || !EL[a.el].ve) return { lp: 0, rad: 0 };
-    const nb = m.adj[i].reduce((s, e) => s + (e.b.partial ? 0 : e.b.order), 0) + a.h;
+    const hasPartial = m.adj[i].some((e) => e.b.partial);
+    const nb = m.adj[i].reduce((s, e) => s + (e.b.partial ? 1 : e.b.order), 0) + a.h;
     let free = Math.floor(EL[a.el].ve - a.charge - nb + 1e-9);
     if (a.el === "B" || a.el === "Al") return { lp: Math.max(0, Math.floor(free / 2)), rad: 0 };
     if (free < 0) free = 0;
     // 탄소·질소 등에서 결합이 모자라면 홀전자(라디칼)
-    const rad = free % 2;
+    const rad = hasPartial ? 0 : free % 2;
     return { lp: (free - rad) / 2, rad };
   };
   Org.heavyDegree = (m, i) => Org.parse(m).adj[i].length;
@@ -1832,7 +1833,7 @@
     const Es = nodes.map((d) => d.E);
     const lo = Math.min(...Es), hi = Math.max(...Es), span = hi - lo || 1;
     const yr = o.y || [lo - span * 0.25, hi + span * 0.3];
-    const ch = SB.chart(ctx, box, { x: [-0.35, n - 1 + 0.35], y: yr, xLabel: o.xLabel || "반응 좌표", yLabel: o.yLabel || "에너지", xTicks: [], yTicks: o.yTicks || (o.ticks === false ? [] : undefined), yFmt: o.yFmt, series: [] });
+    const ch = SB.chart(ctx, box, { x: [-0.35, n - 1 + 0.35], y: yr, xLabel: o.xLabel != null ? o.xLabel : "반응 좌표", yLabel: o.yLabel != null ? o.yLabel : "에너지", xTicks: [], yTicks: o.yTicks || (o.ticks === false ? [] : undefined), yFmt: o.yFmt, series: [] });
     const Ef = (s) => {
       s = SB.clamp(s, 0, n - 1);
       const i = Math.min(n - 2, Math.floor(s)), u = s - i;
