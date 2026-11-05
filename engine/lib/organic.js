@@ -1007,6 +1007,7 @@
 .mol{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;max-width:100%;line-height:1.2}
 .mol>svg{display:block;max-width:100%;height:auto;overflow:visible}
 figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
+.steps .stack{display:grid}.steps .stack>*{grid-area:1/1;align-self:center}
 .mol .mol-cap{font-size:13px;color:var(--text-dim);margin-top:2px;text-align:center}
 .mol-row{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:center;align-items:flex-end;margin:6px 0}
 .mol-scheme{max-width:100%;overflow-x:auto;text-align:center;line-height:0;margin:6px 0}
