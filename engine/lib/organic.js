@@ -190,6 +190,7 @@
     if (!ab.length) return;
     const need = atoms.map((a, i) => {
       if (!a.arom) return false;
+      if (adj[i].some((e) => !e.b.arom && e.b.order >= 2)) return false; // 고리 밖 C=O 등이 이미 π를 차지
       const sig = adj[i].length + a.h;
       if (a.el === "C") return a.charge === 0 && sig === 3;
       if (a.el === "N" || a.el === "P") return (a.charge === 0 && sig === 2) || (a.charge === 1 && sig === 3);
