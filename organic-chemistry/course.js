@@ -61,8 +61,7 @@ SB.registerCourse({
      "tags": [
       "R/S",
       "거울상 이성질체"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -388,6 +387,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "stereochemistry": {
+   "problems": 15,
+   "examples": 9,
+   "sims": 7,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
   "reactions": {
    "problems": 16,
    "examples": 8,
@@ -437,7 +448,7 @@ SB.registerCourse({
    "hero": 1
   }
  },
- "published": 7,
+ "published": 8,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
