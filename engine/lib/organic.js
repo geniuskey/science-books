@@ -138,7 +138,7 @@
       }
       a.Z = a.el === "*" ? 0 : EL[a.el].Z;
       const idx = addAtom(a);
-      if (a.bracket && a.h > 0 && a.chiral) a.hSlot = prev >= 0 ? 1 : 0; // 암시적 H의 자리(키랄 순서)
+      if (a.bracket && a.chiral) a.hSlot = prev >= 0 ? 1 : 0; // 암시적 H(또는 비공유쌍)의 자리(키랄 순서)
       if (prev >= 0) {
         const bd = addBond(prev, idx, pend);
         atoms[prev].nb.push(idx);
@@ -486,6 +486,7 @@
     const a = m.atoms[i];
     const nb = a.nb.slice();
     if (a.h === 1) nb.splice(a.hSlot != null ? a.hSlot : 0, 0, "H");
+    else if (a.h === 0 && nb.length === 3) nb.splice(a.hSlot != null ? a.hSlot : 0, 0, "LP"); // 3배위 입체 중심: 비공유쌍이 넷째 자리
     return nb;
   }
   /** R/S: SMILES의 @/@@에서. 반환 'R' | 'S' | null */
@@ -497,7 +498,9 @@
     if (nb.length !== 4) return null;
     const r = Org.cipRank(m, i);
     if (r.ties) return null;
-    const pri = r.order; // 높은 것 먼저 (1,2,3,4)
+    const pri = r.order.filter((x) => !(typeof x === "string" && x.startsWith("dup"))); // 높은 것 먼저 (1,2,3,4)
+    if (nb.includes("LP")) pri.push("LP");
+    if (pri.length !== 4) return null;
     // 목표 순서 [4,1,2,3] 이면 '@' → R
     const target = [pri[3], pri[0], pri[1], pri[2]];
     const perm = nb.map((x) => target.findIndex((t) => t === x));
@@ -2132,7 +2135,7 @@
     m.atoms.forEach((a, i) => {
       if (!a.chiral) return;
       const order = chiralNbOrder(m, i).map((x) => (x === "H" ? nb[i].map(([j]) => j).find((j) => A[j].el === "H" && A[j].parent === i) : x));
-      if (order.length !== 4 || order.some((x) => x == null)) return;
+      if (order.length !== 4 || order.some((x) => x == null || x === "LP")) return;
       chir.push({ c: i, o: order, sign: a.chiral === "@" ? -1 : 1 });
     });
     // 최소화
