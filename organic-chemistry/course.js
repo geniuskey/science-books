@@ -40,8 +40,7 @@ SB.registerCourse({
      "tags": [
       "pKa",
       "공명 구조"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "alkanes",
@@ -82,8 +81,7 @@ SB.registerCourse({
      "tags": [
       "굽은 화살표",
       "에너지 도표"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "substitution",
@@ -94,8 +92,7 @@ SB.registerCourse({
      "tags": [
       "SN2",
       "SN1"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "elimination",
@@ -106,8 +103,7 @@ SB.registerCourse({
      "tags": [
       "E2",
       "자이체프 규칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "alkenes",
@@ -358,8 +354,57 @@ SB.registerCourse({
    ]
   }
  ],
- "stats": {},
- "published": 0,
+ "stats": {
+  "acids-bases": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 6,
+   "figures": 16,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "reactions": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 15,
+   "drills": 4,
+   "minis": 4,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "substitution": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 5,
+   "figures": 13,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "elimination": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 13,
+   "drills": 3,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  }
+ },
+ "published": 4,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
