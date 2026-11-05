@@ -200,8 +200,7 @@ SB.registerCourse({
      "tags": [
       "시그마 착물",
       "지향 효과"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -490,8 +489,8 @@ SB.registerCourse({
    "hero": 1
   },
   "conjugation": {
-   "problems": 17,
-   "examples": 9,
+   "problems": 16,
+   "examples": 8,
    "sims": 7,
    "figures": 15,
    "drills": 3,
@@ -512,9 +511,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 4,
    "hero": 1
+  },
+  "aromatic-substitution": {
+   "problems": 15,
+   "examples": 7,
+   "sims": 7,
+   "figures": 15,
+   "drills": 4,
+   "minis": 3,
+   "tangles": 2,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 14,
+ "published": 15,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
