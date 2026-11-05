@@ -122,8 +122,7 @@ SB.registerCourse({
      "tags": [
       "아세틸라이드",
       "역합성"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "radicals",
@@ -151,8 +150,7 @@ SB.registerCourse({
      "tags": [
       "동위원소 봉우리",
       "특성 흡수"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "nmr",
@@ -181,8 +179,7 @@ SB.registerCourse({
      "tags": [
       "휘켈 MO",
       "딜스–알더"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "aromaticity",
@@ -193,8 +190,7 @@ SB.registerCourse({
      "tags": [
       "휘켈 규칙",
       "헤테로 방향족"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "aromatic-substitution",
@@ -388,7 +384,7 @@ SB.registerCourse({
   },
   "stereochemistry": {
    "problems": 15,
-   "examples": 9,
+   "examples": 8,
    "sims": 7,
    "figures": 11,
    "drills": 4,
@@ -446,6 +442,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "alkynes-synthesis": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 7,
+   "figures": 16,
+   "drills": 4,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
   "radicals": {
    "problems": 15,
    "examples": 8,
@@ -457,9 +465,45 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 3,
    "hero": 1
+  },
+  "ms-ir": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 5,
+   "hero": 1
+  },
+  "conjugation": {
+   "problems": 17,
+   "examples": 9,
+   "sims": 7,
+   "figures": 15,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 5,
+   "hero": 1
+  },
+  "aromaticity": {
+   "problems": 0,
+   "examples": 4,
+   "sims": 3,
+   "figures": 4,
+   "drills": 2,
+   "minis": 1,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 1,
+   "hero": 1
   }
  },
- "published": 9,
+ "published": 13,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
