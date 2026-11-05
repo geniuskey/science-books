@@ -2236,14 +2236,14 @@
           ctx.strokeStyle = outline; ctx.lineWidth = (offs.length > 1 ? w * 0.75 : w) + 1.6;
           ctx.beginPath(); ctx.moveTo(x1 + nx * sep * k, y1 + ny * sep * k); ctx.lineTo(x2 + nx * sep * k, y2 + ny * sep * k); ctx.stroke();
           if (style === "stick" || style === "wire") {
-            [[x1, y1, it.i, x1 + dx / 2, y1 + dy / 2], [x1 + dx / 2, y1 + dy / 2, it.j, x2, y2]].forEach(([ax, ay, ii, bx, by]) => { ctx.strokeStyle = o.color ? o.color(ii, emb.atoms[ii]) : CPK[emb.atoms[ii].el] || "#ccc"; ctx.lineWidth = offs.length > 1 ? w * 0.75 : w; ctx.beginPath(); ctx.moveTo(ax + nx * sep * k, ay + ny * sep * k); ctx.lineTo(bx + nx * sep * k, by + ny * sep * k); ctx.stroke(); });
+            [[x1, y1, it.i, x1 + dx / 2, y1 + dy / 2], [x1 + dx / 2, y1 + dy / 2, it.j, x2, y2]].forEach(([ax, ay, ii, bx, by]) => { ctx.strokeStyle = (o.color && o.color(ii, emb.atoms[ii])) || CPK[emb.atoms[ii].el] || "#ccc"; ctx.lineWidth = offs.length > 1 ? w * 0.75 : w; ctx.beginPath(); ctx.moveTo(ax + nx * sep * k, ay + ny * sep * k); ctx.lineTo(bx + nx * sep * k, by + ny * sep * k); ctx.stroke(); });
           } else { ctx.strokeStyle = col; ctx.lineWidth = offs.length > 1 ? w * 0.75 : w; ctx.beginPath(); ctx.moveTo(x1 + nx * sep * k, y1 + ny * sep * k); ctx.lineTo(x2 + nx * sep * k, y2 + ny * sep * k); ctx.stroke(); }
         });
         ctx.restore();
       } else {
         const r = rad(it.i); if (r <= 0) return;
         const [x, y] = P[it.i];
-        const base = o.color ? o.color(it.i, emb.atoms[it.i]) : CPK[emb.atoms[it.i].el] || "#d070d0";
+        const base = (o.color && o.color(it.i, emb.atoms[it.i])) || CPK[emb.atoms[it.i].el] || "#d070d0";
         ctx.save();
         const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.1, x, y, r);
         g.addColorStop(0, "#ffffff"); g.addColorStop(0.25, base); g.addColorStop(1, shadeHex(base, 0.55));
