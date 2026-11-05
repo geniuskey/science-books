@@ -1753,7 +1753,7 @@
     // 전체 범위
     let X0 = Infinity, Y0 = Infinity, X1 = -Infinity, Y1 = -Infinity;
     frames.forEach((f) => f.m.xy.forEach(([x, y]) => { X0 = Math.min(X0, x); Y0 = Math.min(Y0, y); X1 = Math.max(X1, x); Y1 = Math.max(Y1, y); }));
-    let k = 0, t = 1, phase = "arrows", prog = 0, playing = false, wait = 0;
+    let k = 0, t = 1, phase = "arrows", prog = 0, playing = false, wait = 0, finishT = 0;
     const st = { s: 30, ox: 0, oy: 0 };
     const drawFrame = (P, f, xy, alpha, arrowsProg) => {
       const mm = Object.create(f.m); mm.xy = xy;
@@ -1810,6 +1810,9 @@
       if (j === k + 1 && !instant) { k = j; t = 0; phase = "morph"; }
       else { k = j; t = 1; phase = "arrows"; prog = instant ? 1 : 0; }
       sync(); cv.redraw();
+      // 루프가 화면 밖 판정으로 멈춰도 화살표·전환이 반쯤 그려진 채 남지 않게
+      clearTimeout(finishT);
+      finishT = setTimeout(() => { if (t < 1 || prog < 1) { t = 1; phase = "arrows"; prog = 1; cv.redraw(); } }, 1000 * ((spec.morph || 0.9) + (spec.arrowTime || 0.8)) + 1500);
     }
     root.addEventListener("click", (e) => {
       const b = e.target.closest("button[data-a]"); if (!b) return;
@@ -1954,7 +1957,7 @@
   Org.chair = function (ctx, cx, cy, size, o = {}) {
     const P = ctx.line ? ctx : canvasPen(ctx);
     const G = Org.chairGeom(o.flip || 0);
-    const yaw = (o.yaw == null ? -20 : o.yaw) * D2R, pitch = (o.pitch == null ? 12 : o.pitch) * D2R;
+    const yaw = (o.yaw == null ? 18 : o.yaw) * D2R, pitch = (o.pitch == null ? 12 : o.pitch) * D2R;
     const proj = (v) => { const x = v[0] * Math.cos(yaw) - v[1] * Math.sin(yaw), y = v[0] * Math.sin(yaw) + v[1] * Math.cos(yaw), z = v[2]; return { x: cx + x * size, y: cy - (z * Math.cos(pitch) + y * Math.sin(pitch)) * size, d: y * Math.cos(pitch) - z * Math.sin(pitch) }; };
     const A = G.atoms.map(proj);
     const lw = o.width || Math.max(1.6, size * 0.04), fs = o.fs || Math.max(10, size * 0.2);
