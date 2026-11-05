@@ -228,8 +228,7 @@ SB.registerCourse({
      "tags": [
       "친핵성 첨가",
       "아세탈"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "carboxylic-acids",
@@ -252,8 +251,7 @@ SB.registerCourse({
      "tags": [
       "엔올레이트",
       "알돌 반응"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "amines",
@@ -534,9 +532,33 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 3,
    "hero": 1
+  },
+  "aldehydes-ketones": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 6,
+   "figures": 17,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
+  "enolates": {
+   "problems": 16,
+   "examples": 9,
+   "sims": 6,
+   "figures": 17,
+   "drills": 4,
+   "minis": 3,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 2,
+   "hero": 1
   }
  },
- "published": 16,
+ "published": 18,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
