@@ -289,8 +289,7 @@ SB.registerCourse({
      "tags": [
       "실록산",
       "ALD 전구체"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "photoresists",
@@ -318,8 +317,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "자료"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -567,7 +565,7 @@ SB.registerCourse({
   },
   "amines": {
    "problems": 15,
-   "examples": 11,
+   "examples": 8,
    "sims": 7,
    "figures": 18,
    "drills": 3,
@@ -578,13 +576,25 @@ SB.registerCourse({
    "hero": 1
   },
   "polymers": {
-   "problems": 17,
+   "problems": 16,
    "examples": 9,
    "sims": 6,
    "figures": 18,
    "drills": 3,
    "minis": 4,
    "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
+  "organosilicon": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 16,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 3,
    "steps": 3,
    "predicts": 3,
    "hero": 1
@@ -600,9 +610,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 3,
    "hero": 1
+  },
+  "data-tables": {
+   "problems": 12,
+   "examples": 5,
+   "sims": 6,
+   "figures": 2,
+   "drills": 3,
+   "minis": 2,
+   "tangles": 1,
+   "steps": 0,
+   "predicts": 1,
+   "hero": 1
   }
  },
- "published": 22,
+ "published": 24,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
