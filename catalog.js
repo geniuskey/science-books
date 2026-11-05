@@ -140,12 +140,12 @@ SB.registerCatalog({
    "level": "대학 2학년 · 반도체 기초",
    "description": "골격 구조식을 읽고 그리는 법에서 출발해 형태 분석과 입체화학, 굽은 화살표로 따라가는 치환·제거·첨가·라디칼 메커니즘, 질량·IR·NMR 분광학, 공액과 방향족성, 작용기별 반응(알코올·카보닐·카복실산 유도체·엔올레이트·아민), 합성 고분자와 유기규소·유기금속 전구체, 화학 증폭형 감광막의 광화학까지 — 분자를 돌리고 전자를 직접 밀어 보며 반도체 공정의 유기 재료를 이해하는 인터랙티브 교과서.",
    "url": "https://science.euiyun.com/organic-chemistry/",
-   "published": 18,
+   "published": 20,
    "total": 25,
    "color": "#b45309",
    "colorDark": "#fbbf24",
-   "sims": 118,
-   "problems": 282
+   "sims": 131,
+   "problems": 313
   },
   {
    "id": "fluid-mechanics",

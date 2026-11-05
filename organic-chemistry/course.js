@@ -239,8 +239,7 @@ SB.registerCourse({
      "tags": [
       "친핵성 아실 치환",
       "에스터 가수 분해"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "enolates",
@@ -262,8 +261,7 @@ SB.registerCourse({
      "tags": [
       "염기도",
       "다이아조늄"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -545,6 +543,18 @@ SB.registerCourse({
    "predicts": 3,
    "hero": 1
   },
+  "carboxylic-acids": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 6,
+   "figures": 13,
+   "drills": 3,
+   "minis": 3,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
+  },
   "enolates": {
    "problems": 16,
    "examples": 9,
@@ -556,9 +566,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 2,
    "hero": 1
+  },
+  "amines": {
+   "problems": 15,
+   "examples": 11,
+   "sims": 7,
+   "figures": 18,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 3,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 18,
+ "published": 20,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
