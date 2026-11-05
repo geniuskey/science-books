@@ -217,8 +217,7 @@ SB.registerCourse({
      "tags": [
       "에폭사이드 개환",
       "알코올 산화"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "aldehydes-ketones",
@@ -523,9 +522,21 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 3,
    "hero": 1
+  },
+  "alcohols-ethers": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 7,
+   "figures": 18,
+   "drills": 4,
+   "minis": 4,
+   "tangles": 3,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 15,
+ "published": 16,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
