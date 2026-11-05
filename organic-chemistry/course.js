@@ -278,8 +278,7 @@ SB.registerCourse({
      "tags": [
       "단계 성장 중합",
       "블록 공중합체"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "organosilicon",
@@ -578,9 +577,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 3,
    "hero": 1
+  },
+  "polymers": {
+   "problems": 17,
+   "examples": 9,
+   "sims": 6,
+   "figures": 17,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 20,
+ "published": 21,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
