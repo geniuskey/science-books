@@ -112,8 +112,7 @@ SB.registerCourse({
      "tags": [
       "마르코브니코프",
       "친전자성 첨가"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "alkynes-synthesis",
@@ -424,9 +423,21 @@ SB.registerCourse({
    "steps": 2,
    "predicts": 4,
    "hero": 1
+  },
+  "alkenes": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 14,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 2,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 6,
+ "published": 7,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
