@@ -3096,7 +3096,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
       const m = Org.parse(src);
       const pi = new Map(); h = []; electrons = 0; const ek = [];
       m.atoms.forEach((a, i) => {
-        const dbl = m.adj[i].some((e) => (Math.round(e.b.order) === 2 || e.b.arom || e.b.order === 1.5) && !e.b.partial);
+        const dbl = m.adj[i].some((e) => !e.b.partial && (Math.round(e.b.order) === 2 || ((e.b.arom || e.b.order === 1.5) && !e.b.kek)));
         const tr = m.adj[i].some((e) => e.b.order === 3);
         const ex = Org.electrons(m, i);
         let e = null, par = null;
