@@ -301,8 +301,7 @@ SB.registerCourse({
      "tags": [
       "화학 증폭",
       "광산 발생제"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -556,7 +555,7 @@ SB.registerCourse({
   },
   "enolates": {
    "problems": 16,
-   "examples": 9,
+   "examples": 8,
    "sims": 6,
    "figures": 17,
    "drills": 4,
@@ -582,16 +581,28 @@ SB.registerCourse({
    "problems": 17,
    "examples": 9,
    "sims": 6,
-   "figures": 17,
+   "figures": 18,
    "drills": 3,
    "minis": 4,
    "tangles": 4,
    "steps": 3,
    "predicts": 3,
    "hero": 1
+  },
+  "photoresists": {
+   "problems": 16,
+   "examples": 7,
+   "sims": 5,
+   "figures": 14,
+   "drills": 4,
+   "minis": 3,
+   "tangles": 5,
+   "steps": 2,
+   "predicts": 3,
+   "hero": 1
   }
  },
- "published": 21,
+ "published": 22,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
