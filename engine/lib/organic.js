@@ -1100,7 +1100,10 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
   function atomLabel(m, i, o) {
     const a = m.atoms[i], deg = m.adj[i].length;
     let custom = o.labels && o.labels[i] != null ? o.labels[i] : null;
-    const showC = o.showC === true || (Array.isArray(o.showC) && o.showC.includes(i)) || (o.showC === "terminal" && deg <= 1);
+    // 무거운 원자 2개 이하인 성분(CH₄·C=O·CH₃OH)이나 이중 결합 두 개 사이 탄소(O=C=O)는 탄소 글자를 자동으로 보인다
+    const compSize = m.atoms.filter((x) => x.comp === a.comp && x.el !== "H").length;
+    const autoC = o.showC !== false && a.el === "C" && (compSize <= 2 || (deg === 2 && m.adj[i].every((e) => e.b.order >= 2 && !e.b.arom)));
+    const showC = autoC || o.showC === true || (Array.isArray(o.showC) && o.showC.includes(i)) || (o.showC === "terminal" && deg <= 1);
     if (custom == null && a.el === "C" && !a.iso && deg > 0 && !showC) return null;
     // H 방향: 결합이 오른쪽으로 몰리면 왼쪽에
     let mx = 0, my = 0;
