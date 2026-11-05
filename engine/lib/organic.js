@@ -1006,6 +1006,7 @@
 :root[data-theme="dark"]{--org-O:#ff7b72;--org-N:#79a8ff;--org-S:#f2cc60;--org-P:#ffa657;--org-F:#a5d86b;--org-Cl:#56d364;--org-Br:#f0a073;--org-I:#d2a8ff;--org-Si:#a5b4c8;--org-B:#f5b971;--org-M:#5fd4e8;--org-arrow:#ff6b6b;--org-hl:rgba(251,191,36,.28);--org-hl2:rgba(96,165,250,.26);--org-pos:#79a8ff;--org-neg:#ff7b72}
 .mol{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;max-width:100%;line-height:1.2}
 .mol>svg{display:block;max-width:100%;height:auto;overflow:visible}
+figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
 .mol .mol-cap{font-size:13px;color:var(--text-dim);margin-top:2px;text-align:center}
 .mol-row{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:center;align-items:flex-end;margin:6px 0}
 .mol-scheme{max-width:100%;overflow-x:auto;text-align:center;line-height:0;margin:6px 0}
@@ -2082,7 +2083,7 @@
         if (rs === 4) th = 88 * D2R;
         if (rs === 5) th = Math.min(th, 105 * D2R);
         const a = bondLen(A[i].el, A[c].el, L[p][1]), b = bondLen(A[j].el, A[c].el, L[q][1]);
-        C.push([i, j, Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(th)), rs && rs < 5 ? 2 : 6]);
+        C.push([i, j, Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(th)), rs && rs < 5 ? 2 : hyb[c] === 1 ? 14 : hyb[c] === 2 ? 9 : 6]);
         is13.add(i * n + j); is13.add(j * n + i);
       }
     }
@@ -2111,7 +2112,7 @@
         // 평면, 120°: 좌표로 계산
         const ax = -dxa * Math.cos(Math.PI / 3), ay = dxa * Math.sin(Math.PI / 3);
         const bx = dxy + dyb * Math.cos(Math.PI / 3), by = (cis ? 1 : -1) * dyb * Math.sin(Math.PI / 3);
-        C.push([a, b, hyp(bx - ax, by - ay), 3]);
+        C.push([a, b, hyp(bx - ax, by - ay), 8]);
       }));
     });
     // 초기 좌표
