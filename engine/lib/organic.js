@@ -3104,7 +3104,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
           if (a.charge === -1 && a.arom) e = 2; else if (a.charge === 1 && m.adj[i].length + a.h === 3 && (a.arom || m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n)))) e = 0; else if (dbl || tr) e = 1; else if (a.charge === 1 && m.adj[i].length + a.h === 3) e = 0; else if (a.charge === -1 && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n) || m.adj[x.n].some((y) => Math.round(y.b.order) === 2))) e = 2; else if (ex.rad && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n) || m.adj[x.n].some((y) => Math.round(y.b.order) === 2 && isC(m, y.n)))) e = 1;
           par = [0, 1];
         } else if (a.el === "N") {
-          if (a.charge === 1 && dbl) { e = 1; par = HUCKEL_PAR["N+"]; } else if (dbl) { e = 1; par = HUCKEL_PAR.N1; } else if (ex.lp && (a.arom || (o.lonePairs !== false && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n) || isCarbonylC(m, x.n))))) { e = 2; par = HUCKEL_PAR.N2; }
+          if (a.charge === 1 && dbl) { e = 1; par = HUCKEL_PAR["N+"]; } else if (dbl || tr) { e = 1; par = HUCKEL_PAR.N1; } else if (ex.lp && (a.arom || (o.lonePairs !== false && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n) || isCarbonylC(m, x.n))))) { e = 2; par = HUCKEL_PAR.N2; }
         } else if (a.el === "O" || a.el === "S") {
           if (dbl) { e = 1; par = HUCKEL_PAR.O1; } else if (ex.lp && (a.arom || (o.lonePairs !== false && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n) || isCarbonylC(m, x.n))))) { e = 2; par = a.el === "S" ? HUCKEL_PAR.S2 : a.charge === -1 ? HUCKEL_PAR["O-"] : HUCKEL_PAR.O2; }
         } else if (["F", "Cl", "Br"].includes(a.el) && o.lonePairs && m.adj[i].some((x) => isAromAt(m, x.n) || inDouble(m, x.n))) { e = 2; par = HUCKEL_PAR[a.el + "2"]; }
@@ -3146,7 +3146,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
     const pal = SB.palette();
     const xs = hk.x, n = xs.length;
     const lo = Math.min(...xs, -1), hi = Math.max(...xs, 1);
-    const Y = (v) => box.y + 10 + (hi - v) / (hi - lo || 1) * (box.h - 20);
+    const Y = (v) => box.y + 10 + (v - lo) / (hi - lo || 1) * (box.h - 20); // β<0: x가 클수록 안정(아래)
     ctx.save();
     ctx.strokeStyle = pal.faint; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(box.x, Y(0)); ctx.lineTo(box.x + box.w, Y(0)); ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = pal.dim; ctx.font = "11px " + SB.color("mono"); ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.fillText("α", box.x + 2, Y(0) - 2);
@@ -3165,7 +3165,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
         if (e >= 1) arr(-6, true);
         if (e >= 2) arr(6, false);
         levels.push({ k: kk, y, x0: cx - wEach / 2, x1: cx + wEach / 2 });
-        if (t === g - 1 && o.labels !== false) { ctx.fillStyle = pal.dim; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(`${xs[kk] >= 0 ? "α+" : "α−"}${Math.abs(xs[kk]).toFixed(2)}β`, cx + wEach / 2 + 8, y); }
+        if (t === g - 1 && o.labels !== false) { ctx.fillStyle = pal.dim; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(Math.abs(xs[kk]) < 0.005 ? "α" : `${xs[kk] >= 0 ? "α+" : "α−"}${Math.abs(xs[kk]).toFixed(2)}β`, cx + wEach / 2 + 8, y); }
       }
       k += g;
     }
