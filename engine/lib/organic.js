@@ -2477,7 +2477,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
     if (X.F) b(1180, Math.min(1, 0.5 + 0.1 * X.F), 70, "C–F 신축", "CF");
     has("alkylhalide").concat(has("arylhalide"), has("vinylhalide")).forEach((g) => { if (g.X === "Cl") b(740, 0.6, 40, "C–Cl 신축", g.key); if (g.X === "Br") b(600, 0.55, 40, "C–Br 신축", g.key); if (g.X === "I") b(520, 0.5, 40, "C–I 신축", g.key); });
     if (has("siloxane").length || has("alkoxysilane").length) b(1070, 1.0, 70, "Si–O–Si / Si–O–C 신축", "siloxane");
-    if (m.atoms.some((a, i) => a.el === "Si" && m.adj[i].some((e) => isC(m, e.n) && hOn(m, e.n) === 3))) { b(1260, 0.8, 10, "Si–CH₃ 굽힘", "SiMe"); b(840, 0.75, 30, "Si–C 신축", "SiMe"); }
+    if (m.atoms.some((a, i) => a.el === "Si" && m.adj[i].some((e) => isC(m, e.n) && hOn(m, e.n) === 3))) { b(1270, 0.8, 10, "Si–CH₃ 굽힘", "SiMe"); b(840, 0.75, 30, "Si–C 신축", "SiMe"); }
     has("silanol").forEach(() => { b(3400, 0.55, 220, "Si–O–H 신축", "silanol"); b(900, 0.5, 30, "Si–OH", "silanol"); });
     has("silane").forEach(() => b(2150, 0.85, 24, "Si–H 신축", "silane"));
     has("silylamine").forEach(() => b(930, 0.7, 30, "Si–N", "silylamine"));
@@ -3190,7 +3190,7 @@ figure.diagram .mol>svg,figure.diagram .mol-scheme>svg{width:auto}
   /* ================================================================== 자료표 */
   /** pKa (물 기준 근삿값; 25 °C). 산성 수소가 있는 화학종 */
   Org.PKA = [
-    ["플루오로황산·초강산 예: 트라이플산", "CF3SO3H", "OS(=O)(=O)C(F)(F)F", -14], ["아이오딘화 수소", "HI", "I", -10], ["브로민화 수소", "HBr", "Br", -9], ["염화 수소", "HCl", "Cl", -7], ["양성자 첨가 케톤", "R₂C=OH⁺", "C[C](C)=[OH+]", -7],
+    ["트라이플루오로메테인설폰산(트라이플산)", "CF3SO3H", "OS(=O)(=O)C(F)(F)F", -14], ["아이오딘화 수소", "HI", "I", -10], ["브로민화 수소", "HBr", "Br", -9], ["염화 수소", "HCl", "Cl", -7], ["양성자 첨가 케톤", "R₂C=OH⁺", "C[C](C)=[OH+]", -7],
     ["황산", "H2SO4", "OS(=O)(=O)O", -3], ["p-톨루엔설폰산", "TsOH", "Cc1ccc(cc1)S(=O)(=O)O", -2.8], ["양성자 첨가 알코올", "ROH₂⁺", "C[OH2+]", -2.4], ["메테인설폰산", "CH3SO3H", "CS(=O)(=O)O", -1.9], ["하이드로늄", "H3O+", "[OH3+]", -1.7], ["질산", "HNO3", "O[N+](=O)[O-]", -1.4],
     ["트라이플루오로아세트산", "CF3COOH", "OC(=O)C(F)(F)F", 0.5], ["트라이클로로아세트산", "CCl3COOH", "OC(=O)C(Cl)(Cl)Cl", 0.65], ["다이클로로아세트산", "CHCl2COOH", "OC(=O)C(Cl)Cl", 1.29], ["클로로아세트산", "ClCH2COOH", "OC(=O)CCl", 2.86], ["플루오린화 수소", "HF", "F", 3.2],
     ["폼산", "HCOOH", "OC=O", 3.75], ["벤조산", "PhCOOH", "OC(=O)c1ccccc1", 4.2], ["아닐리늄", "PhNH3+", "[NH3+]c1ccccc1", 4.6], ["아세트산", "CH3COOH", "CC(=O)O", 4.76], ["피리디늄", "C5H5NH+", "c1cc[nH+]cc1", 5.2], ["탄산", "H2CO3", "OC(=O)O", 6.4],
