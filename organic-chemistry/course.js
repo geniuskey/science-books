@@ -161,8 +161,7 @@ SB.registerCourse({
      "tags": [
       "화학적 이동",
       "n+1 규칙"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -468,14 +467,26 @@ SB.registerCourse({
   },
   "ms-ir": {
    "problems": 16,
-   "examples": 9,
+   "examples": 8,
    "sims": 7,
    "figures": 13,
    "drills": 3,
    "minis": 5,
    "tangles": 4,
    "steps": 2,
-   "predicts": 5,
+   "predicts": 6,
+   "hero": 1
+  },
+  "nmr": {
+   "problems": 16,
+   "examples": 8,
+   "sims": 7,
+   "figures": 14,
+   "drills": 5,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 4,
+   "predicts": 2,
    "hero": 1
   },
   "conjugation": {
@@ -491,19 +502,19 @@ SB.registerCourse({
    "hero": 1
   },
   "aromaticity": {
-   "problems": 0,
-   "examples": 4,
-   "sims": 3,
-   "figures": 4,
-   "drills": 2,
-   "minis": 1,
-   "tangles": 2,
-   "steps": 2,
-   "predicts": 1,
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 3,
+   "minis": 5,
+   "tangles": 4,
+   "steps": 3,
+   "predicts": 4,
    "hero": 1
   }
  },
- "published": 13,
+ "published": 14,
  "total": 25,
  "url": "https://science.euiyun.com/organic-chemistry/"
 });
