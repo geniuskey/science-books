@@ -1647,7 +1647,9 @@
   if (HAS_DOM) {
     const boot = () => {
       Org.render(document);
-      if (window.MutationObserver) new MutationObserver((ms) => { if (ms.some((x) => x.addedNodes.length)) Org.render(document); }).observe(document.body, { childList: true, subtree: true });
+      let queued = false;
+      const kick = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; if (document.querySelector(".mol[data-smiles]:not([data-org]), .mol-scheme[data-scheme]:not([data-org])")) Org.render(document); }); };
+      if (window.MutationObserver) new MutationObserver((ms) => { if (ms.some((x) => x.addedNodes.length)) kick(); }).observe(document.body, { childList: true, subtree: true });
     };
     if (window.SB && SB.hooks) SB.hooks.push(() => Org.render(document));
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
