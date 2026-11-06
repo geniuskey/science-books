@@ -1,0 +1,1551 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>전자기장 속의 양자역학 · 양자역학 · SciBook</title>
+<meta name="description" content="최소 결합과 게이지 불변성, 란다우 준위와 자기 길이, 아하로노프–봄 효과, 자속 양자화와 SQUID, 정수 양자 홀 효과와 폰 클리칭 저항 표준, 슈브니코프–드하스 진동으로 재는 2차원 전자 기체의 농도·이동도, 포크–다윈 양자점 준위를 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/em-fields.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="전자기장 속의 양자역학 · 양자역학 · SciBook">
+<meta property="og:description" content="최소 결합과 게이지 불변성, 란다우 준위와 자기 길이, 아하로노프–봄 효과, 자속 양자화와 SQUID, 정수 양자 홀 효과와 폰 클리칭 저항 표준, 슈브니코프–드하스 진동으로 재는 2차원 전자 기체의 농도·이동도, 포크–다윈 양자점 준위를 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/em-fields.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "전자기장 속의 양자역학 · 양자역학 · SciBook", "headline": "16 전자기장 속의 양자역학", "url": "https://science.euiyun.com/quantum-mechanics/chapters/em-fields.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "최소 결합과 게이지 불변성, 란다우 준위와 자기 길이, 아하로노프–봄 효과, 자속 양자화와 SQUID, 정수 양자 홀 효과와 폰 클리칭 저항 표준, 슈브니코프–드하스 진동으로 재는 2차원 전자 기체의 농도·이동도, 포크–다윈 양자점 준위를 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 16, "dateModified": "2026-11-06", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "16 전자기장 속의 양자역학", "item": "https://science.euiyun.com/quantum-mechanics/chapters/em-fields.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .game-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+</style>
+</head>
+<body data-chapter="em-fields">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="ladder-operators symmetry spin">
+    <div class="eyebrow">Chapter 16</div>
+    <h1>전자기장 속의 양자역학</h1>
+    <p class="lead">전하가 자기장 속에 들어가면 해밀토니언의 운동량이 \(\hat{\mathbf p}\)에서 \(\hat{\mathbf p} - q\mathbf A\)로 바뀐다. 이 한 줄의 <strong>최소 결합</strong>이 원 궤도를 사다리 같은 <strong>란다우 준위</strong>로 쪼개고, 자기장이 없는 곳을 지나는 전자의 위상까지 바꾸며(아하로노프–봄), 결국 시료의 모양·순도와 무관하게 \(h/e^2\)의 정수분의 일로 고정되는 홀 저항을 만든다. 아래 그림은 GaAs 2차원 전자 기체에 자기장을 쓸어 올리는 실험이다. 페르미 준위가 란다우 준위 사이에 걸릴 때마다 \(\rho_{xy}\)가 평탄해지고 \(\rho_{xx}\)가 0으로 떨어진다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">좌우로 끌어 자기장 B를 바꾸세요</span></div>
+    <ul class="objectives">
+      <li>최소 결합 해밀토니언 \((\hat{\mathbf p} - q\mathbf A)^2/2m + q\phi\)를 쓰고, 게이지 변환에서 파동함수가 \(e^{iq\chi/\hbar}\)만큼 위상을 얻는 이유와 무엇이 관측 가능한지 설명한다.</li>
+      <li>운동 운동량의 교환 관계 \([\hat\Pi_x, \hat\Pi_y] = i\hbar qB\)에서 란다우 준위 \(\hbar\omega_c(n+\frac12)\), 자기 길이 \(\ell_B = \sqrt{\hbar/|q|B}\), 준위당 상태 밀도 \(|q|B/h\)와 채움 인자 \(\nu\)를 유도한다.</li>
+      <li>아하로노프–봄 위상 \(q\Phi/\hbar\)로 이중 경로 간섭과 메조스코픽 고리의 \(h/e\) 진동을 계산하고, 초전도 고리의 자속 양자 \(h/2e\)와 SQUID의 동작을 이해한다.</li>
+      <li>정수 양자 홀 효과의 평탄면 \(R_{xy} = h/\nu e^2\)과 \(R_{xx} = 0\)을 가장자리 상태와 로플린 논증으로 설명하고, 폰 클리칭 상수가 저항 표준이 되는 과정을 따라간다.</li>
+      <li>슈브니코프–드하스 진동의 주기·온도 감쇠·딩글 감쇠에서 2차원 전자 기체의 농도·유효 질량·양자 수명을 읽고, 홀 측정의 이동도와 비교한다. 포크–다윈 준위로 자기장 속 양자점 스펙트럼을 계산한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="minimal-coupling">
+    <h2>최소 결합과 게이지 불변성</h2>
+    <p>고전 역학에서 전하 \(q\)가 전기 퍼텐셜 \(\phi\)와 벡터 퍼텐셜 \(\mathbf A\) 속에서 움직이는 라그랑지안은 \(L = \frac12 m\mathbf v^2 - q\phi + q\,\mathbf v\cdot\mathbf A\)다. 마지막 항 때문에 <span class="term">정준 운동량</span><span class="en">(canonical momentum)</span> \(\mathbf p = \partial L/\partial\mathbf v = m\mathbf v + q\mathbf A\)는 더 이상 \(m\mathbf v\)가 아니다. 르장드르 변환으로 해밀토니언을 만들고 \(\mathbf p \to -i\hbar\nabla\)로 바꾸면 양자역학의 출발점이 나온다(벡터 퍼텐셜은 <a href="../../electromagnetics/chapters/magnetostatics.html#vector-potential">전자기학 · 자기 벡터 퍼텐셜</a>).</p>
+    <div class="formula">$$\hat H = \frac{\big(\hat{\mathbf p} - q\mathbf A(\hat{\mathbf r}, t)\big)^2}{2m} + q\,\phi(\hat{\mathbf r}, t), \qquad \mathbf B = \nabla\times\mathbf A, \quad \mathbf E = -\nabla\phi - \frac{\partial\mathbf A}{\partial t}$$<div class="where">\(\hat{\mathbf p} = -i\hbar\nabla\)가 정준 운동량이다. 전자는 \(q = -e\)이므로 \(\hat{\mathbf p} + e\mathbf A\)가 된다. 퍼텐셜이 운동량에 "더해지는" 이 꼴을 <span class="term">최소 결합</span><span class="en">(minimal coupling)</span>이라 한다 — 전하는 장의 세기 \(\mathbf E, \mathbf B\)가 아니라 퍼텐셜 \(\phi, \mathbf A\)와 직접 결합한다.</div></div>
+    <p>속도에 해당하는 연산자는 \(\hat{\mathbf p}\)가 아니라 <span class="term">운동 운동량</span><span class="en">(kinetic momentum)</span> \(\hat{\boldsymbol\Pi} = \hat{\mathbf p} - q\mathbf A = m\hat{\mathbf v}\)다. \(\hat p_x\)와 \(\hat p_y\)는 교환하지만 \(\hat\Pi_x\)와 \(\hat\Pi_y\)는 교환하지 않는다. \([\hat p_x, A_y] = -i\hbar\,\partial_xA_y\)를 쓰면</p>
+    <div class="formula">$$[\hat\Pi_x, \hat\Pi_y] = -q\big([\hat p_x, A_y] + [A_x, \hat p_y]\big) = i\hbar q\,(\partial_xA_y - \partial_yA_x) = i\hbar q\,B_z$$<div class="where">자기장 속에서는 속도의 \(x\), \(y\) 성분을 동시에 정확히 알 수 없다: \(\Delta\Pi_x\,\Delta\Pi_y \ge \frac12\hbar|q|B\). 이 교환 관계 하나가 다음 절의 란다우 준위를 통째로 만든다. 하이젠베르크 운동 방정식 \(d\hat{\boldsymbol\Pi}/dt = (i/\hbar)[\hat H, \hat{\boldsymbol\Pi}]\)을 계산하면 대칭화된 로런츠 힘 \(q[\mathbf E + \frac12(\hat{\mathbf v}\times\mathbf B - \mathbf B\times\hat{\mathbf v})]\)이 나온다(<a href="../../electromagnetics/chapters/magnetostatics.html#lorentz">로런츠 힘</a>, <a href="wave-function.html">1장</a>의 에렌페스트 정리).</div></div>
+    <div class="callout warn"><strong>정준 운동량은 \(m\mathbf v\)가 아니다</strong><p>\(-i\hbar\nabla\)의 기댓값은 게이지를 바꾸면 달라진다. 같은 상태, 같은 자기장에서 \(\mathbf A\)를 \((0, Bx, 0)\)으로 고르든 \((-By, 0, 0)\)으로 고르든 측정되는 속도·전류·확률 밀도는 같지만 \(\langle\hat{\mathbf p}\rangle\)은 다르다. 측정 가능한 양은 언제나 \(\hat{\boldsymbol\Pi}\)로 써야 한다. 란다우 게이지의 "운동량 \(\hbar k\)"가 실은 궤도 중심의 위치를 가리키는 것도 이 때문이다(2절).</p></div>
+    <h3>게이지 변환과 위상</h3>
+    <p>같은 \(\mathbf E\), \(\mathbf B\)를 주는 퍼텐셜은 무수히 많다. 임의의 함수 \(\chi(\mathbf r, t)\)에 대해 \(\mathbf A' = \mathbf A + \nabla\chi\), \(\phi' = \phi - \partial_t\chi\)는 장을 바꾸지 않는다. 슈뢰딩거 방정식이 이 자유를 견디려면 파동함수도 함께 바뀌어야 한다.</p>
+    <div class="def"><span class="def-k">게이지 변환</span>
+      <p>$$\mathbf A \to \mathbf A + \nabla\chi, \qquad \phi \to \phi - \frac{\partial\chi}{\partial t}, \qquad \psi \to e^{iq\chi/\hbar}\,\psi$$
+      이 셋을 함께 바꾸면 슈뢰딩거 방정식의 꼴이 그대로 유지되고, \(|\psi|^2\), 확률 흐름, \(\langle\hat{\boldsymbol\Pi}\rangle\), 에너지 준위 같은 모든 관측량이 변하지 않는다. 이것이 <span class="term">게이지 불변성</span><span class="en">(gauge invariance)</span>이다.</p>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="게이지 변환에서 퍼텐셜, 파동함수, 운동 운동량, 관측량이 바뀌는 네 단계">
+        <defs><marker id="emst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="48" text-anchor="middle" style="font-weight:700">① 퍼텐셜</text>
+        <text class="t-mono" x="107" y="82" text-anchor="middle">A' = A + ∇χ</text>
+        <text class="t-mono" x="107" y="108" text-anchor="middle">φ' = φ − ∂χ/∂t</text>
+        <text class="t-dim" x="107" y="142" text-anchor="middle">∇×∇χ = 0 이므로</text>
+        <text class="t-acc" x="107" y="166" text-anchor="middle">B, E 그대로</text>
+        <g data-step="2">
+          <line x1="197" y1="120" x2="215" y2="120" stroke="var(--text-dim)" marker-end="url(#emst)"/>
+          <rect x="218" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="48" text-anchor="middle" style="font-weight:700">② 위상</text>
+          <text class="t-mono" x="305" y="82" text-anchor="middle">ψ' = e^(iqχ/ħ) ψ</text>
+          <text class="t-dim" x="305" y="116" text-anchor="middle">자리마다 다른 위상</text>
+          <text class="t-dim" x="305" y="138" text-anchor="middle">(국소 위상 변환)</text>
+          <text class="t-acc" x="305" y="166" text-anchor="middle">|ψ'|² = |ψ|²</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="120" x2="413" y2="120" stroke="var(--text-dim)" marker-end="url(#emst)"/>
+          <rect x="416" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="503" y="48" text-anchor="middle" style="font-weight:700">③ 공변 미분</text>
+          <text class="t-mono" x="503" y="82" text-anchor="middle">(p̂ − qA')ψ'</text>
+          <text class="t-mono" x="503" y="106" text-anchor="middle">= e^(iqχ/ħ)(p̂ − qA)ψ</text>
+          <text class="t-dim" x="503" y="140" text-anchor="middle">∇가 만든 q∇χ를</text>
+          <text class="t-acc" x="503" y="164" text-anchor="middle">A'의 q∇χ가 지운다</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="120" x2="611" y2="120" stroke="var(--text-dim)" marker-end="url(#emst)"/>
+          <rect x="614" y="20" width="168" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="48" text-anchor="middle" style="font-weight:700">④ 관측량</text>
+          <text class="t-mono" x="698" y="80" text-anchor="middle">⟨Π̂⟩, j, E_n 불변</text>
+          <text class="t-mono" x="698" y="106" text-anchor="middle">⟨p̂⟩ 은 변한다</text>
+          <text class="t-dim" x="698" y="140" text-anchor="middle">닫힌 고리의 위상</text>
+          <text class="t-acc" x="698" y="164" text-anchor="middle">(q/ħ)∮A·dl = qΦ/ħ</text>
+          <text class="t-dim" x="698" y="190" text-anchor="middle">만 물리적이다</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">게이지는 "좌표계"처럼 계산의 편의로 고르는 것 — 답은 게이지와 무관해야 한다</text>
+      </svg>
+      <ol class="steps-cap"><li>\(\nabla\chi\)의 회전은 0이고, \(\phi\)의 변화가 \(\partial_t\mathbf A\)의 변화를 상쇄하므로 장은 그대로다.</li><li>파동함수에 자리마다 다른 위상 \(q\chi(\mathbf r,t)/\hbar\)를 곱한다. 확률 밀도는 그대로다.</li><li>\(\hat{\mathbf p}\)가 위상 인자를 미분해 만드는 \(q\nabla\chi\)를 \(\mathbf A'\)에 더해진 \(q\nabla\chi\)가 정확히 지운다. 그래서 \(\hat{\mathbf p} - q\mathbf A\)를 <em>공변 미분</em>이라 부른다. 시간 미분 쪽은 \(\phi'\)이 같은 일을 한다.</li><li>\(\hat{\boldsymbol\Pi}\)로 쓴 모든 양은 불변이다. 게이지에 따라 달라지지 않는 위상 정보는 닫힌 경로를 한 바퀴 돌 때의 위상, 곧 감싼 자속뿐이다 — 3절 아하로노프–봄 효과의 씨앗이다.</li></ol>
+      <figcaption>게이지 변환의 구조. 퍼텐셜의 자유와 파동함수의 국소 위상 자유가 짝을 이루어, 최소 결합 해밀토니언을 쓰는 한 물리는 게이지를 고르는 방법과 무관하다.</figcaption>
+    </figure>
+    <p>어떤 게이지를 고를지는 문제의 대칭이 정한다. 균일한 자기장 \(\mathbf B = B\hat z\)에 흔히 쓰는 두 가지는 <span class="term">란다우 게이지</span><span class="en">(Landau gauge)</span> \(\mathbf A = (0, Bx, 0)\)(병진 대칭 \(y\) 방향을 살림)와 <span class="term">대칭 게이지</span><span class="en">(symmetric gauge)</span> \(\mathbf A = \frac12\mathbf B\times\mathbf r = \frac{B}{2}(-y, x, 0)\)(회전 대칭을 살림)이다. 둘은 \(\chi = Bxy/2\)인 게이지 변환으로 이어진다. 아래 미니 실험에서 화살표(\(\mathbf A\))는 게이지마다 전혀 다르지만, 어떤 고리를 그려도 \(\oint\mathbf A\cdot d\mathbf l\)은 감싼 자속 \(BS\)와 같다.</p>
+    <figure class="mini" id="mini-gauge">
+      <div class="mini-view"><canvas id="cv-gauge"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>게이지</span><div class="seg" id="gauge-g"><button data-value="lx" class="on">(0, Bx)</button><button data-value="ly">(−By, 0)</button><button data-value="sym">대칭</button><button data-value="chi">대칭 + ∇χ</button></div></div>
+        <span class="readout" id="gauge-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>균일한 \(B\)(⊙, 지면에서 나오는 방향) 위에 고른 게이지의 \(\mathbf A\)를 화살표로 그렸다. 흰 손잡이로 고리의 두 모서리를 끌어 보라. 고리를 따라 수치 적분한 \(\oint\mathbf A\cdot d\mathbf l\)은 게이지와 고리 위치에 상관없이 \(B \times\) 넓이다. 마지막 게이지는 \(\chi \propto \sin x\cos y\)를 더해 일부러 어지럽힌 것이다.</figcaption>
+    </figure>
+    <h3>확률 흐름과 상자성·반자성 항</h3>
+    <p>연속 방정식 \(\partial_t|\psi|^2 + \nabla\cdot\mathbf j = 0\)을 만족하는 확률 흐름도 운동 운동량으로 써야 게이지 불변이 된다(<a href="wave-function.html">1장</a>의 \(\mathbf j\)에 항 하나가 붙는다).</p>
+    <div class="formula">$$\mathbf j = \frac{1}{m}\,\mathrm{Re}\big[\psi^*(-i\hbar\nabla - q\mathbf A)\psi\big] = \frac{\hbar}{m}\,\mathrm{Im}(\psi^*\nabla\psi) - \frac{q}{m}\mathbf A\,|\psi|^2$$<div class="where">둘째 항을 <span class="term">반자성 전류</span><span class="en">(diamagnetic current)</span>라 한다. 초전도체에서는 이 항이 런던 방정식 \(\mathbf j_s \propto -\mathbf A\)가 되어 자기장을 밀어낸다(4절).</div></div>
+    <p>대칭 게이지로 \((\hat{\mathbf p} - q\mathbf A)^2\)을 펼치면 \(\hat{\mathbf p}\cdot\mathbf A = \mathbf A\cdot\hat{\mathbf p}\)(쿨롱 게이지 \(\nabla\cdot\mathbf A = 0\))이고 \(\mathbf A\cdot\hat{\mathbf p} = \frac12\mathbf B\cdot(\mathbf r\times\hat{\mathbf p}) = \frac12\mathbf B\cdot\hat{\mathbf L}\)이므로</p>
+    <div class="formula">$$\hat H = \frac{\hat{\mathbf p}^2}{2m} + V - \frac{q}{2m}\,\mathbf B\cdot\hat{\mathbf L} + \frac{q^2B^2}{8m}\,(x^2 + y^2) \;\underbrace{-\;\hat{\boldsymbol\mu}_s\cdot\mathbf B}_{\text{스핀(파울리)}}$$<div class="where">셋째 항이 <span class="term">상자성 항</span><span class="en">(paramagnetic term)</span>, 곧 궤도 제이만 에너지다. 전자(\(q = -e\))이면 \(+(\mu_B/\hbar)\,\mathbf B\cdot\hat{\mathbf L}\), \(\mu_B = e\hbar/2m_\mathrm{e} = 57.88\ \mu\)eV/T. 넷째 항은 언제나 양(+)인 <span class="term">반자성 항</span><span class="en">(diamagnetic term)</span>이다. 스핀은 최소 결합에서 저절로 나오지 않고 파울리 항 \(-\hat{\boldsymbol\mu}_s\cdot\mathbf B = (g\mu_B/\hbar)\hat{\mathbf S}\cdot\mathbf B\)로 덧붙는다(\(g \approx 2\), <a href="spin.html">10장</a>; 디랙 방정식에서는 저절로 나온다).</div></div>
+    <p>두 항의 비는 \(\langle\rho^2\rangle\)과 자기 길이 \(\ell_B^2 = \hbar/|q|B\)의 비로 정리된다: \(\Delta E_\text{반자성}/(\mu_B B) = \langle\rho^2\rangle/4\ell_B^2\)(\(\rho^2 = x^2 + y^2\)). 원자는 \(\ell_B\)(1 T에서 25.7 nm)보다 수백 배 작으므로 반자성 항은 \(10^{-6}\)배쯤의 작은 섭동이다(<a href="perturbation.html">12장</a>). 반면 크기가 수–수십 nm인 반도체 엑시톤·양자점·2차원 전자 기체에서는 몇 테슬라만 걸어도 반자성 항이 주인공이 된다 — 이 장의 나머지가 그 이야기다.</p>
+    <div class="tangle" id="tg-dia">
+      <p>유효 질량 <span class="tn" data-var="m" data-min="0.01" data-max="1" data-step="0.001" data-unit=" mₑ">0.058</span>인 입자의 파동함수가 자기장에 수직한 평면에서 \(\sqrt{\langle\rho^2\rangle} =\) <span class="tn" data-var="r" data-min="0.05" data-max="40" data-step="0.05" data-unit=" nm">16.6</span>만큼 퍼져 있을 때, <span class="tn" data-var="B" data-min="0.1" data-max="30" data-step="0.1" data-unit=" T">1.0</span>에서 반자성 이동 \(q^2B^2\langle\rho^2\rangle/8m\)은 <span class="tn-out" data-out="dia"></span>이고, 같은 질량의 궤도 제이만 한 칸 \(\hbar|q|B/2m\)은 <span class="tn-out" data-out="par"></span>다. 비는 \(\langle\rho^2\rangle/4\ell_B^2 =\) <span class="tn-out" data-out="ratio"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="수소 원자와 GaAs 엑시톤의 반자성 이동">
+      <p>1 T에서 (a) 수소 1s 상태와 (b) GaAs 엑시톤 1s 상태(환산 질량 \(\mu = 0.058m_\mathrm{e}\), \(\varepsilon_r = 12.9\))의 반자성 이동 \(\Delta E = e^2B^2\langle x^2 + y^2\rangle/8\mu\)를 구하고 보어 마그네톤 에너지 \(\mu_B B\)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 수소꼴 1s에서 \(\langle r^2\rangle = 3a^2\)이고 등방적이라 \(\langle x^2 + y^2\rangle = \frac23\langle r^2\rangle = 2a^2\). 따라서 \(\Delta E = e^2B^2a^2/4\mu\). 엑시톤의 보어 반지름은 \(a_X = a_0\varepsilon_r(m_\mathrm{e}/\mu)\)(<a href="central-potentials.html">9장</a>).</div>
+        <div class="step"><b>풀이</b> (a) \(a = a_0 = 0.0529\) nm, \(\mu = m_\mathrm{e}\): \(\Delta E = (1.602\times10^{-19})^2(1)^2(5.29\times10^{-11})^2/(4\times9.109\times10^{-31}) = 1.97\times10^{-29}\) J \(= 1.23\times10^{-10}\) eV. (b) \(a_X = 0.0529\times12.9/0.058 = 11.8\) nm. 길이 제곱이 \((222)^2\)배, 질량이 \(1/0.058\)배이므로 \(\Delta E = 1.23\times10^{-10}\times(222.4)^2/0.058 = 1.05\times10^{-4}\) eV.</div>
+        <div class="answer">(a) 0.123 neV (\(\mu_BB = 57.9\ \mu\)eV의 \(2\times10^{-6}\)배) (b) 105 µeV — 수소의 약 \(8.5\times10^5\)배</div>
+        <div class="step"><b>검토</b> 엑시톤에서는 1 T의 반자성 이동이 이미 \(\mu_BB\)보다 크다. 실험에서는 자기 광발광(magneto-PL)의 \(\Delta E = \sigma B^2\) 계수 \(\sigma\)로 엑시톤·양자점의 크기를 거꾸로 잰다. 다만 GaAs 엑시톤의 결합 에너지는 4.7 meV뿐이어서 \(B \gtrsim 2\) T면 \(\hbar e B/\mu\)(1 T에 2.0 meV)가 이를 넘어 섭동이 깨지고 란다우 준위 그림으로 넘어간다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>게이지 원리: 위상의 국소 자유가 전자기장을 요구한다</strong><p>자유 입자의 슈뢰딩거 방정식은 전역 위상 \(\psi \to e^{i\alpha}\psi\)에 불변이지만, 자리마다 다른 위상 \(e^{i\alpha(\mathbf r,t)}\)에는 불변이 아니다 — \(\nabla\)가 \(\alpha\)를 미분하기 때문이다. 국소 위상 자유를 요구하면 그 미분을 흡수할 장 \(\mathbf A, \phi\)를 도입해야 하고, 그 장이 바로 전자기장이다. 이 논리(U(1) 게이지 대칭)를 SU(2), SU(3)로 넓힌 것이 약력과 강력의 게이지 이론이다. 대칭이 상호작용의 꼴을 정한다는 생각은 <a href="symmetry.html">7장</a>의 연장이다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="landau">
+    <h2>란다우 준위와 자기 길이</h2>
+    <p>고전적으로 자기장 \(B\hat z\) 속의 전하는 <span class="term">사이클로트론 진동수</span><span class="en">(cyclotron frequency)</span> \(\omega_c = |q|B/m\)로 원을 돈다. 반지름은 속력에 비례할 뿐 아무 값이나 될 수 있고, 원의 중심도 평면 어디든 놓일 수 있다(<a href="../../solid-state/chapters/electron-dynamics.html#cyclotron">고체물리 · 사이클로트론 공명</a>). 양자역학은 이 두 자유 가운데 앞의 것을 양자화하고 뒤의 것을 거대한 축퇴로 바꾼다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="운동 운동량의 교환 관계에서 사다리 연산자와 란다우 준위, 궤도 중심의 축퇴가 나오는 네 단계">
+        <defs><marker id="emld" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="48" text-anchor="middle" style="font-weight:700">① 교환 관계</text>
+        <text class="t-mono" x="107" y="82" text-anchor="middle">Ĥ = (Π̂x² + Π̂y²)/2m</text>
+        <text class="t-mono" x="107" y="110" text-anchor="middle">[Π̂x, Π̂y] = iħqB</text>
+        <text class="t-dim" x="107" y="144" text-anchor="middle">x̂, p̂ 쌍과 같은 구조</text>
+        <text class="t-acc" x="107" y="168" text-anchor="middle">→ 1차원 진동자</text>
+        <g data-step="2">
+          <line x1="197" y1="120" x2="215" y2="120" stroke="var(--text-dim)" marker-end="url(#emld)"/>
+          <rect x="218" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="48" text-anchor="middle" style="font-weight:700">② 사다리</text>
+          <text class="t-mono" x="305" y="82" text-anchor="middle">â = (Π̂x + iΠ̂y)/√(2ħqB)</text>
+          <text class="t-mono" x="305" y="110" text-anchor="middle">[â, â†] = 1</text>
+          <text class="t-dim" x="305" y="144" text-anchor="middle">(qB &gt; 0으로 잡음)</text>
+          <text class="t-acc" x="305" y="168" text-anchor="middle">6장 그대로</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="120" x2="413" y2="120" stroke="var(--text-dim)" marker-end="url(#emld)"/>
+          <rect x="416" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="503" y="48" text-anchor="middle" style="font-weight:700">③ 란다우 준위</text>
+          <text class="t-mono" x="503" y="82" text-anchor="middle">Ĥ = ħωc(â†â + ½)</text>
+          <text class="t-mono" x="503" y="110" text-anchor="middle">E_n = ħωc(n + ½)</text>
+          <text class="t-dim" x="503" y="144" text-anchor="middle">ωc = |q|B/m</text>
+          <text class="t-acc" x="503" y="168" text-anchor="middle">게이지와 무관</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="120" x2="611" y2="120" stroke="var(--text-dim)" marker-end="url(#emld)"/>
+          <rect x="614" y="20" width="168" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="48" text-anchor="middle" style="font-weight:700">④ 궤도 중심</text>
+          <text class="t-mono" x="698" y="82" text-anchor="middle">X̂ = x̂ + Π̂y/qB</text>
+          <text class="t-mono" x="698" y="104" text-anchor="middle">Ŷ = ŷ − Π̂x/qB</text>
+          <text class="t-mono" x="698" y="128" text-anchor="middle">[X̂, Ŷ] = −iℓ_B²</text>
+          <text class="t-acc" x="698" y="158" text-anchor="middle">[Ĥ, X̂] = 0</text>
+          <text class="t-dim" x="698" y="184" text-anchor="middle">⇒ 넓이 2πℓ_B²당 1개</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">두 자유도(x, y) = 진동자 하나(에너지) + 궤도 중심(축퇴) — 에너지에는 궤도 중심이 들어가지 않는다</text>
+      </svg>
+      <ol class="steps-cap"><li>평면 운동의 해밀토니언은 \(\hat\Pi_x, \hat\Pi_y\)의 제곱합이다. 두 연산자의 교환자가 상수이므로 \(\hat\Pi_x\)를 "위치", \(\hat\Pi_y\)를 "운동량"으로 보면 1차원 조화 진동자와 같다.</li><li><a href="ladder-operators.html">6장</a>처럼 사다리 연산자를 만든다. \([\hat a, \hat a^\dagger] = (1/2\hbar qB)(-i)(2i\hbar qB) = 1\).</li><li>\(\hat a^\dagger\hat a = (\hat\Pi^2 - \hbar qB)/2\hbar qB\)이므로 \(\hat H = \hbar\omega_c(\hat a^\dagger\hat a + \frac12)\). 게이지를 하나도 고르지 않고 얻은 결과다.</li><li>남은 자유도는 고전 원 궤도의 중심 \((\hat X, \hat Y)\)이다. 둘은 \(\hat H\)와 교환해 에너지를 바꾸지 않고, 서로는 교환하지 않는다(\(\ell_B^2 = \hbar/qB\)). 위치–운동량 쌍처럼 위상 공간 넓이 \(2\pi\ell_B^2\)마다 상태 하나가 들어간다.</li></ol>
+      <figcaption>란다우 준위의 대수적 유도. 에너지는 진동자 양자수 \(n\)만으로 정해지고, 궤도 중심이 만드는 축퇴는 시료 넓이에 비례한다.</figcaption>
+    </figure>
+    <div class="formula">$$E_n = \hbar\omega_c\Big(n + \frac12\Big), \qquad \omega_c = \frac{|q|B}{m}, \qquad \ell_B = \sqrt{\frac{\hbar}{|q|B}} = \frac{25.66\ \text{nm}}{\sqrt{B/\text{T}}}$$<div class="where">이 사다리가 <span class="term">란다우 준위</span><span class="en">(Landau level)</span>이고, \(\ell_B\)가 <span class="term">자기 길이</span><span class="en">(magnetic length)</span>다. 전자의 \(\hbar\omega_c\)는 \(0.1158\ \text{meV/T}\times(m_\mathrm{e}/m^*)\): 자유 전자 1 T에서 0.116 meV(1.34 K), GaAs(\(m^* = 0.067m_\mathrm{e}\))에서는 1.73 meV/T라 10 T면 17 meV(200 K)가 된다. \(\ell_B\)는 질량과 무관하다. 바닥 준위의 파동함수 폭이 \(\ell_B\)이고, 고리 \(2\pi\ell_B^2\)를 지나는 자속이 정확히 \(h/|q|\)이다.</div></div>
+    <h3>란다우 게이지: 띠 모양의 파동함수</h3>
+    <p>파동함수를 직접 보려면 게이지를 골라야 한다. \(\mathbf A = (0, Bx, 0)\)이면 \(\hat H\)가 \(y\)를 포함하지 않으므로 \(\psi = e^{iky}\varphi(x)\)로 둘 수 있고, \(\hat p_y \to \hbar k\)를 넣으면(\(qB > 0\))</p>
+    <div class="formula">$$\hat H = \frac{\hat p_x^2}{2m} + \frac{(\hbar k - qBx)^2}{2m} = \frac{\hat p_x^2}{2m} + \frac12 m\omega_c^2\,(x - X_k)^2, \qquad X_k = k\,\ell_B^2$$<div class="where">\(x\) 방향은 중심이 \(X_k\)인 1차원 조화 진동자다. 그래서 \(\psi_{nk} = e^{iky}\,\varphi_n(x - k\ell_B^2)\): \(y\) 방향으로 퍼진 평면파이면서 \(x\) 방향으로는 폭 \(\sim\ell_B\sqrt{2n+1}\)의 띠다. "운동량" \(\hbar k\)는 속도가 아니라 띠의 \(x\) 위치를 정하는 꼬리표이고, 에너지는 \(k\)에 의존하지 않는다.</div></div>
+    <p>크기 \(L_x\times L_y\)인 시료에서 주기 경계 조건은 \(k = 2\pi j/L_y\)이고, 띠의 중심이 시료 안(\(0 \lt X_k \lt L_x\))에 있어야 하므로 허용되는 \(j\)의 수는</p>
+    <div class="formula">$$N_\text{준위} = \frac{L_x}{2\pi\ell_B^2/L_y} = \frac{L_xL_y\,|q|B}{h} = \frac{\Phi}{\Phi_0}, \qquad n_B \equiv \frac{N_\text{준위}}{L_xL_y} = \frac{|q|B}{h} = 2.418\times10^{10}\ \text{cm}^{-2}\ \text{T}^{-1}$$<div class="where">한 란다우 준위의 상태 수는 시료를 지나는 자속을 <span class="term">자속 양자</span><span class="en">(flux quantum)</span> \(\Phi_0 = h/e = 4.136\times10^{-15}\) Wb로 센 개수와 같다(스핀 하나당). 2차원 전자 기체의 영자기장 상태 밀도 \(m/\pi\hbar^2\)(스핀 포함)이 \(\hbar\omega_c\) 간격마다 한 준위로 뭉친 것이라 생각해도 된다: \((m/2\pi\hbar^2)\times\hbar\omega_c = eB/h\).</div></div>
+    <p>전자 농도 \(n\)인 2차원 전자 기체에서 채워진 란다우 준위의 수(스핀 갈래를 따로 셈)를 <span class="term">채움 인자</span><span class="en">(filling factor)</span>라 한다.</p>
+    <div class="formula">$$\nu = \frac{n}{n_B} = \frac{nh}{eB}$$<div class="where">\(\nu\)는 \(1/B\)에 비례해 줄어든다. 자기장을 올리면 준위 하나가 담는 상태가 늘어 같은 전자들이 더 적은 준위에 들어가고, 가장 위 준위가 비워질 때마다 페르미 준위가 아래 준위로 뚝 떨어진다(머리 그림의 톱니). 이것이 5–6절의 모든 진동과 평탄면의 원인이다.</div></div>
+    <div class="predict" data-for="sim-landau">
+      <p>자기장을 두 배로 올리면 한 란다우 준위가 시료 안에 담는 상태 수는 어떻게 될까?</p>
+      <div class="opts"><button class="opt">그대로 — 준위 간격만 두 배가 된다</button><button class="opt" data-correct>두 배가 된다 — 띠 사이 간격 \(2\pi\ell_B^2/L_y\)가 절반이 된다</button><button class="opt">절반이 된다 — 준위가 높아져서</button><button class="opt">\(\sqrt2\)배가 된다 — 띠 폭이 \(\ell_B\)에 비례하므로</button></div>
+      <div class="quiz-exp">\(X_k = k\ell_B^2\)이고 \(k\)의 간격은 \(2\pi/L_y\)로 고정이므로, 띠 중심 사이 간격 \(2\pi\ell_B^2/L_y \propto 1/B\)가 좁아진다. 띠 폭(\(\ell_B\))도 좁아지지만 개수를 정하는 것은 중심 간격이다. 아래에서 \(B\)를 바꾸며 "시료 속 상태 수"를 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-landau">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>란다우 게이지 실험대: 띠를 끌어 가장자리로 보내라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-ldw"></canvas></div><div><canvas id="cv-ldE"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>자기장 B <output id="ld-B-out"></output></span><input type="range" id="ld-B" min="0.5" max="10" step="0.1" value="2"></label>
+          <div class="ctrl"><span>준위 n</span><div class="seg" id="ld-n"><button data-value="0" class="on">0</button><button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button></div></div>
+          <label class="check"><input type="checkbox" id="ld-wall" checked> 시료 벽(폭 300 nm) 넣기</label>
+          <label class="check"><input type="checkbox" id="ld-phase" checked> 위상 색으로 Re ψ 보기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ℓ_B · ħω<sub>c</sub></span><span class="v" id="ld-l">—</span></div>
+        <div class="stat"><span class="k">띠 중심 X · 파수 k</span><span class="v" id="ld-X">—</span></div>
+        <div class="stat"><span class="k">E(n, X) · 표류 속도</span><span class="v" id="ld-E">—</span></div>
+        <div class="stat"><span class="k">1 µm² 당 상태 수 · 가장자리 채널</span><span class="v" id="ld-N">—</span></div>
+      </div>
+      <div class="sim-note">GaAs 전자(\(m^* = 0.067m_\mathrm{e}\)). 왼쪽은 폭 300 nm 시료의 \(\psi_{nk}(x,y) = e^{iky}\varphi(x)\)(밝기 \(|\psi|\), 색 위상), 오른쪽은 벽을 넣고 1차원 방정식을 유한 차분으로 푼 \(E_n(X)\)다. 해볼 것: ① 띠를 시료 가운데에서 움직이면 에너지가 변하지 않고(평평한 곡선) 위상 줄무늬 간격 \(2\pi/k = 2\pi\ell_B^2/X\)만 바뀐다. ② 띠를 벽 쪽으로 끌면 에너지가 치솟고 표류 속도 \(v = \ell_B^2(\partial E/\partial X)/\hbar\)가 생긴다 — 양쪽 벽에서 부호가 반대인 <em>가장자리 상태</em>다. ③ 페르미 준위 손잡이를 올려 가장자리 채널 수가 \(E_F\) 아래 란다우 준위 수와 같은지 본다(5절).</div>
+    </div>
+    <h3>대칭 게이지: 고리마다 자속 양자 하나</h3>
+    <p>대칭 게이지 \(\mathbf A = \frac B2(-y, x, 0)\)를 쓰면 \(\hat L_z\)가 보존되어 고리 모양의 해가 나온다. 바닥 란다우 준위(\(n = 0\))의 상태는 \(z = x - iy\)(전자에 맞춘 부호)로 아주 간단하다.</p>
+    <div class="formula">$$\psi_{0,m}(z) = \frac{1}{\sqrt{2\pi\,2^m m!}\,\ell_B}\Big(\frac{z}{\ell_B}\Big)^m e^{-|z|^2/4\ell_B^2}, \qquad m = 0, 1, 2, \dots, \qquad r_m = \sqrt{2m}\,\ell_B$$<div class="where">\(|\psi_{0,m}|^2\)은 반지름 \(r_m = \sqrt{2m}\,\ell_B\)의 고리에 몰려 있고, 그 고리가 감싼 자속은 \(\pi r_m^2B = 2\pi m\ell_B^2B = m\,h/e\)다. 반지름 \(R\)인 원판에 들어가는 상태 수는 \(\pi R^2B/\Phi_0\)로, 란다우 게이지에서 센 축퇴와 같다. 이 그림은 7절 양자점과 분수 양자 홀 효과(러플린 파동함수 \(\prod(z_i - z_j)^3\))의 출발점이다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="대칭 게이지 바닥 란다우 준위의 고리 상태들이 자속 양자 하나씩을 더 감싸는 모습">
+        <rect x="20" y="20" width="300" height="260" rx="12" class="f-surface" stroke="var(--border)"/>
+        <g fill="none"><circle cx="170" cy="150" r="31" stroke="var(--accent)" stroke-width="5.7" opacity="0.74"/><circle cx="170" cy="150" r="44" stroke="var(--accent)" stroke-width="5.3" opacity="0.69"/><circle cx="170" cy="150" r="54" stroke="var(--accent)" stroke-width="5.0" opacity="0.64"/><circle cx="170" cy="150" r="62" stroke="var(--accent)" stroke-width="4.6" opacity="0.58"/><circle cx="170" cy="150" r="69" stroke="var(--accent)" stroke-width="4.2" opacity="0.53"/><circle cx="170" cy="150" r="76" stroke="var(--accent)" stroke-width="3.9" opacity="0.47"/><circle cx="170" cy="150" r="82" stroke="var(--accent)" stroke-width="3.6" opacity="0.42"/><circle cx="170" cy="150" r="88" stroke="var(--accent)" stroke-width="3.2" opacity="0.36"/><circle cx="170" cy="150" r="93" stroke="var(--accent)" stroke-width="2.9" opacity="0.31"/><circle cx="170" cy="150" r="98" stroke="var(--accent)" stroke-width="2.5" opacity="0.25"/><circle cx="170" cy="150" r="103" stroke="var(--accent)" stroke-width="2.2" opacity="0.20"/><circle cx="170" cy="150" r="107" stroke="var(--accent)" stroke-width="2.2" opacity="0.18"/></g>
+        <circle cx="170" cy="150" r="9" fill="var(--accent)" opacity=".85"/>
+        <g class="t-dim" style="font-size:11px">
+          <text x="170" y="115" text-anchor="middle">m=1</text><text x="170" y="102" text-anchor="middle">2</text><text x="170" y="92" text-anchor="middle">3</text><text x="170" y="38" text-anchor="middle">m=12</text>
+        </g>
+        <text class="t" x="170" y="296" text-anchor="middle" style="font-size:12px">r_m = √(2m) ℓ_B — 고리 사이 넓이가 모두 2πℓ_B²</text>
+        <rect x="350" y="20" width="430" height="260" rx="12" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="370" y="50" style="font-weight:700">고리 하나 = 자속 양자 하나</text>
+        <text class="t-mono" x="370" y="82">πr_m² B = 2πmℓ_B² B = m · h/e</text>
+        <text class="t" x="370" y="114">• 고리 m과 m+1 사이를 지나는 자속은 정확히 Φ₀</text>
+        <text class="t" x="370" y="140">• 반지름 R 원판의 상태 수 = πR²B/Φ₀</text>
+        <text class="t-dim" x="386" y="160">(란다우 게이지에서 센 L_xL_y·eB/h와 같다)</text>
+        <text class="t" x="370" y="190">• 각운동량 L_z = mħ, 에너지는 m과 무관</text>
+        <text class="t-dim" x="386" y="210">(고전: 중심이 다른 원 궤도들의 겹침)</text>
+        <text class="t" x="370" y="240">• 평면파·고리 어느 기저든 같은 준위를 펼친다</text>
+        <text class="t-dim" x="386" y="260">게이지를 바꾸면 기저가 바뀔 뿐, 준위와 축퇴는 같다</text>
+      </svg>
+      <figcaption>대칭 게이지에서 바닥 란다우 준위의 상태들. 각운동량 \(m\)이 하나 늘 때마다 고리가 자속 양자 하나를 더 감싼다. 에너지는 모두 \(\frac12\hbar\omega_c\)로 같다.</figcaption>
+    </figure>
+    <h3>무질서가 준위를 넓힌다</h3>
+    <p>실제 시료에서는 불순물과 계면 거칠기가 전자를 산란시켜, 날카로운 란다우 준위가 폭 \(\Gamma\)로 넓어진다. 산란 사이의 평균 시간을 <span class="term">양자 수명</span><span class="en">(quantum lifetime)</span> \(\tau_q\)라 하면 \(\Gamma \sim \hbar/2\tau_q\)이고, 준위가 구별되려면 간격이 폭보다 커야 한다.</p>
+    <div class="formula">$$\hbar\omega_c \gtrsim \Gamma \quad\Longleftrightarrow\quad \omega_c\tau_q \gtrsim 1, \qquad k_BT \ll \hbar\omega_c$$<div class="where">전자가 산란되기 전에 사이클로트론 궤도를 한 바퀴쯤은 돌아야 궤도가 양자화된다. 고이동도 GaAs(\(\tau_q \sim 1\) ps)는 0.4 T 남짓에서 이 조건을 넘지만, 실리콘 반전층(\(\tau_q \sim 0.1\) ps, 질량도 세 배)은 1 T를 넘겨야 하고 뚜렷한 진동에는 수 T가 필요하다. 두 조건이 모두 만족되어야 5–6절의 양자 진동이 보인다.</div></div>
+    <figure class="mini" id="mini-dos">
+      <div class="mini-view"><canvas id="cv-dos"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>자기장 B <output id="dos-B-out"></output></span><input type="range" id="dos-B" min="0.1" max="8" step="0.05" value="1.5"></label>
+        <label class="ctrl"><span>양자 수명 τ<sub>q</sub> <output id="dos-t-out"></output></span><input type="range" id="dos-t" min="0.05" max="5" step="0.05" value="1"></label>
+        <span class="readout" id="dos-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>GaAs 2차원 전자 기체(\(n = 3\times10^{11}\) cm⁻²)의 상태 밀도. 점선은 \(B = 0\)의 계단 \(m^*/\pi\hbar^2\), 색칠한 부분은 페르미 준위 아래의 찬 상태다. \(\omega_c\tau_q\)가 1보다 작으면 봉우리가 서로 녹아 평평한 상태 밀도로 돌아간다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-ll">
+      <p>유효 질량 <span class="tn" data-var="m" data-min="0.01" data-max="1" data-step="0.001" data-unit=" mₑ">0.067</span>, 농도 <span class="tn" data-var="n" data-min="0.1" data-max="100" data-step="0.1" data-unit="×10¹¹ cm⁻²">3.0</span>인 2차원 전자 기체에 <span class="tn" data-var="B" data-min="0.1" data-max="40" data-step="0.1" data-unit=" T">5.0</span>를 걸면 \(\hbar\omega_c =\) <span class="tn-out" data-out="hw"></span>, \(\ell_B =\) <span class="tn-out" data-out="lB"></span>, 준위당 상태 밀도 \(eB/h =\) <span class="tn-out" data-out="nB"></span>, 채움 인자 \(\nu =\) <span class="tn-out" data-out="nu"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="GaAs 2차원 전자 기체의 란다우 준위">
+      <p>GaAs/AlGaAs 이종 접합의 2차원 전자 기체(\(n = 3.0\times10^{11}\) cm⁻², \(m^* = 0.067m_\mathrm{e}\))에 \(B = 5.0\) T를 수직으로 건다. (a) \(\hbar\omega_c\)와 \(\ell_B\), (b) 란다우 준위 하나(스핀 하나)의 상태 밀도, (c) 채움 인자, (d) 페르미 준위에 있는 전자의 고전 사이클로트론 반지름을 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\hbar\omega_c = 0.1158\ \text{meV}\times B/(m^*/m_\mathrm{e})\), \(\ell_B = 25.66\ \text{nm}/\sqrt B\), \(n_B = eB/h\), \(\nu = n/n_B\). 고전 반지름은 \(r_c = \hbar k_F/eB = k_F\ell_B^2\), \(k_F = \sqrt{2\pi n}\)(스핀 축퇴).</div>
+        <div class="step"><b>풀이</b> (a) \(\hbar\omega_c = 1.728\times5.0 = 8.64\) meV, \(\ell_B = 25.66/\sqrt5 = 11.5\) nm. (b) \(n_B = 2.418\times10^{10}\times5.0 = 1.21\times10^{11}\) cm⁻². (c) \(\nu = 3.0/1.209 = 2.48\). (d) \(k_F = \sqrt{2\pi\times3.0\times10^{15}\ \text{m}^{-2}} = 0.137\) nm⁻¹, \(r_c = 0.137\times(11.47)^2 = 18.1\) nm.</div>
+        <div class="answer">(a) 8.64 meV, 11.5 nm (b) \(1.21\times10^{11}\) cm⁻² (c) \(\nu = 2.48\) (d) 18.1 nm</div>
+        <div class="step"><b>검토</b> \(\nu = 2.48\)은 \(n = 0\) 준위의 두 스핀 갈래가 차고 \(n = 1\) 준위의 한 갈래가 절반쯤 찬 상태다. \(r_c^2 = 2\nu\ell_B^2\)이 성립한다(\(18.1^2 = 2\times2.48\times11.47^2\)): 페르미 준위 전자의 궤도는 란다우 준위 번호 \(\approx\nu/2\)에 해당하는 진동자 상태의 크기 \(\ell_B\sqrt{2n+1}\)과 같다. 페르미 에너지(10.7 meV)와 \(\hbar\omega_c\)가 견줄 만해 몇 개 준위만 차 있는 "양자 극한"에 가깝다.</div>
+      </details>
+    </div>
+    <p>스핀까지 넣으면 각 준위가 제이만 에너지 \(g^*\mu_BB\)만큼 갈라진다: \(E = \hbar\omega_c(n + \frac12) \pm \frac12 g^*\mu_BB\). 자유 전자(\(g = 2\), \(m = m_\mathrm{e}\))에서는 제이만 간격이 \(\hbar\omega_c\)와 정확히 같아 위아래 갈래가 이웃 준위와 겹친다. GaAs는 \(|g^*| = 0.44\)라 제이만 간격이 \(\hbar\omega_c\)의 1.5%에 불과하지만, 전자 사이 교환 상호작용이 이 간격을 수 배로 키워 강한 자기장에서는 홀수 채움 인자도 뚜렷해진다.</p>
+    <div class="drill" id="drill-ll" data-title="란다우 준위 숫자 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="aharonov-bohm">
+    <h2>아하로노프–봄 효과</h2>
+    <p>고전 역학에서 전하는 자기장이 있는 곳에서만 힘을 받는다. 긴 솔레노이드 바깥은 \(\mathbf B = 0\)이므로 그 주위를 지나는 전하는 솔레노이드 안의 자속을 전혀 느끼지 못해야 한다. 그러나 솔레노이드 바깥에서도 \(\mathbf A\)는 0이 아니다(\(\oint\mathbf A\cdot d\mathbf l = \Phi\)이어야 하므로 \(A_\varphi = \Phi/2\pi r\)). 1959년 아하로노프와 봄은 양자역학에서 이 \(\mathbf A\)가 관측 가능한 위상을 남긴다는 것을 보였다.</p>
+    <p>\(\mathbf B = 0\)인 영역에서는 \(\mathbf A = \nabla\Lambda\)로 쓸 수 있으므로, 게이지 변환으로 \(\mathbf A\)를 지운 자유 입자 해 \(\psi_0\)에서 출발해 \(\psi = e^{iq\Lambda/\hbar}\psi_0\)를 얻는다. \(\Lambda\)는 경로를 따른 적분이다.</p>
+    <div class="formula">$$\psi(\mathbf r) = \exp\!\Big[\frac{iq}{\hbar}\int_{\mathbf r_0}^{\mathbf r}\mathbf A\cdot d\mathbf l\Big]\,\psi_0(\mathbf r), \qquad \Delta\varphi_{12} = \frac{q}{\hbar}\Big(\int_1 - \int_2\Big)\mathbf A\cdot d\mathbf l = \frac{q}{\hbar}\oint\mathbf A\cdot d\mathbf l = \frac{q\Phi}{\hbar}$$<div class="where">솔레노이드 양옆의 두 경로 1, 2가 만나는 곳에서 위상 차는 두 경로가 감싼 자속 \(\Phi\)만으로 정해진다. 전자(\(|q| = e\))이면 \(\Delta\varphi = 2\pi\,\Phi/\Phi_0\), \(\Phi_0 = h/e = 4.136\times10^{-15}\) Wb. 이것이 <span class="term">아하로노프–봄 효과</span><span class="en">(Aharonov–Bohm effect)</span>이다. 자속이 \(\Phi_0\)의 정수배이면 간섭 무늬는 처음과 구별되지 않는다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="이중 슬릿 사이에 놓인 솔레노이드와 두 전자 경로, 이동한 간섭 무늬">
+        <defs><marker id="emab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <circle cx="60" cy="150" r="12" fill="var(--accent)" opacity=".85"/><text class="t-dim" x="60" y="186" text-anchor="middle">전자원</text>
+        <rect x="200" y="30" width="10" height="90" fill="var(--text-dim)"/><rect x="200" y="135" width="10" height="30" fill="var(--text-dim)"/><rect x="200" y="180" width="10" height="90" fill="var(--text-dim)"/>
+        <path d="M72,146 C130,120 170,122 205,127 C300,138 420,90 560,118" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#emab)"/>
+        <path d="M72,154 C130,180 170,178 205,173 C300,162 420,210 560,182" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#emab)"/>
+        <text class="t-acc" x="380" y="98">경로 1</text><text class="t-acc" x="380" y="222">경로 2</text>
+        <circle cx="300" cy="150" r="20" fill="var(--warn)" opacity=".2" stroke="var(--warn)" stroke-width="2"/>
+        <circle cx="300" cy="150" r="3.5" fill="var(--warn)"/><circle cx="300" cy="150" r="9" fill="none" stroke="var(--warn)" stroke-width="1.5"/>
+        <text class="t" x="300" y="190" text-anchor="middle" style="fill:var(--warn)">B ≠ 0 (안쪽만)</text>
+        <text class="t-dim" x="300" y="118" text-anchor="middle">바깥 B = 0, A ≠ 0</text>
+        <line x1="570" y1="30" x2="570" y2="270" stroke="var(--text)" stroke-width="2"/>
+        <g opacity=".85">
+          <rect x="574" y="58" width="22" height="14" fill="var(--accent)" opacity=".25"/><rect x="574" y="86" width="22" height="14" fill="var(--accent)" opacity=".7"/><rect x="574" y="114" width="22" height="14" fill="var(--accent)" opacity=".95"/><rect x="574" y="142" width="22" height="14" fill="var(--accent)" opacity=".95"/><rect x="574" y="170" width="22" height="14" fill="var(--accent)" opacity=".7"/><rect x="574" y="198" width="22" height="14" fill="var(--accent)" opacity=".4"/><rect x="574" y="226" width="22" height="14" fill="var(--accent)" opacity=".15"/>
+        </g>
+        <text class="t-dim" x="585" y="290" text-anchor="middle">스크린</text>
+        <rect x="620" y="40" width="165" height="220" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="634" y="66" style="font-weight:700">무늬 이동</text>
+        <text class="t-mono" x="634" y="94">Δφ = 2πΦ/Φ₀</text>
+        <text class="t" x="634" y="124">• 무늬 Φ/Φ₀ 칸 이동</text>
+        <text class="t" x="634" y="150">• 포락선은 그대로</text>
+        <text class="t-dim" x="646" y="170">(고전 힘이 없다)</text>
+        <text class="t" x="634" y="198">• Φ → Φ + Φ₀</text>
+        <text class="t-dim" x="646" y="218">구별할 수 없다</text>
+        <text class="t-dim" x="634" y="246">h/e = 4.14×10⁻¹⁵ Wb</text>
+      </svg>
+      <figcaption>아하로노프–봄 실험의 구조. 전자는 자기장이 있는 솔레노이드 안으로 들어가지 않지만, 두 경로가 감싼 자속이 상대 위상을 바꿔 간섭 무늬 전체를 옆으로 민다. 단일 슬릿 회절이 만드는 포락선은 움직이지 않는다는 점이 고전적인 힘과 다르다.</figcaption>
+    </figure>
+    <p>이 효과를 둘러싸고 "솔레노이드에서 새어 나온 자기장 때문이 아니냐"는 반론이 오래 이어졌다. 결정적인 실험은 1986년 토노무라 등의 전자 홀로그래피였다. 지름 수 µm의 고리 모양 자석을 초전도 나이오븀으로 완전히 감싸 자기장과 전자 파동을 모두 차단하고, 고리 안팎을 지나는 전자의 위상차를 쟀더니 정확히 0 또는 \(\pi\)가 나왔다. 초전도 껍질 속 자속이 \(h/2e\)의 정수배로 양자화되기 때문이다(4절). 자기장을 전혀 만나지 않는 전자가 위상을 얻은 것이다.</p>
+    <div class="predict" data-for="sim-ab">
+      <p>솔레노이드 안 자속을 0에서 \(\Phi_0/2\)로 천천히 올리면 스크린의 무늬는 어떻게 될까? (전자가 지나는 곳의 \(\mathbf B\)는 늘 0)</p>
+      <div class="opts"><button class="opt">아무 변화가 없다 — 전자는 자기장을 만나지 않는다</button><button class="opt">포락선 전체가 한쪽으로 기운다</button><button class="opt" data-correct>밝은 무늬와 어두운 무늬가 자리를 바꾼다(반 칸 이동)</button><button class="opt">무늬가 사라지고 고르게 밝아진다</button></div>
+      <div class="quiz-exp">\(\Delta\varphi = 2\pi\times\frac12 = \pi\)이므로 가운데 밝은 무늬가 어두워진다. 포락선은 그대로다. 아래에서 무늬를 직접 끌어 보고, 전자를 하나씩 쏘아 확률 분포가 쌓이는 것도 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-ab">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>아하로노프–봄 간섭계: 자속으로 무늬를 과녁에 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-ab"></canvas><span class="hint top">흰 원(가운데 밝은 무늬)을 위아래로 끌면 자속이 바뀐다</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>자속 Φ/Φ₀ <output id="ab-f-out"></output></span><input type="range" id="ab-f" min="-2" max="2" step="0.01" value="0"></label>
+          <div class="ctrl"><span>간섭하는 입자의 전하</span><div class="seg" id="ab-q"><button data-value="1" class="on">e (전자)</button><button data-value="2">2e (쿠퍼 쌍)</button></div></div>
+          <label class="check"><input type="checkbox" id="ab-hits" checked> 전자를 하나씩 쏘기</label>
+          <div class="game-row"><button class="btn primary" id="ab-new" type="button">새 과녁</button><button class="btn" id="ab-clear" type="button">검출 기록 지우기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">위상차 Δφ</span><span class="v" id="ab-ph">—</span></div>
+        <div class="stat"><span class="k">무늬 이동(칸)</span><span class="v" id="ab-sh">—</span></div>
+        <div class="stat"><span class="k">검출된 전자</span><span class="v" id="ab-n">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="ab-goal">—</span></div>
+      </div>
+      <div class="sim-note">스크린 좌표는 무늬 간격 \(\lambda L/d\) 단위다. 회색 곡선은 단일 슬릿 포락선, 자홍 곡선은 확률 \(|\psi_1 + \psi_2|^2\), 막대는 하나씩 검출된 전자의 누적이다. 해볼 것: ① 자속을 \(\pm1\Phi_0\)만큼 바꾸면 무늬가 원래와 똑같아진다 — 관측 가능한 것은 \(\Phi \bmod \Phi_0\)뿐이다. ② 전하를 \(2e\)로 바꾸면 같은 자속에서 무늬가 두 배로 움직인다(주기 \(h/2e\)). ③ 과녁에 밝은 무늬를 맞히는 자속은 하나가 아니다. 가능한 값들의 간격은 얼마인가?</div>
+    </div>
+    <h3>메조스코픽 고리: 전기 저항으로 보는 위상</h3>
+    <p>전자 파동이 결맞음을 잃지 않고 고리를 돌 수 있을 만큼 작고 차가운 금속·반도체 고리에서는, 고리 양쪽 팔을 지난 전자가 출구에서 간섭해 전기 전도도가 자속에 따라 진동한다. 주기는 고리 넓이에 걸리는 자기장으로</p>
+    <div class="formula">$$\Delta B_{h/e} = \frac{h/e}{\pi R^2}, \qquad \Delta B_{h/2e} = \frac{h/2e}{\pi R^2}$$<div class="where">한 시료에서는 \(h/e\) 진동이 보인다(1985년 웹 등, 지름 약 0.8 µm 금 고리에서 주기 약 8 mT). 무질서한 시료를 여럿 평균하거나 고리가 많은 원통에서는 각 고리의 \(h/e\) 위상이 제각각이라 지워지고, 서로 시간 반전인 두 경로(같은 고리를 반대 방향으로 한 바퀴씩)가 만드는 \(h/2e\) 진동(알트슐러–아로노프–스피박)만 남는다. 진동이 보이려면 결맞음 길이 \(L_\varphi\)가 둘레 \(2\pi R\)보다 길어야 하므로 보통 1 K 아래에서 잰다 — 결어긋남은 <a href="density-matrix.html">17장</a>.</div></div>
+    <p>전류를 흘리지 않고 고립된 고리에서도 자속은 에너지 준위를 바꾼다. 반지름 \(R\)인 1차원 고리에서 \(\psi = e^{im\varphi}/\sqrt{2\pi R}\)이고 \(A_\varphi = \Phi/2\pi R\)이면, \(\hat\Pi_\varphi = (\hbar/R)(m - \Phi/\Phi_0)\)(전하 \(-e\)에 맞춘 부호)이므로</p>
+    <div class="formula">$$E_m(\Phi) = \frac{\hbar^2}{2m^*R^2}\Big(m - \frac{\Phi}{\Phi_0}\Big)^2, \qquad I_m = -\frac{\partial E_m}{\partial\Phi} = \frac{\hbar^2}{m^*R^2\Phi_0}\Big(m - \frac{\Phi}{\Phi_0}\Big)$$<div class="where">준위는 \(\Phi_0\) 주기로 반복되는 포물선 묶음이다. 바닥 상태는 \(\Phi = \Phi_0/2\)에서 \(m = 0\)과 \(m = 1\)이 바뀌며 꺾인다. 저항 없이 영원히 흐르는 평형 전류 \(I_m\)이 <span class="term">지속 전류</span><span class="en">(persistent current)</span>다. 금속 고리의 지속 전류는 2009년에야 나노 캔틸레버로 정밀하게 측정되었다.</div></div>
+    <figure class="mini" id="mini-ring">
+      <div class="mini-view"><canvas id="cv-ring"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="check"><input type="checkbox" id="ring-all" checked> m = −3…3 모두 그리기</label>
+        <span class="readout" id="ring-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>1차원 고리의 준위 \(E_m/E_0 = (m - \Phi/\Phi_0)^2\), \(E_0 = \hbar^2/2m^*R^2\). 흰 손잡이를 좌우로 끌어 자속을 바꾸면 바닥 상태(굵은 선)가 \(\Phi_0/2\)마다 다른 \(m\)으로 갈아타고, 지속 전류(아래 막대)는 톱니 모양으로 부호가 바뀐다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-ab">
+      <p>반지름 <span class="tn" data-var="R" data-min="20" data-max="5000" data-step="10" data-unit=" nm">500</span>인 고리의 \(h/e\) 진동 주기는 <span class="tn-out" data-out="d1"></span>, 시간 반전 경로의 \(h/2e\) 주기는 <span class="tn-out" data-out="d2"></span>다. 유효 질량 <span class="tn" data-var="m" data-min="0.01" data-max="1" data-step="0.001" data-unit=" mₑ">0.067</span>이면 고리 준위 단위 \(E_0 = \hbar^2/2m^*R^2\)은 <span class="tn-out" data-out="E0"></span>(<span class="tn-out" data-out="T0"></span>)이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="GaAs 고리의 아하로노프–봄 진동과 지속 전류">
+      <p>2차원 전자 기체를 식각해 만든 반지름 0.50 µm의 GaAs 고리(\(m^* = 0.067m_\mathrm{e}\))가 있다. (a) 전도도의 \(h/e\) 진동 주기 \(\Delta B\)는? (b) 고리 준위 단위 \(E_0\)와, 전자 하나가 \(m = 0\) 상태에 있을 때 \(\Phi = \Phi_0/2\) 직전의 지속 전류 크기는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(\Delta B = \Phi_0/\pi R^2\). (b) \(E_0 = \hbar^2/2m^*R^2\), \(|I| = 2E_0|m - f|/\Phi_0\)에서 \(f \to \frac12\)이면 \(E_0/\Phi_0\).</div>
+        <div class="step"><b>풀이</b> (a) \(\pi R^2 = 7.854\times10^{-13}\) m², \(\Delta B = 4.136\times10^{-15}/7.854\times10^{-13} = 5.27\times10^{-3}\) T. (b) \(E_0 = (1.0546\times10^{-34})^2/(2\times0.067\times9.109\times10^{-31}\times2.5\times10^{-13}) = 3.64\times10^{-25}\) J \(= 2.27\ \mu\)eV. \(I = 3.64\times10^{-25}/4.136\times10^{-15} = 8.8\times10^{-11}\) A.</div>
+        <div class="answer">(a) 5.27 mT (b) \(E_0 = 2.27\ \mu\)eV(\(k_B\times26\) mK), \(I \approx 88\) pA</div>
+        <div class="step"><b>검토</b> 진동 주기가 mT 수준이라 일반 초전도 자석의 분해능으로 충분히 잰다. 반면 \(E_0\)이 26 mK의 열에너지와 같아, 지속 전류를 보려면 희석 냉동기 온도가 필요하다. 전자가 많으면 이웃 준위 기여가 서로 상쇄해 전체 전류는 가장 위 전자 몇 개의 값 정도로 남는다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>위상은 경로가 아니라 위상수학을 기억한다</strong><p>AB 위상 \(q\Phi/\hbar\)는 경로의 모양과 무관하고, 경로가 자속관을 몇 번 감았는지(감김수)에만 의존한다. 솔레노이드를 빼낸 평면은 구멍 뚫린 공간이라 \(\mathbf A = \nabla\Lambda\)인 \(\Lambda\)가 한 값 함수가 될 수 없고, 그 "다가성"이 위상으로 나타난다. 같은 구조가 매개변수 공간에서 일어나면 <span class="term">베리 위상</span><span class="en">(Berry phase)</span>이 된다: 단열적으로 한 바퀴 돌린 상태가 얻는 위상은 매개변수 공간의 "자속"(베리 곡률의 적분)이다. 스핀 \(\frac12\)를 자기장 방향을 따라 한 바퀴 돌리면 감싼 입체각의 절반만큼 위상을 얻는 것이 그 예다(<a href="spin.html">10장</a>).</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="flux-quantization">
+    <h2>자속 양자화와 초전도 고리</h2>
+    <p>초전도체에서는 전자들이 쌍(<span class="term">쿠퍼 쌍</span><span class="en">(Cooper pair)</span>, 전하 \(-2e\))을 이루어 하나의 거시적 양자 상태에 응축한다. 이 응축체 전체를 파동함수 하나 \(\Psi = \sqrt{n_s}\,e^{i\theta(\mathbf r)}\)로 쓸 수 있다는 것이 초전도의 핵심이다. 그러면 1절의 확률 흐름이 곧 전기 전류가 된다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="거시적 파동함수의 한 값 조건에서 자속 양자화가 나오는 네 단계">
+        <defs><marker id="emfq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="48" text-anchor="middle" style="font-weight:700">① 응축체</text>
+        <text class="t-mono" x="107" y="82" text-anchor="middle">Ψ = √n_s e^(iθ)</text>
+        <text class="t-mono" x="107" y="108" text-anchor="middle">q* = −2e, m* = 2m</text>
+        <text class="t-dim" x="107" y="142" text-anchor="middle">수많은 쌍이</text>
+        <text class="t-acc" x="107" y="166" text-anchor="middle">같은 위상 θ</text>
+        <g data-step="2">
+          <line x1="197" y1="120" x2="215" y2="120" stroke="var(--text-dim)" marker-end="url(#emfq)"/>
+          <rect x="218" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="48" text-anchor="middle" style="font-weight:700">② 초전류</text>
+          <text class="t-mono" x="305" y="82" text-anchor="middle">J = (q*n_s/m*)</text>
+          <text class="t-mono" x="305" y="106" text-anchor="middle">× (ħ∇θ − q*A)</text>
+          <text class="t-dim" x="305" y="140" text-anchor="middle">1절의 j에 q* 곱하기</text>
+          <text class="t-acc" x="305" y="164" text-anchor="middle">게이지 불변</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="120" x2="413" y2="120" stroke="var(--text-dim)" marker-end="url(#emfq)"/>
+          <rect x="416" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="503" y="48" text-anchor="middle" style="font-weight:700">③ 고리 안쪽</text>
+          <text class="t-mono" x="503" y="82" text-anchor="middle">깊은 곳에서 J = 0</text>
+          <text class="t-mono" x="503" y="106" text-anchor="middle">ħ∇θ = q*A</text>
+          <text class="t-dim" x="503" y="140" text-anchor="middle">표면 침투 깊이 λ_L</text>
+          <text class="t-acc" x="503" y="164" text-anchor="middle">바깥에서만 전류</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="120" x2="611" y2="120" stroke="var(--text-dim)" marker-end="url(#emfq)"/>
+          <rect x="614" y="20" width="168" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="48" text-anchor="middle" style="font-weight:700">④ 한 바퀴</text>
+          <text class="t-mono" x="698" y="82" text-anchor="middle">∮∇θ·dl = 2πn</text>
+          <text class="t-mono" x="698" y="106" text-anchor="middle">= (|q*|/ħ) Φ</text>
+          <text class="t-acc" x="698" y="140" text-anchor="middle">Φ = n · h/2e</text>
+          <text class="t-dim" x="698" y="166" text-anchor="middle">Φ₀ = 2.068×10⁻¹⁵ Wb</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">Ψ가 한 값 함수여야 한다는 조건 하나가 거시적 고리의 자속을 양자화한다</text>
+      </svg>
+      <ol class="steps-cap"><li>초전도 상태는 위상 \(\theta\)가 시료 전체에 걸쳐 결맞은 응축체다. 운반자는 전하 \(q^* = -2e\)인 쿠퍼 쌍이다.</li><li>1절의 확률 흐름에 \(n_s\)와 \(q^*\)를 곱하면 초전류 밀도다. \(\theta\)가 고르면 \(\mathbf J \propto -\mathbf A\)(런던 방정식)이고, 이것이 자기장을 밀어내는 마이스너 효과다.</li><li>고리의 두께가 런던 침투 깊이(수십 nm)보다 두꺼우면 안쪽 깊은 곳에서는 전류가 0이다. 그 경로를 따라 \(\hbar\nabla\theta = q^*\mathbf A\).</li><li>\(\Psi\)는 한 값 함수이므로 고리를 한 바퀴 돌면 \(\theta\)가 \(2\pi\)의 정수배만큼만 바뀔 수 있다. \(\oint\mathbf A\cdot d\mathbf l = \Phi\)이므로 고리 속 자속이 \(h/2e\)의 정수배로 묶인다.</li></ol>
+      <figcaption>초전도 자속 양자화의 유도. 정상 금속 고리의 AB 위상은 전도도를 진동시킬 뿐이지만, 초전도 고리에서는 위상이 거시적이어서 자속 자체가 양자화된다.</figcaption>
+    </figure>
+    <div class="formula">$$\Phi = n\,\Phi_0^{\text{SC}}, \qquad \Phi_0^{\text{SC}} = \frac{h}{2e} = 2.067\,833\,848\times10^{-15}\ \text{Wb}\quad(\text{SI 2019에서 정확한 값})$$<div class="where">1961년 디버–페어뱅크와 돌–내바우어가 가는 초전도 원통에 갇힌 자속을 재어 이 값이 \(h/e\)가 아니라 \(h/2e\)임을 독립적으로 확인했다. 전하 \(2e\)는 BCS 이론의 쿠퍼 쌍을 직접 보여 준 첫 증거였다. 제2종 초전도체 속 소용돌이(볼텍스) 하나도 자속 양자 하나를 나른다.</div></div>
+    <div class="predict" data-for="sim-squid">
+      <p>두 조지프슨 접합을 가진 초전도 고리(SQUID)의 임계 전류를 고리 속 자속에 따라 재면, 진동 주기는 얼마일까?</p>
+      <div class="opts"><button class="opt">\(h/e\) — 전자 하나의 AB 주기</button><button class="opt" data-correct>\(h/2e\) — 쿠퍼 쌍의 AB 주기</button><button class="opt">\(e/h\) — 컨덕턴스 양자</button><button class="opt">진동하지 않는다 — 초전도체는 자속을 밀어낸다</button></div>
+      <div class="quiz-exp">SQUID는 쿠퍼 쌍의 아하로노프–봄 간섭계다. 두 접합을 지나는 위상 차가 \(2\pi\Phi/(h/2e)\)만큼 어긋나므로 주기는 \(h/2e\)다. 아래에서 주기를 확인하고, 숨겨진 외부 자속을 찾아 보라.</div>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 280" role="img" aria-label="두 조지프슨 접합을 가진 DC SQUID와 임계 전류의 자속 의존성">
+        <rect x="80" y="60" width="240" height="160" rx="30" fill="none" stroke="var(--accent-2)" stroke-width="14" opacity=".8"/>
+        <rect x="188" y="46" width="24" height="28" fill="var(--canvas-bg)" stroke="var(--warn)" stroke-width="2"/><text class="t" x="200" y="40" text-anchor="middle" style="fill:var(--warn)">JJ 1</text>
+        <rect x="188" y="206" width="24" height="28" fill="var(--canvas-bg)" stroke="var(--warn)" stroke-width="2"/><text class="t" x="200" y="252" text-anchor="middle" style="fill:var(--warn)">JJ 2</text>
+        <circle cx="200" cy="140" r="20" fill="var(--accent)" opacity=".18"/><text class="t-acc" x="200" y="145" text-anchor="middle">Φ</text>
+        <line x1="20" y1="140" x2="80" y2="140" stroke="var(--text)" stroke-width="3"/><line x1="320" y1="140" x2="380" y2="140" stroke="var(--text)" stroke-width="3"/>
+        <text class="t-dim" x="22" y="130">I_b →</text><text class="t-dim" x="340" y="130">V</text>
+        <text class="t-dim" x="200" y="275" text-anchor="middle">초전도 고리(넓이 S) · 접합의 위상 차 δ₁, δ₂</text>
+        <line x1="440" y1="230" x2="780" y2="230" class="s-axis"/><line x1="460" y1="240" x2="460" y2="40" class="s-axis"/>
+        <path d="M460,60 C500,60 520,230 540,230 C560,230 580,60 620,60 C660,60 680,230 700,230 C720,230 740,60 780,60" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text class="t-dim" x="470" y="52">I_c(Φ) = 2I₀|cos(πΦ/Φ₀)|</text>
+        <text class="t-dim" x="540" y="250" text-anchor="middle">Φ₀/2</text><text class="t-dim" x="620" y="250" text-anchor="middle">Φ₀</text><text class="t-dim" x="700" y="250" text-anchor="middle">3Φ₀/2</text>
+        <text class="t-dim" x="775" y="250" text-anchor="end">Φ</text>
+        <text class="t-mono" x="470" y="140">δ₁ − δ₂ = 2πΦ/Φ₀</text>
+      </svg>
+      <figcaption>DC SQUID. 고리를 끊는 두 조지프슨 접합(얇은 절연막)을 쿠퍼 쌍이 터널한다. 접합 하나의 초전류는 \(I_0\sin\delta\)(조지프슨 관계)이고, 고리를 한 바퀴 도는 위상 조건이 두 접합의 위상 차를 \(2\pi\Phi/\Phi_0\)만큼 벌려 놓는다. 그 결과 두 경로의 초전류가 간섭해 임계 전류가 자속에 따라 진동한다.</figcaption>
+    </figure>
+    <p>두 접합의 위상 차를 \(\delta_1 = \delta + \pi\Phi/\Phi_0\), \(\delta_2 = \delta - \pi\Phi/\Phi_0\)로 두고(고리의 자기 인덕턴스는 무시) 두 초전류를 더하면</p>
+    <div class="formula">$$I = I_0\sin\delta_1 + I_0\sin\delta_2 = 2I_0\cos\Big(\frac{\pi\Phi}{\Phi_0}\Big)\sin\delta \;\Rightarrow\; I_c(\Phi) = 2I_0\Big|\cos\frac{\pi\Phi}{\Phi_0}\Big|$$<div class="where">바이어스 전류 \(I_b\)를 \(I_c\)보다 조금 크게 흘리면 접합 양단에 전압 \(V \approx \frac{R}{2}\sqrt{I_b^2 - I_c(\Phi)^2}\)(저항 분로 접합 모형)이 생기고, 이 전압이 \(\Phi_0\) 주기로 진동한다. 기울기가 가장 큰 곳에서 \(10^{-6}\Phi_0/\sqrt{\text{Hz}}\)의 자속 변화까지 읽을 수 있다. 실제 계측기는 되먹임 코일로 \(\Phi\)를 한 점에 묶어 두고(자속 고정 루프, FLL) 되먹임 전류를 읽는다.</div></div>
+    <div class="sim" id="sim-squid">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>SQUID 자속계: 숨은 자속을 상쇄해 전압을 바닥으로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-sqL"></canvas></div><div><canvas id="cv-sqR"></canvas></div></div></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>바이어스 I<sub>b</sub>/I₀ <output id="sq-ib-out"></output></span><input type="range" id="sq-ib" min="0.2" max="3" step="0.02" value="2.1"></label>
+          <label class="check"><input type="checkbox" id="sq-show"> 이론 곡선 보이기</label>
+          <div class="game-row"><button class="btn primary" id="sq-new" type="button">새 외부 자속</button><button class="btn" id="sq-check" type="button">이 점에서 잠그기</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">보상 자속 Φ<sub>c</sub>/Φ₀</span><span class="v" id="sq-fc">—</span></div>
+        <div class="stat"><span class="k">임계 전류 I<sub>c</sub>/I₀</span><span class="v" id="sq-ic">—</span></div>
+        <div class="stat"><span class="k">전압 V/(I₀R)</span><span class="v" id="sq-v">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="sq-res">—</span></div>
+      </div>
+      <div class="sim-note">고리에는 크기를 모르는 외부 자속 \(\Phi_x\)가 걸려 있고, 손잡이로 보상 코일 자속 \(\Phi_c\)를 더한다. 끌고 지나간 곳의 전압만 점으로 기록된다(실제 측정처럼). 해볼 것: ① \(I_b \lt 2I_0\)이면 \(I_c \gt I_b\)인 구간에서 전압이 0이다 — 변조 깊이가 가장 큰 \(I_b\)는? ② 전압이 가장 작은 곳(\(\Phi_x + \Phi_c = n\Phi_0\))을 찾아 "잠그기"를 누르면 외부 자속의 분수 부분이 드러난다. ③ 정수 부분 \(n\)은 왜 알 수 없는가? 실제 SQUID가 측정 내내 FLL로 자속을 따라가야 하는 이유다.</div>
+    </div>
+    <div class="tangle" id="tg-sq">
+      <p>한 변이 <span class="tn" data-var="a" data-min="10" data-max="10000" data-step="10" data-unit=" µm">100</span>인 정사각형 고리에 \(\Phi_0 = h/2e\) 하나가 들어가는 자기장은 <span class="tn-out" data-out="B0"></span>이다. 자속 잡음이 <span class="tn" data-var="s" data-min="0.1" data-max="20" data-step="0.1" data-unit=" µΦ₀/√Hz">1.0</span>이면 자기장 잡음은 <span class="tn-out" data-out="Bn"></span>이고, 지구 자기장(50 µT)은 자속 양자 <span class="tn-out" data-out="NE"></span>개에 해당한다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="SQUID 고리의 자기장 감도">
+      <p>한 변 100 µm인 정사각형 SQUID 고리가 있다. (a) 고리 속 자속이 \(\Phi_0 = h/2e\) 하나만큼 바뀌는 자기장 변화는? (b) 자속 잡음이 \(1\ \mu\Phi_0/\sqrt{\text{Hz}}\)이면 자기장 잡음은? (c) 지구 자기장 50 µT는 자속 양자 몇 개인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta B = \Phi_0/S\), \(S = (100\ \mu\text{m})^2 = 1.0\times10^{-8}\) m².</div>
+        <div class="step"><b>풀이</b> (a) \(2.068\times10^{-15}/1.0\times10^{-8} = 2.07\times10^{-7}\) T. (b) \(10^{-6}\times207\) nT \(= 2.07\times10^{-13}\) T \(= 207\) fT/√Hz. (c) \(5.0\times10^{-5}/2.068\times10^{-7} = 242\).</div>
+        <div class="answer">(a) 207 nT (b) 207 fT/√Hz (c) 약 242 \(\Phi_0\)</div>
+        <div class="step"><b>검토</b> 심장 자기장(약 50 pT)과 뇌 자기장(수십–수백 fT)을 재려면 이보다 감도가 더 좋아야 하므로, 실제 자기 뇌파(MEG) 장비는 cm 크기의 초전도 픽업 코일로 자속을 모아 작은 SQUID에 넘긴다(자속 변환기). 차폐가 없으면 지구 자기장의 작은 흔들림만으로도 수 \(\Phi_0\)씩 변하므로 FLL이 필수다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>초전도 큐비트와 자기 전류 영상</strong><p>트랜스몬·플럭소늄 같은 초전도 큐비트는 이 절의 조지프슨 접합과 고리로 만든 인공 원자다. 두 접합을 고리로 묶으면 접합 에너지가 \(|\cos(\pi\Phi/\Phi_0)|\)로 바뀌므로 자속 바이어스선 전류로 큐비트 진동수를 조절하고, 고리를 지나는 자속 잡음(\(\mu\Phi_0\) 수준)이 그대로 결어긋남의 원인이 된다(<a href="density-matrix.html">17장</a>, <a href="quantum-information.html">18장</a>). 접합은 보통 Al/AlOx/Al 이중 각도 증착으로 만들고, 산화막 두께 0.1 nm의 차이가 터널 저항을 수 % 바꾼다. 반도체 고장 분석에서는 칩·패키지의 단락 전류가 만드는 자기장을 SQUID로 비접촉 영상화하는 <b>자기 전류 영상</b>(MCI)이 X선·초음파로 찾기 어려운 적층 패키지 속 단락 위치를 좁히는 데 쓰인다 → <a href="https://semi.euiyun.com/failure/chapters/nondestructive.html">FailureBook · 비파괴 검사</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="quantum-hall">
+    <h2>정수 양자 홀 효과와 폰 클리칭 상수</h2>
+    <p>1980년 폰 클리칭은 실리콘 MOSFET의 반전층(2차원 전자 기체)을 1.5 K로 식히고 18 T 가까운 자기장을 건 채 게이트 전압을 쓸다가, 홀 저항이 넓은 구간에서 일정한 값에 머무는 것을 발견했다. 그 값은 시료 크기·모양·이동도와 무관하게 \(h/e^2\)의 정수분의 일이었다. 지금은 서로 다른 물질·연구소의 측정값이 \(10^{-10}\) 수준으로 일치한다. 이것이 <span class="term">정수 양자 홀 효과</span><span class="en">(integer quantum Hall effect)</span>다(1985년 노벨 물리학상).</p>
+    <div class="formula">$$R_{xy} = \frac{h}{\nu e^2} = \frac{R_K}{\nu}, \qquad R_{xx} = 0, \qquad R_K = \frac{h}{e^2} = 25\,812.807\,45\ldots\ \Omega$$<div class="where">\(R_K\)를 <span class="term">폰 클리칭 상수</span><span class="en">(von Klitzing constant)</span>라 한다. 2019년 SI 개정으로 \(h\)와 \(e\)가 정확한 값으로 정의되었으므로 \(R_K\)도 오차 없는 상수다. \(\nu = 1, 2, 3, \dots\)는 페르미 준위 아래에 있는 (스핀 갈래까지 센) 란다우 준위의 수다. 평탄면에서 세로 저항이 0이 되고 전류가 손실 없이 흐른다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="홀 막대 시료의 전극 배치와 가장자리 채널, 세로 전압과 홀 전압 측정">
+        <defs><marker id="emqh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <rect x="60" y="100" width="480" height="110" rx="6" class="f-acc2-soft" stroke="var(--accent-2)" stroke-width="2"/>
+        <rect x="20" y="125" width="40" height="60" class="f-elev" stroke="var(--border)"/><rect x="540" y="125" width="40" height="60" class="f-elev" stroke="var(--border)"/>
+        <g class="f-elev" stroke="var(--border)"><rect x="150" y="70" width="34" height="30"/><rect x="380" y="70" width="34" height="30"/><rect x="150" y="210" width="34" height="30"/><rect x="380" y="210" width="34" height="30"/></g>
+        <text class="t" x="40" y="160" text-anchor="middle">S</text><text class="t" x="560" y="160" text-anchor="middle">D</text>
+        <text class="t-dim" x="167" y="62" text-anchor="middle">1</text><text class="t-dim" x="397" y="62" text-anchor="middle">2</text><text class="t-dim" x="167" y="258" text-anchor="middle">3</text><text class="t-dim" x="397" y="258" text-anchor="middle">4</text>
+        <path d="M70,112 L530,112" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#emqh)"/>
+        <path d="M70,120 L530,120" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#emqh)" opacity=".7"/>
+        <path d="M530,198 L70,198" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#emqh)"/>
+        <path d="M530,190 L70,190" fill="none" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#emqh)" opacity=".7"/>
+        <text class="t-acc" x="300" y="146" text-anchor="middle">절연된 안쪽(편재 상태)</text>
+        <text class="t-dim" x="300" y="168" text-anchor="middle">B ⊙ · 채널 ν = 2개씩</text>
+        <text class="t-mono" x="282" y="40" text-anchor="middle">V_xx = V₁ − V₂ → 0</text>
+        <text class="t-mono" x="282" y="290" text-anchor="middle">V_xy = V₁ − V₃ = (h/νe²) I</text>
+        <rect x="600" y="40" width="185" height="230" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="614" y="66" style="font-weight:700">가장자리 채널</text>
+        <text class="t" x="614" y="94">• 위·아래 반대 방향</text>
+        <text class="t-dim" x="626" y="114">(키랄: 뒤로 못 간다)</text>
+        <text class="t" x="614" y="142">• 채널 하나 = e²/h</text>
+        <text class="t-dim" x="626" y="162">란다우어 공식</text>
+        <text class="t" x="614" y="190">• 1과 2는 같은 채널</text>
+        <text class="t-dim" x="626" y="210">위에 있어 같은 전위</text>
+        <text class="t" x="614" y="238">→ R_xx = 0</text>
+        <text class="t" x="614" y="258">→ R_xy = h/νe²</text>
+      </svg>
+      <figcaption>홀 막대(Hall bar) 시료. 전류 \(I\)를 S→D로 흘리고, 같은 쪽 전극 사이에서 세로 전압 \(V_{xx}\), 마주 보는 전극 사이에서 홀 전압 \(V_{xy}\)를 잰다. 평탄면에서는 전류가 양쪽 가장자리의 한 방향 채널로만 흐르므로 같은 쪽 전극은 전위가 같고(\(R_{xx} = 0\)), 위·아래 가장자리의 전위 차가 \(h/\nu e^2\times I\)가 된다.</figcaption>
+    </figure>
+    <h3>왜 평탄면인가: 편재 상태와 가장자리 상태</h3>
+    <p>무질서가 전혀 없다면 페르미 준위는 \(\nu\)가 정수가 되는 순간에만 준위 사이 틈에 있고, 홀 저항은 고전식 \(B/ne\)을 따라 곧게 올라갈 것이다. 평탄면을 만드는 것은 오히려 무질서다. 넓어진 란다우 준위의 꼬리 쪽 상태들은 불순물 퍼텐셜의 언덕·골짜기를 따라 닫힌 궤도를 도는 <span class="term">편재 상태</span><span class="en">(localized state)</span>여서 전류를 나르지 못한다. 시료를 가로지르는 <span class="term">확장 상태</span><span class="en">(extended state)</span>는 각 준위의 한가운데 좁은 띠에만 있다. 자기장을 바꾸면 \(E_F\)가 편재 상태 구간을 지나는 동안 전류를 나르는 상태의 수가 그대로이므로 \(R_{xy}\)가 변하지 않는다.</p>
+    <p>그러면 전류는 어디로 흐르는가? 2절 시뮬레이터에서 보았듯 시료 벽 근처에서 란다우 준위는 위로 휘어, 안쪽 준위 사이 틈에 있는 \(E_F\)도 가장자리에서는 준위를 가로지른다. 그 교점이 <span class="term">가장자리 상태</span><span class="en">(edge state)</span>이고, 군속도 \(v = \partial E/\hbar\partial k\)의 부호가 위·아래 가장자리에서 반대다. 한쪽 가장자리에서는 전자가 한 방향으로만 가므로 불순물이 있어도 뒤로 튕겨 나갈 상태가 없다(반대편 가장자리는 시료 폭만큼 떨어져 있다). 란다우어 공식(<a href="../../solid-state/chapters/nanostructures.html#ballistic">고체물리 · 탄도 수송</a>)으로 채널 하나가 \(e^2/h\)를 나르므로 \(\nu\)개 채널이면 \(G_{xy} = \nu e^2/h\)다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="로플린 논증: 원통 시료에 자속 양자 하나를 넣으면 각 란다우 준위가 전자 하나를 가장자리에서 가장자리로 옮긴다">
+        <defs><marker id="emlg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="20" y="20" width="175" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="107" y="48" text-anchor="middle" style="font-weight:700">① 원통 시료</text>
+        <ellipse cx="107" cy="92" rx="54" ry="14" fill="none" stroke="var(--accent-2)" stroke-width="2"/><ellipse cx="107" cy="160" rx="54" ry="14" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+        <line x1="53" y1="92" x2="53" y2="160" stroke="var(--accent-2)" stroke-width="2"/><line x1="161" y1="92" x2="161" y2="160" stroke="var(--accent-2)" stroke-width="2"/>
+        <line x1="107" y1="70" x2="107" y2="182" stroke="var(--warn)" stroke-width="2" stroke-dasharray="4 3"/><text class="t" x="118" y="128" style="fill:var(--warn)">Φ</text>
+        <text class="t-dim" x="107" y="204" text-anchor="middle">B는 원통 면에 수직</text>
+        <g data-step="2">
+          <line x1="197" y1="120" x2="215" y2="120" stroke="var(--text-dim)" marker-end="url(#emlg)"/>
+          <rect x="218" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="305" y="48" text-anchor="middle" style="font-weight:700">② Φ → Φ + Φ₀</text>
+          <text class="t-mono" x="305" y="82" text-anchor="middle">k → k + 2π/L_y</text>
+          <text class="t-mono" x="305" y="106" text-anchor="middle">X_k → X_(k+1)</text>
+          <text class="t-dim" x="305" y="140" text-anchor="middle">Φ₀만큼은 게이지 변환</text>
+          <text class="t-acc" x="305" y="164" text-anchor="middle">스펙트럼이 제자리로</text>
+        </g>
+        <g data-step="3">
+          <line x1="395" y1="120" x2="413" y2="120" stroke="var(--text-dim)" marker-end="url(#emlg)"/>
+          <rect x="416" y="20" width="175" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="503" y="48" text-anchor="middle" style="font-weight:700">③ 전하 펌프</text>
+          <text class="t" x="503" y="82" text-anchor="middle">찬 준위마다 전자 1개가</text>
+          <text class="t" x="503" y="104" text-anchor="middle">한 끝 → 다른 끝</text>
+          <text class="t-mono" x="503" y="140" text-anchor="middle">ΔE = ν e V_H</text>
+          <text class="t-acc" x="503" y="164" text-anchor="middle">편재 상태는 안 옮겨짐</text>
+        </g>
+        <g data-step="4">
+          <line x1="593" y1="120" x2="611" y2="120" stroke="var(--text-dim)" marker-end="url(#emlg)"/>
+          <rect x="614" y="20" width="168" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="698" y="48" text-anchor="middle" style="font-weight:700">④ 전류</text>
+          <text class="t-mono" x="698" y="82" text-anchor="middle">I = ∂E/∂Φ</text>
+          <text class="t-mono" x="698" y="106" text-anchor="middle">= νeV_H/Φ₀</text>
+          <text class="t-acc" x="698" y="140" text-anchor="middle">σ_xy = ν e²/h</text>
+          <text class="t-dim" x="698" y="166" text-anchor="middle">정수 ν는 셈의 결과</text>
+          <text class="t-dim" x="698" y="186" text-anchor="middle">— 시료와 무관</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">로플린 논증(1981): 양자화의 정확성은 게이지 불변성과 전하의 정수성에서 온다</text>
+      </svg>
+      <ol class="steps-cap"><li>2차원 전자 기체를 원통으로 말고 원통 축을 따라 자속 \(\Phi\)를 넣는다(면에 수직한 \(B\)와는 별개). 둘레 방향 전류 \(I\)는 \(I = \partial E/\partial\Phi\)로 \(\Phi\)와 짝을 이룬다.</li><li>\(\Phi\)를 \(\Phi_0\) 하나만큼 천천히 늘리면 해밀토니언은 게이지 변환으로 처음과 같아진다. 대신 란다우 게이지 상태 하나하나가 이웃 상태 자리로 옮겨 간다.</li><li>찬 란다우 준위마다 전자 하나가 원통의 한 가장자리에서 반대 가장자리로 펌프된다. 두 가장자리 사이 전위 차가 \(V_H\)이면 에너지가 \(\nu eV_H\)만큼 바뀐다. 편재 상태는 고리를 감싸지 않아 이동에 끼지 않는다.</li><li>\(I = \Delta E/\Delta\Phi = \nu eV_H/(h/e)\), 곧 \(\sigma_{xy} = \nu e^2/h\). 시료의 무질서·모양은 어디에도 들어가지 않는다 — 그래서 정밀하다.</li></ol>
+      <figcaption>로플린의 게이지 논증. 홀 전도도의 양자화는 "자속 양자 하나를 넣을 때 옮겨지는 전자 수"라는 셈의 결과다. 수학적으로 이 정수는 란다우 준위 파동함수의 위상수학적 불변량(천 수)이다.</figcaption>
+    </figure>
+    <div class="predict" data-for="sim-qhe">
+      <p>시료가 \(\nu = 2\) 평탄면에 있을 때(\(R_{xy} = h/2e^2\)), 세로 저항 \(R_{xx}\)와 세로 전도도 \(\sigma_{xx}\)는 각각 어떻게 될까?</p>
+      <div class="opts"><button class="opt">\(R_{xx}\)는 크고 \(\sigma_{xx}\)는 0 — 절연체이므로</button><button class="opt" data-correct>둘 다 0 — 자기장 속에서는 \(\rho_{xx} = \sigma_{xx}/(\sigma_{xx}^2 + \sigma_{xy}^2)\)이다</button><button class="opt">둘 다 \(h/2e^2\)</button><button class="opt">\(R_{xx}\)는 0이고 \(\sigma_{xx}\)는 무한대 — 초전도체처럼</button></div>
+      <div class="quiz-exp">텐서를 뒤집으면 \(\rho_{xx} = \sigma_{xx}/(\sigma_{xx}^2 + \sigma_{xy}^2)\)이므로 \(\sigma_{xy} \ne 0\)이면 \(\sigma_{xx} = 0\)일 때 \(\rho_{xx}\)도 0이다. 벌크는 완벽한 절연체이면서 저항이 0인, 자기장 속에서만 가능한 상태다. 아래에서 \(R_{xx}\)가 정말 0까지 떨어지는지 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-qhe">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>양자 홀 측정대: 자기장을 끌어 평탄면 한가운데를 찾아라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-qhL"></canvas></div><div><canvas id="cv-qhR"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>시료</span><div class="seg" id="qh-mat"><button data-value="gaas" class="on">GaAs 이종 접합</button><button data-value="si">Si MOSFET</button><button data-value="gr">그래핀</button></div></div>
+          <label class="ctrl"><span>전자 농도 n <output id="qh-n-out"></output></span><input type="range" id="qh-n" min="0.5" max="6" step="0.05" value="3"></label>
+          <label class="ctrl"><span>양자 수명 τ<sub>q</sub> <output id="qh-t-out"></output></span><input type="range" id="qh-t" min="0.1" max="4" step="0.05" value="1.5"></label>
+          <label class="ctrl"><span>온도 T <output id="qh-T-out"></output></span><input type="range" id="qh-T" min="0.05" max="20" step="0.05" value="0.3"></label>
+          <label class="check"><input type="checkbox" id="qh-spin" checked> 스핀 갈래 분리(교환 증대 g ≈ 5)</label>
+          <button class="btn primary" id="qh-new" type="button">새 과녁</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">B · 채움 인자 ν</span><span class="v" id="qh-B">—</span></div>
+        <div class="stat"><span class="k">R<sub>xy</sub></span><span class="v" id="qh-xy">—</span></div>
+        <div class="stat"><span class="k">R<sub>xx</sub> (정사각형당)</span><span class="v" id="qh-xx">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="qh-goal">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 지금 \(B\)에서 \(E_F\) 근처의 란다우 준위(띠의 진한 가운데가 확장 상태)와 홀 막대의 가장자리 채널. 오른쪽: \(R_{xy}\)(자홍, 왼쪽 눈금)와 \(R_{xx}\)(초록, 오른쪽 눈금). 준위 넓힘은 자기 일관 보른 근사의 가우스 폭 \(\Gamma^2 = (2/\pi)\hbar\omega_c\,\hbar/2\tau_q\)로 둔 모형이다. 해볼 것: ① 과녁의 평탄면 한가운데(\(R_{xx}\) 최소)로 \(B\)를 맞힌다. ② 온도를 10 K 넘게 올리면 좁은 평탄면부터 사라진다 — 어느 평탄면이 가장 오래 버티나? ③ 그래핀으로 바꾸면 평탄면이 \(\nu = 2, 6, 10\)에만 나타난다. 왜 4의 배수에서 2만큼 어긋날까?</div>
+    </div>
+    <div class="tangle" id="tg-qhe">
+      <p>농도 <span class="tn" data-var="n" data-min="0.2" data-max="100" data-step="0.1" data-unit="×10¹¹ cm⁻²">3.0</span>인 2차원 전자 기체에서 \(\nu =\) <span class="tn" data-var="nu" data-min="1" data-max="12" data-step="1">2</span> 평탄면의 한가운데는 \(B = nh/\nu e =\) <span class="tn-out" data-out="B"></span>이고, 그곳의 홀 저항은 <span class="tn-out" data-out="R"></span>, 홀 전도도는 <span class="tn-out" data-out="G"></span>다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="GaAs 홀 막대의 평탄면 위치">
+      <p>\(n = 3.0\times10^{11}\) cm⁻²인 GaAs 2차원 전자 기체로 만든 홀 막대가 있다. (a) \(\nu = 4\), \(\nu = 2\), \(\nu = 1\) 평탄면의 중심 자기장과 (b) \(\nu = 2\)에서의 홀 저항(소수 둘째 자리까지)을 구하라. (c) 전류 10 µA를 흘리면 홀 전압은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 평탄면 중심은 \(\nu\)가 정확히 정수인 곳: \(B_\nu = nh/\nu e\). \(R_{xy} = R_K/\nu\).</div>
+        <div class="step"><b>풀이</b> (a) \(nh/e = 3.0\times10^{15}\times4.1357\times10^{-15} = 12.41\) T이므로 \(B_4 = 3.10\) T, \(B_2 = 6.20\) T, \(B_1 = 12.4\) T. (b) \(R_K/2 = 25\,812.807\,46/2 = 12\,906.40\) Ω. (c) \(V_H = 12\,906.40\times10\times10^{-6} = 0.129\) V.</div>
+        <div class="answer">(a) 3.10 T, 6.20 T, 12.4 T (b) 12 906.40 Ω (c) 129 mV</div>
+        <div class="step"><b>검토</b> \(\nu = 1\) 평탄면은 스핀 갈래가 갈라져야 나타나므로 교환 증대된 제이만 간격이 무질서 폭보다 커야 한다. 실제 측정에서는 전류를 키우면 가장자리 사이 전위 차가 커져 평탄면이 깨지는 "붕괴 전류"가 있어, 저항 표준용 소자는 수십 µA 이하로 쓴다.</div>
+      </details>
+    </div>
+    <h3>그래핀: 반정수 양자 홀 효과</h3>
+    <p>그래핀의 전자는 질량 없는 디랙 입자(\(E = \pm\hbar v_F|\mathbf k|\), \(v_F \approx 10^6\) m/s)여서 란다우 준위가 등간격이 아니라 \(\sqrt n\)으로 늘어서고, 에너지 0에 전자와 정공이 반씩 나눠 갖는 준위가 생긴다.</p>
+    <div class="formula">$$E_n = \mathrm{sgn}(n)\,v_F\sqrt{2e\hbar B|n|}, \qquad \sigma_{xy} = \pm\,4\Big(N + \frac12\Big)\frac{e^2}{h} \quad (\nu = \pm2, \pm6, \pm10, \dots)$$<div class="where">4는 스핀 2 × 골짜기 2의 축퇴, \(\frac12\)은 \(n = 0\) 준위가 전자·정공에 반씩 속하기 때문이다. \(E_1\)은 10 T에서 115 meV로 같은 자기장의 GaAs \(\hbar\omega_c\)(17 meV)보다 여섯 배 넘게 크고, 실온 열에너지(26 meV)의 네 배가 넘는다. 그래서 그래핀은 실온에서도 양자 홀 평탄면을 보인 유일한 물질이다(45 T, 2007년).</div></div>
+    <div class="callout semi"><strong>저항 표준: 양자 홀 소자에서 팹의 측정기까지</strong><p>각국 표준 기관은 GaAs 또는 SiC 위 에피 그래핀 양자 홀 소자를 \(\nu = 2\)에 두고 \(R_K/2 = 12\,906.4\) Ω을 만든 뒤, 극저온 전류 비교기(CCC)로 100 Ω·1 kΩ·10 kΩ 표준 저항에 \(10^{-9}\) 수준으로 옮긴다. 이 값이 교정 기관을 거쳐 팹의 파라메트릭 테스터(SMU)와 정밀 저항, 프로브 카드 검증용 기준 칩의 저항으로 내려온다. 그래핀 소자는 5 T, 4 K 남짓에서도 넓은 평탄면이 나와 냉동기 하나로 도는 탁상형 표준이 보급되고 있다. 1990–2018년에는 관례값 \(R_{K\text{-}90} = 25\,812.807\) Ω을 썼으므로, 2019년 SI 개정 때 모든 저항 교정값이 약 \(1.8\times10^{-8}\)만큼 바뀌었다(연습문제). 같은 해 조지프슨 상수 \(K_J = 2e/h\)도 정확해져, 전압·저항·전류(\(I = V/R\))가 모두 기본 상수에 묶였다 → <a href="https://semi.euiyun.com/test/chapters/dc.html">TestBook · DC·파라메트릭 테스트</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="sdh">
+    <h2>슈브니코프–드하스 진동과 2DEG 측정</h2>
+    <p>양자 홀 평탄면은 강한 자기장·저온의 극한이다. 그보다 약한 자기장에서는 란다우 준위가 페르미 준위를 하나씩 지나갈 때마다 \(E_F\)의 상태 밀도가 진동해 세로 저항이 오르내린다. 이것이 <span class="term">슈브니코프–드하스 진동</span><span class="en">(Shubnikov–de Haas oscillation)</span>이다. 그 주기·온도 의존성·자기장 감쇠에서 2차원 전자 기체의 농도·유효 질량·양자 수명을 읽어 낸다 — 이종 접합 에피 웨이퍼와 MOSFET 반전층의 표준 진단법이다.</p>
+    <h3>출발점: 고전 홀 측정</h3>
+    <p>약한 자기장(\(\mu B \ll 1\))에서 2차원 시료의 홀 저항과 면저항은 드루데 모형으로 충분하다(<a href="../../solid-state/chapters/electron-dynamics.html#hall">고체물리 · 홀 효과와 홀 이동도</a>).</p>
+    <div class="formula">$$\rho_{xy} = \frac{B}{n e}, \qquad \rho_{xx}(0) = R_\square = \frac{1}{n e\mu}, \qquad \mu = \frac{e\tau_t}{m^*}$$<div class="where">홀 기울기 \(d\rho_{xy}/dB\)에서 농도 \(n\)을, 영자기장 면저항 \(R_\square\)에서 이동도 \(\mu\)와 <span class="term">수송 수명</span><span class="en">(transport lifetime)</span> \(\tau_t\)를 얻는다. 막대 대신 임의 모양 시료의 네 모서리에 전극을 단 반 데르 포 배치도 같은 값을 준다(<a href="../../solid-state/chapters/electron-dynamics.html#vdp">반 데르 포 방법</a>). 평행 전도층이 있으면 홀 농도는 여러 층의 가중 평균이 되어 실제 채널 농도와 어긋난다 — 이때 SdH가 진가를 발휘한다.</div></div>
+    <div class="example" data-title="홀 측정으로 구한 농도와 이동도">
+      <p>4.2 K에서 GaAs 홀 막대의 저자기장 홀 저항 기울기가 \(dR_{xy}/dB = 2081\) Ω/T, 영자기장 면저항이 \(R_\square = 20.0\) Ω이었다. (a) 전자 농도, (b) 이동도, (c) 수송 수명과 평균 자유 경로(\(m^* = 0.067m_\mathrm{e}\))를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n = 1/(e\,dR_{xy}/dB)\), \(\mu = 1/(neR_\square)\), \(\tau_t = \mu m^*/e\), \(l = v_F\tau_t\), \(v_F = \hbar\sqrt{2\pi n}/m^*\).</div>
+        <div class="step"><b>풀이</b> (a) \(n = 1/(1.602\times10^{-19}\times2081) = 3.00\times10^{15}\) m⁻² \(= 3.00\times10^{11}\) cm⁻². (b) \(\mu = 1/(3.00\times10^{15}\times1.602\times10^{-19}\times20.0) = 104\) m²/V·s \(= 1.04\times10^6\) cm²/V·s. (c) \(\tau_t = 104\times0.067\times9.109\times10^{-31}/1.602\times10^{-19} = 39.6\) ps. \(v_F = 1.0546\times10^{-34}\times1.373\times10^8/6.10\times10^{-32} = 2.37\times10^5\) m/s, \(l = 9.4\) µm.</div>
+        <div class="answer">(a) \(3.00\times10^{11}\) cm⁻² (b) \(1.04\times10^6\) cm²/V·s (c) 39.6 ps, 9.4 µm</div>
+        <div class="step"><b>검토</b> 상온 실리콘 전자(1400 cm²/V·s)보다 700배 넘게 크다. 변조 도핑으로 도너를 채널에서 떼어 놓았기 때문이다(<a href="https://semi.euiyun.com/device/chapters/hetero.html">DeviceBook · 이종 접합과 밴드 공학</a>). 평균 자유 경로가 µm를 넘으므로 µm 크기 소자에서는 전자가 탄도적으로 움직인다. \(\mu B = 1\)이 되는 자기장은 0.01 T뿐이라 저자기장 근사는 이보다 훨씬 작은 \(B\)에서만 맞는다.</div>
+      </details>
+    </div>
+    <h3>리프시츠–코세비치 식</h3>
+    <p>\(E_F\)는 거의 고정되어 있고 준위 간격 \(\hbar\omega_c\)가 \(B\)에 비례하므로, \(E_F/\hbar\omega_c\)가 정수(스핀 축퇴 2DEG에서 짝수 \(\nu\))를 지날 때마다 상태 밀도가 극소가 된다. \(E_F/\hbar\omega_c = \pi\hbar n/eB\)이므로 진동은 \(B\)가 아니라 \(1/B\)에 대해 주기적이다. 첫 고조파만 쓰면</p>
+    <div class="formula">$$\frac{\Delta\rho_{xx}}{\rho_0} = -4\,\frac{X}{\sinh X}\,e^{-\pi/\omega_c\tau_q}\cos\!\Big(\frac{2\pi F}{B}\Big), \qquad X = \frac{2\pi^2k_BT}{\hbar\omega_c}, \qquad F = \frac{h\,n}{g_s e}$$<div class="where">\(F\)를 <span class="term">SdH 진동수</span><span class="en">(SdH frequency)</span>라 한다(단위 T). 스핀 축퇴(\(g_s = 2\))면 \(n = (2e/h)F = 4.836\times10^{10}\ \text{cm}^{-2}\times F/\text{T}\), 곧 \(\Delta(1/B) = 1/F\)만 재면 농도가 나온다. \(X/\sinh X\)는 페르미 분포의 열 퍼짐이 만드는 감쇠(<span class="term">열 감쇠 인자</span><span class="en">(thermal damping factor)</span>), \(e^{-\pi/\omega_c\tau_q}\)는 준위 넓힘이 만드는 <span class="term">딩글 인자</span><span class="en">(Dingle factor)</span>다. 이것이 <span class="term">리프시츠–코세비치 식</span><span class="en">(Lifshitz–Kosevich formula)</span>이다.</div></div>
+    <div class="compare">
+      <div><h4>주기 → 농도</h4><p>\(\rho_{xx}\) 극소의 \(1/B\) 간격 \(\Delta(1/B) = g_se/hn\). 평행 전도층이 섞여도 채널 하나하나의 농도를 따로 준다. 부띠가 둘이면 진동수가 둘이라 맥놀이가 생기고, 푸리에 변환에 봉우리 두 개가 보인다.</p></div>
+      <div><h4>온도 → 유효 질량</h4><p>같은 \(B\)에서 진폭이 온도에 따라 \(X/\sinh X\)로 줄어든다. \(X \propto m^*T/B\)이므로 진폭 대 온도 곡선을 맞추면 \(m^*\)가 나온다. 비포물선 띠라면 \(E_F\)에서의 사이클로트론 질량이다.</p></div>
+      <div><h4>자기장 → 양자 수명</h4><p>열 인자로 나눈 진폭의 로그를 \(1/B\)에 대해 그리면(딩글 그림) 기울기가 \(-\pi m^*/e\tau_q\)다. 작은 각 산란도 모두 세는 \(\tau_q\)와 큰 각 산란만 세는 \(\tau_t\)(이동도)의 비가 산란원의 종류를 알려 준다.</p></div>
+    </div>
+    <div class="sim" id="sim-sdh">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>미지 시료의 SdH 진동: 빗을 맞춰 농도를 알아내라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-sdh"></canvas><span class="hint top">아래 그림의 흰 원 두 개: 빗의 첫 이(위치)와 둘째 이(간격)</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>온도 T <output id="sdh-T-out"></output></span><input type="range" id="sdh-T" min="0.3" max="15" step="0.1" value="1.5"></label>
+          <label class="ctrl"><span>자기장 범위 B<sub>max</sub> <output id="sdh-B-out"></output></span><input type="range" id="sdh-B" min="0.6" max="4" step="0.05" value="2"></label>
+          <label class="check"><input type="checkbox" id="sdh-env"> LK 포락선(첫 고조파) 그리기</label>
+          <div class="game-row"><button class="btn primary" id="sdh-new" type="button">새 시료</button><button class="btn" id="sdh-check" type="button">정답 확인</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">빗 간격 Δ(1/B)</span><span class="v" id="sdh-d">—</span></div>
+        <div class="stat"><span class="k">추정 농도 n = 2e/hΔ</span><span class="v" id="sdh-n">—</span></div>
+        <div class="stat"><span class="k">1 T에서 X · ω<sub>c</sub>τ<sub>q</sub></span><span class="v" id="sdh-x">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="sdh-res">—</span></div>
+      </div>
+      <div class="sim-note">GaAs 2차원 전자 기체(\(m^* = 0.067m_\mathrm{e}\), 스핀 축퇴)의 \(\rho_{xx}/\rho_0\)를 상태 밀도의 모든 고조파까지 더해 그렸다(위: \(B\) 축, 아래: \(1/B\) 축). 농도와 양자 수명은 숨겨져 있다. 해볼 것: ① 아래 그림에서 빗살을 극소에 맞춘다 — \(B\) 축에서는 간격이 들쭉날쭉하지만 \(1/B\) 축에서는 일정하다. ② 온도를 올리면 낮은 자기장 쪽 진동부터 사라진다(\(X \propto T/B\)). ③ 강한 자기장 쪽 극소가 0까지 떨어지면 그곳이 양자 홀 평탄면의 시작이다.</div>
+    </div>
+    <figure class="mini" id="mini-lk">
+      <div class="mini-view"><canvas id="cv-lk"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>맞춤 질량 m* <output id="lk-m-out"></output></span><input type="range" id="lk-m" min="0.02" max="0.25" step="0.001" value="0.10"></label>
+        <span class="readout" id="lk-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(B = 1.0\) T에서 온도마다 잰 SdH 진폭(점, 0.3 K 값으로 나눔, 측정 잡음 포함)과 리프시츠–코세비치 열 인자 \(X/\sinh X\)(곡선). 질량을 바꿔 곡선을 점에 맞춰라. 잔차가 가장 작은 질량이 이 시료의 사이클로트론 유효 질량이다.</figcaption>
+    </figure>
+    <div class="example" data-title="SdH 진동에서 농도와 유효 질량 읽기">
+      <p>어떤 2차원 전자 기체의 \(\rho_{xx}\)가 \(B = 2.585\) T와 1.723 T에서 이웃한 극소를 보였다(스핀 축퇴). (a) 농도와 두 극소의 채움 인자는? (b) \(B = 1.00\) T에서 진동 진폭이 1.5 K → 4.2 K로 올릴 때 0.186배로 줄었다. 유효 질량은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(\Delta(1/B) = 1/F\), \(n = 2eF/h\), \(\nu = nh/eB\). (b) \(A(4.2)/A(1.5) = [X_2/\sinh X_2]/[X_1/\sinh X_1]\), \(X = 2\pi^2k_BTm^*/\hbar eB\)를 \(m^*\)에 대해 수치로 푼다.</div>
+        <div class="step"><b>풀이</b> (a) \(1/1.723 - 1/2.585 = 0.5804 - 0.3868 = 0.1936\) T⁻¹, \(F = 5.17\) T, \(n = 4.836\times10^{10}\times5.17 = 2.50\times10^{11}\) cm⁻². \(\nu = nh/eB = 10.34\ \text{T}/B\): 2.585 T에서 \(\nu = 4.00\), 1.723 T에서 6.00. (b) \(m^* = 0.067m_\mathrm{e}\)이면 1 T에서 \(\hbar\omega_c = 1.728\) meV, \(X_1 = 2\pi^2(0.1293)/1.728 = 1.477\), \(X_2 = 4.135\); \(X/\sinh X\) = 0.712, 0.132, 비 0.186. 이분법으로 풀면 \(m^* = 0.0670m_\mathrm{e}\).</div>
+        <div class="answer">(a) \(n = 2.50\times10^{11}\) cm⁻², \(\nu = 4\)와 6 (b) \(m^* = 0.067m_\mathrm{e}\)</div>
+        <div class="step"><b>검토</b> 극소가 짝수 \(\nu\)에 오는 것은 스핀 축퇴 2DEG의 표시다. 온도를 세 배로 올리자 진폭이 다섯 배 넘게 줄었다 — \(X \gtrsim 1\)이면 감쇠가 \(\sim 2Xe^{-X}\)로 지수적이라 질량 결정이 예민하다. 같은 방법으로 Si(100) 반전층에서는 \(0.19m_\mathrm{e}\), GaN HEMT 채널에서는 약 \(0.23m_\mathrm{e}\)가 나온다.</div>
+      </details>
+    </div>
+    <p>두 수명의 비 \(\tau_t/\tau_q\)는 산란의 각도 분포를 알려 준다. 변조 도핑 GaAs처럼 멀리 떨어진 이온화 도너가 주 산란원이면 대부분 작은 각으로 꺾여 이동도에는 거의 기여하지 않으므로 \(\tau_t/\tau_q \sim 10\)–20이다. 계면 거칠기나 채널 안 불순물처럼 짧은 거리 산란이 지배하면 비가 1에 가깝다. 실리콘 MOSFET 반전층이 그런 예다.</p>
+    <div class="drill" id="drill-sdh" data-title="홀·SdH 측정 해석 반복 연습"></div>
+    <div class="callout semi"><strong>HEMT 에피 웨이퍼의 2DEG 검사</strong><p>GaN HEMT 에피는 AlGaN/GaN 계면의 분극 전하가 도핑 없이 \(n_s \approx 1\times10^{13}\) cm⁻²의 2DEG를 만든다. 상온 이동도 2000 cm²/V·s이면 \(R_\square = 1/(n_se\mu) \approx 310\) Ω/□이고, 양산에서는 비접촉 와전류 면저항 지도와 테스트 조각의 반 데르 포 홀 측정으로 웨이퍼마다 \(n_s\), \(\mu\)를 확인한다. 저온 SdH는 더 깊은 정보를 준다: 진동수가 둘이면 AlGaN 장벽 쪽 평행 전도나 둘째 부띠가 채워졌다는 뜻이고, 유효 질량(약 \(0.23m_\mathrm{e}\))과 \(\tau_t/\tau_q\)는 전위 산란과 계면 거칠기 중 무엇이 이동도를 깎는지 가려 준다. 실리콘 소자에서도 같은 측정으로 변형 실리콘·SiGe 채널의 질량 감소를 직접 확인한다 → <a href="https://semi.euiyun.com/power/chapters/gan.html">PowerBook · GaN HEMT</a>, <a href="https://semi.euiyun.com/device/chapters/transport.html">DeviceBook · 캐리어 수송</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fock-darwin">
+    <h2>포크–다윈 준위: 자기장 속 양자점</h2>
+    <p>2차원 전자 기체를 게이트 전압으로 가두면 지름 수십–수백 nm의 <span class="term">양자점</span><span class="en">(quantum dot)</span>이 된다. 게이트가 만드는 가둠 퍼텐셜은 바닥 근처에서 포물선 \(\frac12m^*\omega_0^2r^2\)로 잘 근사된다. 여기에 수직 자기장을 걸면 2차원 조화 진동자(\(\hbar\omega_0\))와 란다우 준위(\(\hbar\omega_c\))가 섞인다. 1928년 포크와 1930년 다윈이 푼 이 문제가 자기장 속 양자점 분광의 기준선이다.</p>
+    <p>대칭 게이지에서 1절의 전개를 그대로 쓰면, 반자성 항 \(\frac18m^*\omega_c^2r^2\)이 가둠 퍼텐셜에 더해져 진동수를 키우고 상자성 항이 \(\hat L_z\)에 비례하는 이동을 준다.</p>
+    <div class="formula">$$\hat H = \frac{\hat{\mathbf p}^2}{2m^*} + \frac12 m^*\Omega^2r^2 - \frac{\omega_c}{2}\hat L_z, \qquad \Omega = \sqrt{\omega_0^2 + \frac{\omega_c^2}{4}}$$
+    $$E_{n,l} = (2n + |l| + 1)\,\hbar\Omega - \frac12\,l\,\hbar\omega_c, \qquad n = 0, 1, 2, \dots,\quad l = 0, \pm1, \pm2, \dots$$<div class="where">\(n\)은 지름 마디 수, \(l\)은 각운동량 \(L_z = l\hbar\)다(부호는 전자의 전하와 \(B\) 방향에 맞춰, 자기장이 \(l \gt 0\) 상태를 낮추도록 잡았다). 이 준위들이 <span class="term">포크–다윈 준위</span><span class="en">(Fock–Darwin levels)</span>다. 첫 항은 진동수 \(\Omega\)인 2차원 진동자, 둘째 항은 궤도 제이만 에너지다.</div></div>
+    <div class="compare">
+      <div><h4>\(B \to 0\): 2차원 진동자</h4><p>\(\Omega = \omega_0\), \(E = (N + 1)\hbar\omega_0\), \(N = 2n + |l|\). 껍질 \(N\)의 축퇴도는 \(N+1\)(스핀까지 \(2(N+1)\))이라 전자 2, 6, 12, 20개에서 껍질이 닫힌다. 1996년 타루차 등이 원통형 양자점의 전자 추가 에너지에서 이 "2차원 주기율표"를 확인했다.</p></div>
+      <div><h4>\(B \to \infty\): 란다우 준위</h4><p>\(\Omega \to \omega_c/2\)이므로 \(E \to \hbar\omega_c\,(n + \frac{|l| - l}{2} + \frac12)\). \(l \ge 0\)이고 \(n = 0\)인 상태가 모두 바닥 란다우 준위로 모이고, 가둠은 그 축퇴를 \(\hbar\omega_0^2/\omega_c\) 정도로만 살짝 푼다. 2절 대칭 게이지의 고리 상태가 바로 이것이다.</p></div>
+    </div>
+    <div class="predict" data-for="sim-fd">
+      <p>\(B = 0\)에서 겹쳐 있던 \((n, l) = (0, +1)\)과 \((0, -1)\) 준위는 약한 자기장에서 어떻게 갈라질까?</p>
+      <div class="opts"><button class="opt">둘 다 \(B^2\)에 비례해 위로 올라간다</button><button class="opt" data-correct>\(\pm\frac12\hbar\omega_c\)만큼 반대로, \(B\)에 비례해 갈라진다</button><button class="opt">갈라지지 않는다 — \(|l|\)만 에너지에 들어가므로</button><button class="opt">\(l = +1\)만 내려가고 \(l = -1\)은 그대로다</button></div>
+      <div class="quiz-exp">약한 자기장에서 \(\hbar\Omega \approx \hbar\omega_0 + \hbar\omega_c^2/8\omega_0\)는 \(B^2\)으로 조금 오르고, 궤도 제이만 항 \(-\frac12l\hbar\omega_c\)이 \(B\)에 비례해 \(\pm\)로 가른다. 아래에서 저자기장 기울기와 강자기장의 란다우 극한을 함께 보라.</div>
+    </div>
+    <div class="sim" id="sim-fd">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>포크–다윈 스펙트럼: 자기장을 끌어 전자를 채워라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-fd"></canvas><span class="hint top">흰 원: 자기장 B 커서 · 굵은 선: 지금 전자가 들어 있는 준위</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>가둠 ħω₀ <output id="fd-w-out"></output></span><input type="range" id="fd-w" min="0.5" max="8" step="0.1" value="3"></label>
+          <label class="ctrl"><span>전자 수 N <output id="fd-N-out"></output></span><input type="range" id="fd-N" min="1" max="20" step="1" value="6"></label>
+          <label class="check"><input type="checkbox" id="fd-ll" checked> 란다우 준위 ħω<sub>c</sub>(k+½) 점선</label>
+          <label class="check"><input type="checkbox" id="fd-lab"> 준위 이름 (n, l) 보이기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">B · ħω<sub>c</sub> · ħΩ</span><span class="v" id="fd-B">—</span></div>
+        <div class="stat"><span class="k">맨 위 전자의 준위</span><span class="v" id="fd-top">—</span></div>
+        <div class="stat"><span class="k">총 에너지(상호작용 무시)</span><span class="v" id="fd-E">—</span></div>
+        <div class="stat"><span class="k">바닥 상태 크기 √⟨r²⟩</span><span class="v" id="fd-r">—</span></div>
+      </div>
+      <div class="sim-note">GaAs(\(m^* = 0.067m_\mathrm{e}\)), 스핀 축퇴, 전자 사이 쿨롱 상호작용은 무시했다. 해볼 것: ① \(B = 0\)의 껍질 축퇴 1, 2, 3, …을 세고, 자기장이 그 축퇴를 어떻게 푸는지 본다. ② 맨 위 전자의 준위가 바뀌는 자기장(준위 교차)을 찾는다 — 실제 양자점에서는 이때 전자 추가 에너지가 꺾인다. ③ \(\hbar\omega_0\)를 줄이면 같은 \(B\)에서 더 일찍 란다우 준위(점선)로 모인다. 기준은 \(\omega_c\)와 \(\omega_0\)의 비다.</div>
+    </div>
+    <figure class="mini" id="mini-fd">
+      <div class="mini-view"><canvas id="cv-fdr"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>각운동량 l <output id="fdr-l-out"></output></span><input type="range" id="fdr-l" min="0" max="6" step="1" value="2"></label>
+        <label class="ctrl"><span>자기장 B <output id="fdr-B-out"></output></span><input type="range" id="fdr-B" min="0" max="10" step="0.1" value="0"></label>
+        <span class="readout" id="fdr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(n = 0\) 포크–다윈 상태의 지름 확률 \(2\pi r|\psi|^2\)(실선)과 위에서 본 밀도(오른쪽 원판). 길이 단위는 \(\ell_\Omega = \sqrt{\hbar/m^*\Omega}\)이고 \(\langle r^2\rangle = (|l| + 1)\ell_\Omega^2\)이다. 자기장을 올리면 고리가 조여 들고, 반지름 \(\sqrt{\langle r^2\rangle}\) 안의 자속이 \((|l| + 1)\Phi_0\)(\(\Phi_0 = h/e\))에 다가간다(\(\hbar\omega_0 = 3\) meV).</figcaption>
+    </figure>
+    <div class="example" data-title="GaAs 양자점의 포크–다윈 준위">
+      <p>\(\hbar\omega_0 = 3.0\) meV로 가둔 GaAs 양자점(\(m^* = 0.067m_\mathrm{e}\))에 \(B = 2.0\) T를 건다. (a) \(\hbar\omega_c\)와 \(\hbar\Omega\), (b) \((0,0)\), \((0,+1)\), \((0,-1)\), \((0,+2)\) 준위, (c) 바닥 상태의 크기 \(\sqrt{\langle r^2\rangle}\)를 \(B = 0\)과 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\hbar\omega_c = 1.728\ \text{meV/T}\times B\), \(\hbar\Omega = \sqrt{(\hbar\omega_0)^2 + (\hbar\omega_c)^2/4}\), \(E_{0,l} = (|l| + 1)\hbar\Omega - \frac12l\hbar\omega_c\). 바닥 상태는 가우스 \(e^{-r^2/2\ell_\Omega^2}\)이라 \(\langle r^2\rangle = \ell_\Omega^2 = \hbar/m^*\Omega\).</div>
+        <div class="step"><b>풀이</b> (a) \(\hbar\omega_c = 3.456\) meV, \(\hbar\Omega = \sqrt{9.00 + 2.986} = 3.462\) meV. (b) \(E_{0,0} = 3.462\), \(E_{0,+1} = 6.924 - 1.728 = 5.196\), \(E_{0,-1} = 6.924 + 1.728 = 8.652\), \(E_{0,+2} = 10.386 - 3.456 = 6.930\) meV. (c) \(B = 0\): \(\ell_0 = \sqrt{\hbar/m^*\omega_0} = 19.5\) nm. \(B = 2\) T: \(\ell_\Omega = 19.5\times\sqrt{3.00/3.462} = 18.1\) nm.</div>
+        <div class="answer">(a) 3.46 meV, 3.46 meV (b) 3.46, 5.20, 8.65, 6.93 meV (c) 19.5 nm → 18.1 nm</div>
+        <div class="step"><b>검토</b> 2 T에서 이미 \((0,+2)\)가 \((0,-1)\)보다 1.7 meV 낮아, 5번째 전자부터 채우는 순서가 \(B = 0\)과 달라진다(교차는 1.23 T, 연습문제). 실제로는 쿨롱 에너지(이 크기에서 수 meV)가 준위 간격과 맞먹어 스핀 배치가 훈트 규칙처럼 바뀌고, 강자기장에서는 전자들이 최대 밀도 방울을 거쳐 분수 양자 홀 상태의 씨앗을 만든다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>실리콘 스핀 큐비트: 양자점 하나에 전자 하나</strong><p>Si MOS나 Si/SiGe 이종 구조 위에 촘촘한 게이트를 깔아 만든 양자점에 전자를 하나씩 채우면(쿨롱 봉쇄, <a href="../../solid-state/chapters/nanostructures.html#single-electron">고체물리 · 단전자 효과</a>), 그 스핀이 큐비트가 된다. 1 T에서 스핀 제이만 간격 \(g\mu_BB\)는 116 µeV, 곧 28 GHz의 마이크로파로 뒤집는다. 궤도 간격(이 절의 \(\hbar\omega_0\), 수 meV)과 골짜기 간격(<a href="symmetry.html">7장</a>)이 이보다 충분히 커야 스핀만 골라 다룰 수 있고, 계면 거칠기가 골짜기 간격을 줄이면 큐비트가 망가진다. 그래서 게이트 산화막·계면 품질과 300 mm CMOS 공정이 큐비트 수율을 정한다 — 양자 컴퓨터가 반도체 공정 문제가 되는 지점이다(<a href="quantum-information.html">18장</a>).</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>전자기장 속 해밀토니언은 최소 결합 \(\hat H = (\hat{\mathbf p} - q\mathbf A)^2/2m + q\phi\)이다. 속도는 운동 운동량 \(\hat{\boldsymbol\Pi} = \hat{\mathbf p} - q\mathbf A\)가 나타내며 \([\hat\Pi_x, \hat\Pi_y] = i\hbar qB\). 게이지 변환 \(\mathbf A \to \mathbf A + \nabla\chi\)에서 \(\psi \to e^{iq\chi/\hbar}\psi\)이고, \(\langle\hat{\mathbf p}\rangle\)이 아닌 \(\langle\hat{\boldsymbol\Pi}\rangle\), \(|\psi|^2\), \(\mathbf j\), 준위만 물리적이다.</li>
+      <li>대칭 게이지로 전개하면 상자성 항 \(-(q/2m)\mathbf B\cdot\hat{\mathbf L}\)과 반자성 항 \(q^2B^2\rho^2/8m\)이 나온다. 둘의 비는 \(\langle\rho^2\rangle/4\ell_B^2\)이라 원자에서는 \(10^{-6}\), 엑시톤·양자점·2DEG에서는 1 이상이 된다.</li>
+      <li>균일한 \(B\) 속 2차원 운동은 란다우 준위 \(E_n = \hbar\omega_c(n + \frac12)\)으로 양자화된다(\(\hbar\omega_c = 0.1158\) meV/T × \(m_\mathrm{e}/m^*\)). 자기 길이 \(\ell_B = 25.66\ \text{nm}/\sqrt{B}\), 준위당 상태 밀도 \(eB/h = 2.418\times10^{10}\) cm⁻²/T(자속 양자당 하나), 채움 인자 \(\nu = nh/eB\). 준위가 보이려면 \(\omega_c\tau_q \gtrsim 1\), \(k_BT \ll \hbar\omega_c\).</li>
+      <li>자기장이 없는 곳을 지나는 전자도 두 경로가 감싼 자속만큼 위상차 \(q\Phi/\hbar = 2\pi\Phi/(h/e)\)를 얻는다(아하로노프–봄). 메조스코픽 고리의 전도도는 \(\Delta B = (h/e)/\pi R^2\)(앙상블 평균에서는 \(h/2e\)) 주기로 진동하고, 고립된 고리에는 지속 전류가 흐른다.</li>
+      <li>초전도 응축체의 위상이 한 값이어야 하므로 고리 속 자속은 \(h/2e = 2.068\times10^{-15}\) Wb의 정수배다. 두 조지프슨 접합의 SQUID는 \(I_c = 2I_0|\cos(\pi\Phi/\Phi_0)|\)로 \(10^{-6}\Phi_0\)까지 재고, 초전도 큐비트의 기본 소자다.</li>
+      <li>정수 양자 홀 효과: \(E_F\)가 편재 상태 구간에 있으면 \(R_{xy} = h/\nu e^2\), \(R_{xx} = 0\). 전류는 한 방향 가장자리 채널(채널당 \(e^2/h\))로 흐르고, 양자화의 정확성은 로플린의 게이지 논증(자속 양자 하나 = 준위당 전자 하나)에서 온다. \(R_K = h/e^2\)는 SI 2019에서 정확한 값이며 저항 표준이다. 그래핀은 \(\nu = \pm2, \pm6, \dots\)의 반정수 양자 홀 효과를 보인다.</li>
+      <li>SdH 진동 \(\Delta\rho_{xx}/\rho_0 = -4(X/\sinh X)e^{-\pi/\omega_c\tau_q}\cos(2\pi F/B)\)의 \(1/B\) 주기는 농도(\(n = 2eF/h\)), 온도 감쇠는 유효 질량, 딩글 감쇠는 양자 수명을 준다. 홀 측정의 \(n\), \(\mu = e\tau_t/m^*\)와 함께 쓰면 \(\tau_t/\tau_q\)가 산란원을 가린다. 포물선 양자점의 포크–다윈 준위 \((2n + |l| + 1)\hbar\Omega - \frac12l\hbar\omega_c\)는 2차원 진동자와 란다우 준위를 잇는다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>필요하면 \(h = 6.626\times10^{-34}\) J·s, \(\hbar = 1.0546\times10^{-34}\) J·s, \(e = 1.602\times10^{-19}\) C, \(m_\mathrm{e} = 9.109\times10^{-31}\) kg, \(k_B = 8.617\times10^{-5}\) eV/K, \(\mu_B = 57.88\ \mu\)eV/T를 쓴다. 자주 쓰는 조합: \(\hbar\omega_c = 0.1158\ \text{meV/T}\times(m_\mathrm{e}/m^*)\), \(\ell_B = 25.66\ \text{nm}/\sqrt{B/\text{T}}\), \(eB/h = 2.418\times10^{10}\) cm⁻²/T, \(h/e = 4.1357\times10^{-15}\) Wb, \(h/2e = 2.0678\times10^{-15}\) Wb, \(R_K = h/e^2 = 25\,812.807\) Ω.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="자기 길이" data-answer="8.55" data-label="ℓ_B =" data-unit="nm">
+        <div class="prob-q"><p>9.0 T에서 자기 길이 \(\ell_B = \sqrt{\hbar/eB}\)는?</p></div>
+        <div class="prob-hint">\(\ell_B\)는 \(1/\sqrt B\)에 비례한다. 1 T에서 25.66 nm.</div>
+        <div class="prob-sol"><p>\(\ell_B = 25.66/\sqrt{9.0} = 8.55\) nm. 질량과 무관하므로 어떤 물질의 전자에도 같다. 바닥 란다우 준위의 파동함수 폭이 이 정도다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="사이클로트론 공명" data-answer="13.8; 89.7" data-label="ħω_c =; λ =" data-unit="meV; µm">
+        <div class="prob-q"><p>GaAs 전자(\(m^* = 0.067m_\mathrm{e}\))의 8.0 T에서 사이클로트론 에너지 \(\hbar\omega_c\)와, 이 전이를 일으키는 빛의 진공 파장은?</p></div>
+        <div class="prob-hint">\(\hbar\omega_c = 0.1158\times8.0/0.067\) meV, \(\lambda = hc/E = 1239.8\ \text{eV·nm}/E\).</div>
+        <div class="prob-sol"><p>\(\hbar\omega_c = 1.728\times8.0 = 13.8\) meV. \(\lambda = 1239.8/0.01382 = 8.97\times10^4\) nm \(= 89.7\) µm(원적외선). 사이클로트론 공명 흡수 파장에서 유효 질량을 직접 읽는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="란다우 준위 축퇴" data-answer="9.67e10" data-label="n_B =" data-unit="cm⁻²">
+        <div class="prob-q"><p>4.0 T에서 란다우 준위 하나(스핀 하나)가 담을 수 있는 전자의 면밀도는?</p></div>
+        <div class="prob-hint">\(n_B = eB/h\): 자속 양자 하나당 상태 하나.</div>
+        <div class="prob-sol"><p>\(n_B = 1.602\times10^{-19}\times4.0/6.626\times10^{-34} = 9.67\times10^{14}\) m⁻² \(= 9.67\times10^{10}\) cm⁻². 물질·질량과 무관하다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="게이지 불변성">
+        <div class="prob-q"><p>균일한 자기장 속 전자의 같은 물리 상태를 란다우 게이지와 대칭 게이지로 각각 기술했다. 두 기술에서 값이 <em>다를 수 있는</em> 것은?</p></div>
+        <div class="prob-choices"><button>확률 밀도 \(|\psi(\mathbf r)|^2\)</button><button>운동 운동량의 기댓값 \(\langle\hat{\mathbf p} - q\mathbf A\rangle\)</button><button data-correct>정준 운동량의 기댓값 \(\langle -i\hbar\nabla\rangle\)</button><button>에너지 고유값</button></div>
+        <div class="prob-sol"><p>게이지 변환에서 \(\psi \to e^{iq\chi/\hbar}\psi\)이므로 \(\langle -i\hbar\nabla\rangle \to \langle -i\hbar\nabla\rangle + q\langle\nabla\chi\rangle\)로 바뀐다. 나머지는 모두 게이지 불변이다. 그래서 \(-i\hbar\nabla\)는 자기장 속에서 관측량이 아니다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="양자 홀 저항" data-answer="8604" data-label="R_xy =" data-unit="Ω">
+        <div class="prob-q"><p>\(\nu = 3\) 양자 홀 평탄면의 홀 저항은?</p></div>
+        <div class="prob-hint">\(R_{xy} = R_K/\nu\).</div>
+        <div class="prob-sol"><p>\(25\,812.807/3 = 8604.27\) Ω. 홀수 평탄면은 스핀 갈래가 갈라진 경우에 나타난다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="채움 인자" data-answer="5.51; 4.14" data-label="ν =; B(ν=4) =" data-unit="; T">
+        <div class="prob-q"><p>\(n = 4.0\times10^{11}\) cm⁻²인 2차원 전자 기체에 3.0 T를 걸었을 때의 채움 인자와, \(\nu = 4\) 평탄면 중심의 자기장을 구하라.</p></div>
+        <div class="prob-hint">\(\nu = nh/eB\). \(nh/e\)를 먼저 계산해 두면 편하다.</div>
+        <div class="prob-sol"><p>\(nh/e = 4.0\times10^{15}\times4.1357\times10^{-15} = 16.54\) T이므로 \(\nu = 16.54/3.0 = 5.51\), \(B_{\nu=4} = 16.54/4 = 4.14\) T. 3 T에서는 \(n = 0, 1\) 준위(스핀 포함 4갈래)가 차고 \(n = 2\) 준위에 1.5갈래만큼 전자가 있다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="아하로노프–봄 주기" data-answer="21.1; 10.5" data-label="ΔB(h/e) =; ΔB(h/2e) =" data-unit="mT; mT">
+        <div class="prob-q"><p>반지름 250 nm인 메조스코픽 금속 고리에서 (a) \(h/e\) 진동과 (b) 시간 반전 경로의 \(h/2e\) 진동의 자기장 주기는?</p></div>
+        <div class="prob-hint">\(\Delta B = \Phi_0/\pi R^2\).</div>
+        <div class="prob-sol"><p>\(\pi R^2 = 1.963\times10^{-13}\) m². (a) \(4.1357\times10^{-15}/1.963\times10^{-13} = 2.11\times10^{-2}\) T \(= 21.1\) mT. (b) 그 절반 10.5 mT. 실제 고리는 팔의 폭이 있어 안·바깥 반지름 사이의 주기들이 섞이므로 진동수 스펙트럼에 폭이 생긴다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="SQUID 감도" data-answer="20.7" data-label="B 잡음 =" data-unit="fT/√Hz">
+        <div class="prob-q"><p>유효 면적 0.20 mm²인 픽업 고리를 단 SQUID 자속계의 자속 잡음이 \(2.0\ \mu\Phi_0/\sqrt{\text{Hz}}\)(\(\Phi_0 = h/2e\))이다. 자기장 잡음은?</p></div>
+        <div class="prob-hint">\(\delta B = \delta\Phi/S\). 0.20 mm² = \(2.0\times10^{-7}\) m².</div>
+        <div class="prob-sol"><p>\(\delta B = 2.0\times10^{-6}\times2.068\times10^{-15}/2.0\times10^{-7} = 2.07\times10^{-14}\) T \(= 20.7\) fT/√Hz. 사람 뇌의 자기장(수십–수백 fT)을 잴 수 있는 수준이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="SdH 주기" data-answer="5.09e11" data-label="n =" data-unit="cm⁻²">
+        <div class="prob-q"><p>스핀 축퇴 2차원 전자 기체의 \(\rho_{xx}\) 극소가 \(1/B\)에 대해 \(\Delta(1/B) = 0.0950\) T⁻¹ 간격으로 나타났다. 전자 농도는?</p></div>
+        <div class="prob-hint">\(n = (2e/h)F\), \(F = 1/\Delta(1/B)\). \(2e/h = 4.836\times10^{10}\) cm⁻²/T.</div>
+        <div class="prob-sol"><p>\(F = 1/0.0950 = 10.53\) T, \(n = 4.836\times10^{10}\times10.53 = 5.09\times10^{11}\) cm⁻². 홀 농도와 다르면 평행 전도층을 의심한다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="홀 이동도" data-answer="4.99e5; 19.0" data-label="μ =; τ_t =" data-unit="cm²/V·s; ps">
+        <div class="prob-q"><p>농도 \(5.0\times10^{11}\) cm⁻², 저온 면저항 25 Ω인 GaAs 2DEG(\(m^* = 0.067m_\mathrm{e}\))의 이동도와 수송 수명은?</p></div>
+        <div class="prob-hint">\(\mu = 1/(neR_\square)\), \(\tau_t = \mu m^*/e\).</div>
+        <div class="prob-sol"><p>\(\mu = 1/(5.0\times10^{15}\times1.602\times10^{-19}\times25) = 49.9\) m²/V·s \(= 4.99\times10^5\) cm²/V·s. \(\tau_t = 49.9\times6.103\times10^{-32}/1.602\times10^{-19} = 1.90\times10^{-11}\) s \(= 19.0\) ps.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="SdH 진동의 주기성">
+        <div class="prob-q"><p>2차원 전자 기체의 SdH 진동이 일정한 간격으로 반복되는 변수는?</p></div>
+        <div class="prob-choices"><button>\(B\)</button><button data-correct>\(1/B\)</button><button>\(B^2\)</button><button>\(\sqrt B\)</button></div>
+        <div class="prob-sol"><p>극소 조건은 \(E_F/\hbar\omega_c\)가 정수, 곧 \(\pi\hbar n/eB\)가 정수인 것이므로 \(1/B\)에 대해 등간격이다. 고정된 페르미 면적(3차원 금속에서는 극값 단면적)이 진동수를 정한다 — 드하스–판알펜 효과로 금속의 페르미 면을 재는 원리와 같다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="반자성 이동" data-answer="4.77" data-label="√⟨ρ²⟩ =" data-unit="nm">
+        <div class="prob-q"><p>InGaAs 양자점 엑시톤의 발광선이 자기장에서 \(\Delta E = \gamma B^2\), \(\gamma = 10\ \mu\)eV/T²로 올라갔다. 환산 질량 \(\mu = 0.050m_\mathrm{e}\)이라면 엑시톤 파동함수의 면내 크기 \(\sqrt{\langle\rho^2\rangle}\)는? (\(\gamma = e^2\langle\rho^2\rangle/8\mu\))</p></div>
+        <div class="prob-hint">\(\langle\rho^2\rangle = 8\mu\gamma/e^2\). \(\gamma\)를 J/T²로 바꾼다.</div>
+        <div class="prob-sol"><p>\(\gamma = 10\times10^{-6}\times1.602\times10^{-19} = 1.602\times10^{-24}\) J/T². \(\langle\rho^2\rangle = 8\times0.050\times9.109\times10^{-31}\times1.602\times10^{-24}/(1.602\times10^{-19})^2 = 2.27\times10^{-17}\) m², \(\sqrt{\langle\rho^2\rangle} = 4.77\) nm. 같은 물질의 덩어리 엑시톤(수십 nm)보다 훨씬 작다 — 양자점이 전자와 정공을 함께 조인다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="리프시츠–코세비치 질량" data-answer="0.0700" data-tol="2%" data-label="m*/mₑ =" data-unit="">
+        <div class="prob-q"><p>\(B = 1.20\) T에서 SdH 진폭이 1.6 K일 때보다 4.2 K일 때 0.265배였다. 사이클로트론 유효 질량은?</p></div>
+        <div class="prob-hint">\(A \propto X/\sinh X\), \(X = 2\pi^2k_BT/\hbar\omega_c = 2\pi^2k_BT\,m^*/(\hbar eB)\). \(m^* = 0.067\)부터 대입해 비를 맞춘다.</div>
+        <div class="prob-hint">\(m^* = 0.067m_\mathrm{e}\)이면 1.2 T, 1.6 K에서 \(X = 1.313\), 비는 0.288. 비가 더 작으므로 질량이 조금 더 크다.</div>
+        <div class="prob-sol"><p>\(X_1 = 1.313\,(m^*/0.067)\), \(X_2 = 2.625X_1\). \(m^* = 0.070\)이면 \(X_1 = 1.371\), \(X_2 = 3.600\), \(X/\sinh X = 0.744, 0.197\), 비 0.265. 따라서 \(m^* = 0.0700m_\mathrm{e}\). GaAs 띠 바닥값 0.067보다 큰 것은 \(E_F\)에서의 비포물선성 때문이다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="포크–다윈 교차" data-answer="1.23" data-tol="2%" data-label="B =" data-unit="T">
+        <div class="prob-q"><p>\(\hbar\omega_0 = 3.0\) meV인 GaAs 양자점(\(m^* = 0.067m_\mathrm{e}\))에서 \((n, l) = (0, +2)\) 준위가 \((0, -1)\) 준위보다 낮아지기 시작하는 자기장은?</p></div>
+        <div class="prob-hint">\(E_{0,2} = 3\hbar\Omega - \hbar\omega_c\), \(E_{0,-1} = 2\hbar\Omega + \frac12\hbar\omega_c\). 같다고 두면 \(\Omega = \frac32\omega_c\).</div>
+        <div class="prob-sol"><p>\(\omega_0^2 + \omega_c^2/4 = \frac94\omega_c^2\) → \(\omega_c = \omega_0/\sqrt2\), \(\hbar\omega_c = 2.121\) meV, \(B = 2.121/1.728 = 1.23\) T. 이 자기장을 넘으면 5–6번째 전자가 \(l = +2\)로 들어가 총 각운동량이 바뀐다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="SI 2019와 저항 표준" data-answer="17.8; 0.178" data-tol="2%; 2%" data-label="상대 변화 =; 10 kΩ 변화 =" data-unit="×10⁻⁹; mΩ">
+        <div class="prob-q"><p>2018년까지 저항 교정은 양자 홀 저항을 관례값 \(R_{K\text{-}90} = 25\,812.807\) Ω로 놓고 했다. 2019년부터는 정확한 \(R_K = h/e^2 = 25\,812.807\,459\) Ω를 쓴다. 같은 측정 비율로 교정된 저항의 SI 값은 상대적으로 얼마나 바뀌었나(\(10^{-9}\) 단위)? 10 kΩ 표준 저항의 값은 몇 mΩ 바뀌나?</p></div>
+        <div class="prob-hint">교정값 = (측정한 비) × (양자 홀 저항에 매긴 값). 비는 그대로다.</div>
+        <div class="prob-sol"><p>\(R_K/R_{K\text{-}90} - 1 = 0.000\,459/25\,812.807 = 1.78\times10^{-8} = 17.8\times10^{-9}\). 10 kΩ는 \(+0.178\) mΩ. 이 차이는 1990년 관례값을 정할 때의 \(h\), \(e\) 불확도 범위 안에 있었고, 덕분에 개정 전후 측정 체계가 끊김 없이 이어졌다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>자기장 속 전자의 해밀토니언에서 \(\hat{\mathbf p}\) 대신 \(\hat{\mathbf p} - q\mathbf A\)를 쓰는 가장 근본적인 이유는?</p><div class="opts">
+        <button class="opt">로런츠 힘이 속도에 비례하기 때문에</button>
+        <button class="opt" data-correct>파동함수의 국소 위상 변환과 퍼텐셜의 게이지 변환을 함께 했을 때 방정식이 변하지 않게 하려고</button>
+        <button class="opt">자기장이 에너지를 바꾸지 않기 때문에</button>
+        <button class="opt">스핀을 넣기 위해서</button>
+      </div><div class="quiz-exp">\(\hat{\mathbf p} - q\mathbf A\)는 \(\psi \to e^{iq\chi/\hbar}\psi\), \(\mathbf A \to \mathbf A + \nabla\chi\)에 대해 공변이다. 이 결합에서 로런츠 힘이 결과로 나온다. 스핀은 별도의 파울리 항이다.</div></div>
+      <div class="quiz-q"><p>란다우 준위의 축퇴도에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">유효 질량이 작을수록 크다</button>
+        <button class="opt">준위 번호 \(n\)이 클수록 크다</button>
+        <button class="opt" data-correct>시료를 지나는 자속을 \(h/e\)로 센 수와 같아, 질량과 \(n\)에 무관하다</button>
+        <button class="opt">온도가 낮을수록 크다</button>
+      </div><div class="quiz-exp">\(N = \Phi/\Phi_0 = AB/(h/e)\). 질량은 간격 \(\hbar\omega_c\)만 정하고, 모든 준위가 같은 수의 상태를 가진다.</div></div>
+      <div class="quiz-q"><p>아하로노프–봄 실험에서 무늬 이동이 "자기장이 새어 나와서"가 아님을 보이는 가장 좋은 관찰은?</p><div class="opts">
+        <button class="opt">무늬가 자속에 비례해 움직인다</button>
+        <button class="opt" data-correct>포락선은 그대로이고 무늬만 움직이며, 자속이 \(h/e\)만큼 바뀌면 원래 무늬와 똑같아진다</button>
+        <button class="opt">무늬의 밝기가 줄어든다</button>
+        <button class="opt">전자의 에너지가 바뀐다</button>
+      </div><div class="quiz-exp">새는 자기장이 힘을 주면 빔 전체(포락선)가 휘어야 한다. AB 효과는 위상만 바꾸므로 포락선은 그대로이고, \(\Phi \bmod \Phi_0\)만 관측된다. 토노무라의 초전도 차폐 실험이 이를 확증했다.</div></div>
+      <div class="quiz-q"><p>양자 홀 저항이 시료의 불순물·모양과 무관하게 \(10^{-10}\) 수준으로 정확한 이유로 가장 알맞은 것은?</p><div class="opts">
+        <button class="opt">고이동도 시료만 쓰기 때문에</button>
+        <button class="opt">극저온에서는 산란이 사라지기 때문에</button>
+        <button class="opt" data-correct>홀 전도도가 자속 양자 하나당 옮겨지는 전자 수라는 정수(위상수학적 불변량)이기 때문에</button>
+        <button class="opt">란다우 준위 간격이 정확히 \(\hbar\omega_c\)이기 때문에</button>
+      </div><div class="quiz-exp">로플린 논증에서 \(\sigma_{xy} = \nu e^2/h\)의 \(\nu\)는 셈의 결과다. 무질서는 오히려 편재 상태를 만들어 평탄면을 넓힌다. 준위 간격은 평탄면 폭에만 영향을 준다.</div></div>
+      <div class="quiz-q"><p>SdH 진동의 진폭이 온도를 올리면 줄어드는 정도에서 얻는 양은?</p><div class="opts">
+        <button class="opt">전자 농도</button>
+        <button class="opt" data-correct>유효 질량</button>
+        <button class="opt">수송 수명</button>
+        <button class="opt">홀 계수의 부호</button>
+      </div><div class="quiz-exp">열 감쇠 인자 \(X/\sinh X\)의 \(X = 2\pi^2k_BT/\hbar\omega_c\)에 \(m^*\)가 들어 있다. 농도는 주기, 양자 수명은 자기장 감쇠(딩글), 수송 수명은 영자기장 저항에서 얻는다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const K = QM.K, HB = K.hbar, EC = K.e, ME = K.me, HP = K.h, KBE = K.kBev, RK = K.RK, C = K.C;
+  const PHI0 = HP / EC, PHI0S = HP / (2 * EC), MUB = K.muB * 1000; // Wb, Wb, meV/T
+  const pal = () => SB.palette();
+  const fx = (x, d = 2) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const sup = (e) => String(e).replace(/-/g, "⁻").replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+  const sci = (x, d = 2) => { if (!(x > 0)) return "0"; const e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); return `${m.toFixed(d)}×10${sup(e)}`; };
+  const line = (ctx, ch, xs, ys, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let st = false; for (let i = 0; i < xs.length; i++) { const y = ys[i]; if (!isFinite(y)) { st = false; continue; } const px = ch.X(xs[i]), py = ch.Y(y); st ? ctx.lineTo(px, py) : ctx.moveTo(px, py); st = true; } ctx.stroke(); ctx.restore(); };
+  const fill = (ctx, ch, xs, ys, base, col, alpha) => { ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(ch.X(xs[0]), ch.Y(base)); for (let i = 0; i < xs.length; i++) ctx.lineTo(ch.X(xs[i]), ch.Y(ys[i])); ctx.lineTo(ch.X(xs[xs.length - 1]), ch.Y(base)); ctx.closePath(); ctx.fill(); ctx.restore(); };
+  const clip = (ctx, b) => { ctx.save(); ctx.beginPath(); ctx.rect(b.x, b.y, b.w, b.h); ctx.clip(); };
+  const fmtE = (E) => { const a = Math.abs(E); return a >= 1000 ? fx(E / 1000, 2) + " eV" : a >= 1 ? fx(E, 2) + " meV" : a >= 1e-3 ? fx(E * 1000, 1) + " µeV" : sci(a * 1e6, 2) + " neV"; }; // E in meV
+  const fmtB = (B) => (B >= 1 ? B.toFixed(2) + " T" : B >= 1e-3 ? (B * 1000).toFixed(B >= 0.1 ? 0 : B >= 0.01 ? 1 : 2) + " mT" : B >= 1e-6 ? (B * 1e6).toFixed(B >= 1e-4 ? 0 : 2) + " µT" : B >= 1e-9 ? (B * 1e9).toFixed(1) + " nT" : B >= 1e-12 ? (B * 1e12).toFixed(1) + " pT" : (B * 1e15).toFixed(1) + " fT");
+  const fmtR = (R) => (R >= 1000 ? (R / 1000).toFixed(R >= 1e4 ? 3 : 4) + " kΩ" : R >= 1 ? R.toFixed(R >= 100 ? 1 : 2) + " Ω" : R >= 1e-3 ? (R * 1000).toFixed(1) + " mΩ" : "≈ 0 Ω");
+  const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const hwc = (B, m) => (0.115767636 * B) / m;      // ħω_c (meV)
+  const lB = (B) => 25.6556418 / Math.sqrt(B);       // ℓ_B (nm)
+  const nBof = (B) => (EC * B) / HP * 1e-4;           // eB/h (cm⁻²)
+  const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)), y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
+  const Phi = (x) => 0.5 * (1 + erf(x / Math.SQRT2));
+  const AT = (x) => (x < 1e-6 ? 1 : x > 700 ? 0 : x / Math.sinh(x));
+
+  /* ---------------------------------------------------------- 양자 홀 모형 (머리·5절) */
+  const MAT = {
+    gaas: { m: 0.067, g: 2, ratio: 10, gz: 5, Bmax: 12, nMax: 6, name: "GaAs" },
+    si: { m: 0.19, g: 4, ratio: 1.5, gz: 3, Bmax: 20, nMax: 20, name: "Si(100)" },
+    gr: { vF: 1e6, g: 4, ratio: 2, dirac: true, Bmax: 15, nMax: 10, name: "그래핀" },
+  };
+  function qLevels(B, M, spin, nu) {
+    const L = []; let sub = 0, D;
+    if (!M.dirac) {
+      D = hwc(B, M.m); const dz = spin ? M.gz * MUB * B : 0;
+      const jmax = Math.ceil(nu / M.g) + 6 + Math.ceil(12 * Math.sqrt(0.3 / D));
+      for (let j = 0; j <= jmax; j++) { const E = D * (j + 0.5); if (spin) { L.push({ E: E - dz / 2, d: M.g / 2, j, s: -1 }); L.push({ E: E + dz / 2, d: M.g / 2, j, s: 1 }); } else L.push({ E, d: M.g, j, s: 0 }); }
+    } else {
+      D = (M.vF * Math.sqrt(2 * EC * HB * B)) / EC * 1000;
+      const J = Math.ceil(((Math.sqrt(Math.abs(nu) / 2) * D * 1.2 + 40) / D) ** 2) + 2;
+      for (let j = -J; j <= J; j++) L.push({ E: Math.sign(j) * D * Math.sqrt(Math.abs(j)), d: M.g, j, s: 0 });
+      sub = M.g * (J + 0.5);
+    }
+    return { L, sub, D };
+  }
+  function qhe(B, o) {
+    const M = MAT[o.mat]; B = Math.max(B, 0.05);
+    const n = o.n * 1e15, nB = (EC * B) / HP, nu = n / nB, tq = o.tq * 1e-12;
+    const { L, sub, D } = qLevels(B, M, o.spin && !M.dirac, nu);
+    const hG = (HB / (2 * tq)) / EC * 1000, th = (Math.PI * KBE * o.T * 1000) / Math.sqrt(3);
+    for (const l of L) {
+      const s = M.dirac ? (Math.abs(l.E) < D ? D : (D * D) / (2 * Math.abs(l.E))) : D;
+      const G = Math.sqrt((2 / Math.PI) * s * hG), a = 0.15 + 0.85 / (1 + Math.pow(s / (2 * G), 4));
+      l.G = Math.hypot(G, th); l.Ge = Math.hypot(a * G, th); l.sp = s;
+    }
+    const cnt = (EF, ext) => { let c = 0; for (const l of L) c += l.d * Phi((EF - l.E) / (ext ? l.Ge : l.G)); return c - sub; };
+    let lo = M.dirac ? -300 : -5, hi = M.dirac ? 300 : L[L.length - 1].E + 5;
+    for (let i = 0; i < 46; i++) { const mid = 0.5 * (lo + hi); if (cnt(mid, false) < nu) lo = mid; else hi = mid; }
+    const EF = 0.5 * (lo + hi), nuE = cnt(EF, true);
+    let d = 0; for (const l of L) d += ((l.d / M.g) * l.sp * Math.exp(-0.5 * ((EF - l.E) / l.Ge) ** 2)) / (Math.sqrt(2 * Math.PI) * l.Ge);
+    const mass = M.dirac ? (HB * Math.sqrt(Math.PI * n)) / M.vF : M.m * ME, mu = (EC * tq * M.ratio) / mass, r0 = 1 / (n * EC * mu);
+    const nc = Math.max(Math.abs(nuE), 1e-3);
+    return { nu, nuE, EF, rxy: RK / nc, rxx: r0 * d * (nu / nc) ** 2, r0, mu, L, D };
+  }
+  function qheTrace(o, B0, B1, N) {
+    const Bs = [], xy = [], xx = [], ef = [], nuE = [];
+    for (let i = 0; i < N; i++) { const B = B0 + ((B1 - B0) * i) / (N - 1), r = qhe(B, o); Bs.push(B); xy.push(r.rxy / 1000); xx.push(r.rxx); ef.push(r.EF); nuE.push(r.nuE); }
+    return { Bs, xy, xx, ef, nuE, B0, B1, N };
+  }
+  const tIdx = (tr, B) => SB.clamp(Math.round(((B - tr.B0) / (tr.B1 - tr.B0)) * (tr.N - 1)), 0, tr.N - 1);
+
+  /* ---------------------------------------------------------- 머리: 자기장 쓸기와 양자 홀 평탄면 */
+  {
+    const o = { mat: "gaas", n: 3, tq: 2, T: 0.3, spin: true }, BMIN = 0.15, BMAX = 12;
+    const tr = qheTrace(o, BMIN, BMAX, 420);
+    const xxMax = Math.max(...tr.xx) * 1.08;
+    let B = 0.4, ph = 0, drag = false, idle = 99;
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), wide = w >= 600;
+      const fb = wide ? { x: 50, y: 30, w: w * 0.4 - 62, h: h - 86 } : { x: 46, y: 30, w: w - 60, h: (h - 140) * 0.45 };
+      const tb = wide ? { x: w * 0.4 + 52, y: 30, w: w * 0.6 - 112, h: h - 86 } : { x: 46, y: fb.y + fb.h + 50, w: w - 70, h: (h - 140) * 0.55 };
+      self._tb = tb; self._fb = fb; self._wide = wide;
+      const i = tIdx(tr, B), r = qhe(B, o);
+      // 란다우 부채꼴
+      const cf = SB.chart(ctx, fb, { x: [0, BMAX], y: [0, 26], xLabel: wide ? "B (T)" : "", yLabel: "E (meV)", xTicks: [0, 4, 8, 12], yTicks: [0, 10, 20] });
+      clip(ctx, cf.box);
+      for (let j = 0; j < 16; j++) for (const s of [-1, 1]) {
+        const E = (BB) => hwc(BB, 0.067) * (j + 0.5) + (s * MUB * 5 * BB) / 2;
+        const filled = E(B) < r.EF;
+        ctx.strokeStyle = filled ? P.accent : P.faint; ctx.lineWidth = filled ? 2 : 1; ctx.globalAlpha = s < 0 ? 1 : 0.75;
+        ctx.beginPath(); ctx.moveTo(cf.X(0), cf.Y(E(0))); ctx.lineTo(cf.X(BMAX), cf.Y(E(BMAX))); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      line(ctx, cf, tr.Bs.slice(0, i + 1), tr.ef.slice(0, i + 1), P.warn, 2.6);
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(cf.X(B), cf.box.y); ctx.lineTo(cf.X(B), cf.box.y + cf.box.h); ctx.stroke(); ctx.setLineDash([]);
+      ctx.restore();
+      SB.label(ctx, "E_F", cf.X(B) + 16, cf.Y(r.EF) - 10, { color: P.warn, size: 11, bold: true });
+      // 저항 곡선
+      const ct = SB.chart(ctx, tb, { x: [0, BMAX], y: [0, 28], xLabel: wide ? "B (T)" : "", yLabel: wide ? "ρxy (kΩ)" : "", xTicks: wide ? [0, 2, 4, 6, 8, 10, 12] : [0, 4, 8, 12], yTicks: wide ? [0, 6.45, 12.91, 25.81] : [0, 12.91, 25.81], yFmt: (v) => v.toFixed(v > 20 ? 1 : 2) });
+      clip(ctx, ct.box);
+      const sxx = tr.xx.map((v) => (v / xxMax) * 28 * 0.55);
+      line(ctx, ct, tr.Bs, sxx, P.accent2, 1, [2, 3]); line(ctx, ct, tr.Bs, tr.xy, P.accent, 1, [2, 3]);
+      line(ctx, ct, tr.Bs.slice(0, i + 1), sxx.slice(0, i + 1), P.accent2, 2.2);
+      line(ctx, ct, tr.Bs.slice(0, i + 1), tr.xy.slice(0, i + 1), P.accent, 2.8);
+      ctx.restore();
+      handle(ctx, ct.X(B), ct.Y(Math.min(27.5, tr.xy[i])), P.accent, 7);
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ct.X(B), ct.Y(sxx[i]), 4, 0, 2 * Math.PI); ctx.fill();
+      SB.label(ctx, "ρxx", ct.box.x + ct.box.w - 22, ct.Y(28 * 0.6) , { color: P.accent2, size: 11, bold: true });
+      const k = Math.round(r.nuE), onP = Math.abs(r.nuE - k) < 0.01 && k >= 1 && r.rxx < 0.5;
+      SB.label(ctx, `B = ${B.toFixed(2)} T · ν = ${r.nu.toFixed(2)}`, 12, 14, { align: "left", bold: true, size: 13 });
+      SB.label(ctx, onP ? `평탄면 ν = ${k}: ρxy = h/${k === 1 ? "" : k}e² = ${(RK / k / 1000).toFixed(3)} kΩ, ρxx = 0` : `ρxy = ${(r.rxy / 1000).toFixed(2)} kΩ · ρxx = ${r.rxx.toFixed(0)} Ω`, wide ? tb.x : 12, wide ? 14 : fb.y + fb.h + 30, { align: "left", color: onP ? P.accent : P.dim, size: 12, bold: onP });
+    }, { aspect: 0.42, minHeight: 330, maxHeight: 400 });
+    const setB = (x) => { const b = cv._wide && x < cv._tb.x - 10 ? cv._fb : cv._tb; B = SB.clamp(((x - b.x) / b.w) * BMAX, BMIN, BMAX); };
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x) => { drag = true; setB(x); cv.redraw(); },
+      move: (id, x) => { if (!drag) return; setB(x); cv.redraw(); },
+      up: () => { drag = false; idle = 0; ph = Math.acos(SB.clamp(1 - (2 * (B - BMIN)) / (BMAX - BMIN), -1, 1)); } });
+    SB.loop("hero", (dt) => { if (drag) return; idle += dt; if (idle > 2.5) { ph += dt * 0.22; B = BMIN + ((BMAX - BMIN) * (1 - Math.cos(ph))) / 2; cv.redraw(); } });
+  }
+
+  /* ---------------------------------------------------------- 미니: 게이지와 고리 적분 */
+  {
+    let g = "lx";
+    const st = { p: [-0.55, -0.3], q: [0.35, 0.32] };
+    const Af = (x, y) => {
+      if (g === "lx") return [0, x];
+      if (g === "ly") return [-y, 0];
+      const s = [-y / 2, x / 2];
+      if (g === "chi") { s[0] += 0.9 * Math.cos(3 * x) * Math.cos(4 * y); s[1] += -1.2 * Math.sin(3 * x) * Math.sin(4 * y); }
+      return s;
+    };
+    const circ = () => {
+      const [x0, y0] = st.p, [x1, y1] = st.q, pts = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]; let s = 0;
+      for (let e = 0; e < 4; e++) { const [ax, ay] = pts[e], [bx, by] = pts[e + 1]; const N = 200; for (let k = 0; k < N; k++) { const t = (k + 0.5) / N, x = ax + (bx - ax) * t, y = ay + (by - ay) * t, A = Af(x, y); s += A[0] * ((bx - ax) / N) + A[1] * ((by - ay) / N); } }
+      return s;
+    };
+    const getG = SB.seg("gauge-g", (v) => { g = v; cv.redraw(); });
+    const cv = SB.canvas("cv-gauge", (ctx, w, h, self) => {
+      const P = pal(), XR = 1.25, YR = XR * (h / w), sc = w / (2 * XR), X = (x) => w / 2 + x * sc, Y = (y) => h / 2 - y * sc;
+      self._m = { sc, w, h, XR, YR };
+      ctx.fillStyle = P.faint; for (let i = -6; i <= 6; i++) for (let j = -4; j <= 4; j++) { const x = i * 0.2, y = j * 0.2; if (Math.abs(y) > YR) continue; ctx.beginPath(); ctx.arc(X(x) + 0.5 * sc * 0.1, Y(y) - 0.5 * sc * 0.1, 1.6, 0, 2 * Math.PI); ctx.fill(); }
+      for (let i = -6; i <= 6; i++) for (let j = -4; j <= 4; j++) {
+        const x = i * 0.2, y = j * 0.2; if (Math.abs(y) > YR - 0.05) continue; const A = Af(x, y), s = 0.13 * sc;
+        const L = Math.hypot(A[0], A[1]); if (L < 1e-6) continue; const f = Math.min(1, 1 / L) * Math.min(1.2, L);
+        SB.arrow(ctx, X(x), Y(y), X(x) + A[0] * s * f / Math.max(L, 0.6) * 1.0, Y(y) - A[1] * s * f / Math.max(L, 0.6), { color: P.accent2, width: 1.5 });
+      }
+      const [x0, y0] = st.p, [x1, y1] = st.q;
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.12; ctx.fillRect(Math.min(X(x0), X(x1)), Math.min(Y(y0), Y(y1)), Math.abs(X(x1) - X(x0)), Math.abs(Y(y1) - Y(y0))); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.strokeRect(Math.min(X(x0), X(x1)), Math.min(Y(y0), Y(y1)), Math.abs(X(x1) - X(x0)), Math.abs(Y(y1) - Y(y0)));
+      SB.arrow(ctx, X((x0 + x1) / 2) - 8, Y(Math.min(y0, y1)), X((x0 + x1) / 2) + 10, Y(Math.min(y0, y1)), { color: P.accent, width: 2.4 });
+      handle(ctx, X(x0), Y(y0), P.accent); handle(ctx, X(x1), Y(y1), P.accent);
+      self._h = [[X(x0), Y(y0)], [X(x1), Y(y1)]];
+      const S = Math.abs((x1 - x0) * (y1 - y0)), c = circ();
+      SB.label(ctx, "B ⊙ 균일 (점) · 화살표 = A", 10, 14, { align: "left", size: 11, color: P.dim });
+      document.getElementById("gauge-r").textContent = `∮A·dl = ${Math.abs(c).toFixed(4)} · B×넓이 = ${S.toFixed(4)} (B = 1)`;
+    }, { aspect: 0.52, minHeight: 220, maxHeight: 330 });
+    SB.drag(cv, { handles: () => [{ id: "p", x: cv._h[0][0], y: cv._h[0][1], r: 14 }, { id: "q", x: cv._h[1][0], y: cv._h[1][1], r: 14 }],
+      move: (id, x, y) => { const m = cv._m, wx = SB.clamp((x - m.w / 2) / m.sc, -m.XR + 0.05, m.XR - 0.05), wy = SB.clamp(-(y - m.h / 2) / m.sc, -m.YR + 0.05, m.YR - 0.05); st[id] = [wx, wy]; cv.redraw(); } });
+    void getG;
+  }
+
+  /* ---------------------------------------------------------- tangle: 반자성 대 상자성 */
+  SB.tangle("tg-dia", (v) => {
+    const r2 = (v.r * 1e-9) ** 2, m = v.m * ME, dia = ((EC * EC * v.B * v.B * r2) / (8 * m)) / EC * 1000, par = ((HB * EC * v.B) / (2 * m)) / EC * 1000, ratio = dia / par;
+    return { dia: fmtE(dia), par: fmtE(par), ratio: ratio < 0.01 ? sci(ratio, 2) : ratio.toFixed(2),
+      msg: ratio < 0.05 ? "반자성 항은 작은 섭동이다 — 원자·작은 분자의 영역." : ratio < 1 ? "반자성 항이 무시할 수 없다 — 섭동 2차까지 챙겨야 한다." : "반자성 항이 궤도 제이만보다 크다: 섭동이 깨지고 란다우 준위가 주인공이 된다(⟨ρ²⟩ ≳ 4ℓ_B²)." };
+  });
+
+  /* ---------------------------------------------------------- 란다우 게이지 실험대 */
+  {
+    const M = 0.067, W = 300, LY = 200, NX = 300, dx = W / (NX + 1);
+    const st = { B: 2, n: 0, X: 150, EF: 0, wall: true, ph: true };
+    let disp = null, cur = null;
+    const wallEl = document.getElementById("ld-wall"), phEl = document.getElementById("ld-phase");
+    const Xs = []; for (let i = 0; i <= 90; i++) Xs.push(-0.25 * W + (1.5 * W * i) / 90);
+    const Vof = (X, hw) => { const V = new Float64Array(NX), a = ((hw / 1000) ** 2 * M) / (4 * C); for (let i = 0; i < NX; i++) { const x = (i + 1) * dx - X; V[i] = a * x * x; } return V; };
+    function solveDisp() {
+      const hw = hwc(st.B, M);
+      disp = [0, 1, 2, 3].map(() => []);
+      for (const X of Xs) {
+        if (!st.wall) { for (let n = 0; n < 4; n++) disp[n].push(hw * (n + 0.5)); continue; }
+        const r = QM.eigen1D(Vof(X, hw), dx, { m: M, n: 4 });
+        for (let n = 0; n < 4; n++) disp[n].push(r.E[n] * 1000);
+      }
+    }
+    function solveCur() {
+      const hw = hwc(st.B, M), l = lB(st.B), phi = new Float64Array(NX); let E;
+      if (st.wall) { const r = QM.eigen1D(Vof(st.X, hw), dx, { m: M, n: 4 }); const p = r.psi[st.n]; let s = 0; for (let i = 0; i < NX; i++) s += p[i]; for (let i = 0; i < NX; i++) phi[i] = p[i] * (s < 0 && st.n === 0 ? -1 : 1); E = r.E[st.n] * 1000; }
+      else { for (let i = 0; i < NX; i++) phi[i] = QM.hoPsi(st.n, ((i + 1) * dx - st.X) / l); E = hw * (st.n + 0.5); }
+      cur = { phi, E };
+    }
+    const Eat = (n, X) => { const t = ((X - Xs[0]) / (Xs[Xs.length - 1] - Xs[0])) * (Xs.length - 1), i = SB.clamp(Math.floor(t), 0, Xs.length - 2), f = t - i; return disp[n][i] * (1 - f) + disp[n][i + 1] * f; };
+    function stats() {
+      const hw = hwc(st.B, M), l = lB(st.B), k = st.X / (l * l);
+      const dE = (Eat(st.n, st.X + 1.5) - Eat(st.n, st.X - 1.5)) / 3; // meV/nm
+      const v = ((l * 1e-9) ** 2 * (dE * 1e-3 * EC / 1e-9)) / HB;
+      let ch = 0; for (let n = 0; n < 40; n++) if (hw * (n + 0.5) < st.EF) ch++;
+      SB.stat("ld-l", `${l.toFixed(1)} nm · ${hw.toFixed(2)} meV`);
+      SB.stat("ld-X", `${st.X.toFixed(0)} nm · ${k.toFixed(3)} nm⁻¹`);
+      SB.stat("ld-E", `${cur.E.toFixed(2)} meV · ${Math.abs(v) < 50 ? "≈ 0" : (v / 1000).toFixed(1) + " km/s"}`);
+      SB.stat("ld-N", `${(nBof(st.B) * 1e-8).toFixed(0)}개 · ${ch}개 (스핀 무시)`);
+    }
+    let cvW = null, cvE = null;
+    const redraw = () => { stats(); cvW && cvW.redraw(); cvE && cvE.redraw(); };
+    const getB = SB.range("ld-B", (v) => (+v).toFixed(1) + " T", () => { st.B = getB(); st.EF = Math.min(st.EF, 4.4 * hwc(st.B, M)); if (st.EF <= 0) st.EF = 2 * hwc(st.B, M); solveDisp(); solveCur(); redraw(); });
+    st.B = getB(); st.EF = 2 * hwc(st.B, M);
+    SB.seg("ld-n", (v) => { st.n = +v; solveCur(); redraw(); });
+    wallEl.addEventListener("change", () => { st.wall = wallEl.checked; solveDisp(); solveCur(); redraw(); });
+    phEl.addEventListener("change", () => { st.ph = phEl.checked; redraw(); });
+    solveDisp(); solveCur();
+    cvW = SB.canvas("cv-ldw", (ctx, w, h, self) => {
+      const P = pal(), bx = { x: 30, y: 26, w: w - 44, h: h - 56 }, x0 = -0.08 * W, x1 = 1.08 * W;
+      const X = (x) => bx.x + ((x - x0) / (x1 - x0)) * bx.w, Y = (y) => bx.y + bx.h - (y / LY) * bx.h;
+      self._m = { bx, x0, x1 };
+      const nx = Math.max(40, Math.round(bx.w / 3)), ny = Math.max(30, Math.round(bx.h / 3));
+      const img = ctx.createImageData(nx, ny), l = lB(st.B), k = st.X / (l * l);
+      let pm = 0; for (let i = 0; i < NX; i++) pm = Math.max(pm, Math.abs(cur.phi[i]));
+      const bg = SB.isDark() ? [20, 22, 28] : [255, 255, 255], ac = SB.isDark() ? [244, 114, 182] : [190, 24, 93];
+      for (let jy = 0; jy < ny; jy++) for (let ix = 0; ix < nx; ix++) {
+        const x = x0 + ((ix + 0.5) / nx) * (x1 - x0), y = LY * (1 - (jy + 0.5) / ny);
+        let p = 0; if (x > 0 && x < W) { const t = x / dx - 1, i = SB.clamp(Math.floor(t), 0, NX - 2), f = t - i; p = (cur.phi[i] * (1 - f) + cur.phi[i + 1] * f) / pm; }
+        else if (!st.wall) p = QM.hoPsi(st.n, (x - st.X) / l) / (pm || 1);
+        const a = Math.min(1, Math.abs(p));
+        let c;
+        if (st.ph) { c = QM.phaseRGB(p * Math.cos(k * y), p * Math.sin(k * y), 0.5); }
+        else c = ac;
+        const al = st.ph ? a : a * a, o = (jy * nx + ix) * 4;
+        img.data[o] = bg[0] + (c[0] - bg[0]) * al; img.data[o + 1] = bg[1] + (c[1] - bg[1]) * al; img.data[o + 2] = bg[2] + (c[2] - bg[2]) * al; img.data[o + 3] = 255;
+      }
+      const off = document.createElement("canvas"); off.width = nx; off.height = ny; off.getContext("2d").putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(off, bx.x, bx.y, bx.w, bx.h);
+      ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.strokeRect(bx.x, bx.y, bx.w, bx.h);
+      if (st.wall) { ctx.fillStyle = P.dim; ctx.globalAlpha = 0.35; ctx.fillRect(bx.x, bx.y, X(0) - bx.x, bx.h); ctx.fillRect(X(W), bx.y, bx.x + bx.w - X(W), bx.h); ctx.globalAlpha = 1; }
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2; [0, W].forEach((x) => { ctx.beginPath(); ctx.moveTo(X(x), bx.y); ctx.lineTo(X(x), bx.y + bx.h); ctx.stroke(); });
+      const hx = X(SB.clamp(st.X, x0, x1)); handle(ctx, hx, Y(LY / 2), P.accent);
+      self._h = [hx, Y(LY / 2)];
+      SB.label(ctx, `ψ = e^(iky) φ${st.n}(x − kℓ²)`, 10, 13, { align: "left", size: 11, bold: true });
+      SB.label(ctx, "x (0–300 nm) →", bx.x + bx.w - 4, bx.y + bx.h + 16, { align: "right", size: 10, color: P.dim });
+      SB.label(ctx, "y ↑", 14, bx.y + 12, { size: 10, color: P.dim });
+    }, { aspect: 0.8, minHeight: 230, maxHeight: 360 });
+    cvE = SB.canvas("cv-ldE", (ctx, w, h, self) => {
+      const P = pal(), hw = hwc(st.B, M), Ym = 5 * hw;
+      const ch = SB.chart(ctx, { x: 46, y: 26, w: w - 64, h: h - 66 }, { x: [Xs[0], Xs[Xs.length - 1]], y: [0, Ym], xLabel: "띠 중심 X (nm)", yLabel: "E (meV)", xTicks: [0, 150, 300] });
+      self._ch = ch;
+      clip(ctx, ch.box);
+      ctx.fillStyle = P.dim; ctx.globalAlpha = 0.1; ctx.fillRect(ch.X(Xs[0]), ch.box.y, ch.X(0) - ch.X(Xs[0]), ch.box.h); ctx.fillRect(ch.X(W), ch.box.y, ch.X(Xs[Xs.length - 1]) - ch.X(W), ch.box.h); ctx.globalAlpha = 1;
+      for (let n = 0; n < 4; n++) line(ctx, ch, Xs, disp[n], n === st.n ? P.accent : P.accent2, n === st.n ? 3 : 1.6);
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 1.8; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(st.EF)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(st.EF)); ctx.stroke(); ctx.setLineDash([]);
+      // 가장자리 교점
+      for (let n = 0; n < 4; n++) for (let i = 0; i < Xs.length - 1; i++) { const a = disp[n][i] - st.EF, b = disp[n][i + 1] - st.EF; if (a * b < 0) { const xc = Xs[i] + (Xs[i + 1] - Xs[i]) * (a / (a - b)); ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(ch.X(xc), ch.Y(st.EF), 4, 0, 2 * Math.PI); ctx.fill(); } }
+      ctx.restore();
+      const hx = ch.X(st.X), hy = ch.Y(Math.min(Ym, cur.E)); handle(ctx, hx, hy, P.accent);
+      const fx_ = ch.box.x + ch.box.w - 10, fy = ch.Y(st.EF); handle(ctx, fx_, fy, P.warn);
+      self._h = { x: [hx, hy], f: [fx_, fy] };
+      SB.label(ctx, "E_F", fx_ - 22, fy - 12, { color: P.warn, size: 11, bold: true });
+      SB.label(ctx, `n = 0–3 · 굵은 선 n = ${st.n}`, 10, 13, { align: "left", size: 11, bold: true });
+    }, { aspect: 0.8, minHeight: 230, maxHeight: 360 });
+    const setX = (px, m) => { st.X = SB.clamp(m.x0 + ((px - m.bx.x) / m.bx.w) * (m.x1 - m.x0), Xs[0], Xs[Xs.length - 1]); solveCur(); redraw(); };
+    SB.drag(cvW, { handles: () => [{ id: "x", x: cvW._h[0], y: cvW._h[1], r: 14 }], free: true,
+      move: (id, x) => setX(x, cvW._m), down: (id, x) => { if (id === null) setX(x, cvW._m); } });
+    SB.drag(cvE, { handles: () => [{ id: "x", x: cvE._h.x[0], y: cvE._h.x[1], r: 14 }, { id: "f", x: cvE._h.f[0], y: cvE._h.f[1], r: 14 }],
+      move: (id, x, y) => { const ch = cvE._ch; if (id === "f") { const hw = hwc(st.B, M); st.EF = SB.clamp(((ch.box.y + ch.box.h - y) / ch.box.h) * 5 * hw, 0.05 * hw, 4.9 * hw); redraw(); } else { st.X = SB.clamp(Xs[0] + ((x - ch.box.x) / ch.box.w) * (Xs[Xs.length - 1] - Xs[0]), Xs[0], Xs[Xs.length - 1]); solveCur(); redraw(); } } });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 미니: 넓어진 란다우 준위의 상태 밀도 */
+  {
+    const M = 0.067, n = 3e15, D0 = (M * ME) / (Math.PI * HB * HB); // m⁻² J⁻¹ (스핀 포함)
+    let cv = null;
+    const getB = SB.range("dos-B", (v) => (+v).toFixed(2) + " T", () => cv && cv.redraw());
+    const getT = SB.range("dos-t", (v) => (+v).toFixed(2) + " ps", () => cv && cv.redraw());
+    cv = SB.canvas("cv-dos", (ctx, w, h) => {
+      const P = pal(), B = getB(), tq = getT() * 1e-12, hw = hwc(B, M), G = Math.sqrt((2 / Math.PI) * hw * ((HB / (2 * tq)) / EC * 1000));
+      const Emax = 24, js = []; for (let j = 0; hw * (j + 0.5) < Emax + 6 * G; j++) js.push(hw * (j + 0.5));
+      const Dn = (E) => { let s = 0; for (const Ej of js) s += Math.exp(-0.5 * ((E - Ej) / G) ** 2); return (s * hw) / (Math.sqrt(2 * Math.PI) * G); };
+      const cnt = (EF) => { let s = 0; for (const Ej of js) s += Phi((EF - Ej) / G); return s * 2 * nBof(B) * 1e4; };
+      let lo = -2, hi = 60; for (let i = 0; i < 50; i++) { const m = 0.5 * (lo + hi); if (cnt(m) < n) lo = m; else hi = m; }
+      const EF = 0.5 * (lo + hi), xs = [], ys = []; let ym = 1.5;
+      for (let i = 0; i <= 500; i++) { const E = (Emax * i) / 500; xs.push(E); const d = Dn(E); ys.push(d); ym = Math.max(ym, d); }
+      const ch = SB.chart(ctx, { x: 52, y: 26, w: w - 66, h: h - 70 }, { x: [0, Emax], y: [0, Math.min(ym * 1.1, 12)], xLabel: "E (meV)", yLabel: "D(E)/D₀" });
+      clip(ctx, ch.box);
+      const k = xs.findIndex((x) => x > EF);
+      fill(ctx, ch, xs.slice(0, k < 0 ? xs.length : k), ys.slice(0, k < 0 ? ys.length : k), 0, P.accent, 0.25);
+      line(ctx, ch, xs, ys, P.accent, 2.2);
+      line(ctx, ch, [0, Emax], [1, 1], P.dim, 1.4, [5, 4]);
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.X(EF), ch.box.y); ctx.lineTo(ch.X(EF), ch.box.y + ch.box.h); ctx.stroke();
+      ctx.restore();
+      SB.label(ctx, "E_F", ch.X(EF) + 14, ch.box.y + 12, { color: P.warn, size: 11, bold: true });
+      const wt = (EC * B / (M * ME)) * tq, nu = (n * HP) / (EC * B);
+      document.getElementById("dos-r").textContent = `ħω_c = ${hw.toFixed(2)} meV · Γ = ${G.toFixed(2)} meV · ω_cτ_q = ${wt.toFixed(2)} · ν = ${nu.toFixed(2)} ${wt < 1 ? "→ 준위가 녹아 있다" : "→ 준위가 갈라졌다"}`;
+      void D0;
+    }, { aspect: 0.45, minHeight: 210, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 란다우 숫자 */
+  SB.tangle("tg-ll", (v) => {
+    const hw = hwc(v.B, v.m), l = lB(v.B), nb = nBof(v.B), nu = (v.n * 1e11) / nb, Ef = (Math.PI * HB * HB * v.n * 1e15) / (v.m * ME) / EC * 1000;
+    const full = Math.floor(nu + 1e-9);
+    return { hw: fmtE(hw), lB: l.toFixed(1) + " nm", nB: sci(nb, 2) + " cm⁻²", nu: nu.toFixed(2),
+      msg: nu < 1 ? "ν가 1보다 작다: 모든 전자가 바닥 준위의 한 스핀 갈래에 들어간 양자 극한이다." : `스핀 갈래 ${full}개가 차 있고 다음 갈래가 ${((nu - full) * 100).toFixed(0)}% 찼다. 영자기장 페르미 에너지 ${Ef.toFixed(1)} meV를 ħω_c로 나누면 ${(Ef / hw).toFixed(2)}(스핀 축퇴면 ν/2).`};
+  });
+
+  /* ---------------------------------------------------------- 드릴: 란다우 준위 */
+  SB.drill("drill-ll", () => {
+    const [nm, m] = pick([["GaAs", 0.067], ["InAs", 0.023], ["Si(100)", 0.19], ["InSb", 0.014], ["GaN", 0.23]]);
+    const B = pick([1, 1.5, 2, 3, 4, 5, 6, 8, 9, 10, 12]), t = randInt(0, 2);
+    if (t === 0) { const v = hwc(B, m); return { q: `<p>${nm} 전자(\\(m^* = ${m}m_\\mathrm{e}\\))의 \\(B = ${B}\\) T에서 \\(\\hbar\\omega_c\\)는 몇 meV인가?</p>`, answer: v, label: "ħω<sub>c</sub> =", unit: "meV", tol: "1%", sol: `\\(\\hbar\\omega_c = 0.1158\\ \\text{meV}\\times${B}/${m} = ${v.toFixed(3)}\\) meV` }; }
+    if (t === 1) { const v = lB(B); return { q: `<p>\\(B = ${B}\\) T에서 자기 길이 \\(\\ell_B\\)는 몇 nm인가? (${nm} 시료)</p>`, answer: v, label: "ℓ<sub>B</sub> =", unit: "nm", tol: "1%", sol: `\\(\\ell_B = 25.66/\\sqrt{${B}} = ${v.toFixed(2)}\\) nm — 질량과 무관하다.` }; }
+    const n = pick([1.5, 2, 2.5, 3, 4, 5, 6]), v = (n * 1e11) / nBof(B);
+    return { q: `<p>농도 \\(${n}\\times10^{11}\\) cm⁻²인 2DEG에 \\(B = ${B}\\) T를 걸었다. 채움 인자 \\(\\nu\\)는?</p>`, answer: v, label: "ν =", unit: "", tol: "1%", sol: `\\(\\nu = n/(eB/h) = ${n}\\times10^{11}/(${(nBof(B) / 1e10).toFixed(3)}\\times10^{10}) = ${v.toFixed(3)}\\)` };
+  });
+
+  /* ---------------------------------------------------------- 아하로노프–봄 간섭계 */
+  {
+    const st = { f: 0, q: 1, hits: [], goal: null, done: false };
+    const NB = 64, YR = 5;
+    const sinc = (u) => (Math.abs(u) < 1e-9 ? 1 : Math.sin(Math.PI * u) / (Math.PI * u));
+    const I = (y) => sinc(y / 4) ** 2 * Math.cos(Math.PI * (y + st.q * st.f)) ** 2;
+    const hitsEl = document.getElementById("ab-hits");
+    let cv = null;
+    const newGoal = () => { st.goal = Math.round((Math.random() * 3.2 - 1.6) * 100) / 100; if (Math.abs(st.goal) < 0.2) st.goal += 0.5; st.done = false; };
+    const check = () => { if (st.goal === null) return; const s = st.q * st.f, k = Math.round(st.goal + s); if (Math.abs(k - s - st.goal) < 0.06) st.done = true; };
+    const stats = () => {
+      const s = st.q * st.f, k0 = Math.round(s);
+      SB.stat("ab-ph", `${(2 * Math.PI * s).toFixed(2)} rad = 2π × ${s.toFixed(2)}`);
+      SB.stat("ab-sh", `${fx(-s, 2)} (가운데 밝은 무늬 y = ${fx(k0 - s, 2)})`);
+      SB.stat("ab-n", String(st.hits.length));
+      SB.stat("ab-goal", st.goal === null ? "‘새 과녁’을 누르세요" : st.done ? `y = ${fx(st.goal, 2)} 명중! Φ/Φ₀ = ${fx(st.f, 2)} (다른 답: ±${(1 / st.q).toFixed(1)}씩)` : `밝은 무늬를 y = ${fx(st.goal, 2)}에`);
+    };
+    const getF = SB.range("ab-f", (v) => fx(+v, 2), () => { st.f = getF(); st.hits = []; check(); stats(); cv && cv.redraw(); });
+    SB.seg("ab-q", (v) => { st.q = +v; st.hits = []; check(); stats(); cv.redraw(); });
+    document.getElementById("ab-new").addEventListener("click", () => { newGoal(); check(); stats(); cv.redraw(); });
+    document.getElementById("ab-clear").addEventListener("click", () => { st.hits = []; stats(); cv.redraw(); });
+    cv = SB.canvas("cv-ab", (ctx, w, h, self) => {
+      const P = pal(), sx = w * 0.62, mid = h / 2, Ys = (y) => mid - (y / YR) * (h / 2 - 24), px0 = sx + 8, pw = w - px0 - 14;
+      self._m = { Ys, mid, h };
+      // 도식
+      const src = [w * 0.05 + 8, mid], slit = w * 0.22, sol = [w * 0.36, mid];
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(src[0], src[1], 7, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = P.dim; ctx.fillRect(slit - 3, 16, 6, mid - 30); ctx.fillRect(slit - 3, mid - 6, 6, 12); ctx.fillRect(slit - 3, mid + 14, 6, h - mid - 30);
+      const s = st.q * st.f, sw = Math.min(1, Math.abs(st.f) / 2);
+      ctx.fillStyle = P.warn; ctx.globalAlpha = 0.15 + 0.5 * sw; ctx.beginPath(); ctx.arc(sol[0], sol[1], 13, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(sol[0], sol[1], 13, 0, 2 * Math.PI); ctx.stroke();
+      SB.label(ctx, st.f >= 0 ? "⊙" : "⊗", sol[0], sol[1], { color: P.warn, size: 12 });
+      SB.label(ctx, `Φ = ${fx(st.f, 2)} Φ₀`, sol[0], sol[1] + 58, { color: P.warn, size: 11, bold: true });
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.8; ctx.globalAlpha = 0.85;
+      ctx.beginPath(); ctx.moveTo(src[0], src[1]); ctx.quadraticCurveTo(slit - 30, mid - 20, slit, mid - 10); ctx.quadraticCurveTo(sol[0], mid - 50, sx, mid); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(src[0], src[1]); ctx.quadraticCurveTo(slit - 30, mid + 20, slit, mid + 10); ctx.quadraticCurveTo(sol[0], mid + 50, sx, mid); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.text; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(sx, 14); ctx.lineTo(sx, h - 14); ctx.stroke();
+      // 세기와 누적
+      ctx.fillStyle = P.surface || P.bg; ctx.fillRect(px0, 14, pw, h - 28);
+      if (st.hits.length) {
+        const hist = new Array(NB).fill(0); st.hits.forEach((y) => { const b = Math.floor(((y + YR) / (2 * YR)) * NB); if (b >= 0 && b < NB) hist[b]++; });
+        const hm = Math.max(...hist), bh = (h - 48) / NB;
+        ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.55;
+        hist.forEach((c, b) => { const y = -YR + ((b + 0.5) / NB) * 2 * YR; ctx.fillRect(px0, Ys(y) - bh / 2, (c / hm) * pw * 0.95, Math.max(1, bh - 1)); });
+        ctx.globalAlpha = 1;
+      }
+      ctx.strokeStyle = P.faint; ctx.lineWidth = 1.4; ctx.setLineDash([4, 3]); ctx.beginPath();
+      for (let i = 0; i <= 300; i++) { const y = -YR + (2 * YR * i) / 300, v = sinc(y / 4) ** 2; const X = px0 + v * pw * 0.95, Y = Ys(y); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); } ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath();
+      for (let i = 0; i <= 400; i++) { const y = -YR + (2 * YR * i) / 400, X = px0 + I(y) * pw * 0.95, Y = Ys(y); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); } ctx.stroke();
+      if (st.goal !== null) { const gy = Ys(st.goal); ctx.strokeStyle = st.done ? P.ok : P.bad; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); ctx.beginPath(); ctx.moveTo(sx - 12, gy); ctx.lineTo(w - 10, gy); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, st.done ? "명중" : "과녁", sx - 20, gy - 10, { color: st.done ? P.ok : P.bad, size: 11, bold: true }); }
+      const k0 = Math.round(s), yc = k0 - s, hx = px0 + I(yc) * pw * 0.95;
+      handle(ctx, Math.min(hx, w - 14), Ys(yc), P.accent);
+      self._h = [Math.min(hx, w - 14), Ys(yc), k0];
+      SB.label(ctx, "스크린 y (무늬 간격 단위)", px0 + pw / 2, h - 6, { size: 10, color: P.dim });
+    }, { aspect: 0.58, minHeight: 260, maxHeight: 380 });
+    let kd = 0;
+    SB.drag(cv, { handles: () => [{ id: "fr", x: cv._h[0], y: cv._h[1], r: 16 }],
+      down: () => { kd = cv._h[2]; },
+      move: (id, x, y) => { const m = cv._m, yv = ((m.mid - y) / (m.h / 2 - 24)) * YR; let f = (kd - SB.clamp(yv, -1.5, 1.5)) / st.q; f = SB.clamp(f, -2, 2); st.f = Math.round(f * 100) / 100; getF.set(st.f, true); st.hits = []; check(); stats(); cv.redraw(); } });
+    SB.loop("sim-ab", (dt) => {
+      if (!hitsEl.checked) return;
+      const N = Math.min(6, Math.round(60 * dt * 1.5) + 1);
+      for (let k = 0; k < N && st.hits.length < 4000; k++) { for (let t = 0; t < 40; t++) { const y = (Math.random() * 2 - 1) * YR; if (Math.random() < I(y)) { st.hits.push(y); break; } } }
+      SB.stat("ab-n", String(st.hits.length)); cv.redraw();
+    });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 미니: 고리 준위와 지속 전류 */
+  {
+    let f = 0.2;
+    const allEl = document.getElementById("ring-all");
+    const cv = SB.canvas("cv-ring", (ctx, w, h, self) => {
+      const P = pal(), hTop = (h - 40) * 0.66;
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 64, h: hTop - 14 }, { x: [-1.5, 1.5], y: [0, 2.6], yLabel: "E/E₀", xTicks: [-1, -0.5, 0, 0.5, 1] });
+      const xs = []; for (let i = 0; i <= 300; i++) xs.push(-1.5 + (3 * i) / 300);
+      clip(ctx, ch.box);
+      if (allEl.checked) for (let m = -3; m <= 3; m++) line(ctx, ch, xs, xs.map((x) => (m - x) ** 2), P.accent2, 1.3, [4, 3]);
+      line(ctx, ch, xs, xs.map((x) => (Math.round(x) - x) ** 2), P.accent, 3);
+      ctx.restore();
+      const mg = Math.round(f), Eg = (mg - f) ** 2;
+      handle(ctx, ch.X(f), ch.Y(Eg), P.accent); self._h = [ch.X(f), ch.Y(Eg)]; self._ch = ch;
+      const c2 = SB.chart(ctx, { x: 50, y: hTop + 14, w: w - 64, h: h - hTop - 50 }, { x: [-1.5, 1.5], y: [-1.2, 1.2], xLabel: "Φ/Φ₀", yLabel: "I/(E₀/Φ₀)", xTicks: [-1, -0.5, 0, 0.5, 1], yTicks: [-1, 0, 1] });
+      clip(ctx, c2.box);
+      const ys = xs.map((x) => { const m = Math.round(x), d = m - x; return Math.abs(Math.abs(d) - 0.5) < 0.006 ? NaN : 2 * d; });
+      line(ctx, c2, xs, ys, P.warn, 2.4); line(ctx, c2, [-1.5, 1.5], [0, 0], P.faint, 1);
+      ctx.restore();
+      ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(c2.X(f), c2.Y(2 * (mg - f)), 5, 0, 2 * Math.PI); ctx.fill();
+      const I = 2 * (mg - f);
+      document.getElementById("ring-r").textContent = `Φ/Φ₀ = ${fx(f, 2)} · 바닥 m = ${mg} · E/E₀ = ${Eg.toFixed(3)} · I = ${fx(I, 2)} E₀/Φ₀ ${Math.abs(I) < 0.02 ? "(전류 없음)" : I > 0 ? "(반시계)" : "(시계)"}`;
+    }, { aspect: 0.62, minHeight: 260, maxHeight: 380 });
+    SB.drag(cv, { handles: () => [{ id: "f", x: cv._h[0], y: cv._h[1], r: 14 }], free: true,
+      move: (id, x) => { const ch = cv._ch; f = SB.clamp(-1.5 + ((x - ch.box.x) / ch.box.w) * 3, -1.45, 1.45); cv.redraw(); },
+      down: (id, x) => { if (id === null) { const ch = cv._ch; f = SB.clamp(-1.5 + ((x - ch.box.x) / ch.box.w) * 3, -1.45, 1.45); cv.redraw(); } } });
+    allEl.addEventListener("change", () => cv.redraw());
+  }
+
+  /* ---------------------------------------------------------- tangle: 고리 주기 */
+  SB.tangle("tg-ab", (v) => {
+    const S = Math.PI * (v.R * 1e-9) ** 2, d1 = PHI0 / S, E0 = ((HB * HB) / (2 * v.m * ME * (v.R * 1e-9) ** 2)) / EC * 1000, T0 = E0 / (KBE * 1000);
+    return { d1: fmtB(d1), d2: fmtB(d1 / 2), E0: fmtE(E0), T0: T0 >= 1 ? T0.toFixed(2) + " K" : (T0 * 1000).toFixed(1) + " mK",
+      msg: d1 > 1 ? "주기가 1 T를 넘는다 — 수십 nm 고리는 강한 자기장이 필요하다." : T0 < 0.01 ? "준위 간격이 10 mK보다 작아 지속 전류를 보려면 극저온이 필요하다." : `결맞음 길이가 둘레 ${(2 * Math.PI * v.R / 1000).toFixed(2)} µm보다 길어야 진동이 보인다.` };
+  });
+
+  /* ---------------------------------------------------------- SQUID 자속계 */
+  {
+    const st = { fx: 0.37 + Math.random() * 0.5 + 2, fc: 0, ib: 2.1, rec: new Map(), msg: "보상 자속을 쓸어 전압 지도를 그리세요" };
+    const Ic = (ft) => 2 * Math.abs(Math.cos(Math.PI * ft));
+    const V = (ft) => { const c = Ic(ft); return st.ib > c ? 0.5 * Math.sqrt(st.ib * st.ib - c * c) : 0; };
+    const showEl = document.getElementById("sq-show");
+    let cL = null, cR = null;
+    const record = () => { st.rec.set(Math.round(st.fc * 200), V(st.fx + st.fc)); };
+    const stats = () => { const ft = st.fx + st.fc; SB.stat("sq-fc", fx(st.fc, 3)); SB.stat("sq-ic", Ic(ft).toFixed(3)); SB.stat("sq-v", V(ft).toFixed(3)); SB.stat("sq-res", st.msg); };
+    const redraw = () => { stats(); cL && cL.redraw(); cR && cR.redraw(); };
+    const getI = SB.range("sq-ib", (v) => (+v).toFixed(2), () => { st.ib = getI(); st.rec.clear(); record(); redraw(); });
+    st.ib = getI();
+    cL = SB.canvas("cv-sqL", (ctx, w, h) => {
+      const P = pal(), cx = w / 2, cy = h / 2 + 4, R = Math.min(w, h) * 0.32, ft = st.fx + st.fc;
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 12; ctx.globalAlpha = 0.75; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke(); ctx.globalAlpha = 1;
+      [[cx, cy - R], [cx, cy + R]].forEach(([x, y]) => { ctx.fillStyle = P.bg; ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.fillRect(x - 9, y - 11, 18, 22); ctx.strokeRect(x - 9, y - 11, 18, 22); });
+      const J = -Math.sin(Math.PI * ft); // 순환 전류 (I0 단위)
+      const n = Math.round(Math.abs(J) * 5);
+      ctx.strokeStyle = P.accent; ctx.fillStyle = P.accent; ctx.lineWidth = 2.5;
+      for (let k = 0; k < n; k++) { const a0 = (k / Math.max(n, 1)) * 2 * Math.PI + 0.3, a1 = a0 + 0.5 * Math.sign(J); ctx.beginPath(); ctx.arc(cx, cy, R - 16, a0, a1, J < 0); ctx.stroke(); const ex = cx + (R - 16) * Math.cos(a1), ey = cy + (R - 16) * Math.sin(a1), tg = a1 + (Math.sign(J) * Math.PI) / 2; ctx.beginPath(); ctx.moveTo(ex + 6 * Math.cos(tg), ey + 6 * Math.sin(tg)); ctx.lineTo(ex + 5 * Math.cos(tg + 2.3), ey + 5 * Math.sin(tg + 2.3)); ctx.lineTo(ex + 5 * Math.cos(tg - 2.3), ey + 5 * Math.sin(tg - 2.3)); ctx.fill(); }
+      SB.label(ctx, "Φ_x = ?", cx, cy - 10, { color: P.warn, bold: true, size: 12 });
+      SB.label(ctx, `+ Φ_c = ${fx(st.fc, 2)} Φ₀`, cx, cy + 12, { color: P.accent, size: 11 });
+      SB.label(ctx, `순환 전류 ${fx(J, 2)} I₀`, cx, h - 12, { color: P.dim, size: 11 });
+      SB.label(ctx, "JJ", cx + 24, cy - R, { color: P.warn, size: 10 }); SB.label(ctx, "JJ", cx + 24, cy + R, { color: P.warn, size: 10 });
+      SB.label(ctx, `I_b = ${st.ib.toFixed(2)} I₀ →`, 10, 14, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.85, minHeight: 220, maxHeight: 340 });
+    cR = SB.canvas("cv-sqR", (ctx, w, h, self) => {
+      const P = pal(), ch = SB.chart(ctx, { x: 48, y: 22, w: w - 62, h: h - 62 }, { x: [-1.5, 1.5], y: [0, 1.6], xLabel: "보상 자속 Φ_c/Φ₀", yLabel: "V/(I₀R)", xTicks: [-1, -0.5, 0, 0.5, 1] });
+      self._ch = ch;
+      clip(ctx, ch.box);
+      if (showEl.checked) { const xs = [], ys = []; for (let i = 0; i <= 600; i++) { const x = -1.5 + (3 * i) / 600; xs.push(x); ys.push(V(st.fx + x)); } line(ctx, ch, xs, ys, P.faint, 1.5, [4, 3]); }
+      ctx.fillStyle = P.accent2; for (const [k, v] of st.rec) { ctx.beginPath(); ctx.arc(ch.X(k / 200), ch.Y(v), 2.4, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.restore();
+      const v = V(st.fx + st.fc); handle(ctx, ch.X(st.fc), ch.Y(v), P.accent); self._h = [ch.X(st.fc), ch.Y(v)];
+    }, { aspect: 0.85, minHeight: 220, maxHeight: 340 });
+    const setFc = (x) => { const ch = cR._ch; st.fc = SB.clamp(-1.5 + ((x - ch.box.x) / ch.box.w) * 3, -1.5, 1.5); record(); redraw(); };
+    SB.drag(cR, { handles: () => [{ id: "c", x: cR._h[0], y: cR._h[1], r: 16 }], free: true, move: (id, x) => setFc(x), down: (id, x) => { if (id === null) setFc(x); } });
+    showEl.addEventListener("change", () => cR.redraw());
+    document.getElementById("sq-new").addEventListener("click", () => { st.fx = randInt(-3, 3) + Math.random(); st.fc = 0; st.rec.clear(); record(); st.msg = "새 자속이 걸렸다 — 다시 쓸어 보세요"; redraw(); });
+    document.getElementById("sq-check").addEventListener("click", () => {
+      const ft = st.fx + st.fc, d = ft - Math.round(ft), frac = ((-st.fc % 1) + 1) % 1, tf = ((st.fx % 1) + 1) % 1;
+      st.msg = Math.abs(d) < 0.03 ? `잠금 성공! Φ_x의 분수 부분 = ${frac.toFixed(2)} (참값 ${tf.toFixed(3)}) — 정수 부분은 알 수 없다` : st.ib < 2 && V(ft) === 0 ? "전압이 0인 구간이 넓다 — I_b를 2I₀보다 크게 해 극소를 뾰족하게" : `아직: V가 최소가 아니다 (Φ 총합이 정수에서 ${Math.abs(d).toFixed(2)}Φ₀ 벗어남)`;
+      redraw();
+    });
+    record(); stats();
+  }
+
+  /* ---------------------------------------------------------- tangle: SQUID 감도 */
+  SB.tangle("tg-sq", (v) => {
+    const S = (v.a * 1e-6) ** 2, B0 = PHI0S / S, Bn = B0 * v.s * 1e-6, NE = 50e-6 / B0;
+    return { B0: fmtB(B0), Bn: fmtB(Bn) + "/√Hz", NE: NE >= 1e4 ? sci(NE, 2) : NE.toFixed(NE < 10 ? 2 : 0),
+      msg: Bn < 1e-14 ? "뇌 자기장(MEG, 수십 fT)도 잴 수 있다." : Bn < 1e-11 ? "심장 자기장(약 50 pT)을 잴 수 있는 수준이다." : "작은 고리는 감도는 낮지만 공간 분해능이 좋다 — 주사 SQUID 현미경의 선택." };
+  });
+
+  /* ---------------------------------------------------------- 양자 홀 측정대 */
+  {
+    const o = { mat: "gaas", n: 3, tq: 1.5, T: 0.3, spin: true };
+    const st = { B: 6.2, goal: null, done: false };
+    let tr = null, xxMax = 1, cL = null, cR = null;
+    const spinEl = document.getElementById("qh-spin");
+    const rebuild = () => { const M = MAT[o.mat]; tr = qheTrace(o, 0.15, M.Bmax, 360); xxMax = Math.max(1, ...tr.xx) * 1.08; st.B = SB.clamp(st.B, 0.15, M.Bmax); };
+    const targets = () => { const M = MAT[o.mat], base = o.mat === "gr" ? [2, 6, 10, 14] : o.mat === "si" ? (o.spin ? [2, 4, 6, 8, 12] : [4, 8, 12]) : (o.spin ? [1, 2, 3, 4, 6] : [2, 4, 6, 8]); return base.filter((t) => { const Bc = (o.n * 1e15 * HP) / (t * EC); return Bc > 0.5 && Bc < M.Bmax * 0.95; }); };
+    const newGoal = () => { const t = targets(); st.goal = t.length ? pick(t) : null; st.done = false; };
+    const check = () => { if (st.goal === null) return; const r = qhe(st.B, o); if (Math.abs(r.nu - st.goal) / st.goal < 0.03 && r.rxx < 0.02 * xxMax) st.done = true; };
+    const stats = () => {
+      const r = qhe(st.B, o);
+      SB.stat("qh-B", `${st.B.toFixed(2)} T · ν = ${r.nu.toFixed(2)}`);
+      SB.stat("qh-xy", `${r.rxy.toFixed(r.rxy > 1e4 ? 2 : 3)} Ω (h/e² ÷ ${(RK / r.rxy).toFixed(3)})`);
+      SB.stat("qh-xx", fmtR(r.rxx));
+      SB.stat("qh-goal", st.goal === null ? "이 농도에서 보이는 평탄면 없음 — 농도를 바꾸세요" : st.done ? `ν = ${st.goal} 평탄면 한가운데 명중! (B = ${st.B.toFixed(2)} T)` : `ν = ${st.goal} 평탄면 한가운데를 찾아라`);
+    };
+    const redraw = () => { check(); stats(); cL && cL.redraw(); cR && cR.redraw(); };
+    const onParam = () => { rebuild(); const t = targets(); if (st.goal !== null && !t.includes(st.goal)) newGoal(); redraw(); };
+    const getN = SB.range("qh-n", (v) => (+v).toFixed(2) + "×10¹¹ cm⁻²", () => { o.n = getN(); onParam(); });
+    const getT = SB.range("qh-t", (v) => (+v).toFixed(2) + " ps", () => { o.tq = getT(); onParam(); });
+    const getTT = SB.range("qh-T", (v) => (+v).toFixed(2) + " K", () => { o.T = getTT(); onParam(); });
+    SB.seg("qh-mat", (v) => {
+      o.mat = v; const M = MAT[v], nEl = getN.el; nEl.max = M.nMax; nEl.min = v === "si" ? 2 : 0.5;
+      const dn = v === "si" ? 15 : v === "gr" ? 4 : 3, dt = v === "si" ? 0.3 : v === "gr" ? 0.5 : 1.5;
+      getN.set(dn, true); getT.set(dt, true); o.n = dn; o.tq = dt; spinEl.disabled = v === "gr"; st.B = M.Bmax * 0.5; rebuild(); newGoal(); redraw();
+    });
+    spinEl.addEventListener("change", () => { o.spin = spinEl.checked; onParam(); });
+    o.n = getN(); o.tq = getT(); o.T = getTT(); o.spin = spinEl.checked;
+    rebuild(); newGoal();
+    document.getElementById("qh-new").addEventListener("click", () => { newGoal(); redraw(); });
+    cL = SB.canvas("cv-qhL", (ctx, w, h) => {
+      const P = pal(), r = qhe(st.B, o), M = MAT[o.mat], hTop = h * 0.56;
+      // 상태 밀도(세로 E)
+      const Ew = Math.max(3 * r.D, 8), E0 = r.EF - Ew, E1 = r.EF + Ew, bx = { x: 40, y: 22, w: w - 54, h: hTop - 34 };
+      const Ey = (E) => bx.y + bx.h - ((E - E0) / (E1 - E0)) * bx.h;
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx.x, bx.y); ctx.lineTo(bx.x, bx.y + bx.h); ctx.stroke();
+      const Dt = (E, ext) => { let s = 0; for (const l of r.L) { const G = ext ? l.Ge : l.G; s += ((l.d / M.g) * (ext ? 0.3 : 1) * l.sp * Math.exp(-0.5 * ((E - l.E) / G) ** 2)) / (Math.sqrt(2 * Math.PI) * G); } return s; };
+      let dm = 0; const es = []; for (let i = 0; i <= 600; i++) { const E = E0 + ((E1 - E0) * i) / 600, d = Dt(E, false); es.push([E, d, Dt(E, true)]); dm = Math.max(dm, d); }
+      dm = Math.max(dm, 1.2);
+      ctx.save(); ctx.beginPath(); ctx.rect(bx.x, bx.y, bx.w, bx.h); ctx.clip();
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.moveTo(bx.x, Ey(E0)); es.forEach(([E, d]) => { if (E <= r.EF) ctx.lineTo(bx.x + (d / dm) * bx.w, Ey(E)); }); ctx.lineTo(bx.x, Ey(r.EF)); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 1.6; ctx.beginPath(); es.forEach(([E, d], i) => { const X = bx.x + (d / dm) * bx.w; i ? ctx.lineTo(X, Ey(E)) : ctx.moveTo(X, Ey(E)); }); ctx.stroke();
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.4; ctx.beginPath(); es.forEach(([E, , d], i) => { const X = bx.x + (d / dm) * bx.w; i ? ctx.lineTo(X, Ey(E)) : ctx.moveTo(X, Ey(E)); }); ctx.stroke();
+      ctx.restore();
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.setLineDash([5, 3]); ctx.beginPath(); ctx.moveTo(bx.x, Ey(r.EF)); ctx.lineTo(bx.x + bx.w, Ey(r.EF)); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "E_F", bx.x + bx.w - 14, Ey(r.EF) - 10, { color: P.warn, size: 11, bold: true });
+      SB.label(ctx, "상태 밀도 (초록: 확장 상태)", 10, 12, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, "E", 22, bx.y + 8, { size: 11, color: P.dim });
+      // 홀 막대와 가장자리 채널
+      const hb = { x: 30, y: hTop + 18, w: w - 60, h: h - hTop - 44 };
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.1; ctx.fillRect(hb.x, hb.y, hb.w, hb.h); ctx.globalAlpha = 1; ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.5; ctx.strokeRect(hb.x, hb.y, hb.w, hb.h);
+      const k = Math.round(Math.abs(r.nuE)), onP = Math.abs(Math.abs(r.nuE) - k) < 0.02 && k >= 1, nc = Math.min(k, 6);
+      if (onP) {
+        for (let c = 0; c < nc; c++) { const off = 5 + c * 5; SB.arrow(ctx, hb.x + 10, hb.y + off, hb.x + hb.w - 10, hb.y + off, { color: P.accent, width: 1.6 }); SB.arrow(ctx, hb.x + hb.w - 10, hb.y + hb.h - off, hb.x + 10, hb.y + hb.h - off, { color: P.accent, width: 1.6 }); }
+        SB.label(ctx, `가장자리 채널 ${k}개${k > 6 ? " (6개만 그림)" : ""} · 벌크 절연`, hb.x + hb.w / 2, hb.y + hb.h / 2, { size: 11, bold: true, color: P.accent });
+      } else {
+        ctx.fillStyle = P.warn; ctx.globalAlpha = 0.18; ctx.fillRect(hb.x + 4, hb.y + 4, hb.w - 8, hb.h - 8); ctx.globalAlpha = 1;
+        SB.label(ctx, "E_F가 확장 상태에: 벌크가 전류를 나른다 (R_xx ≠ 0)", hb.x + hb.w / 2, hb.y + hb.h / 2, { size: 11, color: P.warn, bold: true });
+      }
+      SB.label(ctx, `${M.name} · B = ${st.B.toFixed(2)} T`, w / 2, h - 10, { size: 11, color: P.dim });
+    }, { aspect: 0.9, minHeight: 260, maxHeight: 380 });
+    cR = SB.canvas("cv-qhR", (ctx, w, h, self) => {
+      const P = pal(), M = MAT[o.mat], ymax = Math.min(Math.max(...tr.xy) * 1.05, RK / 1000 / (o.mat === "gr" ? 2 : o.mat === "si" ? (o.spin ? 1.5 : 3.5) : 0.9));
+      const ch = SB.chart(ctx, { x: 50, y: 22, w: w - 74, h: h - 62 }, { x: [0, M.Bmax], y: [0, ymax], xLabel: "B (T)", yLabel: "R_xy (kΩ)" });
+      self._ch = ch;
+      clip(ctx, ch.box);
+      const sxx = tr.xx.map((v) => (v / xxMax) * ymax * 0.6);
+      line(ctx, ch, tr.Bs, sxx, P.accent2, 2);
+      line(ctx, ch, tr.Bs, tr.xy, P.accent, 2.6);
+      if (st.goal !== null) { const Bc = (o.n * 1e15 * HP) / (st.goal * EC); ctx.strokeStyle = st.done ? P.ok : P.bad; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(RK / st.goal / 1000)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(RK / st.goal / 1000)); ctx.stroke(); ctx.setLineDash([]); void Bc; }
+      ctx.restore();
+      const i = tIdx(tr, st.B), y = Math.min(tr.xy[i], ymax);
+      ctx.strokeStyle = P.dim; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(ch.X(st.B), ch.box.y); ctx.lineTo(ch.X(st.B), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      handle(ctx, ch.X(st.B), ch.Y(y), P.accent); self._h = [ch.X(st.B), ch.Y(y)];
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(st.B), ch.Y(sxx[i]), 4, 0, 2 * Math.PI); ctx.fill();
+      SB.label(ctx, `R_xx (최대 ${fmtR(xxMax)})`, ch.box.x + ch.box.w - 4, ch.box.y + 10, { align: "right", size: 10, color: P.accent2 });
+    }, { aspect: 0.9, minHeight: 260, maxHeight: 380 });
+    const setB = (x) => { const ch = cR._ch; st.B = SB.clamp(((x - ch.box.x) / ch.box.w) * MAT[o.mat].Bmax, 0.15, MAT[o.mat].Bmax); redraw(); };
+    SB.drag(cR, { handles: () => [{ id: "b", x: cR._h[0], y: cR._h[1], r: 16 }], free: true, move: (id, x) => setB(x), down: (id, x) => { if (id === null) setB(x); } });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- tangle: 평탄면 위치 */
+  SB.tangle("tg-qhe", (v) => {
+    const B = (v.n * 1e15 * HP) / (v.nu * EC), R = RK / v.nu;
+    return { B: B.toFixed(2) + " T", R: R.toFixed(2) + " Ω", G: ((v.nu * EC * EC) / HP * 1e6).toFixed(2) + " µS",
+      msg: B > 45 ? "45 T를 넘는다 — 정적 자기장으로는 거의 불가능하다." : B > 20 ? "초전도 자석 한계(약 20 T)를 넘어 대형 자기장 시설이 필요하다." : B < 0.5 ? "자기장은 작지만 이 정도면 준위 넓힘에 묻히기 쉽다 — 아주 깨끗한 시료가 필요하다." : "실험실 초전도 자석으로 닿는 범위다." };
+  });
+
+  /* ---------------------------------------------------------- SdH: 미지 시료 */
+  {
+    const M = 0.067, KH = 60;
+    const st = { n: 3, tq: 1.2, T: 1.5, Bmax: 2, u0: 0.5, du: 0.3, msg: "빗을 극소에 맞추고 정답 확인", reveal: false };
+    const newSample = () => { st.n = Math.round((1.5 + Math.random() * 4.5) * 100) / 100; st.tq = Math.round((0.6 + Math.random() * 1.9) * 100) / 100; st.reveal = false; st.msg = "빗을 극소에 맞추고 정답 확인"; };
+    newSample();
+    const rho = (B) => {
+      const F = (HP * st.n * 1e15) / (2 * EC), wc = (EC * B) / (M * ME), X = (2 * Math.PI * Math.PI * KBE * st.T) / (hwc(B, M) / 1000), a = Math.PI / (wc * st.tq * 1e-12);
+      let D = 1; for (let k = 1; k <= KH; k++) { const e = Math.exp(-k * a) * AT(k * X); if (e < 1e-7) break; D += 2 * (k % 2 ? -1 : 1) * e * Math.cos((2 * Math.PI * k * F) / B); }
+      return D * D;
+    };
+    const env = (B) => { const wc = (EC * B) / (M * ME), X = (2 * Math.PI * Math.PI * KBE * st.T) / (hwc(B, M) / 1000); return 4 * AT(X) * Math.exp(-Math.PI / (wc * st.tq * 1e-12)); };
+    const envEl = document.getElementById("sdh-env");
+    let cv = null;
+    const stats = () => {
+      const nEst = (2 * EC) / (HP * st.du) * 1e-4, X1 = (2 * Math.PI * Math.PI * KBE * st.T) / (hwc(1, M) / 1000);
+      SB.stat("sdh-d", st.du.toFixed(4) + " T⁻¹");
+      SB.stat("sdh-n", sci(nEst, 3) + " cm⁻²");
+      SB.stat("sdh-x", `${X1.toFixed(2)} · ${st.reveal ? ((EC / (M * ME)) * st.tq * 1e-12).toFixed(2) : "?"}`);
+      SB.stat("sdh-res", st.msg);
+    };
+    const getT = SB.range("sdh-T", (v) => (+v).toFixed(1) + " K", () => { st.T = getT(); stats(); cv && cv.redraw(); });
+    const getB = SB.range("sdh-B", (v) => (+v).toFixed(2) + " T", () => { st.Bmax = getB(); stats(); cv && cv.redraw(); });
+    st.T = getT(); st.Bmax = getB();
+    cv = SB.canvas("cv-sdh", (ctx, w, h, self) => {
+      const P = pal(), hh = (h - 30) / 2, Bmin = 0.12;
+      const xs = [], ys = []; let ym = 1.6;
+      for (let i = 0; i <= 900; i++) { const B = Bmin + ((st.Bmax - Bmin) * i) / 900, r = rho(B); xs.push(B); ys.push(r); ym = Math.max(ym, r); }
+      ym = Math.min(ym * 1.05, 6);
+      const c1 = SB.chart(ctx, { x: 48, y: 14, w: w - 62, h: hh - 38 }, { x: [0, st.Bmax], y: [0, ym], xLabel: "B (T)", yLabel: "ρxx/ρ₀" });
+      clip(ctx, c1.box);
+      if (envEl.checked) { line(ctx, c1, xs, xs.map((B) => 1 + env(B)), P.dim, 1.2, [4, 3]); line(ctx, c1, xs, xs.map((B) => Math.max(0, 1 - env(B))), P.dim, 1.2, [4, 3]); }
+      line(ctx, c1, xs, ys, P.accent, 2);
+      ctx.restore();
+      const u1 = 1 / st.Bmax, u2 = 3.2;
+      const us = [], vs = []; for (let i = 0; i <= 900; i++) { const u = u1 + ((u2 - u1) * i) / 900; us.push(u); vs.push(rho(1 / u)); }
+      const c2 = SB.chart(ctx, { x: 48, y: hh + 22, w: w - 62, h: hh - 30 }, { x: [0, u2], y: [0, ym], xLabel: "1/B (T⁻¹)", yLabel: "ρxx/ρ₀" });
+      self._c2 = c2;
+      clip(ctx, c2.box);
+      line(ctx, c2, us, vs, P.accent, 2);
+      ctx.restore();
+      // 빗
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 1.4; ctx.setLineDash([4, 3]);
+      for (let k = -40; k <= 80; k++) { const u = st.u0 + k * st.du; if (u < u1 || u > u2) continue; ctx.beginPath(); ctx.moveTo(c2.X(u), c2.box.y); ctx.lineTo(c2.X(u), c2.box.y + c2.box.h); ctx.stroke(); const B = 1 / u; if (B < st.Bmax) { ctx.beginPath(); ctx.moveTo(c1.X(B), c1.box.y); ctx.lineTo(c1.X(B), c1.box.y + c1.box.h); ctx.stroke(); } }
+      ctx.setLineDash([]);
+      const hy = c2.box.y + c2.box.h - 14, h0 = [c2.X(st.u0), hy], h1 = [c2.X(st.u0 + st.du), hy];
+      handle(ctx, h0[0], h0[1], P.warn); handle(ctx, h1[0], h1[1], P.warn, 8);
+      self._h = { a: h0, b: h1 };
+      if (st.reveal) { const F = (HP * st.n * 1e15) / (2 * EC); SB.label(ctx, `참값 Δ(1/B) = ${(1 / F).toFixed(4)} T⁻¹`, c2.box.x + c2.box.w - 6, c2.box.y + 10, { align: "right", size: 11, color: P.ok, bold: true }); }
+    }, { aspect: 0.7, minHeight: 360, maxHeight: 520 });
+    SB.drag(cv, { handles: () => [{ id: "a", x: cv._h.a[0], y: cv._h.a[1], r: 14 }, { id: "b", x: cv._h.b[0], y: cv._h.b[1], r: 14 }],
+      move: (id, x) => { const c2 = cv._c2, u = SB.clamp((x - c2.box.x) / c2.box.w * 3.2, 0.02, 3.2); if (id === "a") st.u0 = u; else st.du = SB.clamp(u - st.u0, 0.01, 2); stats(); cv.redraw(); } });
+    envEl.addEventListener("change", () => cv.redraw());
+    document.getElementById("sdh-new").addEventListener("click", () => { newSample(); stats(); cv.redraw(); });
+    document.getElementById("sdh-check").addEventListener("click", () => {
+      const nEst = (2 * EC) / (HP * st.du) * 1e-15, err = (nEst - st.n) / st.n; st.reveal = true;
+      st.msg = Math.abs(err) < 0.03 ? `정답! 참 농도 ${st.n.toFixed(2)}×10¹¹ cm⁻² (오차 ${(err * 100).toFixed(1)}%), τ_q = ${st.tq.toFixed(2)} ps` : `참 농도 ${st.n.toFixed(2)}×10¹¹ cm⁻² — 오차 ${(err * 100).toFixed(0)}%. 빗살이 모든 극소에 맞는지 1/B 축에서 다시 보라`;
+      stats(); cv.redraw();
+    });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 미니: LK 열 감쇠로 질량 맞추기 */
+  {
+    const B = 1, MT = 0.067, Ts = [0.5, 1, 1.5, 2, 3, 4, 5, 6, 8, 10], rng = QM.rng(11);
+    const Xof = (T, m) => (2 * Math.PI * Math.PI * KBE * T) / (hwc(B, m) / 1000);
+    const data = Ts.map((T) => [T, (AT(Xof(T, MT)) / AT(Xof(0.3, MT))) * (1 + 0.025 * rng.normal()) + 0.004 * rng.normal()]);
+    let cv = null;
+    const getM = SB.range("lk-m", (v) => (+v).toFixed(3) + " mₑ", () => cv && cv.redraw());
+    cv = SB.canvas("cv-lk", (ctx, w, h) => {
+      const P = pal(), m = getM();
+      const ch = SB.chart(ctx, { x: 52, y: 20, w: w - 66, h: h - 64 }, { x: [0, 11], y: [0, 1.1], xLabel: "T (K)", yLabel: "진폭 A(T)/A(0.3 K)" });
+      const xs = [], ys = []; for (let i = 0; i <= 200; i++) { const T = (11 * i) / 200; xs.push(T); ys.push(AT(Xof(T, m)) / AT(Xof(0.3, m))); }
+      clip(ctx, ch.box); line(ctx, ch, xs, ys, P.accent, 2.4); ctx.restore();
+      let ss = 0; data.forEach(([T, a]) => { const f = AT(Xof(T, m)) / AT(Xof(0.3, m)); ss += (a - f) ** 2; ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(T), ch.Y(a), 5, 0, 2 * Math.PI); ctx.fill(); });
+      const rms = Math.sqrt(ss / data.length);
+      document.getElementById("lk-r").textContent = `잔차 RMS = ${rms.toFixed(4)} ${rms < 0.02 ? "→ 잘 맞았다! (GaAs 0.067 근처)" : m > MT ? "→ 질량이 너무 크다: 곡선이 너무 빨리 떨어진다" : "→ 질량이 너무 작다: 곡선이 너무 천천히 떨어진다"}`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 홀·SdH */
+  SB.drill("drill-sdh", () => {
+    const t = randInt(0, 2);
+    if (t === 0) { const n = randInt(15, 80) / 10, d = (2 * EC) / (HP * n * 1e15); const dr = +d.toPrecision(3), v = (2 * EC) / (HP * dr) * 1e-4;
+      return { q: `<p>스핀 축퇴 2DEG의 SdH 극소 간격이 \\(\\Delta(1/B) = ${dr}\\) T⁻¹이다. 농도는 몇 cm⁻²인가?</p>`, answer: v, label: "n =", unit: "cm⁻²", tol: "1%", sol: `\\(n = (2e/h)/\\Delta(1/B) = 4.836\\times10^{10}/${dr} = ${sci(v, 3)}\\) cm⁻²` }; }
+    if (t === 1) { const n = pick([1, 2, 3, 5, 8, 10]) , R = pick([5, 10, 20, 50, 100, 300, 1000]), v = 1 / (n * 1e15 * EC * R) * 1e4;
+      return { q: `<p>농도 \\(${n}\\times10^{11}\\) cm⁻², 면저항 \\(R_\\square = ${R}\\) Ω인 2DEG의 이동도는 몇 cm²/V·s인가?</p>`, answer: v, label: "μ =", unit: "cm²/V·s", tol: "1%", sol: `\\(\\mu = 1/(neR_\\square) = 1/(${n}\\times10^{15}\\times1.602\\times10^{-19}\\times${R})\\ \\text{m}^2/\\text{V·s} = ${sci(v, 3)}\\) cm²/V·s` }; }
+    const n = randInt(10, 60) / 10, nu = pick([2, 4, 6, 8]), v = (n * 1e15 * HP) / (nu * EC);
+    return { q: `<p>농도 \\(${n}\\times10^{11}\\) cm⁻²인 2DEG에서 \\(\\nu = ${nu}\\)인 \\(\\rho_{xx}\\) 극소는 몇 T에 나타나는가?</p>`, answer: v, label: "B =", unit: "T", tol: "1%", sol: `\\(B = nh/\\nu e = ${n}\\times10^{15}\\times4.1357\\times10^{-15}/${nu} = ${v.toFixed(3)}\\) T` };
+  });
+
+  /* ---------------------------------------------------------- 포크–다윈 스펙트럼 */
+  {
+    const M = 0.067, BM = 8, st = { B: 1.5, w0: 3, N: 6 };
+    const llEl = document.getElementById("fd-ll"), labEl = document.getElementById("fd-lab");
+    const states = []; for (let n = 0; n <= 4; n++) for (let l = -8; l <= 8; l++) states.push([n, l]);
+    const occ = (B) => { const E = states.map(([n, l]) => ({ n, l, E: QM.fockDarwin(n, l, st.w0, B, M) })).sort((a, b) => a.E - b.E); return E.slice(0, Math.ceil(st.N / 2)); };
+    let cv = null;
+    const stats = () => {
+      const o = occ(st.B), hw = hwc(st.B, M), hO = Math.sqrt(st.w0 * st.w0 + hw * hw / 4), top = o[o.length - 1];
+      let Et = 0; o.forEach((s, i) => { Et += s.E * (i === o.length - 1 && st.N % 2 ? 1 : 2); });
+      SB.stat("fd-B", `${st.B.toFixed(2)} T · ${hw.toFixed(2)} · ${hO.toFixed(2)} meV`);
+      SB.stat("fd-top", `(n, l) = (${top.n}, ${fx(top.l, 0).replace("−0", "0")}) · ${top.E.toFixed(2)} meV`);
+      SB.stat("fd-E", Et.toFixed(2) + " meV");
+      SB.stat("fd-r", (19.4706 * Math.sqrt(3 / hO)).toFixed(1) + " nm");
+    };
+    const getW = SB.range("fd-w", (v) => (+v).toFixed(1) + " meV", () => { st.w0 = getW(); stats(); cv && cv.redraw(); });
+    const getN = SB.range("fd-N", (v) => String(v), () => { st.N = getN(); stats(); cv && cv.redraw(); });
+    st.w0 = getW(); st.N = getN();
+    cv = SB.canvas("cv-fd", (ctx, w, h, self) => {
+      const P = pal(), Ym = 6.5 * st.w0;
+      const ch = SB.chart(ctx, { x: 52, y: 22, w: w - 66, h: h - 64 }, { x: [0, BM], y: [0, Ym], xLabel: "B (T)", yLabel: "E (meV)" });
+      self._ch = ch;
+      const o = occ(st.B), key = new Set(o.map((s) => s.n + "," + s.l)), xs = []; for (let i = 0; i <= 200; i++) xs.push((BM * i) / 200);
+      clip(ctx, ch.box);
+      if (llEl.checked) for (let k = 0; k < 6; k++) line(ctx, ch, xs, xs.map((B) => hwc(B, M) * (k + 0.5)), P.warn, 1.2, [5, 4]);
+      for (const [n, l] of states) { const ys = xs.map((B) => QM.fockDarwin(n, l, st.w0, B, M)); if (ys[0] > Ym * 1.6 && ys[200] > Ym) continue; const on = key.has(n + "," + l); line(ctx, ch, xs, ys, on ? P.accent : n === 0 ? P.accent2 : P.faint, on ? 2.6 : 1.1); }
+      ctx.strokeStyle = P.dim; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(ch.X(st.B), ch.box.y); ctx.lineTo(ch.X(st.B), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      o.forEach((s) => { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(st.B), ch.Y(s.E), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.restore();
+      if (labEl.checked) for (const [n, l] of states) { const E = QM.fockDarwin(n, l, st.w0, 0.4, M); if (E < Ym * 0.95 && n <= 1) SB.label(ctx, `(${n},${l})`, ch.X(0.4), ch.Y(E), { size: 9, color: P.dim }); }
+      const top = o[o.length - 1]; const hy = ch.Y(Math.min(Ym, top.E));
+      handle(ctx, ch.X(st.B), hy, P.accent); self._h = [ch.X(st.B), hy];
+      SB.label(ctx, `N = ${st.N}개 전자 (스핀 축퇴) · ħω₀ = ${st.w0.toFixed(1)} meV`, 12, 12, { align: "left", size: 11, bold: true });
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    const setB = (x) => { const ch = cv._ch; st.B = SB.clamp(((x - ch.box.x) / ch.box.w) * BM, 0, BM); stats(); cv.redraw(); };
+    SB.drag(cv, { handles: () => [{ id: "b", x: cv._h[0], y: cv._h[1], r: 16 }], free: true, move: (id, x) => setB(x), down: (id, x) => { if (id === null) setB(x); } });
+    llEl.addEventListener("change", () => cv.redraw()); labEl.addEventListener("change", () => cv.redraw());
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 미니: 포크–다윈 고리의 크기 */
+  {
+    const M = 0.067, W0 = 3;
+    let cv = null;
+    const getL = SB.range("fdr-l", (v) => String(v), () => cv && cv.redraw());
+    const getB = SB.range("fdr-B", (v) => (+v).toFixed(1) + " T", () => cv && cv.redraw());
+    cv = SB.canvas("cv-fdr", (ctx, w, h) => {
+      const P = pal(), l = getL(), B = getB(), hw = hwc(B, M), hO = Math.sqrt(W0 * W0 + hw * hw / 4), L = 19.4706 * Math.sqrt(W0 / hO), RM = 80;
+      const Pr = (r) => (2 * Math.pow(r / L, 2 * l + 1) * Math.exp(-(r * r) / (L * L) - QM.lnFact(l))) / L;
+      const split = w * 0.64, ch = SB.chart(ctx, { x: 50, y: 20, w: split - 64, h: h - 62 }, { x: [0, RM], y: [0, 0.075], xLabel: "r (nm)", yLabel: "2πr|ψ|² (nm⁻¹)", yTicks: [0, 0.025, 0.05, 0.075] });
+      const xs = [], ys = []; for (let i = 0; i <= 300; i++) { const r = (RM * i) / 300; xs.push(r); ys.push(Pr(r)); }
+      clip(ctx, ch.box); fill(ctx, ch, xs, ys, 0, P.accent, 0.2); line(ctx, ch, xs, ys, P.accent, 2.4); ctx.restore();
+      const rr = Math.sqrt(l + 1) * L; ctx.strokeStyle = P.warn; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(ch.X(rr), ch.box.y); ctx.lineTo(ch.X(rr), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      // 위에서 본 원판
+      const cx = split + (w - split) / 2, cy = h / 2 - 6, R = Math.min((w - split) / 2 - 8, h / 2 - 22), sc = R / RM;
+      let mx = 0; for (let i = 0; i <= 100; i++) { const r = (RM * i) / 100, d = Pr(r) / Math.max(r, 1e-3); if (r > 0.5) mx = Math.max(mx, d); }
+      for (let i = 100; i >= 1; i--) { const r = (RM * i) / 100, d = Pr(r) / Math.max(r, 0.5); ctx.fillStyle = P.accent; ctx.globalAlpha = Math.min(1, d / mx) * 0.9; ctx.beginPath(); ctx.arc(cx, cy, r * sc, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.globalAlpha = 1; ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.stroke();
+      ctx.fillStyle = P.bg; ctx.globalAlpha = 0.0; ctx.globalAlpha = 1;
+      SB.label(ctx, "위에서 본 밀도", cx, cy + R + 14, { size: 10, color: P.dim });
+      const flux = (Math.PI * (rr * 1e-9) ** 2 * B) / PHI0;
+      document.getElementById("fdr-r").textContent = `ℓ_Ω = ${L.toFixed(1)} nm · √⟨r²⟩ = ${rr.toFixed(1)} nm · 그 안의 자속 = ${flux.toFixed(2)} Φ₀ (h/e)`;
+    }, { aspect: 0.48, minHeight: 220, maxHeight: 300 });
+  }
+})();
+</script>
+</body>
+</html>
