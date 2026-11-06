@@ -64,13 +64,6 @@
       `<polyline points="${pts((x) => 68 + 16 * Math.sin((x - 10) * Math.PI / 28), -46, 196, 2, 14)}" fill="none" stroke="${W}" stroke-width="2" stroke-opacity=".6" stroke-dasharray="4 3"/>` +
       `</g></g>` +
       `<text x="14" y="20" fill="${W}" font-size="13" font-weight="700" font-style="italic" font-family="serif">E</text><text x="14" y="118" fill="${W}" fill-opacity=".7" font-size="13" font-weight="700" font-style="italic" font-family="serif">B</text>`),
-    // 쌓여 가는 히스토그램과 그 위의 정규 분포 곡선, 위에서 떨어지는 표본
-    "probability-statistics": () => svg(
-      Array.from({ length: 11 }, (_, i) => { const h = 76 * Math.exp(-((i - 5) ** 2) / (2 * 2.1 ** 2)); return `<rect class="cv-grow" style="animation-delay:${(-Math.abs(i - 5) * 0.25 - i * 0.07).toFixed(2)}s" x="${23 + i * 14}" y="${(112 - h).toFixed(1)}" width="12" height="${h.toFixed(1)}" fill="${W}" fill-opacity=".42"/>`; }).join("") +
-      `<path d="M14 112h172" stroke="${W}" stroke-width="2.4"/>` +
-      `<polyline points="${pts((x) => 112 - 82 * Math.exp(-((x - 100) ** 2) / (2 * 30 ** 2)), 14, 186)}" fill="none" stroke="${W}" stroke-width="2.6"/>` +
-      `<path d="M100 30v82" stroke="${W}" stroke-opacity=".45" stroke-dasharray="3 4"/>` +
-      [[86, 0], [100, .6], [114, 1.2], [93, 1.8]].map(([x, d]) => `<circle class="cv-fall" style="animation-delay:${d}s" cx="${x}" cy="14" r="3.2" fill="${W}"/>`).join("")),
     // 기체를 가둔 실린더와 피스톤, 옆에는 P–V 그림 위를 도는 열기관 순환
     "thermal-physics": () => svg(
       `<path d="M18 30v82h62V30" fill="none" stroke="${W}" stroke-width="3" stroke-linejoin="round"/>` +
