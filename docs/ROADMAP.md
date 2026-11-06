@@ -17,7 +17,7 @@
 | 8 | 재료과학 `materials-science` | 재료 | 2–3 | materials(신규), solid, thermo | 완료 |
 | 9 | 공학수학·수치해석 `engineering-math` | 수학 | 2 | — | 예정(반도체 우선) |
 | 10 | 확률과 통계 `probability-statistics` | 수학 | 1–2 | stat(신규) | 완료 |
-| 11 | 양자역학 `quantum-mechanics` | 물리 | 3–4 | qm(신규), quantum | 집필 중 |
+| 11 | 양자역학 `quantum-mechanics` | 물리 | 3–4 | qm(신규), quantum | 완료 |
 | 12 | 유기화학 `organic-chemistry` | 화학 | 2 | organic(신규), chem | 완료 |
 
 ## 공유 라이브러리 계획

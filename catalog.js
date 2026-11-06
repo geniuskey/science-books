@@ -223,7 +223,7 @@ SB.registerCatalog({
    "id": "quantum-mechanics",
    "code": "QM",
    "field": "physics",
-   "status": "writing",
+   "status": "published",
    "manifest": "quantum-mechanics/course.json",
    "title": "양자역학",
    "en": "Quantum Mechanics",
