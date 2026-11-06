@@ -37,6 +37,10 @@ catalog.json  ──┐                      ┌──► catalog.js           (
 - 장 파일이 존재하면 "공개", 없으면 매니페스트에 있어도 "준비 중"으로 표시된다. 목차를 먼저 확정하고 장을 하나씩 채우는 흐름을 지원한다.
 - `build.py --check`는 CI에서 생성 파일이 최신인지와 콘텐츠 규칙(필수 head 태그, 숫자 정답, 중복 id 등)을 검사한다.
 
+### 가져온 책(standalone)
+
+`catalog.json`의 항목에 `manifest` 대신 `"standalone": "<폴더>/"`가 있으면, 그 폴더는 자체 css·js를 가진 독립 책이다(예: `color/` = 옛 ColorBook). `build.py`는 본문 규칙 검사와 SEO 블록 생성을 하지 않고 `chapters/*.html` 수(장)·`class="sim"`(시뮬레이터)·`class="quiz-q"`(문제)만 세어 서가 카드를 만들고 사이트맵에 쪽을 넣는다. canonical·OG는 그 책의 `tools/seo.py`가 관리한다. 스모크 테스트는 같은 검사를 한다.
+
 ## 3. 페이지 실행 순서
 
 1. `<head>`에서 `engine/js/scibook.js` 로드 → 전역 `SB` 생성, 테마 복원, 엔진 위치(`SB.engineBase`) 계산.

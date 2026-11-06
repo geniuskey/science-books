@@ -18,11 +18,14 @@ const repo = process.env.SB_ROOT || root;
 const cdn = process.env.SB_CDN_DIR;
 const shots = process.env.SB_SHOTS;
 
+const standalone = new Set(JSON.parse(fs.readFileSync(path.join(repo, "catalog.json"), "utf8")).courses
+  .filter((c) => c.standalone).map((c) => c.standalone.replace(/\/$/, "")));
 function pages() {
   const out = ["index.html"];
   for (const d of fs.readdirSync(repo)) {
     const cj = path.join(repo, d, "course.json");
-    if (!fs.existsSync(cj)) continue;
+    // 자체 엔진으로 가져온 책(catalog.json의 standalone)도 같은 검사를 받는다.
+    if (!fs.existsSync(cj) && !standalone.has(d)) continue;
     out.push(`${d}/index.html`);
     const chd = path.join(repo, d, "chapters");
     if (fs.existsSync(chd)) for (const f of fs.readdirSync(chd).sort()) if (f.endsWith(".html")) out.push(`${d}/chapters/${f}`);

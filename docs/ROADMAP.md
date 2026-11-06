@@ -19,6 +19,7 @@
 | 10 | 확률과 통계 `probability-statistics` | 수학 | 1–2 | stat(신규) | 완료 → [MathBooks](https://math.euiyun.com/probability/)로 이전 |
 | 11 | 양자역학 `quantum-mechanics` | 물리 | 3–4 | qm(신규), quantum | 완료 |
 | 12 | 유기화학 `organic-chemistry` | 화학 | 2 | organic(신규), chem | 완료 |
+| — | 색채공학 `color` | 색채공학 | 학부 | 자체 엔진 | colorbook.euiyun.com에서 가져옴(2026-11-07) |
 
 ## 공유 라이브러리 계획
 

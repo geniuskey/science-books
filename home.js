@@ -98,6 +98,13 @@
       `<path d="M104 104h88" stroke="${W}" stroke-width="2" stroke-opacity=".7"/><rect x="146" y="48" width="7" height="56" fill="${W}" fill-opacity=".55"/>` +
       `<polyline points="${pts((x) => 82 - 26 * Math.exp(-((x - 124) ** 2) / 70) * Math.cos((x - 124) / 2.6), 104, 144, 1.5)}" fill="none" stroke="${W}" stroke-width="2.4"/>` +
       `<polyline class="cv-pulse" points="${pts((x) => 82 - 13 * Math.exp(-((x - 174) ** 2) / 60) * Math.cos((x - 174) / 2.6), 156, 194, 1.5)}" fill="none" stroke="${W}" stroke-width="2"/>`),
+    // CIE xy 색도도의 말굽(스펙트럼 궤적)과 sRGB 삼각형, 옆에는 겹치는 가산 혼합 원 셋
+    color: () => svg(
+      `<path d="M30 116V12M30 116h100" stroke="${W}" stroke-opacity=".45" stroke-width="1.4"/>` +
+      `<path d="M50 112C44 100 40 70 46 40Q50 18 62 14Q72 14 86 40L116 96Z" fill="${W}" fill-opacity=".14" stroke="${W}" stroke-width="2.6" stroke-linejoin="round"/>` +
+      `<polygon points="61,24 101,82 52,104" fill="none" stroke="${W}" stroke-width="2" stroke-dasharray="4 3"/>` +
+      `<circle class="cv-pulse" cx="72" cy="70" r="4" fill="${W}"/>` +
+      `<g fill="${W}" stroke="${W}" stroke-width="2"><circle cx="160" cy="46" r="20" fill-opacity=".28"/><circle cx="148" cy="66" r="20" fill-opacity=".28"/><circle cx="172" cy="66" r="20" fill-opacity=".28"/></g>`),
   };
   document.querySelectorAll(".book[data-course]").forEach((el) => {
     const art = ART[el.dataset.course], slot = el.querySelector(".book-art");

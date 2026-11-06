@@ -7,6 +7,7 @@
 |---|---|---|
 | 일반화학 (General Chemistry) | `/general-chemistry/` | 초판 — 6부 20장 + 부록 3 |
 | 일반물리학 · 유기화학 · 유체역학 | — | 예정 ([로드맵](docs/ROADMAP.md)) |
+| 색채공학 (Color Science, 옛 ColorBook) | `/color/` | 20장 — 자체 엔진(`color/js/common.js`)으로 가져옴 |
 
 ## 구조
 
@@ -21,6 +22,7 @@ general-chemistry/      과목 = 교과서 한 권
   course.js             생성 파일
   index.html            과목 홈(목차·강의 계획)
   chapters/*.html       장 본문
+color/                  가져온 책(옛 colorbook.euiyun.com). 자체 css/js를 그대로 쓰며 catalog.json의 "standalone" 항목
 catalog.json            플랫폼의 과목 목록
 index.html              플랫폼 홈(서가·대표 실험·읽는 순서)
 home.css, home.js       플랫폼 홈 전용 스타일·책장 필터·표지 그림

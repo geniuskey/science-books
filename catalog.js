@@ -30,6 +30,12 @@ SB.registerCatalog({
    "name": "재료공학",
    "en": "Materials Engineering",
    "color": "#a16207"
+  },
+  {
+   "id": "color",
+   "name": "색채공학",
+   "en": "Color Science",
+   "color": "#c2255c"
   }
  ],
  "courses": [
@@ -212,6 +218,23 @@ SB.registerCatalog({
    "colorDark": "#f472b6",
    "sims": 135,
    "problems": 345
+  },
+  {
+   "id": "color",
+   "code": "CB",
+   "field": "color",
+   "status": "published",
+   "title": "색채공학",
+   "en": "Color Science",
+   "level": "대학 학부 · 공학",
+   "description": "빛의 스펙트럼에서 측색학과 색공간, 색차, 조명, 카메라·디스플레이·인쇄의 색 재현까지 — CIE 표준 데이터를 쓰는 시뮬레이터로 색을 정의하고 측정하고 재현하는 법을 익히는 인터랙티브 색채공학 교과서(옛 ColorBook).",
+   "color": "#c2255c",
+   "colorDark": "#f783ac",
+   "url": "https://science.euiyun.com/color/",
+   "published": 20,
+   "total": 20,
+   "sims": 117,
+   "problems": 183
   }
  ]
 });

@@ -63,6 +63,19 @@ sitemap: list[tuple[str, str]] = [(SITE, TODAY)]
 for entry in catalog["courses"]:
     if entry.get("field") not in fields:
         errors.append(f"catalog.json: {entry['id']} 의 field '{entry.get('field')}' 가 fields에 없습니다")
+    if "standalone" in entry:
+        # 자체 엔진을 가진 채 가져온 책(예: color/ = 옛 ColorBook). 본문 규칙 검사는 하지 않고
+        # 서가 카드 통계와 사이트맵만 만든다. 장 목록은 그 책의 chapters/*.html이다.
+        sdir = ROOT / entry["standalone"]
+        chs = sorted((sdir / "chapters").glob("*.html"))
+        srcs = [f.read_text(encoding="utf-8") for f in chs]
+        url = SITE + entry["standalone"]
+        courses.append(dict({k: v for k, v in entry.items() if k != "standalone"}, url=url, published=len(chs), total=len(chs),
+                            sims=sum(len(re.findall(r'class="sim"', s)) for s in srcs),
+                            problems=sum(len(re.findall(r'class="quiz-q"', s)) for s in srcs)))
+        sitemap.append((url, TODAY))
+        sitemap.extend((url + "chapters/" + f.name, TODAY) for f in chs)
+        continue
     if "manifest" not in entry:
         courses.append(dict(entry))
         continue
