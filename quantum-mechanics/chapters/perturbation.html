@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>시간 무관 섭동 이론 · 양자역학 · SciBook</title>
+<meta name="description" content="비축퇴 섭동 1·2차와 준위 반발, 축퇴 섭동과 대칭 깨짐, 수소와 양자 우물의 슈타르크 효과(QCSE), 수소의 미세 구조, 약한 장·강한 장 제만 효과, k·p 섭동과 유효 질량, 변형 실리콘의 골짜기 분리를 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/perturbation.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="시간 무관 섭동 이론 · 양자역학 · SciBook">
+<meta property="og:description" content="비축퇴 섭동 1·2차와 준위 반발, 축퇴 섭동과 대칭 깨짐, 수소와 양자 우물의 슈타르크 효과(QCSE), 수소의 미세 구조, 약한 장·강한 장 제만 효과, k·p 섭동과 유효 질량, 변형 실리콘의 골짜기 분리를 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/perturbation.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "시간 무관 섭동 이론 · 양자역학 · SciBook", "headline": "12 시간 무관 섭동 이론", "url": "https://science.euiyun.com/quantum-mechanics/chapters/perturbation.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "비축퇴 섭동 1·2차와 준위 반발, 축퇴 섭동과 대칭 깨짐, 수소와 양자 우물의 슈타르크 효과(QCSE), 수소의 미세 구조, 약한 장·강한 장 제만 효과, k·p 섭동과 유효 질량, 변형 실리콘의 골짜기 분리를 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 12, "dateModified": "2026-11-06", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "12 시간 무관 섭동 이론", "item": "https://science.euiyun.com/quantum-mechanics/chapters/perturbation.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .game-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+</style>
+</head>
+<body data-chapter="perturbation">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="central-potentials spin state-space">
+    <div class="eyebrow">Chapter 12</div>
+    <h1>시간 무관 섭동 이론</h1>
+    <p class="lead">정확히 풀리는 해밀토니언은 손에 꼽는다. 실제 원자에는 외부 전기장·자기장이 걸리고, 상대론 보정과 스핀–궤도 결합이 붙는다. 실제 반도체 우물에는 게이트 전계가 걸리고, 결정은 늘어나거나 눌려 있다. 이런 작은 추가 항을 정확한 해 위에 <strong>차수별로 쌓아 올리는</strong> 방법이 섭동 이론이다. 1차 보정은 기댓값, 2차 보정은 다른 준위와 섞이며 생기는 <em>준위 반발</em>이다. 아래 그림에서 섭동 세기 \(\lambda\)를 끌면 정확한 준위(실선)가 2차 섭동 근사(점선)에서 언제 떨어져 나가는지 보인다. 같은 틀로 슈타르크 효과와 전계 흡수 변조기, 수소의 미세 구조, 제만 효과와 스핀 큐비트, 그리고 반도체 유효 질량이 왜 띠 간격에 비례하는지까지 계산한다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">좌우로 끌면 λ · 누르면 새 섭동</span></div>
+    <ul class="objectives">
+      <li>\(\hat H = \hat H_0 + \lambda\hat V\)를 차수별로 전개해 1차 에너지 \(V_{nn}\), 1차 상태 보정, 2차 에너지 \(\sum|V_{mn}|^2/(E_n - E_m)\)를 유도하고, 근사가 성립하는 조건 \(|V_{mn}| \ll |E_n - E_m|\)과 급수가 점근적이라는 사실을 이해한다.</li>
+      <li>축퇴 준위에서는 축퇴 부분 공간 안의 섭동 행렬을 대각화해 <em>좋은 상태</em>를 고르고, 대칭(섭동과 교환하는 연산자)이 좋은 상태를 미리 알려 준다는 것을 활용한다.</li>
+      <li>수소 바닥 상태의 2차 슈타르크 효과(편극률 \(\tfrac92 \cdot 4\pi\varepsilon_0a_0^3\))와 \(n=2\)의 1차 슈타르크 효과 \(\pm3ea_0F\), 양자 우물의 양자 구속 슈타르크 효과(\(\Delta E \propto F^2L^4\))를 계산하고 전계 흡수 변조기의 원리를 설명한다.</li>
+      <li>상대론 보정·스핀–궤도 결합·다윈 항을 더해 수소의 미세 구조 \(E_{nj}\)를 얻고, 약한 장(랑데 \(g_J\))·강한 장(파셴–바크)·중간 장 제만 효과를 구분해 계산한다.</li>
+      <li>k·p 섭동으로 유효 질량 공식을 유도하고, 2띠 모형 \(m_0/m^* \approx 1 + E_P/E_g\)·비포물선성, 변형이 실리콘 골짜기 축퇴를 깨서 전도 유효 질량을 줄이는 과정을 정량적으로 다룬다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="nondegenerate">
+    <h2>비축퇴 섭동 이론: 1차와 2차</h2>
+    <p>고유값 문제 \(\hat H_0|n^{(0)}\rangle = E_n^{(0)}|n^{(0)}\rangle\)를 이미 안다고 하자. 무한 우물, 조화 진동자, 수소 원자처럼 앞 장들에서 정확히 푼 계가 그런 예다. 여기에 작은 항 \(\hat V\)가 더해진 \(\hat H = \hat H_0 + \lambda\hat V\)의 고유값을 \(\lambda\)의 거듭제곱 급수로 구하는 방법을 <span class="term">섭동 이론</span><span class="en">(perturbation theory)</span>이라 하고, \(\hat H_0\)을 <span class="term">비섭동 해밀토니언</span><span class="en">(unperturbed Hamiltonian)</span>, \(\hat V\)를 <span class="term">섭동</span><span class="en">(perturbation)</span>이라 한다. \(\lambda\)는 차수를 세는 표지로, 계산이 끝나면 1로 둔다. 이 절에서는 들여다보는 준위 \(E_n^{(0)}\)이 축퇴하지 않았다고 가정한다(<span class="term">레일리–슈뢰딩거 섭동 이론</span><span class="en">(Rayleigh–Schrödinger perturbation theory)</span>).</p>
+    <div class="formula">$$E_n = E_n^{(0)} + \lambda E_n^{(1)} + \lambda^2E_n^{(2)} + \cdots, \qquad |n\rangle = |n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \lambda^2|n^{(2)}\rangle + \cdots$$<div class="where">정규화는 편한 대로 \(\langle n^{(0)}|n\rangle = 1\)로 잡는다(이른바 중간 정규화). 그러면 모든 보정 켓이 \(|n^{(0)}\rangle\)과 직교한다: \(\langle n^{(0)}|n^{(k)}\rangle = 0\) (\(k \ge 1\)).</div></div>
+    <p>이 두 급수를 \((\hat H_0 + \lambda\hat V)|n\rangle = E_n|n\rangle\)에 넣고 \(\lambda\)의 같은 차수끼리 모으면 차수마다 한 개씩 방정식이 나온다. 아래 단계별 그림이 그 과정을 보여 준다.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 290" role="img" aria-label="레일리–슈뢰딩거 섭동 이론의 유도 네 단계">
+        <defs><marker id="ptar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="16" y="20" width="180" height="220" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="106" y="48" text-anchor="middle" style="font-weight:700">① 차수 맞추기</text>
+        <text class="t-mono" x="106" y="82" text-anchor="middle">λ⁰: (H₀−E⁽⁰⁾)|n⁽⁰⁾⟩ = 0</text>
+        <text class="t-mono" x="106" y="110" text-anchor="middle">λ¹: (H₀−E⁽⁰⁾)|n⁽¹⁾⟩</text>
+        <text class="t-mono" x="106" y="130" text-anchor="middle">= (E⁽¹⁾−V)|n⁽⁰⁾⟩</text>
+        <text class="t-mono" x="106" y="160" text-anchor="middle">λ²: (H₀−E⁽⁰⁾)|n⁽²⁾⟩</text>
+        <text class="t-mono" x="106" y="180" text-anchor="middle">= (E⁽¹⁾−V)|n⁽¹⁾⟩ + E⁽²⁾|n⁽⁰⁾⟩</text>
+        <text class="t-dim" x="106" y="218" text-anchor="middle">λ의 차수마다 식 하나</text>
+        <g data-step="2">
+          <line x1="198" y1="130" x2="214" y2="130" stroke="var(--text-dim)" marker-end="url(#ptar)"/>
+          <rect x="216" y="20" width="180" height="220" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="306" y="48" text-anchor="middle" style="font-weight:700">② ⟨n⁽⁰⁾| 사영</text>
+          <text class="t-dim" x="306" y="80" text-anchor="middle">λ¹ 식 왼쪽에 ⟨n⁽⁰⁾|</text>
+          <text class="t-dim" x="306" y="100" text-anchor="middle">왼쪽 변은 0이 된다</text>
+          <text class="t-acc" x="306" y="140" text-anchor="middle" style="font-size:15px">E⁽¹⁾ = ⟨n⁽⁰⁾|V|n⁽⁰⁾⟩</text>
+          <text class="t-dim" x="306" y="180" text-anchor="middle">1차 = 섭동의 기댓값</text>
+          <text class="t-dim" x="306" y="200" text-anchor="middle">(옛 파동함수로 평균)</text>
+        </g>
+        <g data-step="3">
+          <line x1="398" y1="130" x2="414" y2="130" stroke="var(--text-dim)" marker-end="url(#ptar)"/>
+          <rect x="416" y="20" width="180" height="220" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="506" y="48" text-anchor="middle" style="font-weight:700">③ ⟨m⁽⁰⁾| 사영 (m≠n)</text>
+          <text class="t-mono" x="506" y="86" text-anchor="middle">(E_m−E_n)⟨m|n⁽¹⁾⟩ = −V_mn</text>
+          <text class="t-acc" x="506" y="132" text-anchor="middle">|n⁽¹⁾⟩ = Σ V_mn</text>
+          <text class="t-acc" x="506" y="154" text-anchor="middle">/(E_n−E_m) |m⁽⁰⁾⟩</text>
+          <text class="t-dim" x="506" y="194" text-anchor="middle">가까운 준위일수록</text>
+          <text class="t-dim" x="506" y="214" text-anchor="middle">많이 섞인다</text>
+        </g>
+        <g data-step="4">
+          <line x1="598" y1="130" x2="614" y2="130" stroke="var(--text-dim)" marker-end="url(#ptar)"/>
+          <rect x="616" y="20" width="168" height="220" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="700" y="48" text-anchor="middle" style="font-weight:700">④ λ² 식 사영</text>
+          <text class="t-mono" x="700" y="86" text-anchor="middle">E⁽²⁾ = ⟨n⁽⁰⁾|V|n⁽¹⁾⟩</text>
+          <text class="t-acc" x="700" y="130" text-anchor="middle">= Σ |V_mn|²</text>
+          <text class="t-acc" x="700" y="152" text-anchor="middle">/(E_n − E_m)</text>
+          <text class="t-dim" x="700" y="194" text-anchor="middle">위 준위는 밀어 내리고</text>
+          <text class="t-dim" x="700" y="214" text-anchor="middle">아래 준위는 밀어 올린다</text>
+        </g>
+        <text class="t-dim" x="400" y="272" text-anchor="middle">V_mn = ⟨m⁽⁰⁾|V̂|n⁽⁰⁾⟩ · 합은 m ≠ n 전부 (연속 상태 포함)</text>
+      </svg>
+      <ol class="steps-cap"><li>급수를 고유값 방정식에 넣고 \(\lambda^0, \lambda^1, \lambda^2\)의 계수를 각각 0으로 둔다. 0차 식은 이미 푼 문제다.</li><li>1차 식에 \(\langle n^{(0)}|\)을 곱하면 \(\hat H_0\)이 에르미트라 왼쪽 변이 사라지고, 1차 에너지가 섭동의 기댓값으로 나온다.</li><li>다른 바닥 상태 \(\langle m^{(0)}|\)을 곱하면 1차 보정 켓의 성분이 나온다. 분모 \(E_n - E_m\) 때문에 에너지가 가까운 상태가 많이 섞인다.</li><li>2차 식에 \(\langle n^{(0)}|\)을 곱하면 2차 에너지가 1차 켓으로 표현되고, ③을 넣으면 제곱 합이 된다.</li></ol>
+      <figcaption>차수별로 맞추기만 하면 섭동 이론 전체가 나온다. 1차 에너지에는 옛 파동함수만, 2차 에너지에는 1차 파동함수가 필요하다 — 일반적으로 \(k\)차 상태를 알면 \(2k+1\)차 에너지까지 얻는다(위그너의 \(2n+1\) 규칙).</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">비축퇴 섭동의 1·2차 결과</span>
+      <p>\(V_{mn} = \langle m^{(0)}|\hat V|n^{(0)}\rangle\)라 쓰면</p>
+      <div class="formula">$$E_n^{(1)} = V_{nn}, \qquad |n^{(1)}\rangle = \sum_{m\ne n}\frac{V_{mn}}{E_n^{(0)} - E_m^{(0)}}\,|m^{(0)}\rangle, \qquad E_n^{(2)} = \sum_{m\ne n}\frac{|V_{mn}|^2}{E_n^{(0)} - E_m^{(0)}}$$<div class="where">근사가 쓸모 있으려면 섞이는 상태마다 \(|V_{mn}| \ll |E_n^{(0)} - E_m^{(0)}|\)여야 한다. 바닥 상태는 모든 분모가 음수라 \(E_0^{(2)} \le 0\)이다 — 2차 보정은 바닥 상태를 언제나 끌어내린다.</div></div>
+    </div>
+    <h3>준위 반발: 2준위 계로 보는 2차 섭동</h3>
+    <p>2차 보정의 부호 규칙은 정확히 풀리는 2준위 계에서 가장 잘 보인다. 에너지 \(E_1 &lt; E_2\), 간격 \(\Delta = E_2 - E_1\)인 두 상태를 섭동 \(V_{12} = V\)가 이으면</p>
+    <div class="formula">$$E_\pm = \frac{E_1 + E_2}{2} \pm \sqrt{\frac{\Delta^2}{4} + |V|^2} \;\approx\; \begin{cases} E_2 + |V|^2/\Delta \\ E_1 - |V|^2/\Delta \end{cases} \quad (|V| \ll \Delta)$$<div class="where">정확한 해를 \(|V|/\Delta\)로 전개한 첫 항이 정확히 2차 섭동 결과다. 섞인 두 준위는 서로 밀어낸다 — 이것이 <span class="term">준위 반발</span><span class="en">(level repulsion)</span>이고, 같은 대칭을 가진 준위가 교차하지 않고 비켜 가는 <span class="term">회피 교차</span><span class="en">(avoided crossing)</span>의 원인이다.</div></div>
+    <figure class="mini" id="mini-rep">
+      <div class="mini-view"><canvas id="cv-rep"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="check"><input type="checkbox" id="rep-p1" checked> 2차 근사 곡선</label>
+        <span class="readout" id="rep-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>흰 손잡이를 좌우로 끌어 결합 \(|V|\)를 바꾼다(간격 \(\Delta\)는 1로 고정). 실선은 정확한 \(E_\pm\), 점선은 2차 섭동 \(E_{1,2} \mp |V|^2/\Delta\)다. 준위 이동의 오차는 \(|V| = 0.1\Delta\)에서 1%, \(0.2\Delta\)에서 4%이고, \(|V| = \Delta/2\)이면 21%로 커진다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-two">
+      <p>간격 <span class="tn" data-var="D" data-min="5" data-max="200" data-step="5" data-unit=" meV">100</span>인 두 준위를 결합 <span class="tn" data-var="V" data-min="1" data-max="100" data-step="1" data-unit=" meV">20</span>로 이으면, 아래 준위는 정확히 <span class="tn-out" data-out="ex"></span> 내려가고 2차 섭동은 <span class="tn-out" data-out="pt"></span>을 준다. 상대 오차는 <span class="tn-out" data-out="err"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>무한 우물에 계단을 깔면</h3>
+    <p>섭동이 국소적이면 1차 에너지는 "섭동이 있는 곳에 전자가 머무는 확률 × 섭동 크기"다. 그래서 같은 섭동이라도 준위마다 1차 이동이 다르다: 마디가 섭동 위치에 있는 상태는 거의 움직이지 않는다. 2차 에너지는 섭동이 파동함수의 <em>모양</em>을 얼마나 바꾸는지, 곧 다른 상태를 얼마나 섞는지를 잰다.</p>
+    <div class="example" data-title="무한 우물 바닥 절반에 깐 계단">
+      <p>폭 \(L = 10\) nm인 GaAs 무한 우물(\(m^* = 0.067m_\mathrm{e}\))의 왼쪽 절반 \(0 &lt; x &lt; L/2\)에만 높이 \(V_0 = 20\) meV의 계단이 있다. 바닥 상태 에너지의 1차·2차 보정과 1차 상태 보정의 \(|2^{(0)}\rangle\) 성분을 구하라. (\(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm²)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\psi_n = \sqrt{2/L}\sin(n\pi x/L)\), \(E_n^{(0)} = n^2E_1^{(0)}\). 1차는 \(V_0\times\)(왼쪽 절반 확률), 2차는 \(V_{m1}\)을 구해 합한다.</div>
+        <div class="step"><b>풀이</b> \(E_1^{(0)} = (0.0381/0.067)(\pi/10)^2 = 56.12\) meV, \(E_2^{(0)} = 224.50\) meV. 모든 \(\psi_n^2\)이 \(x = L/2\)에 대해 대칭이라 \(V_{nn} = V_0/2 = 10.0\) meV. 비대각 원소는 \(V_{m1} = V_0\frac2L\int_0^{L/2}\sin\frac{m\pi x}{L}\sin\frac{\pi x}{L}dx\)에서 \(V_{21} = \frac{4}{3\pi}V_0 = 8.488\) meV, \(V_{31} = 0\), \(V_{41} = -3.395\) meV, …. 2차 합은 \(\frac{8.488^2}{56.12 - 224.50} + \frac{3.395^2}{56.12 - 898.0} + \cdots = -0.428 - 0.014 - 0.002 - \cdots = -0.445\) meV. 1차 상태 계수는 \(c_2 = V_{21}/(E_1 - E_2) = -0.0504\).</div>
+        <div class="answer">\(E_1^{(1)} = 10.0\) meV, \(E_1^{(2)} = -0.445\) meV → 이동 9.555 meV (정확한 수치 풀이 9.556 meV), \(c_2 = -0.050\)</div>
+        <div class="step"><b>검토</b> \(c_2 &lt; 0\)이므로 \(\psi_1 - 0.05\psi_2\)는 계단이 있는 왼쪽에서 작아지고 오른쪽으로 쏠린다 — 전자가 높은 곳을 피하는 것이다. 그 덕분에 실제 이동은 단순 평균 10 meV보다 작다. 2차 합의 96%가 가장 가까운 \(n = 2\) 한 항에서 나온다.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-well">
+      <p>폭 10 nm 우물 <em>한가운데</em>에 좁고 높은 혹을 올린다. 첫 들뜬 상태(\(n = 2\)) 에너지의 1차 이동은?</p>
+      <div class="opts"><button class="opt">바닥 상태와 같은 만큼 오른다</button><button class="opt">바닥 상태보다 더 많이 오른다</button><button class="opt" data-correct>거의 0이다</button><button class="opt">오히려 내려간다</button></div>
+      <div class="quiz-exp">\(\psi_2\)는 가운데에 마디가 있어 혹 위에 확률이 거의 없다. 1차 이동은 \(\int V|\psi_2|^2dx \approx 0\)이다. 아래에서 손잡이를 끌어 가운데에 혹을 만들고 \(n=2\)의 "1차" 값을 확인해 보라. 2차 효과는 \(n=2\)를 아주 조금 내린다.</div>
+    </div>
+    <div class="sim" id="sim-well">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>섭동 실험대: 우물 바닥을 끌어 준위를 원하는 만큼 옮겨라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-well"></canvas><span class="hint top">흰 원 7개를 위아래로 끌어 섭동 V(x)를 그린다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>볼 준위 n</span><div class="seg" id="well-n"><button data-value="1" class="on">1</button><button data-value="2">2</button><button data-value="3">3</button><button data-value="4">4</button></div></div>
+          <div class="ctrl"><span>섭동 모양 미리 놓기</span><div class="seg" id="well-pre"><button data-value="step" class="on">왼쪽 계단</button><button data-value="bump">가운데 혹</button><button data-value="tilt">기울기</button><button data-value="zero">없음</button></div></div>
+          <label class="check"><input type="checkbox" id="well-psi1" checked> 1차 보정 파동함수 겹쳐 그리기</label>
+          <div class="ctrl"><span>도전</span><div class="game-row"><button class="btn" id="well-game" type="button">과녁: n=1은 +15 meV, n=2는 그대로</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">E⁽⁰⁾ (meV)</span><span class="v" id="well-e0">—</span></div>
+        <div class="stat"><span class="k">1차 · 2차 보정</span><span class="v" id="well-e12">—</span></div>
+        <div class="stat"><span class="k">섭동 합 vs 정확한 이동</span><span class="v" id="well-ex">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="well-goal">—</span></div>
+      </div>
+      <div class="sim-note">GaAs 전자(\(m^* = 0.067m_\mathrm{e}\)), 폭 10 nm 무한 우물. 섭동은 손잡이 사이를 직선으로 이은 \(V(x)\)(±60 meV)이다. 오른쪽 사다리의 회색 눈금은 \(E^{(0)}\), 점선은 1차, 자홍은 2차까지, 초록은 유한 차분으로 정확히 푼 값이다. 해볼 것: ① "가운데 혹"에서 \(n = 2, 4\)의 1차 이동이 작은 이유를 파동함수로 확인한다. ② "기울기"(전기장)에서는 모든 \(n\)의 1차 이동이 같고 차이는 2차에서만 생긴다 — 2절의 슈타르크 효과다. ③ 손잡이를 ±60 meV까지 키워 섭동 합과 정확한 값이 벌어지기 시작하는 크기를 찾는다.</div>
+    </div>
+    <h3>섭동 급수는 수렴하지 않을 수 있다</h3>
+    <p>2차까지 계산해서 잘 맞으면 3차, 4차를 더할수록 더 좋아질 것 같지만 그렇지 않은 경우가 흔하다. 대표적인 예가 <span class="term">비조화 진동자</span><span class="en">(anharmonic oscillator)</span> \(\hat H = \hat p^2/2m + \frac12m\omega^2\hat x^2 + \lambda\hat x^4\)다. \(\lambda &lt; 0\)이면 퍼텐셜이 아래로 열려 속박 상태가 아예 없으므로, \(E_0(\lambda)\)는 \(\lambda = 0\)에서 해석적일 수 없다. 그래서 급수의 수렴 반지름은 0이다. 그래도 급수는 <span class="term">점근 급수</span><span class="en">(asymptotic series)</span>라서, 적당한 차수에서 멈추면 아주 좋은 근사를 준다.</p>
+    <div class="formula">$$\frac{E_0}{\hbar\omega} = \frac12 + \frac34g - \frac{21}{8}g^2 + \frac{333}{16}g^3 - \frac{30885}{128}g^4 + \cdots, \qquad g = \frac{\lambda x_0^4}{\hbar\omega}, \quad x_0 = \sqrt{\frac{\hbar}{m\omega}}$$<div class="where">계수의 크기가 \(k!\)처럼 자란다(벤더–우). 1차 계수는 \(\langle0|\hat x^4|0\rangle = \tfrac34x_0^4\)(<a href="ladder-operators.html">6장</a>의 사다리 연산자 계산)에서 나온다.</div></div>
+    <div class="example" data-title="비조화 진동자의 바닥 상태">
+      <p>\(g = 0.1\)인 비조화 진동자의 바닥 에너지를 1차, 2차, 3차 섭동으로 구하고 정확한 값 \(E_0 = 0.559146\,\hbar\omega\)(수치 대각화)와 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 위의 급수를 차수별로 더한다.</div>
+        <div class="step"><b>풀이</b> 1차: \(0.5 + 0.075 = 0.575\). 2차: \(-\tfrac{21}{8}(0.01) = -0.02625\)를 더해 \(0.54875\). 3차: \(+\tfrac{333}{16}(0.001) = +0.02081\)을 더해 \(0.56956\).</div>
+        <div class="answer">1차 0.5750 (오차 +2.8%), 2차 0.5488 (−1.9%), 3차 0.5696 (+1.9%)</div>
+        <div class="step"><b>검토</b> 차수를 올려도 오차가 줄지 않고 정확한 값 주위를 진동한다. 항의 크기가 \(0.075, 0.026, 0.021, 0.024, \dots\)로 셋째 항 근처에서 가장 작아지므로 거기서 자르는 것이 최선이다. \(g = 0.05\)이면 2차가 0.53094로 정확한 값 0.53264와 0.3% 차이다.</div>
+      </details>
+    </div>
+    <figure class="mini" id="mini-asym">
+      <div class="mini-view"><canvas id="cv-asym"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>결합 g <output id="asym-g-out"></output></span><input type="range" id="asym-g" min="0.005" max="0.3" step="0.005" value="0.1"></label>
+        <span class="readout" id="asym-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>막대는 \(k\)차까지 더한 부분합 \(S_k\), 초록 선은 유한 차분으로 구한 정확한 \(E_0\)이다. \(g\)가 작으면 몇 차까지 정확한 값에 다가가다가 결국 발산한다. 가장 좋은 차수(자홍 테두리)는 \(g\)가 클수록 낮아진다.</figcaption>
+    </figure>
+    <div class="callout deep"><strong>헬만–파인만 정리와 1차 섭동</strong><p>\(\hat H(\lambda)\)의 정규화된 고유 상태에 대해 \(dE_n/d\lambda = \langle n(\lambda)|\partial\hat H/\partial\lambda|n(\lambda)\rangle\)가 정확히 성립한다(<span class="term">헬만–파인만 정리</span><span class="en">(Hellmann–Feynman theorem)</span>). \(\lambda = 0\)에서 계산하면 바로 1차 섭동 \(E^{(1)} = V_{nn}\)이다. 한 번 더 미분하면 \(d^2E/d\lambda^2 = 2E^{(2)}\)이 되어, 2차 보정이 "섭동에 대한 에너지 곡선의 곡률"임을 알 수 있다. 분자의 힘 계산, 전기 편극률(3절)이나 유효 질량(6절)처럼 <em>에너지의 2차 도함수</em>로 정의되는 물리량은 모두 2차 섭동으로 계산된다.</p></div>
+    <div class="callout warn"><strong>2차 합에서 흔히 하는 실수</strong><p>① 합에서 \(m = n\)을 빼는 것을 잊는다(분모가 0). ② 연속 상태를 빼먹는다 — 수소 바닥 상태의 편극률은 속박 상태만 더하면 정확한 값의 81%뿐이고, 나머지는 이온화된 연속 상태에서 온다. ③ 축퇴 준위에 이 공식을 쓴다 — 분모가 0인 항이 생기면 2절의 축퇴 섭동으로 가야 한다.</p></div>
+    <p>섭동 이론은 앞 장의 결과를 다듬는 데에도 쓰였다. <a href="central-potentials.html">9장</a>의 브루스 식에서 양자점 속 전자와 정공의 쿨롱 인력은 두 입자를 무한 구형 우물의 1S에 넣은 채로 계산한 1차 섭동 \(\langle -e^2/4\pi\varepsilon_0\varepsilon_r|\mathbf r_e - \mathbf r_h|\rangle = -1.786\,e^2/4\pi\varepsilon_0\varepsilon_rR\)이다. 반지름 2 nm의 CdSe(\(\varepsilon_r = 10.6\))에서 이 값은 −0.121 eV로, 구속 에너지보다 작아서 1차로 충분하다.</p>
+    <div class="drill" id="drill-pt" data-title="2준위 2차 섭동 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="degenerate">
+    <h2>축퇴 섭동과 대칭 깨짐</h2>
+    <p>\(E_n^{(0)}\)이 \(g\)겹 축퇴해 있으면 1절의 공식은 무너진다. 같은 에너지의 다른 상태 \(|m^{(0)}\rangle\)에 대해 분모 \(E_n^{(0)} - E_m^{(0)}\)이 0이 되기 때문이다. 문제의 뿌리는 더 깊다: 축퇴 부분 공간 안에서는 어떤 직교 기저를 골라도 \(\hat H_0\)의 고유 상태다. 그런데 섭동을 켰을 때 \(\lambda \to 0\)으로 연속적으로 이어지는 상태는 그중 특정한 조합뿐이다. 이 조합을 <span class="term">좋은 상태</span><span class="en">(good states)</span>라 한다. 축퇴 섭동 이론의 일은 좋은 상태를 찾는 것이다.</p>
+    <p>축퇴 부분 공간의 기저 \(|n_1^{(0)}\rangle, \dots, |n_g^{(0)}\rangle\)으로 0차 상태를 \(|n^{(0)}\rangle = \sum_a c_a|n_a^{(0)}\rangle\)이라 두고 1차 식에 \(\langle n_b^{(0)}|\)을 곱하면, 왼쪽 변이 사라지면서 \(g\times g\) 고유값 문제가 남는다.</p>
+    <div class="def"><span class="def-k">축퇴 섭동의 1차 결과</span>
+      <div class="formula">$$\sum_{a=1}^{g}W_{ba}\,c_a = E^{(1)}c_b, \qquad W_{ba} = \langle n_b^{(0)}|\hat V|n_a^{(0)}\rangle, \qquad \det\!\left(W - E^{(1)}\mathbb 1\right) = 0$$<div class="where">축퇴 부분 공간 안의 섭동 행렬 \(W\)의 고유값이 1차 에너지 이동이고, 고유 벡터가 좋은 상태다. 이 행렬식 방정식을 <span class="term">영년 방정식</span><span class="en">(secular equation)</span>이라 한다. 고유값이 서로 다르면 축퇴가 <span class="term">풀린다</span><span class="en">(lifted)</span>.</div></div>
+    </div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 280" role="img" aria-label="축퇴 섭동 이론을 푸는 네 단계: 부분 공간, W 행렬, 대각화, 갈라짐">
+        <defs><marker id="dgar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="16" y="20" width="180" height="215" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="106" y="46" text-anchor="middle" style="font-weight:700">① 축퇴 부분 공간</text>
+        <line x1="50" y1="120" x2="162" y2="120" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="106" y="110" text-anchor="middle">g겹: |n₁⟩ … |n_g⟩</text>
+        <line x1="50" y1="200" x2="162" y2="200" stroke="var(--text-dim)" stroke-width="2"/>
+        <text class="t-dim" x="106" y="190" text-anchor="middle">다른 준위 (멀리)</text>
+        <text class="t-dim" x="106" y="150" text-anchor="middle">기저 선택이 자유롭다</text>
+        <g data-step="2">
+          <line x1="198" y1="128" x2="214" y2="128" stroke="var(--text-dim)" marker-end="url(#dgar)"/>
+          <rect x="216" y="20" width="180" height="215" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="306" y="46" text-anchor="middle" style="font-weight:700">② W 행렬</text>
+          <text class="t-mono" x="306" y="84" text-anchor="middle">W_ab = ⟨n_a|V̂|n_b⟩</text>
+          <rect x="262" y="104" width="88" height="70" rx="6" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+          <text class="t-mono" x="284" y="132" text-anchor="middle">W₁₁</text><text class="t-mono" x="328" y="132" text-anchor="middle">W₁₂</text>
+          <text class="t-mono" x="284" y="160" text-anchor="middle">W₂₁</text><text class="t-mono" x="328" y="160" text-anchor="middle">W₂₂</text>
+          <text class="t-dim" x="306" y="204" text-anchor="middle">g × g 만 계산</text>
+        </g>
+        <g data-step="3">
+          <line x1="398" y1="128" x2="414" y2="128" stroke="var(--text-dim)" marker-end="url(#dgar)"/>
+          <rect x="416" y="20" width="180" height="215" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="506" y="46" text-anchor="middle" style="font-weight:700">③ 대각화</text>
+          <text class="t-mono" x="506" y="84" text-anchor="middle">det(W − E⁽¹⁾) = 0</text>
+          <text class="t-acc" x="506" y="122" text-anchor="middle">고유값 = 1차 이동</text>
+          <text class="t-acc" x="506" y="146" text-anchor="middle">고유벡터 = 좋은 상태</text>
+          <text class="t-dim" x="506" y="186" text-anchor="middle">대칭을 알면 W가</text>
+          <text class="t-dim" x="506" y="206" text-anchor="middle">처음부터 대각이다</text>
+        </g>
+        <g data-step="4">
+          <line x1="598" y1="128" x2="614" y2="128" stroke="var(--text-dim)" marker-end="url(#dgar)"/>
+          <rect x="616" y="20" width="168" height="215" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="700" y="46" text-anchor="middle" style="font-weight:700">④ 갈라짐</text>
+          <line x1="636" y1="130" x2="676" y2="130" stroke="var(--accent)" stroke-width="3"/>
+          <line x1="676" y1="130" x2="716" y2="100" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+          <line x1="676" y1="130" x2="716" y2="150" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+          <line x1="716" y1="100" x2="764" y2="100" stroke="var(--accent-2)" stroke-width="3"/>
+          <line x1="716" y1="150" x2="764" y2="150" stroke="var(--accent-2)" stroke-width="3"/>
+          <text class="t-dim" x="700" y="190" text-anchor="middle">대칭이 낮아진 만큼</text>
+          <text class="t-dim" x="700" y="210" text-anchor="middle">축퇴가 풀린다</text>
+        </g>
+        <text class="t-dim" x="400" y="266" text-anchor="middle">좋은 상태가 정해지면 그 위에서 1절의 비축퇴 공식(2차 등)을 그대로 쓴다</text>
+      </svg>
+      <ol class="steps-cap"><li>같은 에너지의 상태들을 모은다. 이 안에서는 어떤 기저든 \(\hat H_0\)의 고유 상태다.</li><li>섭동을 부분 공간 안에서만 행렬로 쓴다. 바깥 상태는 1차에 들어오지 않는다.</li><li>\(W\)를 대각화하면 1차 이동과 좋은 상태가 동시에 나온다.</li><li>고유값이 다르면 준위가 갈라진다. 대칭이 남아 있으면 일부 축퇴는 그대로다.</li></ol>
+      <figcaption>축퇴 섭동의 절차. 결국 "작은 행렬 하나를 대각화하는 일"이며, 축퇴 부분 공간의 상태 수가 클수록 대칭을 써서 행렬을 미리 쪼개는 것이 중요해진다.</figcaption>
+    </figure>
+    <h3>대칭이 좋은 상태를 알려 준다</h3>
+    <p>\(W\)를 매번 대각화할 필요는 없다. 다음 정리가 지름길을 준다.</p>
+    <div class="def"><span class="def-k">좋은 상태 정리</span>
+      <p>에르미트 연산자 \(\hat A\)가 \(\hat H_0\), \(\hat V\)와 모두 교환하고, 축퇴 부분 공간의 상태들이 \(\hat A\)의 서로 다른 고유값을 갖는다면, 그 \(\hat A\)의 고유 상태들이 좋은 상태다. 곧 \(W\)는 그 기저에서 이미 대각이다.</p>
+    </div>
+    <p>증명은 짧다: \([\hat A, \hat V] = 0\)이면 \(\langle a|\hat V|a'\rangle(a - a') = \langle a|[\hat A, \hat V]|a'\rangle = 0\)이라, \(a \ne a'\)인 비대각 원소가 0이다. 그래서 물리학자들은 \(W\)를 계산하기 전에 "섭동이 깨지 않고 남겨 둔 대칭이 무엇인가"를 먼저 묻는다. 수소의 \(n=2\) 준위에 \(z\) 방향 전기장을 걸면 \(\hat L_z\)가 보존되어 \(m\)이 좋은 양자수로 남고(3절), 스핀–궤도 결합을 켜면 \(\hat{\mathbf J}^2, \hat J_z\)가 남아 \(|j\,m_j\rangle\)이 좋은 상태가 된다(4절). 대칭이 낮아지는 만큼 축퇴가 풀리는 이 현상을 <span class="term">대칭 깨짐</span><span class="en">(symmetry breaking)</span>에 의한 준위 갈라짐이라 부른다. <a href="symmetry.html">7장</a>에서 본 실리콘 전도띠의 여섯 골짜기 축퇴가 변형으로 갈라지는 것(6절)도 같은 이야기다.</p>
+    <figure class="mini" id="mini-rot">
+      <div class="mini-view"><canvas id="cv-rot"></canvas></div>
+      <div class="mini-ctrl">
+        <span class="readout" id="rot-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽 평면의 점을 끌어 2겹 축퇴 부분 공간의 섭동 \(W = \begin{pmatrix}\delta/2 & w\\ w & -\delta/2\end{pmatrix}\)를 정한다. 오른쪽은 좋은 상태 두 개를 \((|1\rangle, |2\rangle)\) 평면의 화살표로 그렸다. 섭동을 아무리 작게 해도(점을 원점 가까이) 화살표의 방향은 섭동의 <em>방향</em>(\(\tan2\theta = 2w/\delta\))만으로 정해진다 — 축퇴 상태는 작은 섭동에 극도로 민감하다.</figcaption>
+    </figure>
+    <div class="example" data-title="사분면 계단이 가른 2차원 상자의 축퇴">
+      <p>한 변 \(L = 10\) nm인 2차원 GaAs 정사각 무한 우물(\(m^* = 0.067m_\mathrm{e}\))의 첫 들뜬 준위 \((n_x, n_y) = (1,2), (2,1)\)은 2겹 축퇴다. 한 사분면 \(0 &lt; x, y &lt; L/2\)에만 \(V_0 = 20\) meV의 계단이 있을 때 갈라진 두 준위의 1차 이동과 좋은 상태를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\psi_{12}\), \(\psi_{21}\) 기저에서 \(2\times2\) 행렬 \(W\)를 만든다. 적분이 \(x\)와 \(y\)로 나뉘므로 1차원 적분 두 개의 곱이다.</div>
+        <div class="step"><b>풀이</b> \(\frac2L\int_0^{L/2}\sin^2\frac{n\pi x}{L}dx = \frac12\)이므로 \(W_{11} = W_{22} = V_0/4 = 5.00\) meV. 비대각은 \(W_{12} = V_0\left(\frac2L\int_0^{L/2}\sin\frac{\pi x}{L}\sin\frac{2\pi x}{L}dx\right)^2 = V_0\left(\frac{4}{3\pi}\right)^2 = \frac{16}{9\pi^2}V_0 = 3.603\) meV. 고유값은 \(5.00 \pm 3.60\) meV, 고유 벡터는 \((\psi_{12} \pm \psi_{21})/\sqrt2\).</div>
+        <div class="answer">이동 +8.60 meV (\(\psi_{12} + \psi_{21}\)), +1.40 meV (\(\psi_{12} - \psi_{21}\)); 갈라짐 7.21 meV (\(E^{(0)} = 280.6\) meV)</div>
+        <div class="step"><b>검토</b> \(\psi_{12} + \psi_{21}\)은 계단이 있는 사분면과 그 맞은편에 확률이 몰리고, \(\psi_{12} - \psi_{21}\)은 대각선 \(x = y\)에 마디가 있어 계단을 피한다. 계단이 남긴 대칭(대각선 \(x = y\)에 대한 거울 대칭)의 고유 상태가 좋은 상태라는 정리와 맞는다. 2차원 유한 차분으로 정확히 풀면 +8.54, +1.35 meV다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-box">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>축퇴 쪼개기: 혹을 끌어 두 상태를 원하는 만큼 갈라라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-box"></canvas></div><div><canvas id="cv-boxE"></canvas></div></div><span class="hint top">흰 원(혹)을 상자 안 어디로든 끈다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>섭동</span><div class="seg" id="box-mode"><button data-value="bump" class="on">가우스 혹</button><button data-value="quad">사분면 계단</button><button data-value="stretch">x 방향 늘이기</button></div></div>
+          <label class="ctrl"><span>혹 높이 · 계단 V₀ · 늘임 <output id="box-a-out"></output></span><input type="range" id="box-a" min="0" max="100" step="1" value="60"></label>
+          <div class="ctrl"><span>도전</span><div class="game-row"><button class="btn" id="box-game" type="button">과녁: 갈라짐 10.0 meV (가우스 혹)</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">W 행렬 (meV)</span><span class="v" id="box-w">—</span></div>
+        <div class="stat"><span class="k">1차 이동 (아래 · 위)</span><span class="v" id="box-e">—</span></div>
+        <div class="stat"><span class="k">좋은 상태</span><span class="v" id="box-s">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="box-goal">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 두 지도는 좋은 상태 \(\psi_- \)(아래 준위)와 \(\psi_+\)(위 준위)의 확률 밀도, 오른쪽은 축퇴 준위(회색)가 갈라지는 모습이다. 가우스 혹은 폭 0.8 nm다. 해볼 것: ① 혹을 어디에 두든 한 상태는 거의 이동하지 않는다 — 좁은 섭동에서는 \(W \approx g\begin{pmatrix}a^2 & ab\\ ab & b^2\end{pmatrix}\)(\(a, b\)는 혹 위치의 \(\psi_{12}, \psi_{21}\))라 고유값 하나가 0이기 때문이다. ② 혹을 대각선 위에 두면 좋은 상태가 정확히 \((\psi_{12} \pm \psi_{21})/\sqrt2\)가 된다. ③ "늘이기"는 대칭을 \(x\)와 \(y\)로 나누므로 좋은 상태가 \(\psi_{12}\), \(\psi_{21}\) 그 자체다.</div>
+    </div>
+    <div class="callout deep"><strong>준축퇴와 유효 해밀토니언</strong><p>두 준위가 정확히 축퇴하지 않고 간격이 \(|V|\)와 비슷하게 가까우면(<span class="term">준축퇴</span><span class="en">(quasi-degenerate)</span>) 비축퇴 공식은 분모가 작아 쓸 수 없다. 이때는 가까운 상태들만 묶어 그 부분 공간에서 \(\hat H\)를 정확히 대각화하고, 멀리 있는 상태의 효과는 2차 섭동으로 부분 공간 행렬에 더한다: \(H^\text{eff}_{ab} = E_a\delta_{ab} + V_{ab} + \sum_{m}\frac{V_{am}V_{mb}}{\bar E - E_m}\). 이것을 <span class="term">뢰브딘 분할</span><span class="en">(Löwdin partitioning)</span>이라 하며, 6절의 k·p 띠 계산과 반도체 TCAD의 \(\mathbf k\cdot\mathbf p\) 다띠 모형이 바로 이 방식이다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="stark">
+    <h2>슈타르크 효과와 양자 구속 슈타르크 효과</h2>
+    <p>원자나 양자 우물에 균일한 전기장 \(\mathbf F = F\hat z\)를 걸면 전자(전하 \(-e\))의 퍼텐셜 에너지에 \(\hat V = eF\hat z\)가 더해진다. 이 섭동이 만드는 준위 이동이 <span class="term">슈타르크 효과</span><span class="en">(Stark effect)</span>다. 원자 내부 전기장 \(e/4\pi\varepsilon_0a_0^2 = 5.14\times10^{11}\) V/m에 비하면 실험실 전기장은 아주 작아서 섭동 이론이 잘 맞는다.</p>
+    <h3>수소 바닥 상태: 1차는 0, 2차가 편극률</h3>
+    <p>\(\hat z\)는 반전성이 홀이고 1s는 짝이라 \(\langle1s|\hat z|1s\rangle = 0\)이다. 반전 대칭이 있는 계에서 축퇴하지 않은 상태는 영구 쌍극자 모멘트가 없으므로 1차 슈타르크 효과가 없다. 첫 효과는 2차다.</p>
+    <div class="formula">$$E^{(2)}_{1s} = e^2F^2\sum_{n\ne1}\frac{|\langle n|\hat z|1s\rangle|^2}{E_1 - E_n} = -\frac12\alpha_\text{pol}F^2, \qquad \alpha_\text{pol} = \frac92\,(4\pi\varepsilon_0)a_0^3$$<div class="where">\(\alpha_\text{pol}\)이 <span class="term">편극률</span><span class="en">(polarizability)</span>이다: 전기장이 유도한 쌍극자 \(p = \alpha_\text{pol}F\)가 다시 전기장과 상호작용해 \(-\frac12pF\)의 에너지를 낸다. 정확한 값 9/2는 합을 직접 하지 않고 \(\hat V|1s\rangle\)을 만족하는 1차 파동함수를 바로 푸는 달가르노–루이스 방법으로 얻는다. \(\alpha_\text{pol}/4\pi\varepsilon_0 = 0.667\) Å³.</div></div>
+    <div class="callout tip"><strong>2차 합의 상한을 손으로 구하는 요령</strong><p>모든 \(n \ge 2\)에서 \(E_n - E_1 \ge E_2 - E_1 = \tfrac34\,\text{Ry}\)이므로 분모를 가장 작은 값으로 바꾸면 \(|E^{(2)}| \le e^2F^2\langle1s|\hat z^2|1s\rangle/(\tfrac34\text{Ry})\)이고, 완비성 덕분에 합이 \(\langle\hat z^2\rangle = a_0^2\) 하나로 줄어든다. 결과는 \(\alpha_\text{pol} \le \tfrac{16}{3}(4\pi\varepsilon_0)a_0^3\), 곧 계수 5.33으로 정확한 값 4.5보다 19% 크다. 2차 섭동의 크기를 어림하는 데 늘 쓰는 기법이다.</p></div>
+    <h3>수소 n = 2: 축퇴가 만드는 1차 슈타르크 효과</h3>
+    <p>\(n = 2\)에는 2s, 2p₀, 2p₊₁, 2p₋₁ 네 상태가 축퇴해 있다. \(\hat V = eF\hat z\)는 \(\hat L_z\)와 교환하므로 \(m\)이 좋은 양자수이고, 반전성이 홀이라 같은 반전성끼리의 원소는 0이다. 남는 것은 \(m = 0\)인 2s와 2p₀ 사이의 원소 하나뿐이다.</p>
+    <div class="formula">$$W = eF\begin{pmatrix}0 & \langle2s|\hat z|2p_0\rangle\\ \langle2p_0|\hat z|2s\rangle & 0\end{pmatrix}, \quad \langle2s|\hat z|2p_0\rangle = -3a_0 \;\Rightarrow\; E^{(1)} = \pm3ea_0F, \quad |\pm\rangle = \frac{|2s\rangle \mp |2p_0\rangle}{\sqrt2}$$<div class="where">2p₊₁, 2p₋₁은 1차로 움직이지 않는다. 섞인 상태는 크기 \(3ea_0\)의 영구 쌍극자를 가져 에너지가 전기장에 <em>선형</em>으로 변한다. 축퇴 덕분에 반전 대칭이 있어도 1차 효과가 생긴다.</div></div>
+    <figure class="mini" id="mini-stark2">
+      <div class="mini-view"><canvas id="cv-stark2"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>전기장 F <output id="st2-f-out"></output></span><input type="range" id="st2-f" min="0" max="20" step="0.5" value="10"></label>
+        <span class="readout" id="st2-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>좋은 상태 \((2s \mp 2p_0)/\sqrt2\)의 \(x\)–\(z\) 단면 진폭 \(|\psi|\)(원점 근처를 잘라 밝기를 맞춤). 전자 구름이 \(+z\) 또는 \(-z\)로 \(3a_0\)만큼 치우친 쌍극자다. 전기장 \(F\hat z\)(화살표) 아래에서 전자의 퍼텐셜 \(eFz\)는 \(-z\) 쪽이 낮으므로, 구름이 \(-z\)로 쏠린 상태가 \(3ea_0F\)만큼 내려간다.</figcaption>
+    </figure>
+    <div class="example" data-title="수소 n = 2의 선형 슈타르크 갈라짐">
+      <p>\(F = 1.0\times10^7\) V/m(100 kV/cm)에서 수소 \(n=2\) 준위의 슈타르크 갈라짐을 구하고 바닥 상태의 2차 이동과 비교하라. 또 이 갈라짐이 \(n=2\)의 미세 구조 간격(45.3 µeV, 4절)과 같아지는 전기장은? (\(a_0 = 0.05292\) nm)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(n=2\): \(\pm3ea_0F\). 1s: \(-\frac12\alpha_\text{pol}F^2\), \(\alpha_\text{pol} = 4.5\times4\pi\varepsilon_0a_0^3 = 7.42\times10^{-41}\) C·m²/V.</div>
+        <div class="step"><b>풀이</b> \(eF = 0.010\) eV/nm이므로 \(3ea_0F = 3\times0.05292\times0.010 = 1.588\times10^{-3}\) eV. 바닥 상태는 \(\frac12(7.42\times10^{-41})(10^{7})^2 = 3.71\times10^{-27}\) J \(= 2.32\times10^{-8}\) eV 내려간다. 미세 구조와 같아지는 장: \(F = 45.3\ \mu\text{eV}/(3ea_0) = 2.85\times10^5\) V/m.</div>
+        <div class="answer">\(n=2\): \(\pm1.59\) meV (네 준위가 +1.59, 0, 0, −1.59 meV로 셋으로 갈라짐); 1s: −23 neV; 미세 구조와 비슷해지는 장 \(\approx 2.9\times10^5\) V/m</div>
+        <div class="step"><b>검토</b> 선형 효과가 2차 효과보다 7만 배 가까이 크다. 축퇴가 있으면 섭동이 0차 상태를 통째로 바꿀 수 있기 때문이다. 다만 3 kV/cm보다 약한 장에서는 미세 구조가 먼저 2s와 2p를 갈라 놓으므로 \(j\) 상태를 기저로 다시 계산해야 하고, 그 영역의 2s 준위 이동은 다시 \(F^2\)에 비례한다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-pol">
+      <p>전기장 \(F =\) <span class="tn" data-var="p" data-min="5" data-max="9.5" data-step="0.1">7.0</span>(\(\log_{10}\) V/m, 곧 <span class="tn-out" data-out="F"></span>)이면 수소 1s는 <span class="tn-out" data-out="q"></span> 내려가고, \(n = 2\)는 ±<span class="tn-out" data-out="l"></span> 갈라진다. 1s 유도 쌍극자는 <span class="tn-out" data-out="d"></span>\(\,ea_0\)이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>양자 우물에 전계를 걸면: QCSE</h3>
+    <p>반도체 양자 우물(<a href="one-dimensional.html">5장</a>)에 성장 방향으로 전계를 걸면 우물 바닥이 기운다. 대칭 우물의 준위도 반전성이 정해져 있으므로 1차 이동은 0이고, 2차 이동이 주인공이다. 폭 \(L\)인 무한 우물의 바닥 상태는 가까운 준위 \(n = 2\)와 섞이며 내려간다.</p>
+    <div class="formula">$$\Delta E_1 \approx \sum_{n\,\text{짝}}\frac{e^2F^2|\langle n|\hat z|1\rangle|^2}{E_1 - E_n} = -\frac{15 - \pi^2}{24\pi^4}\,\frac{m^*e^2F^2L^4}{\hbar^2}, \qquad \langle2|\hat z|1\rangle = -\frac{16L}{9\pi^2}$$<div class="where">계수 \((15-\pi^2)/24\pi^4 = 2.195\times10^{-3}\)은 무한 합을 정확히 더한 값이다. 이동은 \(L^4\)과 \(m^*\)에 비례한다: 넓은 우물, 무거운 입자일수록 준위가 촘촘해 잘 섞인다. 전자와 정공이 서로 반대쪽 벽으로 밀리므로 띠간 전이 에너지는 \(|\Delta E_e| + |\Delta E_h|\)만큼 줄어든다(적색 이동).</div></div>
+    <p>이것이 <span class="term">양자 구속 슈타르크 효과</span><span class="en">(quantum-confined Stark effect, QCSE)</span>다. 덩어리 반도체에서는 수 kV/cm만 걸어도 엑시톤이 전계에 찢겨 흡수 봉우리가 사라지지만(프란츠–켈디시 효과로 흡수 끝만 번진다), 우물에서는 벽이 전자와 정공을 붙잡아 두므로 100 kV/cm가 넘는 전계에서도 엑시톤 봉우리가 살아남은 채 수십 meV 이동한다. 대신 전자와 정공이 반대쪽으로 갈라져 겹침 \(|\langle\psi_e|\psi_h\rangle|^2\)이 줄고, 흡수(진동자 세기)가 약해진다.</p>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 300" role="img" aria-label="양자 구속 슈타르크 효과의 세 단계: 평평한 우물, 기운 우물, 갈라진 파동함수와 적색 이동">
+        <g>
+          <text class="t" x="130" y="24" text-anchor="middle" style="font-weight:700">① F = 0</text>
+          <path d="M30,60 L90,60 L90,120 L170,120 L170,60 L230,60" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <path d="M30,250 L90,250 L90,190 L170,190 L170,250 L230,250" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <path d="M90,108 Q130,72 170,108" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M90,202 Q130,238 170,202" fill="none" stroke="var(--warn)" stroke-width="2"/>
+          <line x1="130" y1="108" x2="130" y2="202" stroke="var(--text-dim)" stroke-dasharray="4 3"/>
+          <text class="t-dim" x="138" y="158">ħω₀</text>
+          <text class="t-acc" x="186" y="104">전자</text><text class="t" x="186" y="212" style="fill:var(--warn)">정공</text>
+          <text class="t-dim" x="130" y="282" text-anchor="middle">겹침 최대, 반전 대칭</text>
+        </g>
+        <g data-step="2">
+          <text class="t" x="400" y="24" text-anchor="middle" style="font-weight:700">② 전계 → 바닥이 기운다</text>
+          <path d="M300,40 L360,58 L360,108 L440,132 L440,82 L500,100" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <path d="M300,230 L360,248 L360,198 L440,222 L440,272 L500,290" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <text class="t-dim" x="400" y="158" text-anchor="middle">기울기 = eF</text>
+          <text class="t-dim" x="400" y="178" text-anchor="middle">전자 → 오른쪽 벽, 정공 → 왼쪽 벽</text>
+        </g>
+        <g data-step="3">
+          <text class="t" x="670" y="24" text-anchor="middle" style="font-weight:700">③ 적색 이동 + 겹침 감소</text>
+          <path d="M570,40 L630,58 L630,108 L710,132 L710,82 L770,100" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <path d="M570,230 L630,248 L630,198 L710,222 L710,272 L770,290" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+          <path d="M630,104 Q698,58 710,122" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M630,204 Q642,252 710,226" fill="none" stroke="var(--warn)" stroke-width="2"/>
+          <line x1="690" y1="92" x2="646" y2="222" stroke="var(--text-dim)" stroke-dasharray="4 3"/>
+          <text class="t-dim" x="676" y="170">ħω &lt; ħω₀</text>
+          <text class="t-acc" x="712" y="200">ΔE ∝ −F²L⁴</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>전계가 없으면 전자(위)와 정공(아래)이 우물 가운데에 겹쳐 있고, 전이 에너지는 띠 간격 + 두 구속 에너지다.</li><li>전계 \(F\)가 전도띠와 원자가띠를 함께 기울인다. 전자의 퍼텐셜 \(eFz\)는 한쪽 벽에서 낮고, 정공은 반대쪽 벽에서 낮다.</li><li>두 입자가 서로 반대쪽 벽으로 밀리며 각자 2차 섭동만큼 내려간다. 전이 에너지는 줄고(적색 이동) 파동함수 겹침도 준다.</li></ol>
+      <figcaption>QCSE의 세 단계. 전이 에너지 변화는 \(F^2\)에 비례하므로 작은 전계에서는 둔하고, 전계를 키울수록 기울기가 가팔라진다 — 변조기를 바이어스해 쓰는 이유다.</figcaption>
+    </figure>
+    <div class="example" data-title="GaAs 양자 우물의 QCSE 적색 이동">
+      <p>폭 \(L = 10\) nm인 GaAs 우물을 무한 우물로 보고 \(F = 100\) kV/cm를 걸었다. 전자(\(m^* = 0.067\))와 무거운 정공(성장 방향 \(m^* = 0.35\))의 2차 섭동 이동과 전이 에너지 적색 이동을 구하라. 섭동이 정공에도 잘 맞는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\Delta E = -2.195\times10^{-3}\,(eFL)^2L^2m^*/\hbar^2\). \(\hbar^2/m^* = 2(0.0381)/m^*\) eV·nm²를 쓴다. 타당성은 \(|V_{21}| = eF\cdot0.180L\)과 \(E_2 - E_1 = 3E_1\)을 비교한다.</div>
+        <div class="step"><b>풀이</b> \(eFL = 0.010\times10 = 0.10\) eV. 전자: \(\Delta E_e = -2.195\times10^{-3}\times0.01\times100\times0.067/0.0762 = -1.93\) meV. 정공: 질량비만큼 커서 \(\Delta E_h = -10.08\) meV. 합 −12.0 meV. 결합 \(|V_{21}| = 18.0\) meV를 간격과 비교하면 전자 168 meV(0.11배), 정공 32.2 meV(0.56배)다.</div>
+        <div class="answer">전자 −1.93 meV, 정공 −10.1 meV, 전이 적색 이동 약 12 meV (정확한 수치 풀이: −1.92, −8.83, 합 −10.7 meV)</div>
+        <div class="step"><b>검토</b> 전자는 \(|V|/\Delta \approx 0.1\)이라 섭동과 정확한 값의 차이가 0.6%에 불과하지만, 정공은 0.56으로 섭동이 14% 과대평가한다(1절 미니 실험의 2준위 그림 그대로). 무거운 정공이 QCSE의 대부분을 만들고, 바로 그 정공에서 섭동이 먼저 무너진다. 실제 유한 장벽 우물은 파동함수가 장벽으로 스며 유효 폭이 넓어 이동이 더 크다 — 아래 시뮬레이터로 확인하라.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-qcse">
+      <p>같은 전계에서 우물 폭을 10 nm에서 5 nm로 줄이면 QCSE 적색 이동은 대략 어떻게 될까?</p>
+      <div class="opts"><button class="opt">절반으로 준다</button><button class="opt">1/4로 준다</button><button class="opt" data-correct>1/16 가까이로 준다</button><button class="opt">오히려 커진다</button></div>
+      <div class="quiz-exp">무한 우물 2차 섭동은 \(L^4\)에 비례한다. 유한 장벽에서는 좁은 우물의 파동함수가 장벽으로 더 스며 유효 폭이 덜 줄어들므로 1/16보다 조금 덜 준다. 아래에서 폭 슬라이더를 바꾸며 같은 전계의 이동을 비교해 보라.</div>
+    </div>
+    <div class="sim" id="sim-qcse">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>전계 흡수 변조기 설계: 전계를 끌어 흡수 끝을 옮겨라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-qcse"></canvas></div><div><canvas id="cv-qcseF"></canvas></div></div><span class="hint top">흰 원을 위아래로 끌어 전계 F</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>우물 폭 L <output id="qc-L-out"></output></span><input type="range" id="qc-L" min="4" max="16" step="0.5" value="10"></label>
+          <label class="ctrl"><span>전계 F <output id="qc-F-out"></output></span><input type="range" id="qc-F" min="0" max="120" step="1" value="60"></label>
+          <label class="check"><input type="checkbox" id="qc-pt" checked> 2차 섭동 곡선 겹치기</label>
+          <div class="ctrl"><span>도전</span><div class="game-row"><button class="btn" id="qc-game" type="button">과녁: 이동 ≥ 15 meV, 겹침 ≥ 0.60</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">전자 · 정공 이동 (meV)</span><span class="v" id="qc-sh">—</span></div>
+        <div class="stat"><span class="k">전이 에너지 · 파장</span><span class="v" id="qc-E">—</span></div>
+        <div class="stat"><span class="k">겹침 |⟨e|h⟩|²</span><span class="v" id="qc-ov">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="qc-goal">—</span></div>
+      </div>
+      <div class="sim-note">GaAs/Al<sub>0.3</sub>Ga<sub>0.7</sub>As 우물(전도띠 장벽 0.24 eV, 원자가띠 0.13 eV, \(m_e^* = 0.067\), 무거운 정공 \(0.35\)), 엑시톤 결합은 빼고 전자·정공 준위만 유한 차분으로 풀었다. 오른쪽 그래프의 실선은 정확한 적색 이동, 점선은 \(F = 0\) 상태들로 계산한 2차 섭동이다. 해볼 것: ① 작은 \(F\)에서 두 곡선이 겹치고 큰 \(F\)에서 갈라지는 지점이 폭에 따라 어떻게 변하는지 본다. ② 폭을 넓히면 같은 전계에서 이동은 커지지만 겹침이 빨리 무너진다 — 변조 깊이와 흡수 세기의 맞바꿈이다. ③ 도전 과제를 만족하는 (\(L\), \(F\)) 조합 중 전계가 가장 작은 것을 찾아라.</div>
+    </div>
+    <div class="callout semi"><strong>전계 흡수 변조기(EAM)와 광통신 송신기</strong><p>데이터센터와 장거리 광통신의 송신기는 레이저를 직접 껐다 켜는 대신, 레이저 바로 뒤에 QCSE 우물을 둔 <b>전계 흡수 변조기</b>를 집적한다(EML, electro-absorption modulated laser). 우물의 흡수 끝을 레이저 파장보다 조금 짧은 쪽에 두면, 역바이어스를 걸 때 흡수 끝이 적색 이동해 레이저 빛을 삼키고 바이어스를 풀면 통과시킨다. 이 절의 계산이 설계 변수를 그대로 보여 준다: 이동이 \(F^2L^4\)에 비례하므로 넓은 우물이 적은 전압으로 깊게 변조하지만, 겹침이 빨리 줄어 흡수가 약해진다. 그래서 InGaAsP/InGaAlAs 다중 양자 우물의 폭을 수 nm–10 nm로 잡고 우물 수로 흡수 길이를 보탠다. 실리콘 광자학의 Ge/SiGe 변조기도 같은 QCSE 또는 덩어리 Ge의 프란츠–켈디시 효과를 쓴다 → <a href="https://semi.euiyun.com/device/chapters/hetero.html">DeviceBook · 이종 접합과 밴드 공학</a>, <a href="https://semi.euiyun.com/device/chapters/opto.html">DeviceBook · 광전자 소자</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="fine-structure">
+    <h2>수소의 미세 구조</h2>
+    <p><a href="central-potentials.html">9장</a>의 수소 준위 \(E_n = -13.6\ \text{eV}/n^2\)은 비상대론 슈뢰딩거 방정식의 결과다. 분광기의 분해능을 올리면 각 선이 여러 가닥으로 갈라진다. 이것이 <span class="term">미세 구조</span><span class="en">(fine structure)</span>이고, 크기는 \(E_n\)의 \(\alpha^2 \approx 5.3\times10^{-5}\)배 정도다. 여기서 \(\alpha = e^2/4\pi\varepsilon_0\hbar c \approx 1/137\)이 <span class="term">미세 구조 상수</span><span class="en">(fine-structure constant)</span>다. 원자 속 전자의 속력이 \(v/c \sim \alpha\)이므로, 미세 구조는 \((v/c)^2\) 크기의 상대론 보정이다. 디랙 방정식을 \((v/c)^2\)까지 전개하면 세 항이 나온다.</p>
+    <div class="formula">$$\hat H_\text{fs} = \underbrace{-\frac{\hat p^4}{8m^3c^2}}_{\text{상대론 운동 에너지}} + \underbrace{\frac{1}{2m^2c^2}\frac{e^2}{4\pi\varepsilon_0}\frac{1}{r^3}\,\hat{\mathbf S}\cdot\hat{\mathbf L}}_{\text{스핀–궤도}} + \underbrace{\frac{\pi\hbar^2}{2m^2c^2}\frac{e^2}{4\pi\varepsilon_0}\,\delta^3(\mathbf r)}_{\text{다윈 항}}$$<div class="where">스핀–궤도 항의 1/2은 전자 정지 좌표계가 회전하며 생기는 토머스 세차 보정까지 넣은 값이다(<a href="spin.html">10장</a>). 다윈 항은 전자의 위치가 콤프턴 파장 정도로 떨리며(지터베베궁) 핵의 퍼텐셜을 평균해서 생기고, 원점에 확률이 있는 s 상태에만 작용한다.</div></div>
+    <h3>세 보정을 따로 계산하기</h3>
+    <p>수소의 \(n\) 준위는 \(2n^2\)겹(스핀 포함) 축퇴이므로 원칙적으로는 축퇴 섭동이다. 그러나 대칭이 일을 덜어 준다. 상대론 항과 다윈 항은 회전 불변이라 \(\hat{\mathbf L}^2, \hat L_z, \hat S_z\)와 교환하고, \(|n\,l\,m_l\,m_s\rangle\) 기저에서 이미 대각이다. 스핀–궤도 항은 \(\hat L_z\), \(\hat S_z\)와는 교환하지 않지만 \(\hat{\mathbf L}^2, \hat{\mathbf S}^2, \hat{\mathbf J}^2, \hat J_z\)와 교환하므로 \(|n\,l\,j\,m_j\rangle\)이 좋은 상태다. \(\hat{\mathbf S}\cdot\hat{\mathbf L} = \frac12(\hat{\mathbf J}^2 - \hat{\mathbf L}^2 - \hat{\mathbf S}^2)\)을 쓰고, <a href="central-potentials.html">9장</a>의 기댓값 \(\langle1/r\rangle\), \(\langle1/r^2\rangle\), \(\langle1/r^3\rangle\)을 넣으면</p>
+    <div class="formula">$$E_\text{rel}^{(1)} = -\frac{E_n^2}{2mc^2}\left[\frac{4n}{l+\frac12} - 3\right], \qquad E_\text{so}^{(1)} = \frac{E_n^2}{mc^2}\,\frac{n\left[j(j+1) - l(l+1) - \frac34\right]}{l(l+\frac12)(l+1)}, \qquad E_\text{D}^{(1)} = \frac{2nE_n^2}{mc^2}\,\delta_{l0}$$<div class="where">상대론 항은 \(\langle\hat p^4\rangle = 4m^2\langle(E_n - V)^2\rangle\)로 바꿔 계산한다. 스핀–궤도는 \(l = 0\)에서 0이고, 다윈 항은 \(l = 0\)에서만 0이 아니다. \(E_1^2/2mc^2 = 181.1\ \mu\)eV.</div></div>
+    <p>세 항을 더하면 놀랍게도 \(l\)이 사라지고 \(j\)만 남는다.</p>
+    <div class="def"><span class="def-k">수소의 미세 구조</span>
+      <div class="formula">$$E_{nj}^{(1)} = \frac{E_n^2}{2mc^2}\left(3 - \frac{4n}{j+\frac12}\right) = E_n\,\frac{\alpha^2}{n^2}\left(\frac{n}{j+\frac12} - \frac34\right)$$<div class="where">모든 준위가 내려가고, \(j\)가 작을수록 많이 내려간다. 같은 \(n, j\)이면 \(l\)이 달라도(예: 2s₁/₂와 2p₁/₂) 에너지가 같다 — 디랙 방정식의 정확한 해도 그렇다. 수소꼴 이온에서는 \(E_n \propto Z^2\)이므로 미세 구조가 \(Z^4\)으로 커진다.</div></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>상태</th><th class="num">상대론 (µeV)</th><th class="num">스핀–궤도</th><th class="num">다윈</th><th class="num">합</th></tr></thead>
+      <tbody>
+        <tr><td>1s₁/₂</td><td class="num">−905.7</td><td class="num">0</td><td class="num">+724.5</td><td class="num">−181.1</td></tr>
+        <tr><td>2s₁/₂</td><td class="num">−147.2</td><td class="num">0</td><td class="num">+90.6</td><td class="num">−56.6</td></tr>
+        <tr><td>2p₁/₂</td><td class="num">−26.4</td><td class="num">−30.2</td><td class="num">0</td><td class="num">−56.6</td></tr>
+        <tr><td>2p₃/₂</td><td class="num">−26.4</td><td class="num">+15.1</td><td class="num">0</td><td class="num">−11.3</td></tr>
+        <tr><td>3d₃/₂</td><td class="num">−4.0</td><td class="num">−2.7</td><td class="num">0</td><td class="num">−6.7</td></tr>
+        <tr><td>3d₅/₂</td><td class="num">−4.0</td><td class="num">+1.8</td><td class="num">0</td><td class="num">−2.2</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="수소 n=2 준위가 보어 준위에서 상대론, 스핀–궤도와 다윈, 램 이동을 거쳐 갈라지는 사다리">
+        <text class="t" x="110" y="24" text-anchor="middle" style="font-weight:700">보어</text>
+        <text class="t" x="300" y="24" text-anchor="middle" style="font-weight:700">+ 상대론</text>
+        <text class="t" x="500" y="24" text-anchor="middle" style="font-weight:700">+ 스핀–궤도 + 다윈</text>
+        <text class="t" x="690" y="24" text-anchor="middle" style="font-weight:700">+ 램 이동 (QED)</text>
+        <line x1="60" y1="44" x2="160" y2="44" stroke="var(--text)" stroke-width="3"/>
+        <text class="t-dim" x="110" y="64" text-anchor="middle">n = 2 (8겹)</text>
+        <text class="t-dim" x="110" y="84" text-anchor="middle">0 µeV</text>
+        <line x1="160" y1="44" x2="250" y2="81" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="160" y1="44" x2="250" y2="250" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="250" y1="81" x2="350" y2="81" stroke="var(--accent-2)" stroke-width="3"/>
+        <text class="t" x="300" y="74" text-anchor="middle" style="fill:var(--accent-2)">2p  −26.4</text>
+        <line x1="250" y1="250" x2="350" y2="250" stroke="var(--accent-2)" stroke-width="3"/>
+        <text class="t" x="300" y="243" text-anchor="middle" style="fill:var(--accent-2)">2s  −147.2</text>
+        <line x1="350" y1="81" x2="450" y2="60" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="350" y1="81" x2="450" y2="123" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="350" y1="250" x2="450" y2="123" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="450" y1="60" x2="550" y2="60" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="500" y="53" text-anchor="middle">2p₃/₂  −11.3</text>
+        <line x1="450" y1="123" x2="550" y2="123" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="500" y="146" text-anchor="middle">2s₁/₂ = 2p₁/₂  −56.6</text>
+        <line x1="550" y1="60" x2="640" y2="60" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="550" y1="123" x2="640" y2="117" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="550" y1="123" x2="640" y2="124" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <line x1="640" y1="60" x2="740" y2="60" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="690" y="53" text-anchor="middle">2p₃/₂</text>
+        <line x1="640" y1="117" x2="740" y2="117" stroke="var(--warn)" stroke-width="3"/>
+        <text class="t" x="690" y="108" text-anchor="middle" style="fill:var(--warn)">2s₁/₂</text>
+        <line x1="640" y1="124" x2="740" y2="124" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="690" y="144" text-anchor="middle">2p₁/₂</text>
+        <text class="t-dim" x="690" y="176" text-anchor="middle">램 이동 1057.8 MHz</text>
+        <text class="t-dim" x="690" y="196" text-anchor="middle">= 4.37 µeV</text>
+        <text class="t-dim" x="500" y="196" text-anchor="middle">분리 45.3 µeV = 10.95 GHz</text>
+        <text class="t-dim" x="400" y="288" text-anchor="middle">세로축: 보어 준위에서 잰 이동 (µeV, 상대론 열 크기에 맞춤 · 램 이동은 과장)</text>
+      </svg>
+      <figcaption>수소 \(n = 2\)의 미세 구조. 상대론 보정은 원점 가까이 가는 s를 더 끌어내리고, 스핀–궤도와 다윈 항이 더해지면 \(l\) 의존성이 정확히 상쇄되어 \(j\)만 남는다. 2s₁/₂와 2p₁/₂의 축퇴는 양자 전기역학의 램 이동이 마저 깬다.</figcaption>
+    </figure>
+    <div class="example" data-title="수소 n = 2의 미세 구조 분리">
+      <p>수소 \(n = 2\)에서 2p₃/₂와 2p₁/₂ 사이 간격을 eV, GHz, cm⁻¹로 구하고, 각 준위에 대한 상대론·스핀–궤도 기여를 분리해 보라. (\(E_2 = -3.4014\) eV, \(m_\mathrm{e}c^2 = 510\,999\) eV, \(h = 4.1357\times10^{-15}\) eV·s)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(u = E_2^2/2mc^2\)를 먼저 구하고, 상대론 항 \(-u(4n/(l+\frac12) - 3)\), 스핀–궤도 항 \(2nu[j(j+1)-l(l+1)-\frac34]/[l(l+\frac12)(l+1)]\)을 쓴다.</div>
+        <div class="step"><b>풀이</b> \(u = 3.4014^2/(2\times510\,999) = 11.32\ \mu\)eV. 2p의 상대론 항: \(-u(8/1.5 - 3) = -26.41\ \mu\)eV(두 \(j\) 공통). 스핀–궤도: \(4u\times\frac{\frac{15}{4} - 2 - \frac34}{3} = +15.09\ \mu\)eV(\(j = \frac32\)), \(4u\times\frac{\frac34 - 2 - \frac34}{3} = -30.19\ \mu\)eV(\(j = \frac12\)). 간격은 \(45.28\ \mu\)eV.</div>
+        <div class="answer">\(\Delta E = 4.53\times10^{-5}\) eV = 10.95 GHz = 0.365 cm⁻¹</div>
+        <div class="step"><b>검토</b> 공식 \(E_{nj}\)로 바로 계산해도 \(u(3 - 8/2) - u(3 - 8/1) = 4u = 45.3\ \mu\)eV로 같다. 상대론 항은 두 \(j\)에 똑같이 작용하므로 \(j\) 분리는 순전히 스핀–궤도에서 온다. 10.95 GHz는 마이크로파 영역이라, 램과 러더퍼드는 이 근처 진동수의 마이크로파로 2s→2p 전이를 직접 일으켜 램 이동을 쟀다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-fs">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>미세 구조 확대경: 보정을 하나씩 켜고 준위를 눌러 분해하라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-fs"></canvas><span class="hint top">준위를 누르면 기여가 분해된다</span></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>주양자수 n</span><div class="seg" id="fs-n"><button data-value="1">1</button><button data-value="2" class="on">2</button><button data-value="3">3</button><button data-value="4">4</button></div></div>
+          <label class="ctrl"><span>핵전하 Z <output id="fs-z-out"></output></span><input type="range" id="fs-z" min="1" max="10" step="1" value="1"></label>
+          <label class="check"><input type="checkbox" id="fs-rel" checked> 상대론 운동 에너지</label>
+          <label class="check"><input type="checkbox" id="fs-so" checked> 스핀–궤도</label>
+          <label class="check"><input type="checkbox" id="fs-d" checked> 다윈 항</label>
+          <div class="ctrl"><span>도전</span><div class="game-row"><button class="btn" id="fs-game" type="button">과녁: 2p 분리가 처음 1 meV를 넘는 Z</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">고른 준위</span><span class="v" id="fs-sel">—</span></div>
+        <div class="stat"><span class="k">상대론 · 스핀–궤도 · 다윈 (µeV)</span><span class="v" id="fs-parts">—</span></div>
+        <div class="stat"><span class="k">j 분리 (최대 j − 최소 j)</span><span class="v" id="fs-split">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="fs-goal">—</span></div>
+      </div>
+      <div class="sim-note">세로축은 보어 준위에서 잰 이동(\(\mu\)eV, \(Z\)에 맞춰 자동 확대)이고, 가로는 \(l\) 열(s, p, d, f)이다. 해볼 것: ① 스핀–궤도만 끄면 같은 \(l\)의 두 \(j\)가 합쳐지고, 상대론만 켜면 s가 가장 많이 내려간다. ② 세 보정을 모두 켜면 같은 \(j\)의 준위가 \(l\)과 무관하게 한 높이로 모인다(점선). 다윈 항을 끄면 이 일치가 깨진다. ③ \(Z\)를 올리면 이동이 \(Z^4\)으로 자란다 — 무거운 원자일수록 스핀–궤도가 강하다.</div>
+    </div>
+    <div class="tangle" id="tg-fs">
+      <p>핵전하 \(Z =\) <span class="tn" data-var="Z" data-min="1" data-max="20" data-step="1">1</span>인 수소꼴 이온의 \(n =\) <span class="tn" data-var="n" data-min="1" data-max="6" data-step="1">2</span> 준위에서 \(j = \tfrac12\)과 \(j = n - \tfrac12\)의 미세 구조 간격은 <span class="tn-out" data-out="d"></span>(<span class="tn-out" data-out="f"></span>)이고, 바닥 \(j = \tfrac12\) 준위 자체는 보어 값보다 <span class="tn-out" data-out="s"></span> 아래에 있다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>반도체의 스핀–궤도 분리 띠</strong><p>원자의 스핀–궤도 결합은 결정의 원자가띠에 그대로 물려진다. 원자가띠 꼭대기는 p 오비탈로 만들어지고, 스핀–궤도 결합이 이를 \(j = \tfrac32\)(무거운·가벼운 정공)과 \(j = \tfrac12\)(<b>분리 띠</b>, split-off)로 가른다. 간격 \(\Delta_\text{so}\)는 이 절의 \(Z^4\) 경향을 따라 구성 원자가 무거울수록 크다: Si 0.044 eV, Ge 0.29 eV, GaAs 0.341 eV, InSb 0.81 eV. 실리콘은 \(\Delta_\text{so}\)가 상온 \(k_BT\)의 두 배도 안 되어 정공이 분리 띠까지 퍼지지만, GaAs에서는 분리 띠가 멀어 정공 수송에 거의 끼지 않는다. 6절의 k·p 유효 질량 공식에도 \(\Delta_\text{so}\)가 들어간다 → <a href="../../solid-state/chapters/band-structure.html">고체물리 · 띠 구조</a>, <a href="https://semi.euiyun.com/device/chapters/hetero.html">DeviceBook · 이종 접합과 밴드 공학</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="zeeman">
+    <h2>제만 효과: 약한 장과 강한 장</h2>
+    <p>자기장 \(\mathbf B = B\hat z\) 속 원자 전자의 자기 모멘트는 궤도와 스핀 둘 다에서 온다. 스핀의 \(g\) 인자가 궤도의 두 배(\(g_s = 2.0023\))이므로 섭동은</p>
+    <div class="formula">$$\hat H_Z = \frac{\mu_B B}{\hbar}\left(\hat L_z + g_s\hat S_z\right) \approx \frac{\mu_B B}{\hbar}\left(\hat J_z + \hat S_z\right), \qquad \mu_B = \frac{e\hbar}{2m_\mathrm{e}} = 57.88\ \mu\text{eV/T}$$<div class="where">\(\hat L_z + 2\hat S_z\)가 \(\hat J_z\)에 비례하지 않는다는 점이 모든 복잡함의 원인이다. 이 장 안에서는 \(g_s = 2\)로 둔다. 이 준위 이동이 <span class="term">제만 효과</span><span class="en">(Zeeman effect)</span>다.</div></div>
+    <p>무엇이 좋은 상태인지는 \(\hat H_Z\)와 미세 구조 \(\hat H_\text{fs}\) 중 어느 쪽이 큰지에 달렸다. 수소 2p에서 기준은 \(\mu_BB\)와 미세 구조 간격 45.3 µeV의 비교이고, 둘이 같아지는 자기장은 \(B_c = 45.3/57.9 = 0.78\) T다.</p>
+    <div class="compare">
+      <div><h4>약한 장 (\(\mu_BB \ll \Delta_\text{fs}\))</h4><p>미세 구조가 먼저 \(|n\,l\,j\,m_j\rangle\)을 정하고, 제만 항은 그 위의 섭동이다. 각 \(j\) 다중항 안에서 \(\hat J_z\)가 대각이므로 축퇴 부분 공간의 \(W\)가 이미 대각이다. 투영 정리로 \(\langle\hat S_z\rangle\)을 \(\langle\hat J_z\rangle\)에 비례하게 바꾸면 랑데 인자가 나온다: \(E = g_J\mu_BBm_j\).</p></div>
+      <div><h4>강한 장 (\(\mu_BB \gg \Delta_\text{fs}\))</h4><p>제만 항이 먼저 \(|n\,l\,m_l\,m_s\rangle\)을 정한다(<span class="term">파셴–바크 효과</span><span class="en">(Paschen–Back effect)</span>). \(E = \mu_BB(m_l + 2m_s)\)이고, 미세 구조는 이 기저에서의 1차 섭동 \(\langle\hat H_\text{fs}\rangle\)으로 더한다(스핀–궤도는 \(\xi m_lm_s\)만 남는다). 스펙트럼선은 고전적인 세 가닥(정상 제만 효과)에 가까워진다.</p></div>
+    </div>
+    <div class="formula">$$g_J = 1 + \frac{j(j+1) - l(l+1) + s(s+1)}{2j(j+1)}, \qquad E_{nljm_j} = E_{nj} + g_J\,\mu_BB\,m_j \quad (\text{약한 장})$$<div class="where">\(g_J\)는 <span class="term">랑데 g 인자</span><span class="en">(Landé g-factor)</span>다. s₁/₂는 2, p₁/₂는 2/3, p₃/₂는 4/3, d₅/₂는 6/5. 다중항마다 \(g_J\)가 달라 스펙트럼선이 고전 이론으로 설명 안 되는 여러 가닥으로 갈라지므로 역사적으로 <em>이상</em> 제만 효과라 불렸다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="수소 2p 여섯 준위의 자기장에 따른 에너지: 약한 장의 j mj 다중항에서 강한 장의 ml ms 상태로 이어지는 상관 그림">
+        <line x1="150" y1="12" x2="150" y2="282" class="s-axis"/>
+        <line x1="150" y1="282" x2="640" y2="282" class="s-axis"/>
+        <text class="t-dim" x="640" y="298" text-anchor="end">B = 2.5 T</text><text class="t-dim" x="150" y="298" text-anchor="middle">0</text>
+        <line x1="337" y1="276" x2="337" y2="288" class="s-axis"/><text class="t-dim" x="337" y="298" text-anchor="middle">B_c ≈ 0.78 T</text>
+        <path d="M150,144 L169,139 L188,134 L208,129 L227,124 L246,119 L265,114 L284,110 L304,105 L323,100 L342,95 L361,90 L380,85 L400,80 L419,76 L438,71 L457,66 L476,61 L496,56 L515,51 L534,46 L553,42 L572,37 L592,32 L611,27 L630,22" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <path d="M150,144 L169,149 L188,153 L208,158 L227,163 L246,168 L265,173 L284,178 L304,183 L323,187 L342,192 L361,197 L380,202 L400,207 L419,212 L438,217 L457,221 L476,226 L496,231 L515,236 L534,241 L553,246 L572,251 L592,255 L611,260 L630,265" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <path d="M150,163 L169,162 L188,161 L208,161 L227,160 L246,160 L265,160 L284,159 L304,159 L323,159 L342,159 L361,159 L380,158 L400,158 L419,158 L438,158 L457,158 L476,158 L496,158 L515,158 L534,158 L553,158 L572,158 L592,158 L611,158 L630,158" fill="none" stroke="var(--accent-2)" stroke-width="2.2"/>
+        <path d="M150,144 L169,142 L188,140 L208,138 L227,136 L246,134 L265,132 L284,130 L304,128 L323,126 L342,123 L361,121 L380,119 L400,116 L419,114 L438,112 L457,109 L476,107 L496,105 L515,102 L534,100 L553,98 L572,95 L592,93 L611,90 L630,88" fill="none" stroke="var(--accent-2)" stroke-width="2.2"/>
+        <path d="M150,163 L169,164 L188,165 L208,166 L227,167 L246,169 L265,170 L284,172 L304,174 L323,176 L342,178 L361,180 L380,182 L400,184 L419,187 L438,189 L457,191 L476,193 L496,196 L515,198 L534,200 L553,203 L572,205 L592,207 L611,210 L630,212" fill="none" stroke="var(--warn)" stroke-width="2.2"/>
+        <path d="M150,144 L169,145 L188,147 L208,148 L227,149 L246,150 L265,151 L284,151 L304,152 L323,152 L342,153 L361,153 L380,153 L400,153 L419,154 L438,154 L457,154 L476,154 L496,154 L515,154 L534,155 L553,155 L572,155 L592,155 L611,155 L630,155" fill="none" stroke="var(--warn)" stroke-width="2.2"/>
+        <text class="t" x="142" y="140" text-anchor="end">2p₃/₂</text>
+        <text class="t" x="142" y="172" text-anchor="end">2p₁/₂</text>
+        <text class="t-dim" x="20" y="40">약한 장: |j, m_j⟩</text>
+        <text class="t-dim" x="20" y="58">E = g_J μ_B B m_j</text>
+        <text class="t-mono" x="646" y="26">(+1, +½)</text>
+        <text class="t-mono" x="646" y="92">(0, +½)</text>
+        <text class="t-mono" x="646" y="160">(±1, ∓½)</text>
+        <text class="t-mono" x="646" y="216">(0, −½)</text>
+        <text class="t-mono" x="646" y="269">(−1, −½)</text>
+        <text class="t-dim" x="646" y="246">강한 장 (m_l, m_s)</text>
+        <text class="t-dim" x="380" y="250" text-anchor="middle">색: |m_j| = 3/2 · m_j = +1/2 · m_j = −1/2</text>
+      </svg>
+      <figcaption>수소 2p 여섯 상태의 정확한 에너지(아래 시뮬레이터와 같은 계산, 세로 0.42 px/µeV). 왼쪽 끝에서는 \(j\) 다중항이 \(g_Jm_j\)의 기울기로 부채꼴처럼 퍼지고, 오른쪽에서는 기울기가 \(m_l + 2m_s\)인 다섯 묶음이 된다. 같은 \(m_j\)끼리는 서로 밀어내며 비켜 가고(회피 교차), \(m_j\)가 다르면 그대로 교차한다.</figcaption>
+    </figure>
+    <h3>중간 장: 작은 행렬을 정확히 대각화</h3>
+    <p>\(\mu_BB \sim \Delta_\text{fs}\)이면 어느 기저도 좋지 않다. 그래도 \(\hat H_\text{so} + \hat H_Z\)는 \(\hat J_z\)와 교환하므로(좋은 상태 정리), 2p 여섯 상태가 \(m_j\)별로 쪼개진다: \(m_j = \pm\tfrac32\)은 상태 하나씩이라 바로 풀리고, \(m_j = \pm\tfrac12\)은 \(|m_l, m_s\rangle = |{\pm1}, \mp\tfrac12\rangle, |0, \pm\tfrac12\rangle\) 두 상태의 \(2\times2\) 행렬이다. 스핀–궤도 상수를 \(\xi\)(\(\hat H_\text{so} = \xi\hat{\mathbf L}\cdot\hat{\mathbf S}/\hbar^2\), \(\tfrac32\xi = \Delta_\text{fs}\))라 하면</p>
+    <div class="formula">$$H_{m_j = \pm\frac12} = \begin{pmatrix} -\xi/2 & \xi/\sqrt2 \\ \xi/\sqrt2 & \pm\mu_BB\end{pmatrix}, \qquad E_{m_j=\pm\frac32} = \frac{\xi}{2} \pm 2\mu_BB$$<div class="where">\(B = 0\)이면 고유값이 \(\xi/2\)(\(j = \tfrac32\))와 \(-\xi\)(\(j = \tfrac12\))이고, \(B \to \infty\)이면 대각 원소가 그대로 고유값이 된다. 이 \(2\times2\) 풀이가 위 상관 그림 전체다. 원자 분광에서는 이런 작은 행렬 대각화가 일상이다.</div></div>
+    <div class="example" data-title="약한 장 제만 갈라짐과 실리콘 스핀 큐비트">
+      <p>(a) \(B = 0.10\) T에서 수소 2p₃/₂와 2p₁/₂ 다중항의 이웃 \(m_j\) 사이 간격을 µeV와 GHz로 구하고, 약한 장 근사가 맞는지 확인하라. (b) 실리콘 양자점에 갇힌 전자 하나(\(g \approx 2.00\))를 \(B = 0.50\) T에 두었다. 스핀 큐비트의 공명 진동수와, 그 에너지에 해당하는 온도는? (\(\mu_B = 57.88\ \mu\)eV/T, \(h = 4.1357\times10^{-15}\) eV·s, \(k_B = 86.17\ \mu\)eV/K)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 약한 장에서 이웃 \(m_j\) 간격은 \(g_J\mu_BB\). 큐비트 진동수는 \(g\mu_BB/h\).</div>
+        <div class="step"><b>풀이</b> (a) \(\mu_BB = 5.79\ \mu\)eV. 2p₃/₂: \(\tfrac43\times5.79 = 7.72\ \mu\)eV(1.87 GHz), 2p₁/₂: \(\tfrac23\times5.79 = 3.86\ \mu\)eV. \(\mu_BB/\Delta_\text{fs} = 5.79/45.3 = 0.13\). (b) \(g\mu_BB = 2.00\times57.88\times0.50 = 57.9\ \mu\)eV, \(f = 57.9\times10^{-6}/4.1357\times10^{-15} = 14.0\) GHz, \(T = 57.9/86.17 = 0.67\) K.</div>
+        <div class="answer">(a) 7.72 µeV (1.87 GHz), 3.86 µeV; 비가 0.13이라 약한 장 (b) 14.0 GHz, 0.67 K</div>
+        <div class="step"><b>검토</b> (a)는 정확한 대각화와 비교하면 2p₃/₂의 \(m_j = +\tfrac32\)는 정확히 선형이지만 \(m_j = \pm\tfrac12\)은 이미 \((\mu_BB)^2/\Delta_\text{fs}\)에 비례하는 2차 보정(약 0.16 µeV)이 붙는다. (b)에서 스핀 상태를 열 요동 없이 초기화하려면 \(k_BT \ll g\mu_BB\)여야 하므로, 스핀 큐비트는 0.1 K 이하의 희석 냉동기에서 돌린다.</div>
+      </details>
+    </div>
+    <div class="predict" data-for="sim-zee">
+      <p>수소 2p의 여섯 상태에 아주 강한 자기장(\(\mu_BB \gg \Delta_\text{fs}\))을 걸면 서로 다른 에너지는 몇 개로 보일까? (미세 구조는 무시할 만큼 작다고 하자)</p>
+      <div class="opts"><button class="opt">6개</button><button class="opt" data-correct>5개</button><button class="opt">3개</button><button class="opt">2개</button></div>
+      <div class="quiz-exp">\(m_l + 2m_s\)는 \(2, 1, 0, 0, -1, -2\)로 다섯 값이다. \((m_l, m_s) = (1, -\tfrac12)\)과 \((-1, +\tfrac12)\)이 0에서 겹친다(스핀–궤도 \(\xi m_lm_s\)는 둘 다 \(-\xi/2\)라 이 축퇴를 깨지 않는다). 아래에서 \(B\)를 끝까지 끌어 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-zee">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>제만 지도: 자기장을 끌어 약한 장에서 파셴–바크까지</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-zee"></canvas><span class="hint top">흰 원을 좌우로 끌어 B</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>최대 B <output id="zee-bmax-out"></output></span><input type="range" id="zee-bmax" min="0.5" max="5" step="0.5" value="2"></label>
+          <label class="check"><input type="checkbox" id="zee-weak" checked> 약한 장 직선 g_J m_j</label>
+          <label class="check"><input type="checkbox" id="zee-strong"> 강한 장 직선 m_l + 2m_s</label>
+          <div class="ctrl"><span>도전</span><div class="game-row"><button class="btn" id="zee-game" type="button">과녁: 처음 교차하는 B를 찾아라 (±0.01 T)</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">B · μ_B B / Δ_fs</span><span class="v" id="zee-b">—</span></div>
+        <div class="stat"><span class="k">m_j = ±½ 상태의 섞임</span><span class="v" id="zee-mix">—</span></div>
+        <div class="stat"><span class="k">준위 (µeV, 위에서부터)</span><span class="v" id="zee-E">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="zee-goal">—</span></div>
+      </div>
+      <div class="sim-note">수소 2p 여섯 상태를 \(\xi\hat{\mathbf L}\cdot\hat{\mathbf S} + \mu_BB(\hat L_z + 2\hat S_z)\)로 정확히 대각화했다(상대론 공통 이동 제외). 색은 \(m_j\)다. 해볼 것: ① 약한 장 직선이 0.2 T 근처까지 \(m_j = \pm\tfrac12\) 곡선을 따라가다 벗어나는 것을 본다. ② 강한 장 직선을 켜고 \(B\)를 키워 곡선이 그쪽으로 붙는 것을 확인한다. ③ 같은 색(같은 \(m_j\)) 두 곡선은 절대 만나지 않고, 다른 색끼리는 교차한다 — 도전 과제의 첫 교차점을 손잡이로 찾아라.</div>
+    </div>
+    <figure class="mini" id="mini-lines">
+      <div class="mini-view"><canvas id="cv-lines"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>자기장 B <output id="ln-b-out"></output></span><input type="range" id="ln-b" min="0" max="3" step="0.02" value="0.2"></label>
+        <div class="seg" id="ln-pol"><button data-value="all" class="on">모두</button><button data-value="pi">π (Δm = 0)</button><button data-value="sigma">σ (Δm = ±1)</button></div>
+        <span class="readout" id="ln-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>수소 라이먼 α(2p → 1s) 선의 제만 갈라짐. 막대 높이는 정확한 2p 상태에서 계산한 쌍극자 세기다. 약한 장에서는 2p₁/₂에서 4가닥, 2p₃/₂에서 6가닥으로 모두 10가닥(이상 제만 효과)이고, \(B\)를 키우면 \(\Delta m_s = 0\) 성분만 살아남아 간격 \(\mu_BB\)의 세 무리(정상 제만 효과)로 모인다. 가로축은 선 중심에서 잰 진동수 차(GHz)다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-zee">
+      <p>\(g =\) <span class="tn" data-var="g" data-min="-2" data-max="2.5" data-step="0.01">2.00</span>인 스핀 하나를 <span class="tn" data-var="B" data-min="0.01" data-max="10" data-step="0.01" data-unit=" T">0.35</span>에 두면 제만 간격은 <span class="tn-out" data-out="E"></span>, 공명 진동수는 <span class="tn-out" data-out="f"></span>이고, 이 간격을 열에너지로 바꾸면 <span class="tn-out" data-out="T"></span>다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>ESR로 결함을 찾고, 같은 원리로 큐비트를 돌린다</strong><p>전자 스핀 공명(ESR, EPR)은 이 절의 제만 간격 \(g\mu_BB\)에 맞는 마이크로파를 흡수시키는 분광법이다. 보통 X 밴드(약 9.8 GHz)에서 자기장을 0.35 T 근처로 쓸며, 흡수가 일어나는 자기장에서 \(g\) 값을 읽는다. 홀전자를 가진 결함은 결정장과 스핀–궤도 결합 때문에 \(g\)가 2.0023에서 조금씩 벗어나 지문이 된다. Si/SiO₂ 계면의 끊긴 결합(\(P_b\) 중심)이나 산화막 속 \(E'\) 중심이 그렇게 확인되었고, 스트레스 전후의 신호 세기로 계면 트랩 생성을 정량한다. 같은 물리가 실리콘 스핀 큐비트에서는 정보 단위가 된다: \(^{28}\)Si로 동위 원소를 정제해 핵스핀 잡음을 없애면 결맞음 시간이 길어지고, 국소 마이크로자석의 자기장 기울기와 \(g\) 인자의 계면 의존성으로 큐비트마다 다른 공명 진동수를 준다 → <a href="spin.html">10장 스핀</a>, <a href="quantum-information.html">18장 양자 정보</a>, <a href="https://semi.euiyun.com/device/chapters/reliability.html">DeviceBook · 신뢰성</a></p></div>
+    <div class="drill" id="drill-lande" data-title="랑데 g 인자와 제만 이동 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="kp">
+    <h2>k·p 섭동과 유효 질량</h2>
+    <p>섭동 이론의 가장 중요한 반도체 응용은 띠 구조 그 자체다. 주기 퍼텐셜 속 전자의 블로흐 상태 \(\psi_{n\mathbf k} = e^{i\mathbf k\cdot\mathbf r}u_{n\mathbf k}(\mathbf r)\)(<a href="symmetry.html">7장</a>)를 슈뢰딩거 방정식에 넣으면, 주기 함수 \(u_{n\mathbf k}\)가 따르는 방정식은 \(\mathbf k\)에 의존하는 항이 더해진 꼴이 된다.</p>
+    <div class="formula">$$\left[\frac{\hat p^2}{2m_0} + V(\mathbf r) + \frac{\hbar}{m_0}\mathbf k\cdot\hat{\mathbf p} + \frac{\hbar^2k^2}{2m_0}\right]u_{n\mathbf k} = E_n(\mathbf k)\,u_{n\mathbf k}$$<div class="where">\(\mathbf k = 0\)(띠 끝)의 해 \(u_{n0}\)과 \(E_n(0)\)을 안다면, \(\frac{\hbar}{m_0}\mathbf k\cdot\hat{\mathbf p}\)가 \(k\)에 비례하는 작은 섭동이다. 이것이 <span class="term">k·p 섭동</span><span class="en">(k·p perturbation theory)</span>이다. \(\hbar^2k^2/2m_0\)은 모든 띠에 같은 상수라 섭동으로 따질 필요도 없다.</div></div>
+    <p>축퇴하지 않은 띠 끝(예: 직접 띠 간격 반도체의 Γ 전도띠)에서 1차 항 \(\langle n|\hat{\mathbf p}|n\rangle\)은 반전 대칭 때문에 0이고, 2차 섭동이 \(k^2\)에 비례하는 에너지를 준다. 그 계수가 곧 유효 질량이다.</p>
+    <div class="def"><span class="def-k">k·p 유효 질량 공식</span>
+      <div class="formula">$$E_n(\mathbf k) = E_n(0) + \frac{\hbar^2k^2}{2m_0} + \frac{\hbar^2}{m_0^2}\sum_{m\ne n}\frac{|\mathbf k\cdot\mathbf p_{nm}|^2}{E_n(0) - E_m(0)} \;\Rightarrow\; \left(\frac{m_0}{m^*}\right)_{ij} = \delta_{ij} + \frac{2}{m_0}\sum_{m\ne n}\frac{p^i_{nm}p^j_{mn}}{E_n(0) - E_m(0)}$$<div class="where">\(\mathbf p_{nm} = \langle u_{n0}|\hat{\mathbf p}|u_{m0}\rangle\). 위 띠는 아래로, 아래 띠는 위로 민다 — 1절의 준위 반발이 그대로 띠 곡률이 된다. 아래 띠(원자가띠)에 밀려 올라가는 전도띠는 자유 전자보다 더 휘어 가벼워지고(\(m^* &lt; m_0\)), 간격이 좁을수록 많이 가벼워진다.</div></div>
+    </div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="Γ점의 s 전도띠와 p 원자가띠가 k·p 결합으로 서로 밀어내어 전도띠는 가볍게, 가벼운 정공띠는 아래로 휘는 그림">
+        <defs><marker id="kpar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--warn)"/></marker></defs>
+        <line x1="250" y1="20" x2="250" y2="285" class="s-axis"/>
+        <text class="t-dim" x="250" y="298" text-anchor="middle">k = 0 (Γ)</text>
+        <path d="M110,40 Q250,190 390,40" fill="none" stroke="var(--text-dim)" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <path d="M150,30 Q250,215 350,30" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text class="t-acc" x="356" y="34">전도띠 (s, Γ₆)</text>
+        <text class="t-dim" x="392" y="58">자유 전자 곡률</text>
+        <path d="M90,152 Q250,244 410,152" fill="none" stroke="var(--accent-2)" stroke-width="2.4" stroke-dasharray="2 0"/>
+        <path d="M130,262 Q250,180 370,262" fill="none" stroke="var(--accent-2)" stroke-width="3"/>
+        <path d="M70,172 Q250,212 430,172" fill="none" stroke="var(--accent-2)" stroke-width="2" transform="translate(0,26)"/>
+        <text class="t" x="414" y="150" style="fill:var(--accent-2)">무거운 정공 (결합 약함)</text>
+        <text class="t" x="374" y="268" style="fill:var(--accent-2)">가벼운 정공</text>
+        <text class="t" x="434" y="200" style="fill:var(--accent-2)">분리 띠 (−Δ_so)</text>
+        <line x1="236" y1="122" x2="264" y2="122" stroke="var(--accent)" stroke-width="2"/>
+        <line x1="236" y1="198" x2="264" y2="198" stroke="var(--accent-2)" stroke-width="2"/>
+        <line x1="270" y1="190" x2="270" y2="130" stroke="var(--warn)" stroke-width="2" marker-end="url(#kpar)"/>
+        <line x1="282" y1="130" x2="282" y2="190" stroke="var(--warn)" stroke-width="2" marker-end="url(#kpar)"/>
+        <text class="t" x="290" y="164" style="fill:var(--warn)">E_g, 결합 P</text>
+        <rect x="540" y="40" width="244" height="220" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="556" y="66" style="font-weight:700">2띠 그림 (케인 모형)</text>
+        <text class="t" x="556" y="94">• 결합 ⟨S|p_x|X⟩ = P</text>
+        <text class="t-dim" x="568" y="114">E_P = 2P²/m₀ ≈ 20–29 eV</text>
+        <text class="t" x="556" y="142">• 전도띠: m₀/m* ≈ 1 + E_P/E_g</text>
+        <text class="t-dim" x="568" y="162">간격이 좁을수록 가볍다</text>
+        <text class="t" x="556" y="190">• 가벼운 정공도 거울상</text>
+        <text class="t-dim" x="568" y="210">m_lh ≈ m₀/(E_P/E_g − 1)</text>
+        <text class="t" x="556" y="238">• 무거운 정공: P 결합 없음</text>
+      </svg>
+      <figcaption>k·p 그림. Γ점에서 s꼴 전도띠와 p꼴 원자가띠가 \(\hat{\mathbf p}\)로 결합한다. 둘은 서로 밀어내어 전도띠는 자유 전자(점선)보다 훨씬 가파르게 휘고, 가벼운 정공띠는 아래로 휜다. 무거운 정공띠는 이 결합에 참여하지 않아 무겁게 남는다.</figcaption>
+    </figure>
+    <h3>2띠 모형과 비포물선성</h3>
+    <p>전도띠와 가장 강하게 결합하는 띠 하나(가벼운 정공)만 남기면 \(2\times2\) 문제가 된다. 원자가띠 꼭대기를 에너지 0으로 잡으면</p>
+    <div class="formula">$$H(k) = \begin{pmatrix} E_g + \dfrac{\hbar^2k^2}{2m_0} & \dfrac{\hbar kP}{m_0}\\[2mm] \dfrac{\hbar kP}{m_0} & \dfrac{\hbar^2k^2}{2m_0}\end{pmatrix}, \qquad E_\pm(k) = \frac{E_g}{2} + \frac{\hbar^2k^2}{2m_0} \pm \sqrt{\frac{E_g^2}{4} + E_P\frac{\hbar^2k^2}{2m_0}}$$<div class="where">\(E_P = 2P^2/m_0\)은 <span class="term">케인 에너지</span><span class="en">(Kane energy)</span>로, III–V 반도체에서 20–29 eV로 거의 보편적이다. \(k\)가 작으면 \(E_+ \approx E_g + \frac{\hbar^2k^2}{2m_0}(1 + E_P/E_g)\): 전도띠 유효 질량 \(m_0/m^* \approx 1 + E_P/E_g\). 스핀–궤도 분리 띠까지 넣으면 \(m_0/m^* = 1 + \frac{E_P}{3}\left(\frac{2}{E_g} + \frac{1}{E_g + \Delta_\text{so}}\right)\).</div></div>
+    <p>2차 섭동이 깨지는 곳도 바로 보인다: 전도띠 바닥에서 위로 올라가면 띠가 포물선보다 완만해지는 <span class="term">비포물선성</span><span class="en">(nonparabolicity)</span>이 생긴다. \(E_P \gg E_g\)에서 전도띠 바닥으로부터 잰 에너지 \(\varepsilon\)은 \(\varepsilon(1 + \varepsilon/E_g) = \hbar^2k^2/2m^*\)을 따르고, 속도로 정의한 질량은 \(m(\varepsilon) = m^*(1 + 2\varepsilon/E_g)\)로 무거워진다. InSb·InAs처럼 띠 간격이 좁은 물질에서는 수십 meV만 올라가도 질량이 눈에 띄게 변해, 양자 우물 준위와 고전계 수송을 계산할 때 빼놓을 수 없다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>물질 (300 K)</th><th class="num">E_g (eV)</th><th class="num">E_P (eV)</th><th class="num">2띠 m*/m₀</th><th class="num">분리 띠 포함</th><th class="num">측정값</th></tr></thead>
+      <tbody>
+        <tr><td>GaAs</td><td class="num">1.424</td><td class="num">28.8</td><td class="num">0.047</td><td class="num">0.050</td><td class="num">0.067</td></tr>
+        <tr><td>InP</td><td class="num">1.344</td><td class="num">20.7</td><td class="num">0.061</td><td class="num">0.062</td><td class="num">0.080</td></tr>
+        <tr><td>In₀.₅₃Ga₀.₄₇As</td><td class="num">0.75</td><td class="num">25.3</td><td class="num">0.029</td><td class="num">0.032</td><td class="num">0.041</td></tr>
+        <tr><td>InAs</td><td class="num">0.354</td><td class="num">21.5</td><td class="num">0.016</td><td class="num">0.020</td><td class="num">0.023</td></tr>
+        <tr><td>InSb</td><td class="num">0.17</td><td class="num">23.3</td><td class="num">0.0072</td><td class="num">0.010</td><td class="num">0.0135</td></tr>
+      </tbody>
+    </table></div>
+    <p>표가 보여 주는 두 가지: ① 유효 질량은 띠 간격을 거의 그대로 따라간다. GaAs에서 InSb로 띠 간격이 8배 줄면 질량도 5배 준다. ② 모형 값은 일관되게 측정값보다 가볍다(2띠 23–47%, 분리 띠를 넣어도 15–26%). 더 멀리 있는 띠(Γ₇c, Γ₈c 같은 위쪽 p 띠)가 전도띠를 <em>아래로</em> 밀어 질량을 늘리는 몫이 빠졌기 때문이다. 실제 계산은 이 원격 띠 기여를 매개변수 \(F\)로 넣는다: \(m_0/m^* = (1 + 2F) + \frac{E_P}{3}\left(\frac2{E_g} + \frac1{E_g+\Delta_\text{so}}\right)\).</p>
+    <div class="example" data-title="GaAs 전도띠 유효 질량의 k·p 계산">
+      <p>저온 GaAs의 \(E_g = 1.519\) eV, \(E_P = 28.8\) eV, \(\Delta_\text{so} = 0.341\) eV, 원격 띠 매개변수 \(F = -1.94\)이다. (a) 2띠 모형, (b) 분리 띠를 넣은 3띠 모형, (c) 원격 띠까지 넣은 값으로 \(m^*/m_0\)을 구하라. (d) 전도띠 바닥에서 0.1 eV 위의 전자는 질량이 몇 % 무거운가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 위 공식들에 차례로 넣는다. 비포물선 질량은 \(m(\varepsilon) = m^*(1 + 2\varepsilon/E_g)\).</div>
+        <div class="step"><b>풀이</b> (a) \(1 + 28.8/1.519 = 19.96\) → \(m^* = 0.0501\). (b) \(\frac{28.8}{3}\left(\frac{2}{1.519} + \frac{1}{1.860}\right) = 9.6(1.3167 + 0.5376) = 17.80\), \(1 + 17.80 = 18.80\) → 0.0532. (c) \(1 + 2(-1.94) + 17.80 = 14.92\) → 0.0670. (d) \(2\times0.1/1.519 = 0.13\).</div>
+        <div class="answer">(a) 0.050 (b) 0.053 (c) 0.067 — 측정값과 일치 (d) 약 13% 무거움</div>
+        <div class="step"><b>검토</b> 결합 하나(\(E_P/E_g \approx 19\))가 질량을 자유 전자의 1/20로 만들고, 나머지 띠들이 질량을 다시 34% 늘린다. 전도띠 전자가 가벼운 이유의 대부분은 "바로 아래 원자가띠와의 준위 반발"이다. 같은 식으로 1 eV 위의 뜨거운 전자는 질량이 두 배를 넘는다(\(1 + 2/1.519 = 2.3\)) — 고전계 수송에서 비포물선성을 넣어야 하는 이유다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-kp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>2띠 k·p 실험대: 띠 간격을 끌어 목표 물질의 유효 질량을 맞춰라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-kp"></canvas><span class="hint top">흰 원: 전도띠 바닥(E_g) · 띠 위의 점(k)</span></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>케인 에너지 E_P <output id="kp-ep-out"></output></span><input type="range" id="kp-ep" min="10" max="30" step="0.5" value="20"></label>
+          <label class="check"><input type="checkbox" id="kp-par" checked> 포물선 근사(2차 섭동) 겹치기</label>
+          <div class="ctrl"><span>목표 물질 (측정 m*)</span><div class="seg" id="kp-tgt"><button data-value="GaAs" class="on">GaAs</button><button data-value="InGaAs">InGaAs</button><button data-value="InAs">InAs</button><button data-value="InSb">InSb</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">m*/m₀ (전도) · m_lh/m₀</span><span class="v" id="kp-m">—</span></div>
+        <div class="stat"><span class="k">점에서: ε 정확 vs 포물선</span><span class="v" id="kp-e">—</span></div>
+        <div class="stat"><span class="k">s 성분 비율 · m(ε)</span><span class="v" id="kp-s">—</span></div>
+        <div class="stat"><span class="k">도전 과제</span><span class="v" id="kp-goal">—</span></div>
+      </div>
+      <div class="sim-note">실선은 2띠 해밀토니언의 정확한 띠 \(E_\pm(k)\), 점선은 \(k = 0\) 근처 2차 섭동(포물선)이다. 전도띠의 색 농도는 s 성분 비율로, 위로 갈수록 p 성분이 섞인다. 해볼 것: ① 띠 간격 손잡이를 내려 전도띠가 가벼워지는(더 가파른) 것과 가벼운 정공띠가 거울처럼 따라 휘는 것을 본다. ② 띠 위의 점을 끌어 올려 정확한 곡선과 포물선의 차가 10%가 되는 에너지가 \(E_g\)의 몇 배인지 찾는다. ③ 목표 물질의 측정 \(m^*\)를 만들도록 \(E_g\)를 맞추고, 그 값을 실제 띠 간격과 비교한다(\(E_P = 20\) eV의 2띠 모형이 원격 띠 효과를 대신 흡수한다).</div>
+    </div>
+    <div class="tangle" id="tg-kp">
+      <p>띠 간격 <span class="tn" data-var="Eg" data-min="0.1" data-max="3.5" data-step="0.01" data-unit=" eV">1.42</span>, 케인 에너지 <span class="tn" data-var="EP" data-min="10" data-max="30" data-step="0.5" data-unit=" eV">20.0</span>인 직접 띠 간격 반도체의 전도띠 유효 질량은 2띠 모형으로 <span class="tn-out" data-out="m"></span>\(\,m_0\)이고, 바닥에서 50 meV 위에서는 <span class="tn-out" data-out="mE"></span>\(\,m_0\)로 무거워진다. <span data-out="msg"></span></p>
+    </div>
+    <h3>변형 실리콘: 축퇴 섭동으로 골짜기를 가르기</h3>
+    <p>실리콘 전도띠의 바닥은 Γ점이 아니라 ⟨100⟩ 방향 여섯 곳(Δ 골짜기)에 있고, 각 골짜기는 축 방향으로 무거운 \(m_l = 0.916\), 옆으로 가벼운 \(m_t = 0.19\)의 회전 타원체다. 여섯 골짜기는 입방 대칭으로 축퇴해 있어서, 전도 유효 질량은 평균 \(m_c = 3/(1/m_l + 2/m_t) = 0.26\)이다. 결정을 늘이거나 누르는 <span class="term">변형</span><span class="en">(strain)</span> \(\varepsilon_{ij}\)은 퍼텐셜을 조금 바꾸는 섭동이고, 여섯 골짜기는 그 축퇴 부분 공간이다. 변형 섭동은 골짜기 사이를 섞지 않으므로 골짜기 자체가 좋은 상태이고, 1차 이동은 <span class="term">변형 퍼텐셜</span><span class="en">(deformation potential)</span> \(\Xi_d, \Xi_u\)로 쓴다.</p>
+    <div class="formula">$$\delta E_{\Delta_i} = \Xi_d\,(\varepsilon_{xx} + \varepsilon_{yy} + \varepsilon_{zz}) + \Xi_u\,\varepsilon_{ii}, \qquad E_{\Delta_2} - E_{\Delta_4} = \Xi_u(\varepsilon_{zz} - \varepsilon_{xx}) = -\Xi_u\left(1 + \frac{2C_{12}}{C_{11}}\right)\varepsilon_\parallel$$<div class="where">(001) 면 안에서 \(\varepsilon_\parallel\)만큼 늘린 2축 인장 변형(이완된 SiGe 위의 Si)에서는 \(\varepsilon_{zz} = -2(C_{12}/C_{11})\varepsilon_\parallel\)이다. \(\Xi_u = 9.16\) eV, \(C_{11} = 165.7\) GPa, \(C_{12} = 63.9\) GPa를 넣으면 \(\Delta_2\)(\(z\)축 두 골짜기)가 \(\Delta_4\)보다 \(16.2\,\varepsilon_\parallel\) eV 내려간다.</div></div>
+    <figure class="mini" id="mini-strain">
+      <div class="mini-view"><canvas id="cv-strain"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>2축 인장 변형 ε∥ <output id="sr-e-out"></output></span><input type="range" id="sr-e" min="0" max="1.5" step="0.05" value="1"></label>
+        <span class="readout" id="sr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>왼쪽은 \(k_x\)–\(k_y\) 평면에서 본 여섯 골짜기(가운데 원 두 개가 \(\Delta_2\), 바깥 타원 넷이 \(\Delta_4\)), 크기는 300 K 전자 점유율이다. 오른쪽은 골짜기 준위다. 변형을 키우면 전자가 면 안에서 가벼운 \(m_t\)만 보이는 \(\Delta_2\)로 옮겨 가 면내 전도 질량이 0.26에서 0.19로 줄어든다.</figcaption>
+    </figure>
+    <div class="callout semi"><strong>변형 실리콘 채널의 이동도</strong><p>Si₀.₇₅Ge₀.₂₅ 위에 기른 실리콘은 격자 상수 차이(베가드 법칙으로 1.04%)만큼 늘어나, \(\Delta_2\)가 약 0.17 eV 내려간다. 300 K에서 전자의 99.7%가 \(\Delta_2\)에 모여 면내 전도 질량이 0.258에서 0.190으로 26% 줄고(질량만으로 이동도 1.36배), 두 무리 사이의 골짜기 간 산란이 막혀 실제 nMOS 이동도 향상은 더 크다. 정공 쪽은 축퇴한 무거운·가벼운 정공띠(Γ₈)가 변형으로 갈라지고 k·p로 다시 섞이면서 수송 방향의 질량이 가벼워진다 — 그래서 pMOS에는 소스·드레인에 SiGe를 채워 채널을 길이 방향으로 압축한다. 축 방향 응력은 \(\Delta\) 골짜기 바닥 근처의 두 띠를 k·p로 섞어 \(m_t\) 자체도 바꾼다. 핀과 나노시트에서도 변형 공학은 이동도를 올리는 핵심 수단이고, TCAD는 이 효과를 변형 의존 이동도 모델이나 k·p 띠 계산으로 넣는다 → <a href="https://semi.euiyun.com/device/chapters/hetero.html">DeviceBook · 변형 Si/SiGe 밴드 공학</a>, <a href="https://semi.euiyun.com/process/chapters/advanced.html">ProcessBook · 첨단 소자 공정</a>, <a href="https://semi.euiyun.com/tcad/chapters/models.html">TCADBook · 이동도와 재결합 모델</a></p></div>
+    <div class="drill" id="drill-kp" data-title="2띠 k·p 유효 질량 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>\(\hat H = \hat H_0 + \lambda\hat V\)의 비축퇴 섭동: \(E_n^{(1)} = V_{nn}\)(옛 상태로 잰 기댓값), \(E_n^{(2)} = \sum_{m\ne n}|V_{mn}|^2/(E_n - E_m)\), \(|n^{(1)}\rangle = \sum_{m\ne n}V_{mn}|m\rangle/(E_n - E_m)\). 섞인 준위는 서로 밀어내고(준위 반발), 바닥 상태의 2차 보정은 언제나 음수다. 근사는 \(|V_{mn}| \ll |E_n - E_m|\)일 때 맞고, 급수는 흔히 점근적이라 적당한 차수에서 멈춘다.</li>
+      <li>축퇴 준위에서는 축퇴 부분 공간의 섭동 행렬 \(W\)를 대각화한다. 고유값이 1차 이동, 고유 벡터가 좋은 상태다. \(\hat H_0\)과 \(\hat V\)에 모두 교환하는 연산자의 고유 상태가 좋은 상태이므로, 섭동이 남긴 대칭을 찾으면 \(W\)가 처음부터 대각이 된다. 대칭이 낮아진 만큼 축퇴가 풀린다.</li>
+      <li>반전 대칭 계의 비축퇴 상태는 2차 슈타르크 효과만 갖는다: 수소 1s는 \(-\frac12\alpha_\text{pol}F^2\), \(\alpha_\text{pol} = \frac92(4\pi\varepsilon_0)a_0^3\). 축퇴한 \(n = 2\)는 2s와 2p₀이 섞여 1차 효과 \(\pm3ea_0F\)를 보인다. 양자 우물의 QCSE는 \(\Delta E = -\frac{15-\pi^2}{24\pi^4}m^*e^2F^2L^4/\hbar^2\)로 적색 이동하며 겹침이 줄고, 이것이 전계 흡수 변조기의 원리다.</li>
+      <li>수소의 미세 구조는 상대론 운동 에너지, 스핀–궤도(\(|l\,j\,m_j\rangle\)이 좋은 상태), 다윈 항의 합으로 \(E_{nj}^{(1)} = (E_n^2/2mc^2)(3 - 4n/(j+\frac12))\)이다. \(l\)이 사라져 2s₁/₂ = 2p₁/₂이고, 2p 분리는 45.3 µeV(10.95 GHz), 크기는 \(\alpha^2|E_n|\)과 \(Z^4\)으로 간다.</li>
+      <li>제만 효과는 \(\mu_BB\)와 미세 구조의 크기 비교로 갈린다. 약한 장 \(E = g_J\mu_BBm_j\)(랑데 인자), 강한 장 \(E = \mu_BB(m_l + 2m_s)\)(파셴–바크), 그 사이는 \(m_j\)별 작은 행렬을 정확히 대각화한다. 전자 스핀의 \(g\mu_BB/h \approx 28\) GHz/T가 ESR과 스핀 큐비트의 작동 진동수다.</li>
+      <li>k·p 섭동: \(\frac{\hbar}{m_0}\mathbf k\cdot\hat{\mathbf p}\)의 2차가 유효 질량 \((m_0/m^*) = 1 + \frac{2}{m_0}\sum|p_{nm}|^2/(E_n - E_m)\)을 준다. 2띠 모형 \(m_0/m^* \approx 1 + E_P/E_g\)(\(E_P \approx 20\)–29 eV)는 좁은 간격 물질이 가벼운 이유와 비포물선성 \(m(\varepsilon) = m^*(1 + 2\varepsilon/E_g)\)을 설명한다. 변형은 실리콘 골짜기 축퇴를 \(16.2\,\varepsilon_\parallel\) eV만큼 갈라 면내 전도 질량을 0.26에서 0.19로 낮춘다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>필요하면 \(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm², \(a_0 = 0.05292\) nm, Ry = 13.606 eV, \(m_\mathrm{e}c^2 = 511.0\) keV, \(\alpha = 1/137.04\), \(\mu_B = 57.88\ \mu\)eV/T, \(h = 4.1357\times10^{-15}\) eV·s, \(k_B = 8.617\times10^{-5}\) eV/K를 쓴다. 전기장 \(F\)(V/m)에서 \(eF\)는 \(F\times10^{-9}\) eV/nm다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="1차 섭동" data-answer="19.8; 0.645" data-label="ΔE₁ =; ΔE₂ =" data-unit="meV; meV">
+        <div class="prob-q"><p>폭 \(L = 10\) nm 무한 우물(벽 \(x = 0, L\)) 한가운데 \(4.5 &lt; x &lt; 5.5\) nm에 높이 \(V_0 = 0.10\) eV의 얇은 장벽이 있다. 바닥 상태와 첫 들뜬 상태의 1차 에너지 이동은?</p></div>
+        <div class="prob-hint">\(\Delta E_n = V_0\int_{4.5}^{5.5}\frac2L\sin^2\frac{n\pi x}{L}dx\). \(\sin^2\theta = \frac12(1 - \cos2\theta)\)로 적분한다.</div>
+        <div class="prob-hint">\(n = 2\)는 \(x = L/2\)에 마디가 있어 아주 작다.</div>
+        <div class="prob-sol"><p>\(\int_{a}^{b}\frac2L\sin^2\frac{n\pi x}{L}dx = \frac{b-a}{L} - \frac{1}{2n\pi}\left[\sin\frac{2n\pi b}{L} - \sin\frac{2n\pi a}{L}\right]\). \(n = 1\): \(0.1 - \frac{1}{2\pi}[\sin(1.1\pi) - \sin(0.9\pi)] = 0.1 + 0.0984 = 0.1984\) → 19.8 meV. \(n = 2\): \(0.1 - \frac{1}{4\pi}[\sin(2.2\pi) - \sin(1.8\pi)] = 0.1 - 0.0935 = 0.00645\) → 0.645 meV. 장벽 폭이 같아도 마디 위에 있으면 효과가 30분의 1이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="1차 섭동과 정확한 값" data-answer="1.25; 1.22" data-label="1차 =; 정확 =" data-unit="meV; meV">
+        <div class="prob-q"><p>\(\hbar\omega = 50\) meV인 조화 진동자의 용수철 상수가 10% 커졌다(\(\hat V = \frac{\epsilon}{2}m\omega^2\hat x^2\), \(\epsilon = 0.1\)). 바닥 에너지의 1차 섭동 이동과 정확한 이동을 구하라.</p></div>
+        <div class="prob-hint">\(\langle0|\hat x^2|0\rangle = \hbar/2m\omega\)이므로 1차는 \(\epsilon\hbar\omega/4\). 정확한 값은 \(\omega \to \omega\sqrt{1+\epsilon}\).</div>
+        <div class="prob-sol"><p>1차: \(0.1\times50/4 = 1.25\) meV. 정확: \(\frac{\hbar\omega}{2}(\sqrt{1.1} - 1) = 25\times0.04881 = 1.22\) meV. 차이 \(-0.03\) meV는 2차 항 \(-\epsilon^2\hbar\omega/16 = -0.031\) meV와 맞는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="반전성과 1차 섭동">
+        <div class="prob-q"><p>조화 진동자 바닥 상태에서 1차 에너지 보정이 <em>0</em>인 섭동은?</p></div>
+        <div class="prob-choices"><button>\(\lambda\hat x^2\)</button><button data-correct>\(\lambda\hat x^3\)</button><button>\(\lambda\hat x^4\)</button><button>\(\lambda|\hat x|\)</button></div>
+        <div class="prob-sol"><p>\(|\psi_0|^2\)은 짝 함수라 홀 함수 \(x^3\)의 기댓값이 0이다. 3차 비조화 항의 첫 효과는 2차 섭동에서 나오며 언제나 바닥을 내린다. 나머지 세 섭동은 모두 짝 함수이고 양의 기댓값을 갖는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="선형 슈타르크 효과" data-answer="1.59" data-label="ΔE =" data-unit="meV">
+        <div class="prob-q"><p>\(F = 5.0\times10^6\) V/m에서 수소 \(n = 2\) 준위의 가장 높은 슈타르크 성분과 가장 낮은 성분 사이 간격은? (미세 구조 무시)</p></div>
+        <div class="prob-hint">성분은 \(+3ea_0F, 0, 0, -3ea_0F\)이다.</div>
+        <div class="prob-sol"><p>\(eF = 0.0050\) eV/nm. 간격 \(6ea_0F = 6\times0.05292\times0.0050 = 1.59\times10^{-3}\) eV = 1.59 meV.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="랑데 g 인자" data-answer="1.20" data-label="g_J =">
+        <div class="prob-q"><p>3d₅/₂ 상태(\(l = 2\), \(s = \tfrac12\), \(j = \tfrac52\))의 랑데 \(g_J\)를 구하라.</p></div>
+        <div class="prob-hint">\(g_J = 1 + [j(j+1) - l(l+1) + s(s+1)]/2j(j+1)\).</div>
+        <div class="prob-sol"><p>\(j(j+1) = 8.75\), \(l(l+1) = 6\), \(s(s+1) = 0.75\). \(g_J = 1 + 3.5/17.5 = 1.20\). \(j = l + \tfrac12\)이면 늘 \(g_J = 1 + 1/(2l+1)\)이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="전자 스핀 공명" data-answer="9.81" data-label="f =" data-unit="GHz">
+        <div class="prob-q"><p>자유 전자(\(g = 2.0023\))를 \(B = 0.350\) T에 두었을 때 ESR 공명 진동수는?</p></div>
+        <div class="prob-hint">\(hf = g\mu_BB\).</div>
+        <div class="prob-sol"><p>\(g\mu_BB = 2.0023\times57.88\times0.350 = 40.56\ \mu\)eV. \(f = 40.56\times10^{-6}/4.1357\times10^{-15} = 9.81\times10^9\) Hz — X 밴드 ESR 분광기의 표준 조건이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="2차 섭동 (정확히 맞는 경우)" data-answer="-0.381" data-label="ΔE₀ =" data-unit="meV">
+        <div class="prob-q"><p>\(\hbar\omega = 0.10\) eV인 전자(\(m = m_\mathrm{e}\)) 조화 진동자에 균일 전기장 \(F = 1.0\times10^7\) V/m를 건다(\(\hat V = eF\hat x\)). 바닥 에너지의 2차 섭동 이동은? 이 결과가 정확한 이유도 설명하라.</p></div>
+        <div class="prob-hint">\(\hat x\)는 \(|0\rangle\)을 \(|1\rangle\)에만 잇는다: \(|\langle1|\hat x|0\rangle|^2 = \hbar/2m\omega\).</div>
+        <div class="prob-hint">\(E^{(2)} = -e^2F^2/2m\omega^2 = -(eF)^2(\hbar^2/2m)/(\hbar\omega)^2\).</div>
+        <div class="prob-sol"><p>\(E^{(2)} = \frac{(eF)^2\hbar/2m\omega}{-\hbar\omega} = -\frac{(eF)^2}{2m\omega^2} = -\frac{(0.010)^2\times0.0381}{(0.10)^2} = -3.81\times10^{-4}\) eV. 완전 제곱 \(\frac12m\omega^2x^2 + eFx = \frac12m\omega^2(x + x_s)^2 - e^2F^2/2m\omega^2\)이므로 진동자가 통째로 옮겨질 뿐이고, 정확한 이동이 2차 항 하나로 끝난다(3차 이상 0).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="축퇴 섭동" data-answer="2.00" data-label="갈라짐 =" data-unit="meV">
+        <div class="prob-q"><p>2차원 등방 조화 진동자(\(\hbar\omega = 20\) meV)의 첫 들뜬 준위 \(|1,0\rangle, |0,1\rangle\)에 섭동 \(\hat V = \epsilon m\omega^2\hat x\hat y\)(\(\epsilon = 0.10\))를 건다. 1차 축퇴 섭동으로 구한 두 준위의 갈라짐은?</p></div>
+        <div class="prob-hint">\(\langle1,0|\hat x\hat y|0,1\rangle = \langle1|\hat x|0\rangle\langle0|\hat y|1\rangle = \hbar/2m\omega\). 대각 원소는 0이다.</div>
+        <div class="prob-sol"><p>\(W = \frac{\epsilon\hbar\omega}{2}\begin{pmatrix}0&1\\1&0\end{pmatrix}\) → 이동 \(\pm\epsilon\hbar\omega/2 = \pm1.00\) meV, 갈라짐 2.00 meV. 좋은 상태는 \((|1,0\rangle \pm |0,1\rangle)/\sqrt2\), 곧 대각선 방향 진동이다. 좌표를 45° 돌리면 정확한 진동수가 \(\omega\sqrt{1\pm\epsilon}\)이라 정확한 갈라짐은 \(20(\sqrt{1.1} - \sqrt{0.9}) = 2.003\) meV다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="QCSE" data-answer="1.00" data-label="|ΔE| =" data-unit="meV">
+        <div class="prob-q"><p>폭 12 nm인 GaAs 무한 우물 속 전자(\(m^* = 0.067\))에 \(F = 50\) kV/cm를 걸었다. 바닥 준위는 2차 섭동으로 얼마나 내려가는가?</p></div>
+        <div class="prob-hint">\(|\Delta E| = 2.195\times10^{-3}\,(eFL)^2L^2\,m^*/\hbar^2\), \(\hbar^2/m^* = 2\times0.0381/0.067\) eV·nm².</div>
+        <div class="prob-sol"><p>\(eF = 0.0050\) eV/nm, \(eFL = 0.060\) eV. \(|\Delta E| = 2.195\times10^{-3}\times0.0036\times144\times0.067/0.0762 = 1.00\times10^{-3}\) eV. 수치로 정확히 풀면 0.996 meV로 0.5% 안에서 맞는다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="미세 구조" data-answer="-181" data-label="ΔE =" data-unit="µeV">
+        <div class="prob-q"><p>수소 바닥 상태 1s₁/₂의 미세 구조 이동(보어 준위 대비)을 µeV로 구하라.</p></div>
+        <div class="prob-hint">\(E_{nj}^{(1)} = (E_n^2/2mc^2)(3 - 4n/(j+\tfrac12))\), \(n = 1\), \(j = \tfrac12\).</div>
+        <div class="prob-sol"><p>\(E_1^2/2mc^2 = 13.606^2/(2\times511\,000) = 1.811\times10^{-4}\) eV, 괄호 \(3 - 4 = -1\) → \(-181\ \mu\)eV. 상대론 항(−905.7)과 다윈 항(+724.5)이 크게 상쇄된 결과다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="파셴–바크 영역" data-answer="0.782" data-label="B =" data-unit="T">
+        <div class="prob-q"><p>수소 2p에서 \(\mu_BB\)가 미세 구조 간격 \(\Delta_\text{fs} = E(2p_{3/2}) - E(2p_{1/2})\)과 같아지는 자기장은?</p></div>
+        <div class="prob-hint">\(\Delta_\text{fs} = 4E_2^2/2mc^2\)(문제 10과 같은 방법).</div>
+        <div class="prob-sol"><p>\(E_2^2/2mc^2 = 11.32\ \mu\)eV, \(\Delta_\text{fs} = 45.28\ \mu\)eV. \(B = 45.28/57.88 = 0.782\) T. 실험실 전자석(1–2 T)이면 수소 2p는 이미 중간 장이다. 무거운 원자는 \(\Delta_\text{fs}\)가 훨씬 커서 같은 자기장도 약한 장이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="2띠 k·p" data-answer="0.0162" data-label="m*/m₀ =">
+        <div class="prob-q"><p>InAs의 \(E_g = 0.354\) eV, \(E_P = 21.5\) eV이다. 2띠 모형으로 전도띠 유효 질량을 구하라.</p></div>
+        <div class="prob-hint">\(m_0/m^* = 1 + E_P/E_g\).</div>
+        <div class="prob-sol"><p>\(1 + 21.5/0.354 = 61.73\) → \(m^* = 0.0162m_0\). 분리 띠(\(\Delta_\text{so} = 0.39\) eV)를 넣으면 0.0196, 측정값은 0.023이다. 원격 띠가 나머지를 채운다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="비포물선성" data-answer="56.2" data-label="E₁ =" data-unit="meV">
+        <div class="prob-q"><p>InSb(\(m^* = 0.0135\), \(E_g = 0.235\) eV, 저온) 무한 우물(폭 20 nm)의 바닥 준위를 (a) 포물선 띠로, (b) 비포물선 관계 \(\varepsilon(1 + \varepsilon/E_g) = \hbar^2k^2/2m^*\)로 구하라. 답에는 (b)를 meV로 넣는다.</p></div>
+        <div class="prob-hint">무한 우물에서는 \(k = \pi/L\)이 그대로다. (a)의 값을 \(\varepsilon_0 = \hbar^2k^2/2m^*\)이라 하면 (b)는 \(\varepsilon^2/E_g + \varepsilon - \varepsilon_0 = 0\)의 양의 근.</div>
+        <div class="prob-sol"><p>(a) \(\varepsilon_0 = (0.0381/0.0135)(\pi/20)^2 = 69.6\) meV. (b) \(\varepsilon = \frac{E_g}{2}\left[\sqrt{1 + 4\varepsilon_0/E_g} - 1\right] = 0.1175\times(\sqrt{2.185} - 1) = 56.2\) meV. 포물선 근사가 24% 과대평가한다 — 준위가 띠 간격의 1/4만 되어도 2차 섭동(포물선)은 부족하다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="변형 실리콘" data-answer="130; 98.7" data-label="ΔE =; Δ₂ 점유율 =" data-unit="meV; %">
+        <div class="prob-q"><p>(001) 실리콘에 2축 인장 변형 \(\varepsilon_\parallel = 0.80\%\)을 걸었다. \(\Delta_2\)와 \(\Delta_4\) 골짜기 사이 간격(\(16.2\,\varepsilon_\parallel\) eV)과, 300 K에서 전자가 \(\Delta_2\)에 있는 비율을 구하라. 골짜기마다 상태 밀도는 같고 볼츠만 통계를 쓴다.</p></div>
+        <div class="prob-hint">\(\Delta_2\)는 골짜기 2개, \(\Delta_4\)는 4개다. 비율 \(= 2/(2 + 4e^{-\Delta E/k_BT})\).</div>
+        <div class="prob-sol"><p>\(\Delta E = 16.22\times0.0080 = 0.130\) eV. \(\Delta E/k_BT = 0.130/0.02585 = 5.02\), \(4e^{-5.02} = 0.0264\). 비율 \(2/2.0264 = 98.7\%\). 면내 전도 질량은 \(1/[0.987/0.19 + 0.013\times\frac12(1/0.916 + 1/0.19)] = 0.191\)로, 변형 전 0.258보다 26% 작다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="좋은 상태">
+        <div class="prob-q"><p>수소 \(n = 2\)에 \(z\) 방향 전기장과 \(z\) 방향 자기장을 함께 건다(미세 구조와 스핀 무시). 축퇴 섭동의 좋은 상태를 고르는 데 쓸 수 있는 연산자로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>반전 연산자 \(\hat\Pi\)</button><button>\(\hat{\mathbf L}^2\)</button><button data-correct>\(\hat L_z\)</button><button>\(\hat L_x\)</button></div>
+        <div class="prob-sol"><p>섭동 \(eF\hat z + (\mu_BB/\hbar)\hat L_z\)는 \(z\)축 회전에 불변이라 \(\hat L_z\)와 교환한다. \(\hat z\)는 반전에 홀이라 \(\hat\Pi\)와 교환하지 않고, \(\hat{\mathbf L}^2\)과도 교환하지 않는다(2s와 2p₀을 섞는다). 따라서 \(m\)이 좋은 양자수이고, \(m = \pm1\)은 \(\pm\mu_BB\), \(m = 0\)의 두 상태는 \(\pm3ea_0F\)로 갈라진다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>바닥 상태 에너지의 2차 섭동 보정이 언제나 0 이하인 이유는?</p><div class="opts">
+        <button class="opt">섭동이 늘 음수라서</button>
+        <button class="opt" data-correct>합의 모든 항에서 분자 \(|V_{m0}|^2 \ge 0\)이고 분모 \(E_0 - E_m &lt; 0\)이라서</button>
+        <button class="opt">1차 보정이 0이라서</button>
+        <button class="opt">변분 원리에 따라 1차 보정이 상한이라서</button>
+      </div><div class="quiz-exp">바닥 상태보다 낮은 준위는 없으므로 분모가 모두 음수다. 위 준위와 섞이며 밀려 내려가는 준위 반발이다. 1차 결과 \(E_0 + V_{00}\)이 정확한 값의 상한이라는 것도 사실이지만(변분 원리, <a href="variational-wkb.html">13장</a>), 그것은 2차 항의 부호를 직접 말해 주지 않는다.</div></div>
+      <div class="quiz-q"><p>축퇴 준위에 비축퇴 공식을 그대로 쓰면 안 되는 근본 이유는?</p><div class="opts">
+        <button class="opt">1차 에너지가 늘 0이라서</button>
+        <button class="opt">축퇴 상태는 정규화가 안 되어서</button>
+        <button class="opt" data-correct>섭동에 연속적으로 이어지는 0차 상태(좋은 상태)가 미리 정해져 있지 않고, 잘못 고르면 분모 0인 항이 생기기 때문이다</button>
+        <button class="opt">섭동이 축퇴 부분 공간 밖의 상태만 섞기 때문이다</button>
+      </div><div class="quiz-exp">축퇴 부분 공간 안의 어떤 기저든 \(\hat H_0\)의 고유 상태지만, \(\lambda\to0\)의 극한으로 나오는 상태는 \(W\)의 고유 벡터뿐이다. 그 기저에서는 비대각 \(W_{ab} = 0\)이라 분모 0인 항이 자동으로 사라진다.</div></div>
+      <div class="quiz-q"><p>수소 1s는 1차 슈타르크 효과가 없는데 \(n = 2\)는 있는 이유는?</p><div class="opts">
+        <button class="opt">\(n = 2\)가 핵에서 더 멀어서</button>
+        <button class="opt" data-correct>\(n = 2\)에는 반전성이 반대인 2s와 2p가 축퇴해 있어, 섞인 상태가 영구 쌍극자를 가질 수 있기 때문이다</button>
+        <button class="opt">1s는 구대칭이라 전기장을 느끼지 못해서</button>
+        <button class="opt">\(n = 2\)에서는 스핀–궤도 결합이 있어서</button>
+      </div><div class="quiz-exp">비축퇴 상태는 반전성이 정해져 있어 \(\langle\hat z\rangle = 0\)이다. 1s도 전기장을 느끼며 편극되지만 그 효과는 \(F^2\)다. 축퇴가 있으면 섭동이 0차 상태를 반전성이 섞인 상태로 고를 수 있어 선형 효과가 된다. 단, 미세 구조가 2s와 2p를 갈라 놓은 아주 약한 장에서는 다시 2차가 된다.</div></div>
+      <div class="quiz-q"><p>디랙 방정식(=미세 구조 1차 섭동)에서 2s₁/₂와 2p₁/₂의 에너지가 같다. 실제로 둘을 가르는 것은?</p><div class="opts">
+        <button class="opt">다윈 항</button>
+        <button class="opt">핵의 유한한 질량</button>
+        <button class="opt" data-correct>진공 요동과 전자 자체 에너지가 만드는 램 이동(양자 전기역학)</button>
+        <button class="opt">외부 자기장</button>
+      </div><div class="quiz-exp">미세 구조는 \(j\)에만 의존해 \(l\)이 다른 두 상태가 축퇴한다. 램과 러더퍼드(1947)는 마이크로파로 2s₁/₂가 2p₁/₂보다 1057.8 MHz(4.37 µeV) 높다는 것을 쟀고, 이것이 QED의 출발점이 되었다. 다윈 항은 이미 미세 구조 안에 들어 있다.</div></div>
+      <div class="quiz-q"><p>k·p 이론으로 보면, 띠 간격이 좁은 III–V 반도체의 전도띠 전자가 가벼운 이유는?</p><div class="opts">
+        <button class="opt">격자 상수가 커서 원자가 멀리 떨어져 있기 때문에</button>
+        <button class="opt">전도띠 전자가 자유 전자에 가깝기 때문에</button>
+        <button class="opt" data-correct>바로 아래 원자가띠와의 결합 \(E_P\)는 거의 같은데 에너지 분모 \(E_g\)가 작아 2차 섭동(준위 반발)이 커지기 때문에</button>
+        <button class="opt">스핀–궤도 결합이 질량을 줄이기 때문에</button>
+      </div><div class="quiz-exp">\(m_0/m^* \approx 1 + E_P/E_g\)에서 \(E_P \approx 20\)–29 eV는 물질마다 크게 다르지 않으므로 \(m^*\)는 대략 \(E_g\)에 비례한다. 자유 전자보다 15–70배 가볍다는 것은 오히려 결정의 효과가 아주 크다는 뜻이다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const K = QM.K, C = K.C, A0 = K.a0, RY = K.Ry, MUB = K.muB, HEV = 4.135667696e-15, KB = K.kBev, MEC2 = 510998.95;
+  const pal = () => SB.palette();
+  const fx = (x, d = 2) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  const sgn = (x, d = 2) => (x < 0 ? "−" : "+") + Math.abs(x).toFixed(d);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const sup = (e) => String(e).replace(/-/g, "⁻").replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+  const sci = (x, d = 2) => { if (!(Math.abs(x) > 0)) return "0"; const e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); return `${fx(m, d)}×10${sup(e)}`; };
+  const line = (ctx, ch, xs, ys, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let st = false; for (let i = 0; i < xs.length; i++) { const y = ys[i]; if (!isFinite(y)) { st = false; continue; } const px = ch.X(xs[i]), py = ch.Y(y); st ? ctx.lineTo(px, py) : ctx.moveTo(px, py); st = true; } ctx.stroke(); ctx.restore(); };
+  const clip = (ctx, ch) => { ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip(); };
+  const fmtE = (meV, d = 2) => (Math.abs(meV) >= 1 ? fx(meV, d) + " meV" : fx(meV * 1000, 1) + " µeV");
+  const setGoal = (id, ok, txt) => { const el = document.getElementById(id); if (!el) return; el.innerHTML = (ok ? "✅ " : "") + txt; el.style.color = ok ? "var(--ok)" : ""; };
+  /* 실대칭 야코비 고유값 (작은 행렬) → {E:[오름차순], V:[[열벡터]]} */
+  const jacobi = (A0m) => {
+    const n = A0m.length, A = A0m.map((r) => r.slice()), V = A.map((r, i) => r.map((_, j) => (i === j ? 1 : 0)));
+    for (let sw = 0; sw < 50; sw++) {
+      let off = 0; for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) off += A[p][q] * A[p][q];
+      if (off < 1e-22) break;
+      for (let p = 0; p < n - 1; p++) for (let q = p + 1; q < n; q++) {
+        if (Math.abs(A[p][q]) < 1e-14) continue;
+        const th = 0.5 * Math.atan2(2 * A[p][q], A[q][q] - A[p][p]), c = Math.cos(th), s = Math.sin(th);
+        for (let k = 0; k < n; k++) { const a = A[k][p], b = A[k][q]; A[k][p] = c * a - s * b; A[k][q] = s * a + c * b; }
+        for (let k = 0; k < n; k++) { const a = A[p][k], b = A[q][k]; A[p][k] = c * a - s * b; A[q][k] = s * a + c * b; }
+        for (let k = 0; k < n; k++) { const a = V[k][p], b = V[k][q]; V[k][p] = c * a - s * b; V[k][q] = s * a + c * b; }
+      }
+    }
+    const idx = A.map((_, i) => i).sort((a, b) => A[a][a] - A[b][b]);
+    return { E: idx.map((i) => A[i][i]), V: idx.map((i) => V.map((r) => r[i])) };
+  };
+  const eig2 = (a, b, d) => { const m = 0.5 * (a + d), r = Math.hypot(0.5 * (a - d), b), th = 0.5 * Math.atan2(2 * b, a - d); return { lo: m - r, hi: m + r, th }; }; // hi 벡터 (cos th, sin th), lo 벡터 (−sin th, cos th)
+
+  /* ---------------------------------------------------------- 머리: H0 + λV 준위와 2차 섭동 */
+  {
+    const N = 6, E0 = [0, 1, 1.75, 2.55, 3.3, 4.2], LMAX = 1.2, NS = 121;
+    let seed = 7, Vm = null, exact = null, lam = 0.45, drag = null, idle = 99, t = 0;
+    const build = () => {
+      const r = QM.rng(seed); const g = () => { let s = 0; for (let k = 0; k < 6; k++) s += r(); return (s - 3) * 0.75; };
+      Vm = []; for (let i = 0; i < N; i++) { Vm.push([]); for (let j = 0; j < N; j++) Vm[i].push(0); }
+      for (let i = 0; i < N; i++) for (let j = i; j < N; j++) { const v = (i === j ? 0.45 : 0.55) * g(); Vm[i][j] = v; Vm[j][i] = v; }
+      exact = [];
+      for (let s = 0; s < NS; s++) { const l = (LMAX * s) / (NS - 1), H = E0.map((e, i) => E0.map((_, j) => (i === j ? e : 0) + l * Vm[i][j])); exact.push(jacobi(H).E); }
+    };
+    const pt = (n, l) => { let e2 = 0; for (let m = 0; m < N; m++) if (m !== n) e2 += (Vm[m][n] * Vm[m][n]) / (E0[n] - E0[m]); return E0[n] + l * Vm[n][n] + l * l * e2; };
+    build();
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), cols = P.series;
+      const ch = SB.chart(ctx, { x: 52, y: 44, w: w - 70, h: h - 90 }, { x: [0, LMAX], y: [-1.2, 5.6], xLabel: "섭동 세기 λ", yLabel: "E (임의 단위)", yTicks: [0, 2, 4] });
+      self._ch = ch;
+      clip(ctx, ch);
+      const xs = exact.map((_, s) => (LMAX * s) / (NS - 1));
+      for (let n = 0; n < N; n++) {
+        line(ctx, ch, xs, xs.map((l) => pt(n, l)), cols[n % cols.length], 1.6, [5, 4]);
+        line(ctx, ch, xs, exact.map((e) => e[n]), cols[n % cols.length], 2.6);
+      }
+      ctx.restore();
+      const s = Math.round((lam / LMAX) * (NS - 1)), ex = exact[s];
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(lam), ch.box.y); ctx.lineTo(ch.X(lam), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      let worst = 0;
+      for (let n = 0; n < N; n++) {
+        const p = pt(n, lam); worst = Math.max(worst, Math.abs(p - ex[n]));
+        ctx.fillStyle = cols[n % cols.length]; ctx.beginPath(); ctx.arc(ch.X(lam), ch.Y(ex[n]), 4.5, 0, 2 * Math.PI); ctx.fill();
+      }
+      handle(ctx, ch.X(lam), ch.box.y + ch.box.h, P.accent, 9);
+      SB.label(ctx, `H = H₀ + λV · λ = ${lam.toFixed(2)}`, 12, 16, { align: "left", bold: true, size: 13 });
+      SB.label(ctx, `실선 정확 · 점선 2차 섭동 · 최대 오차 ${worst.toFixed(3)} (준위 간격 ~0.8)`, 12, 34, { align: "left", color: P.dim, size: 11 });
+    }, { aspect: 0.42, minHeight: 250, maxHeight: 340 });
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x) => { drag = { x0: x, moved: false }; },
+      move: (id, x) => { if (!drag) return; if (Math.abs(x - drag.x0) > 4) drag.moved = true; if (drag.moved) { const ch = cv._ch; lam = SB.clamp(((x - ch.box.x) / ch.box.w) * LMAX, 0, LMAX); } },
+      up: () => { if (drag && !drag.moved) { seed = (seed * 31 + 11) % 9973; build(); } drag = null; idle = 0; t = Math.acos(SB.clamp(1 - (2 * lam) / LMAX, -1, 1)) / 0.5; cv.redraw(); } });
+    SB.loop("hero", (dt) => { if (drag) return; idle += dt; if (idle > 2.5) { t += dt; lam = (LMAX / 2) * (1 - Math.cos(0.5 * t)); } cv.redraw(); });
+  }
+
+  /* ---------------------------------------------------------- 미니: 2준위 준위 반발 */
+  {
+    let V = 0.3;
+    const cv = SB.canvas("cv-rep", (ctx, w, h, self) => {
+      const P = pal(), showPT = document.getElementById("rep-p1").checked;
+      const ch = SB.chart(ctx, { x: 52, y: 20, w: w - 66, h: h - 62 }, { x: [0, 1.2], y: [-1.3, 2.3], xLabel: "결합 |V| / Δ", yLabel: "E / Δ", xTicks: [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2], yTicks: [-1, 0, 1, 2] });
+      self._ch = ch;
+      const xs = [], ep = [], em = [], pp = [], pm = [];
+      for (let i = 0; i <= 120; i++) { const v = (1.2 * i) / 120, r = Math.sqrt(0.25 + v * v); xs.push(v); ep.push(0.5 + r); em.push(0.5 - r); pp.push(1 + v * v); pm.push(-v * v); }
+      clip(ctx, ch);
+      ctx.strokeStyle = P.faint || P.dim; ctx.setLineDash([2, 3]); [0, 1].forEach((y) => { ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(y)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(y)); ctx.stroke(); }); ctx.setLineDash([]);
+      if (showPT) { line(ctx, ch, xs, pp, P.accent2, 1.8, [6, 4]); line(ctx, ch, xs, pm, P.accent2, 1.8, [6, 4]); }
+      line(ctx, ch, xs, ep, P.accent, 2.6); line(ctx, ch, xs, em, P.accent, 2.6);
+      ctx.restore();
+      const r = Math.sqrt(0.25 + V * V), lo = 0.5 - r;
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(V), ch.box.y); ctx.lineTo(ch.X(V), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(V), ch.Y(0.5 + r), 4, 0, 7); ctx.fill();
+      handle(ctx, ch.X(V), ch.Y(lo), P.accent, 10); self._h = [ch.X(V), ch.Y(lo)];
+      SB.label(ctx, "E₂ = 1", ch.box.x + 8, ch.Y(1) - 10, { align: "left", size: 11, color: P.dim });
+      SB.label(ctx, "E₁ = 0", ch.box.x + 8, ch.Y(0) + 12, { align: "left", size: 11, color: P.dim });
+      const ex = r - 0.5, p2 = V * V;
+      document.getElementById("rep-r").textContent = `|V|/Δ = ${V.toFixed(2)} · 정확 이동 ${ex.toFixed(4)} · 2차 ${p2.toFixed(4)} · 오차 ${(((p2 - ex) / ex) * 100 || 0).toFixed(1)}%`;
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 320 });
+    SB.drag(cv, { handles: () => [{ id: "v", x: cv._h[0], y: cv._h[1], r: 14 }], move: (id, x) => { const ch = cv._ch; V = SB.clamp(((x - ch.box.x) / ch.box.w) * 1.2, 0.01, 1.2); } });
+    document.getElementById("rep-p1").addEventListener("change", () => cv.redraw());
+  }
+
+  /* ---------------------------------------------------------- tangle: 2준위 오차 */
+  SB.tangle("tg-two", (v) => {
+    const ex = Math.sqrt((v.D * v.D) / 4 + v.V * v.V) - v.D / 2, pt = (v.V * v.V) / v.D, err = ((pt - ex) / ex) * 100, r = v.V / v.D;
+    return { ex: ex.toFixed(2) + " meV", pt: pt.toFixed(2) + " meV", err: err.toFixed(1) + "%", msg: r < 0.15 ? "|V|/Δ가 작아 2차 섭동으로 충분하다." : r < 0.5 ? "2차 섭동이 이동을 과대평가하기 시작한다 — 고차 항이 필요하다." : "|V|가 Δ와 비슷하다. 섭동 대신 두 준위를 정확히 대각화해야 한다(준축퇴)." };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 무한 우물 섭동 실험대 */
+  {
+    const L = 10, M = 0.067, NG = 260, dx = L / (NG + 1), NB = 40, NK = 7;
+    const xg = new Float64Array(NG); for (let i = 0; i < NG; i++) xg[i] = (i + 1) * dx;
+    const E1 = (C / M) * (Math.PI / L) ** 2 * 1000; // meV
+    const phi = []; for (let k = 1; k <= NB; k++) { const a = new Float64Array(NG); for (let i = 0; i < NG; i++) a[i] = Math.sqrt(2 / L) * Math.sin((k * Math.PI * xg[i]) / L); phi.push(a); }
+    const E0fd = QM.eigen1D(new Float64Array(NG), dx, { m: M, n: 4 }).E.map((e) => e * 1000);
+    const PRE = { step: [20, 20, 20, 10, 0, 0, 0], bump: [0, 0, 0, 40, 0, 0, 0], tilt: [-30, -20, -10, 0, 10, 20, 30], zero: [0, 0, 0, 0, 0, 0, 0] };
+    const st = { v: PRE.step.slice(), n: 1, game: false, res: null };
+    const Vx = (x) => { const u = (x / L) * (NK - 1), i = Math.min(NK - 2, Math.max(0, Math.floor(u))), f = u - i; return st.v[i] * (1 - f) + st.v[i + 1] * f; };
+    const solve = () => {
+      const V = new Float64Array(NG); for (let i = 0; i < NG; i++) V[i] = Vx(xg[i]) / 1000;
+      const ex = QM.eigen1D(V, dx, { m: M, n: 4 });
+      const Vmn = []; for (let m = 0; m < NB; m++) { Vmn.push(new Float64Array(4)); for (let n = 0; n < 4; n++) { let s = 0; for (let i = 0; i < NG; i++) s += phi[m][i] * phi[n][i] * V[i]; Vmn[m][n] = s * dx * 1000; } }
+      const out = [];
+      for (let n = 0; n < 4; n++) {
+        const En = E1 * (n + 1) ** 2; let e2 = 0; const c = [];
+        for (let m = 0; m < NB; m++) { if (m === n) { c.push(0); continue; } const d = En - E1 * (m + 1) ** 2; e2 += (Vmn[m][n] * Vmn[m][n]) / d; c.push(Vmn[m][n] / d); }
+        out.push({ E0: En, e1: Vmn[n][n], e2, exact: ex.E[n] * 1000 - E0fd[n], psi: ex.psi[n], c });
+      }
+      st.res = out;
+      const r = out[st.n - 1];
+      SB.stat("well-e0", `${r.E0.toFixed(2)} (n = ${st.n})`);
+      SB.stat("well-e12", `${sgn(r.e1, 2)} · ${sgn(r.e2, 3)} meV`);
+      SB.stat("well-ex", `${sgn(r.e1 + r.e2, 3)} vs ${sgn(r.exact, 3)} meV`);
+      if (st.game) { const a = out[0].exact, b = out[1].exact, ok = Math.abs(a - 15) <= 1.5 && Math.abs(b) <= 1.5; setGoal("well-goal", ok, ok ? `성공! n=1 ${sgn(a, 1)}, n=2 ${sgn(b, 1)} meV — 마디 자리를 비워 두었다` : `n=1 ${sgn(a, 1)} (목표 +15±1.5) · n=2 ${sgn(b, 1)} (목표 0±1.5)`); }
+      else setGoal("well-goal", false, "버튼을 눌러 시작");
+    };
+    const cv = SB.canvas("cv-well", (ctx, w, h, self) => {
+      const P = pal(); if (!st.res) solve();
+      const top = { x: 52, y: 26, w: w - 66, h: h * 0.4 - 30 };
+      const chV = SB.chart(ctx, top, { x: [0, L], y: [-70, 70], yLabel: "V (meV)", yTicks: [-60, 0, 60], xTicks: [0, 2, 4, 6, 8, 10] });
+      self._chV = chV;
+      const xs = [], vs = []; for (let i = 0; i <= 200; i++) { const x = (L * i) / 200; xs.push(x); vs.push(Vx(x)); }
+      clip(ctx, chV);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.beginPath(); ctx.moveTo(chV.X(0), chV.Y(0)); xs.forEach((x, i) => ctx.lineTo(chV.X(x), chV.Y(vs[i]))); ctx.lineTo(chV.X(L), chV.Y(0)); ctx.closePath(); ctx.fill();
+      line(ctx, chV, xs, vs, P.accent, 2.4);
+      ctx.restore();
+      self._hs = [];
+      for (let k = 0; k < NK; k++) { const X = chV.X((L * k) / (NK - 1)), Y = chV.Y(st.v[k]); handle(ctx, X, Y, P.accent, 9); self._hs.push([X, Y]); }
+      SB.label(ctx, "섭동 V(x) — 손잡이를 끌어라", 12, 12, { align: "left", bold: true, size: 12 });
+      const by = h * 0.4 + 40, bh = h - by - 40, wl = Math.max(150, (w - 40) * 0.56);
+      const r = st.res[st.n - 1];
+      const amp = Math.max(...Array.from(r.psi, Math.abs)) * 1.15;
+      const chP = SB.chart(ctx, { x: 52, y: by, w: wl - 52, h: bh }, { x: [0, L], y: [-amp, amp], xLabel: "x (nm)", yLabel: "ψ", yTicks: [0], xTicks: [0, 5, 10] });
+      const x2 = Array.from(xg), p0 = x2.map((_, i) => phi[st.n - 1][i]), sg = Math.sign(r.psi.reduce((s, v, i) => s + v * p0[i], 0)) || 1;
+      clip(ctx, chP);
+      line(ctx, chP, x2, p0, P.dim, 1.4, [4, 4]);
+      if (document.getElementById("well-psi1").checked) { const p1 = x2.map((_, i) => { let s = phi[st.n - 1][i]; for (let m = 0; m < NB; m++) s += r.c[m] * phi[m][i]; return s; }); line(ctx, chP, x2, p1, P.accent, 2, [2, 2]); }
+      line(ctx, chP, x2, Array.from(r.psi, (v) => sg * v), P.green, 2.2);
+      ctx.restore();
+      SB.label(ctx, `ψ${st.n}: 회색 0차 · 자홍 점선 1차 · 초록 정확`, 56, by - 8, { align: "left", size: 10, color: P.dim });
+      // 이동 사다리
+      const all = []; st.res.forEach((q) => all.push(q.e1, q.e1 + q.e2, q.exact, 0));
+      let lo = Math.min(...all), hi = Math.max(...all); const pad = Math.max(2, 0.15 * (hi - lo)); lo -= pad; hi += pad;
+      const chS = SB.chart(ctx, { x: wl + 40, y: by, w: w - wl - 52, h: bh }, { x: [0.4, 4.6], y: [lo, hi], xLabel: "준위 n", yLabel: "ΔE (meV)", xTicks: [1, 2, 3, 4] });
+      self._chS = chS;
+      st.res.forEach((q, i) => {
+        const n = i + 1, X0 = chS.X(n - 0.32), X1 = chS.X(n + 0.32), sel = n === st.n;
+        const bar = (y, col, wd, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = wd; if (dash) ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(X0, chS.Y(y)); ctx.lineTo(X1, chS.Y(y)); ctx.stroke(); ctx.restore(); };
+        bar(0, P.dim, 1.2); bar(q.e1, P.accent, 1.6, [4, 3]); bar(q.e1 + q.e2, P.accent, sel ? 3.4 : 2.4); bar(q.exact, P.green, sel ? 2.2 : 1.6);
+      });
+    }, { aspect: 0.66, minHeight: 380, maxHeight: 520 });
+    SB.drag(cv, { handles: () => (cv._hs || []).map((p, k) => ({ id: k, x: p[0], y: p[1], r: 13 })),
+      move: (id, x, y) => { if (id == null) return; const ch = cv._chV, v = 70 - ((y - ch.box.y) / ch.box.h) * 140; st.v[id] = Math.round(SB.clamp(v, -60, 60)); solve(); } });
+    SB.seg("well-n", (v) => { st.n = +v; solve(); cv.redraw(); });
+    SB.seg("well-pre", (v) => { st.v = PRE[v].slice(); solve(); cv.redraw(); });
+    document.getElementById("well-psi1").addEventListener("change", () => cv.redraw());
+    document.getElementById("well-game").addEventListener("click", () => { st.game = true; st.v = PRE.zero.slice(); solve(); cv.redraw(); });
+    solve();
+  }
+
+  /* ---------------------------------------------------------- 미니: 점근 급수 */
+  {
+    const CO = [0.5, 0.75, -2.625, 20.8125, -241.2890625, 3580.98046875, -63982.8134765625, 1329733.72705078, -31448214.6927795];
+    const NG = 700, XM = 6, dx = (2 * XM) / (NG + 1), xg = Array.from({ length: NG }, (_, i) => -XM + (i + 1) * dx);
+    const exactE = (g) => QM.eigen1D(Float64Array.from(xg, (x) => 0.5 * x * x + g * x ** 4), dx, { m: 2 * C, n: 1, vectors: false }).E[0];
+    let cache = {};
+    const getG = SB.range("asym-g", (v) => (+v).toFixed(3), () => cv.redraw());
+    const cv = SB.canvas("cv-asym", (ctx, w, h) => {
+      const P = pal(), g = getG(); const key = g.toFixed(3); const E = cache[key] ?? (cache[key] = exactE(g));
+      const S = []; let s = 0; CO.forEach((c, k) => { s += c * g ** k; S.push(s); });
+      const span = Math.max(0.06, 0.6 * g);
+      const ch = SB.chart(ctx, { x: 56, y: 22, w: w - 70, h: h - 64 }, { x: [-0.6, 8.6], y: [E - span, E + span], xLabel: "더한 차수 k", yLabel: "S_k (ħω)", xTicks: [0, 1, 2, 3, 4, 5, 6, 7, 8] });
+      let best = 0; S.forEach((v, k) => { if (Math.abs(v - E) < Math.abs(S[best] - E)) best = k; });
+      S.forEach((v, k) => {
+        const yv = SB.clamp(v, E - span, E + span), X = ch.X(k), bw = Math.max(6, ch.box.w / 9 * 0.55);
+        ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = k === best ? P.accent : P.dim; ctx.lineWidth = k === best ? 2.6 : 1.2;
+        const y0 = ch.Y(E - span), y1 = ch.Y(yv); ctx.fillRect(X - bw / 2, y1, bw, y0 - y1); ctx.strokeRect(X - bw / 2, y1, bw, y0 - y1);
+        if (v > E + span || v < E - span) SB.label(ctx, v > 0 ? "↑" : "↓", X, v > 0 ? ch.box.y + 10 : ch.box.y + ch.box.h - 10, { size: 12, color: P.bad });
+      });
+      ctx.strokeStyle = P.green; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(E)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(E)); ctx.stroke();
+      SB.label(ctx, `정확 E₀ = ${E.toFixed(5)}`, ch.box.x + ch.box.w - 4, ch.Y(E) - 10, { align: "right", size: 11, color: P.green });
+      document.getElementById("asym-r").textContent = `g = ${g.toFixed(3)} · 최선 k = ${best}: S = ${S[best].toFixed(5)} (오차 ${(((S[best] - E) / E) * 100).toFixed(2)}%)`;
+    }, { aspect: 0.48, minHeight: 230, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 2준위 2차 섭동 */
+  SB.drill("drill-pt", () => {
+    const D = 20 + 10 * Math.floor(Math.random() * 19), V = +(D * (0.05 + Math.random() * 0.3)).toFixed(1);
+    const pt = (V * V) / D, ex = Math.sqrt((D * D) / 4 + V * V) - D / 2;
+    return { q: `<p>간격 \\(\\Delta = ${D}\\) meV인 두 준위를 결합 \\(|V_{12}| = ${V}\\) meV가 잇는다. 아래 준위의 (a) 2차 섭동 이동과 (b) 정확한 이동을 meV로 구하라(내려가는 양을 양수로).</p>`,
+      answer: [pt, ex], label: ["2차 =", "정확 ="], unit: ["meV", "meV"], tol: "1%",
+      sol: `(a) \\(|V|^2/\\Delta = ${V}^2/${D} = ${pt.toFixed(3)}\\) meV. (b) \\(\\sqrt{\\Delta^2/4 + |V|^2} - \\Delta/2 = ${ex.toFixed(3)}\\) meV. 비 \\(|V|/\\Delta = ${(V / D).toFixed(2)}\\)에서 오차 ${(((pt - ex) / ex) * 100).toFixed(1)}%.` };
+  });
+
+  /* ---------------------------------------------------------- 미니: 축퇴 부분 공간의 좋은 상태 */
+  {
+    let dl = 0.6, ww = 0.4;
+    const cv = SB.canvas("cv-rot", (ctx, w, h, self) => {
+      const P = pal(), s = Math.min(h - 50, (w - 60) / 2.2), cx = 24 + s / 2, cy = 18 + s / 2, R = s / 2;
+      ctx.strokeStyle = P.border || P.dim; ctx.lineWidth = 1; ctx.strokeRect(cx - R, cy - R, s, s);
+      ctx.strokeStyle = P.dim; ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R); ctx.stroke();
+      SB.label(ctx, "δ (대각 차)", cx + R - 4, cy + 12, { align: "right", size: 10, color: P.dim }); SB.label(ctx, "w (비대각)", cx + 6, cy - R + 10, { align: "left", size: 10, color: P.dim });
+      const hx = cx + dl * R, hy = cy - ww * R; self._h = [hx, hy]; self._g = [cx, cy, R];
+      ctx.strokeStyle = P.accent; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(hx, hy); ctx.stroke(); ctx.setLineDash([]);
+      handle(ctx, hx, hy, P.accent, 10);
+      const e = eig2(dl / 2, ww, -dl / 2), th = e.th;
+      const qx = cx + R + 40 + s / 2 + 10, qy = cy, Q = R * 0.85;
+      ctx.strokeStyle = P.dim; ctx.beginPath(); ctx.arc(qx, qy, Q, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(qx - Q - 8, qy); ctx.lineTo(qx + Q + 8, qy); ctx.moveTo(qx, qy - Q - 8); ctx.lineTo(qx, qy + Q + 8); ctx.stroke();
+      SB.label(ctx, "|1⟩", qx + Q + 10, qy + 12, { size: 11, color: P.dim }); SB.label(ctx, "|2⟩", qx + 12, qy - Q - 6, { size: 11, color: P.dim });
+      SB.arrow(ctx, qx, qy, qx + Q * Math.cos(th), qy - Q * Math.sin(th), { color: P.accent, width: 3, label: "위" });
+      SB.arrow(ctx, qx, qy, qx - Q * Math.sin(th), qy - Q * Math.cos(th), { color: P.accent2, width: 3, label: "아래" });
+      const deg = (th * 180) / Math.PI;
+      document.getElementById("rot-r").textContent = `θ = ${deg.toFixed(1)}° · E⁽¹⁾ = ±${(e.hi).toFixed(3)} · 위 상태 = ${Math.cos(th).toFixed(2)}|1⟩ ${Math.sin(th) < 0 ? "−" : "+"} ${Math.abs(Math.sin(th)).toFixed(2)}|2⟩`;
+    }, { aspect: 0.46, minHeight: 210, maxHeight: 300 });
+    SB.drag(cv, { handles: () => [{ id: "p", x: cv._h[0], y: cv._h[1], r: 14 }], move: (id, x, y) => { const [cx, cy, R] = cv._g; dl = SB.clamp((x - cx) / R, -1, 1); ww = SB.clamp(-(y - cy) / R, -1, 1); if (Math.hypot(dl, ww) < 0.02) dl = 0.02; } });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 2차원 상자 축퇴 쪼개기 */
+  {
+    const L = 10, M = 0.067, G = 64, d = L / G, WB = 0.8, E0 = ((5 * C) / M) * (Math.PI / L) ** 2 * 1000;
+    const a12 = new Float64Array(G * G), a21 = new Float64Array(G * G);
+    for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) { const x = (i + 0.5) * d, y = (j + 0.5) * d, k = j * G + i; a12[k] = (2 / L) * Math.sin((Math.PI * x) / L) * Math.sin((2 * Math.PI * y) / L); a21[k] = (2 / L) * Math.sin((2 * Math.PI * x) / L) * Math.sin((Math.PI * y) / L); }
+    const st = { mode: "bump", p: [3.0, 2.2], game: false, r: null };
+    const getA = SB.range("box-a", (v) => (st.mode === "bump" ? (2 * v).toFixed(0) + " meV" : st.mode === "quad" ? (0.5 * v).toFixed(1) + " meV" : (0.1 * v).toFixed(1) + " %"), () => { calc(); draw(); });
+    const calc = () => {
+      const A = getA();
+      let W11 = 0, W22 = 0, W12 = 0, sh = null;
+      if (st.mode === "bump") {
+        const amp = 2 * A;
+        for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) { const x = (i + 0.5) * d, y = (j + 0.5) * d, k = j * G + i, v = amp * Math.exp(-((x - st.p[0]) ** 2 + (y - st.p[1]) ** 2) / (2 * WB * WB)); W11 += a12[k] * a12[k] * v; W22 += a21[k] * a21[k] * v; W12 += a12[k] * a21[k] * v; }
+        W11 *= d * d; W22 *= d * d; W12 *= d * d;
+      } else if (st.mode === "quad") { const V0 = 0.5 * A; W11 = W22 = V0 / 4; W12 = ((16 / (9 * Math.PI * Math.PI)) * V0); }
+      else { const del = 0.001 * A, Lx = L * (1 + del), f = (C / M) * Math.PI * Math.PI * 1000; W11 = f * (1 / (Lx * Lx) + 4 / (L * L)) - E0; W22 = f * (4 / (Lx * Lx) + 1 / (L * L)) - E0; W12 = 0; sh = del; }
+      const e = eig2(W11, W12, W22);
+      st.r = { W11, W22, W12, e, sh };
+      SB.stat("box-w", `[${W11.toFixed(2)}, ${W12.toFixed(2)}; ${W12.toFixed(2)}, ${W22.toFixed(2)}]`);
+      SB.stat("box-e", `${sgn(e.lo, 2)} · ${sgn(e.hi, 2)} meV (갈라짐 ${(e.hi - e.lo).toFixed(2)})`);
+      const c = Math.cos(e.th), s = Math.sin(e.th);
+      SB.stat("box-s", `ψ₊ = ${c.toFixed(2)}ψ₁₂ ${s < 0 ? "−" : "+"} ${Math.abs(s).toFixed(2)}ψ₂₁`);
+      if (st.game) { const sp = e.hi - e.lo, ok = st.mode === "bump" && Math.abs(sp - 10) <= 0.3; setGoal("box-goal", ok, ok ? `성공! 갈라짐 ${sp.toFixed(2)} meV` : st.mode !== "bump" ? "가우스 혹 모드에서 도전" : `갈라짐 ${sp.toFixed(2)} meV (목표 10.0 ± 0.3)`); }
+      else setGoal("box-goal", false, "버튼을 눌러 시작");
+    };
+    const cvB = SB.canvas("cv-box", (ctx, w, h, self) => {
+      const P = pal(); if (!st.r) calc();
+      const s = Math.min((w - 30) / 2, h - 46), y0 = 30; self._sq = [];
+      const { e } = st.r, c = Math.cos(e.th), sn = Math.sin(e.th);
+      [[-sn, c, "ψ₋ (아래)"], [c, sn, "ψ₊ (위)"]].forEach(([p, q, lab], t) => {
+        const x0 = 10 + t * (s + 10);
+        const vals = new Float64Array(G * G); for (let k = 0; k < G * G; k++) vals[k] = (p * a12[k] + q * a21[k]) ** 2;
+        QM.heatmap(ctx, vals, G, G, { x: x0, y: y0, w: s, h: s }, { cmap: "seq", vmin: 0 });
+        ctx.strokeStyle = P.border || P.dim; ctx.strokeRect(x0, y0, s, s);
+        SB.label(ctx, lab, x0 + s / 2, y0 - 12, { size: 11, bold: true });
+        self._sq.push([x0, y0, s]);
+        if (st.mode === "bump") { const hx = x0 + (st.p[0] / L) * s, hy = y0 + s - (st.p[1] / L) * s; ctx.strokeStyle = "#fff"; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(hx, hy, (WB / L) * s * 2, 0, 7); ctx.stroke(); ctx.setLineDash([]); handle(ctx, hx, hy, P.accent, 9); }
+        if (st.mode === "quad") { ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0 + s / 2, s / 2, s / 2); ctx.lineWidth = 1; }
+      });
+    }, { aspect: 0.56, minHeight: 200, maxHeight: 330 });
+    const cvE = SB.canvas("cv-boxE", (ctx, w, h) => {
+      const P = pal(); if (!st.r) calc();
+      const { e } = st.r, lo = Math.min(0, e.lo) - 2, hi = Math.max(1, e.hi) + 3;
+      const ch = SB.chart(ctx, { x: 58, y: 18, w: w - 70, h: h - 50 }, { x: [0, 3], y: [lo, hi], yLabel: "1차 이동 (meV)", xTicks: [] });
+      const bar = (x0, x1, y, col, wd, lab) => { ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath(); ctx.moveTo(ch.X(x0), ch.Y(y)); ctx.lineTo(ch.X(x1), ch.Y(y)); ctx.stroke(); if (lab) SB.label(ctx, lab, ch.X(x1) + 4, ch.Y(y), { align: "left", size: 10, color: col }); };
+      bar(0.2, 1.0, 0, P.dim, 3, "");
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(1.0), ch.Y(0)); ctx.lineTo(ch.X(1.6), ch.Y(e.hi)); ctx.moveTo(ch.X(1.0), ch.Y(0)); ctx.lineTo(ch.X(1.6), ch.Y(e.lo)); ctx.stroke(); ctx.setLineDash([]);
+      bar(1.6, 2.4, e.hi, P.accent, 3, "ψ₊"); bar(1.6, 2.4, e.lo, P.accent2, 3, "ψ₋");
+      SB.label(ctx, `E⁽⁰⁾ = ${E0.toFixed(1)} meV (2겹)`, ch.X(0.6), ch.Y(0) - 12, { size: 10, color: P.dim });
+    }, { aspect: 0.56, minHeight: 200, maxHeight: 330 });
+    const draw = () => { cvB.redraw(); cvE.redraw(); };
+    SB.drag(cvB, { handles: () => { if (st.mode !== "bump" || !cvB._sq) return []; return cvB._sq.map(([x0, y0, s], t) => ({ id: t, x: x0 + (st.p[0] / L) * s, y: y0 + s - (st.p[1] / L) * s, r: 14 })); },
+      move: (id, x, y) => { if (id == null) return; const [x0, y0, s] = cvB._sq[id]; st.p = [SB.clamp(((x - x0) / s) * L, 0.3, L - 0.3), SB.clamp(((y0 + s - y) / s) * L, 0.3, L - 0.3)]; calc(); cvE.redraw(); } });
+    SB.seg("box-mode", (v) => { st.mode = v; getA.set(getA(), true); calc(); draw(); });
+    document.getElementById("box-game").addEventListener("click", () => { st.game = true; if (st.mode !== "bump") { st.mode = "bump"; document.querySelectorAll("#box-mode button").forEach((b) => b.classList.toggle("on", b.dataset.value === "bump")); } st.p = [5, 5]; calc(); draw(); });
+    calc();
+  }
+
+  /* ---------------------------------------------------------- 미니: 수소 n=2 좋은 상태 */
+  {
+    const G = 90, R = 16;
+    const getF = SB.range("st2-f", (v) => (+v).toFixed(1) + "×10⁶ V/m", () => cv.redraw());
+    const dens = [0, 1].map((t) => { const a = new Float64Array(G * G); for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) { const x = -R + (2 * R * (i + 0.5)) / G, z = -R + (2 * R * (j + 0.5)) / G, r = Math.hypot(x, z), s2 = (2 - r) * Math.exp(-r / 2), p0 = z * Math.exp(-r / 2), psi = (s2 + (t === 0 ? -1 : 1) * p0) / Math.SQRT2; a[j * G + i] = Math.abs(psi); } return a; });
+    const vmx = 0.45 * Math.max(...dens[0]);
+    const cv = SB.canvas("cv-stark2", (ctx, w, h) => {
+      const P = pal(), F = getF() * 1e6, s = Math.min((w - 40) / 2, h - 50), y0 = 30, E = 3 * A0 * F * 1e-9 * 1000;
+      [["|+⟩ = (2s − 2p₀)/√2", +E, 0], ["|−⟩ = (2s + 2p₀)/√2", -E, 1]].forEach(([lab, e, t], k) => {
+        const x0 = 14 + k * (s + 12);
+        QM.heatmap(ctx, dens[t], G, G, { x: x0, y: y0, w: s, h: s }, { cmap: "seq", vmin: 0, vmax: vmx });
+        ctx.strokeStyle = P.border || P.dim; ctx.strokeRect(x0, y0, s, s);
+        SB.label(ctx, lab, x0 + s / 2, y0 - 12, { size: 11, bold: true });
+        SB.label(ctx, `ΔE = ${sgn(e, 3)} meV · ⟨z⟩ = ${t === 0 ? "+" : "−"}3a₀`, x0 + s / 2, y0 + s + 12, { size: 10, color: P.dim });
+        const cx = x0 + s / 2, cy = y0 + s / 2, dz = (3 / R) * (s / 2) * (t === 0 ? -1 : 1);
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx, cy, 3, 0, 7); ctx.fill();
+        SB.arrow(ctx, cx, cy, cx, cy + dz, { color: "#fff", width: 2 });
+        if (F > 0) SB.arrow(ctx, x0 + s - 14, y0 + s - 10, x0 + s - 14, y0 + 14, { color: P.warn, width: 2.5, label: "F" });
+      });
+    }, { aspect: 0.52, minHeight: 220, maxHeight: 330 });
+    const upd = () => { const F = getF() * 1e6, E = 3 * A0 * F * 1e-9 * 1000; document.getElementById("st2-r").textContent = `±3ea₀F = ±${E.toFixed(3)} meV · 2p±1은 이동 없음`; };
+    document.getElementById("st2-f").addEventListener("input", upd); upd();
+  }
+
+  /* ---------------------------------------------------------- tangle: 편극률 */
+  SB.tangle("tg-pol", (v) => {
+    const F = Math.pow(10, v.p), alpha = 4.5 * 4 * Math.PI * K.eps0 * (A0 * 1e-9) ** 3, q = (0.5 * alpha * F * F) / K.e, l = 3 * A0 * F * 1e-9, d = (4.5 * F) / 5.14220674e11;
+    const fmt = (eV) => (eV >= 1e-3 ? (eV * 1e3).toFixed(2) + " meV" : eV >= 1e-6 ? (eV * 1e6).toFixed(2) + " µeV" : (eV * 1e9).toFixed(2) + " neV");
+    return { F: sci(F, 1) + " V/m", q: fmt(q), l: fmt(l), d: d < 0.01 ? sci(d, 2) : d.toFixed(3), msg: F < 2.85e5 ? "이 장은 미세 구조(45 µeV)보다 작은 슈타르크 갈라짐을 만든다 — n=2도 2차 효과에 가깝다." : F < 5e9 ? `원자 내부 전기장 5.1×10¹¹ V/m의 ${((F / 5.14e11) * 100).toFixed(F < 5.14e8 ? 3 : 2)}%라 섭동이 잘 맞는다.` : "원자 내부 전기장의 1%를 넘었다. 고차 항과 터널 이온화가 중요해진다." };
+  }, { fmt: { p: (x) => x.toFixed(1) } });
+
+  /* ---------------------------------------------------------- 시뮬레이터: QCSE */
+  {
+    const DEC = 0.24, DEV = 0.13, ME = 0.067, MH = 0.35, EG = 1.424, B = 6, NG = 340;
+    const st = { L: 10, F: 60, game: false, base: null, curve: null };
+    const grid = (L) => { const a = -L / 2 - B, dx = (L + 2 * B) / (NG + 1); return { dx, x: Float64Array.from({ length: NG }, (_, i) => a + (i + 1) * dx) }; };
+    const pick = (res, x, L, dx) => { for (let k = 0; k < res.E.length; k++) { let s = 0; const p = res.psi[k]; for (let i = 0; i < NG; i++) if (Math.abs(x[i]) <= L / 2 + 0.5) s += p[i] * p[i] * dx; if (s > 0.5) return k; } return 0; };
+    const solve = (L, Fk) => {
+      const { dx, x } = grid(L), f = Fk * 1e-4, Ve = new Float64Array(NG), Vh = new Float64Array(NG);
+      for (let i = 0; i < NG; i++) { const out = Math.abs(x[i]) > L / 2; Ve[i] = (out ? DEC : 0) + f * x[i]; Vh[i] = (out ? DEV : 0) - f * x[i]; }
+      const re = QM.eigen1D(Ve, dx, { m: ME, n: 3 }), rh = QM.eigen1D(Vh, dx, { m: MH, n: 3 }), ke = pick(re, x, L, dx), kh = pick(rh, x, L, dx);
+      let ov = 0; for (let i = 0; i < NG; i++) ov += re.psi[ke][i] * rh.psi[kh][i] * dx;
+      return { x, dx, Ve, Vh, Ee: re.E[ke], Eh: rh.E[kh], pe: re.psi[ke], ph: rh.psi[kh], ov: ov * ov };
+    };
+    const ptCoef = (L) => { // F=0 상태로 2차 섭동 계수 (eV per (eV/nm)²)
+      const { dx, x } = grid(L), co = [];
+      [[DEC, ME], [DEV, MH]].forEach(([dV, m]) => {
+        const V = Float64Array.from(x, (xx) => (Math.abs(xx) > L / 2 ? dV : 0)), r = QM.eigen1D(V, dx, { m, n: 40 });
+        let s = 0; for (let k = 1; k < r.E.length; k++) { let xm = 0; for (let i = 0; i < NG; i++) xm += r.psi[0][i] * x[i] * r.psi[k][i] * dx; s += (xm * xm) / (r.E[0] - r.E[k]); }
+        co.push(s);
+      });
+      return co;
+    };
+    const rebuild = () => {
+      st.base = solve(st.L, 0); st.co = ptCoef(st.L); st.curve = [];
+      for (let F = 0; F <= 120; F += 6) { const r = solve(st.L, F); st.curve.push([F, (r.Ee - st.base.Ee + r.Eh - st.base.Eh) * 1000, r.ov]); }
+    };
+    let cur = null;
+    const update = () => {
+      cur = solve(st.L, st.F);
+      const de = (cur.Ee - st.base.Ee) * 1000, dh = (cur.Eh - st.base.Eh) * 1000, Et = EG + cur.Ee + cur.Eh;
+      SB.stat("qc-sh", `${sgn(de, 2)} · ${sgn(dh, 2)} (합 ${sgn(de + dh, 2)})`);
+      SB.stat("qc-E", `${Et.toFixed(4)} eV · ${(1239.84 / Et).toFixed(1)} nm`);
+      SB.stat("qc-ov", `${cur.ov.toFixed(3)} (F=0: ${st.base.ov.toFixed(3)})`);
+      if (st.game) { const ok = -(de + dh) >= 15 && cur.ov >= 0.6; setGoal("qc-goal", ok, ok ? `성공! 이동 ${(-(de + dh)).toFixed(1)} meV, 겹침 ${cur.ov.toFixed(2)} (L = ${st.L} nm, F = ${st.F} kV/cm)` : `이동 ${(-(de + dh)).toFixed(1)} meV · 겹침 ${cur.ov.toFixed(2)}`); }
+      else setGoal("qc-goal", false, "버튼을 눌러 시작");
+    };
+    const getL = SB.range("qc-L", (v) => (+v).toFixed(1) + " nm", (v) => { st.L = +v; rebuild(); update(); cvA.redraw(); cvB.redraw(); });
+    const getF = SB.range("qc-F", (v) => (+v).toFixed(0) + " kV/cm", (v) => { st.F = +v; update(); cvA.redraw(); cvB.redraw(); });
+    st.L = getL(); st.F = getF(); rebuild(); update();
+    const cvA = SB.canvas("cv-qcse", (ctx, w, h, self) => {
+      const P = pal(), r = cur, L = st.L, xm = L / 2 + B, f = st.F * 1e-4;
+      const hh = (h - 30) / 2;
+      const chE = SB.chart(ctx, { x: 46, y: 22, w: w - 74, h: hh - 30 }, { x: [-xm, xm], y: [-0.2, 0.42], yLabel: "전도띠 (eV)", xTicks: [], yTicks: [0, 0.2, 0.4] });
+      const chH = SB.chart(ctx, { x: 46, y: hh + 10, w: w - 74, h: hh - 24 }, { x: [-xm, xm], y: [0.32, -0.2], xLabel: "z (nm)", yLabel: "원자가띠", yTicks: [0, 0.2] });
+      self._ch = chE;
+      const xs = Array.from(r.x);
+      clip(ctx, chE); line(ctx, chE, xs, Array.from(r.Ve), P.accent2, 2.4);
+      const ae = 0.08 / Math.max(...Array.from(r.pe, (v) => v * v)); line(ctx, chE, xs, xs.map((_, i) => r.Ee + ae * r.pe[i] * r.pe[i]), P.accent, 2);
+      ctx.strokeStyle = P.accent; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(chE.X(-xm), chE.Y(r.Ee)); ctx.lineTo(chE.X(xm), chE.Y(r.Ee)); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+      clip(ctx, chH); line(ctx, chH, xs, Array.from(r.Vh), P.accent2, 2.4);
+      const ah = 0.08 / Math.max(...Array.from(r.ph, (v) => v * v)); line(ctx, chH, xs, xs.map((_, i) => r.Eh + ah * r.ph[i] * r.ph[i]), P.warn, 2);
+      ctx.strokeStyle = P.warn; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(chH.X(-xm), chH.Y(r.Eh)); ctx.lineTo(chH.X(xm), chH.Y(r.Eh)); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+      SB.label(ctx, `E_g = ${EG} eV 생략`, w - 30, hh + 2, { align: "right", size: 10, color: P.dim });
+      const hx = chE.X(xm) + 14, hy = chE.Y(SB.clamp(DEC + f * xm, -0.2, 0.42)); self._h = [hx, hy];
+      handle(ctx, hx, hy, P.accent, 10);
+      SB.label(ctx, `F = ${st.F} kV/cm`, 12, 12, { align: "left", bold: true, size: 12 });
+    }, { aspect: 0.95, minHeight: 300, maxHeight: 460 });
+    const cvB = SB.canvas("cv-qcseF", (ctx, w, h) => {
+      const P = pal(), cu = st.curve, mn = Math.min(-5, ...cu.map((c) => c[1])) * 1.1;
+      const hh = (h - 20) * 0.62;
+      const ch = SB.chart(ctx, { x: 54, y: 22, w: w - 66, h: hh - 30 }, { x: [0, 120], y: [mn, 1], yLabel: "적색 이동 (meV)", xTicks: [] });
+      const xs = cu.map((c) => c[0]);
+      if (document.getElementById("qc-pt").checked) { const fs = []; for (let F = 0; F <= 120; F += 2) fs.push(F); line(ctx, ch, fs, fs.map((F) => (st.co[0] + st.co[1]) * (F * 1e-4) ** 2 * 1000), P.accent2, 1.8, [6, 4]); }
+      line(ctx, ch, xs, cu.map((c) => c[1]), P.accent, 2.6);
+      const de = (cur.Ee - st.base.Ee + cur.Eh - st.base.Eh) * 1000;
+      ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(st.F), ch.Y(de), 5, 0, 7); ctx.fill();
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(-15)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(-15)); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "−15 meV", ch.box.x + ch.box.w - 4, ch.Y(-15) - 8, { align: "right", size: 10, color: P.dim });
+      const ch2 = SB.chart(ctx, { x: 54, y: hh + 8, w: w - 66, h: h - hh - 50 }, { x: [0, 120], y: [0, 1.05], xLabel: "F (kV/cm)", yLabel: "겹침²", yTicks: [0, 0.5, 1] });
+      line(ctx, ch2, xs, cu.map((c) => c[2]), P.warn, 2.2);
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch2.box.x, ch2.Y(0.6)); ctx.lineTo(ch2.box.x + ch2.box.w, ch2.Y(0.6)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(ch2.X(st.F), ch2.Y(cur.ov), 5, 0, 7); ctx.fill();
+    }, { aspect: 0.95, minHeight: 300, maxHeight: 460 });
+    SB.drag(cvA, { handles: () => [{ id: "F", x: cvA._h[0], y: cvA._h[1], r: 14 }], move: (id, x, y) => { const ch = cvA._ch, E = 0.42 - ((y - ch.box.y) / ch.box.h) * 0.62, xm = st.L / 2 + B; const F = Math.round(SB.clamp(((E - DEC) / xm) * 1e4, 0, 120)); getF.set(F); } });
+    document.getElementById("qc-pt").addEventListener("change", () => cvB.redraw());
+    document.getElementById("qc-game").addEventListener("click", () => { st.game = true; update(); });
+  }
+
+  /* ---------------------------------------------------------- 시뮬레이터: 미세 구조 */
+  {
+    const LN = "spdf", st = { n: 2, Z: 1, sel: null, game: false };
+    const parts = (n, l, j, Z) => { const En = (-RY * Z * Z) / (n * n), u = (En * En) / (2 * MEC2) * 1e6; return { rel: -u * ((4 * n) / (l + 0.5) - 3), so: l === 0 ? 0 : (2 * n * u * (j * (j + 1) - l * (l + 1) - 0.75)) / (l * (l + 0.5) * (l + 1)), dar: l === 0 ? 4 * n * u : 0, u }; };
+    const jstr = (j) => ({ 0.5: "₁/₂", 1.5: "₃/₂", 2.5: "₅/₂", 3.5: "₇/₂" }[j]);
+    const levels = () => {
+      const on = { rel: document.getElementById("fs-rel").checked, so: document.getElementById("fs-so").checked, d: document.getElementById("fs-d").checked }, out = [];
+      for (let l = 0; l < st.n; l++) for (const j of l === 0 ? [0.5] : [l - 0.5, l + 0.5]) { const p = parts(st.n, l, j, st.Z); out.push({ l, j, p, E: (on.rel ? p.rel : 0) + (on.so ? p.so : 0) + (on.d ? p.dar : 0), lab: `${st.n}${LN[l]}${on.so ? jstr(j) : ""}` }); }
+      return { out, on };
+    };
+    const stats = () => {
+      const { out } = levels(); if (!st.sel || st.sel.l >= st.n) st.sel = { l: Math.min(1, st.n - 1), j: st.n > 1 ? 0.5 : 0.5 };
+      const q = out.find((o) => o.l === st.sel.l && Math.abs(o.j - st.sel.j) < 1e-9) || out[0];
+      SB.stat("fs-sel", `${st.n}${LN[q.l]}${jstr(q.j)} (Z = ${st.Z}): ${fx(q.E, 2)} µeV`);
+      SB.stat("fs-parts", `${fx(q.p.rel, 2)} · ${sgn(q.p.so, 2)} · ${sgn(q.p.dar, 2)}`);
+      const sp = 4 * (st.n - 1) * q.p.u; SB.stat("fs-split", st.n === 1 ? "j = ½ 하나뿐" : `${sp >= 1000 ? (sp / 1000).toFixed(3) + " meV" : sp.toFixed(2) + " µeV"} = ${((sp * 1e-6) / HEV / 1e9).toFixed(2)} GHz`);
+      if (st.game) { const s2 = 4 * parts(2, 1, 0.5, st.Z).u; const ok = st.Z === 3; setGoal("fs-goal", ok, ok ? `성공! Z = 3 (Li²⁺): 2p 분리 ${(s2 / 1000).toFixed(2)} meV. Z = 2는 ${(4 * parts(2, 1, 0.5, 2).u / 1000).toFixed(3)} meV` : `Z = ${st.Z}: 2p 분리 ${(s2 / 1000).toFixed(3)} meV ${s2 > 1000 ? "— 더 작은 Z도 1 meV를 넘는지 보라" : "— 아직 1 meV 미만"}`); }
+      else setGoal("fs-goal", false, "버튼을 눌러 시작");
+    };
+    const cv = SB.canvas("cv-fs", (ctx, w, h, self) => {
+      const P = pal(), { out, on } = levels(); if (!st.sel) stats();
+      const Es = out.map((o) => o.E).concat([0]), lo = Math.min(...Es), hi = Math.max(...Es), pad = 0.12 * (hi - lo || 1);
+      const ch = SB.chart(ctx, { x: 64, y: 30, w: w - 80, h: h - 70 }, { x: [-0.5, 3.5], y: [lo - pad, hi + pad], yLabel: "이동 (µeV)", xTicks: [], yFmt: (v) => (Math.abs(v) >= 1000 ? (v / 1000).toFixed(1) + "k" : v.toFixed(0)) });
+      ctx.strokeStyle = P.dim; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(ch.box.x, ch.Y(0)); ctx.lineTo(ch.box.x + ch.box.w, ch.Y(0)); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, `보어 E${st.n}`, ch.box.x + ch.box.w - 4, ch.Y(0) - 9, { align: "right", size: 10, color: P.dim });
+      for (let l = 0; l < 4; l++) SB.label(ctx, l < st.n ? LN[l] : "", ch.X(l), ch.box.y + ch.box.h + 14, { bold: true });
+      if (on.rel && on.so && on.d) { const js = [...new Set(out.map((o) => o.j))]; js.forEach((j) => { const g = out.filter((o) => o.j === j); if (g.length > 1) { ctx.strokeStyle = P.accent; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(ch.X(g[0].l), ch.Y(g[0].E)); ctx.lineTo(ch.X(g[g.length - 1].l), ch.Y(g[g.length - 1].E)); ctx.stroke(); ctx.setLineDash([]); } }); }
+      self._spots = [];
+      out.forEach((o) => {
+        const off = on.so && o.l > 0 ? (o.j > o.l ? 0.16 : -0.16) : 0, X0 = ch.X(o.l + off - 0.17), X1 = ch.X(o.l + off + 0.17), Y = ch.Y(o.E), sel = st.sel && st.sel.l === o.l && Math.abs(st.sel.j - o.j) < 1e-9;
+        ctx.strokeStyle = sel ? P.accent : P.accent2; ctx.lineWidth = sel ? 4 : 2.6; ctx.beginPath(); ctx.moveTo(X0, Y); ctx.lineTo(X1, Y); ctx.stroke();
+        SB.label(ctx, o.lab, (X0 + X1) / 2, Y + (o.j > o.l ? -11 : 12), { size: 10, color: sel ? P.accent : P.dim });
+        self._spots.push({ x: (X0 + X1) / 2, y: Y, l: o.l, j: o.j });
+      });
+      SB.label(ctx, `n = ${st.n}, Z = ${st.Z} · 미세 구조 ∝ Z⁴`, 12, 14, { align: "left", bold: true, size: 12 });
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { let best = null, bd = 40; (cv._spots || []).forEach((s) => { const d = Math.hypot(s.x - x, s.y - y); if (d < bd) { bd = d; best = s; } }); if (best) { st.sel = { l: best.l, j: best.j }; stats(); } } });
+    SB.seg("fs-n", (v) => { st.n = +v; st.sel = null; stats(); cv.redraw(); });
+    SB.range("fs-z", (v) => String(v), (v) => { st.Z = +v; stats(); cv.redraw(); });
+    ["fs-rel", "fs-so", "fs-d"].forEach((id) => document.getElementById(id).addEventListener("change", () => { stats(); cv.redraw(); }));
+    document.getElementById("fs-game").addEventListener("click", () => { st.game = true; stats(); });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- tangle: 미세 구조 Z, n */
+  SB.tangle("tg-fs", (v) => {
+    const En = (-RY * v.Z * v.Z) / (v.n * v.n), u = ((En * En) / (2 * MEC2)) * 1e6, d = 4 * (v.n - 1) * u, s = (4 * v.n - 3) * u;
+    const f = (x) => (x >= 1e6 ? (x / 1e6).toFixed(3) + " eV" : x >= 1000 ? (x / 1000).toFixed(3) + " meV" : x.toFixed(2) + " µeV");
+    return { d: v.n === 1 ? "0 (j = ½ 하나뿐)" : f(d), f: v.n === 1 ? "—" : ((d * 1e-6) / HEV / 1e9).toFixed(2) + " GHz", s: f(s), msg: v.Z >= 10 ? "Z가 크면 (Zα)²가 커져 1차 섭동 대신 디랙 방정식의 정확한 해를 써야 한다." : v.n === 1 ? "n = 1에는 j = ½ 하나뿐이라 갈라짐이 없다." : `n = ${v.n}에서 간격은 ${v.Z}⁴ = ${v.Z ** 4}배로 자란다.` };
+  });
+
+  /* ---------------------------------------------------------- 2p 제만: m_j 블록 */
+  const D2P = 45.28259924924656e-6, XI = (2 * D2P) / 3;
+  const zee = (B) => { // 6 준위: {mj, E(eV), vec in |ml,ms>}
+    const b = MUB * B, out = [];
+    out.push({ mj: 1.5, E: XI / 2 + 2 * b, c: [[1, 0.5, 1]] });
+    out.push({ mj: -1.5, E: XI / 2 - 2 * b, c: [[-1, -0.5, 1]] });
+    [[0.5, 1], [-0.5, -1]].forEach(([mj, s]) => {
+      const e = eig2(-XI / 2, XI / Math.SQRT2, s * b), ml1 = s > 0 ? 1 : -1, ms1 = s > 0 ? -0.5 : 0.5;
+      const ch = Math.cos(e.th), sh = Math.sin(e.th);
+      out.push({ mj, E: e.hi, c: [[ml1, ms1, ch], [0, s * 0.5, sh]] });
+      out.push({ mj, E: e.lo, c: [[ml1, ms1, -sh], [0, s * 0.5, ch]] });
+    });
+    return out;
+  };
+  const mjCol = (P, mj) => (Math.abs(mj) > 1 ? P.accent : mj > 0 ? P.accent2 : P.warn);
+
+  /* ---------------------------------------------------------- 시뮬레이터: 제만 지도 */
+  {
+    const st = { B: 0.3, game: false };
+    const getBm = SB.range("zee-bmax", (v) => (+v).toFixed(1) + " T", () => { st.B = Math.min(st.B, getBm()); stats(); cv.redraw(); });
+    const stats = () => {
+      const lv = zee(st.B).sort((a, b) => b.E - a.E);
+      SB.stat("zee-b", `${st.B.toFixed(3)} T · ${((MUB * st.B) / D2P).toFixed(2)}`);
+      const lo = zee(st.B).find((o) => o.mj === 0.5 && o.c[0][2] !== undefined && o.E === Math.min(...zee(st.B).filter((q) => q.mj === 0.5).map((q) => q.E)));
+      SB.stat("zee-mix", `m_j=+½ 아래: |1,−½⟩ ${(lo.c[0][2] ** 2 * 100).toFixed(0)}% · |0,+½⟩ ${(lo.c[1][2] ** 2 * 100).toFixed(0)}%`);
+      SB.stat("zee-E", lv.map((o) => fx(o.E * 1e6, 1)).join(", "));
+      if (st.game) { const ok = Math.abs(st.B - 0.3477) <= 0.01; setGoal("zee-goal", ok, ok ? `성공! B = ${st.B.toFixed(3)} T에서 m_j = −3/2와 m_j = +1/2가 교차 (정확히 0.348 T)` : `B = ${st.B.toFixed(3)} T — 색이 다른 두 곡선이 처음 만나는 곳으로`); }
+      else setGoal("zee-goal", false, "버튼을 눌러 시작");
+    };
+    const cv = SB.canvas("cv-zee", (ctx, w, h, self) => {
+      const P = pal(), Bm = getBm(), NS = 160, Bs = [], L = [[], [], [], [], [], []];
+      for (let i = 0; i <= NS; i++) { const B = (Bm * i) / NS; Bs.push(B); zee(B).forEach((o, k) => L[k].push(o.E * 1e6)); }
+      const all = L.flat(), lo = Math.min(...all), hi = Math.max(...all), pad = 0.08 * (hi - lo);
+      const ch = SB.chart(ctx, { x: 58, y: 24, w: w - 72, h: h - 66 }, { x: [0, Bm], y: [lo - pad, hi + pad], xLabel: "B (T)", yLabel: "E (µeV)" });
+      self._ch = ch;
+      clip(ctx, ch);
+      if (document.getElementById("zee-weak").checked) [[1.5, 4 / 3, XI / 2], [0.5, 4 / 3, XI / 2], [-0.5, 4 / 3, XI / 2], [-1.5, 4 / 3, XI / 2], [0.5, 2 / 3, -XI], [-0.5, 2 / 3, -XI]].forEach(([mj, g, e0]) => line(ctx, ch, [0, Bm], [e0 * 1e6, (e0 + g * mj * MUB * Bm) * 1e6], mjCol(P, mj), 1.2, [5, 4]));
+      if (document.getElementById("zee-strong").checked) [[1, 0.5], [1, -0.5], [0, 0.5], [0, -0.5], [-1, 0.5], [-1, -0.5]].forEach(([ml, ms]) => line(ctx, ch, [0, Bm], [XI * ml * ms * 1e6, (MUB * Bm * (ml + 2 * ms) + XI * ml * ms) * 1e6], mjCol(P, ml + ms), 1.2, [2, 3]));
+      const mjs = zee(0).map((o) => o.mj);
+      L.forEach((ys, k) => line(ctx, ch, Bs, ys, mjCol(P, mjs[k]), 2.6));
+      ctx.restore();
+      ctx.strokeStyle = P.dim; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(st.B), ch.box.y); ctx.lineTo(ch.X(st.B), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      zee(st.B).forEach((o) => { ctx.fillStyle = mjCol(P, o.mj); ctx.beginPath(); ctx.arc(ch.X(st.B), ch.Y(o.E * 1e6), 4.5, 0, 7); ctx.fill(); });
+      if (0.7823 < Bm) { ctx.strokeStyle = P.faint || P.dim; ctx.beginPath(); ctx.moveTo(ch.X(0.7823), ch.box.y + ch.box.h - 8); ctx.lineTo(ch.X(0.7823), ch.box.y + ch.box.h); ctx.stroke(); SB.label(ctx, "B_c", ch.X(0.7823), ch.box.y + ch.box.h - 16, { size: 10, color: P.dim }); }
+      const hx = ch.X(st.B), hy = ch.box.y + 12; self._h = [hx, hy]; handle(ctx, hx, hy, P.accent, 10);
+      SB.label(ctx, "색: |m_j| = 3/2 · +1/2 · −1/2", 12, 12, { align: "left", size: 11, color: P.dim });
+    }, { aspect: 0.6, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { handles: () => [{ id: "B", x: cv._h[0], y: cv._h[1], r: 14 }], move: (id, x) => { const ch = cv._ch; st.B = SB.clamp(((x - ch.box.x) / ch.box.w) * getBm(), 0, getBm()); stats(); } });
+    ["zee-weak", "zee-strong"].forEach((id) => document.getElementById(id).addEventListener("change", () => cv.redraw()));
+    document.getElementById("zee-game").addEventListener("click", () => { st.game = true; getBm.set(1); st.B = 0.05; stats(); cv.redraw(); });
+    stats();
+  }
+
+  /* ---------------------------------------------------------- 미니: 라이먼 α 제만 성분 */
+  {
+    const getB = SB.range("ln-b", (v) => (+v).toFixed(2) + " T", () => cv.redraw());
+    const getPol = SB.seg("ln-pol", () => cv.redraw());
+    const cv = SB.canvas("cv-lines", (ctx, w, h) => {
+      const P = pal(), B = getB(), pol = getPol(), lines = [];
+      zee(B).forEach((s) => [0.5, -0.5].forEach((ms1) => s.c.forEach(([ml, ms, a]) => { if (Math.abs(ms - ms1) > 1e-9) return; const I = a * a; if (I < 1e-4) return; const nu = ((s.E - 2 * ms1 * MUB * B) / HEV) / 1e9; lines.push({ nu, I, q: ml }); })));
+      const shown = lines.filter((l) => pol === "all" || (pol === "pi" ? l.q === 0 : l.q !== 0));
+      const span = Math.max(20, ...lines.map((l) => Math.abs(l.nu))) * 1.12;
+      const ch = SB.chart(ctx, { x: 46, y: 18, w: w - 60, h: h - 60 }, { x: [-span, span], y: [0, 1.1], xLabel: "Δν (GHz)", yLabel: "세기", yTicks: [0, 0.5, 1] });
+      shown.forEach((l) => { ctx.strokeStyle = l.q === 0 ? P.accent : P.accent2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(l.nu), ch.Y(0)); ctx.lineTo(ch.X(l.nu), ch.Y(l.I)); ctx.stroke(); });
+      const pos = []; shown.filter((l) => l.I > 0.01).sort((a, b) => a.nu - b.nu).forEach((l) => { if (!pos.length || l.nu - pos[pos.length - 1] > 0.1) pos.push(l.nu); });
+      document.getElementById("ln-r").textContent = `보이는 가닥 ${pos.length}개 (세기 1% 이상, 0.1 GHz 안은 하나로) · μ_B B/h = ${((MUB * B) / HEV / 1e9).toFixed(2)} GHz`;
+      SB.label(ctx, "π (자홍) · σ (초록)", ch.box.x + 6, ch.box.y + 10, { align: "left", size: 10, color: P.dim });
+    }, { aspect: 0.42, minHeight: 200, maxHeight: 280 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 제만 간격 */
+  SB.tangle("tg-zee", (v) => {
+    const E = Math.abs(v.g) * MUB * v.B, f = E / HEV / 1e9, T = E / KB;
+    return { E: (E * 1e6).toFixed(2) + " µeV", f: f.toFixed(2) + " GHz", T: T >= 1 ? T.toFixed(2) + " K" : (T * 1000).toFixed(0) + " mK", msg: Math.abs(v.g) < 0.05 ? "g ≈ 0이면 자기장으로 스핀을 거의 가를 수 없다." : T < 4.2 ? `액체 헬륨(4.2 K)보다 작은 간격이라 스핀을 열적으로 정렬하려면 ${T < 0.5 ? "희석 냉동기가" : "1 K 아래 냉각이"} 필요하다.` : "액체 헬륨 온도보다 큰 간격이다." };
+  });
+
+  /* ---------------------------------------------------------- 드릴: 랑데 g */
+  SB.drill("drill-lande", () => {
+    const l = Math.floor(Math.random() * 4), j = l === 0 ? 0.5 : l + (Math.random() < 0.5 ? 0.5 : -0.5), nm = Math.round(2 * j + 1), mj = -j + Math.floor(Math.random() * nm), B = +(0.1 + Math.random() * 1.9).toFixed(2);
+    const g = 1 + (j * (j + 1) - l * (l + 1) + 0.75) / (2 * j * (j + 1)), dE = g * MUB * B * mj * 1e6;
+    const fr = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : `${x < 0 ? "-" : ""}\\tfrac{${Math.round(Math.abs(2 * x))}}{2}`);
+    return { q: `<p>\\(l = ${l}\\), \\(s = \\tfrac12\\), \\(j = ${fr(j)}\\) 상태의 랑데 \\(g_J\\)와, \\(B = ${B}\\) T의 약한 장에서 \\(m_j = ${fr(mj)}\\) 준위의 제만 이동(µeV)을 구하라. (\\(\\mu_B = 57.88\\ \\mu\\)eV/T)</p>`,
+      answer: [g, dE], label: ["g_J =", "ΔE ="], unit: ["", "µeV"], tol: "1%",
+      sol: `\\(g_J = 1 + \\frac{${(j * (j + 1)).toFixed(2)} - ${l * (l + 1)} + 0.75}{${(2 * j * (j + 1)).toFixed(2)}} = ${g.toFixed(4)}\\). \\(\\Delta E = g_J\\mu_BBm_j = ${g.toFixed(4)}\\times57.88\\times${B}\\times(${mj}) = ${dE.toFixed(2)}\\ \\mu\\)eV.` };
+  });
+
+  /* ---------------------------------------------------------- 시뮬레이터: 2띠 k·p */
+  {
+    const TG = { GaAs: [0.067, 1.424], InGaAs: [0.041, 0.75], InAs: [0.023, 0.354], InSb: [0.0135, 0.17] };
+    const st = { Eg: 1.0, k: 0.45, tgt: "GaAs" };
+    const getEP = SB.range("kp-ep", (v) => (+v).toFixed(1) + " eV", () => { stats(); cv.redraw(); });
+    const band = (k, Eg, EP) => { const t = C * k * k, r = Math.sqrt((Eg * Eg) / 4 + EP * t); return { c: Eg / 2 + t + r, v: Eg / 2 + t - r, r }; };
+    const sfrac = (k, Eg, EP) => { const b = band(k, Eg, EP), off = Math.sqrt(EP * C) * Math.abs(k), a = b.c - C * k * k; /* (H − E)v = 0 : [(Eg + t − Ec) , off] */ const x = off, y = b.c - (Eg + C * k * k); const n = Math.hypot(x, y) || 1; return (x / n) ** 2; };
+    const stats = () => {
+      const EP = getEP(), m = 1 / (1 + EP / st.Eg), mlh = EP > st.Eg ? 1 / (EP / st.Eg - 1) : Infinity, b = band(st.k, st.Eg, EP), eps = b.c - st.Eg, par = C * st.k * st.k * (1 + EP / st.Eg);
+      SB.stat("kp-m", `${m.toFixed(4)} · ${isFinite(mlh) ? mlh.toFixed(4) : "∞"}`);
+      SB.stat("kp-e", `${(eps * 1000).toFixed(1)} vs ${(par * 1000).toFixed(1)} meV (${(((par - eps) / eps) * 100 || 0).toFixed(1)}%)`);
+      SB.stat("kp-s", `${(sfrac(st.k, st.Eg, EP) * 100).toFixed(1)}% · ${(m * (1 + (2 * eps) / st.Eg)).toFixed(4)} m₀`);
+      const [mt, Er] = TG[st.tgt], ok = Math.abs(m / mt - 1) <= 0.02, need = EP / (1 / mt - 1);
+      setGoal("kp-goal", ok, ok ? `성공! ${st.tgt} m* = ${mt}: 이 E_P에서 E_g = ${st.Eg.toFixed(3)} eV (실제 ${Er} eV)` : `${st.tgt} 목표 m* = ${mt} — 지금 ${m.toFixed(4)} (${m > mt ? "E_g를 낮춰라" : "E_g를 올려라"})`);
+      void need;
+    };
+    const cv = SB.canvas("cv-kp", (ctx, w, h, self) => {
+      const P = pal(), EP = getEP(), KM = 1.0;
+      const ch = SB.chart(ctx, { x: 52, y: 22, w: w - 66, h: h - 62 }, { x: [-KM, KM], y: [-1.6, 2.8], xLabel: "k (nm⁻¹)", yLabel: "E (eV)", yTicks: [-1, 0, 1, 2] });
+      self._ch = ch;
+      const xs = [], ec = [], ev = [], pc = [], pv = [];
+      for (let i = 0; i <= 200; i++) { const k = -KM + (2 * KM * i) / 200, b = band(k, st.Eg, EP); xs.push(k); ec.push(b.c); ev.push(b.v); pc.push(st.Eg + C * k * k * (1 + EP / st.Eg)); pv.push(-C * k * k * (EP / st.Eg - 1)); }
+      clip(ctx, ch);
+      ctx.fillStyle = SB.color("accent-soft"); ctx.fillRect(ch.box.x, ch.Y(st.Eg), ch.box.w, ch.Y(0) - ch.Y(st.Eg));
+      if (document.getElementById("kp-par").checked) { line(ctx, ch, xs, pc, P.dim, 1.6, [6, 4]); line(ctx, ch, xs, pv, P.dim, 1.6, [6, 4]); }
+      for (let i = 0; i < 200; i++) { const f = sfrac(0.5 * (xs[i] + xs[i + 1]), st.Eg, EP); ctx.strokeStyle = P.accent; ctx.globalAlpha = 0.35 + 0.65 * f; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ch.X(xs[i]), ch.Y(ec[i])); ctx.lineTo(ch.X(xs[i + 1]), ch.Y(ec[i + 1])); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+      line(ctx, ch, xs, ev, P.accent2, 3);
+      ctx.restore();
+      SB.label(ctx, `E_g = ${st.Eg.toFixed(3)} eV`, ch.X(0) + 14, ch.Y(st.Eg / 2), { align: "left", size: 11, color: P.dim });
+      const hE = [ch.X(0), ch.Y(st.Eg)], bk = band(st.k, st.Eg, EP), hk = [ch.X(st.k), ch.Y(Math.min(bk.c, 2.75))];
+      self._hE = hE; self._hk = hk;
+      handle(ctx, hE[0], hE[1], P.accent, 10); handle(ctx, hk[0], hk[1], P.accent2, 9);
+      SB.label(ctx, "전도띠", ch.X(-KM) + 30, ch.Y(Math.min(2.6, band(-KM * 0.9, st.Eg, EP).c)) + 2, { size: 10, color: P.accent });
+      SB.label(ctx, "가벼운 정공", ch.X(-KM) + 40, ch.Y(Math.max(-1.5, band(-KM * 0.8, st.Eg, EP).v)) - 10, { size: 10, color: P.accent2 });
+    }, { aspect: 0.62, minHeight: 300, maxHeight: 440 });
+    SB.drag(cv, { handles: () => [{ id: "E", x: cv._hE[0], y: cv._hE[1], r: 14 }, { id: "k", x: cv._hk[0], y: cv._hk[1], r: 14 }],
+      move: (id, x, y) => { const ch = cv._ch; if (id === "E") st.Eg = Math.round(SB.clamp(2.8 - ((y - ch.box.y) / ch.box.h) * 4.4, 0.1, 2.0) * 1000) / 1000; else if (id === "k") st.k = SB.clamp(-1 + ((x - ch.box.x) / ch.box.w) * 2, -1, 1); stats(); } });
+    SB.seg("kp-tgt", (v) => { st.tgt = v; stats(); });
+    document.getElementById("kp-par").addEventListener("change", () => cv.redraw());
+    stats();
+  }
+
+  /* ---------------------------------------------------------- tangle: 2띠 질량 */
+  SB.tangle("tg-kp", (v) => {
+    const m = 1 / (1 + v.EP / v.Eg), mE = m * (1 + 0.1 / v.Eg);
+    return { m: m.toFixed(4), mE: mE.toFixed(4), msg: v.Eg < 0.4 ? `좁은 간격이라 50 meV만 올라가도 질량이 ${((0.1 / v.Eg) * 100).toFixed(0)}% 무거워진다 — 비포물선성을 꼭 넣어야 한다.` : v.Eg > 2.5 ? "넓은 간격 물질은 k·p 결합이 약해 질량이 무겁고, 다른 띠의 기여가 상대적으로 커진다." : `50 meV 위에서 질량이 ${((0.1 / v.Eg) * 100).toFixed(1)}% 무거워진다.` };
+  });
+
+  /* ---------------------------------------------------------- 미니: 변형 실리콘 골짜기 */
+  {
+    const ML = 0.916, MT = 0.19, MC0 = 3 / (1 / ML + 2 / MT), KT = KB * 300;
+    const getE = SB.range("sr-e", (v) => (+v).toFixed(2) + " %", () => cv.redraw());
+    const cv = SB.canvas("cv-strain", (ctx, w, h) => {
+      const P = pal(), eps = getE() / 100, dE = 16.2249 * eps, x4 = 4 * Math.exp(-dE / KT), f2 = 2 / (2 + x4), f4 = 1 - f2;
+      const mc = 1 / (f2 / MT + f4 * 0.5 * (1 / ML + 1 / MT));
+      const S = Math.min(h - 30, w * 0.5), cx = 16 + S / 2, cy = h / 2, kr = S * 0.36, a = S * 0.11;
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx - S / 2 + 4, cy); ctx.lineTo(cx + S / 2 - 4, cy); ctx.moveTo(cx, cy - S / 2 + 4); ctx.lineTo(cx, cy + S / 2 - 4); ctx.stroke();
+      SB.label(ctx, "k_x", cx + S / 2 - 12, cy + 12, { size: 10, color: P.dim }); SB.label(ctx, "k_y", cx + 14, cy - S / 2 + 10, { size: 10, color: P.dim });
+      const ell = (x, y, rx, ry, f, col) => { ctx.save(); ctx.globalAlpha = 0.25 + 0.75 * Math.min(1, f * 3); ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(x, y, rx * (0.4 + 0.6 * Math.sqrt(f * 3)), ry * (0.4 + 0.6 * Math.sqrt(f * 3)), 0, 0, 7); ctx.fill(); ctx.restore(); };
+      ell(cx + kr, cy, a * 1.9, a * 0.85, f4 / 4, P.accent2); ell(cx - kr, cy, a * 1.9, a * 0.85, f4 / 4, P.accent2);
+      ell(cx, cy + kr, a * 0.85, a * 1.9, f4 / 4, P.accent2); ell(cx, cy - kr, a * 0.85, a * 1.9, f4 / 4, P.accent2);
+      ell(cx, cy, a * 0.9, a * 0.9, f2 / 2, P.accent);
+      SB.label(ctx, "Δ₂ ×2", cx, cy + a + 10, { size: 10, color: P.accent });
+      const ex = 16 + S + 30, ew = w - ex - 20, top = 30, bot = h - 30, sc = (bot - top) / 0.3;
+      const y4 = top + 40, y2 = y4 + dE * sc;
+      ctx.lineWidth = 3; ctx.strokeStyle = P.accent2; ctx.beginPath(); ctx.moveTo(ex, y4); ctx.lineTo(ex + ew * 0.7, y4); ctx.stroke();
+      ctx.strokeStyle = P.accent; ctx.beginPath(); ctx.moveTo(ex, y2); ctx.lineTo(ex + ew * 0.7, y2); ctx.stroke();
+      SB.label(ctx, `Δ₄ ${(f4 * 100).toFixed(1)}%`, ex + ew * 0.35, y4 - 10, { size: 11, color: P.accent2 });
+      SB.label(ctx, `Δ₂ ${(f2 * 100).toFixed(1)}%`, ex + ew * 0.35, y2 + 13, { size: 11, color: P.accent });
+      if (dE > 0.004) SB.arrow(ctx, ex + ew * 0.85, y4, ex + ew * 0.85, y2, { color: P.dim, width: 1.5 });
+      ctx.strokeStyle = P.dim; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(ex, y2 - KT * sc); ctx.lineTo(ex + ew * 0.7, y2 - KT * sc); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "k_BT", ex + ew * 0.7 + 4, y2 - KT * sc, { align: "left", size: 9, color: P.dim });
+      document.getElementById("sr-r").textContent = `ΔE = ${(dE * 1000).toFixed(0)} meV · 면내 m_c = ${mc.toFixed(3)} (변형 전 ${MC0.toFixed(3)}) · 질량만의 이동도 비 ×${(MC0 / mc).toFixed(2)}`;
+    }, { aspect: 0.5, minHeight: 220, maxHeight: 320 });
+  }
+
+  /* ---------------------------------------------------------- 드릴: 2띠 k·p */
+  SB.drill("drill-kp", () => {
+    const Eg = +(0.15 + Math.random() * 1.45).toFixed(2), EP = +(18 + Math.random() * 10).toFixed(1), m = 1 / (1 + EP / Eg), mE = m * (1 + 0.2 / Eg);
+    return { q: `<p>띠 간격 \\(E_g = ${Eg}\\) eV, 케인 에너지 \\(E_P = ${EP}\\) eV인 직접 띠 간격 반도체가 있다. (a) 2띠 모형의 전도띠 유효 질량 \\(m^*/m_0\\)과 (b) 전도띠 바닥에서 0.1 eV 위의 속도 질량 \\(m(\\varepsilon)/m_0\\)을 구하라.</p>`,
+      answer: [m, mE], label: ["m*/m₀ =", "m(ε)/m₀ ="], unit: ["", ""], tol: "1%",
+      sol: `(a) \\(m_0/m^* = 1 + ${EP}/${Eg} = ${(1 + EP / Eg).toFixed(3)}\\) → \\(m^* = ${m.toFixed(4)}m_0\\). (b) \\(m(\\varepsilon) = m^*(1 + 2\\varepsilon/E_g) = ${m.toFixed(4)}\\times${(1 + 0.2 / Eg).toFixed(3)} = ${mE.toFixed(4)}m_0\\).` };
+  });
+})();
+</script>
+</body>
+</html>
