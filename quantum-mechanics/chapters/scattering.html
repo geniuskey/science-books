@@ -1,0 +1,1627 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>산란 이론 · 양자역학 · SciBook</title>
+<meta name="description" content="미분 산란 단면적과 산란 진폭, 리프먼–슈윙거 식과 보른 근사, 러더퍼드·차폐 쿨롱 산란과 RBS, 부분파 전개와 위상 이동, 광학 정리, 산란 길이와 공명 산란, 이온화 불순물 산란과 이동도, 이온 주입의 핵 충돌을 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/scattering.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="산란 이론 · 양자역학 · SciBook">
+<meta property="og:description" content="미분 산란 단면적과 산란 진폭, 리프먼–슈윙거 식과 보른 근사, 러더퍼드·차폐 쿨롱 산란과 RBS, 부분파 전개와 위상 이동, 광학 정리, 산란 길이와 공명 산란, 이온화 불순물 산란과 이동도, 이온 주입의 핵 충돌을 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/scattering.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "산란 이론 · 양자역학 · SciBook", "headline": "15 산란 이론", "url": "https://science.euiyun.com/quantum-mechanics/chapters/scattering.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "미분 산란 단면적과 산란 진폭, 리프먼–슈윙거 식과 보른 근사, 러더퍼드·차폐 쿨롱 산란과 RBS, 부분파 전개와 위상 이동, 광학 정리, 산란 길이와 공명 산란, 이온화 불순물 산란과 이동도, 이온 주입의 핵 충돌을 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 15, "dateModified": "2026-11-06", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "15 산란 이론", "item": "https://science.euiyun.com/quantum-mechanics/chapters/scattering.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .game-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+</style>
+</head>
+<body data-chapter="scattering">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="central-potentials angular-momentum time-dependent">
+    <div class="eyebrow">Chapter 15</div>
+    <h1>산란 이론</h1>
+    <p class="lead">원자핵, 원자, 결정 속 불순물처럼 너무 작아서 직접 볼 수 없는 것을 알아내는 거의 유일한 방법은 무언가를 쏘아 보내고 <strong>어느 방향으로 얼마나 튕겨 나오는지</strong>를 세는 것이다. 러더퍼드가 원자핵을 찾은 실험이 그랬고, 박막 조성을 재는 RBS, 실리콘 속 전자의 이동도, 이온 주입이 만드는 격자 손상도 모두 같은 물리, 곧 산란이다. 아래 그림에서 입자들이 산란 중심 하나에 차례로 날아든다. 바깥 고리에 쌓이는 개수가 이 장의 주인공인 <strong>미분 단면적</strong>이다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint">좌우로 끌면 차폐 길이 · 누르면 척력 ↔ 인력</span></div>
+    <ul class="objectives">
+      <li>미분·전체 단면적을 계수율로 정의하고, 정상 상태 \(e^{ikz} + f(\theta)e^{ikr}/r\)의 확률 흐름에서 \(d\sigma/d\Omega = |f|^2\)를 유도한다.</li>
+      <li>그린 함수로 리프먼–슈윙거 적분 방정식을 세우고, 1차 보른 근사 \(f = -(m/2\pi\hbar^2)\,\tilde V(\mathbf q)\)로 우물·가우스·유카와 퍼텐셜의 산란을 계산하며 그 적용 조건을 판정한다.</li>
+      <li>유카와 퍼텐셜의 극한으로 러더퍼드 식을 얻고, 차폐가 작은 각 산란을 어떻게 잘라 내는지, RBS의 운동학 인자로 원소를 어떻게 가려내는지 계산한다.</li>
+      <li>부분파 전개로 \(f(\theta)\)를 위상 이동 \(\delta_l\)로 나타내고, 유니터리 한계·광학 정리·강체 구의 \(4\pi a^2\)를 설명한다.</li>
+      <li>저에너지 산란을 산란 길이와 유효 거리로 정리하고, 브라이트–위그너 공명과 램자우어–타운센드 효과를 위상 이동으로 해석한다.</li>
+      <li>브룩스–헤링 이론으로 이온화 불순물 이동도를, 차폐 쿨롱 이체 충돌로 이온 주입의 에너지 전달과 변위 손상을 어림한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ -->
+  <section id="cross-section">
+    <h2>산란 단면적과 산란 진폭</h2>
+    <p>산란 실험의 기본 장치는 단순하다. 선속 밀도(단위 시간·단위 면적당 입자 수) \(J_\text{in}\)인 평행 빔을 표적에 쏘고, 표적에서 멀리 떨어진 검출기가 방향 \((\theta,\phi)\) 둘레의 작은 입체각 \(d\Omega\)로 나오는 입자를 센다. 계수율 \(dN/dt\)는 빔 세기와 \(d\Omega\)에 비례하고, 그 비례 상수가 표적 하나가 가진 "유효 넓이"다.</p>
+    <div class="def"><span class="def-k">미분 단면적과 전체 단면적</span>
+      <p>산란 중심 하나에 대해 \(\dfrac{dN}{dt} = J_\text{in}\,\dfrac{d\sigma}{d\Omega}\,d\Omega\)로 정의한 \(d\sigma/d\Omega\)를 <span class="term">미분 단면적</span><span class="en">(differential cross section)</span>이라 하고, 모든 방향으로 적분한 \(\sigma = \int (d\sigma/d\Omega)\,d\Omega\)를 <span class="term">전체 단면적</span><span class="en">(total cross section)</span>이라 한다. 차원은 넓이(nm², 핵물리에서는 1 b = 10⁻²⁸ m² = 100 fm²)이고, 입체각당 넓이이므로 미분 단면적의 단위는 nm²/sr이다.</p>
+    </div>
+    <p>표적이 단위 면적당 \(n_t\)개의 산란 중심을 가진 얇은 막이고 빔이 초당 \(\dot N_b\)개의 입자를 실어 오면, 다중 산란이 없을 때 검출기 계수율은</p>
+    <div class="formula">$$\dot N_\text{det} = \dot N_b\,n_t\,\frac{d\sigma}{d\Omega}\,\Delta\Omega, \qquad P_\text{산란} = n_t\,\sigma \ll 1$$<div class="where">\(n_t\)는 넓이 밀도(cm⁻²), \(\Delta\Omega\)는 검출기가 표적에서 보는 입체각(넓이/거리²). 둘째 식은 입자 하나가 막을 지나며 산란될 확률이다. 이 값이 1에 가까우면 여러 번 산란되어 이 식이 깨진다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="입사 빔, 충돌 변수 b, 산란각 θ, 입체각 dΩ의 검출기로 이루어진 산란 실험의 기하">
+        <defs><marker id="scax" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker><marker id="scad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <g stroke="var(--accent-2)" stroke-width="1.6" opacity=".55">
+          <line x1="30" y1="90" x2="260" y2="90"/><line x1="30" y1="115" x2="260" y2="115"/><line x1="30" y1="185" x2="260" y2="185"/><line x1="30" y1="210" x2="260" y2="210"/>
+        </g>
+        <text class="t" x="34" y="78" style="fill:var(--accent-2)">입사 빔 J_in = 선속 밀도</text>
+        <line x1="30" y1="150" x2="330" y2="150" class="s-axis" stroke-dasharray="4 4"/>
+        <text class="t-dim" x="650" y="166">z (빔 축)</text><line x1="560" y1="150" x2="760" y2="150" class="s-axis" stroke-dasharray="4 4" marker-end="url(#scad)"/>
+        <path d="M30,125 L250,125 Q330,125 380,96 L560,8" fill="none" stroke="var(--accent)" stroke-width="2.6" marker-end="url(#scax)"/>
+        <line x1="120" y1="150" x2="120" y2="125" stroke="var(--warn)" stroke-width="2"/><text class="t" x="128" y="142" style="fill:var(--warn)">b</text>
+        <circle cx="350" cy="150" r="16" fill="var(--accent-2)" opacity=".85"/><text class="t" x="350" y="155" text-anchor="middle" style="fill:#fff;font-weight:700">V</text>
+        <path d="M430,150 A80,80 0 0,0 414,104" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/><text class="t" x="440" y="128">θ</text>
+        <line x1="350" y1="150" x2="490" y2="52" stroke="var(--text-dim)" stroke-dasharray="3 3"/>
+        <ellipse cx="575" cy="60" rx="36" ry="12" transform="rotate(-35 575 60)" class="f-acc-soft" stroke="var(--accent)" stroke-width="2"/>
+        <text class="t-acc" x="612" y="46">검출기 dΩ</text>
+        <text class="t-dim" x="612" y="66">계수율 J_in (dσ/dΩ) dΩ</text>
+        <ellipse cx="120" cy="150" rx="8" ry="40" fill="none" stroke="var(--warn)" stroke-dasharray="3 3"/>
+        <text class="t-dim" x="40" y="250">고리 넓이 dσ = 2πb db 를 지난 입자가</text>
+        <text class="t-dim" x="40" y="270">각 θ…θ+dθ (입체각 2π sinθ dθ) 로 간다</text>
+        <rect x="560" y="196" width="226" height="92" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="574" y="222" style="font-weight:700">고전 역학</text>
+        <text class="t-mono" x="574" y="246">dσ/dΩ = (b / sinθ)|db/dθ|</text>
+        <text class="t-dim" x="574" y="272">b(θ)가 산란을 다 결정한다</text>
+      </svg>
+      <figcaption>산란 실험의 기하. 빔 축에서 \(b\)만큼 떨어져 들어온 입자(<span class="term">충돌 변수</span><span class="en">(impact parameter)</span>)가 각 \(\theta\)로 꺾인다. 고리 넓이 \(2\pi b\,db\)로 들어온 입자가 입체각 \(2\pi\sin\theta\,d\theta\)로 나가므로, 그 비가 미분 단면적이다.</figcaption>
+    </figure>
+    <h3>고전 단면적: 강체 구</h3>
+    <p>고전 역학에서는 충돌 변수 하나가 산란각 하나를 정한다. 반지름 \(a\)인 단단한 공에 부딪히면 입사각과 반사각이 같다는 조건에서 \(b = a\cos(\theta/2)\)이므로</p>
+    <div class="formula">$$\frac{d\sigma}{d\Omega} = \frac{b}{\sin\theta}\left|\frac{db}{d\theta}\right| = \frac{a\cos(\theta/2)\cdot\tfrac{a}{2}\sin(\theta/2)}{2\sin(\theta/2)\cos(\theta/2)} = \frac{a^2}{4}, \qquad \sigma = 4\pi\cdot\frac{a^2}{4} = \pi a^2$$<div class="where">고전 강체 구는 모든 방향으로 고르게(등방적으로) 튕기고, 전체 단면적은 기하학적 그림자 넓이 \(\pi a^2\)과 같다. 4절에서 양자역학은 이 값을 저에너지에서 \(4\pi a^2\), 고에너지에서 \(2\pi a^2\)로 바꾼다.</div></div>
+    <div class="predict" data-for="mini-hs">
+      <p>고전 강체 구에서 충돌 변수 \(b\)를 0부터 \(a\)까지 고르게 바꾸면 산란각은 180°에서 0°까지 변한다. 그러면 단위 입체각당 산란되는 입자 수 \(d\sigma/d\Omega\)는?</p>
+      <div class="opts"><button class="opt">뒤쪽(180° 근처)으로 몰린다</button><button class="opt">앞쪽(0° 근처)으로 몰린다</button><button class="opt" data-correct>모든 방향에서 같다</button><button class="opt">90°에서 가장 크다</button></div>
+      <div class="quiz-exp">\(b\)가 \(a\)에 가까운 스침 충돌은 넓은 고리(\(2\pi b\,db\)가 큼)를 차지하지만 앞쪽의 좁은 입체각에 몰리지 않고, 두 효과가 정확히 상쇄되어 \(a^2/4\)가 된다. 아래에서 \(b\)를 끌며 두 넓이의 비를 직접 확인하라.</div>
+    </div>
+    <figure class="mini" id="mini-hs">
+      <div class="mini-view"><canvas id="cv-hs"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>고리 폭 db/a <output id="hs-db-out"></output></span><input type="range" id="hs-db" min="0.02" max="0.2" step="0.01" value="0.08"></label>
+        <span class="readout" id="hs-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>흰 원을 위아래로 끌어 충돌 변수 \(b\)를 바꾼다. 자홍 띠는 입사 고리 \(b\)…\(b+db\), 초록 띠는 그 입자들이 나가는 각도 구간이다. 오른쪽 숫자 \(2\pi b\,db\,/\,\Delta\Omega\)가 \(b\)와 무관하게 \(a^2/4\)로 일정한 것이 등방 산란의 뜻이다.</figcaption>
+    </figure>
+    <div class="example" data-title="고전 강체 구: 충돌 변수와 산란각">
+      <p>반지름 \(a = 0.20\) nm인 단단한 공에 점 입자를 쏜다. (a) 산란각 60°를 만드는 충돌 변수는? (b) 미분·전체 단면적은? (c) 90°보다 뒤로 튕기는 입자의 비율은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(b = a\cos(\theta/2)\)이고 \(\theta\)가 \(b\)에 대해 단조 감소하므로, \(\theta &gt; 90°\)인 입자는 \(b &lt; a\cos 45°\)인 원판을 지난 입자다.</div>
+        <div class="step"><b>풀이</b> (a) \(b = 0.20\cos 30° = 0.173\) nm. (b) \(d\sigma/d\Omega = a^2/4 = 0.0100\) nm²/sr, \(\sigma = \pi a^2 = 0.126\) nm². (c) 비율 \(= \pi(a\cos45°)^2/\pi a^2 = \cos^2 45° = 0.5\).</div>
+        <div class="answer">(a) 0.173 nm (b) 0.0100 nm²/sr, 0.126 nm² (c) 50%</div>
+        <div class="step"><b>검토</b> 등방 산란이면 앞 반구와 뒤 반구의 입체각이 \(2\pi\)로 같으니 절반씩이 당연하다. (b)의 두 값도 \(\sigma = 4\pi\,(d\sigma/d\Omega)\)로 서로 맞는다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-rate">
+      <p>초당 <span class="tn" data-var="Nb" data-min="6" data-max="14" data-step="0.5">10.0</span>개의 입자를 넓이 밀도 <span class="tn" data-var="nt" data-min="14" data-max="20" data-step="0.5">18.0</span>(log₁₀ cm⁻²)의 막에 쏘고, 미분 단면적 <span class="tn" data-var="ds" data-min="-4" data-max="2" data-step="0.5">0.0</span>(log₁₀ b/sr)인 방향에 넓이 <span class="tn" data-var="A" data-min="0.1" data-max="5" data-step="0.1" data-unit=" cm²">1.0</span> 검출기를 <span class="tn" data-var="L" data-min="2" data-max="50" data-step="1" data-unit=" cm">10</span> 거리에 두면 입체각 <span class="tn-out" data-out="dO"></span>, 계수율 <span class="tn-out" data-out="R"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>양자역학: 산란 진폭</h3>
+    <p>양자역학에는 궤적이 없으므로 \(b(\theta)\)도 없다. 대신 에너지 \(E = \hbar^2k^2/2m\)인 정상 상태를 푼다. 퍼텐셜이 \(r\to\infty\)에서 \(1/r\)보다 빨리 사라지면, 멀리서의 파동함수는 \(z\)축으로 오는 평면파와 중심에서 퍼져 나가는 구면파의 합이다.</p>
+    <div class="formula">$$\psi(\mathbf r) \xrightarrow{\;r\to\infty\;} e^{ikz} + f(\theta,\phi)\,\frac{e^{ikr}}{r}, \qquad \frac{d\sigma}{d\Omega} = |f(\theta,\phi)|^2$$<div class="where">\(f\)는 길이 차원을 가진 <span class="term">산란 진폭</span><span class="en">(scattering amplitude)</span>이다. 구면파의 \(1/r\)은 확률 흐름이 \(1/r^2\)로 줄어 구 껍질 전체를 지나는 총량이 보존되게 한다. 중심력이면 \(f\)는 \(\theta\)에만 의존한다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 260" role="img" aria-label="확률 흐름에서 미분 단면적이 산란 진폭의 절댓값 제곱임을 보이는 네 단계">
+        <defs><marker id="scst" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="16" y="20" width="178" height="196" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="105" y="46" text-anchor="middle" style="font-weight:700">① 입사 흐름</text>
+        <text class="t-mono" x="105" y="80" text-anchor="middle">ψ_in = e^(ikz)</text>
+        <text class="t-mono" x="105" y="108" text-anchor="middle">J = (ħ/m) Im(ψ*∇ψ)</text>
+        <text class="t-acc" x="105" y="142" text-anchor="middle">J_in = ħk/m = v</text>
+        <text class="t-dim" x="105" y="170" text-anchor="middle">(진폭 1 ⇒ 밀도 1)</text>
+        <g data-step="2">
+          <line x1="196" y1="118" x2="212" y2="118" stroke="var(--text-dim)" marker-end="url(#scst)"/>
+          <rect x="214" y="20" width="178" height="196" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="303" y="46" text-anchor="middle" style="font-weight:700">② 산란 흐름</text>
+          <text class="t-mono" x="303" y="80" text-anchor="middle">ψ_sc = f e^(ikr)/r</text>
+          <text class="t-mono" x="303" y="108" text-anchor="middle">J_r = (ħk/m)|f|²/r²</text>
+          <text class="t-dim" x="303" y="142" text-anchor="middle">각 성분은 1/r³ ⇒ 무시</text>
+        </g>
+        <g data-step="3">
+          <line x1="394" y1="118" x2="410" y2="118" stroke="var(--text-dim)" marker-end="url(#scst)"/>
+          <rect x="412" y="20" width="178" height="196" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="501" y="46" text-anchor="middle" style="font-weight:700">③ 검출기 계수</text>
+          <text class="t-mono" x="501" y="80" text-anchor="middle">dN/dt = J_r · r² dΩ</text>
+          <text class="t-mono" x="501" y="108" text-anchor="middle">= v |f|² dΩ</text>
+          <text class="t-dim" x="501" y="142" text-anchor="middle">r에 무관 — 멀리서 잰다</text>
+        </g>
+        <g data-step="4">
+          <line x1="592" y1="118" x2="608" y2="118" stroke="var(--text-dim)" marker-end="url(#scst)"/>
+          <rect x="610" y="20" width="174" height="196" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="697" y="46" text-anchor="middle" style="font-weight:700">④ 나누기</text>
+          <text class="t-mono" x="697" y="80" text-anchor="middle">dσ/dΩ = (dN/dt)/(J_in dΩ)</text>
+          <text class="t-acc" x="697" y="116" text-anchor="middle" style="font-size:15px">= |f(θ)|²</text>
+          <text class="t-dim" x="697" y="150" text-anchor="middle">θ ≠ 0 에서만:</text>
+          <text class="t-dim" x="697" y="170" text-anchor="middle">θ = 0 은 간섭 (4절)</text>
+        </g>
+        <text class="t-dim" x="400" y="246" text-anchor="middle">실제 빔은 폭이 유한한 파속이라 θ ≠ 0 방향에서는 입사파와 산란파가 겹치지 않는다</text>
+      </svg>
+      <ol class="steps-cap"><li>확률 흐름 \(\mathbf J = (\hbar/m)\,\mathrm{Im}(\psi^*\nabla\psi)\)에 평면파를 넣으면 \(J_\text{in} = \hbar k/m = v\)이다.</li><li>구면파의 지름 방향 흐름은 \(v|f|^2/r^2\)이다. \(\theta\) 방향 미분은 \(1/r\)을 하나 더 만들어 멀리서는 사라진다.</li><li>거리 \(r\)의 검출기 넓이는 \(r^2d\Omega\)이므로 계수율 \(v|f|^2d\Omega\)는 \(r\)과 무관하다.</li><li>정의대로 입사 선속으로 나누면 \(d\sigma/d\Omega = |f|^2\). 산란 문제는 결국 \(f(\theta)\) 하나를 구하는 일이다.</li></ol>
+      <figcaption>미분 단면적이 \(|f|^2\)인 이유. 빔 축(\(\theta = 0\)) 방향에서는 두 파가 겹쳐 간섭하고, 이 간섭이 빔에서 빠져나간 확률을 정확히 장부에 맞추는 것이 4절의 광학 정리다.</figcaption>
+    </figure>
+    <h3>실험실 좌표와 질량 중심 좌표</h3>
+    <p>두 입자 산란은 상대 좌표에서 환산 질량 \(\mu = m_1m_2/(m_1+m_2)\)의 한 입자 문제로 바뀐다. 이 장의 식은 모두 이 <b>질량 중심(CM) 좌표</b>의 각 \(\theta\)와 상대 운동 에너지 \(E_\text{cm} = E\,m_2/(m_1+m_2)\)로 쓴다. 정지한 표적을 향해 \(m_1\)을 쏘는 실험실에서 재는 각 \(\theta_L\)은</p>
+    <div class="formula">$$\tan\theta_L = \frac{\sin\theta}{\cos\theta + m_1/m_2}, \qquad \theta_\text{되튐} = \frac{\pi - \theta}{2}$$<div class="where">\(m_1 \ll m_2\)(전자–원자, He–Au)이면 두 각이 같다. \(m_1 = m_2\)이면 \(\theta_L = \theta/2\)라 실험실에서는 90°를 넘지 못한다. \(m_1 &gt; m_2\)인 무거운 이온(As → Si)은 앞으로만 꺾이고, 최대 실험실 각은 \(\sin\theta_{L,\max} = m_2/m_1\)이다. 6절의 이온 주입에서 다시 쓴다.</div></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="born">
+    <h2>리프먼–슈윙거 식과 보른 근사</h2>
+    <p>\(f(\theta)\)를 구하려면 슈뢰딩거 방정식을 "\(e^{ikz}\) + 바깥으로 나가는 파"라는 경계 조건으로 풀어야 한다. 이 경계 조건을 방정식 안에 넣어 버리는 방법이 그린 함수다. \(U(\mathbf r) = 2mV(\mathbf r)/\hbar^2\)로 쓰면 방정식은 \((\nabla^2 + k^2)\psi = U\psi\)이고, 오른쪽을 "원천"으로 보면 풀이는 원천 하나하나가 만드는 구면파의 겹침이다.</p>
+    <div class="formula">$$(\nabla^2 + k^2)\,G_+(\mathbf r) = \delta^3(\mathbf r), \qquad G_+(\mathbf r) = -\frac{e^{ikr}}{4\pi r}$$<div class="where">\(e^{-ikr}\)를 쓴 \(G_-\)도 해지만, 바깥으로 나가는 파만 남기는 경계 조건이 \(G_+\)를 고른다. 시간 영역으로 말하면 원인 뒤에 결과가 오는 지연 그린 함수다(에너지 분모 \(E - H_0 + i\epsilon\)).</div></div>
+    <p>그러면 산란 상태는 자기 자신을 오른쪽에 품은 적분 방정식을 만족한다. 이것이 <span class="term">리프먼–슈윙거 식</span><span class="en">(Lippmann–Schwinger equation)</span>이다.</p>
+    <div class="formula">$$\psi(\mathbf r) = e^{i\mathbf k\cdot\mathbf r} - \frac{m}{2\pi\hbar^2}\int \frac{e^{ik|\mathbf r - \mathbf r'|}}{|\mathbf r - \mathbf r'|}\,V(\mathbf r')\,\psi(\mathbf r')\,d^3r', \qquad |\psi^{(+)}\rangle = |\mathbf k\rangle + \frac{1}{E - \hat H_0 + i\epsilon}\hat V|\psi^{(+)}\rangle$$<div class="where">퍼텐셜이 있는 영역(\(r' \lesssim a\), 퍼텐셜의 범위)보다 훨씬 먼 곳에서는 \(|\mathbf r - \mathbf r'| \approx r - \hat{\mathbf r}\cdot\mathbf r'\)이고, 나가는 파수 벡터를 \(\mathbf k' = k\hat{\mathbf r}\)로 쓰면 둘째 항이 \(f\,e^{ikr}/r\) 꼴이 된다.</div></div>
+    <div class="formula">$$f(\mathbf k', \mathbf k) = -\frac{m}{2\pi\hbar^2}\int e^{-i\mathbf k'\cdot\mathbf r'}\,V(\mathbf r')\,\psi(\mathbf r')\,d^3r' = -\frac{m}{2\pi\hbar^2}\,(2\pi)^3\langle\mathbf k'|\hat V|\psi^{(+)}\rangle$$<div class="where">정확한 식이지만 모르는 \(\psi\)가 적분 안에 있다. \(\hat V|\psi^{(+)}\rangle \equiv \hat T|\mathbf k\rangle\)로 쓰는 \(\hat T\)를 전이 연산자라 부른다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="슈뢰딩거 방정식에서 그린 함수, 리프먼–슈윙거 식, 먼 곳 전개를 거쳐 보른 근사에 이르는 네 단계">
+        <defs><marker id="scbs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <rect x="16" y="20" width="178" height="200" rx="10" class="f-elev" stroke="var(--border)"/>
+        <text class="t" x="105" y="46" text-anchor="middle" style="font-weight:700">① 미분 방정식</text>
+        <text class="t-mono" x="105" y="82" text-anchor="middle">(∇² + k²)ψ = Uψ</text>
+        <text class="t-dim" x="105" y="112" text-anchor="middle">U = 2mV/ħ²</text>
+        <text class="t-dim" x="105" y="140" text-anchor="middle">Uψ 를 "원천"으로 본다</text>
+        <text class="t-acc" x="105" y="174" text-anchor="middle">경계 조건이 따로 필요</text>
+        <g data-step="2">
+          <line x1="196" y1="120" x2="212" y2="120" stroke="var(--text-dim)" marker-end="url(#scbs)"/>
+          <rect x="214" y="20" width="178" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="303" y="46" text-anchor="middle" style="font-weight:700">② 그린 함수</text>
+          <text class="t-mono" x="303" y="82" text-anchor="middle">G₊ = −e^(ikr)/4πr</text>
+          <text class="t-dim" x="303" y="112" text-anchor="middle">점 원천 하나가 만드는</text>
+          <text class="t-dim" x="303" y="132" text-anchor="middle">나가는 구면파</text>
+          <text class="t-acc" x="303" y="174" text-anchor="middle">경계 조건 내장</text>
+        </g>
+        <g data-step="3">
+          <line x1="394" y1="120" x2="410" y2="120" stroke="var(--text-dim)" marker-end="url(#scbs)"/>
+          <rect x="412" y="20" width="178" height="200" rx="10" class="f-acc-soft" stroke="var(--accent)"/>
+          <text class="t" x="501" y="46" text-anchor="middle" style="font-weight:700">③ 리프먼–슈윙거</text>
+          <text class="t-mono" x="501" y="82" text-anchor="middle">ψ = e^(ikz) + ∫G₊Uψ</text>
+          <text class="t-dim" x="501" y="112" text-anchor="middle">r ≫ 퍼텐셜 범위에서</text>
+          <text class="t-mono" x="501" y="136" text-anchor="middle">→ e^(ikz) + f e^(ikr)/r</text>
+          <text class="t-acc" x="501" y="174" text-anchor="middle">f = −(m/2πħ²)⟨k'|V|ψ⟩</text>
+        </g>
+        <g data-step="4">
+          <line x1="592" y1="120" x2="608" y2="120" stroke="var(--text-dim)" marker-end="url(#scbs)"/>
+          <rect x="610" y="20" width="174" height="200" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="697" y="46" text-anchor="middle" style="font-weight:700">④ 보른 근사</text>
+          <text class="t-mono" x="697" y="82" text-anchor="middle">ψ ≈ e^(ikz)</text>
+          <text class="t-mono" x="697" y="112" text-anchor="middle">f ≈ −(m/2πħ²) Ṽ(q)</text>
+          <text class="t-dim" x="697" y="142" text-anchor="middle">q = k' − k</text>
+          <text class="t-acc" x="697" y="174" text-anchor="middle">푸리에 변환 하나</text>
+        </g>
+        <text class="t-dim" x="400" y="252" text-anchor="middle">ψ 대신 e^(ikz)를 넣고, 다시 그 결과를 넣으면 2차, 3차 … 보른 급수</text>
+      </svg>
+      <ol class="steps-cap"><li>퍼텐셜 항을 오른쪽으로 넘기면 자유 입자 방정식에 원천이 붙은 꼴이 된다.</li><li>점 원천의 풀이인 그린 함수를 나가는 구면파로 고르면 경계 조건이 저절로 맞는다.</li><li>원천들의 겹침으로 쓴 적분 방정식이 리프먼–슈윙거 식이다. 멀리서 보면 산란 진폭의 정확한 표현이 나온다.</li><li>퍼텐셜이 약해 \(\psi\)가 입사파와 거의 같으면 \(\psi \approx e^{ikz}\)를 넣는다. 산란 진폭이 퍼텐셜의 푸리에 변환이 된다.</li></ol>
+      <figcaption>보른 근사로 가는 길. ③까지는 정확하고, 근사는 ④에서 한 번만 한다. ③을 반복해서 대입하면 \(V\)의 거듭제곱 급수(보른 급수)가 된다.</figcaption>
+    </figure>
+    <h3>1차 보른 근사</h3>
+    <p>적분 안의 \(\psi\)를 입사파 \(e^{i\mathbf k\cdot\mathbf r}\)로 바꾸는 것이 <span class="term">보른 근사</span><span class="en">(Born approximation)</span>다. 그러면 산란 진폭은 <span class="term">운동량 전달</span><span class="en">(momentum transfer)</span> \(\hbar\mathbf q = \hbar(\mathbf k' - \mathbf k)\)에서 본 퍼텐셜의 푸리에 변환이다.</p>
+    <div class="formula">$$f_B(\mathbf q) = -\frac{m}{2\pi\hbar^2}\int e^{-i\mathbf q\cdot\mathbf r}\,V(\mathbf r)\,d^3r \;\xrightarrow{\;V(r)\;}\; -\frac{2m}{\hbar^2 q}\int_0^\infty r\,V(r)\sin(qr)\,dr, \qquad q = 2k\sin\frac{\theta}{2}$$<div class="where">탄성 산란이라 \(|\mathbf k'| = |\mathbf k| = k\)이고, 두 벡터 사이 각이 \(\theta\)이므로 \(q = 2k\sin(\theta/2)\)(0에서 \(2k\)까지). 중심력이면 각도 적분 \(\int e^{-iqr\cos\theta'}d\Omega' = 4\pi\sin(qr)/qr\)로 지름 적분 하나가 남는다. 이 식은 <a href="time-dependent.html">14장</a>의 페르미 황금률로 평면파 \(|\mathbf k\rangle \to |\mathbf k'\rangle\) 전이율을 구한 것과 똑같다.</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>퍼텐셜 \(V(r)\)</th><th>보른 진폭 \(f_B(q)\)</th><th>특징</th></tr></thead>
+      <tbody>
+        <tr><td>구형 우물 \(-V_0\,(r &lt; a)\)</td><td>\(\dfrac{2mV_0}{\hbar^2q^3}\,(\sin qa - qa\cos qa)\)</td><td>\(qa = 4.493\)(\(j_1\) 영점)에서 첫 0 — 회절 고리</td></tr>
+        <tr><td>가우스 \(V_0\,e^{-r^2/a^2}\)</td><td>\(-\dfrac{\sqrt\pi\,mV_0a^3}{2\hbar^2}\,e^{-q^2a^2/4}\)</td><td>큰 \(q\)에서 빠르게 사라진다</td></tr>
+        <tr><td>유카와 \(\beta\,e^{-r/\lambda}/r\)</td><td>\(-\dfrac{2m\beta}{\hbar^2}\,\dfrac{1}{q^2 + \lambda^{-2}}\)</td><td>\(\lambda\to\infty\)이면 러더퍼드(3절)</td></tr>
+      </tbody>
+    </table></div>
+    <p>두 가지를 눈여겨보자. 첫째, \(q \to 0\)(앞쪽, 또는 저에너지)이면 \(f_B \to -(m/2\pi\hbar^2)\int V\,d^3r\)로 퍼텐셜의 "부피 적분"만 남는다. 크기 \(a\)인 퍼텐셜은 \(qa \lesssim 1\), 곧 \(ka \ll 1\)이면 모양과 무관하게 등방적으로 산란한다. 둘째, \(f_B\)는 \(V\)에 선형이라 \(d\sigma/d\Omega \propto V^2\)는 퍼텐셜의 <b>부호를 모른다</b>. 끌림과 밀침이 같은 단면적을 준다는 것은 1차 근사의 한계이고, 정확한 풀이에서는 둘이 다르다.</p>
+    <figure class="mini" id="mini-ft">
+      <div class="mini-view"><canvas id="cv-ft"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>모양</span><div class="seg" id="ft-shape"><button data-value="well" class="on">우물</button><button data-value="gauss">가우스</button><button data-value="yuk">유카와</button></div></div>
+        <label class="ctrl"><span>ka <output id="ft-ka-out"></output></span><input type="range" id="ft-ka" min="0.2" max="8" step="0.1" value="3"></label>
+        <span class="readout" id="ft-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>보른 미분 단면적 \(|f_B(\theta)|^2\)을 \(\theta = 0\) 값으로 나눠 극좌표(왼쪽, 위 반원)와 로그 직교 좌표(오른쪽)로 그렸다. \(ka\)가 작으면 원(등방), 크면 앞쪽으로 좁아진다. 날카로운 벽을 가진 우물만 회절 고리(0점)를 만든다 — 퍼텐셜의 가장자리 모양이 큰 각 산란에 새겨진다.</figcaption>
+    </figure>
+    <h3>보른 근사는 언제 맞는가</h3>
+    <p>보른 근사가 맞으려면 퍼텐셜 영역 안에서 산란파가 입사파보다 훨씬 작아야 한다: \(|\psi - e^{ikz}| \ll 1\) at \(r \approx 0\). 리프먼–슈윙거 식의 둘째 항을 원점에서 어림하면 두 극한에서 간단한 조건이 나온다. 깊이 \(V_0\), 범위 \(a\)인 퍼텐셜에 대해</p>
+    <div class="formula">$$\text{저에너지 }(ka \lesssim 1):\; \frac{m|V_0|a^2}{\hbar^2} \ll 1, \qquad \text{고에너지 }(ka \gg 1):\; \frac{|V_0|a}{\hbar v} \ll 1$$<div class="where">첫째는 "퍼텐셜이 속박 상태를 만들기엔 한참 얕다"는 뜻이다(2절 조건이 1에 가까우면 곧 속박 상태 문턱). 둘째는 입자가 범위 \(a\)를 지나는 시간 \(a/v\) 동안 쌓는 위상 \(V_0a/\hbar v\)가 작다는 뜻이라, 빠른 입자일수록 보른 근사가 좋아진다. 쿨롱형 \(\beta/r\)에서는 둘째 조건이 \(\beta/\hbar v \ll 1\)(조머펠트 매개변수)이 된다.</div></div>
+    <div class="tangle" id="tg-valid">
+      <p>질량 <span class="tn" data-var="m" data-min="0.05" data-max="2" data-step="0.01" data-unit=" mₑ">1.00</span>인 입자가 깊이 <span class="tn" data-var="V" data-min="0.01" data-max="5" data-step="0.01" data-unit=" eV">0.20</span>, 반지름 <span class="tn" data-var="a" data-min="0.05" data-max="2" data-step="0.01" data-unit=" nm">0.30</span>인 퍼텐셜에 에너지 <span class="tn" data-var="E" data-min="0.01" data-max="200" data-step="0.01" data-unit=" eV">1.00</span>로 들어오면 \(ka\) = <span class="tn-out" data-out="ka"></span>, 저에너지 조건 \(m|V_0|a^2/\hbar^2\) = <span class="tn-out" data-out="p1"></span>, 고에너지 조건 \(|V_0|a/\hbar v\) = <span class="tn-out" data-out="p2"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-born">
+      <p>깊이가 같은 끌개 우물(\(-V_0\))과 밀개 장벽(\(+V_0\)). 1차 보른 근사의 미분 단면적은 둘이 똑같다. 정확한 풀이에서 저에너지 전체 단면적은 어느 쪽이 클까? (끌개가 속박 문턱에 가깝지 않은 보통의 깊이)</p>
+      <div class="opts"><button class="opt">똑같다 — 보른 근사가 그렇게 말한다</button><button class="opt" data-correct>끌개 우물이 더 크다</button><button class="opt">밀개 장벽이 더 크다</button><button class="opt">에너지와 무관하게 0이다</button></div>
+      <div class="quiz-exp">끌개는 파동을 안으로 끌어들여 진폭을 키우고(2차 보른 항이 1차와 같은 부호로 더해진다), 밀개는 파동을 밀어내 진폭을 줄인다. 2차 보른 항이 \(V^2\)에 비례하므로 부호를 구분한다. 아래에서 "끌개/밀개"를 바꾸며 정확한 곡선(자홍)이 보른 곡선(초록 점선)의 위·아래로 갈라지는 것을 보라.</div>
+    </div>
+    <div class="sim" id="sim-born">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>보른 근사 검증대: 우물을 끌어 정확한 단면적과 비교하라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-bornV"></canvas><span class="hint top">흰 원: 벽 손잡이(a) · 바닥(V₀)</span></div><div><canvas id="cv-bornS"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>부호</span><div class="seg" id="born-sign"><button data-value="-1" class="on">끌개 −V₀</button><button data-value="1">밀개 +V₀</button></div></div>
+          <label class="ctrl"><span>입사 에너지 E (eV) <output id="born-E-out"></output></span><input type="range" id="born-E" min="-2" max="2" step="0.01" value="0"></label>
+          <label class="check"><input type="checkbox" id="born-log" checked> 세로축 로그</label>
+          <button class="btn" id="born-reset" type="button">처음 값으로</button>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">a · V₀ · ka</span><span class="v" id="born-p">—</span></div>
+        <div class="stat"><span class="k">m|V₀|a²/ħ² · |V₀|a/ħv</span><span class="v" id="born-c">—</span></div>
+        <div class="stat"><span class="k">σ 정확 · σ 보른</span><span class="v" id="born-s">—</span></div>
+        <div class="stat"><span class="k">보른 오차</span><span class="v" id="born-err">—</span></div>
+      </div>
+      <div class="sim-note">자유 전자(\(m = m_\mathrm{e}\)). 왼쪽: 퍼텐셜 \(V(r)\)과 입사 에너지(점선). 오른쪽: 미분 단면적 — 자홍 실선은 부분파로 푼 정확한 값(4절), 초록 점선은 1차 보른 근사. 에너지 슬라이더는 log₁₀E. 해볼 것: ① 바닥을 끌어 \(m|V_0|a^2/\hbar^2\)를 0.1 아래로 내려 두 곡선이 겹치는 것을 본다. ② 끌개에서 깊이를 키워 \(Ka \to \pi/2\)(속박 문턱) 근처로 가면 정확한 σ가 폭발하는데 보른은 모른다. ③ 깊은 우물이라도 에너지를 수십 eV로 올리면 다시 보른이 맞아 들어간다 — 고에너지 조건.</div>
+    </div>
+    <div class="example" data-title="얕은 구형 우물: 보른 근사와 정확한 값">
+      <p>전자가 깊이 \(V_0 = 0.20\) eV, 반지름 \(a = 0.30\) nm인 끌개 구형 우물에 아주 느리게(\(k\to0\)) 들어온다. (a) 보른 근사의 \(f(0)\)와 전체 단면적은? (b) 정확한 저에너지 단면적은 \(\sigma = 4\pi a_s^2\), \(a_s = a[1 - \tan(Ka)/Ka]\), \(K = \sqrt{2mV_0}/\hbar\)이다(5절). 보른 근사의 오차는? (\(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm²)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(q \to 0\)에서 \(\sin qa - qa\cos qa \approx (qa)^3/3\)이므로 \(f_B = 2mV_0a^3/3\hbar^2 = V_0a^3/(3\cdot0.0381\text{ eV·nm}^2)\), \(\sigma_B = 4\pi f_B^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(f_B = 0.20\times0.027/0.1143 = 0.0472\) nm, \(\sigma_B = 4\pi(0.0472)^2 = 0.0280\) nm². (b) \(Ka = 0.30\sqrt{0.20/0.0381} = 0.687\), \(\tan(0.687)/0.687 = 1.194\), \(a_s = 0.30(1 - 1.194) = -0.0583\) nm, \(\sigma = 4\pi(0.0583)^2 = 0.0427\) nm².</div>
+        <div class="answer">(a) \(f_B = 0.0472\) nm, \(\sigma_B = 0.0280\) nm² (b) \(\sigma = 0.0427\) nm² — 보른 근사가 34% 작다</div>
+        <div class="step"><b>검토</b> 조건 \(m V_0 a^2/\hbar^2 = 0.236\)은 "1보다 작다"지만 "훨씬 작다"는 아니다. 진폭 오차 \((0.0583 - 0.0472)/0.0583 = 19\%\)가 제곱되어 34%가 된다. 끌개에서 보른이 작게 나오는 것은 예측 문제의 답과 같다. 위 시뮬레이터의 처음 값이 바로 이 우물이다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="원자의 차폐 퍼텐셜에서 100 eV 전자의 산란">
+      <p>100 eV 전자가 유카와 퍼텐셜 \(V = \beta e^{-r/\lambda}/r\)(\(\beta = 1.440\) eV·nm, \(\lambda = 0.100\) nm)로 어림한 원자에 부딪힌다. 보른 근사로 (a) \(d\sigma/d\Omega\)의 \(\theta = 0\)과 90° 값, (b) 전체 단면적을 구하고 (c) 보른 근사가 맞는지 판정하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(|f| = (2m\beta/\hbar^2)/(q^2 + \lambda^{-2})\), \(2m/\hbar^2 = 1/0.0381\) eV⁻¹nm⁻². 전체 단면적은 \(\int|f|^2d\Omega = (2m\beta/\hbar^2)^2\,4\pi\lambda^4/(1 + 4k^2\lambda^2)\).</div>
+        <div class="step"><b>풀이</b> \(k = \sqrt{100/0.0381} = 51.2\) nm⁻¹, \(2m\beta/\hbar^2 = 37.8\) nm⁻¹. (a) \(\theta = 0\): \(|f| = 37.8\times0.0100 = 0.378\) nm → 0.143 nm²/sr. \(\theta = 90°\): \(q^2 = 2k^2 = 5249\) nm⁻², \(|f| = 37.8/5349 = 7.07\times10^{-3}\) nm → \(5.0\times10^{-5}\) nm²/sr. (b) \(\sigma = 1428\times4\pi\times10^{-4}/(1 + 4\times26.25) = 0.0169\) nm². (c) \(\beta/\hbar v = \beta/(2\cdot0.0381\,k) = 0.369\).</div>
+        <div class="answer">(a) 0.143 nm²/sr, \(5.0\times10^{-5}\) nm²/sr (b) 0.0169 nm² (c) \(\beta/\hbar v \approx 0.37\) — 대략 맞는다</div>
+        <div class="step"><b>검토</b> 앞쪽과 90°가 3000배 가까이 차이 나는 강한 앞쪽 산란이다(\(k\lambda = 5.1\)). 저에너지 조건 \(2m\beta\lambda/\hbar^2 = 3.8\)은 1보다 커서, 같은 원자에 1 eV 전자를 쏘면 보른 근사를 쓸 수 없다. 전자 현미경(수십–수백 keV)의 상 대비 이론이 1차 보른 근사로 충분한 이유가 바로 고에너지 조건이다.</div>
+      </details>
+    </div>
+    <div class="callout deep"><strong>보른 급수와 유니터리성</strong><p>리프먼–슈윙거 식을 반복 대입하면 \(f = f^{(1)} + f^{(2)} + \cdots\), \(f^{(n)} \propto V^n\)이다. 1차 진폭 \(f_B\)는 \(V\)가 실수이면 실수다. 그런데 4절의 광학 정리 \(\sigma = (4\pi/k)\,\mathrm{Im}\,f(0)\)는 앞쪽 진폭의 허수부가 \(\sigma \propto V^2\)만큼 있어야 함을 요구한다. 즉 1차 보른 근사는 확률 보존을 \(V^2\) 차수에서 어긴다. 이 장부는 2차 항 \(\mathrm{Im}\,f^{(2)}(0) = k\sigma_B/4\pi\)가 정확히 맞춘다 — 근사의 차수를 일관되게 세면 보존 법칙이 차수마다 성립한다.</p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="coulomb">
+    <h2>러더퍼드 산란과 차폐 쿨롱 퍼텐셜</h2>
+    <p>전하 \(Z_1e\)인 입자가 \(Z_2e\)인 핵에 부딪히는 쿨롱 문제는 \(1/r\)이 너무 천천히 줄어 1절의 점근형부터 성립하지 않는다. 그래서 먼저 유카와 퍼텐셜 \(\beta e^{-r/\lambda}/r\)(\(\beta = Z_1Z_2e^2/4\pi\varepsilon_0\))로 풀고 \(\lambda\to\infty\)로 보낸다. 보른 진폭에서 \(\lambda^{-2}\)를 지우고 \(\hbar^2k^2 = 2mE\)를 쓰면</p>
+    <div class="formula">$$\frac{d\sigma}{d\Omega} = \left(\frac{2m\beta}{\hbar^2q^2}\right)^2 = \left(\frac{Z_1Z_2e^2}{16\pi\varepsilon_0E}\right)^2\frac{1}{\sin^4(\theta/2)} = \left(\frac{d}{4}\right)^2\frac{1}{\sin^4(\theta/2)}$$<div class="where">\(d = Z_1Z_2e^2/4\pi\varepsilon_0E\)는 정면 충돌에서 가장 가까이 다가가는 거리(근접 거리)다. 이것이 <span class="term">러더퍼드 산란</span><span class="en">(Rutherford scattering)</span> 식이다. \(e^2/4\pi\varepsilon_0 = 1.440\) eV·nm \(= 1.440\) MeV·fm.</div></div>
+    <p>놀랍게도 이 1차 보른 결과는 고전 역학의 궤도 계산(충돌 변수 \(b = (d/2)\cot(\theta/2)\))과도, 쿨롱 파동함수로 정확히 푼 양자역학 결과와도 <b>똑같다</b>. 정확한 쿨롱 진폭은 보른 진폭에 위상 인자 \(e^{-i\eta\ln\sin^2(\theta/2)}\)(\(\eta = Z_1Z_2e^2/4\pi\varepsilon_0\hbar v\))가 붙을 뿐이라 \(|f|^2\)이 같다. \(\hbar\)이 사라진 식이라 고전과 양자가 일치한다 — 러더퍼드가 1911년에 고전 역학으로 원자핵을 찾을 수 있었던 행운이다(<a href="../../modern-physics/chapters/atomic-spectra.html">현대물리학 · 원자 모형과 스펙트럼</a>). 단, 동일 입자끼리의 쿨롱 산란(모트 산란)에서는 그 위상이 간섭 항에 살아 남는다(<a href="identical-particles.html">11장</a>).</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="척력 쿨롱 퍼텐셜에서 충돌 변수에 따라 다르게 꺾이는 쌍곡선 궤도 묶음">
+        <circle cx="330" cy="150" r="9" fill="var(--accent-2)"/><text class="t" x="330" y="154" text-anchor="middle" style="fill:#fff;font-weight:700;font-size:11px">+</text>
+        <g fill="none" stroke="var(--accent)" stroke-width="1.8" opacity=".9">
+          <path d="M60,142 L201,142 L255,142 L278,142 L288,141 L298,140 L304,131 L300,121 L293,111 L275,84 L225,10"/>
+          <path d="M60,158 L201,158 L255,158 L278,158 L288,159 L298,160 L304,169 L300,179 L293,189 L275,216 L225,290"/>
+          <path d="M60,135 L178,135 L234,134 L255,134 L278,133 L288,132 L298,131 L308,126 L313,116 L315,106 L316,96 L318,73 L321,30 L323,9"/>
+          <path d="M60,165 L178,165 L234,166 L255,166 L278,167 L288,168 L298,169 L308,174 L313,184 L315,194 L316,204 L318,227 L321,270 L323,291"/>
+          <path d="M60,120 L155,120 L212,119 L245,119 L265,118 L277,117 L288,116 L298,114 L309,110 L319,105 L327,99 L335,91 L343,83 L357,68 L378,44 L407,9"/>
+          <path d="M60,180 L155,180 L212,181 L245,181 L265,182 L277,183 L288,184 L298,186 L309,190 L319,195 L327,201 L335,209 L343,217 L357,232 L378,256 L407,291"/>
+          <path d="M60,102 L143,102 L190,101 L223,101 L245,100 L266,99 L276,98 L288,97 L300,95 L311,92 L322,89 L332,84 L343,79 L361,70 L380,59 L408,42 L463,8"/>
+          <path d="M60,198 L143,198 L190,199 L223,199 L245,200 L266,201 L276,202 L288,203 L300,205 L311,208 L322,211 L332,216 L343,221 L361,230 L380,241 L408,258 L463,292"/>
+          <path d="M60,75 L131,75 L178,74 L213,74 L235,73 L257,72 L279,70 L300,68 L310,66 L320,64 L341,60 L361,54 L382,47 L414,37 L457,21 L493,8"/>
+          <path d="M60,225 L131,225 L178,226 L213,226 L235,227 L257,228 L279,230 L300,232 L310,234 L320,236 L341,240 L361,246 L382,253 L414,263 L457,279 L493,292"/>
+          <path d="M60,42 L132,42 L179,41 L213,40 L247,39 L270,38 L292,36 L314,34 L336,31 L358,27 L380,23 L413,16 L449,8"/>
+          <path d="M60,258 L132,258 L179,259 L213,260 L247,261 L270,262 L292,264 L314,266 L336,269 L358,273 L380,277 L413,284 L449,292"/>
+        </g>
+        <circle cx="330" cy="150" r="30" fill="none" stroke="var(--warn)" stroke-dasharray="4 4"/>
+        <text class="t" x="350" y="196" style="fill:var(--warn)">d (정면 근접 거리)</text>
+        <text class="t-dim" x="40" y="138" text-anchor="end">b</text>
+        <rect x="560" y="26" width="226" height="250" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="574" y="52" style="font-weight:700">b / d → θ</text>
+        <text class="t-mono" x="574" y="80">0.25 → 126.9°</text>
+        <text class="t-mono" x="574" y="102">0.50 →  90.0°</text>
+        <text class="t-mono" x="574" y="124">1.00 →  53.1°</text>
+        <text class="t-mono" x="574" y="146">1.60 →  34.7°</text>
+        <text class="t-mono" x="574" y="168">2.50 →  22.6°</text>
+        <text class="t-mono" x="574" y="190">3.60 →  15.8°</text>
+        <text class="t-dim" x="574" y="220">tan(θ/2) = d / 2b</text>
+        <text class="t-dim" x="574" y="244">먼 입자도 조금은 꺾인다</text>
+        <text class="t-dim" x="574" y="264">⇒ σ = ∞</text>
+      </svg>
+      <figcaption>척력 쿨롱 퍼텐셜 속 고전 궤도(쌍곡선). 충돌 변수가 \(d\)의 몇 배가 되어도 꺾임이 0이 되지 않으므로, 아무리 먼 입자도 작은 각으로 산란된다. 그래서 \(\theta\to0\)에서 \(d\sigma/d\Omega \propto \theta^{-4}\)가 적분 불가능하게 발산하고 전체 단면적은 무한대다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-d">
+      <p>운동 에너지 <span class="tn" data-var="E" data-min="0.5" data-max="30" data-step="0.1" data-unit=" MeV">5.0</span>의 α 입자(\(Z_1 = 2\), \(A = 4\))를 \(Z_2 =\) <span class="tn" data-var="Z" data-min="6" data-max="92" data-step="1">79</span>(질량수 <span class="tn" data-var="A" data-min="12" data-max="238" data-step="1">197</span>)인 핵에 쏘면 근접 거리 \(d\) = <span class="tn-out" data-out="d"></span>, 두 핵 반지름의 합 \(1.2(A_1^{1/3} + A_2^{1/3})\) fm = <span class="tn-out" data-out="R"></span>, 90° 미분 단면적 <span class="tn-out" data-out="s"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="5 MeV α 입자와 금박: 가이거–마스든 실험의 계수율">
+      <p>1.0 nA의 α 빔(He²⁺, 5.0 MeV)을 두께 1.0 µm 금박(\(\rho = 19.32\) g/cm³, \(M = 196.97\) g/mol)에 쏜다. 표적에서 10 cm 떨어진 1.0 cm² 검출기를 90°에 두면 초당 몇 개를 세는가? 같은 검출기를 10°로 옮기면 몇 배가 되는가? (핵의 되튐 무시)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\dot N = \dot N_b\,n_t\,(d\sigma/d\Omega)\,\Delta\Omega\). \(\dot N_b = I/2e\), \(n_t = \rho N_A t/M\), \(\Delta\Omega = 1/10^2 = 0.010\) sr, \(d = 2\cdot79\cdot1.440/5.0\) fm.</div>
+        <div class="step"><b>풀이</b> \(\dot N_b = 10^{-9}/(3.204\times10^{-19}) = 3.12\times10^9\) s⁻¹. \(n_t = 5.91\times10^{22}\times10^{-4} = 5.91\times10^{18}\) cm⁻². \(d = 45.5\) fm, \(d\sigma/d\Omega(90°) = (11.38)^2/\sin^4 45° = 518\) fm²/sr \(= 5.18\times10^{-24}\) cm²/sr. \(\dot N = 3.12\times10^9\times5.91\times10^{18}\times5.18\times10^{-24}\times0.010 = 954\) s⁻¹. 10°로 옮기면 \(\sin^4 45°/\sin^4 5° = 4.33\times10^3\)배.</div>
+        <div class="answer">90°에서 약 950 s⁻¹, 10°에서는 약 4300배(\(4\times10^6\) s⁻¹)</div>
+        <div class="step"><b>검토</b> 근접 거리 45.5 fm는 금 핵과 α의 반지름 합(\(1.2(4^{1/3} + 197^{1/3}) = 8.9\) fm)보다 훨씬 커서 핵력이 끼지 않는다 — 러더퍼드 식이 맞는 조건이다. 산란 확률 \(n_t\sigma\)는 각 범위를 정해야 유한하다. 10°에서 4300배나 늘어나는 강한 앞쪽 집중이 \(\sin^{-4}\)의 특징이다.</div>
+      </details>
+    </div>
+    <h3>차폐: 원자 전자와 결정 속 자유 전자</h3>
+    <p>실제 핵은 전자 구름에 둘러싸여 있어, 원자 크기보다 먼 곳에서는 전하가 보이지 않는다. 반도체 속 이온화 불순물은 그 주위로 모여든 자유 캐리어에 가려진다. 어느 쪽이든 퍼텐셜을 \(e^{-r/\lambda}\)로 자르는 유카와 꼴로 어림하면, 보른 단면적이 러더퍼드 식의 분모를 고친 꼴이 된다.</p>
+    <div class="formula">$$\frac{d\sigma}{d\Omega} = \left(\frac{d}{4}\right)^2\frac{1}{\left[\sin^2(\theta/2) + (2k\lambda)^{-2}\right]^2}$$<div class="where">차폐는 \(\theta \lesssim \theta_s = 1/k\lambda\)인 작은 각에서만 효과가 있고, 큰 각은 핵 가까이 지나간 입자라 러더퍼드 그대로다. 전체 단면적은 유한해져서 \(\sigma = 4\pi(2m\beta/\hbar^2)^2\lambda^4/(1 + 4k^2\lambda^2) = 4\pi d^2k^4\lambda^4/(1 + 4k^2\lambda^2) \approx \pi d^2(k\lambda)^2\)(\(k\lambda \gg 1\))이다. 원자의 차폐 길이는 토머스–페르미 모형으로 \(a_\text{TF} = 0.8853\,a_0Z^{-1/3}\) 정도이고, 이온 주입에서는 두 원자 모두의 전자를 고려한 보편 차폐 길이 \(a_U = 0.8854\,a_0/(Z_1^{0.23} + Z_2^{0.23})\)를 쓴다(6절). 반도체에서는 6절의 디바이 길이다.</div></div>
+    <figure class="mini" id="mini-scr">
+      <div class="mini-view"><canvas id="cv-scr"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>kλ <output id="scr-kl-out"></output></span><input type="range" id="scr-kl" min="0" max="2.5" step="0.05" value="1"></label>
+        <span class="readout" id="scr-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>러더퍼드(초록 점선)와 차폐 쿨롱(자홍)의 \(d\sigma/d\Omega\)를 \((d/4)^2\) 단위로 로그–로그에 그렸다(슬라이더는 log₁₀ kλ). 차폐가 작은 각의 발산을 평평하게 자르는 각 \(\theta_s \approx 1/k\lambda\)(세로 점선)이 \(k\lambda\)를 키울수록 앞쪽으로 물러난다. 큰 각에서는 두 곡선이 겹친다.</figcaption>
+    </figure>
+    <h3>RBS: 되튐으로 원소를 가려내기</h3>
+    <p>2 MeV 남짓의 He⁺ 이온을 박막에 쏘고 거의 뒤로(150°–170°) 튕겨 나온 이온의 에너지를 재는 방법이 <span class="term">러더퍼드 후방 산란 분광법</span><span class="en">(Rutherford backscattering spectrometry, RBS)</span>이다. 탄성 이체 충돌의 운동량·에너지 보존만으로, 질량 \(M_2\)인 표적 원자에서 각 \(\theta\)로 튕긴 이온의 에너지가 정해진다.</p>
+    <div class="formula">$$E_1 = K E_0, \qquad K = \left[\frac{\sqrt{M_2^2 - M_1^2\sin^2\theta} + M_1\cos\theta}{M_1 + M_2}\right]^2, \qquad \frac{d\sigma}{d\Omega}\bigg|_\text{lab} \approx \left(\frac{Z_1Z_2e^2}{16\pi\varepsilon_0E_0}\right)^2\frac{4}{\sin^4\theta}\,\frac{\left[\sqrt{1 - (M_1\sin\theta/M_2)^2} + \cos\theta\right]^2}{\sqrt{1 - (M_1\sin\theta/M_2)^2}}$$<div class="where">\(K\)는 <span class="term">운동학 인자</span><span class="en">(kinematic factor)</span>로, 무거운 원소일수록 1에 가깝다(튕겨도 에너지를 거의 잃지 않는다). 봉우리 위치가 원소(질량)를, 봉우리 넓이가 \(Z_2^2\times\)넓이 밀도를, 봉우리 폭이 깊이 분포를 알려 준다. 둘째 식은 러더퍼드 식을 실험실 각으로 옮긴 것이다.</div></div>
+    <div class="predict" data-for="sim-rbs">
+      <p>2 MeV He 이온을 Si 기판 위 얇은 HfO₂ 막에 쏘고 170°에서 잰다. 다음 중 RBS 스펙트럼에서 가장 높은 에너지에, 가장 큰 봉우리로 나타나는 원소는?</p>
+      <div class="opts"><button class="opt">O — 가벼워서 잘 튕긴다</button><button class="opt">Si — 기판이라 원자가 가장 많다</button><button class="opt" data-correct>Hf — 무거워 \(K \approx 0.91\), 단면적 \(\propto Z^2\)</button><button class="opt">세 원소가 같은 에너지에 겹친다</button></div>
+      <div class="quiz-exp">무거운 표적일수록 \(K\)가 1에 가까워 높은 에너지에, \(Z_2^2\) 때문에 크게 나온다. Hf(\(Z = 72\))는 Si(14)보다 단면적이 \((72/14)^2 \approx 26\)배다. 아래에서 시료를 바꾸고 검출기 각을 끌어 보라.</div>
+    </div>
+    <div class="sim" id="sim-rbs">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>RBS 분광기: 검출기를 끌어 미지 원소를 알아맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-rbsG"></canvas><span class="hint top">흰 원: 검출기 각 θ</span></div><div><canvas id="cv-rbsS"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>시료</span><div class="seg" id="rbs-smp"><button data-value="hfo" class="on">HfO₂/Si</button><button data-value="tisi">TiSi₂/Si</button><button data-value="as">As 주입 Si</button><button data-value="x">미지 시료</button></div></div>
+          <label class="ctrl"><span>He 에너지 E₀ (MeV) <output id="rbs-E-out"></output></span><input type="range" id="rbs-E" min="1" max="3" step="0.05" value="2"></label>
+          <label class="ctrl"><span>미지 원소 추측</span><select id="rbs-guess"><option value="">— 고르기 —</option><option>Ti</option><option>Co</option><option>Cu</option><option>Ga</option><option>As</option><option>In</option><option>Sb</option><option>Hf</option></select></label>
+          <div class="ctrl"><span>도전: 미지 원소</span><div class="game-row"><button class="btn primary" id="rbs-new" type="button">새 미지 시료</button><button class="btn" id="rbs-check" type="button">판정</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">검출기 각 θ</span><span class="v" id="rbs-th">—</span></div>
+        <div class="stat"><span class="k">K (원소별)</span><span class="v" id="rbs-K">—</span></div>
+        <div class="stat"><span class="k">dσ/dΩ (최대 원소)</span><span class="v" id="rbs-sig">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="rbs-msg">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="rbs-score">0</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 빔(왼쪽에서), 시료, 검출기 팔. 오른쪽: 표면 원자에서 튕긴 He의 에너지 스펙트럼(검출기 분해능 15 keV, 봉우리 높이 ∝ 넓이 밀도 × \(d\sigma/d\Omega\)). 두꺼운 Si 기판은 표면 에너지 \(K_\text{Si}E_0\)에서 시작해 아래로 이어지는 계단으로 그렸다(깊이에 따른 에너지 손실). 해볼 것: ① 검출기를 90°에서 170°로 옮기며 원소 봉우리 사이 간격이 벌어지는 것을 본다 — 질량 분해능은 뒤로 갈수록 좋다. ② HfO₂에서 O 봉우리가 Si 계단 위에 묻히는 것을 본다(가벼운 원소는 RBS로 재기 어렵다). ③ "미지 시료"에서 봉우리 위치로 \(K\)를 읽고 \(M_2\)를 거꾸로 풀어 원소를 맞힌다.</div>
+    </div>
+    <div class="callout semi"><strong>RBS로 박막 조성과 주입 손상을 잰다</strong><p>RBS는 표준 시료 없이 Rutherford 단면적만으로 조성을 정량하는 몇 안 되는 방법이라, 게이트 절연막(HfO₂, HfSiON)의 Hf:O 비, 실리사이드(TiSi₂, NiSi)의 화학량론, 금속 배선 장벽막 두께를 교정하는 기준으로 쓰인다. 빔을 결정 축에 맞추면 이온이 원자 열 사이로 미끄러져(채널링) 후방 산란이 1/30 남짓으로 줄어드는데, 이온 주입으로 원자가 자리에서 밀려나면 그만큼 산란이 되살아나 손상 깊이 분포가 보인다 → <a href="../../materials-science/chapters/characterization.html">재료과학 · 재료 분석</a>, <a href="https://semi.euiyun.com/doping/chapters/channeling.html">DopingBook · 채널링</a></p></div>
+    <div class="drill" id="drill-ruth" data-title="러더퍼드·RBS 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="partial-waves">
+    <h2>부분파 전개와 위상 이동</h2>
+    <p>보른 근사는 약한 퍼텐셜에서만 맞는다. 중심력이면 어떤 세기에서도 쓸 수 있는 정확한 방법이 있다. 퍼텐셜이 회전 대칭이면 각운동량이 보존되므로(<a href="central-potentials.html">9장</a>), 입사 평면파를 각운동량 \(l\)마다 쪼개 따로 산란시키면 된다. 평면파 자체가 이미 모든 \(l\)의 겹침이다(<span class="term">레일리 전개</span><span class="en">(Rayleigh expansion)</span>, <a href="angular-momentum.html">8장</a>).</p>
+    <div class="formula">$$e^{ikz} = \sum_{l=0}^{\infty} i^l(2l+1)\,j_l(kr)\,P_l(\cos\theta) \;\xrightarrow{r\to\infty}\; \sum_l \frac{(2l+1)i^l}{2ikr}\left[e^{i(kr - l\pi/2)} - e^{-i(kr - l\pi/2)}\right]P_l(\cos\theta)$$<div class="where">각 \(l\) 성분은 들어오는 구면파 \(e^{-ikr}\)와 나가는 구면파 \(e^{ikr}\)가 같은 크기로 섞인 정상파다. 충돌 변수로 말하면 \(l\)번째 부분파는 \(b \approx (l+\tfrac12)/k\) 근처를 지나는 입자에 해당한다.</div></div>
+    <p>탄성 산란에서 퍼텐셜이 할 수 있는 일은 <b>나가는 파의 위상을 바꾸는 것뿐</b>이다. 확률이 보존되고 \(l\)이 섞이지 않으므로, 들어온 만큼 같은 \(l\)로 나가야 하기 때문이다. 나가는 파에 \(S_l = e^{2i\delta_l}\)이 곱해지고, 지름 함수는 퍼텐셜 밖에서</p>
+    <div class="formula">$$u_l(r) \xrightarrow{r\to\infty} \sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right), \qquad S_l = e^{2i\delta_l}, \quad |S_l| = 1$$<div class="where">\(\delta_l\)이 <span class="term">위상 이동</span><span class="en">(phase shift)</span>이다. \(|S_l| = 1\)이 부분파마다의 <span class="term">유니터리성</span><span class="en">(unitarity)</span>, 곧 확률 보존이다. 흡수(비탄성 통로)가 있으면 \(|S_l| &lt; 1\)이 된다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="자유 입자, 끌개 우물, 강체 구에서의 지름 함수 비교와 위상 이동의 부호">
+        <line x1="70" y1="60" x2="530" y2="60" class="s-axis" stroke-dasharray="2 4"/><line x1="70" y1="150" x2="530" y2="150" class="s-axis" stroke-dasharray="2 4"/><line x1="70" y1="240" x2="530" y2="240" class="s-axis" stroke-dasharray="2 4"/>
+        <rect x="70" y="112" width="87" height="76" class="f-acc2-soft"/><text class="t-dim" x="113" y="200" text-anchor="middle">우물</text>
+        <rect x="70" y="200" width="87" height="80" fill="var(--text-faint)" opacity=".35"/><text class="t-dim" x="113" y="292" text-anchor="middle">강체 구</text>
+        <path d="M70,60 L92,43 L109,35 L126,32 L143,36 L166,50 L199,76 L216,85 L233,88 L250,85 L267,76 L306,46 L323,36 L340,32 L357,35 L374,43 L413,73 L430,83 L447,88 L464,86 L481,78 L520,48" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+        <path d="M70,150 L87,128 L98,122 L109,127 L140,168 L149,176 L160,178 L177,172 L199,157 L228,135 L244,126 L261,122 L278,125 L295,133 L334,163 L351,173 L368,178 L385,176 L402,168 L447,134 L464,125 L481,122 L498,125 L520,138" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+        <path d="M70,240 L154,240 L182,221 L199,214 L216,212 L233,218 L256,232 L284,254 L301,264 L318,268 L334,266 L351,257 L391,227 L408,217 L424,212 L441,214 L458,222 L503,256 L520,265" fill="none" stroke="var(--accent-2)" stroke-width="2.4"/>
+        <g stroke="var(--text-dim)" stroke-dasharray="3 3" stroke-width="1"><line x1="233" y1="20" x2="233" y2="280"/></g>
+        <line x1="160" y1="96" x2="228" y2="96" stroke="var(--accent)" stroke-width="2"/><path d="M160,96 l8,-4 v8z" fill="var(--accent)"/>
+        <text class="t-acc" x="168" y="110">안으로 당겨짐</text>
+        <line x1="236" y1="290" x2="318" y2="290" stroke="var(--accent-2)" stroke-width="2"/><path d="M318,290 l-8,-4 v8z" fill="var(--accent-2)"/>
+        <text class="t" x="250" y="284" style="fill:var(--accent-2)">밖으로 밀림</text>
+        <text class="t" x="530" y="64">자유: sin kr</text>
+        <text class="t-acc" x="530" y="154">끌개: δ &gt; 0</text>
+        <text class="t" x="530" y="244" style="fill:var(--accent-2)">밀개: δ = −ka</text>
+        <rect x="610" y="40" width="176" height="220" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="622" y="66" style="font-weight:700">위상 이동 읽는 법</text>
+        <text class="t-dim" x="622" y="94">밖의 파동을 sin(kr+δ)로</text>
+        <text class="t-dim" x="622" y="114">맞추면 δ가 나온다</text>
+        <text class="t" x="622" y="146">끌개: 안에서 빨리 진동</text>
+        <text class="t-dim" x="622" y="166">→ 마디가 앞당겨짐</text>
+        <text class="t" x="622" y="196">밀개: 안에 못 들어감</text>
+        <text class="t-dim" x="622" y="216">→ 마디가 밀려남</text>
+        <text class="t-dim" x="622" y="244">δ는 π의 배수만큼 모호</text>
+      </svg>
+      <figcaption>\(l = 0\) 지름 함수 \(u(r)\). 끌개 우물 안에서는 운동 에너지가 커서 파장이 짧아지고, 밖으로 나온 파동은 자유파보다 앞선다(\(\delta &gt; 0\)). 반지름 \(a\)인 강체 구는 파동을 \(a\)만큼 밀어내 \(u = \sin k(r - a)\), 곧 \(\delta_0 = -ka\)이다.</figcaption>
+    </figure>
+    <p>나가는 파 \(e^{ikr}\)의 계수에서 입사 평면파의 몫을 빼면 산란파가 남는다. 그 결과가 부분파로 쓴 산란 진폭과 단면적이다.</p>
+    <div class="formula">$$f(\theta) = \frac{1}{k}\sum_{l=0}^\infty (2l+1)\,e^{i\delta_l}\sin\delta_l\,P_l(\cos\theta) = \sum_l (2l+1)\frac{S_l - 1}{2ik}P_l(\cos\theta), \qquad \sigma = \frac{4\pi}{k^2}\sum_l (2l+1)\sin^2\delta_l$$<div class="where">르장드르 다항식의 직교성 \(\int P_lP_{l'}d\Omega = 4\pi\delta_{ll'}/(2l+1)\) 덕분에 \(\sigma\)에는 간섭 항이 없다. 각 부분파의 몫은 <span class="term">유니터리 한계</span><span class="en">(unitarity limit)</span> \(\sigma_l \le 4\pi(2l+1)/k^2\)를 넘지 못하고, 이 한계는 \(\delta_l = \pi/2\)(공명, 5절)에서 닿는다.</div></div>
+    <figure class="mini" id="mini-ps">
+      <div class="mini-view"><canvas id="cv-ps"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>ka <output id="ps-ka-out"></output></span><input type="range" id="ps-ka" min="0.2" max="4" step="0.05" value="1"></label>
+        <span class="readout" id="ps-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>흰 원을 위아래로 끌어 구형 우물(\(l = 0\))의 깊이를 바꾼다(위쪽은 장벽). 자홍 실선은 정확한 \(u(r)\), 회색 점선은 자유파 \(\sin kr\), 초록 점선은 밖의 파를 안으로 이어 그린 \(\sin(kr + \delta_0)\)이다. 깊이를 키우면 \(\delta_0\)이 \(\pi/2\)를 지나 \(\pi\)로 가며, 속박 상태가 하나 생길 때마다 \(\pi\)씩 늘어난다(레빈슨 정리).</figcaption>
+    </figure>
+    <h3>광학 정리</h3>
+    <p>\(\theta = 0\)에서 \(P_l(1) = 1\)이므로 \(\mathrm{Im}\,f(0) = (1/k)\sum(2l+1)\sin^2\delta_l\)이고, 이것은 \(\sigma\)의 식과 \(k/4\pi\)배만 다르다.</p>
+    <div class="formula">$$\sigma = \frac{4\pi}{k}\,\mathrm{Im}\,f(0)$$<div class="where"><span class="term">광학 정리</span><span class="en">(optical theorem)</span>. 부분파와 무관하게 확률 보존에서 나오는 일반 정리다. 산란된 확률은 빔에서 빠져나간 것이므로, 앞쪽에서 산란파가 입사파와 상쇄 간섭해 "그림자"를 만들어야 한다. 그 그림자의 크기가 \(\mathrm{Im}\,f(0)\)다. 흡수가 있으면 \(\sigma\) 자리에 흡수까지 더한 \(\sigma_\text{tot}\)가 온다.</div></div>
+    <figure class="diagram steps" data-steps="3">
+      <svg viewBox="0 0 800 250" role="img" aria-label="한 부분파에서 들어오는 구면파, 위상이 바뀐 나가는 구면파, 그 차이인 산란파를 보이는 세 단계">
+        <defs><marker id="scpw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <circle cx="130" cy="120" r="8" fill="var(--accent-2)"/>
+        <g fill="none" stroke="var(--text-dim)" stroke-width="1.6"><circle cx="130" cy="120" r="40"/><circle cx="130" cy="120" r="70"/><circle cx="130" cy="120" r="100"/></g>
+        <g stroke="var(--text-dim)" stroke-width="1.6"><line x1="232" y1="120" x2="214" y2="120" marker-end="url(#scpw)"/><line x1="130" y1="18" x2="130" y2="36" marker-end="url(#scpw)"/></g>
+        <text class="t" x="130" y="242" text-anchor="middle">① 들어오는 파 e^(−ikr)</text>
+        <g data-step="2">
+          <circle cx="400" cy="120" r="8" fill="var(--accent-2)"/>
+          <g fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="400" cy="120" r="48"/><circle cx="400" cy="120" r="78"/><circle cx="400" cy="120" r="108"/></g>
+          <g stroke="var(--accent)" stroke-width="1.8"><line x1="484" y1="120" x2="506" y2="120" marker-end="url(#scpw)"/></g>
+          <text class="t-acc" x="400" y="242" text-anchor="middle">② 나가는 파 S_l e^(ikr), S_l = e^(2iδ)</text>
+          <text class="t-dim" x="400" y="125" text-anchor="middle" style="font-size:11px">세기 그대로</text>
+        </g>
+        <g data-step="3">
+          <rect x="560" y="30" width="226" height="180" rx="10" class="f-acc2-soft" stroke="var(--accent-2)"/>
+          <text class="t" x="673" y="58" text-anchor="middle" style="font-weight:700">③ 산란파 = ② − (δ=0일 때)</text>
+          <text class="t-mono" x="673" y="92" text-anchor="middle">(S_l − 1) e^(ikr)/2ikr</text>
+          <text class="t-mono" x="673" y="120" text-anchor="middle">f_l = e^(iδ) sin δ / k</text>
+          <text class="t-dim" x="673" y="150" text-anchor="middle">|S_l − 1| ≤ 2 ⇒</text>
+          <text class="t-acc" x="673" y="176" text-anchor="middle">σ_l ≤ 4π(2l+1)/k²</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>입사 평면파의 \(l\) 성분에는 원점으로 모여드는 구면파가 들어 있다. 이 부분은 퍼텐셜과 상관없이 정해진다.</li><li>퍼텐셜은 같은 세기로 되돌려 보내되 위상만 \(2\delta_l\) 돌린다. 확률 보존이 세기를 고정한다.</li><li>퍼텐셜이 없을 때(\(S_l = 1\))와의 차이가 산란파다. \(|S_l - 1|\)은 최대 2이므로 한 부분파가 산란시킬 수 있는 양에 한계가 있다.</li></ol>
+      <figcaption>부분파 하나의 산란. 산란 이론 전체가 숫자 하나 \(\delta_l(k)\)로 줄어든다. 측정한 \(d\sigma/d\Omega\)에서 \(\delta_l\)들을 거꾸로 뽑는 일을 위상 이동 분석이라 하며, 핵력의 모양은 이렇게 알아냈다.</figcaption>
+    </figure>
+    <h3>몇 개의 부분파가 필요한가</h3>
+    <p>범위 \(a\)인 퍼텐셜은 충돌 변수 \(b \approx l/k\)가 \(a\)보다 큰 부분파를 건드리지 못한다. 양자역학으로 말하면 원심 장벽 때문에 \(j_l(kr) \propto (kr)^l\)이 \(r &lt; a\)에서 작아지고, 그래서 저에너지에서는 \(\delta_l \propto (ka)^{2l+1}\)이다. 따라서 필요한 부분파는 \(l \lesssim ka\)까지다. \(ka \ll 1\)이면 s파 하나로 충분하고(5절), \(ka \gg 1\)이면 수많은 부분파가 필요해 보른 근사나 준고전 근사(<a href="variational-wkb.html">13장</a>)가 더 편하다.</p>
+    <div class="tangle" id="tg-lmax">
+      <p>질량 <span class="tn" data-var="m" data-min="0.05" data-max="2" data-step="0.01" data-unit=" mₑ">1.00</span>인 입자가 에너지 <span class="tn" data-var="E" data-min="0.01" data-max="500" data-step="0.01" data-unit=" eV">10.00</span>로 반지름 <span class="tn" data-var="a" data-min="0.05" data-max="2" data-step="0.01" data-unit=" nm">0.20</span>인 퍼텐셜에 들어오면 \(ka\) = <span class="tn-out" data-out="ka"></span>이므로 부분파 <span class="tn-out" data-out="n"></span>개 남짓이 산란에 참여한다. 가장 큰 유니터리 한계 \(\sigma_0 \le 4\pi/k^2\) = <span class="tn-out" data-out="smax"></span>는 기하 단면적 \(\pi a^2\)의 <span class="tn-out" data-out="ratio"></span>배다. <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-pw">
+      <p>반지름 \(a\)인 강체 구에 아주 느린 입자(\(ka \ll 1\))를 쏜다. 양자역학의 전체 단면적은 기하학적 그림자 넓이 \(\pi a^2\)의 몇 배일까?</p>
+      <div class="opts"><button class="opt">1배 — 고전과 같다</button><button class="opt">2배</button><button class="opt" data-correct>4배</button><button class="opt">0에 가깝다 — 파장이 너무 길어 구를 못 본다</button></div>
+      <div class="quiz-exp">\(\delta_0 = -ka\)이므로 \(\sigma = (4\pi/k^2)\sin^2(ka) \to 4\pi a^2\). 공 표면 전체(넓이 \(4\pi a^2\))가 파동을 튕긴다. 아래에서 강체 구를 고르고 \(ka\)를 0 쪽으로 끌어 \(\sigma/\pi a^2\)가 4로 가는 것을, 큰 \(ka\)에서 2로 가는 것(그림자 산란)을 확인하라.</div>
+    </div>
+    <div class="sim" id="sim-pw">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>부분파 작업대: 위상 이동에서 단면적과 광학 정리까지</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-pwA"></canvas></div><div><canvas id="cv-pwB"></canvas><span class="hint top">곡선 위 흰 원을 끌어 ka</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>퍼텐셜</span><div class="seg" id="pw-pot"><button data-value="hs" class="on">강체 구</button><button data-value="well">끌개 우물</button><button data-value="gauss">가우스 장벽</button></div></div>
+          <label class="ctrl"><span>세기 U₀ = 2m|V₀|a²/ħ² <output id="pw-U-out"></output></span><input type="range" id="pw-U" min="0.5" max="40" step="0.1" value="6"></label>
+          <label class="check"><input type="checkbox" id="pw-born"> 보른 근사 겹쳐 그리기</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ka</span><span class="v" id="pw-ka">—</span></div>
+        <div class="stat"><span class="k">δ₀ · δ₁ · δ₂ (°)</span><span class="v" id="pw-d">—</span></div>
+        <div class="stat"><span class="k">σ / πa²</span><span class="v" id="pw-s">—</span></div>
+        <div class="stat"><span class="k">광학 정리 (4π/k)Im f(0) / σ</span><span class="v" id="pw-ot">—</span></div>
+        <div class="stat"><span class="k">쓰인 부분파</span><span class="v" id="pw-n">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 위: 부분파별 \(\sin^2\delta_l\)(막대, 1이 유니터리 한계), 왼쪽 아래: \(d\sigma/d\Omega\)의 극좌표 그림(위 반원, 빔은 왼쪽에서). 오른쪽: \(\sigma/\pi a^2\)를 \(ka\)의 함수로(점선은 s파 몫). 위상 이동은 지름 방정식을 수치로 적분해 구했다(강체 구는 \(\tan\delta_l = j_l(ka)/y_l(ka)\)). 해볼 것: ① 강체 구에서 \(ka\to0\)이면 4, \(ka = 10\)이면 2.4 남짓(→ 2)임을 확인한다. ② 끌개 우물의 세기를 \(U_0 = \pi^2/4 \approx 2.47\) 근처에 두고 작은 \(ka\)에서 σ가 치솟는 것을 본다(속박 문턱, 5절). ③ 어떤 경우든 광학 정리 비가 1.000인지 확인하고, 보른을 겹쳐 그려 세기가 클 때 어디서 어긋나는지 본다.</div>
+    </div>
+    <div class="example" data-title="강체 구의 부분파: 4πa²와 2πa²">
+      <p>반지름 \(a\)인 강체 구에서 \(ka = 0.50\)일 때 \(\delta_0\), \(\delta_1\), \(\delta_2\)와 \(\sigma/\pi a^2\)를 구하라. \(ka \to 0\)과 \(ka \to \infty\)의 극한은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(u(a) = 0\)에서 \(\tan\delta_l = j_l(ka)/y_l(ka)\). \(l = 0\): \(j_0/y_0 = -\tan ka\)이므로 \(\delta_0 = -ka\). \(l = 1\): \(j_1 = \sin x/x^2 - \cos x/x\), \(y_1 = -\cos x/x^2 - \sin x/x\).</div>
+        <div class="step"><b>풀이</b> \(\delta_0 = -0.500\), \(\tan\delta_1 = j_1(0.5)/y_1(0.5) = 0.1624/(-4.469)\) → \(\delta_1 = -0.0364\), \(\delta_2 = -6.5\times10^{-4}\). \(\sigma/\pi a^2 = (4/(ka)^2)[\sin^2 0.5 + 3\sin^2 0.0364 + 5\sin^2(6.5\times10^{-4})] = 16[0.2298 + 0.0040 + 0.0000] = 3.74\).</div>
+        <div class="answer">\(\delta_0 = -0.500\), \(\delta_1 = -0.036\), \(\delta_2 \approx -0.0007\) rad; \(\sigma = 3.74\,\pi a^2\). 극한: \(4\pi a^2\)(저에너지), \(2\pi a^2\)(고에너지)</div>
+        <div class="step"><b>검토</b> \(\delta_1/\delta_0 \approx (ka)^2/3\)으로 \(\delta_l \propto (ka)^{2l+1}\)과 맞는다. 고에너지 극한이 \(\pi a^2\)이 아니라 \(2\pi a^2\)인 이유: 고전적으로 튕긴 몫 \(\pi a^2\)에 더해, 그림자를 만들려고 앞쪽 좁은 각(\(\theta \lesssim 1/ka\))으로 회절된 몫 \(\pi a^2\)이 있기 때문이다. 이것이 광학 정리가 말하는 그림자 산란이다.</div>
+      </details>
+    </div>
+    <div class="example" data-title="위상 이동 두 개로 광학 정리 확인하기">
+      <p>어떤 퍼텐셜에서 \(k = 1.00\) nm⁻¹일 때 \(\delta_0 = 30°\), \(\delta_1 = 10°\)이고 나머지는 0이다. 전체 단면적, \(\mathrm{Im}\,f(0)\), 그리고 \(\theta = 0°, 90°, 180°\)의 \(d\sigma/d\Omega\)를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(f(\theta) = (1/k)[e^{i\delta_0}\sin\delta_0 + 3e^{i\delta_1}\sin\delta_1\cos\theta]\), \(\sigma = (4\pi/k^2)[\sin^2\delta_0 + 3\sin^2\delta_1]\).</div>
+        <div class="step"><b>풀이</b> \(\sin^2 30° = 0.2500\), \(3\sin^2 10° = 0.0905\). \(\sigma = 4\pi(0.3405) = 4.28\) nm². \(\mathrm{Im}\,f(0) = 0.3405\) nm이므로 \((4\pi/k)\mathrm{Im}\,f(0) = 4.28\) nm² — 일치. \(f(0) = 0.946 + 0.340i\) → \(|f|^2 = 1.011\); \(f(90°) = 0.433 + 0.250i\) → 0.250; \(f(180°) = -0.080 + 0.160i\) → 0.0319 nm²/sr.</div>
+        <div class="answer">\(\sigma = 4.28\) nm², \(\mathrm{Im}\,f(0) = 0.340\) nm; \(d\sigma/d\Omega\) = 1.01, 0.250, 0.0319 nm²/sr</div>
+        <div class="step"><b>검토</b> s파만 있으면 등방(0.250)이다. p파가 s파와 간섭해 앞쪽을 키우고(\(\cos\theta &gt; 0\)) 뒤쪽을 줄였다. 90°에서는 \(P_1 = 0\)이라 s파만 남는다. 앞뒤 비대칭을 보면 홀수 \(l\)이 있음을 알 수 있다.</div>
+      </details>
+    </div>
+    <div class="drill" id="drill-pw" data-title="위상 이동 → 단면적 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="low-energy">
+    <h2>저에너지 산란, 산란 길이와 공명</h2>
+    <p>\(ka \ll 1\)이면 4절에서 본 대로 \(\delta_l \propto (ka)^{2l+1}\)이라 s파만 남는다. 이때 \(\delta_0\)도 \(k\)에 비례하므로 그 비례 상수를 길이 하나로 쓴다.</p>
+    <div class="def"><span class="def-k">산란 길이와 유효 거리</span>
+      <p>\(k \to 0\)에서 \(\delta_0 \approx -ka_s\)로 정의한 \(a_s\)를 <span class="term">산란 길이</span><span class="en">(scattering length)</span>라 한다. 그러면 \(f \to -a_s\), \(\sigma \to 4\pi a_s^2\)이다. 다음 차수까지 쓴 <span class="term">유효 거리 전개</span><span class="en">(effective-range expansion)</span> \(k\cot\delta_0 = -1/a_s + \tfrac12 r_e k^2 + \cdots\)의 \(r_e\)를 유효 거리라 한다.</p>
+    </div>
+    <p>산란 길이는 기하학적으로 읽을 수 있다. \(k = 0\)이면 퍼텐셜 밖의 방정식이 \(u'' = 0\)이라 \(u \propto (r - a_s)\)인 직선이다. 즉 <b>바깥 파동함수를 직선으로 이어 \(r\)축과 만나는 점이 \(a_s\)</b>다. 강체 구는 \(u(a) = 0\)이라 \(a_s = a\)이고, 끌개 우물에서는 안쪽 \(\sin Kr\)(\(K = \sqrt{2mV_0}/\hbar\))에 이어 붙여</p>
+    <div class="formula">$$a_s = a\left[1 - \frac{\tan Ka}{Ka}\right], \qquad Ka \to \frac{\pi}{2},\ \frac{3\pi}{2},\ \dots \;\Rightarrow\; a_s \to \mp\infty$$<div class="where">약한 끌개에서는 \(a_s &lt; 0\)이고 \(|a_s|\)가 \(a\)보다 크다. 우물을 깊게 해 속박 상태가 막 생기는 문턱(\(Ka = \pi/2\), <a href="central-potentials.html">9장</a>의 3차원 우물 문턱)에서 \(a_s\)가 \(-\infty\)에서 \(+\infty\)로 건너뛴다. 이 근처에서는 \(\sigma = 4\pi a_s^2\)이 기하 단면적을 아득히 넘는다.</div></div>
+    <p>\(a_s\)가 크고 양수이면 얕은 속박 상태가 있다. 속박 상태 \(u \propto e^{-\kappa r}\)를 바깥에서 직선으로 근사하면 \(\kappa \approx 1/a_s\), 곧</p>
+    <div class="formula">$$E_B \approx \frac{\hbar^2}{2ma_s^2} \quad (a_s \gg a), \qquad \text{유효 거리 보정: }\; \frac{1}{a_s} = \kappa - \frac{r_e\kappa^2}{2}$$<div class="where">속박 에너지가 퍼텐셜의 모양과 무관하게 산란 길이 하나로 정해진다 — 저에너지 보편성. 극저온 원자 기체에서는 자기장으로 \(a_s\)를 \(\pm\infty\)까지 조절하는 페시바흐 공명이 이 성질을 쓴다.</div></div>
+    <div class="predict" data-for="sim-alen">
+      <p>깊이가 0인 우물에서 시작해 끌개 우물을 천천히 깊게 하면 산란 길이 \(a_s\)는 어떻게 변할까?</p>
+      <div class="opts"><button class="opt">0에서 시작해 계속 양수로 커진다</button><button class="opt" data-correct>음수로 점점 커지다가 속박 상태가 생기는 순간 \(+\infty\)로 건너뛴다</button><button class="opt">깊이에 비례해 줄어든다</button><button class="opt">\(a\)에 고정된다</button></div>
+      <div class="quiz-exp">약한 끌개는 바깥 직선을 \(r &lt; 0\) 쪽에서 축과 만나게 한다(\(a_s &lt; 0\)). 깊어질수록 안쪽 파동이 많이 휘어 직선이 수평에 가까워지고(\(|a_s| \to \infty\)), 속박 상태가 생기면 반대편으로 넘어간다. 아래에서 바닥을 끌며 직선의 교점을 따라가 보라.</div>
+    </div>
+    <div class="sim" id="sim-alen">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>산란 길이 만들기: 우물 바닥을 끌어 목표 aₛ를 맞혀라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-alU"></canvas><span class="hint top">흰 원: 우물 깊이</span></div><div><canvas id="cv-alA"></canvas><span class="hint top">곡선 위 흰 원도 끌 수 있다</span></div></div></div>
+        <div class="sim-controls">
+          <label class="check"><input type="checkbox" id="al-ext" checked> 바깥 직선 연장 그리기</label>
+          <div class="ctrl"><span>도전: 목표 aₛ/a ±5%</span><div class="game-row"><button class="btn primary" id="al-new" type="button">새 목표</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">Ka · 우물 세기</span><span class="v" id="al-K">—</span></div>
+        <div class="stat"><span class="k">aₛ / a</span><span class="v" id="al-a">—</span></div>
+        <div class="stat"><span class="k">σ(k→0) / πa²</span><span class="v" id="al-s">—</span></div>
+        <div class="stat"><span class="k">속박 상태 수 · 얕은 E_B</span><span class="v" id="al-nb">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="al-goal">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="al-score">0</span></div>
+      </div>
+      <div class="sim-note">왼쪽: \(k = 0\)의 지름 함수 \(u(r)\)(자홍)와 퍼텐셜(초록), 바깥 직선의 연장(점선)과 \(r\)축 교점 \(a_s\)(주황). 오른쪽: \(a_s/a\)를 \(Ka\)의 함수로. 속박 에너지는 \(\hbar^2/2ma^2\) 단위. 해볼 것: ① \(Ka = \pi/2\) 근처에서 교점이 왼쪽 끝에서 사라졌다가 오른쪽 끝에서 나타나는 것을 본다. ② \(a_s = +5a\)를 만들고 얕은 속박 에너지가 \(\hbar^2/2ma_s^2\)(= 0.04)에 가까운지 확인한다. ③ \(Ka = 4.49\)(\(\tan x = x\))에서 \(a_s = 0\) — 저에너지에서 투명해진다(아래 램자우어 효과).</div>
+    </div>
+    <div class="example" data-title="중수소핵: 산란 길이로 구한 결합 에너지">
+      <p>중성자–양성자의 스핀 삼중항 산란 길이는 \(a_t = 5.419\) fm, 유효 거리는 \(r_e = 1.753\) fm다. (a) 유효 거리를 무시한 근사와 (b) 유효 거리를 넣은 식으로 중수소핵(삼중항 속박 상태)의 결합 에너지를 구하라. (\(\hbar c = 197.33\) MeV·fm, 환산 질량 \(\mu c^2 = 469.46\) MeV, 실측 2.2246 MeV)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (a) \(E_B = (\hbar c)^2/2\mu c^2a_t^2\). (b) \(1/a_t = \kappa - r_e\kappa^2/2\)를 \(\kappa\)에 대해 풀면 \(\kappa = [1 - \sqrt{1 - 2r_e/a_t}]/r_e\), \(E_B = (\hbar c\,\kappa)^2/2\mu c^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(E_B = 38938/(938.92\times29.37) = 1.41\) MeV. (b) \(2r_e/a_t = 0.6470\), \(\kappa = (1 - 0.5941)/1.753 = 0.2315\) fm⁻¹, \(E_B = (197.33\times0.2315)^2/938.92 = 2.22\) MeV.</div>
+        <div class="answer">(a) 1.41 MeV (b) 2.22 MeV (실측 2.2246 MeV)</div>
+        <div class="step"><b>검토</b> 핵력의 상세한 모양 없이 산란 실험의 두 숫자만으로 결합 에너지를 0.1% 안에서 맞혔다. 속박 상태의 크기 \(1/\kappa = 4.3\) fm가 핵력 범위(약 1.5 fm)보다 훨씬 커서, 중수소핵은 대부분의 시간을 핵력 밖에서 보내는 "얕은" 상태다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-shallow">
+      <p>질량 <span class="tn" data-var="m" data-min="0.02" data-max="2" data-step="0.01" data-unit=" mₑ">0.26</span>인 입자의 산란 길이가 <span class="tn" data-var="as" data-min="1" data-max="50" data-step="0.5" data-unit=" nm">10.0</span>이고 퍼텐셜 범위가 <span class="tn" data-var="a" data-min="0.1" data-max="5" data-step="0.1" data-unit=" nm">1.0</span>이면 얕은 속박 에너지 \(\hbar^2/2ma_s^2\) = <span class="tn-out" data-out="E"></span>, 저에너지 단면적 \(4\pi a_s^2\) = <span class="tn-out" data-out="s"></span>(기하 단면적의 <span class="tn-out" data-out="r"></span>배)이다. <span data-out="msg"></span></p>
+    </div>
+    <h3>램자우어–타운센드 효과</h3>
+    <p>1920년대에 램자우어와 타운센드는 아르곤·크립톤·제논 기체에 1 eV 안팎의 전자를 보내면 단면적이 거의 0으로 떨어져 기체가 "투명"해지는 것을 발견했다. 고전적으로는 설명할 수 없는 일이다. 깊고 좁은 원자 퍼텐셜에서는 저에너지 \(\delta_0\)이 \(\pi\)의 배수를 지나는 에너지가 있는데, 거기서 \(\sin\delta_0 = 0\)이라 s파가 산란하지 않고, p파 이상은 아직 작기 때문이다. 1차원 우물의 공명 투과(<a href="one-dimensional.html">5장</a>)와 같은 간섭이 3차원에서 일어난 것이다.</p>
+    <figure class="mini" id="mini-rt">
+      <div class="mini-view"><canvas id="cv-rt"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>우물 세기 Ka₀ = a√(2mV₀)/ħ <output id="rt-K-out"></output></span><input type="range" id="rt-K" min="3" max="12" step="0.01" value="7.7"></label>
+        <span class="readout" id="rt-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>끌개 구형 우물의 \(\sigma/\pi a^2\)(검정)과 s·p·d파 몫(자홍·초록·주황)을 \(ka\)의 함수로 그렸다. s파 곡선이 0에 닿는 곳(\(\delta_0 = n\pi\))에서 전체 단면적이 깊게 파인다. 세기를 바꿔 이 골이 \(ka \approx 1\) 근처에 오도록 맞춰 보라 — 비활성 기체의 전자 산란이 그 경우다.</figcaption>
+    </figure>
+    <h3>공명 산란</h3>
+    <p>원심 장벽이나 얇은 퍼텐셜 벽 뒤에 거의 갇힌 상태가 있으면, 그 에너지 \(E_r\) 근처에서 입자가 안으로 들어가 한동안 머물다 나온다. 이때 \(\delta_l\)이 좁은 에너지 구간에서 \(\pi\)만큼 급하게 올라가고, \(\pi/2\)를 지날 때 \(\sigma_l\)이 유니터리 한계에 닿는다. 공명 근처를 전개하면 <span class="term">브라이트–위그너 식</span><span class="en">(Breit–Wigner formula)</span>이 된다.</p>
+    <div class="formula">$$\tan\delta_l = \frac{\Gamma/2}{E_r - E}, \qquad \sigma_l = \frac{4\pi}{k^2}(2l+1)\frac{\Gamma^2/4}{(E - E_r)^2 + \Gamma^2/4}, \qquad \tau = \frac{\hbar}{\Gamma}$$<div class="where">\(\Gamma\)는 공명 폭(반치 전폭), \(\tau\)는 <span class="term">준속박 상태</span><span class="en">(quasi-bound state)</span>의 수명이다. 위상이 에너지에 따라 빠르게 돌면 나가는 파속이 늦게 나온다: 위그너 시간 지연 \(\Delta t = 2\hbar\,d\delta_l/dE\)는 공명 봉우리에서 \(4\hbar/\Gamma\)이다. 산란 진폭은 복소 에너지 \(E_r - i\Gamma/2\)에 극을 가진다 — 감쇠하는 상태 \(e^{-iE_rt/\hbar}e^{-\Gamma t/2\hbar}\)의 흔적이다.</div></div>
+    <p>가장 깔끔한 모형은 반지름 \(a\)의 얇은 껍질 장벽 \(V = (\hbar^2g/2ma)\,\delta(r - a)\)이다. 껍질 안은 무한 구형 우물(\(ka \approx x_{nl}\), 9장)과 거의 같고, 벽의 세기 \(g\)가 클수록 새어 나가기 어려워 공명이 좁아진다. 이 모형의 위상 이동은 리카티 함수 \(\hat j_l = x\,j_l(x)\), \(\hat n_l = x\,y_l(x)\)로 정확히 풀린다.</p>
+    <div class="formula">$$\tan\delta_l = -\frac{(g/ka)\,\hat j_l^{\,2}(ka)}{1 - (g/ka)\,\hat j_l(ka)\,\hat n_l(ka)}$$<div class="where">\(g \to \infty\)이면 분모가 0이 되는 곳이 \(\hat j_l(ka) = 0\), 곧 껍질 속 갇힌 상태 \(j_l(ka) = 0\)이다. 유한한 \(g\)에서는 조금 낮은 에너지로 옮겨 가며 폭 \(\Gamma \propto 1/g^2\)을 얻는다.</div></div>
+    <div class="predict" data-for="sim-res">
+      <p>껍질 장벽의 세기 \(g\)를 두 배로 키우면 첫 번째 s파 공명의 폭 \(\Gamma\)는 대략 어떻게 될까?</p>
+      <div class="opts"><button class="opt">두 배로 넓어진다</button><button class="opt">변하지 않는다</button><button class="opt">절반이 된다</button><button class="opt" data-correct>약 1/4로 좁아진다</button></div>
+      <div class="quiz-exp">벽을 통과하는 진폭이 \(1/g\)에 비례하므로 새어 나가는 확률(곧 \(\Gamma\))은 \(1/g^2\)에 비례한다. 1차원 이중 장벽의 공명 투과 폭과 같은 이야기다. 아래에서 \(g\) = 20과 40의 폭을 비교하라(값 0.25와 0.070, \(\hbar^2/2ma^2\) 단위).</div>
+    </div>
+    <div class="sim" id="sim-res">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>공명 사냥: 에너지를 끌어 준속박 상태를 찾아라</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-resS"></canvas><span class="hint top">흰 원: 입사 에너지 (ka)</span></div><div><canvas id="cv-resU"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>부분파 l</span><div class="seg" id="res-l"><button data-value="0" class="on">s (0)</button><button data-value="1">p (1)</button><button data-value="2">d (2)</button></div></div>
+          <label class="ctrl"><span>껍질 세기 g <output id="res-g-out"></output></span><input type="range" id="res-g" min="2" max="60" step="0.5" value="20"></label>
+          <div class="ctrl"><span>도전: sin²δ ≥ 0.98 이고 안쪽 진폭 ≥ 3배</span><div class="game-row"><span class="readout" id="res-game">—</span></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">ka · E/(ħ²/2ma²)</span><span class="v" id="res-k">—</span></div>
+        <div class="stat"><span class="k">δ_l · sin²δ_l</span><span class="v" id="res-d">—</span></div>
+        <div class="stat"><span class="k">안 / 밖 진폭</span><span class="v" id="res-amp">—</span></div>
+        <div class="stat"><span class="k">가장 가까운 공명 E_r · Γ</span><span class="v" id="res-G">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="res-score">0</span></div>
+      </div>
+      <div class="sim-note">위: \(\sin^2\delta_l\)(자홍, 1이 유니터리 한계)과 \(\delta_l/\pi\)(초록 점선)를 \(ka\)의 함수로. 아래: 지금 에너지의 \(u_l(r)\) — 바깥 진폭을 1로 맞췄다. 세로 점선은 \(g \to \infty\)의 갇힌 상태 \(j_l(ka) = 0\). 해볼 것: ① 공명 위에 올라서면 껍질 안 진폭이 바깥의 몇 배로 커지는 것(공진)을 본다. ② \(g\)를 키우면 공명이 좁아지고 점선 쪽으로 다가간다. ③ 같은 \(g\)에서 \(l\)을 올리면 원심 장벽이 더해져 공명이 더 좁다.</div>
+    </div>
+    <div class="example" data-title="껍질 장벽 속 전자의 준속박 상태">
+      <p>반지름 1.0 nm, 세기 \(g = 20\)인 껍질 장벽에 전자가 s파로 들어온다. 첫 공명은 \(E_r \approx 8.97\,\hbar^2/2ma^2\), 폭 \(\Gamma \approx 0.251\,\hbar^2/2ma^2\)이다(위 시뮬레이터로 확인). (a) \(E_r\), \(\Gamma\)를 eV로, (b) 수명과 봉우리의 위그너 시간 지연을 구하라. (c) 껍질이 완전히 막혔을 때(\(g\to\infty\))의 갇힌 준위와 비교하라. (\(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm², \(\hbar = 0.6582\) eV·fs)</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(\hbar^2/2ma^2 = 0.0381\) eV. \(\tau = \hbar/\Gamma\), \(\Delta t = 4\hbar/\Gamma\). 막힌 껍질은 무한 구형 우물이라 1s 준위 \(\pi^2\hbar^2/2ma^2\).</div>
+        <div class="step"><b>풀이</b> (a) \(E_r = 8.97\times0.0381 = 0.342\) eV, \(\Gamma = 0.251\times0.0381 = 9.6\) meV. (b) \(\tau = 0.6582/0.0096 = 69\) fs, \(\Delta t = 4\tau = 0.28\) ps. (c) \(\pi^2\times0.0381 = 0.376\) eV.</div>
+        <div class="answer">(a) \(E_r = 0.342\) eV, \(\Gamma = 9.6\) meV (b) \(\tau \approx 69\) fs, 시간 지연 약 0.28 ps (c) 갇힌 준위 0.376 eV보다 약 9% 낮다</div>
+        <div class="step"><b>검토</b> \(\Gamma/E_r = 0.028\)이라 좁은 공명이다. 전자가 안을 한 번 왕복하는 시간 \(2a/v\)(\(v = \sqrt{2E/m} = 3.5\times10^5\) m/s → 5.7 fs)의 12배쯤 머문다. 벽이 투과 가능하면 파동이 벽 바깥까지 조금 퍼져 유효 상자가 커지므로 준위가 내려간다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>공명 터널링 다이오드와 준속박 상태</strong><p>GaAs/AlGaAs 이중 장벽처럼 얇은 두 벽 사이에 갇힌 준속박 상태를 바이어스로 입사 전자 에너지에 맞추면 투과가 1에 가까워지고, 지나치면 급히 떨어져 음의 미분 저항이 생긴다. 공명 폭 \(\Gamma\)는 벽 두께로 지수적으로 조절되며, 수명 \(\hbar/\Gamma\)이 THz 발진기의 속도 한계를 정한다. 3차원 산란의 공명과 1차원 투과 공명은 같은 수학(위상이 \(\pi\)만큼 도는 극)이다 → <a href="../../modern-physics/chapters/tunneling.html">현대물리학 · 터널링</a>, <a href="one-dimensional.html">5장 1차원 퍼텐셜</a></p></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="semiconductor">
+    <h2>반도체 속 산란: 이온화 불순물과 이온 주입</h2>
+    <p>이 장의 도구는 반도체 공정과 소자의 두 핵심 현상에 그대로 쓰인다. 하나는 실온 전자가 이온화된 도펀트에 꺾여 이동도를 잃는 <b>이온화 불순물 산란</b>이고, 다른 하나는 수십 keV 이온이 실리콘 원자를 들이받아 멈추며 결정을 부수는 <b>이온 주입의 핵 충돌</b>이다. 앞의 것은 보른 근사의 양자 산란, 뒤의 것은 고전 궤도로 충분한 산란이다.</p>
+    <h3>이온화 불순물 산란: 브룩스–헤링</h3>
+    <p>실리콘 속 P⁺ 이온은 비유전율 \(\varepsilon_r = 11.7\)로 가려진 쿨롱 전하이고, 그 주위로 자유 전자가 모여 \(e^{-r/L_D}\)로 한 번 더 가린다. 비축퇴 반도체의 차폐 길이는 <span class="term">디바이 길이</span><span class="en">(Debye length)</span>다.</p>
+    <div class="formula">$$V(r) = -\frac{e^2}{4\pi\varepsilon_0\varepsilon_r}\frac{e^{-r/L_D}}{r}, \qquad L_D = \sqrt{\frac{\varepsilon_0\varepsilon_rk_BT}{e^2n}}, \qquad \frac{d\sigma}{d\Omega} = \frac{(2m^*\beta/\hbar^2)^2}{(q^2 + L_D^{-2})^2}$$<div class="where">\(\beta = e^2/4\pi\varepsilon_0\varepsilon_r\), \(m^*\)은 전도 유효 질량(Si 전자 0.26\(m_\mathrm{e}\)). 3절의 차폐 쿨롱 보른 단면적과 같은 식이다. \(n = 10^{17}\) cm⁻³, 300 K에서 \(L_D = 12.9\) nm.</div></div>
+    <p>그런데 전류를 줄이는 것은 산란된 <em>개수</em>가 아니라 잃어버린 <em>앞방향 운동량</em>이다. 각 \(\theta\)로 꺾인 전자는 앞방향 운동량의 \(1 - \cos\theta\)만큼을 잃으므로, 이동도에는 <span class="term">운동량 완화 단면적</span><span class="en">(momentum-transfer cross section)</span>이 들어간다.</p>
+    <div class="formula">$$\sigma_m = \int (1 - \cos\theta)\,\frac{d\sigma}{d\Omega}\,d\Omega, \qquad \frac{1}{\tau_m(E)} = N_I\,v\,\sigma_m = \frac{N_Ie^4}{16\pi\sqrt{2m^*}\,(\varepsilon_0\varepsilon_r)^2E^{3/2}}\left[\ln(1 + \gamma^2) - \frac{\gamma^2}{1 + \gamma^2}\right]$$<div class="where">\(\gamma = 2kL_D\). 빠른 전자일수록 덜 꺾이므로 \(\tau_m \propto E^{3/2}\)이다. 이를 맥스웰 분포로 평균한 \(\mu = e\langle\langle\tau_m\rangle\rangle/m^*\)가 <span class="term">브룩스–헤링 이동도</span><span class="en">(Brooks–Herring mobility)</span> \(\mu_I \propto T^{3/2}/N_I\)(로그 인자 제외)다(<code>QM.mobilityBH</code>). 차폐 대신 불순물 사이 거리의 절반에서 충돌 변수를 자른 것이 콘웰–바이스코프 식이다.</div></div>
+    <figure class="mini" id="mini-mt">
+      <div class="mini-view"><canvas id="cv-mt"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>2kL_D (γ) <output id="mt-g-out"></output></span><input type="range" id="mt-g" min="-0.5" max="1.7" step="0.02" value="1.1"></label>
+        <span class="readout" id="mt-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>차폐 쿨롱의 \(d\sigma/d\Omega\)(초록)와 운동량 가중치를 곱한 \((1 - \cos\theta)\,d\sigma/d\Omega\)(자홍)를 \(\sin\theta\)를 곱해 각 분포로 그렸다(슬라이더는 log₁₀γ). 차폐가 약할수록(\(\gamma\) 큼) 산란은 거의 다 앞쪽 스침이라 개수로는 많아도 운동량은 거의 잃지 않는다. 오른쪽 숫자 \(\sigma_m/\sigma\)이 그 비율이다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-LD">
+      <p>실리콘(\(\varepsilon_r = 11.7\), \(m^* = 0.26\))에 전자 농도 <span class="tn" data-var="n" data-min="14" data-max="19" data-step="0.1">17.0</span>(log₁₀ cm⁻³), 온도 <span class="tn" data-var="T" data-min="50" data-max="500" data-step="5" data-unit=" K">300</span>이면 디바이 길이 \(L_D\) = <span class="tn-out" data-out="LD"></span>, 불순물 사이 평균 간격 \(N^{-1/3}\) = <span class="tn-out" data-out="d"></span>, 열 전자의 \(2kL_D\) = <span class="tn-out" data-out="g"></span>, 보른 매개변수 \(\beta/\hbar v\) = <span class="tn-out" data-out="b"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="실리콘 전자의 이온화 불순물 이동도">
+      <p>\(N_D = n = 10^{17}\) cm⁻³인 n형 Si(\(m^* = 0.26\), \(\varepsilon_r = 11.7\))에서 300 K의 (a) 디바이 길이, (b) 에너지 \(\tfrac32k_BT\) 전자의 \(\sigma\), \(\sigma_m\), \(\tau_m\), (c) 브룩스–헤링 이동도와 격자 이동도 1414 cm²/V·s를 마티센 규칙으로 합친 이동도를 구하고 실측 맞춤값(약 720 cm²/V·s)과 비교하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (b) \(E = 38.8\) meV에서 \(k = \sqrt{Em^*/0.0381}\), 3절의 유카와 식을 수치 적분. \(\tau_m = 1/(N_Iv\sigma_m)\). (c) \(1/\mu = 1/\mu_I + 1/\mu_L\).</div>
+        <div class="step"><b>풀이</b> (a) \(L_D = \sqrt{11.7\times8.854\times10^{-12}\times0.02585/(1.602\times10^{-19}\times10^{23})} = 12.9\) nm. (b) \(k = 0.514\) nm⁻¹, \(2kL_D = 13.3\). \(\sigma = 1.39\times10^3\) nm², \(\sigma_m = 66\) nm². \(v = 2.29\times10^5\) m/s → \(\tau_m = 1/(10^{23}\times2.29\times10^5\times6.6\times10^{-17}) = 0.66\) ps. (c) 열평균하면 \(\mu_I = 9.4\times10^3\) cm²/V·s, \(\mu = (1/9408 + 1/1414)^{-1} = 1.23\times10^3\) cm²/V·s.</div>
+        <div class="answer">(a) 12.9 nm (b) \(\sigma \approx 1400\) nm², \(\sigma_m \approx 66\) nm², \(\tau_m \approx 0.66\) ps (c) \(\mu_I \approx 9400\), 합성 \(\mu \approx 1230\) cm²/V·s — 실측의 약 1.7배</div>
+        <div class="step"><b>검토</b> 산란의 95%가 앞쪽 스침이라 \(\sigma_m/\sigma = 0.048\)이다. 단순 이론이 실측보다 크게 나오는 이유: ① \(\beta/\hbar v = 0.82\)로 보른 조건이 겨우 맞아 끌개(주개)의 산란을 과소평가하고, ② \(\tau_m \propto E^{3/2}\)이 강해 마티센 규칙(산란율의 단순 합)이 에너지 평균에서 틀리며, ③ 여섯 골 이방성 질량과 캐리어–캐리어 산란이 빠져 있다. 그래서 TCAD는 이 이론의 꼴(\(T^{3/2}/N\))을 빌린 경험 모형을 실측에 맞춰 쓴다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-mob">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>이동도 지도: 도핑과 온도를 끌어 어느 산란이 이기는지 보라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-mobN"></canvas><span class="hint top">흰 원: 도핑 농도</span></div><div><canvas id="cv-mobT"></canvas><span class="hint top">흰 원: 온도</span></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>캐리어 (Si)</span><div class="seg" id="mob-car"><button data-value="n" class="on">전자</button><button data-value="p">정공</button></div></div>
+          <div class="ctrl"><span>불순물 산란 모형</span><div class="seg" id="mob-mod"><button data-value="bh" class="on">브룩스–헤링</button><button data-value="cw">콘웰–바이스코프</button></div></div>
+          <label class="check"><input type="checkbox" id="mob-ct" checked> 300 K 실측 맞춤 곡선</label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">N · T</span><span class="v" id="mob-NT">—</span></div>
+        <div class="stat"><span class="k">μ_L (격자) · μ_I (불순물)</span><span class="v" id="mob-LI">—</span></div>
+        <div class="stat"><span class="k">마티센 합성 μ</span><span class="v" id="mob-mu">—</span></div>
+        <div class="stat"><span class="k">비저항 ρ</span><span class="v" id="mob-rho">—</span></div>
+        <div class="stat"><span class="k">지배 산란</span><span class="v" id="mob-dom">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 300 K…(지금 온도)에서 이동도 대 도핑(로그–로그). 초록 점선 \(\mu_L\), 주황 점선 \(\mu_I\), 자홍 실선 합성, 회색 점선은 300 K 실측 맞춤(코기–토머스: 전자 \(\mu_\text{min}\) 68.5, \(\mu_\text{max}\) 1414, \(N_\text{ref} = 9.2\times10^{16}\), \(\alpha = 0.711\); 정공 44.9, 470.5, \(2.23\times10^{17}\), 0.719). 오른쪽: 지금 농도에서 온도 의존. \(\mu_L = \mu_\text{max}(T/300)^{-2.42}\)(정공 \(-2.2\)), 차폐는 \(n = N\)(완전 이온화)로 두었다. 해볼 것: ① 낮은 온도에서 \(\mu_I \propto T^{3/2}\) 때문에 이동도가 다시 떨어지는 봉우리를 찾는다. ② \(10^{17}\)에서 합성 곡선과 실측 곡선이 얼마나 다른지 본다 — 예제의 1.7배. ③ \(10^{19}\) 근처에서는 BH와 CW가 크게 갈린다(축퇴·강한 차폐로 둘 다 믿기 어렵다).</div>
+    </div>
+    <div class="callout semi"><strong>TCAD 이동도 모형은 산란 이론의 꼴을 빌린다</strong><p>소자 시뮬레이터의 저전계 이동도 모형(마세티, 아로라, 클라센)은 \(\mu_\text{min} + (\mu_\text{max} - \mu_\text{min})/[1 + (N/N_\text{ref})^\alpha]\) 같은 맞춤식이지만, 그 속의 \(T^{-2.4}\)(격자)·\(T^{3/2}/N\)(불순물) 지수와 마티센 합은 이 절의 산란 이론에서 왔다. 클라센 모형은 다수·소수 캐리어를 구분하는데, 같은 이온이 전자에게는 끌개, 정공에게는 밀개라 보른 근사를 넘어서면 산란 세기가 다르기 때문이다(2절 예측 문제). 채널이 표면에 붙은 MOSFET에서는 여기에 표면 거칠기·쿨롱 산란이 더해진다 → <a href="https://semi.euiyun.com/tcad/chapters/models.html">TCADBook · 이동도와 재결합 모델</a>, <a href="https://semi.euiyun.com/device/chapters/transport.html">DeviceBook · 캐리어 수송</a>, <a href="../../solid-state/chapters/carrier-transport.html">고체물리 · 캐리어 수송</a></p></div>
+    <h3>이온 주입: 차폐 쿨롱 이체 충돌</h3>
+    <p>50 keV As 이온의 드브로이 파장은 \(1.5\times10^{-5}\) nm로 원자 간 거리의 만분의 일도 안 되고, 보어 매개변수 \(\kappa = 2Z_1Z_2e^2/4\pi\varepsilon_0\hbar v \approx 5600 \gg 1\)이다. 2절의 보른 조건과 정반대인 이 극한에서는 파속이 고전 궤도를 따라가므로, 산란을 고전 <span class="term">이체 충돌</span><span class="en">(binary collision)</span>로 다룬다. 질량 중심 각 \(\theta_c\)로 꺾이면 정지해 있던 표적 원자에 넘겨주는 에너지는</p>
+    <div class="formula">$$T = \gamma E\sin^2\frac{\theta_c}{2}, \qquad \gamma = \frac{4M_1M_2}{(M_1 + M_2)^2}, \qquad \theta_c = \pi - 2b\int_{r_0}^\infty \frac{dr}{r^2\sqrt{1 - V(r)/E_c - b^2/r^2}}$$<div class="where">\(E_c = EM_2/(M_1 + M_2)\)는 질량 중심 에너지, \(r_0\)는 근일점(근호 속이 0인 곳). 퍼텐셜은 보편 ZBL 차폐 쿨롱 \(V = (Z_1Z_2e^2/4\pi\varepsilon_0r)\,\Phi(r/a_U)\), \(\Phi(x) = 0.1818e^{-3.2x} + 0.5099e^{-0.9423x} + 0.2802e^{-0.4029x} + 0.02817e^{-0.2016x}\)를 쓴다. 넘겨받은 \(T\)가 <span class="term">변위 문턱 에너지</span><span class="en">(displacement threshold energy)</span>(Si 약 15 eV)를 넘으면 표적 원자가 격자 자리에서 튕겨 나가 공공–틈새 쌍을 남긴다.</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 290" role="img" aria-label="실험실 좌표에서 이온이 정지한 실리콘 원자를 때려 이온은 꺾이고 원자는 되튀는 이체 충돌과 연쇄 충돌">
+        <defs><marker id="scim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker><marker id="scim2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent-2)"/></marker></defs>
+        <line x1="30" y1="140" x2="200" y2="140" stroke="var(--accent)" stroke-width="2.6"/>
+        <circle cx="200" cy="140" r="13" fill="var(--accent)"/><text class="t" x="200" y="145" text-anchor="middle" style="fill:#fff;font-weight:700;font-size:11px">As</text>
+        <text class="t-acc" x="40" y="128">E = 50 keV</text>
+        <circle cx="230" cy="158" r="9" fill="var(--accent-2)"/><text class="t" x="230" y="162" text-anchor="middle" style="fill:#fff;font-size:10px">Si</text>
+        <line x1="200" y1="140" x2="230" y2="140" stroke="var(--text-dim)" stroke-dasharray="3 3"/><line x1="230" y1="140" x2="230" y2="158" stroke="var(--warn)" stroke-width="2"/><text class="t" x="236" y="152" style="fill:var(--warn);font-size:12px">b</text>
+        <path d="M210,138 L400,118" stroke="var(--accent)" stroke-width="2.4" fill="none" marker-end="url(#scim)"/><text class="t-acc" x="330" y="108">이온: θ_L만큼 꺾여 계속 간다</text>
+        <path d="M232,162 L330,240" stroke="var(--accent-2)" stroke-width="2.4" fill="none" marker-end="url(#scim2)"/><text class="t" x="250" y="262" style="fill:var(--accent-2)">되튄 Si: T = γE sin²(θ_c/2)</text>
+        <g fill="var(--text-faint)"><circle cx="350" cy="232" r="5"/><circle cx="372" cy="250" r="5"/><circle cx="392" cy="226" r="5"/><circle cx="420" cy="118" r="5"/><circle cx="470" cy="140" r="5"/><circle cx="500" cy="104" r="5"/></g>
+        <path d="M335,244 L366,262 M335,244 L360,226" stroke="var(--accent-2)" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+        <path d="M402,116 L480,96 L560,120 L640,90" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-dasharray="5 4"/>
+        <path d="M480,96 L470,140 M560,120 L590,170" stroke="var(--accent-2)" stroke-width="1.4" fill="none" stroke-dasharray="4 3"/>
+        <circle cx="640" cy="90" r="9" fill="var(--accent)"/><text class="t-dim" x="652" y="78">멈춘 자리 = 주입 깊이</text>
+        <rect x="520" y="170" width="266" height="110" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="534" y="194" style="font-weight:700">As → Si, 50 keV</text>
+        <text class="t-mono" x="534" y="218">γ = 0.793, T_max = 39.7 keV</text>
+        <text class="t-mono" x="534" y="240">θ_L,max = 22.0° (M₂/M₁)</text>
+        <text class="t-dim" x="534" y="264">T &gt; 15 eV ⇒ 변위 · 연쇄 충돌</text>
+      </svg>
+      <figcaption>이온 주입의 이체 충돌(실험실 좌표, 축척 아님). 무거운 이온은 앞으로만 꺾이며(\(\sin\theta_{L,\max} = M_2/M_1\)) 수많은 충돌로 에너지를 잃고, 큰 에너지를 받은 Si 원자는 다시 다른 원자를 때리는 연쇄 충돌을 일으킨다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-gamma">
+      <p>질량 <span class="tn" data-var="M1" data-min="1" data-max="130" data-step="1" data-unit=" u">75</span>인 이온을 에너지 <span class="tn" data-var="E" data-min="1" data-max="500" data-step="1" data-unit=" keV">50</span>로 질량 <span class="tn" data-var="M2" data-min="10" data-max="75" data-step="1" data-unit=" u">28</span>인 표적에 쏘면 \(\gamma\) = <span class="tn-out" data-out="g"></span>, 정면 충돌의 최대 전달 에너지 \(T_\text{max}\) = <span class="tn-out" data-out="T"></span>, 이온의 최대 꺾임 <span class="tn-out" data-out="th"></span>이다. <span data-out="msg"></span></p>
+    </div>
+    <div class="sim" id="sim-imp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>주입 충돌 실험대: 충돌 변수를 끌어 Si 원자를 튕겨라</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-impX"></canvas><span class="hint top">흰 원: 충돌 변수 b</span></div><div><canvas id="cv-impT"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>이온 → Si</span><div class="seg" id="imp-ion"><button data-value="B">B</button><button data-value="P">P</button><button data-value="As" class="on">As</button><button data-value="Sb">Sb</button></div></div>
+          <label class="ctrl"><span>이온 에너지 (keV) <output id="imp-E-out"></output></span><input type="range" id="imp-E" min="0" max="2.5" step="0.001" value="1.699"></label>
+          <label class="check"><input type="checkbox" id="imp-ruth"> 차폐 없는 러더퍼드와 비교</label>
+          <div class="ctrl"><span>도전: Si에 목표 에너지 ±5%</span><div class="game-row"><button class="btn primary" id="imp-new" type="button">새 목표</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">b · 근일점 r₀</span><span class="v" id="imp-b">—</span></div>
+        <div class="stat"><span class="k">θ_c (CM) · θ_L (이온)</span><span class="v" id="imp-th">—</span></div>
+        <div class="stat"><span class="k">전달 에너지 T</span><span class="v" id="imp-T">—</span></div>
+        <div class="stat"><span class="k">변위 단면적 πb_d² · 자유 행로</span><span class="v" id="imp-sd">—</span></div>
+        <div class="stat"><span class="k">목표</span><span class="v" id="imp-goal">—</span></div>
+        <div class="stat"><span class="k">점수</span><span class="v" id="imp-score">0</span></div>
+      </div>
+      <div class="sim-note">왼쪽: 실험실 좌표의 이온 궤적(자홍)과 되튄 Si(초록), 점선 원은 보편 차폐 길이 \(a_U\). 오른쪽: 전달 에너지 \(T(b)\)(로그), 가로 점선은 변위 문턱 15 eV, 그 교점 \(b_d\)가 변위를 일으키는 최대 충돌 변수다. 에너지 슬라이더는 log₁₀(keV). 해볼 것: ① As 50 keV에서 \(b_d \approx 0.076\) nm, 곧 Si 원자 사이에서 1.1 nm마다 변위 충돌이 일어나는 것을 확인한다 — 무거운 이온이 비정질층을 만드는 이유다. ② 같은 에너지의 B와 비교한다. ③ 러더퍼드와 비교를 켜면, 차폐가 없을 때 먼 충돌의 꺾임을 얼마나 과대평가하는지 보인다.</div>
+    </div>
+    <div class="example" data-title="50 keV 비소 주입: 에너지 전달과 변위 손상">
+      <p>50 keV As⁺(\(M_1 = 74.92\), \(Z_1 = 33\))를 Si(\(M_2 = 28.09\), \(Z_2 = 14\), 원자 밀도 \(5.0\times10^{22}\) cm⁻³)에 주입한다. (a) \(\gamma\)와 \(T_\text{max}\), (b) Si 원자에 15 eV 이상을 줄 질량 중심 최소 각, (c) ZBL 퍼텐셜로 계산하면 그 각을 만드는 충돌 변수가 \(b_d = 0.076\) nm이다. 변위 충돌 사이 평균 거리는?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> (b) \(\sin^2(\theta_c/2) = 15\ \text{eV}/(\gamma E)\). (c) 변위 단면적 \(\sigma_d = \pi b_d^2\), 평균 자유 행로 \(\ell = 1/(n\sigma_d)\).</div>
+        <div class="step"><b>풀이</b> (a) \(\gamma = 4(74.92)(28.09)/(103.0)^2 = 0.793\), \(T_\text{max} = 39.7\) keV. (b) \(\sin(\theta_c/2) = \sqrt{15/39\,660} = 0.01945\) → \(\theta_c = 2.23°\). (c) \(\sigma_d = \pi(0.076)^2 = 0.0181\) nm², \(n = 50\) nm⁻³ → \(\ell = 1/(50\times0.0181) = 1.1\) nm.</div>
+        <div class="answer">(a) \(\gamma = 0.793\), \(T_\text{max} = 39.7\) keV (b) \(\theta_c \ge 2.23°\) (c) 약 1.1 nm마다 한 번</div>
+        <div class="step"><b>검토</b> 고작 2°의 꺾임으로도 원자를 자리에서 쫓아낸다. 차폐 없는 러더퍼드라면 같은 \(b\)에서 36° 가까이 꺾인다고 예측해 손상을 크게 과대평가한다. 1.1 nm는 Si 원자 간격(0.235 nm)의 다섯 배 남짓이고, 되튄 원자들이 또 연쇄를 일으키므로 무거운 이온의 비적 주변은 곧 비정질이 된다. 그래서 As·Sb 주입에서는 비정질화 후 고상 재성장 어닐이 표준 공정이다.</div>
+      </details>
+    </div>
+    <div class="callout semi"><strong>핵 저지와 주입 프로파일·손상</strong><p>이온의 에너지 손실은 원자핵과의 탄성 충돌(핵 저지, 이 절의 고전 산란)과 전자들과의 비탄성 충돌(전자 저지)로 나뉜다. 환산 에너지 \(\varepsilon = 32.53\,M_2E/[Z_1Z_2(M_1 + M_2)(Z_1^{0.23} + Z_2^{0.23})]\)(\(E\) keV)가 1보다 작으면 핵 저지가 크다: 50 keV As는 \(\varepsilon = 0.24\)로 핵 저지가 지배하고, 같은 에너지의 B는 전자 저지가 지배해 더 깊이, 덜 부수며 들어간다. SRIM·TCAD 주입 모델은 이 ZBL 이체 충돌을 수백만 번 되풀이하는 몬테카를로이고, 결정 축으로 빔이 들어가면 큰 충돌 변수만 만나 깊게 미끄러지는 채널링이 생긴다 → <a href="https://semi.euiyun.com/doping/chapters/stopping.html">DopingBook · 이온은 어떻게 멈추는가</a>, <a href="https://semi.euiyun.com/doping/chapters/damage.html">DopingBook · 격자 손상과 비정질화</a>, <a href="https://semi.euiyun.com/tcad/chapters/implant.html">TCADBook · 이온 주입</a></p></div>
+    <div class="drill" id="drill-imp" data-title="주입 운동학·이동도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>미분 단면적은 계수율 \(dN/dt = J_\text{in}(d\sigma/d\Omega)d\Omega\)로 정의하고, 정상 상태 \(e^{ikz} + f(\theta)e^{ikr}/r\)의 확률 흐름에서 \(d\sigma/d\Omega = |f|^2\)이다. 고전적으로는 \(d\sigma/d\Omega = (b/\sin\theta)|db/d\theta|\)이며 강체 구는 등방(\(a^2/4\))이다.</li>
+      <li>리프먼–슈윙거 식 \(\psi = e^{ikz} + \int G_+U\psi\)의 정확한 진폭 \(f = -(m/2\pi\hbar^2)\langle\mathbf k'|V|\psi\rangle\)에서 \(\psi \approx e^{ikz}\)로 둔 1차 보른 근사는 \(f_B = -(m/2\pi\hbar^2)\tilde V(\mathbf q)\), \(q = 2k\sin(\theta/2)\)이다. 조건은 저에너지 \(m|V_0|a^2/\hbar^2 \ll 1\), 고에너지 \(|V_0|a/\hbar v \ll 1\)이고, 1차 근사는 퍼텐셜의 부호와 광학 정리를 모른다.</li>
+      <li>유카와 퍼텐셜의 \(\lambda\to\infty\) 극한이 러더퍼드 식 \((d/4)^2/\sin^4(\theta/2)\)이며 고전·보른·정확한 결과가 일치한다. 차폐는 \(\theta \lesssim 1/k\lambda\)를 잘라 σ를 유한하게 만들고, RBS는 운동학 인자 \(K\)로 질량을, \(Z^2\)로 양을 잰다.</li>
+      <li>중심력에서는 \(f = (1/k)\sum(2l+1)e^{i\delta_l}\sin\delta_l P_l\), \(\sigma = (4\pi/k^2)\sum(2l+1)\sin^2\delta_l\)이다. 부분파마다 \(\sigma_l \le 4\pi(2l+1)/k^2\)(유니터리 한계), 전체로는 광학 정리 \(\sigma = (4\pi/k)\mathrm{Im}\,f(0)\)가 성립한다. 저에너지에서 \(\delta_l \propto (ka)^{2l+1}\)이고 강체 구는 \(4\pi a^2\), 고에너지에서는 그림자 산란까지 \(2\pi a^2\)이다.</li>
+      <li>저에너지 s파는 산란 길이로 요약된다: \(\delta_0 \approx -ka_s\), \(\sigma \to 4\pi a_s^2\), 큰 양의 \(a_s\)는 얕은 속박 상태 \(E_B \approx \hbar^2/2ma_s^2\)을 뜻한다. 준속박 상태는 \(\delta\)가 \(\pi/2\)를 지나는 브라이트–위그너 공명(폭 \(\Gamma\), 수명 \(\hbar/\Gamma\))을, \(\delta_0 = n\pi\)는 램자우어–타운센드 투명을 만든다.</li>
+      <li>반도체에서 이온화 불순물 산란은 디바이 길이로 차폐된 쿨롱 보른 산란이고, 운동량 완화 단면적 \(\sigma_m = \int(1-\cos\theta)d\sigma\)가 브룩스–헤링 이동도 \(\mu_I \propto T^{3/2}/N_I\)를 준다. 이온 주입은 보어 매개변수 \(\kappa \gg 1\)인 고전 이체 충돌로, \(T = \gamma E\sin^2(\theta_c/2)\)와 ZBL 차폐 퍼텐셜이 에너지 전달과 변위 손상을 정한다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>필요하면 \(\hbar^2/2m_\mathrm{e} = 0.0381\) eV·nm², \(e^2/4\pi\varepsilon_0 = 1.440\) eV·nm \(= 1.440\) MeV·fm, \(\hbar = 0.6582\) eV·fs, \(\hbar c = 197.33\) MeV·fm, \(k_B = 8.617\times10^{-5}\) eV/K, \(\varepsilon_0 = 8.854\times10^{-12}\) F/m, 1 b = 100 fm²를 쓴다. 원자량: He 4.003, B 10.81, Si 28.09, As 74.92, Au 196.97.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="운동량 전달" data-answer="51.2" data-label="q =" data-unit="nm⁻¹">
+        <div class="prob-q"><p>100 eV 전자가 60°로 탄성 산란될 때 운동량 전달의 크기 \(q\)는?</p></div>
+        <div class="prob-hint">\(k = \sqrt{E/(\hbar^2/2m)}\), \(q = 2k\sin(\theta/2)\).</div>
+        <div class="prob-sol"><p>\(k = \sqrt{100/0.0381} = 51.2\) nm⁻¹, \(q = 2k\sin30° = k = 51.2\) nm⁻¹. 크기 \(1/q \approx 0.02\) nm의 구조를 보는 셈이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="고전 강체 구" data-answer="120" data-label="θ =" data-unit="°">
+        <div class="prob-q"><p>반지름 0.30 nm인 고전 강체 구에 충돌 변수 0.15 nm로 들어온 점 입자의 산란각은?</p></div>
+        <div class="prob-hint">\(b = a\cos(\theta/2)\).</div>
+        <div class="prob-sol"><p>\(\cos(\theta/2) = 0.5\) → \(\theta/2 = 60°\), \(\theta = 120°\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="러더퍼드 각 의존" data-answer="55.7" data-label="비 =" data-unit="">
+        <div class="prob-q"><p>러더퍼드 산란에서 30°의 미분 단면적은 90°의 몇 배인가?</p></div>
+        <div class="prob-hint">\(d\sigma/d\Omega \propto 1/\sin^4(\theta/2)\).</div>
+        <div class="prob-sol"><p>\(\sin^4 45°/\sin^4 15° = 0.2500/0.004487 = 55.7\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="보른 근사 조건">
+        <div class="prob-q"><p>깊이 \(V_0\), 범위 \(a\)인 퍼텐셜에서 1차 보른 근사가 <em>가장</em> 잘 맞는 경우는?</p></div>
+        <div class="prob-choices"><button>느린 입자와 깊은 우물(\(mV_0a^2/\hbar^2 \approx 2\))</button><button>속박 상태가 막 생기려는 깊이의 우물</button><button data-correct>빠른 입자(\(ka \gg 1\))이고 \(V_0a/\hbar v \ll 1\)</button><button>쿨롱 퍼텐셜에서 \(Z_1Z_2e^2/4\pi\varepsilon_0\hbar v \gg 1\)</button></div>
+        <div class="prob-sol"><p>고에너지 조건 \(V_0a/\hbar v \ll 1\)은 입자가 퍼텐셜을 지나며 쌓는 위상이 작다는 뜻이다. 속박 문턱 근처에서는 산란 길이가 발산해 보른 근사가 완전히 깨지고, \(\beta/\hbar v \gg 1\)은 오히려 고전 궤도 극한(6절 이온 주입)이다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="근접 거리" data-answer="29.5" data-label="d =" data-unit="fm">
+        <div class="prob-q"><p>러더퍼드 실험에 쓰인 7.7 MeV α 입자가 금 핵(\(Z = 79\))에 정면으로 다가갈 수 있는 가장 가까운 거리는? (되튐 무시)</p></div>
+        <div class="prob-hint">\(d = Z_1Z_2e^2/4\pi\varepsilon_0E\), \(e^2/4\pi\varepsilon_0 = 1.440\) MeV·fm.</div>
+        <div class="prob-sol"><p>\(d = 2\times79\times1.440/7.7 = 29.5\) fm. 금 핵 반지름(약 7 fm)보다 커서 러더퍼드 식이 맞는다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="RBS 운동학 인자" data-answer="1.62e3; 1.13e3" data-label="E(As) =; E(Si) =" data-unit="keV; keV">
+        <div class="prob-q"><p>2.00 MeV He 이온이 170°로 후방 산란될 때, 표면의 As 원자와 Si 원자에서 튕긴 이온의 에너지는 각각 얼마인가?</p></div>
+        <div class="prob-hint">\(K = [(\sqrt{M_2^2 - M_1^2\sin^2\theta} + M_1\cos\theta)/(M_1 + M_2)]^2\).</div>
+        <div class="prob-sol"><p>\(\sin170° = 0.1736\), \(\cos170° = -0.9848\). As: \((\sqrt{5613.0 - 0.483} - 3.942)/78.92 = 0.8993\) → \(K = 0.8087\), \(E = 1617\) keV. Si: \((\sqrt{789.1 - 0.483} - 3.942)/32.09 = 0.7521\) → \(K = 0.5657\), \(E = 1131\) keV. 두 봉우리가 490 keV 떨어져 쉽게 구분된다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="계수율" data-answer="5.32e4" data-tol="2%" data-label="계수율 =" data-unit="s⁻¹">
+        <div class="prob-q"><p>예제의 가이거–마스든 장치(5.0 MeV α 1.0 nA, 금박 넓이 밀도 \(5.91\times10^{18}\) cm⁻², 검출기 입체각 0.010 sr)에서 검출기를 30°에 두면 초당 몇 개를 세는가?</p></div>
+        <div class="prob-hint">\(d = 45.5\) fm, \(d\sigma/d\Omega = (d/4)^2/\sin^4 15°\). 1 fm² = 10⁻²⁶ cm².</div>
+        <div class="prob-sol"><p>\(d\sigma/d\Omega = 129.4/0.004487 = 2.88\times10^4\) fm²/sr \(= 2.88\times10^{-22}\) cm²/sr. \(\dot N = 3.12\times10^9\times5.91\times10^{18}\times2.88\times10^{-22}\times0.010 = 5.32\times10^4\) s⁻¹. 90°의 55.7배다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="유니터리 한계" data-answer="1.44" data-label="σ₁,max =" data-unit="nm²">
+        <div class="prob-q"><p>1.0 eV 전자의 p파(\(l = 1\)) 산란 단면적이 가질 수 있는 최댓값은?</p></div>
+        <div class="prob-hint">\(\sigma_l \le 4\pi(2l+1)/k^2\).</div>
+        <div class="prob-sol"><p>\(k = \sqrt{1.0/0.0381} = 5.12\) nm⁻¹, \(\sigma_{1,\max} = 12\pi/k^2 = 37.70/26.25 = 1.44\) nm². 공명(\(\delta_1 = 90°\))에서 닿는다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="광학 정리" data-answer="1.57" data-label="σ =" data-unit="nm²">
+        <div class="prob-q"><p>\(k = 2.0\) nm⁻¹에서 잰 앞방향 산란 진폭의 허수부가 \(\mathrm{Im}\,f(0) = 0.25\) nm이다. 흡수가 없다면 전체 단면적은?</p></div>
+        <div class="prob-hint">\(\sigma = (4\pi/k)\,\mathrm{Im}\,f(0)\).</div>
+        <div class="prob-sol"><p>\(\sigma = 4\pi\times0.25/2.0 = 1.57\) nm². 앞방향 한 각도의 진폭만으로 모든 방향의 산란 총량을 안다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="강체 구 부분파" data-answer="3.74" data-label="σ/πa² =" data-unit="">
+        <div class="prob-q"><p>강체 구에서 \(ka = 0.50\)일 때 \(\delta_0 = -0.500\), \(\delta_1 = -0.0364\) rad이고 \(\delta_2\) 이상은 무시할 만하다. \(\sigma/\pi a^2\)는?</p></div>
+        <div class="prob-hint">\(\sigma/\pi a^2 = [4/(ka)^2]\sum(2l+1)\sin^2\delta_l\).</div>
+        <div class="prob-sol"><p>\(16\,[\sin^2 0.5 + 3\sin^2 0.0364] = 16(0.2298 + 0.0040) = 3.74\). 저에너지 극한 4에 가깝다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="산란 길이" data-answer="-0.572; 4.11" data-label="aₛ =; σ =" data-unit="nm; nm²">
+        <div class="prob-q"><p>반지름 0.50 nm인 끌개 구형 우물에서 \(Ka = 1.20\)이다. 산란 길이와 \(k\to0\)의 전체 단면적을 구하라.</p></div>
+        <div class="prob-hint">\(a_s = a[1 - \tan(Ka)/Ka]\), \(\sigma = 4\pi a_s^2\).</div>
+        <div class="prob-sol"><p>\(\tan1.2 = 2.572\), \(a_s = 0.50(1 - 2.144) = -0.572\) nm. \(\sigma = 4\pi(0.572)^2 = 4.11\) nm² — 기하 단면적 0.785 nm²의 5.2배. 음의 \(a_s\)는 속박 상태가 아직 없다는 뜻이다(\(Ka &lt; \pi/2\)).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="스핀 평균 단면적" data-answer="20.5" data-label="σ =" data-unit="b">
+        <div class="prob-q"><p>느린 중성자가 양성자에 산란될 때 스핀 단일항의 산란 길이는 \(a_s = -23.74\) fm, 삼중항은 \(a_t = 5.419\) fm이다. 스핀이 무작위인 빔과 표적에서 저에너지 전체 단면적은 몇 b인가?</p></div>
+        <div class="prob-hint">두 스핀 1/2의 상태 4개 중 단일항이 1개, 삼중항이 3개다(<a href="identical-particles.html">11장</a>와 스핀 합성).</div>
+        <div class="prob-sol"><p>\(\sigma = \tfrac14(4\pi a_s^2) + \tfrac34(4\pi a_t^2) = \pi(a_s^2 + 3a_t^2) = \pi(563.6 + 88.1) = 2047\) fm² \(= 20.5\) b. 실측 20.4 b와 맞는다. 단일항 혼자면 70.8 b, 삼중항만이면 3.7 b — 핵력이 스핀에 크게 의존한다는 첫 증거였다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="디바이 길이·온도" data-answer="4.09; 1.22e3" data-label="L_D =; μ_I(77 K) =" data-unit="nm; cm²/V·s">
+        <div class="prob-q"><p>(a) \(n = 10^{18}\) cm⁻³인 Si(\(\varepsilon_r = 11.7\))의 300 K 디바이 길이는? (b) \(10^{17}\) cm⁻³에서 300 K의 브룩스–헤링 이동도가 9400 cm²/V·s일 때, 로그 인자를 무시하면 77 K에서는?</p></div>
+        <div class="prob-hint">\(L_D = \sqrt{\varepsilon_0\varepsilon_rk_BT/e^2n}\); \(\mu_I \propto T^{3/2}\).</div>
+        <div class="prob-sol"><p>(a) \(L_D = \sqrt{1.036\times10^{-10}\times4.142\times10^{-21}/(2.567\times10^{-38}\times10^{24})} = 4.09\) nm. (b) \(9408\times(77/300)^{1.5} = 1.22\times10^3\) cm²/V·s. 실제로는 저온에서 캐리어가 얼어(9장) 차폐도 바뀐다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="주입 운동학" data-answer="0.803; 8.03" data-label="γ =; T_max =" data-unit="; keV">
+        <div class="prob-q"><p>10 keV B⁺ 이온(10.81 u)을 Si(28.09 u)에 주입한다. 에너지 전달 인자 \(\gamma\)와 정면 충돌의 최대 전달 에너지는?</p></div>
+        <div class="prob-hint">\(\gamma = 4M_1M_2/(M_1 + M_2)^2\).</div>
+        <div class="prob-sol"><p>\(\gamma = 4(10.81)(28.09)/(38.90)^2 = 1214.6/1513.2 = 0.803\), \(T_\text{max} = 8.03\) keV. 가벼운 이온은 실험실에서 뒤로도 튕길 수 있다(\(M_1 &lt; M_2\)).</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="변위 최소 각" data-answer="2.23" data-tol="2%" data-label="θ_c =" data-unit="°">
+        <div class="prob-q"><p>50 keV As 이온이 Si 원자에 변위 문턱 15 eV 이상을 넘겨주려면 질량 중심 좌표에서 최소 몇 도 꺾여야 하는가?</p></div>
+        <div class="prob-hint">\(\gamma = 0.793\). \(T = \gamma E\sin^2(\theta_c/2) \ge 15\) eV.</div>
+        <div class="prob-sol"><p>\(\sin(\theta_c/2) = \sqrt{15/(0.793\times50\,000)} = 0.01945\) → \(\theta_c = 2.23°\). 이 꺾임을 만드는 충돌 변수(ZBL)는 약 0.076 nm다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="램자우어 효과">
+        <div class="prob-q"><p>아르곤 기체에서 1 eV 안팎 전자의 산란 단면적이 거의 0으로 떨어지는 램자우어–타운센드 효과의 설명으로 옳은 것은?</p></div>
+        <div class="prob-choices"><button>전자의 파장이 원자보다 길어 원자를 보지 못한다</button><button>이 에너지에서 보른 근사가 정확해진다</button><button data-correct>깊은 원자 퍼텐셜에서 s파 위상 이동이 π의 배수가 되어 \(\sin\delta_0 = 0\)이고 고차 부분파는 아직 작다</button><button>아르곤이 전자를 흡수해 산란이 사라진다</button></div>
+        <div class="prob-sol"><p>\(\delta_0 = n\pi\)이면 s파 산란 진폭 \(e^{i\delta}\sin\delta/k\)가 0이다. 파장이 길다는 것만으로는 단면적이 0이 되지 않는다 — 강체 구는 오히려 \(4\pi a^2\)이다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>차폐되지 않은 쿨롱 퍼텐셜의 전체 산란 단면적이 무한대인 이유는?</p><div class="opts">
+        <button class="opt">보른 근사가 쿨롱 퍼텐셜에서 틀리기 때문에</button>
+        <button class="opt" data-correct>\(1/r\)이 너무 천천히 줄어 아무리 먼 충돌 변수의 입자도 조금은 꺾이므로, 작은 각 산란이 끝없이 쌓이기 때문에</button>
+        <button class="opt">뒤로 튕기는 산란이 무한히 많기 때문에</button>
+        <button class="opt">쿨롱 위상 인자가 발산하기 때문에</button>
+      </div><div class="quiz-exp">\(\theta\to0\)에서 \(d\sigma/d\Omega \propto \theta^{-4}\)이고 \(\int\theta^{-4}\theta\,d\theta\)가 발산한다. 실제로는 원자 전자나 자유 캐리어가 \(\lambda\) 너머를 가려 σ가 유한해진다.</div></div>
+      <div class="quiz-q"><p>광학 정리 \(\sigma = (4\pi/k)\,\mathrm{Im}\,f(0)\)이 말하는 물리는?</p><div class="opts">
+        <button class="opt">앞방향 산란이 다른 방향보다 늘 크다</button>
+        <button class="opt">산란 진폭은 순허수다</button>
+        <button class="opt" data-correct>산란된 확률만큼 앞방향에서 산란파와 입사파가 상쇄 간섭해 빔이 줄어든다(그림자)</button>
+        <button class="opt">흡수가 있으면 성립하지 않는다</button>
+      </div><div class="quiz-exp">확률 보존의 결과다. 흡수가 있으면 왼쪽에 흡수 단면적까지 더한 전체가 온다. 1차 보른 근사는 \(\mathrm{Im}\,f_B = 0\)이라 이 정리를 \(V^2\) 차수에서 어긴다.</div></div>
+      <div class="quiz-q"><p>저에너지(\(ka \ll 1\))에서 s파만 산란에 기여하는 이유는?</p><div class="opts">
+        <button class="opt">고차 부분파는 퍼텐셜에 끌리지 않기 때문에</button>
+        <button class="opt" data-correct>원심 장벽 때문에 \(l \ge 1\) 부분파는 퍼텐셜 범위 안에 거의 들어오지 못해 \(\delta_l \propto (ka)^{2l+1}\)으로 작아지기 때문에</button>
+        <button class="opt">유니터리 한계가 \(l \ge 1\)에서 0이기 때문에</button>
+        <button class="opt">s파만 구면 대칭이라서</button>
+      </div><div class="quiz-exp">고전적으로 \(l = kb\)이므로 \(l \ge 1\)이면 \(b \ge 1/k \gg a\)라 퍼텐셜을 스치지도 못한다. 그래서 저에너지 산란은 등방이고 산란 길이 하나로 요약된다.</div></div>
+      <div class="quiz-q"><p>끌개 우물을 깊게 해 속박 상태가 막 하나 생긴 직후, 산란 길이와 저에너지 단면적은?</p><div class="opts">
+        <button class="opt">\(a_s \approx 0\), \(\sigma \approx 0\)</button>
+        <button class="opt">\(a_s = a\), \(\sigma = 4\pi a^2\)</button>
+        <button class="opt" data-correct>\(a_s\)가 큰 양수, \(\sigma = 4\pi a_s^2\)이 매우 크다</button>
+        <button class="opt">\(a_s\)가 큰 음수, σ는 기하 단면적과 같다</button>
+      </div><div class="quiz-exp">문턱에서 \(a_s\)는 \(-\infty\)에서 \(+\infty\)로 건너뛰고, 직후의 얕은 속박 상태는 \(E_B \approx \hbar^2/2ma_s^2\)이다. 중수소핵(\(a_t = 5.4\) fm, 핵력 범위의 서너 배)이 이런 상태다.</div></div>
+      <div class="quiz-q"><p>이온화 불순물 산란에서 이동도를 정하는 것이 전체 단면적 σ가 아니라 \(\sigma_m = \int(1 - \cos\theta)\,d\sigma\)인 이유는?</p><div class="opts">
+        <button class="opt">σ가 무한대라서 계산할 수 없기 때문에</button>
+        <button class="opt" data-correct>전류를 줄이는 것은 산란 횟수가 아니라 잃어버린 앞방향 운동량이고, 작은 각 스침은 운동량을 거의 잃지 않기 때문에</button>
+        <button class="opt">뒤로 튕긴 전자는 다시 앞으로 오기 때문에</button>
+        <button class="opt">\(1 - \cos\theta\)가 보른 근사의 보정 항이기 때문에</button>
+      </div><div class="quiz-exp">차폐 쿨롱 산란은 대부분 앞쪽 스침이라 \(\sigma_m/\sigma\)가 수 %에 불과하다. 그래서 단면적이 거대해도 이동도는 그만큼 나빠지지 않는다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const K = QM.K, C = K.C, KE = 1.439964547, KB = K.kBev, A0 = K.a0;
+  const pal = () => SB.palette();
+  const D2R = Math.PI / 180;
+  const fx = (x, d = 2) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const sup = (e) => String(e).replace(/-/g, "⁻").replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+  const sci = (x, d = 2) => { if (!(x > 0)) return "0"; const e = Math.floor(Math.log10(x) + 1e-12), m = x / Math.pow(10, e); if (e >= -2 && e <= 3) return x.toPrecision(d + 1).replace(/\.?0+$/, (s) => (s.includes(".") ? "" : s)); return `${m.toFixed(d)}×10${sup(e)}`; };
+  const sig = (x, n = 3) => { if (!isFinite(x)) return "∞"; if (x === 0) return "0"; const a = Math.abs(x); if (a >= 1e4 || a < 1e-3) return (x < 0 ? "−" : "") + sci(a, n - 1); return (x < 0 ? "−" : "") + Number(a.toPrecision(n)).toString(); };
+  const fmtE = (E) => { const a = Math.abs(E); return a >= 1 ? fx(E, 2) + " eV" : a >= 1e-3 ? fx(E * 1000, a >= 0.01 ? 1 : 2) + " meV" : sig(E * 1e6, 3) + " µeV"; };
+  const line = (ctx, ch, xs, ys, col, w = 2, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); let st = false; for (let i = 0; i < xs.length; i++) { const y = ys[i]; if (!isFinite(y)) { st = false; continue; } const px = ch.X(xs[i]), py = ch.Y(y); st ? ctx.lineTo(px, py) : ctx.moveTo(px, py); st = true; } ctx.stroke(); ctx.restore(); };
+  const clipBox = (ctx, ch) => { ctx.save(); ctx.beginPath(); ctx.rect(ch.box.x, ch.box.y, ch.box.w, ch.box.h); ctx.clip(); };
+  const font = (px, mono) => px + "px " + SB.color(mono ? "mono" : "font");
+
+  /* ---------------------------------------------------------- 산란 수치 도구 (a = 1 무차원) */
+  const sj = (l, x) => QM.sphJ(l, x), sy = (l, x) => QM.sphY(l, x);
+  const jh = (l, x) => x * sj(l, x), nh = (l, x) => x * sy(l, x);
+  const jhp = (l, x) => (l === 0 ? Math.cos(x) : x * sj(l - 1, x) - l * sj(l, x));
+  const nhp = (l, x) => (l === 0 ? Math.sin(x) : x * sy(l - 1, x) - l * sy(l, x));
+  /** r = 1 안쪽 (u'' = [l(l+1)/r² − K2] u) 해의 로그 미분 u'(1)/u(1). K2 > 0 이면 해석 해, 아니면 누메로프 */
+  function innerLog2(l, K2) {
+    if (K2 > 1e-10) { const Kq = Math.sqrt(K2), j = jh(l, Kq); if (Math.abs(j) > 1e-9) return (Kq * jhp(l, Kq)) / j; }
+    const N = 600, h = 1 / N, g = (r) => K2 - (l * (l + 1)) / (r * r);
+    const u = new Float64Array(N + 2); u[1] = Math.pow(h, l + 1); u[2] = Math.pow(2 * h, l + 1);
+    let gm = g(h), g0 = g(2 * h);
+    for (let i = 2; i <= N; i++) {
+      const gp = g((i + 1) * h);
+      u[i + 1] = (2 * u[i] * (1 - (5 * h * h * g0) / 12) - u[i - 1] * (1 + (h * h * gm) / 12)) / (1 + (h * h * gp) / 12);
+      gm = g0; g0 = gp;
+      if (Math.abs(u[i + 1]) > 1e150) { for (let k = 0; k <= i + 1; k++) u[k] *= 1e-150; }
+    }
+    return (u[N + 1] - u[N - 1]) / (2 * h) / u[N];
+  }
+  /** 구형 우물/장벽 위상 이동. x = ka, U = 2mV0a²/ħ² (양수 = 밀개, 음수 = 끌개) */
+  function psWell(l, x, U) {
+    const L = innerLog2(l, x * x - U);
+    const t = (L * jh(l, x) - x * jhp(l, x)) / (L * nh(l, x) - x * nhp(l, x));
+    return Math.atan(t);
+  }
+  const psHard = (l, x) => Math.atan(sj(l, x) / sy(l, x));
+  /** l = 0 우물의 연속 위상 (레빈슨 정리를 보이려고 π 가지를 고른다) */
+  function d0cont(x, U) {
+    const K2 = x * x - U;
+    if (K2 < 0) { const q = Math.sqrt(-K2); return -x + Math.atan((x / q) * Math.tanh(q)); }
+    const Kq = Math.sqrt(K2);
+    if (Kq < 1e-9) return -x + Math.atan(x);
+    return -x + Math.atan((x / Kq) * Math.tan(Kq)) + Math.PI * Math.floor(Kq / Math.PI + 0.5);
+  }
+  /** δ 껍질 V = (ħ²g/2ma) δ(r − a) 의 위상 (atan2 가지, 바깥에서 펼친다) */
+  const psShellRaw = (l, x, g) => { const j = jh(l, x), n = nh(l, x); return Math.atan2(-(g / x) * j * j, 1 - (g / x) * j * n); };
+  /** 위상들로 f(θ) (a = 1 단위, k = x) */
+  function fAmp(x, ds, ct) { let re = 0, im = 0; for (let l = 0; l < ds.length; l++) { const P = QM.P(l, ct), s = Math.sin(ds[l]); re += (2 * l + 1) * s * Math.cos(ds[l]) * P; im += (2 * l + 1) * s * s * P; } return [re / x, im / x]; }
+  const sigmaPW = (x, ds) => (4 * Math.PI / (x * x)) * ds.reduce((s, d, l) => s + (2 * l + 1) * Math.sin(d) ** 2, 0);
+  /** |f(θ)|² 각 적분 2π∫ sinθ dθ (심프슨) */
+  function angInt(fn, n = 240) { let s = 0; for (let i = 0; i <= n; i++) { const t = (Math.PI * i) / n, w = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; s += w * fn(t) * Math.sin(t); } return (2 * Math.PI * s * Math.PI) / (3 * n); }
+  const lmaxFor = (x) => Math.min(60, Math.ceil(x) + 8);
+  const bornWell = (Q, U) => (Q < 1e-4 ? -U / 3 : (-U * (Math.sin(Q) - Q * Math.cos(Q))) / (Q * Q * Q));
+  const bornGauss = (Q, U) => -(Math.sqrt(Math.PI) * U / 4) * Math.exp(-Q * Q / 4);
+
+  /* ---------------------------------------------------------- 머리: 산란 중심에 날아드는 입자들 */
+  {
+    const st = { lam: 2.5, sgn: 1, parts: [], bins: new Float64Array(18), N: 0, t: 0, spawn: 0, drag: null, msg: 0 };
+    const BMAX = 4, KAP = 0.5, X0 = -8.5;
+    const force = (x, y) => { const r2 = x * x + y * y + 0.004, r = Math.sqrt(r2), e = isFinite(st.lam) ? Math.exp(-r / st.lam) : 1, F = st.sgn * KAP * e * (1 / r2 + (isFinite(st.lam) ? 1 / (st.lam * r) : 0)); return [(F * x) / r, (F * y) / r]; };
+    const reset = () => { st.parts.length = 0; st.bins.fill(0); st.N = 0; };
+    const spawn = () => { const b = BMAX * Math.sqrt(Math.random()) * (Math.random() < 0.5 ? -1 : 1); st.parts.push({ x: X0, y: b, vx: 1, vy: 0, tr: [[X0, b]], done: false, age: 0 }); };
+    const step = (p, dt) => {
+      const n = Math.max(1, Math.ceil(dt / 0.01 * Math.min(8, 2 / Math.max(0.15, Math.hypot(p.x, p.y)))));
+      const h = dt / n;
+      for (let i = 0; i < n; i++) { let a = force(p.x, p.y); p.vx += 0.5 * h * a[0]; p.vy += 0.5 * h * a[1]; p.x += h * p.vx; p.y += h * p.vy; a = force(p.x, p.y); p.vx += 0.5 * h * a[0]; p.vy += 0.5 * h * a[1]; }
+    };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), wide = w > 560, Lw = wide ? w * 0.62 : w, Lh = wide ? h : h * 0.6;
+      const sc = Math.min(Lw / 17.5, Lh / 10), cx = Lw * 0.5, cy = Lh * 0.5 + 6;
+      self._sc = sc;
+      // 차폐 길이 원
+      if (isFinite(st.lam) && st.lam * sc < Lw) { ctx.strokeStyle = P.warn; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, st.lam * sc, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]); }
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 1.6 * sc);
+      grd.addColorStop(0, st.sgn > 0 ? P.accent2 : P.warn); grd.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, 1.6 * sc, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = st.sgn > 0 ? P.accent2 : P.warn; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, Lw, Lh); ctx.clip();
+      for (const p of st.parts) {
+        ctx.strokeStyle = P.accent; ctx.globalAlpha = p.done ? Math.max(0, 1 - p.age / 1.5) * 0.7 : 0.75; ctx.lineWidth = 1.4; ctx.beginPath();
+        p.tr.forEach(([x, y], i) => { const X = cx + x * sc, Y = cy - y * sc; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke();
+        if (!p.done) { ctx.globalAlpha = 1; ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(cx + p.x * sc, cy - p.y * sc, 3, 0, 2 * Math.PI); ctx.fill(); }
+      }
+      ctx.globalAlpha = 1; ctx.restore();
+      SB.label(ctx, (st.sgn > 0 ? "척력" : "인력") + " · 차폐 길이 λ = " + (isFinite(st.lam) ? (st.lam / 1).toFixed(2) + " d" : "∞ (러더퍼드)"), 10, 14, { align: "left", bold: true, size: 13 });
+      SB.label(ctx, `입자 ${st.N}개 검출 · d = 정면 근접 거리`, 10, 32, { align: "left", color: P.dim, size: 11 });
+      // 오른쪽: 검출 분포
+      const box = wide ? { x: Lw + 44, y: 30, w: w - Lw - 58, h: h - 98 } : { x: 52, y: Lh + 10, w: w - 66, h: h - Lh - 62 };
+      const ch = SB.chart(ctx, box, { x: [0, 180], y: [1e-2, 1e3], logY: true, xTicks: [0, 60, 120, 180], xLabel: "", yLabel: wide ? "dσ/dΩ (d²)" : "", yTicks: [1e-2, 1, 1e2] });
+      const xs = [], ys = [];
+      for (let i = 4; i <= 180; i += 2) { xs.push(i); ys.push(1 / 16 / Math.pow(Math.sin((i * D2R) / 2), 4)); }
+      line(ctx, ch, xs, ys, P.accent2, 1.6, [5, 4]);
+      const tmin = 2 * Math.atan(1 / (2 * BMAX)) / D2R;
+      ctx.fillStyle = P.faint; ctx.globalAlpha = 0.25; ctx.fillRect(ch.X(0), ch.box.y, ch.X(Math.max(tmin, 20)) - ch.X(0), ch.box.h); ctx.globalAlpha = 1;
+      if (st.N > 0) for (let b = 0; b < 18; b++) {
+        if (!st.bins[b]) continue; const t1 = b * 10 * D2R, t2 = (b + 1) * 10 * D2R;
+        const val = ((st.bins[b] / st.N) * Math.PI * BMAX * BMAX) / (2 * Math.PI * (Math.cos(t1) - Math.cos(t2)));
+        if (val > 0) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(b * 10 + 5), ch.Y(SB.clamp(val, 1.1e-2, 9e2)), 4, 0, 2 * Math.PI); ctx.fill(); }
+      }
+      SB.label(ctx, "가로축 θ(°) · 점: 센 값 · 점선: 러더퍼드", ch.box.x + ch.box.w - 4, ch.box.y + 8, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 0.46, minHeight: 300, maxHeight: 380 });
+    SB.drag(cv, { free: true, handles: () => [],
+      down: (id, x) => { st.drag = { x0: x, l0: isFinite(st.lam) ? Math.log10(st.lam) : 1.4, moved: false }; },
+      move: (id, x) => { if (!st.drag) return; if (Math.abs(x - st.drag.x0) > 5) st.drag.moved = true; if (!st.drag.moved) return; const v = SB.clamp(st.drag.l0 + ((x - st.drag.x0) / Math.max(200, cv.w)) * 2.4, -0.5, 1.35); st.lam = v > 1.3 ? Infinity : Math.pow(10, v); reset(); },
+      up: () => { if (st.drag && !st.drag.moved) { st.sgn = -st.sgn; reset(); } st.drag = null; } });
+    SB.loop("hero", (dt) => {
+      dt = Math.min(dt, 0.05); st.spawn += dt;
+      if (st.spawn > 0.09 && st.parts.filter((p) => !p.done).length < 36) { st.spawn = 0; spawn(); }
+      for (const p of st.parts) {
+        if (p.done) { p.age += dt; continue; }
+        step(p, dt * 6); p.tr.push([p.x, p.y]); if (p.tr.length > 400) p.tr.shift();
+        const r = Math.hypot(p.x, p.y);
+        if (r > 9 && p.x * p.vx + p.y * p.vy > 0) { p.done = true; const th = Math.atan2(Math.abs(p.vy), p.vx); st.bins[Math.min(17, Math.floor(th / D2R / 10))]++; st.N++; }
+      }
+      for (let i = st.parts.length - 1; i >= 0; i--) if (st.parts[i].done && st.parts[i].age > 1.5) st.parts.splice(i, 1);
+      if (st.N > 4000) { st.bins = st.bins.map((v) => v / 2); st.N /= 2; }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 미니: 고전 강체 구 */
+  {
+    let b = 0.55;
+    const getDb = SB.range("hs-db", (v) => v.toFixed(2), () => cv.redraw());
+    const cv = SB.canvas("cv-hs", (ctx, w, h, self) => {
+      const P = pal(), db = getDb(); b = Math.min(b, 1 - db);
+      const Lw = w * 0.56, R = Math.min(Lw * 0.22, h * 0.3), cx = Lw * 0.55, cy = h * 0.52;
+      self._geo = { cx, cy, R };
+      const th = (bb) => 2 * Math.acos(SB.clamp(bb, 0, 1));
+      // 입사 띠
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.18; ctx.fillRect(10, cy - (b + db) * R, cx - 10, db * R); ctx.globalAlpha = 1;
+      // 나가는 각도 띠
+      const t1 = th(b), t2 = th(b + db);
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.22; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R * 2.2, -t1, -t2); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = SB.color("surface"); ctx.strokeStyle = P.dim; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+      // 궤적: 들어와서 표면에서 반사
+      const ang = Math.asin(SB.clamp(b, 0, 1)), px = cx - R * Math.cos(ang), py = cy - R * Math.sin(ang);
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(10, py); ctx.lineTo(px, py); ctx.stroke();
+      const ex = px + Math.cos(t1) * R * 2.6, ey = py - Math.sin(t1) * R * 2.6;
+      SB.arrow(ctx, px, py, ex, ey, { color: P.accent, width: 2.4 });
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = P.faint; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.moveTo(10, cy); ctx.lineTo(Lw, cy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(30, cy); ctx.lineTo(30, py); ctx.stroke();
+      SB.label(ctx, "b", 40, (cy + py) / 2, { color: P.warn, bold: true });
+      handle(ctx, 30, py, P.accent, 11); self._h = [30, py];
+      SB.label(ctx, `θ = ${(t1 / D2R).toFixed(1)}°`, Math.min(Lw - 30, ex), Math.max(14, ey + 14), { color: P.accent, bold: true });
+      // 오른쪽: θ(b)
+      const ch = SB.chart(ctx, { x: Lw + 44, y: 16, w: w - Lw - 58, h: h - 56 }, { x: [0, 1], y: [0, 180], xLabel: "b / a", yLabel: "θ (°)", yTicks: [0, 90, 180], xTicks: [0, 0.5, 1] });
+      const xs = [], ys = []; for (let i = 0; i <= 100; i++) { xs.push(i / 100); ys.push(th(i / 100) / D2R); }
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.18; ctx.fillRect(ch.X(b), ch.box.y, ch.X(b + db) - ch.X(b), ch.box.h); ctx.globalAlpha = 1;
+      line(ctx, ch, xs, ys, P.accent, 2.2);
+      const ring = Math.PI * ((b + db) ** 2 - b * b), dO = 2 * Math.PI * (Math.cos(t2) - Math.cos(t1));
+      document.getElementById("hs-r").textContent = `b = ${b.toFixed(2)}a · 고리 ${ring.toFixed(4)}a² ÷ ΔΩ ${dO.toFixed(4)} sr = ${(ring / dO).toFixed(3)} a²`;
+    }, { aspect: 0.48, minHeight: 220, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "b", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const g = cv._geo; b = SB.clamp((g.cy - y) / g.R, 0, 1 - getDb()); } });
+  }
+
+  /* ---------------------------------------------------------- tangle: 계수율 */
+  SB.tangle("tg-rate", (v) => {
+    const dO = v.A / (v.L * v.L), R = Math.pow(10, v.Nb + v.nt + v.ds - 24) * dO;
+    return { dO: sig(dO, 3) + " sr", R: sig(R, 3) + " s⁻¹", msg: R < 1e-2 ? "하루에 몇 개 — 측정이 사실상 불가능하다." : R < 1 ? "몇 분에 몇 개 — 오래 모아야 한다." : R > 1e6 ? "검출기가 포화될 만큼 많다 — 빔을 줄인다." : "적당히 셀 수 있는 계수율이다." };
+  }, { fmt: { Nb: (v) => "10" + sup(v.toFixed(1).replace(".0", "")), nt: (v) => "10" + sup(v.toFixed(1).replace(".0", "")), ds: (v) => "10" + sup(v.toFixed(1).replace(".0", "")) } });
+
+  /* ---------------------------------------------------------- 미니: 보른 진폭 = 푸리에 변환 */
+  {
+    const getS = SB.seg("ft-shape", () => cv.redraw());
+    const getK = SB.range("ft-ka", (v) => v.toFixed(1), () => cv.redraw());
+    const amp = (Q, s) => (s === "well" ? bornWell(Q, -1) / (1 / 3) : s === "gauss" ? Math.exp(-Q * Q / 4) : 1 / (Q * Q + 1));
+    const cv = SB.canvas("cv-ft", (ctx, w, h) => {
+      const P = pal(), s = getS(), ka = getK();
+      const g = (t) => { const v = amp(2 * ka * Math.sin(t / 2), s); return v * v; };
+      // 극좌표 (위 반원)
+      const R = Math.min(w * 0.2, h * 0.7), cx = R + 20, cy = h * 0.5 + R * 0.45;
+      ctx.strokeStyle = P.grid; ctx.lineWidth = 1; [0.25, 0.5, 0.75, 1].forEach((f) => { ctx.beginPath(); ctx.arc(cx, cy, R * f, Math.PI, 2 * Math.PI); ctx.stroke(); });
+      ctx.beginPath(); ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy); ctx.stroke();
+      ctx.fillStyle = P.accent; ctx.globalAlpha = 0.25; ctx.strokeStyle = P.accent; ctx.lineWidth = 2;
+      ctx.beginPath(); for (let i = 0; i <= 180; i++) { const t = i * D2R, r = R * Math.sqrt(g(t)); const X = cx + r * Math.cos(t), Y = cy - r * Math.sin(t); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); } ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+      SB.arrow(ctx, cx - R - 14, cy + 12, cx - R + 26, cy + 12, { color: P.accent2, width: 2 });
+      SB.label(ctx, "빔", cx - R - 6, cy + 26, { color: P.accent2, size: 11 });
+      SB.label(ctx, "√ 눈금 극좌표", cx, cy + 26, { color: P.dim, size: 11 });
+      // 직교 (로그)
+      const ch = SB.chart(ctx, { x: 2 * R + 70, y: 14, w: w - 2 * R - 84, h: h - 54 }, { x: [0, 180], y: [1e-6, 1], logY: true, xLabel: "θ (°)", yLabel: "|f_B|² / |f_B(0)|²", xTicks: [0, 45, 90, 135, 180], yTicks: [1e-6, 1e-4, 1e-2, 1] });
+      const xs = [], ys = []; for (let i = 0; i <= 360; i++) { xs.push(i / 2); ys.push(Math.max(1e-9, g((i / 2) * D2R))); }
+      line(ctx, ch, xs, ys, P.accent, 2.2);
+      let msg = "";
+      if (s === "well") { const z = 4.4934 / (2 * ka); msg = z < 1 ? `첫 0점 θ = ${(2 * Math.asin(z) / D2R).toFixed(1)}° (qa = 4.493)` : "2ka < 4.493 — 0점이 없다"; if (z < 1) { ctx.strokeStyle = P.warn; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(ch.X(2 * Math.asin(z) / D2R), ch.box.y); ctx.lineTo(ch.X(2 * Math.asin(z) / D2R), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]); } }
+      else msg = `90°/0° 비 = ${sig(g(Math.PI / 2), 3)}`;
+      document.getElementById("ft-r").textContent = `ka = ${ka.toFixed(1)} · ${msg}`;
+    }, { aspect: 0.42, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 보른 조건 */
+  SB.tangle("tg-valid", (v) => {
+    const k = Math.sqrt((v.E * v.m) / C), ka = k * v.a, p1 = (v.V * v.a * v.a * v.m) / (2 * C), hv = (2 * C * k) / v.m, p2 = (v.V * v.a) / hv;
+    const p = ka < 1 ? p1 : Math.min(p1, p2);
+    return { ka: ka.toFixed(2), p1: p1.toFixed(3), p2: p2.toFixed(3), msg: p < 0.2 ? "보른 근사를 믿어도 된다." : p < 1 ? "보른 근사는 수십 % 오차를 감수해야 한다." : "보른 근사는 쓸 수 없다 — 부분파로 정확히 풀어야 한다." };
+  });
+
+  /* ---------------------------------------------------------- 보른 검증대 */
+  {
+    const st = { a: 0.3, V0: 0.2 };
+    const getSg = SB.seg("born-sign", () => upd());
+    const getE = SB.range("born-E", (v) => sig(Math.pow(10, v), 3), () => upd());
+    const logC = document.getElementById("born-log");
+    let cache = null;
+    const calc = () => {
+      const s = Number(getSg()), E = Math.pow(10, getE()), k = Math.sqrt(E / C), x = k * st.a, U = (s * st.V0 * st.a * st.a) / C;
+      const L = lmaxFor(x), ds = []; for (let l = 0; l <= L; l++) ds.push(psWell(l, x, U));
+      const th = [], ex = [], bo = [];
+      for (let i = 0; i <= 180; i++) { const t = i * D2R, f = fAmp(x, ds, Math.cos(t)); th.push(i); ex.push((f[0] * f[0] + f[1] * f[1]) * st.a * st.a); const fb = bornWell(2 * x * Math.sin(t / 2), U) * st.a; bo.push(fb * fb); }
+      const sE = sigmaPW(x, ds) * st.a * st.a, sB = angInt((t) => { const fb = bornWell(2 * x * Math.sin(t / 2), U) * st.a; return fb * fb; });
+      cache = { s, E, k, x, U, th, ex, bo, sE, sB };
+    };
+    const VR = [-1.25, 1.25], RR = [0, 1.2];
+    const cvV = SB.canvas("cv-bornV", (ctx, w, h, self) => {
+      if (!cache) calc();
+      const P = pal(), s = Number(getSg());
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 64, h: h - 54 }, { x: RR, y: VR, xLabel: "r (nm)", yLabel: "V (eV)", yTicks: [-1, -0.5, 0, 0.5, 1] });
+      self._ch = ch;
+      const y0 = ch.Y(0), yv = ch.Y(s * st.V0), xa = ch.X(st.a);
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.16; ctx.fillRect(ch.X(0), Math.min(y0, yv), xa - ch.X(0), Math.abs(yv - y0)); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(ch.X(0), yv); ctx.lineTo(xa, yv); ctx.lineTo(xa, y0); ctx.lineTo(ch.X(RR[1]), y0); ctx.stroke();
+      if (cache.E < VR[1]) { ctx.strokeStyle = P.accent; ctx.setLineDash([6, 4]); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(cache.E)); ctx.lineTo(ch.X(RR[1]), ch.Y(cache.E)); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, "E", ch.X(RR[1]) - 10, ch.Y(cache.E) - 9, { color: P.accent, bold: true }); }
+      else SB.label(ctx, `E = ${sig(cache.E, 3)} eV ↑`, ch.X(RR[1]) - 50, ch.box.y + 10, { color: P.accent, size: 11 });
+      const yw = y0 + s * 30; ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xa, y0); ctx.lineTo(xa, yw); ctx.stroke();
+      self._hw = [xa, yw]; self._hf = [ch.X(st.a * 0.4), yv];
+      handle(ctx, xa, yw, P.accent2, 10); handle(ctx, self._hf[0], yv, P.accent2, 10);
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    const cvS = SB.canvas("cv-bornS", (ctx, w, h) => {
+      if (!cache) calc();
+      const P = pal(), lg = logC.checked;
+      let mx = 0, mn = Infinity; cache.ex.concat(cache.bo).forEach((v) => { if (v > mx) mx = v; if (v > 0 && v < mn) mn = v; });
+      const yr = lg ? [Math.max(mx * 1e-7, Math.pow(10, Math.floor(Math.log10(Math.max(mn, mx * 1e-7))))), Math.pow(10, Math.ceil(Math.log10(mx)))] : [0, mx * 1.08];
+      const ch = SB.chart(ctx, { x: 62, y: 14, w: w - 76, h: h - 54 }, { x: [0, 180], y: yr, logY: lg, xLabel: "θ (°)", yLabel: "dσ/dΩ (nm²/sr)", xTicks: [0, 45, 90, 135, 180] });
+      line(ctx, ch, cache.th, cache.bo, P.accent2, 2, [6, 4]);
+      line(ctx, ch, cache.th, cache.ex, P.accent, 2.6);
+      SB.label(ctx, "정확", ch.box.x + ch.box.w - 30, ch.box.y + 10, { color: P.accent, bold: true, size: 11 });
+      SB.label(ctx, "보른", ch.box.x + ch.box.w - 30, ch.box.y + 26, { color: P.accent2, bold: true, size: 11 });
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    function upd() {
+      calc(); cvV.redraw(); cvS.redraw();
+      const c = cache, hv = (2 * C * c.k), p1 = (st.V0 * st.a * st.a) / (2 * C), p2 = (st.V0 * st.a) / hv;
+      SB.stat("born-p", `${st.a.toFixed(2)} nm · ${st.V0.toFixed(2)} eV · ${c.x.toFixed(2)}`);
+      SB.stat("born-c", `${p1.toFixed(3)} · ${p2.toFixed(3)}`);
+      SB.stat("born-s", `${sig(c.sE, 3)} · ${sig(c.sB, 3)} nm²`);
+      const err = (c.sB - c.sE) / c.sE;
+      SB.stat("born-err", `${err >= 0 ? "+" : "−"}${Math.abs(err * 100).toFixed(1)}% ${Math.abs(err) < 0.05 ? "✓" : ""}`);
+    }
+    logC.addEventListener("change", () => cvS.redraw());
+    document.getElementById("born-reset").addEventListener("click", () => { st.a = 0.3; st.V0 = 0.2; getE.set(0); });
+    SB.drag(cvV, { handles: () => (cvV._hw ? [{ id: "w", x: cvV._hw[0], y: cvV._hw[1], r: 14 }, { id: "f", x: cvV._hf[0], y: cvV._hf[1], r: 14 }] : []),
+      move: (id, x, y) => { const ch = cvV._ch; if (!ch) return; const s = Number(getSg()); if (id === "w") st.a = SB.clamp(Math.round((RR[0] + ((x - ch.box.x) / ch.box.w) * (RR[1] - RR[0])) * 100) / 100, 0.1, 1.0); if (id === "f") { const v = VR[1] - ((y - ch.box.y) / ch.box.h) * (VR[1] - VR[0]); st.V0 = SB.clamp(Math.round(s * v * 100) / 100, 0.01, 1.2); } upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- tangle: 근접 거리 */
+  SB.tangle("tg-d", (v) => {
+    const d = (2 * v.Z * KE) / v.E, R = 1.2 * (Math.cbrt(4) + Math.cbrt(v.A)), s = (d / 4) ** 2 / Math.pow(Math.sin(Math.PI / 4), 4);
+    return { d: d.toFixed(1) + " fm", R: R.toFixed(1) + " fm", s: sig(s / 100, 3) + " b/sr", msg: d > 1.3 * R ? "핵에 닿지 않으므로 러더퍼드 식이 맞는다." : d > R ? "핵 표면을 스치기 시작한다 — 큰 각에서 러더퍼드보다 줄어든다." : "핵력이 끼어든다 — 러더퍼드 식이 깨진다(이상 산란)." };
+  });
+
+  /* ---------------------------------------------------------- 미니: 차폐 쿨롱 */
+  {
+    const getKL = SB.range("scr-kl", (v) => sig(Math.pow(10, v), 3), () => cv.redraw());
+    const cv = SB.canvas("cv-scr", (ctx, w, h) => {
+      const P = pal(), kl = Math.pow(10, getKL()), e2 = 1 / (4 * kl * kl);
+      const ch = SB.chart(ctx, { x: 62, y: 14, w: w - 76, h: h - 54 }, { x: [0.1, 180], y: [1e-1, 1e10], logX: true, logY: true, xLabel: "θ (°)", yLabel: "dσ/dΩ / (d/4)²", xTicks: [0.1, 1, 10, 100], xFmt: (v) => String(v), yTicks: [1, 1e3, 1e6, 1e9] });
+      const xs = [], yr = [], ys = [];
+      for (let i = 0; i <= 300; i++) { const t = Math.pow(10, -1 + (Math.log10(180) + 1) * i / 300), s2 = Math.sin((t * D2R) / 2) ** 2; xs.push(t); yr.push(1 / (s2 * s2)); ys.push(1 / ((s2 + e2) ** 2)); }
+      line(ctx, ch, xs, yr, P.accent2, 1.8, [6, 4]); line(ctx, ch, xs, ys, P.accent, 2.6);
+      const ts = Math.min(180, 1 / kl / D2R);
+      ctx.strokeStyle = P.warn; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(ts), ch.box.y); ctx.lineTo(ch.X(ts), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]);
+      SB.label(ctx, "θ_s", ch.X(ts) + 14, ch.box.y + 12, { color: P.warn, bold: true, size: 11 });
+      document.getElementById("scr-r").textContent = `kλ = ${sig(kl, 3)} · θ_s ≈ ${sig(ts, 3)}° · σ / πd² = ${sig((4 * kl ** 4) / (1 + 4 * kl * kl), 3)}`;
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- RBS 분광기 */
+  const EL = { He: [4.002602, 2], O: [15.999, 8], Si: [28.085, 14], Ti: [47.867, 22], Co: [58.933, 27], Cu: [63.546, 29], Ga: [69.723, 31], As: [74.9216, 33], In: [114.818, 49], Sb: [121.76, 51], Hf: [178.49, 72] };
+  const Kfac = (M1, M2, th) => { const s = M1 * Math.sin(th); if (s >= M2) return NaN; return ((Math.sqrt(M2 * M2 - s * s) + M1 * Math.cos(th)) / (M1 + M2)) ** 2; };
+  const rbsXS = (Z1, Z2, M1, M2, E0, th) => { const a = ((Z1 * Z2 * KE) / (4 * E0)) ** 2, r = (M1 * Math.sin(th)) / M2, c = Math.sqrt(1 - r * r); return (a * 4 / Math.sin(th) ** 4) * ((c + Math.cos(th)) ** 2) / c / 100; }; // b/sr, E0 MeV
+  {
+    const SMP = { hfo: [["Hf", 5.5e15, 0], ["O", 1.1e16, 0]], tisi: [["Ti", 3.2e16, 0]], as: [["As", 1.0e15, 25]] };
+    const UNK = ["Ti", "Co", "Cu", "Ga", "As", "In", "Sb", "Hf"];
+    const st = { th: 170, unk: null, score: 0, done: false };
+    const getSm = SB.seg("rbs-smp", () => upd());
+    const getE = SB.range("rbs-E", (v) => v.toFixed(2), () => upd());
+    const layers = () => (getSm() === "x" ? (st.unk ? [[st.unk, 1.0e16, 0]] : []) : SMP[getSm()]);
+    const He = EL.He;
+    const cvG = SB.canvas("cv-rbsG", (ctx, w, h, self) => {
+      const P = pal(), cx = w * 0.55, cy = h * 0.55, L = Math.min(w * 0.4, h * 0.42), th = st.th * D2R;
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 3; SB.arrow(ctx, 8, cy, cx - 6, cy, { color: P.accent, width: 3 });
+      SB.label(ctx, "He⁺ " + getE().toFixed(2) + " MeV", 50, cy - 14, { color: P.accent, size: 11 });
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.35; ctx.fillRect(cx, cy - h * 0.32, 10, h * 0.64); ctx.globalAlpha = 1;
+      SB.label(ctx, "시료", cx + 24, cy + h * 0.36, { color: P.dim, size: 11 });
+      const hx = cx + L * Math.cos(th), hy = cy - L * Math.sin(th);
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(hx, hy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = P.dim; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, 34, -th, 0, false); ctx.stroke();
+      SB.label(ctx, `θ = ${st.th.toFixed(0)}°`, cx + 30, cy - 40, { bold: true, size: 12 });
+      ctx.fillStyle = P.warn; ctx.save(); ctx.translate(hx, hy); ctx.rotate(-th); ctx.fillRect(-4, -12, 8, 24); ctx.restore();
+      handle(ctx, hx, hy, P.warn, 11); self._h = [hx, hy, cx, cy];
+      SB.label(ctx, "검출기", hx, hy + (hy < cy ? -20 : 20), { color: P.warn, size: 11 });
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    const cvS = SB.canvas("cv-rbsS", (ctx, w, h) => {
+      const P = pal(), E0 = getE() * 1000, th = st.th * D2R, sE = 15 / 2.3548;
+      const ch = SB.chart(ctx, { x: 56, y: 14, w: w - 70, h: h - 54 }, { x: [0, E0 * 1.05], y: [1e13, 3e17], logY: true, xLabel: "검출 에너지 (keV)", yLabel: "수율 (상대)", yTicks: [1e14, 1e15, 1e16, 1e17], yFmt: (v) => "10" + sup(Math.round(Math.log10(v))) });
+      const sSi = rbsXS(2, 14, He[0], EL.Si[0], E0 / 1000, th), KSi = Kfac(He[0], EL.Si[0], th);
+      const xs = [], ys = [];
+      const ly = layers();
+      for (let i = 0; i <= 600; i++) {
+        const E = (E0 * 1.05 * i) / 600; xs.push(E);
+        let y = 2e13;
+        // 기판 Si: KSi·E0 에서 시작해 낮은 에너지로 갈수록 조금 오른다 (∝ 1/E²)
+        const edge = KSi * E0;
+        if (E < edge + 3 * sE) { const f = 0.5 * (1 - QM.erf((E - edge) / (Math.SQRT2 * sE))); y += f * sSi * 1.1e16 * Math.pow(edge / Math.max(E, 0.25 * edge), 2) * (E > 0.06 * E0 ? 1 : E / (0.06 * E0)); }
+        for (const [el, N, wid] of ly) { const m = EL[el], Ki = Kfac(He[0], m[0], th), si = rbsXS(2, m[1], He[0], m[0], E0 / 1000, th), s = Math.hypot(sE, wid); y += ((si * N) / (s * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((E - Ki * E0) / s) ** 2); }
+        ys.push(y);
+      }
+      ctx.save(); ctx.globalAlpha = 0.18; ctx.fillStyle = P.accent; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(1e13)); xs.forEach((x, i) => ctx.lineTo(ch.X(x), ch.Y(Math.max(1e13, ys[i])))); ctx.lineTo(ch.X(xs[xs.length - 1]), ch.Y(1e13)); ctx.closePath(); ctx.fill(); ctx.restore();
+      line(ctx, ch, xs, ys, P.accent, 2);
+      const mk = (el, row) => { const Ki = Kfac(He[0], EL[el][0], th); const X = ch.X(Ki * E0); ctx.strokeStyle = P.dim; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(X, ch.box.y); ctx.lineTo(X, ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, el, X, ch.box.y + 10 + row * 15, { size: 11, bold: true, color: P.text }); };
+      mk("Si", 0); ly.forEach(([el], i) => { if (getSm() === "x") return; mk(el, i + 1); });
+      const g = document.getElementById("rbs-guess").value; if (getSm() === "x" && g) mk(g, 1);
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    function upd() {
+      cvG.redraw(); cvS.redraw();
+      const th = st.th * D2R, ly = layers(), E0 = getE();
+      SB.stat("rbs-th", `${st.th.toFixed(0)}°`);
+      const ks = [["Si", 0]].concat(getSm() === "x" ? [] : ly).map(([el]) => `${el} ${Kfac(He[0], EL[el][0], th).toFixed(3)}`);
+      SB.stat("rbs-K", ks.join(" · "));
+      const heavy = getSm() === "x" ? "Si" : ly.reduce((a, b) => (EL[b[0]][1] > EL[a][1] ? b[0] : a), "Si");
+      SB.stat("rbs-sig", `${heavy}: ${sig(rbsXS(2, EL[heavy][1], He[0], EL[heavy][0], E0, th), 3)} b/sr`);
+    }
+    document.getElementById("rbs-guess").addEventListener("change", () => cvS.redraw());
+    document.getElementById("rbs-new").addEventListener("click", () => {
+      let u; do u = UNK[Math.floor(Math.random() * UNK.length)]; while (u === st.unk);
+      st.unk = u; st.done = false; getSm.set("x"); SB.stat("rbs-msg", "봉우리 위치에서 K를 읽고 원소를 골라 '판정'"); upd();
+    });
+    document.getElementById("rbs-check").addEventListener("click", () => {
+      const g = document.getElementById("rbs-guess").value;
+      if (getSm() !== "x" || !st.unk) { SB.stat("rbs-msg", "먼저 '새 미지 시료'를 누르세요"); return; }
+      if (!g) { SB.stat("rbs-msg", "원소를 고르세요"); return; }
+      if (g === st.unk) { if (!st.done) { st.score++; st.done = true; } SB.stat("rbs-msg", `정답! ${g} (M = ${EL[g][0].toFixed(1)}, K = ${Kfac(He[0], EL[g][0], st.th * D2R).toFixed(3)})`); }
+      else SB.stat("rbs-msg", `아니다 — ${g}의 K = ${Kfac(He[0], EL[g][0], st.th * D2R).toFixed(3)}. 봉우리와 비교해 보라`);
+      SB.stat("rbs-score", String(st.score));
+    });
+    SB.drag(cvG, { handles: () => (cvG._h ? [{ id: "d", x: cvG._h[0], y: cvG._h[1], r: 14 }] : []),
+      move: (id, x, y) => { const [, , cx, cy] = cvG._h; let deg = Math.atan2(cy - y, x - cx) / D2R; if (deg < 0) deg = -deg; st.th = SB.clamp(Math.round(deg), 60, 175); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 러더퍼드·RBS */
+  SB.drill("drill-ruth", () => {
+    const type = Math.floor(Math.random() * 3);
+    if (type === 0) {
+      const E = [2, 3, 4, 5, 6, 8][Math.floor(Math.random() * 6)], Z = [29, 47, 79, 82][Math.floor(Math.random() * 4)], d = (2 * Z * KE) / E;
+      return { q: `<p>운동 에너지 ${E} MeV의 α 입자가 \\(Z = ${Z}\\)인 핵에 정면으로 다가간다. 근접 거리 \\(d\\)는? (\\(e^2/4\\pi\\varepsilon_0 = 1.440\\) MeV·fm, 되튐 무시)</p>`, answer: Number(d.toPrecision(3)), label: "d =", unit: "fm", tol: "1%", sol: `\\(d = Z_1Z_2e^2/4\\pi\\varepsilon_0E = 2\\times${Z}\\times1.440/${E} = ${d.toFixed(1)}\\) fm` };
+    }
+    if (type === 1) {
+      const t1 = [10, 15, 20, 30, 45][Math.floor(Math.random() * 5)], t2 = [60, 90, 120, 150][Math.floor(Math.random() * 4)];
+      const r = Math.pow(Math.sin((t2 * D2R) / 2) / Math.sin((t1 * D2R) / 2), 4);
+      return { q: `<p>러더퍼드 산란에서 \\(\\theta = ${t1}°\\)의 미분 단면적은 \\(${t2}°\\)의 몇 배인가?</p>`, answer: Number(r.toPrecision(3)), label: "비 =", unit: "", tol: "1%", sol: `\\(\\sin^4(${t2 / 2}°)/\\sin^4(${t1 / 2}°) = ${sig(r, 3)}\\)` };
+    }
+    const els = ["O", "Si", "Ti", "Cu", "Ga", "As", "In", "Hf"], el = els[Math.floor(Math.random() * els.length)], th = [150, 160, 165, 170][Math.floor(Math.random() * 4)];
+    const Kv = Kfac(EL.He[0], EL[el][0], th * D2R);
+    return { q: `<p>2.00 MeV He(\\(M_1 = 4.003\\))가 표면의 ${el}(\\(M_2 = ${EL[el][0].toFixed(2)}\\)) 원자에서 \\(${th}°\\)로 후방 산란된다. 검출 에너지는?</p>`, answer: Number((Kv * 2000).toPrecision(4)), label: "E₁ =", unit: "keV", tol: "0.5%", sol: `\\(K = [(\\sqrt{M_2^2 - M_1^2\\sin^2\\theta} + M_1\\cos\\theta)/(M_1+M_2)]^2 = ${Kv.toFixed(4)}\\), \\(E_1 = KE_0 = ${(Kv * 2000).toFixed(0)}\\) keV` };
+  });
+
+  /* ---------------------------------------------------------- 미니: 위상 이동 그림 */
+  {
+    let U = -6;
+    const getK = SB.range("ps-ka", (v) => v.toFixed(2), () => cv.redraw());
+    const cv = SB.canvas("cv-ps", (ctx, w, h, self) => {
+      const P = pal(), x = getK(), K2 = x * x - U, d = d0cont(x, U);
+      const ch = SB.chart(ctx, { x: 40, y: 14, w: w - 54, h: h - 56 }, { x: [0, 4], y: [-2.2, 2.2], xLabel: "r / a", yTicks: [-1, 0, 1] });
+      self._ch = ch;
+      // 퍼텐셜 상자 (깊이 ∝ U, 그림용)
+      const yU = SB.clamp(-U / 30, -1.9, 1.9);
+      ctx.fillStyle = U < 0 ? P.accent2 : P.warn; ctx.globalAlpha = 0.16; ctx.fillRect(ch.X(0), Math.min(ch.Y(0), ch.Y(yU)), ch.X(1) - ch.X(0), Math.abs(ch.Y(yU) - ch.Y(0))); ctx.globalAlpha = 1;
+      ctx.strokeStyle = U < 0 ? P.accent2 : P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(yU)); ctx.lineTo(ch.X(1), ch.Y(yU)); ctx.lineTo(ch.X(1), ch.Y(0)); ctx.lineTo(ch.X(4), ch.Y(0)); ctx.stroke();
+      const xs = [], fr = [], ex = [], cont = [];
+      // 안쪽 진폭: 바깥 sin(xr + δ) 와 r = 1 에서 이어 붙임
+      let uin;
+      if (K2 > 0) { const Kq = Math.sqrt(K2), s = Math.sin(Kq); const A = Math.abs(s) > 0.15 ? Math.sin(x + d) / s : (x * Math.cos(x + d)) / (Kq * Math.cos(Kq)); uin = (r) => A * Math.sin(Kq * r); }
+      else { const q = Math.sqrt(-K2), A = Math.sin(x + d) / Math.sinh(q); uin = (r) => A * Math.sinh(q * r); }
+      for (let i = 0; i <= 400; i++) { const r = (4 * i) / 400; xs.push(r); fr.push(Math.sin(x * r)); cont.push(Math.sin(x * r + d)); ex.push(r < 1 ? uin(r) : Math.sin(x * r + d)); }
+      line(ctx, ch, xs, fr, P.faint, 1.6, [5, 4]); line(ctx, ch, xs, cont, P.accent2, 1.4, [3, 3]); line(ctx, ch, xs, ex, P.accent, 2.6);
+      self._h = [ch.X(0.5), ch.Y(yU)]; handle(ctx, ch.X(0.5), ch.Y(yU), U < 0 ? P.accent2 : P.warn, 10);
+      const nb = U < 0 ? Math.floor(Math.sqrt(-U) / Math.PI + 0.5) : 0;
+      document.getElementById("ps-r").textContent = `U₀ = 2mV₀a²/ħ² = ${U.toFixed(1)} · δ₀ = ${d.toFixed(3)} rad = ${(d / Math.PI).toFixed(3)}π · 속박 상태 ${nb}개`;
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 300 });
+    SB.drag(cv, { handles: () => (cv._h ? [{ id: "f", x: cv._h[0], y: cv._h[1], r: 14 }] : []), move: (id, x, y) => { const ch = cv._ch; const v = 2.2 - ((y - ch.box.y) / ch.box.h) * 4.4; U = SB.clamp(Math.round(-v * 30 * 10) / 10, -57, 20); } });
+  }
+
+  /* ---------------------------------------------------------- tangle: 부분파 개수 */
+  SB.tangle("tg-lmax", (v) => {
+    const k = Math.sqrt((v.E * v.m) / C), ka = k * v.a, smax = (4 * Math.PI) / (k * k);
+    return { ka: ka.toFixed(2), n: String(Math.max(1, Math.ceil(ka))), smax: sig(smax, 3) + " nm²", ratio: sig(smax / (Math.PI * v.a * v.a), 3), msg: ka < 0.5 ? "s파 하나로 충분하다 — 산란은 등방이다." : ka < 5 ? "몇 개의 부분파로 정확히 풀 수 있는 영역이다." : "부분파가 너무 많다 — 보른·준고전 근사가 편하다." };
+  });
+
+  /* ---------------------------------------------------------- 부분파 작업대 */
+  {
+    const st = { x: 0.5 };
+    const getPot = SB.seg("pw-pot", () => { curve = null; upd(); });
+    const getU = SB.range("pw-U", (v) => v.toFixed(1), () => { curve = null; upd(); });
+    const bornC = document.getElementById("pw-born");
+    let curve = null;
+    const deltas = (x) => {
+      const p = getPot(), U0 = getU(), L = lmaxFor(x), ds = [];
+      if (p === "gauss") { const r = QM.phaseShifts((r) => U0 * C * Math.exp(-r * r), x * x * C, L, { m: 1, rmax: 4, N: 1600 }); return r; }
+      for (let l = 0; l <= L; l++) ds.push(p === "hs" ? psHard(l, x) : psWell(l, x, -U0));
+      return ds;
+    };
+    const bornSig = (x) => { const p = getPot(), U0 = getU(); if (p === "hs") return NaN; const f = p === "well" ? (Q) => bornWell(Q, -U0) : (Q) => bornGauss(Q, U0); return angInt((t) => f(2 * x * Math.sin(t / 2)) ** 2, 160) / Math.PI; };
+    const buildCurve = () => { const xs = [], ys = [], y0 = [], yb = []; for (let i = 0; i <= 140; i++) { const x = 0.05 + (9.95 * i) / 140; const ds = deltas(x); xs.push(x); ys.push(sigmaPW(x, ds) / Math.PI); y0.push(((4 * Math.PI) / (x * x)) * Math.sin(ds[0]) ** 2 / Math.PI); yb.push(bornC.checked ? bornSig(x) : NaN); } curve = { xs, ys, y0, yb, born: bornC.checked }; };
+    const cvA = SB.canvas("cv-pwA", (ctx, w, h) => {
+      const P = pal(), x = st.x, ds = deltas(x), nL = Math.min(ds.length, 12);
+      const bh = h * 0.42, bw = (w - 60) / nL;
+      ctx.font = font(11); ctx.fillStyle = P.dim; ctx.textAlign = "center";
+      for (let l = 0; l < nL; l++) { const s2 = Math.sin(ds[l]) ** 2, X = 40 + l * bw; ctx.fillStyle = P.grid; ctx.fillRect(X + 2, 14, bw - 4, bh - 20); ctx.fillStyle = P.accent; ctx.fillRect(X + 2, 14 + (bh - 20) * (1 - s2), bw - 4, (bh - 20) * s2); ctx.fillStyle = P.dim; ctx.fillText(String(l), X + bw / 2, bh + 4); }
+      SB.label(ctx, "sin²δ_l", 22, 20, { size: 10, color: P.dim });
+      SB.label(ctx, "l", 22, bh + 8, { size: 10, color: P.dim });
+      // 극좌표
+      const R = Math.min((w - 40) / 2, h - bh - 40), cx = w / 2, cy = h - 14;
+      const vals = []; let mx = 0; for (let i = 0; i <= 180; i++) { const f = fAmp(x, ds, Math.cos(i * D2R)), v = f[0] * f[0] + f[1] * f[1]; vals.push(v); if (v > mx) mx = v; }
+      ctx.strokeStyle = P.grid; [0.5, 1].forEach((q) => { ctx.beginPath(); ctx.arc(cx, cy, R * q, Math.PI, 2 * Math.PI); ctx.stroke(); });
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.22; ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath();
+      vals.forEach((v, i) => { const t = i * D2R, r = R * Math.sqrt(v / mx); const X = cx + r * Math.cos(t), Y = cy - r * Math.sin(t); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+      SB.label(ctx, "dσ/dΩ (√ 눈금) · 빔 →", cx, cy - R - 8, { size: 11, color: P.dim });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    const cvB = SB.canvas("cv-pwB", (ctx, w, h, self) => {
+      if (!curve || curve.born !== bornC.checked) buildCurve();
+      const P = pal(); let mx = 4.2; curve.ys.forEach((v) => { if (isFinite(v)) mx = Math.max(mx, v); });
+      mx = Math.min(mx * 1.05, 60);
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 64, h: h - 54 }, { x: [0, 10], y: [0, mx], xLabel: "ka", yLabel: "σ / πa²", hlines: getPot() === "hs" ? [{ y: 4, label: "4" }, { y: 2, label: "2" }] : [] });
+      self._ch = ch;
+      line(ctx, ch, curve.xs, curve.y0, P.accent2, 1.5, [4, 4]);
+      if (curve.born) line(ctx, ch, curve.xs, curve.yb, P.warn, 1.8, [6, 3]);
+      line(ctx, ch, curve.xs, curve.ys, P.accent, 2.6);
+      const ds = deltas(st.x), y = sigmaPW(st.x, ds) / Math.PI;
+      self._h = [ch.X(st.x), ch.Y(Math.min(y, mx))]; handle(ctx, self._h[0], self._h[1], P.accent, 10);
+      if (curve.born) SB.label(ctx, "보른", ch.box.x + ch.box.w - 24, ch.box.y + 26, { color: P.warn, size: 11, bold: true });
+      SB.label(ctx, "s파 몫", ch.box.x + ch.box.w - 30, ch.box.y + 10, { color: P.accent2, size: 11 });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    function upd() {
+      cvA.redraw(); cvB.redraw();
+      const x = st.x, ds = deltas(x), s = sigmaPW(x, ds);
+      const sInt = angInt((t) => { const f = fAmp(x, ds, Math.cos(t)); return f[0] * f[0] + f[1] * f[1]; }, 360), im0 = fAmp(x, ds, 1)[1];
+      SB.stat("pw-ka", x.toFixed(2));
+      SB.stat("pw-d", [0, 1, 2].map((l) => (ds[l] / D2R).toFixed(1)).join(" · "));
+      SB.stat("pw-s", (s / Math.PI).toFixed(3));
+      SB.stat("pw-ot", ((4 * Math.PI / x) * im0 / sInt).toFixed(4));
+      SB.stat("pw-n", `l = 0…${ds.length - 1}`);
+    }
+    bornC.addEventListener("change", () => { curve = null; cvB.redraw(); });
+    SB.drag(cvB, { handles: () => (cvB._h ? [{ id: "k", x: cvB._h[0], y: cvB._h[1], r: 14 }] : []), move: (id, x) => { const ch = cvB._ch; st.x = SB.clamp(((x - ch.box.x) / ch.box.w) * 10, 0.05, 10); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 위상 이동 → 단면적 */
+  SB.drill("drill-pw", () => {
+    const d0 = 5 * Math.floor(Math.random() * 17 + 1), d1 = 5 * Math.floor(Math.random() * 8), k = [0.5, 1, 1.5, 2, 3][Math.floor(Math.random() * 5)];
+    const S = Math.sin(d0 * D2R) ** 2 + 3 * Math.sin(d1 * D2R) ** 2, s = ((4 * Math.PI) / (k * k)) * S;
+    return { q: `<p>\\(k = ${k}\\) nm⁻¹에서 위상 이동이 \\(\\delta_0 = ${d0}°\\), \\(\\delta_1 = ${d1}°\\)이고 나머지는 0이다. 전체 단면적은?</p>`, answer: Number(s.toPrecision(3)), label: "σ =", unit: "nm²", tol: "1%", sol: `\\(\\sigma = (4\\pi/k^2)[\\sin^2\\delta_0 + 3\\sin^2\\delta_1] = (4\\pi/${k * k})(${S.toFixed(4)}) = ${sig(s, 3)}\\) nm²` };
+  });
+
+  /* ---------------------------------------------------------- 산란 길이 만들기 */
+  {
+    const st = { K: 1.2, goal: null, score: 0, hit: false };
+    const ext = document.getElementById("al-ext");
+    const asOf = (K) => (K < 1e-6 ? 0 : 1 - Math.tan(K) / K);
+    const bound = (K) => {
+      const nb = Math.floor(K / Math.PI + 0.5); if (!nb) return { nb, EB: NaN };
+      const f = (q) => { const Kp = Math.sqrt(Math.max(0, K * K - q * q)); return Kp * Math.cos(Kp) + q * Math.sin(Kp); };
+      let prev = f(1e-6), qp = 1e-6;
+      for (let i = 1; i <= 2000; i++) { const q = (K * i) / 2000, v = f(q); if (prev * v <= 0) return { nb, EB: Math.pow(QM.bisect(f, qp, q), 2) }; prev = v; qp = q; }
+      return { nb, EB: NaN };
+    };
+    const RX = [-6, 8];
+    const cvU = SB.canvas("cv-alU", (ctx, w, h, self) => {
+      const P = pal(), K = st.K, as = asOf(K);
+      const ch = SB.chart(ctx, { x: 30, y: 14, w: w - 44, h: h - 56 }, { x: RX, y: [-1.6, 1.6], xLabel: "r / a", yTicks: [0], xTicks: [-6, -4, -2, 0, 2, 4, 6, 8] });
+      self._ch = ch;
+      const yd = -0.15 - (1.3 * K) / 11;
+      ctx.fillStyle = P.accent2; ctx.globalAlpha = 0.16; ctx.fillRect(ch.X(0), ch.Y(0), ch.X(1) - ch.X(0), ch.Y(yd) - ch.Y(0)); ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.X(0), ch.Y(1.6)); ctx.lineTo(ch.X(0), ch.Y(yd)); ctx.lineTo(ch.X(1), ch.Y(yd)); ctx.lineTo(ch.X(1), ch.Y(0)); ctx.stroke();
+      ctx.fillStyle = P.faint; ctx.globalAlpha = 0.15; ctx.fillRect(ch.X(RX[0]), ch.box.y, ch.X(0) - ch.X(RX[0]), ch.box.h); ctx.globalAlpha = 1;
+      // u(r): 안 sin(Kr), 밖 sinK + K cosK (r − 1)
+      const s = Math.sin(K), c = K * Math.cos(K);
+      let mx = 0; for (let i = 0; i <= 100; i++) { const r = i / 100; mx = Math.max(mx, Math.abs(Math.sin(K * r))); } mx = Math.max(mx, Math.abs(s + c * (RX[1] - 1)), 1e-3);
+      const nrm = 1.2 / mx, xs = [], ys = [], xe = [], ye = [];
+      for (let i = 0; i <= 300; i++) { const r = (8 * i) / 300; xs.push(r); ys.push(nrm * (r < 1 ? Math.sin(K * r) : s + c * (r - 1))); }
+      for (let i = 0; i <= 100; i++) { const r = RX[0] + ((1 - RX[0]) * i) / 100; xe.push(r); ye.push(nrm * (s + c * (r - 1))); }
+      if (ext.checked) line(ctx, ch, xe, ye, P.warn, 1.6, [5, 4]);
+      line(ctx, ch, xs, ys, P.accent, 2.6);
+      if (as > RX[0] && as < RX[1]) { ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(ch.X(as), ch.Y(0), 5, 0, 2 * Math.PI); ctx.fill(); SB.label(ctx, "aₛ", ch.X(as), ch.Y(0) + 16, { color: P.warn, bold: true }); }
+      else SB.label(ctx, as > 0 ? "aₛ → (오른쪽 밖)" : "← aₛ (왼쪽 밖)", as > 0 ? ch.box.x + ch.box.w - 60 : ch.box.x + 60, ch.Y(0) + 16, { color: P.warn, size: 11 });
+      self._h = [ch.X(0.5), ch.Y(yd)]; handle(ctx, self._h[0], self._h[1], P.accent2, 10);
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    const cvA = SB.canvas("cv-alA", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 60, h: h - 54 }, { x: [0, 11], y: [-10, 10], xLabel: "Ka = a√(2mV₀)/ħ", yLabel: "aₛ / a", yTicks: [-10, -5, 0, 1, 5, 10], vlines: [1, 3, 5].map((n) => ({ x: (n * Math.PI) / 2, color: P.faint })) });
+      self._ch = ch;
+      if (st.goal != null) { ctx.fillStyle = P.ok; ctx.globalAlpha = 0.18; const a = ch.Y(st.goal * 1.05), b = ch.Y(st.goal * 0.95); ctx.fillRect(ch.box.x, Math.min(a, b), ch.box.w, Math.abs(a - b)); ctx.globalAlpha = 1; }
+      const xs = [], ys = []; for (let i = 0; i <= 1100; i++) { const K = (11 * i) / 1100; xs.push(K); const v = asOf(K); ys.push(Math.abs(v) > 40 ? NaN : v); }
+      clipBox(ctx, ch); line(ctx, ch, xs, ys, P.accent, 2.2); ctx.restore();
+      const v = SB.clamp(asOf(st.K), -10, 10); self._h = [ch.X(st.K), ch.Y(v)]; handle(ctx, self._h[0], self._h[1], P.accent, 10);
+    }, { aspect: 0.75, minHeight: 220, maxHeight: 320 });
+    function upd() {
+      cvU.redraw(); cvA.redraw();
+      const as = asOf(st.K), b = bound(st.K);
+      SB.stat("al-K", `${st.K.toFixed(3)} · U₀ = ${(st.K * st.K).toFixed(2)}`);
+      SB.stat("al-a", Math.abs(as) > 1e3 ? "±∞" : as.toFixed(3));
+      SB.stat("al-s", sig(4 * as * as, 3));
+      SB.stat("al-nb", `${b.nb}개${isFinite(b.EB) ? ` · ${b.EB.toFixed(4)} (1/aₛ² = ${as > 0 ? (1 / (as * as)).toFixed(4) : "—"})` : ""}`);
+      if (st.goal != null) {
+        const ok = Math.abs(as - st.goal) <= 0.05 * Math.abs(st.goal);
+        if (ok && !st.hit) { st.hit = true; st.score++; }
+        SB.stat("al-goal", `aₛ/a = ${st.goal.toFixed(2)} ${ok ? "✓ 성공!" : ""}`); SB.stat("al-score", String(st.score));
+      }
+    }
+    ext.addEventListener("change", () => cvU.redraw());
+    document.getElementById("al-new").addEventListener("click", () => { const sgn = Math.random() < 0.5 ? -1 : 1; st.goal = sgn * (1.5 + Math.random() * 5); st.goal = Math.round(st.goal * 100) / 100; st.hit = false; upd(); });
+    SB.drag(cvU, { handles: () => (cvU._h ? [{ id: "f", x: cvU._h[0], y: cvU._h[1], r: 14 }] : []), move: (id, x, y) => { const ch = cvU._ch, v = 1.6 - ((y - ch.box.y) / ch.box.h) * 3.2; st.K = SB.clamp(((-0.15 - v) * 11) / 1.3, 0, 11); upd(); } });
+    SB.drag(cvA, { handles: () => (cvA._h ? [{ id: "k", x: cvA._h[0], y: cvA._h[1], r: 14 }] : []), move: (id, x) => { const ch = cvA._ch; st.K = SB.clamp(((x - ch.box.x) / ch.box.w) * 11, 0, 11); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- tangle: 얕은 속박 */
+  SB.tangle("tg-shallow", (v) => {
+    const E = C / v.m / (v.as * v.as), s = 4 * Math.PI * v.as * v.as, r = s / (Math.PI * v.a * v.a);
+    return { E: fmtE(E), s: sig(s, 3) + " nm²", r: sig(r, 3), msg: v.as > 3 * v.a ? "aₛ가 범위보다 훨씬 커서 보편 관계가 잘 맞는다." : "aₛ가 범위와 비슷해 유효 거리 보정이 크다." };
+  });
+
+  /* ---------------------------------------------------------- 미니: 램자우어–타운센드 */
+  {
+    const getK = SB.range("rt-K", (v) => v.toFixed(2), () => cv.redraw());
+    const cv = SB.canvas("cv-rt", (ctx, w, h) => {
+      const P = pal(), K0 = getK(), U = -K0 * K0;
+      const xs = [], tot = [], s0 = [], s1 = [], s2 = []; let mn = Infinity, xm = 0;
+      for (let i = 0; i <= 260; i++) { const x = 0.05 + (3.95 * i) / 260; xs.push(x); const ds = [0, 1, 2, 3, 4].map((l) => psWell(l, x, U)); const c = (l) => ((4 * Math.PI) / (x * x)) * (2 * l + 1) * Math.sin(ds[l]) ** 2 / Math.PI; s0.push(c(0)); s1.push(c(1)); s2.push(c(2)); const t = ds.reduce((s, d, l) => s + c(l), 0); tot.push(t); if (x > 0.3 && t < mn) { mn = t; xm = x; } }
+      let mx = 0; tot.forEach((v) => (mx = Math.max(mx, v)));
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 64, h: h - 54 }, { x: [0, 4], y: [0, Math.min(Math.max(mx * 1.05, 2), 60)], xLabel: "ka", yLabel: "σ / πa²" });
+      clipBox(ctx, ch);
+      line(ctx, ch, xs, s2, P.warn, 1.5, [3, 3]); line(ctx, ch, xs, s1, P.accent2, 1.6, [5, 3]); line(ctx, ch, xs, s0, P.accent, 1.8); line(ctx, ch, xs, tot, P.text, 2.4);
+      ctx.restore();
+      ctx.fillStyle = P.bad; ctx.beginPath(); ctx.arc(ch.X(xm), ch.Y(mn), 5, 0, 2 * Math.PI); ctx.fill();
+      document.getElementById("rt-r").textContent = `Ka₀ = ${K0.toFixed(2)} (U₀ = ${(K0 * K0).toFixed(1)}) · 최소 σ = ${mn.toFixed(3)}πa² at ka = ${xm.toFixed(2)} · 속박 상태 ${Math.floor(K0 / Math.PI + 0.5)}개(s)`;
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- 공명 사냥 */
+  {
+    const st = { x: 2.6, score: 0, got: {} };
+    const getL = SB.seg("res-l", () => { cur = null; upd(); });
+    const getG = SB.range("res-g", (v) => v.toFixed(1), () => { cur = null; upd(); });
+    let cur = null;
+    const X0 = 0.2, X1 = 10, NX = 6000;
+    const build = () => {
+      const l = Number(getL()), g = getG(), xs = new Float64Array(NX + 1), d = new Float64Array(NX + 1);
+      let prev = 0, off = 0;
+      for (let i = 0; i <= NX; i++) { const x = X0 + ((X1 - X0) * i) / NX; xs[i] = x; let v = psShellRaw(l, x, g) + off; while (v - prev > Math.PI / 2) { v -= Math.PI; off -= Math.PI; } while (v - prev < -Math.PI / 2) { v += Math.PI; off += Math.PI; } d[i] = v; prev = v; }
+      const res = [];
+      for (let i = 2; i < NX - 1; i++) { const s = (j) => (d[j + 1] - d[j - 1]) / (xs[j + 1] ** 2 - xs[j - 1] ** 2); const si = s(i); if (si > 0.4 && si >= s(i - 1) && si >= s(i + 1)) res.push({ x: xs[i], E: xs[i] ** 2, G: 2 / si }); }
+      const zeros = []; for (let n = 1; n <= 4; n++) { const z = QM.sphJZero ? QM.sphJZero(l, n) : NaN; if (z < X1) zeros.push(z); }
+      cur = { l, g, xs, d, res, zeros };
+    };
+    const ampAt = (x) => {
+      const l = cur.l, g = cur.g, dl = psShellRaw(l, x, g), cd = Math.cos(dl), sd = Math.sin(dl);
+      const out = (r) => jh(l, x * r) * cd - nh(l, x * r) * sd;
+      const ja = jh(l, x), al = Math.abs(ja) > 1e-9 ? out(1) / ja : 0;
+      return { dl, inn: (r) => al * jh(l, x * r), out };
+    };
+    const cvS = SB.canvas("cv-resS", (ctx, w, h, self) => {
+      if (!cur) build();
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 60, h: h - 56 }, { x: [0, X1], y: [0, 1.05], xLabel: "ka", yLabel: "sin²δ_l", yTicks: [0, 0.5, 1], vlines: cur.zeros.map((z) => ({ x: z, color: P.faint })) });
+      self._ch = ch;
+      const xs = Array.from(cur.xs), s2 = xs.map((x, i) => Math.sin(cur.d[i]) ** 2), dm = xs.map((x, i) => { let v = cur.d[i] / Math.PI; v -= Math.floor(v); return v; });
+      line(ctx, ch, xs, dm, P.accent2, 1.3, [3, 3]); line(ctx, ch, xs, s2, P.accent, 2.4);
+      const y = Math.sin(psShellRaw(cur.l, st.x, cur.g)) ** 2; self._h = [ch.X(st.x), ch.Y(y)]; handle(ctx, self._h[0], self._h[1], P.accent, 10);
+    }, { aspect: 0.36, minHeight: 200, maxHeight: 280 });
+    const cvU = SB.canvas("cv-resU", (ctx, w, h) => {
+      if (!cur) build();
+      const P = pal(), A = ampAt(st.x);
+      const xs = [], ys = []; let mi = 0;
+      for (let i = 0; i <= 400; i++) { const r = (3 * i) / 400 + 1e-6; xs.push(r); const v = r < 1 ? A.inn(r) : A.out(r); ys.push(v); if (r < 1) mi = Math.max(mi, Math.abs(v)); }
+      const m = Math.max(1.2, mi * 1.1);
+      const ch = SB.chart(ctx, { x: 46, y: 14, w: w - 60, h: h - 56 }, { x: [0, 3], y: [-m, m], xLabel: "r / a", yLabel: "u_l(r)", vlines: [{ x: 1, color: P.warn, dash: [], width: 3 }] });
+      line(ctx, ch, xs, ys, P.accent, 2.4);
+      SB.label(ctx, "껍질 장벽", ch.X(1) + 34, ch.box.y + 10, { color: P.warn, size: 11 });
+      st.amp = mi;
+    }, { aspect: 0.36, minHeight: 200, maxHeight: 280 });
+    function upd() {
+      if (!cur) build();
+      cvS.redraw(); cvU.redraw();
+      const dl = psShellRaw(cur.l, st.x, cur.g), s2 = Math.sin(dl) ** 2;
+      SB.stat("res-k", `${st.x.toFixed(3)} · ${(st.x * st.x).toFixed(3)}`);
+      SB.stat("res-d", `${(((dl % Math.PI) + Math.PI) % Math.PI / D2R).toFixed(1)}° · ${s2.toFixed(3)}`);
+      SB.stat("res-amp", `${(st.amp || 0).toFixed(2)}배`);
+      let best = null; cur.res.forEach((r) => { if (!best || Math.abs(r.x - st.x) < Math.abs(best.x - st.x)) best = r; });
+      SB.stat("res-G", best ? `${best.E.toFixed(3)} · Γ = ${sig(best.G, 3)} (ħ²/2ma²)` : "—");
+      const ok = s2 >= 0.98 && (st.amp || 0) >= 3;
+      if (ok && best) { const key = `${cur.l}:${cur.g}:${best.x.toFixed(2)}`; if (!st.got[key]) { st.got[key] = 1; st.score++; } }
+      SB.stat("res-game", ok ? "공명 포착! 다른 공명도 찾아보라" : s2 >= 0.98 ? "sin²δ는 크지만 안쪽 진폭이 작다 — 넓은 배경 산란" : "에너지를 끌어 봉우리를 찾는다");
+      SB.stat("res-score", String(st.score));
+    }
+    SB.drag(cvS, { handles: () => (cvS._h ? [{ id: "k", x: cvS._h[0], y: cvS._h[1], r: 14 }] : []), free: true, move: (id, x) => { const ch = cvS._ch; st.x = SB.clamp(((x - ch.box.x) / ch.box.w) * X1, X0, X1 - 0.01); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 미니: 운동량 완화 */
+  {
+    const getG = SB.range("mt-g", (v) => sig(Math.pow(10, v), 3), () => cv.redraw());
+    const cv = SB.canvas("cv-mt", (ctx, w, h) => {
+      const P = pal(), g = Math.pow(10, getG()), e = 1 / (g * g);
+      const ds = (t) => 1 / ((Math.sin(t / 2) ** 2 + e) ** 2);
+      const xs = [], a = [], b = []; let ma = 0, mb = 0;
+      for (let i = 0; i <= 360; i++) { const t = (i / 2) * D2R; xs.push(i / 2); const v = ds(t) * Math.sin(t), u = v * (1 - Math.cos(t)); a.push(v); b.push(u); ma = Math.max(ma, v); mb = Math.max(mb, u); }
+      const ch = SB.chart(ctx, { x: 50, y: 14, w: w - 64, h: h - 54 }, { x: [0, 180], y: [0, 1.08], xLabel: "θ (°)", yLabel: "각 분포 (최댓값 = 1)", xTicks: [0, 45, 90, 135, 180] });
+      line(ctx, ch, xs, a.map((v) => v / ma), P.accent2, 2.2); line(ctx, ch, xs, b.map((v) => v / mb), P.accent, 2.4);
+      const s = angInt((t) => ds(t), 720), sm = angInt((t) => ds(t) * (1 - Math.cos(t)), 720);
+      SB.label(ctx, "dσ/dΩ·sinθ", ch.X(120), ch.box.y + 12, { color: P.accent2, size: 11 }); SB.label(ctx, "(1−cosθ)dσ/dΩ·sinθ", ch.X(120), ch.box.y + 28, { color: P.accent, size: 11 });
+      document.getElementById("mt-r").textContent = `γ = 2kL_D = ${sig(g, 3)} · σ_m/σ = ${sig(sm / s, 3)}`;
+    }, { aspect: 0.45, minHeight: 220, maxHeight: 300 });
+  }
+
+  /* ---------------------------------------------------------- tangle: 디바이 길이 */
+  SB.tangle("tg-LD", (v) => {
+    const n = Math.pow(10, v.n), LD = Math.sqrt((11.7 * K.eps0 * K.kB * v.T) / (K.e * K.e * n * 1e6)) * 1e9, d = 1e7 / Math.cbrt(n);
+    const E = 1.5 * KB * v.T, k = Math.sqrt((E * 0.26) / C), g = 2 * k * LD, b = (KE / 11.7) / ((2 * C * k) / 0.26);
+    return { LD: sig(LD, 3) + " nm", d: sig(d, 3) + " nm", g: sig(g, 3), b: b.toFixed(2), msg: b > 1 ? "보른 근사가 맞지 않는 영역 — 브룩스–헤링은 어림일 뿐이다." : LD > d ? "차폐 구름이 이웃 이온까지 덮는다 — 이온 하나만 보는 그림이 흔들린다." : "이온마다 따로 가려진 유카와 산란 중심으로 볼 수 있다." };
+  });
+
+  /* ---------------------------------------------------------- 이동도 지도 */
+  {
+    const st = { N: 1e17, T: 300 };
+    const getCar = SB.seg("mob-car", () => upd());
+    const getMod = SB.seg("mob-mod", () => upd());
+    const ctC = document.getElementById("mob-ct");
+    const prm = () => (getCar() === "n" ? { m: 0.26, mx: 1414, mn: 68.5, Nr: 9.2e16, al: 0.711, ex: 2.42 } : { m: 0.39, mx: 470.5, mn: 44.9, Nr: 2.23e17, al: 0.719, ex: 2.2 });
+    const muL = (T) => prm().mx * Math.pow(T / 300, -prm().ex);
+    const muI = (N, T) => (getMod() === "bh" ? QM.mobilityBH(N, T, prm().m, 11.7) : QM.mobilityCW(N, T, prm().m, 11.7));
+    const muT = (N, T) => 1 / (1 / muL(T) + 1 / muI(N, T));
+    const ct = (N) => { const p = prm(); return p.mn + (p.mx - p.mn) / (1 + Math.pow(N / p.Nr, p.al)); };
+    const cvN = SB.canvas("cv-mobN", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 58, y: 14, w: w - 72, h: h - 54 }, { x: [1e14, 1e20], y: [10, 1e5], logX: true, logY: true, xLabel: "N (cm⁻³)", yLabel: "μ (cm²/V·s)", xTicks: [1e14, 1e16, 1e18, 1e20], xFmt: (v) => "10" + sup(Math.round(Math.log10(v))), yFmt: (v) => String(v) });
+      self._ch = ch;
+      const xs = [], a = [], b = [], c = [], d = [];
+      for (let i = 0; i <= 120; i++) { const N = Math.pow(10, 14 + (6 * i) / 120); xs.push(N); a.push(muL(st.T)); b.push(muI(N, st.T)); c.push(muT(N, st.T)); d.push(ct(N)); }
+      clipBox(ctx, ch);
+      line(ctx, ch, xs, a, P.accent2, 1.6, [5, 4]); line(ctx, ch, xs, b, P.warn, 1.6, [5, 4]);
+      if (ctC.checked) line(ctx, ch, xs, d, P.dim, 1.8, [2, 3]);
+      line(ctx, ch, xs, c, P.accent, 2.6); ctx.restore();
+      self._h = [ch.X(st.N), ch.Y(muT(st.N, st.T))]; handle(ctx, self._h[0], self._h[1], P.accent, 10);
+      SB.label(ctx, `T = ${st.T} K`, ch.box.x + 8, ch.box.y + ch.box.h - 12, { size: 11, bold: true, align: "left" });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    const cvT = SB.canvas("cv-mobT", (ctx, w, h, self) => {
+      const P = pal();
+      const ch = SB.chart(ctx, { x: 58, y: 14, w: w - 72, h: h - 54 }, { x: [50, 500], y: [10, 1e5], logX: true, logY: true, xLabel: "T (K)", yLabel: "μ (cm²/V·s)", xTicks: [50, 100, 200, 500], xFmt: (v) => String(v), yFmt: (v) => String(v) });
+      self._ch = ch;
+      const xs = [], a = [], b = [], c = [];
+      for (let i = 0; i <= 100; i++) { const T = 50 * Math.pow(10, i / 100); xs.push(T); a.push(muL(T)); b.push(muI(st.N, T)); c.push(muT(st.N, T)); }
+      clipBox(ctx, ch);
+      line(ctx, ch, xs, a, P.accent2, 1.6, [5, 4]); line(ctx, ch, xs, b, P.warn, 1.6, [5, 4]); line(ctx, ch, xs, c, P.accent, 2.6); ctx.restore();
+      self._h = [ch.X(st.T), ch.Y(muT(st.N, st.T))]; handle(ctx, self._h[0], self._h[1], P.accent, 10);
+      SB.label(ctx, "N = " + sci(st.N, 1) + " cm⁻³", ch.box.x + 8, ch.box.y + ch.box.h - 12, { size: 11, bold: true, align: "left" });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    function upd() {
+      cvN.redraw(); cvT.redraw();
+      const L = muL(st.T), I = muI(st.N, st.T), M = muT(st.N, st.T), rho = 1 / (K.e * st.N * M);
+      SB.stat("mob-NT", `${sci(st.N, 1)} cm⁻³ · ${st.T} K`);
+      SB.stat("mob-LI", `${sig(L, 3)} · ${sig(I, 3)}`);
+      SB.stat("mob-mu", `${sig(M, 3)} cm²/V·s${st.T === 300 ? ` (맞춤 ${sig(ct(st.N), 3)})` : ""}`);
+      SB.stat("mob-rho", `${sig(rho, 3)} Ω·cm`);
+      SB.stat("mob-dom", I < L ? "이온화 불순물" : "격자(포논)");
+    }
+    ctC.addEventListener("change", () => cvN.redraw());
+    SB.drag(cvN, { handles: () => (cvN._h ? [{ id: "n", x: cvN._h[0], y: cvN._h[1], r: 14 }] : []), move: (id, x) => { const ch = cvN._ch; const e = 14 + ((x - ch.box.x) / ch.box.w) * 6; st.N = Math.pow(10, SB.clamp(Math.round(e * 20) / 20, 14, 20)); upd(); } });
+    SB.drag(cvT, { handles: () => (cvT._h ? [{ id: "t", x: cvT._h[0], y: cvT._h[1], r: 14 }] : []), move: (id, x) => { const ch = cvT._ch; const T = 50 * Math.pow(10, SB.clamp((x - ch.box.x) / ch.box.w, 0, 1)); st.T = Math.round(T / 5) * 5; upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- tangle: 에너지 전달 인자 */
+  SB.tangle("tg-gamma", (v) => {
+    const g = (4 * v.M1 * v.M2) / ((v.M1 + v.M2) ** 2), T = g * v.E;
+    return { g: g.toFixed(3), T: T.toFixed(1) + " keV", th: v.M1 > v.M2 ? (Math.asin(v.M2 / v.M1) / D2R).toFixed(1) + "°" : "180°(뒤로도 튕긴다)", msg: Math.abs(v.M1 - v.M2) < 1 ? "질량이 같으면 정면 충돌에서 에너지를 전부 넘긴다." : g > 0.9 ? "질량이 비슷해 에너지 전달이 효율적이다." : "질량 차가 커서 한 번에 넘기는 에너지가 작다." };
+  });
+
+  /* ---------------------------------------------------------- 주입 충돌 실험대 */
+  const ION = { B: [10.81, 5], P: [30.973762, 15], As: [74.921595, 33], Sb: [121.76, 51] }, SI = [28.085, 14];
+  const zbl = (x) => 0.1818 * Math.exp(-3.2 * x) + 0.5099 * Math.exp(-0.9423 * x) + 0.2802 * Math.exp(-0.4029 * x) + 0.02817 * Math.exp(-0.2016 * x);
+  /** ZBL 퍼텐셜 고전 산란각 θ_c (rad) 와 근일점: b(nm), Ecm(eV) */
+  function thetaC(b, Z1, Z2, Ecm, screened = true) {
+    const aU = (0.8854 * A0) / (Math.pow(Z1, 0.23) + Math.pow(Z2, 0.23)), Z = Z1 * Z2 * KE;
+    if (!screened) { const d = Z / Ecm; return { th: 2 * Math.atan(d / (2 * b)), r0: d / 2 + Math.sqrt(d * d / 4 + b * b), aU }; }
+    const V = (r) => (Z * zbl(r / aU)) / r, F = (r) => 1 - V(r) / Ecm - (b * b) / (r * r);
+    let lo = 1e-7, hi = 10 * b + 1; for (let i = 0; i < 200; i++) { const m = Math.sqrt(lo * hi); F(m) > 0 ? (hi = m) : (lo = m); if (hi / lo < 1 + 1e-12) break; }
+    const r0 = hi, n = 240; let s = 0;
+    for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t * t, wgt = i === 0 || i === n ? 1 : i % 2 ? 4 : 2; let f; if (i === 0) { const dr = r0 * 1e-6, Fp = (F(r0 + dr) - F(r0 - dr)) / (2 * dr); f = (2 * (b / r0)) / Math.sqrt(Math.max(r0 * Fp, 1e-30)); } else if (u <= 1e-12) f = (2 * t * b) / r0; else { const Fv = F(r0 / u); f = (2 * t * (b / r0)) / Math.sqrt(Math.max(Fv, 1e-30)); } s += wgt * f; }
+    return { th: Math.PI - (2 * s) / (3 * n), r0, aU };
+  }
+  {
+    const st = { b: 0.03, goal: null, hit: false, score: 0 };
+    const getI = SB.seg("imp-ion", () => { cur = null; upd(); });
+    const getE = SB.range("imp-E", (v) => sig(Math.pow(10, v), 3), () => { cur = null; upd(); });
+    const ruC = document.getElementById("imp-ruth");
+    let cur = null;
+    const P0 = () => { const [M1, Z1] = ION[getI()], E = Math.pow(10, getE()) * 1000, Ec = (E * SI[0]) / (M1 + SI[0]), g = (4 * M1 * SI[0]) / ((M1 + SI[0]) ** 2); return { M1, Z1, E, Ec, g }; };
+    const Tof = (b, p, scr = true) => p.g * p.E * Math.sin(thetaC(b, p.Z1, SI[1], p.Ec, scr).th / 2) ** 2;
+    const BR = [0.002, 0.3];
+    const build = () => {
+      const p = P0(), bs = [], Ts = [], Tr = [];
+      for (let i = 0; i <= 70; i++) { const b = BR[0] * Math.pow(BR[1] / BR[0], i / 70); bs.push(b); Ts.push(Tof(b, p)); Tr.push(Tof(b, p, false)); }
+      let bd = NaN; if (Tof(BR[0], p) > 15 && Tof(BR[1], p) < 15) { let lo = BR[0], hi = BR[1]; for (let i = 0; i < 50; i++) { const m = Math.sqrt(lo * hi); Tof(m, p) > 15 ? (lo = m) : (hi = m); } bd = Math.sqrt(lo * hi); }
+      cur = { p, bs, Ts, Tr, bd };
+    };
+    const YR = 0.3;
+    const cvX = SB.canvas("cv-impX", (ctx, w, h, self) => {
+      if (!cur) build();
+      const P = pal(), p = cur.p, cx = w * 0.42, cy = h * 0.55, sc = (h * 0.42) / YR;
+      const r = thetaC(st.b, p.Z1, SI[1], p.Ec), thL = Math.atan2(Math.sin(r.th), Math.cos(r.th) + p.M1 / SI[0]), thR = (Math.PI - r.th) / 2;
+      self._geo = { cy, sc };
+      ctx.strokeStyle = P.warn; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, r.aU * sc, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]);
+      const yb = cy - st.b * sc, L = w * 0.5;
+      ctx.strokeStyle = P.accent; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(10, yb); ctx.lineTo(cx, yb); ctx.stroke();
+      SB.arrow(ctx, cx, yb, cx + L * Math.cos(thL), yb - L * Math.sin(thL), { color: P.accent, width: 2.4 });
+      const TR = p.g * p.E * Math.sin(r.th / 2) ** 2, Lr = SB.clamp(20 + 18 * Math.log10(Math.max(TR, 1)), 16, L);
+      SB.arrow(ctx, cx, cy, cx + Lr * Math.cos(thR), cy + Lr * Math.sin(thR), { color: P.accent2, width: 2.4 });
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 2 * Math.PI); ctx.fill();
+      ctx.strokeStyle = P.faint; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy); ctx.stroke(); ctx.setLineDash([]);
+      self._h = [40, yb]; handle(ctx, 40, yb, P.accent, 11);
+      SB.label(ctx, `${getI()} ${sig(p.E / 1000, 3)} keV`, 60, yb - 14, { color: P.accent, size: 11, align: "left" });
+      SB.label(ctx, "Si", cx, cy + 20, { color: P.accent2, bold: true });
+      SB.label(ctx, "점선 원: a_U · 점근선만 그림", w - 10, h - 12, { align: "right", size: 10, color: P.dim });
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    const cvT = SB.canvas("cv-impT", (ctx, w, h) => {
+      if (!cur) build();
+      const P = pal(), Tm = cur.p.g * cur.p.E;
+      const ch = SB.chart(ctx, { x: 58, y: 14, w: w - 72, h: h - 54 }, { x: BR, y: [0.1, Math.pow(10, Math.ceil(Math.log10(Tm)))], logX: true, logY: true, xLabel: "b (nm)", yLabel: "T (eV)", xTicks: [0.003, 0.01, 0.03, 0.1, 0.3], xFmt: (v) => String(v), yFmt: (v) => (v >= 1000 ? v / 1000 + "k" : String(v)), hlines: [{ y: 15, color: P.warn, label: "15 eV" }] });
+      clipBox(ctx, ch);
+      if (ruC.checked) line(ctx, ch, cur.bs, cur.Tr, P.dim, 1.6, [5, 4]);
+      line(ctx, ch, cur.bs, cur.Ts, P.accent, 2.6); ctx.restore();
+      if (isFinite(cur.bd)) { ctx.strokeStyle = P.warn; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ch.X(cur.bd), ch.box.y); ctx.lineTo(ch.X(cur.bd), ch.box.y + ch.box.h); ctx.stroke(); ctx.setLineDash([]); SB.label(ctx, "b_d", ch.X(cur.bd) + 14, ch.box.y + ch.box.h - 12, { color: P.warn, size: 11, bold: true }); }
+      if (st.goal) { ctx.fillStyle = P.ok; ctx.globalAlpha = 0.2; ctx.fillRect(ch.box.x, ch.Y(st.goal * 1.05), ch.box.w, ch.Y(st.goal * 0.95) - ch.Y(st.goal * 1.05)); ctx.globalAlpha = 1; }
+      const T = Tof(st.b, cur.p); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(st.b), ch.Y(Math.max(T, 0.11)), 5, 0, 2 * Math.PI); ctx.fill();
+    }, { aspect: 0.8, minHeight: 240, maxHeight: 330 });
+    function upd() {
+      if (!cur) build();
+      cvX.redraw(); cvT.redraw();
+      const p = cur.p, r = thetaC(st.b, p.Z1, SI[1], p.Ec), T = p.g * p.E * Math.sin(r.th / 2) ** 2, thL = Math.atan2(Math.sin(r.th), Math.cos(r.th) + p.M1 / SI[0]);
+      SB.stat("imp-b", `${st.b.toFixed(4)} · ${r.r0.toFixed(4)} nm`);
+      SB.stat("imp-th", `${sig(r.th / D2R, 3)}° · ${sig(thL / D2R, 3)}°`);
+      SB.stat("imp-T", `${T >= 1000 ? sig(T / 1000, 3) + " keV" : sig(T, 3) + " eV"}${T > 15 ? " → 변위!" : ""}`);
+      SB.stat("imp-sd", isFinite(cur.bd) ? `${sig(Math.PI * cur.bd * cur.bd, 3)} nm² · ${sig(1 / (50 * Math.PI * cur.bd * cur.bd), 3)} nm` : "—");
+      if (st.goal) { const ok = Math.abs(T - st.goal) <= 0.05 * st.goal; if (ok && !st.hit) { st.hit = true; st.score++; } SB.stat("imp-goal", `${st.goal >= 1000 ? sig(st.goal / 1000, 3) + " keV" : sig(st.goal, 3) + " eV"} ${ok ? "✓" : ""}`); SB.stat("imp-score", String(st.score)); }
+    }
+    ruC.addEventListener("change", () => cvT.redraw());
+    document.getElementById("imp-new").addEventListener("click", () => { const Tm = cur.p.g * cur.p.E; st.goal = Number(sig(30 * Math.pow((0.5 * Tm) / 30, Math.random()), 2)); st.hit = false; upd(); });
+    SB.drag(cvX, { handles: () => (cvX._h ? [{ id: "b", x: cvX._h[0], y: cvX._h[1], r: 14 }] : []), move: (id, x, y) => { const g = cvX._geo; st.b = SB.clamp((g.cy - y) / g.sc, BR[0], YR); upd(); } });
+    upd();
+  }
+
+  /* ---------------------------------------------------------- 드릴: 주입 운동학·이동도 */
+  SB.drill("drill-imp", () => {
+    if (Math.random() < 0.55) {
+      const ions = [["B", 10.81], ["P", 30.97], ["As", 74.92], ["Sb", 121.76], ["Ge", 72.63]], [nm, M1] = ions[Math.floor(Math.random() * ions.length)], E = [5, 10, 20, 30, 50, 80, 100][Math.floor(Math.random() * 7)];
+      const g = (4 * M1 * 28.09) / ((M1 + 28.09) ** 2);
+      return { q: `<p>${E} keV ${nm}⁺(\\(M_1 = ${M1}\\))를 Si(\\(M_2 = 28.09\\))에 주입한다. 에너지 전달 인자 \\(\\gamma\\)와 정면 충돌의 최대 전달 에너지 \\(T_\\text{max}\\)는?</p>`, answer: [Number(g.toPrecision(3)), Number((g * E).toPrecision(3))], label: ["γ =", "T_max ="], unit: ["", "keV"], tol: "1%", sol: `\\(\\gamma = 4M_1M_2/(M_1+M_2)^2 = ${g.toFixed(4)}\\), \\(T_\\text{max} = \\gamma E = ${(g * E).toFixed(2)}\\) keV` };
+    }
+    const mL = [1414, 1300, 470, 900][Math.floor(Math.random() * 4)], mI = [500, 800, 1500, 3000, 6000][Math.floor(Math.random() * 5)], m = 1 / (1 / mL + 1 / mI);
+    return { q: `<p>격자 산란만의 이동도가 ${mL} cm²/V·s, 이온화 불순물 산란만의 이동도가 ${mI} cm²/V·s이다. 마티센 규칙으로 합친 이동도는?</p>`, answer: Number(m.toPrecision(3)), label: "μ =", unit: "cm²/V·s", tol: "1%", sol: `\\(1/\\mu = 1/${mL} + 1/${mI}\\) → \\(\\mu = ${m.toFixed(0)}\\) cm²/V·s` };
+  });
+})();
+</script>
+</body>
+</html>
