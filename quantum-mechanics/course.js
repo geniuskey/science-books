@@ -262,8 +262,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "정리"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   }
@@ -496,9 +495,3941 @@ SB.registerCourse({
    "steps": 0,
    "predicts": 1,
    "hero": 0
+  },
+  "glossary": {
+   "problems": 52,
+   "examples": 0,
+   "sims": 0,
+   "figures": 0,
+   "drills": 6,
+   "minis": 0,
+   "tangles": 0,
+   "steps": 0,
+   "predicts": 0,
+   "hero": 1
   }
  },
- "published": 19,
+ "published": 20,
  "total": 20,
- "url": "https://science.euiyun.com/quantum-mechanics/"
+ "url": "https://science.euiyun.com/quantum-mechanics/",
+ "glossary": {
+  "version": 1,
+  "terms": [
+   {
+    "ko": "1차 시간 의존 섭동 이론",
+    "en": "first-order time-dependent perturbation theory",
+    "abbr": "",
+    "def": "c_f(t) ≈ −(i/ħ)∫⟨f|V(t′)|i⟩e^{iω_fi t′}dt′. 처음 상태의 점유가 거의 그대로일 때 다른 상태로 가는 진폭을 섭동의 1차까지 구하는 방법.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "3j 기호",
+    "en": "Wigner 3j symbol",
+    "abbr": "",
+    "def": "위그너 3j 기호. 클레브시–고르단 계수를 세 각운동량에 대해 대칭인 형태로 다시 쓴 것으로, 열의 순열에 대해 부호만 바뀌어 각운동량 결합과 행렬 요소 계산을 간단히 한다.",
+    "chapters": [
+     "math-tools#cg"
+    ]
+   },
+   {
+    "ko": "δ 정규화",
+    "en": "delta-function normalization",
+    "abbr": "",
+    "def": "연속 고유값의 고유 상태를 ⟨x|x′⟩ = δ(x − x′), ⟨p|p′⟩ = δ(p − p′)처럼 디랙 델타로 정규화하는 방식. 평면파는 제곱 적분 가능하지 않아 이렇게 정규화한다.",
+    "chapters": [
+     "state-space#continuous"
+    ]
+   },
+   {
+    "ko": "π 펄스",
+    "en": "π pulse",
+    "abbr": "",
+    "def": "라비 진동의 반 주기(Ωt = π)만큼 구동하는 펄스. 공명에서 |0⟩을 |1⟩로 완전히 뒤집는다. π/2 펄스는 같은 크기의 중첩을 만든다.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "BCH 공식",
+    "en": "Baker–Campbell–Hausdorff",
+    "abbr": "",
+    "def": "베이커–캠벨–하우스도르프 공식 e^Ae^B = e^{A + B + [A,B]/2 + …}. [A, B]가 숫자이면 거기서 끝나며, 변위 연산자와 분할 연산자 방법의 오차에 쓴다.",
+    "chapters": [
+     "math-tools#linalg"
+    ]
+   },
+   {
+    "ko": "CPMG 펄스열",
+    "en": "Carr–Purcell–Meiboom–Gill sequence",
+    "abbr": "",
+    "def": "π/2 펄스 뒤 π 펄스를 일정 간격으로 여러 번 거는 펄스열. 느린 잡음에 의한 결어긋남을 반복해서 되돌려 결맞음 시간을 늘린다.",
+    "chapters": [
+     "density-matrix#spin-echo"
+    ]
+   },
+   {
+    "ko": "LCAO",
+    "en": "linear combination of atomic orbitals",
+    "abbr": "",
+    "def": "원자 오비탈의 선형 결합으로 분자 오비탈을 근사하는 방법. H₂⁺에서 결합(σ_g)·반결합(σ_u) 조합이 나오며, 레일리–리츠 방법의 가장 단순한 예다.",
+    "chapters": [
+     "variational-wkb#h2plus"
+    ]
+   },
+   {
+    "ko": "LS 결합",
+    "en": "LS coupling",
+    "abbr": "",
+    "def": "가벼운 원자에서 전자들의 궤도 각운동량을 먼저 L로, 스핀을 S로 합친 뒤 스핀–궤도 결합으로 J를 만드는 근사(러셀–손더스 결합).",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "NV 중심",
+    "en": "nitrogen-vacancy center",
+    "abbr": "",
+    "def": "다이아몬드에서 질소 원자 옆 탄소 자리가 비어 생긴 점결함. 음전하 상태는 스핀 1 바닥 상태를 가지며 상온에서 광학적으로 초기화·판독되어 양자 센서·큐비트로 쓴다.",
+    "chapters": [
+     "spin#general-spin"
+    ]
+   },
+   {
+    "ko": "RKKY 상호작용",
+    "en": "RKKY interaction",
+    "abbr": "",
+    "def": "국소 자기 모멘트들이 전도 전자의 스핀 분극을 매개로 주고받는 간접 교환. 거리에 따라 cos(2k_Fr)/r³로 진동하며, 비자성 스페이서를 둔 다층막의 층간 결합을 정한다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "S 행렬",
+    "en": "scattering matrix",
+    "abbr": "",
+    "def": "들어오는 파동의 진폭을 나가는 파동의 진폭에 연결하는 행렬. 1차원에서 2×2이고 성분은 r, t, r′, t′이며, 확률 흐름 보존 때문에 유니터리다.",
+    "chapters": [
+     "one-dimensional#smatrix"
+    ]
+   },
+   {
+    "ko": "SdH 진동수",
+    "en": "SdH frequency",
+    "abbr": "",
+    "def": "F = hn/(g_s e). 1/B에 대한 SdH 진동의 진동수(단위 T)로, 운반자 면밀도 n을 직접 준다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "WKB 근사",
+    "en": "Wentzel–Kramers–Brillouin approximation",
+    "abbr": "",
+    "def": "퍼텐셜이 파장 규모에서 천천히 변할 때 ψ ≈ p(x)^{-1/2} exp(±(i/ħ)∫p dx)로 쓰는 준고전 근사. 터널 확률 e^{-2∫κdx}와 양자화 조건을 준다.",
+    "chapters": [
+     "variational-wkb#wkb"
+    ]
+   },
+   {
+    "ko": "g 인자",
+    "en": "g-factor",
+    "abbr": "",
+    "def": "자기 모멘트를 μ = −gμ_B J/ħ처럼 쓸 때의 무차원 계수. 궤도는 1, 전자 스핀은 약 2.0023이며, 고체에서는 스핀–궤도 결합으로 2에서 벗어난다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "k·p 섭동",
+    "en": "k·p perturbation theory",
+    "abbr": "",
+    "def": "블로흐 해밀토니언의 (ħ/m)k·p 항을 띠 가장자리(k = 0) 근처에서 섭동으로 다뤄 띠 분산과 유효 질량을 운동량 행렬 요소와 띠 간격으로 구하는 이론.",
+    "chapters": [
+     "perturbation#kp"
+    ]
+   },
+   {
+    "ko": "가로 결맞음 길이",
+    "en": "transverse coherence length",
+    "abbr": "",
+    "def": "빔의 진행 방향에 수직으로 떨어진 두 점이 서로 간섭할 수 있는 최대 거리. 전자원의 각 퍼짐 α로 대략 λ/(2πα)이며, 원천이 작고 멀수록 길다.",
+    "chapters": [
+     "wave-function#coherence"
+    ]
+   },
+   {
+    "ko": "가로 이완 시간",
+    "en": "transverse relaxation time, T₂, 스핀–스핀 이완",
+    "abbr": "",
+    "def": "T₂. 결맞음(블로흐 벡터의 가로 성분)이 사라지는 시간으로 1/T₂ = 1/2T₁ + 1/T_φ, T₂ ≤ 2T₁이다. 스핀–스핀 이완이라고도 한다.",
+    "chapters": [
+     "density-matrix#bloch-equations"
+    ]
+   },
+   {
+    "ko": "가상 상태",
+    "en": "virtual state",
+    "abbr": "",
+    "def": "2차 이상의 전이 과정에서 거쳐 가는 중간 상태. 에너지 보존을 만족할 필요가 없으며, 실리콘의 포논 보조 간접 흡수가 예다.",
+    "chapters": [
+     "time-dependent#interaction"
+    ]
+   },
+   {
+    "ko": "가속 정리",
+    "en": "acceleration theorem",
+    "abbr": "",
+    "def": "균일한 힘 F를 받는 전자의 (결정) 운동량이 dℏk/dt = F로 일정하게 변한다는 결과. 하이젠베르크 방정식에서 나오며, 결정에서는 블로흐 진동의 근거가 된다.",
+    "chapters": [
+     "time-evolution#conserved"
+    ]
+   },
+   {
+    "ko": "가이거–누탈 법칙",
+    "en": "Geiger–Nuttall law",
+    "abbr": "",
+    "def": "알파 붕괴 반감기의 로그가 알파 입자 에너지의 −1/2제곱에 대해 직선이라는 경험 법칙. 쿨롱 장벽 WKB 터널링(가모프 인자)으로 설명된다.",
+    "chapters": [
+     "variational-wkb#tunneling"
+    ]
+   },
+   {
+    "ko": "가장자리 상태",
+    "en": "edge state",
+    "abbr": "",
+    "def": "시료 가장자리에서 가둠 퍼텐셜로 란다우 준위가 휘어 페르미 에너지와 만나는 곳에 생기는 한 방향으로만 흐르는 상태. 후방 산란이 막혀 양자 홀 수송을 완벽하게 만든다.",
+    "chapters": [
+     "em-fields#quantum-hall"
+    ]
+   },
+   {
+    "ko": "간접 띠 간격",
+    "en": "indirect band gap",
+    "abbr": "",
+    "def": "가전자대 꼭대기와 전도대 바닥이 다른 k에 있는 띠 간격. 실리콘·저마늄처럼 수직 전이가 안 되어 포논이 운동량을 메우는 2차 과정으로만 흡수·발광하므로 약하다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "강결합 모형",
+    "en": "tight-binding model",
+    "abbr": "",
+    "def": "전자가 원자 자리에 머물며 이웃 자리로 진폭 −t로 건너뛴다고 보는 모형. 1차원 사슬에서 E(k) = E₀ − 2t cos ka, 띠 폭 4t이며 유한 차분 해밀토니언과 같은 구조다.",
+    "chapters": [
+     "state-space#finite-diff"
+    ]
+   },
+   {
+    "ko": "강체 회전자",
+    "en": "rigid rotor",
+    "abbr": "",
+    "def": "모양이 고정된 채 도는 물체의 모형. 이원자 분자는 E_J = ħ²J(J+1)/2I = hcBJ(J+1)이고 각 준위는 2J+1중 축퇴다.",
+    "chapters": [
+     "angular-momentum#rotor"
+    ]
+   },
+   {
+    "ko": "강한 구속",
+    "en": "strong confinement",
+    "abbr": "",
+    "def": "양자점 반지름이 엑시톤 보어 반지름보다 작은 경우. 전자와 정공의 구속 에너지(∝1/R²)가 쿨롱 에너지(∝1/R)보다 커서 둘을 따로 가두고 쿨롱 항은 섭동으로 더한다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "게이지 불변성",
+    "en": "gauge invariance",
+    "abbr": "",
+    "def": "벡터 퍼텐셜을 A → A + ∇χ로 바꾸고 파동함수에 위상 e^{iqχ/ħ}를 곱해도 물리가 바뀌지 않는 성질. 관측량은 B, E와 게이지 불변 위상뿐이다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "결맞음",
+    "en": "coherence",
+    "abbr": "",
+    "def": "파동의 여러 성분이나 두 지점 사이에 일정한 위상 관계가 유지되어 간섭 무늬를 만들 수 있는 정도. 전자 빔에서는 원천의 크기와 에너지 퍼짐이 결맞음을 정한다.",
+    "chapters": [
+     "wave-function#coherence"
+    ]
+   },
+   {
+    "ko": "결맞음 상태",
+    "en": "coherent state",
+    "abbr": "",
+    "def": "내림 연산자의 고유 상태 â|α⟩ = α|α⟩. 최소 불확정 가우스 파속이 모양을 유지한 채 고전 진동자처럼 진동하고, 광자 수는 평균 |α|²인 푸아송 분포다. 레이저 빛의 모형.",
+    "chapters": [
+     "ladder-operators#coherent"
+    ]
+   },
+   {
+    "ko": "결맞음 항",
+    "en": "coherence",
+    "abbr": "",
+    "def": "밀도 행렬의 비대각 원소 ρ_mn. 두 상태 사이의 위상 관계를 담아 간섭을 만들며, 결어긋남은 이것을 0으로 줄인다(결맞음 상태와는 다른 뜻).",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "결어긋남",
+    "en": "dephasing",
+    "abbr": "",
+    "def": "충돌·포논·잡음 같은 환경 때문에 상태 사이의 위상 관계(결맞음)가 무작위로 흩어지는 과정. 점유는 그대로 두고 간섭만 지우며 시간 T₂(T_φ)로 특징짓는다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "결정 운동량",
+    "en": "crystal momentum",
+    "abbr": "",
+    "def": "블로흐 상태의 ħk. 이산 병진 대칭에서 오는 양자수로 −π/a < k ≤ π/a(첫 브릴루앵 영역) 안에서 정의되며, 외력에 대해 dħk/dt = F를 따른다. 진짜 운동량의 고유값은 아니다.",
+    "chapters": [
+     "symmetry#bloch"
+    ]
+   },
+   {
+    "ko": "결합 기저",
+    "en": "coupled basis",
+    "abbr": "",
+    "def": "합성 각운동량 J² 과 J_z의 고유 상태 |j₁j₂; J M⟩. 스핀–궤도나 교환 상호작용처럼 J₁·J₂에 비례하는 항이 있을 때 대각 기저다.",
+    "chapters": [
+     "spin#addition"
+    ]
+   },
+   {
+    "ko": "결합 상태 밀도",
+    "en": "joint density of states",
+    "abbr": "",
+    "def": "가전자대–전도대 사이 같은 k의 상태 쌍을 에너지 차 ħω로 센 상태 밀도. 직접 간격 3차원 반도체에서 √(ħω − E_g)에 비례해 흡수 계수의 모양을 정한다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "겹침 적분",
+    "en": "overlap integral",
+    "abbr": "",
+    "def": "S = ⟨φ_A|φ_B⟩. 서로 다른 중심의 두 원자 오비탈이 공간적으로 겹치는 정도로, 직교하지 않는 기저에서 일반화된 고유값 문제를 만든다.",
+    "chapters": [
+     "variational-wkb#h2plus"
+    ]
+   },
+   {
+    "ko": "겹침 행렬",
+    "en": "overlap matrix",
+    "abbr": "",
+    "def": "S_ij = ⟨φ_i|φ_j⟩. 직교하지 않는 기저 함수들의 내적 행렬. 레일리–리츠 방법에서 Hc = ESc의 오른쪽에 들어간다.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "경로 적분",
+    "en": "path integral",
+    "abbr": "",
+    "def": "파인만의 정식화. 전파 인자를 두 점을 잇는 모든 경로에 대한 e^{iS/ħ}의 합으로 쓴다. S ≫ ħ이면 정류 위상인 고전 경로가 지배한다.",
+    "chapters": [
+     "time-evolution#kernel"
+    ]
+   },
+   {
+    "ko": "계산 기저",
+    "en": "computational basis",
+    "abbr": "",
+    "def": "큐비트의 표준 측정 기저 {|0⟩, |1⟩}(σ_z 고유 상태). n큐비트에서는 2ⁿ개의 비트 문자열 상태 |00…0⟩–|11…1⟩이다.",
+    "chapters": [
+     "quantum-information#qubits"
+    ]
+   },
+   {
+    "ko": "고양이 상태",
+    "en": "cat state",
+    "abbr": "",
+    "def": "서로 거시적으로 다른 두 결맞음 상태의 중첩 |α⟩ ± |−α⟩. 위그너 함수 가운데에 간섭 무늬(음수 영역)가 생기며 환경과의 결어긋남에 매우 약하다.",
+    "chapters": [
+     "ladder-operators#wigner"
+    ]
+   },
+   {
+    "ko": "고유 상태",
+    "en": "eigenstate",
+    "abbr": "",
+    "def": "연산자를 걸어도 상수배만 되는 상태 Â|a⟩ = a|a⟩. 관측가능량의 고유 상태에서 그 양을 재면 확률 1로 고유값 a를 얻는다.",
+    "chapters": [
+     "state-space#eigen"
+    ]
+   },
+   {
+    "ko": "고전 전환점",
+    "en": "classical turning point",
+    "abbr": "",
+    "def": "E = V(x)인 점. 고전 입자가 멈추고 되돌아오는 곳으로, WKB 근사가 깨져 연결 공식으로 양쪽 해를 잇는다.",
+    "chapters": [
+     "variational-wkb#wkb"
+    ]
+   },
+   {
+    "ko": "골짜기 축퇴",
+    "en": "valley degeneracy",
+    "abbr": "",
+    "def": "띠 바닥이 브릴루앵 영역 안 대칭으로 같은 여러 점에 있어 생기는 축퇴. 실리콘 전도띠는 ⟨100⟩ 방향 여섯 골짜기, 저마늄은 L점 네 골짜기(여덟 반쪽)다.",
+    "chapters": [
+     "symmetry#valleys"
+    ]
+   },
+   {
+    "ko": "곱 상태",
+    "en": "product state",
+    "abbr": "",
+    "def": "|ψ⟩_A ⊗ |φ⟩_B처럼 부분계 상태의 텐서곱으로 쓸 수 있는 합성계 상태. 이렇게 쓸 수 없으면 얽힌 상태다.",
+    "chapters": [
+     "state-space#tensor"
+    ]
+   },
+   {
+    "ko": "공명 터널링",
+    "en": "resonant tunneling",
+    "abbr": "",
+    "def": "두 장벽 사이 우물의 준속박 준위와 입사 에너지가 맞을 때, 각 장벽의 투과율이 작아도 전체 투과율이 1 가까이 치솟는 현상. 공명 터널 다이오드의 부성 저항을 만든다.",
+    "chapters": [
+     "one-dimensional#transfer"
+    ]
+   },
+   {
+    "ko": "공존도",
+    "en": "concurrence",
+    "abbr": "",
+    "def": "두 큐비트 상태의 얽힘 척도 C. 곱 상태 0, 벨 상태 1이며, 순수 상태 a|00⟩+b|01⟩+c|10⟩+d|11⟩에서 C = 2|ad − bc|다.",
+    "chapters": [
+     "quantum-information#entanglement"
+    ]
+   },
+   {
+    "ko": "광 검출 자기 공명",
+    "en": "ODMR",
+    "abbr": "",
+    "def": "스핀 상태에 따라 형광 세기가 달라지는 것을 이용해 마이크로파 공명을 빛으로 읽는 방법(ODMR). NV 중심의 2.87 GHz 형광 감소로 자기장을 잰다.",
+    "chapters": [
+     "spin#general-spin"
+    ]
+   },
+   {
+    "ko": "광자",
+    "en": "photon",
+    "abbr": "",
+    "def": "전자기장 한 모드의 양자화된 들뜸. 모드가 조화 진동자이므로 에너지 ħω의 덩어리로 오고, 수 상태 |n⟩이 광자 n개 상태다.",
+    "chapters": [
+     "ladder-operators#fields"
+    ]
+   },
+   {
+    "ko": "광학 정리",
+    "en": "optical theorem",
+    "abbr": "",
+    "def": "σ_tot = (4π/k)Im f(0). 전체 단면적이 앞방향 산란 진폭의 허수부로 정해진다는 정리로, 산란이 앞방향 입사파와의 간섭으로 흐름을 빼앗음을 나타낸다.",
+    "chapters": [
+     "scattering#partial-waves"
+    ]
+   },
+   {
+    "ko": "교환 관계",
+    "en": "commutation relations",
+    "abbr": "",
+    "def": "연산자 사이의 교환자 값을 정한 관계. 각운동량에서는 [Ĵ_i, Ĵ_j] = iħε_ijkĴ_k, [Ĵ², Ĵ_i] = 0이며, 이것만으로 고유값 j(j+1)ħ², mħ가 나온다.",
+    "chapters": [
+     "angular-momentum#operators"
+    ]
+   },
+   {
+    "ko": "교환 관측가능량 완비 집합",
+    "en": "complete set of commuting observables, CSCO",
+    "abbr": "",
+    "def": "서로 교환하는 관측가능량들의 집합으로, 그 고유값 조합이 기저 상태를 하나로 정할 만큼 충분한 것. 예: 수소의 (Ĥ, L̂², L̂_z, Ŝ_z)이 양자수 (n, l, m, m_s)를 준다.",
+    "chapters": [
+     "measurement#commutators"
+    ]
+   },
+   {
+    "ko": "교환 구멍",
+    "en": "exchange hole",
+    "abbr": "",
+    "def": "같은 스핀 전자 둘레에 교환 반대칭 때문에 다른 같은 스핀 전자가 들어오지 않는 영역(페르미 구멍). 크기는 1/k_F 정도이며 쿨롱 에너지를 낮춘다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "교환 대칭",
+    "en": "exchange symmetry",
+    "abbr": "",
+    "def": "두 동일 입자의 좌표(위치·스핀)를 바꾸는 교환 연산자 P̂₁₂의 고유값 ±1. 보손은 +1(대칭), 페르미온은 −1(반대칭)이다.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "교환 분리",
+    "en": "exchange splitting",
+    "abbr": "",
+    "def": "같은 오비탈 배치에서 스핀 단일항과 삼중항(공간 대칭·반대칭)의 에너지 차. 헬륨 1s2s에서 파라·오르토 준위를 가르고, 강자성체에서는 다수·소수 스핀 띠를 가른다.",
+    "chapters": [
+     "identical-particles#helium"
+    ]
+   },
+   {
+    "ko": "교환 적분",
+    "en": "exchange integral",
+    "abbr": "",
+    "def": "K = ∫∫φ_a*(1)φ_b*(2)(e²/4πε₀r₁₂)φ_b(1)φ_a(2). 교환 반대칭에서만 생기는 고전 대응이 없는 항으로, 단일항–삼중항(또는 파라·오르토) 에너지 차 2K를 준다.",
+    "chapters": [
+     "identical-particles#helium"
+    ]
+   },
+   {
+    "ko": "교환 힘",
+    "en": "exchange force",
+    "abbr": "",
+    "def": "실제 힘이 아니라 대칭화 요구 때문에 동일 입자 사이에 나타나는 유효 끌림·밀침. 공간 반대칭 상태는 서로 멀어지고(페르미 구멍), 대칭 상태는 가까워진다.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "교환자",
+    "en": "commutator",
+    "abbr": "",
+    "def": "[Â, B̂] = ÂB̂ − B̂Â. 두 연산자를 거는 순서에 따른 차이로, 0이면 공통 고유 기저가 있어 동시에 정확히 잴 수 있고, 0이 아니면 불확정성 관계의 하한을 준다.",
+    "chapters": [
+     "measurement#commutators"
+    ]
+   },
+   {
+    "ko": "구 베셀 함수",
+    "en": "spherical Bessel function",
+    "abbr": "",
+    "def": "j_l(x), y_l(x). 자유 입자 지름 방정식의 해로 j₀ = sin x/x. 원점에서 유한한 j_l이 구형 우물 안의 해이고 산란의 부분파 전개에도 쓴다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "구면 조화 함수",
+    "en": "spherical harmonics",
+    "abbr": "",
+    "def": "Y_l^m(θ,φ). L̂²과 L̂_z의 공통 고유 함수로 구면 위의 직교 정규 기저를 이룬다. φ 의존은 e^{imφ}이고, 패리티는 (−1)^l이다.",
+    "chapters": [
+     "angular-momentum#harmonics"
+    ]
+   },
+   {
+    "ko": "국소 숨은 변수 이론",
+    "en": "local hidden variable theory",
+    "abbr": "",
+    "def": "측정 결과가 미리 정해진 숨은 변수와 측정 장치의 국소 설정만으로 결정된다는 고전적 이론. 벨(CHSH) 부등식 |S| ≤ 2를 만족해야 한다.",
+    "chapters": [
+     "quantum-information#bell"
+    ]
+   },
+   {
+    "ko": "군속도",
+    "en": "group velocity",
+    "abbr": "",
+    "def": "v_g = dω/dk. 파속의 포락선(곧 확률이 몰린 곳)이 움직이는 속도. 자유 입자에서 ħk/m으로 고전 속도와 같고, 결정 속 전자에서는 (1/ħ)dE/dk다.",
+    "chapters": [
+     "wave-function#packet"
+    ]
+   },
+   {
+    "ko": "궤도 각운동량",
+    "en": "orbital angular momentum",
+    "abbr": "",
+    "def": "L̂ = r̂ × p̂. 공간 회전의 생성자이며, 성분은 [L̂_x, L̂_y] = iħL̂_z를 만족하고 L̂² 고유값은 l(l+1)ħ² (l은 정수)다.",
+    "chapters": [
+     "angular-momentum#operators"
+    ]
+   },
+   {
+    "ko": "균일 선폭 넓힘",
+    "en": "homogeneous broadening",
+    "abbr": "",
+    "def": "모든 원자가 같은 모양으로 넓어지는 선폭 넓힘. 수명과 위상 흩트림(T₂)에서 오며 로렌츠 모양 Δω = 2/T₂를 갖는다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "금지 전이",
+    "en": "forbidden transition",
+    "abbr": "",
+    "def": "전이 쌍극자 모멘트가 대칭 때문에 0인 전이. 자기 쌍극자·전기 사중극자 같은 고차 과정으로만 일어나 훨씬 느리다(긴 수명의 준안정 상태).",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "기댓값",
+    "en": "expectation value",
+    "abbr": "",
+    "def": "같은 상태로 준비한 계를 여러 번 잰 결과의 평균 ⟨A⟩ = ⟨ψ|Â|ψ⟩ = ∫ψ*Âψ dx. 한 번의 측정값이 아니라 통계적 평균이다.",
+    "chapters": [
+     "wave-function#operators"
+    ]
+   },
+   {
+    "ko": "기약 표현",
+    "en": "irreducible representation",
+    "abbr": "",
+    "def": "더 작은 불변 부분 공간으로 나눌 수 없는 군의 행렬 표현. 해밀토니언의 대칭군에서 축퇴된 고유 상태들은 하나의 기약 표현을 이루므로 그 차원이 축퇴도다.",
+    "chapters": [
+     "symmetry#degeneracy"
+    ]
+   },
+   {
+    "ko": "기저 변환",
+    "en": "change of basis",
+    "abbr": "",
+    "def": "같은 상태·연산자를 다른 직교 정규 기저로 나타내는 일. 성분은 유니터리 행렬 U_mn = ⟨m′|n⟩로 바뀌고 연산자 행렬은 UAU†가 된다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "내림 연산자",
+    "en": "lowering operator",
+    "abbr": "",
+    "def": "â = (mω/2ħ)^{1/2}(x̂ + ip̂/mω). 조화 진동자의 에너지를 ħω 내리는 연산자로 â|n⟩ = √n|n−1⟩, 바닥 상태는 â|0⟩ = 0으로 정의된다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "내부 양자 효율",
+    "en": "internal quantum efficiency",
+    "abbr": "",
+    "def": "재결합 가운데 광자를 내는 복사 재결합의 비율 Bnp/(Bnp + 비복사 재결합). LED의 밝기를 결정하는 재료 고유의 효율이다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "뇌터 정리",
+    "en": "Noether's theorem",
+    "abbr": "",
+    "def": "연속 대칭마다 보존량이 하나씩 있다는 정리. 양자역학에서는 대칭의 생성자가 해밀토니언과 교환해 보존된다: 시간 병진→에너지, 공간 병진→운동량, 회전→각운동량.",
+    "chapters": [
+     "symmetry#conservation"
+    ]
+   },
+   {
+    "ko": "누메로프 방법",
+    "en": "Numerov method",
+    "abbr": "",
+    "def": "y″ = −k²(x)y 꼴 방정식을 격자 간격의 4차 정확도로 적분하는 3점 점화식. 1차 도함수가 없는 슈뢰딩거 방정식의 사격법에 표준으로 쓴다.",
+    "chapters": [
+     "one-dimensional#numerics"
+    ]
+   },
+   {
+    "ko": "다이슨 급수",
+    "en": "Dyson series",
+    "abbr": "",
+    "def": "해밀토니언이 시간에 의존할 때 시간 전개 연산자를 시간 순서 곱의 적분 급수 Û = 1 + (−i/ħ)∫Ĥdt + …로 쓴 것. 시간 의존 섭동 이론의 출발점이다.",
+    "chapters": [
+     "time-evolution#evolution-operator"
+    ]
+   },
+   {
+    "ko": "단열 극한",
+    "en": "adiabatic limit",
+    "abbr": "",
+    "def": "해밀토니언이 준위 간격에 비해 아주 천천히 바뀌는 극한. 계가 순간 고유 상태를 따라가며 전이하지 않는다(단열 정리).",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "단일 광자 사태 다이오드",
+    "en": "single-photon avalanche diode, SPAD",
+    "abbr": "",
+    "def": "항복 전압보다 높은 역바이어스로 구동해, 광자 하나가 만든 전자–정공 쌍이 사태 증배로 거시 전류 펄스를 일으키게 한 p–n 다이오드. 광자 계수와 비행 시간 측정에 쓴다.",
+    "chapters": [
+     "measurement#quantum-limits"
+    ]
+   },
+   {
+    "ko": "단일항",
+    "en": "singlet",
+    "abbr": "",
+    "def": "두 스핀 1/2를 합친 S = 0 상태 (|↑↓⟩ − |↓↑⟩)/√2. 스핀 교환에 반대칭이며 어느 축으로 재도 두 스핀이 반대로 나오는 최대 얽힘 상태다.",
+    "chapters": [
+     "spin#addition"
+    ]
+   },
+   {
+    "ko": "단일항–삼중항 큐비트",
+    "en": "singlet–triplet qubit",
+    "abbr": "",
+    "def": "이중 양자점의 두 전자 스핀에서 단일항 S와 삼중항 T₀를 |0⟩, |1⟩로 쓰는 큐비트. 교환 에너지 J를 게이트 전압으로 켜고 끄며 조작한다.",
+    "chapters": [
+     "identical-particles#helium"
+    ]
+   },
+   {
+    "ko": "대칭 게이지",
+    "en": "symmetric gauge",
+    "abbr": "",
+    "def": "A = (B × r)/2. 원점에 대한 회전 대칭을 보존하는 게이지로, L_z가 좋은 양자수가 되어 양자점·원형 구조(포크–다윈) 문제에 쓴다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "대칭 깨짐",
+    "en": "symmetry breaking",
+    "abbr": "",
+    "def": "섭동이 원래 해밀토니언보다 대칭이 낮아 그 대칭이 보장하던 축퇴가 풀리는 일. 예: 전기장은 수소의 회전 대칭을, 변형은 실리콘 골짜기의 입방 대칭을 깬다.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "대칭 변환",
+    "en": "symmetry transformation",
+    "abbr": "",
+    "def": "계를 바꿔도 물리(모든 전이 확률 |⟨φ|ψ⟩|²)가 달라지지 않는 변환. 해밀토니언과 교환하면 동역학까지 보존되어 보존량과 축퇴를 낳는다.",
+    "chapters": [
+     "symmetry#transformations"
+    ]
+   },
+   {
+    "ko": "대칭화 가정",
+    "en": "symmetrization postulate",
+    "abbr": "",
+    "def": "동일 입자계의 상태는 모든 입자 교환에 대해 완전히 대칭(보손)이거나 완전히 반대칭(페르미온)이어야 한다는 공준.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "델타 퍼텐셜",
+    "en": "delta-function potential",
+    "abbr": "",
+    "def": "V(x) = −αδ(x)(우물) 또는 +αδ(x)(장벽). 폭이 0이고 넓이가 α인 극한으로, 도함수가 δ 자리에서 2mα/ħ²만큼 뛴다. 우물은 속박 상태가 정확히 하나다.",
+    "chapters": [
+     "one-dimensional#delta"
+    ]
+   },
+   {
+    "ko": "돌연 극한",
+    "en": "sudden limit",
+    "abbr": "",
+    "def": "해밀토니언이 계의 고유 시간보다 훨씬 빨리 바뀌는 극한. 상태가 그대로 남은 채 새 고유 상태로 전개되며 전이 확률은 |⟨f_new|i_old⟩|²이다.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "동시 측정 가능",
+    "en": "compatible",
+    "abbr": "",
+    "def": "두 관측가능량이 교환해 공통 고유 상태 기저를 가져, 한쪽을 재도 다른 쪽의 결과 분포가 흐트러지지 않는 성질. 예: 수소의 Ĥ, L̂², L̂_z.",
+    "chapters": [
+     "measurement#commutators"
+    ]
+   },
+   {
+    "ko": "동일 입자",
+    "en": "identical particles",
+    "abbr": "",
+    "def": "질량·전하·스핀 등 고유 성질이 모두 같아 원리적으로 구별할 수 없는 입자. 입자 표지를 바꿔도 물리가 같아야 하므로 파동함수가 교환에 대해 대칭이거나 반대칭이다.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "동적 결합 끊기",
+    "en": "dynamical decoupling",
+    "abbr": "",
+    "def": "펄스열로 큐비트를 반복해서 뒤집어 느린 환경 잡음의 효과를 평균으로 지우는 기법. 스핀 에코·CPMG·XY4 등이 있다.",
+    "chapters": [
+     "density-matrix#spin-echo"
+    ]
+   },
+   {
+    "ko": "디바이 길이",
+    "en": "Debye length",
+    "abbr": "",
+    "def": "λ_D = √(εk_BT/e²n). 자유 운반자가 이온화된 불순물의 쿨롱 퍼텐셜을 가려 e^{-r/λ_D}/r로 줄이는 거리. 차폐 쿨롱 산란의 길이 척도다.",
+    "chapters": [
+     "scattering#semiconductor"
+    ]
+   },
+   {
+    "ko": "딩글 인자",
+    "en": "Dingle factor",
+    "abbr": "",
+    "def": "exp(−π/ω_cτ_q). 산란으로 넓어진 란다우 준위가 SdH 진동 진폭을 줄이는 인자로, 양자 수명 τ_q를 준다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "라모어 세차",
+    "en": "Larmor precession",
+    "abbr": "",
+    "def": "자기장 B 속 자기 모멘트(스핀 기댓값)가 장 둘레를 각진동수 ω_L = γB로 도는 운동. 블로흐 벡터가 B축 둘레로 회전한다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "라비 공식",
+    "en": "Rabi formula",
+    "abbr": "",
+    "def": "P(t) = [Ω²/(Ω² + Δ²)] sin²(√(Ω² + Δ²) t/2). 회전파 근사에서 이조 Δ로 구동한 2준위 계의 전이 확률.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "라비 셰브론",
+    "en": "Rabi chevron",
+    "abbr": "",
+    "def": "구동 이조와 펄스 길이를 바꿔 가며 잰 전이 확률을 2차원 지도로 그린 무늬. 갈매기(셰브론) 모양으로 퍼지며 공명 진동수와 라비 진동수를 함께 보정한다.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "라비 진동",
+    "en": "Rabi oscillation",
+    "abbr": "",
+    "def": "공명에 가까운 진동장 아래 2준위 계의 점유가 두 준위 사이를 주기적으로 오가는 현상. 큐비트 조작의 기본이다.",
+    "chapters": [
+     "time-dependent#rabi"
+    ]
+   },
+   {
+    "ko": "라비 진동수",
+    "en": "Rabi frequency",
+    "abbr": "",
+    "def": "Ω = 진동장 결합의 크기(스핀이면 γB₁, 쌍극자 전이면 dE₀/ħ). 공명에서 두 준위의 점유가 cos²(Ωt/2), sin²(Ωt/2)로 오가는 진동수다.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "라포르테 규칙",
+    "en": "Laporte rule",
+    "abbr": "",
+    "def": "반전 대칭인 계에서 전기 쌍극자 전이는 패리티가 반대인 상태 사이(짝↔홀)에서만 일어난다는 선택 규칙. 원자에서 Δl이 홀수여야 한다.",
+    "chapters": [
+     "symmetry#parity"
+    ]
+   },
+   {
+    "ko": "란다우 게이지",
+    "en": "Landau gauge",
+    "abbr": "",
+    "def": "A = (0, Bx, 0)처럼 균일 자기장을 한 방향 성분만으로 나타낸 게이지. y방향 평면파와 x방향 조화 진동자로 분리되어 란다우 준위가 띠 모양으로 나온다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "란다우 준위",
+    "en": "Landau level",
+    "abbr": "",
+    "def": "균일 자기장 속 2차원 전자의 에너지 E_n = ħω_c(n + 1/2). 운동이 조화 진동자처럼 양자화되고 각 준위는 단위 넓이당 eB/h개의 상태로 크게 축퇴한다.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "란다우–립시츠–길버트 방정식",
+    "en": "Landau–Lifshitz–Gilbert equation",
+    "abbr": "",
+    "def": "dM/dt = −γM × B_eff + αM × dM/dt. 자화의 세차와 감쇠(α)를 기술하는 고전 방정식으로, 스핀 전달 토크 항을 더해 MRAM 자유층의 반전을 계산한다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "랑데 g 인자",
+    "en": "Landé g-factor",
+    "abbr": "",
+    "def": "g_J = 1 + [J(J+1) + S(S+1) − L(L+1)]/[2J(J+1)]. 약한 자기장에서 LSJ 준위의 제만 갈라짐 g_Jμ_BBm_J를 정한다.",
+    "chapters": [
+     "spin#spin-orbit"
+    ]
+   },
+   {
+    "ko": "러더퍼드 산란",
+    "en": "Rutherford scattering",
+    "abbr": "",
+    "def": "쿨롱 퍼텐셜에 의한 산란. dσ/dΩ = (Z₁Z₂e²/16πε₀E)²/sin⁴(θ/2)로 고전 계산·보른 근사·정확한 양자 결과가 모두 같다.",
+    "chapters": [
+     "scattering#coulomb"
+    ]
+   },
+   {
+    "ko": "러더퍼드 후방 산란 분광법",
+    "en": "Rutherford backscattering spectrometry, RBS",
+    "abbr": "",
+    "def": "MeV 헬륨 이온을 박막에 쏘아 뒤로 튕긴 이온의 에너지로 표적 원자의 질량과 깊이 분포를 재는 분석법(RBS). 운동학 인자와 저지능으로 해석한다.",
+    "chapters": [
+     "scattering#coulomb"
+    ]
+   },
+   {
+    "ko": "레일리 전개",
+    "en": "Rayleigh expansion",
+    "abbr": "",
+    "def": "평면파를 부분파로 전개한 e^{ikz} = Σ(2l+1)i^l j_l(kr)P_l(cos θ). 산란을 각운동량 l별로 나누는 출발점이다.",
+    "chapters": [
+     "scattering#partial-waves"
+    ]
+   },
+   {
+    "ko": "레일리–리츠 방법",
+    "en": "Rayleigh–Ritz method",
+    "abbr": "",
+    "def": "시험 함수를 고정된 기저 함수들의 선형 결합으로 놓고 계수에 대해 변분해 행렬 고유값 문제로 바꾸는 방법. 고유값들이 정확한 준위들의 위쪽 한계가 된다.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "레일리–슈뢰딩거 섭동 이론",
+    "en": "Rayleigh–Schrödinger perturbation theory",
+    "abbr": "",
+    "def": "축퇴가 없는 준위의 시간 무관 섭동 이론. 1차 E⁽¹⁾ = V_nn, 2차 E⁽²⁾ = Σ_{m≠n}|V_mn|²/(E_n − E_m)이다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "로렌츠 선 모양",
+    "en": "Lorentzian line shape",
+    "abbr": "",
+    "def": "L(ω) ∝ (Γ/2)²/[(ω − ω₀)² + (Γ/2)²]. 지수적으로 붕괴하는 상태의 스펙트럼 모양으로, 반치 전폭 Γ가 수명의 역수다.",
+    "chapters": [
+     "measurement#energy-time"
+    ]
+   },
+   {
+    "ko": "로버트슨 불확정성 관계",
+    "en": "Robertson uncertainty relation",
+    "abbr": "",
+    "def": "임의의 두 관측가능량에 대해 ΔA·ΔB ≥ |⟨[Â, B̂]⟩|/2. x, p에 적용하면 ΔxΔp ≥ ħ/2이며, 하한이 상태에 따라 달라질 수 있다.",
+    "chapters": [
+     "measurement#uncertainty"
+    ]
+   },
+   {
+    "ko": "뢰브딘 분할",
+    "en": "Löwdin partitioning",
+    "abbr": "",
+    "def": "관심 있는 몇 상태(A)와 나머지(B)를 나누고, B와의 결합을 2차까지 넣어 A 안의 유효 해밀토니언을 만드는 방법. k·p 이론의 유효 질량 유도에 쓴다.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "룽게–렌츠 벡터",
+    "en": "Runge–Lenz vector",
+    "abbr": "",
+    "def": "1/r 퍼텐셜에서만 보존되는 벡터로 고전 궤도의 장축 방향을 가리킨다. 양자역학에서는 이것이 각운동량과 함께 SO(4) 대칭을 만들어 수소의 l 우연 축퇴를 낳는다.",
+    "chapters": [
+     "central-potentials#hydrogen"
+    ]
+   },
+   {
+    "ko": "르장드르 다항식",
+    "en": "Legendre polynomials",
+    "abbr": "",
+    "def": "P_l(x). [−1, 1]에서 직교하는 다항식으로 P₀ = 1, P₁ = x, P₂ = (3x² − 1)/2. m = 0 구면 조화 함수와 산란의 부분파 전개에 나온다.",
+    "chapters": [
+     "math-tools#special"
+    ]
+   },
+   {
+    "ko": "리드베리 상태",
+    "en": "Rydberg state",
+    "abbr": "",
+    "def": "주 양자수 n이 아주 큰 원자 상태. 크기 ∝ n², 준위 간격 ∝ 1/n³, 수명이 길고 전기장에 매우 민감하며 쌍극자 모멘트가 크다.",
+    "chapters": [
+     "central-potentials#rydberg"
+    ]
+   },
+   {
+    "ko": "리프먼–슈윙거 식",
+    "en": "Lippmann–Schwinger equation",
+    "abbr": "",
+    "def": "|ψ⟩ = |k⟩ + G₀⁺V|ψ⟩. 산란 상태를 입사 평면파와 나가는 그린 함수로 쓴 적분 방정식. 반복 대입하면 보른 급수가 된다.",
+    "chapters": [
+     "scattering#born"
+    ]
+   },
+   {
+    "ko": "리프시츠–코세비치 식",
+    "en": "Lifshitz–Kosevich formula",
+    "abbr": "",
+    "def": "자기 저항(또는 자화) 진동 진폭을 열 감쇠 인자와 딩글 인자의 곱으로 주는 식. 진동 분석으로 페르미 면의 크기·유효 질량·양자 수명을 얻는다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "린드블라드 주 방정식",
+    "en": "Lindblad master equation, GKSL 방정식",
+    "abbr": "",
+    "def": "dρ/dt = −(i/ħ)[H, ρ] + Σ(L_kρL_k† − {L_k†L_k, ρ}/2). 마르코프 개방계에서 완전 양성을 보장하는 가장 일반적인 밀도 행렬 운동 방정식.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "마디 정리",
+    "en": "node theorem",
+    "abbr": "",
+    "def": "1차원 속박 상태를 에너지 순으로 늘어놓으면 n번째 상태(바닥 n = 0)는 마디가 정확히 n개라는 정리. 수치 해법에서 몇 번째 고유값인지 세는 근거가 된다.",
+    "chapters": [
+     "one-dimensional#bound"
+    ]
+   },
+   {
+    "ko": "마르코프 근사",
+    "en": "Markov approximation",
+    "abbr": "",
+    "def": "환경의 기억(상관 시간)이 계의 변화 시간보다 훨씬 짧다고 보고, 계의 변화율이 현재 상태에만 의존하게 하는 근사. 린드블라드 방정식의 전제다.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "만델스탐–탐 관계",
+    "en": "Mandelstam–Tamm relation",
+    "abbr": "",
+    "def": "ΔE·τ_A ≥ ħ/2, τ_A = ΔA/|d⟨A⟩/dt|. 에너지–시간 불확정성을 엄밀하게 표현한 것으로, 상태가 눈에 띄게 변하는 데 걸리는 시간의 하한을 에너지 퍼짐으로 준다.",
+    "chapters": [
+     "time-evolution#conserved"
+    ]
+   },
+   {
+    "ko": "맥도날드 정리",
+    "en": "Hylleraas–Undheim–MacDonald theorem",
+    "abbr": "",
+    "def": "힐러라스–운다임–맥도날드 정리. 기저를 하나 늘린 레일리–리츠 계산의 k번째 고유값은 이전 값보다 내려가며 항상 정확한 k번째 준위보다 위에 있다는 정리.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "무한 구형 우물",
+    "en": "infinite spherical well",
+    "abbr": "",
+    "def": "반지름 a 안에서 0, 경계에서 무한대인 퍼텐셜. 준위는 E_nl = ħ²x_nl²/2ma² (x_nl은 구 베셀 함수 j_l의 n번째 영점)이며 구형 양자점의 기본 모형이다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "문턱 정리",
+    "en": "threshold theorem",
+    "abbr": "",
+    "def": "물리 게이트 오류율이 어떤 문턱값보다 낮으면 오류 정정 부호를 겹겹이 써서 논리 오류율을 원하는 만큼 낮출 수 있다는 정리. 표면 부호의 문턱은 약 1%다.",
+    "chapters": [
+     "quantum-information#error-correction"
+    ]
+   },
+   {
+    "ko": "미니띠",
+    "en": "miniband",
+    "abbr": "",
+    "def": "초격자에서 우물들의 준위가 터널링으로 결합해 생긴 좁은 에너지 띠. 폭은 이웃 우물 결합의 약 4배로, 장벽이 얇을수록 넓다.",
+    "chapters": [
+     "one-dimensional#transfer"
+    ]
+   },
+   {
+    "ko": "미분 단면적",
+    "en": "differential cross section",
+    "abbr": "",
+    "def": "dσ/dΩ. 입사 흐름당 단위 입체각으로 산란되는 입자 수로, 넓이 차원을 가진다. 산란 진폭으로 dσ/dΩ = |f(θ)|²이다.",
+    "chapters": [
+     "scattering#cross-section"
+    ]
+   },
+   {
+    "ko": "미세 구조",
+    "en": "fine structure",
+    "abbr": "",
+    "def": "수소 준위가 상대론적 운동 에너지 보정, 스핀–궤도 결합, 다윈 항 때문에 α²Ry 규모로 갈라지는 것. 결과는 n과 j에만 의존한다.",
+    "chapters": [
+     "perturbation#fine-structure"
+    ]
+   },
+   {
+    "ko": "미세 구조 상수",
+    "en": "fine-structure constant",
+    "abbr": "",
+    "def": "α = e²/(4πε₀ħc) ≈ 1/137.036. 전자기 상호작용의 세기를 나타내는 무차원 상수로, 수소 전자의 속도 v/c와 미세 구조 크기 α²Ry를 정한다.",
+    "chapters": [
+     "perturbation#fine-structure"
+    ]
+   },
+   {
+    "ko": "밀도 반전",
+    "en": "population inversion",
+    "abbr": "",
+    "def": "위 준위 점유가 아래 준위보다 많은 상태 N₂ > N₁. 유도 방출이 흡수를 이겨 빛이 증폭되는 조건이며, 두 준위 계로는 만들 수 없어 세·네 준위나 p–n 접합 주입을 쓴다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "밀도 행렬",
+    "en": "density matrix, 밀도 연산자",
+    "abbr": "",
+    "def": "ρ = Σp_i|ψ_i⟩⟨ψ_i|. 순수 상태와 통계적 혼합을 모두 나타내는 에르미트·양의 반정부호·대각합 1인 연산자. 기댓값은 ⟨A⟩ = tr(ρA)다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "반교차",
+    "en": "avoided crossing",
+    "abbr": "",
+    "def": "회피 교차와 같은 말. 결합된 두 준위가 매개변수를 바꿀 때 만나지 않고 최소 간격 2|W|를 두고 서로 밀어내는 현상.",
+    "chapters": [
+     "one-dimensional#double"
+    ]
+   },
+   {
+    "ko": "반사 진폭",
+    "en": "reflection amplitude",
+    "abbr": "",
+    "def": "왼쪽에서 들어온 평면파 e^{ikx}에 대해 반사파 r e^{-ikx}의 계수 r. 반사율은 R = |r|²이다.",
+    "chapters": [
+     "one-dimensional#smatrix"
+    ]
+   },
+   {
+    "ko": "반유니터리 연산자",
+    "en": "antiunitary operator",
+    "abbr": "",
+    "def": "Θ(a|ψ⟩) = a*Θ|ψ⟩처럼 복소수를 켤레로 바꾸며 내적의 크기를 보존하는 연산자. 유니터리 연산자와 복소 켤레의 곱으로 쓰며, 시간 반전이 대표적이다.",
+    "chapters": [
+     "symmetry#transformations"
+    ]
+   },
+   {
+    "ko": "반자성 전류",
+    "en": "diamagnetic current",
+    "abbr": "",
+    "def": "확률 흐름의 −(q/m)A|ψ|² 항. 자기장이 직접 유도하는 전류로, 초전도체에서는 런던 방정식이 되어 자기장을 밀어낸다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "반자성 항",
+    "en": "diamagnetic term",
+    "abbr": "",
+    "def": "해밀토니언의 q²A²/2m 항. 대칭 게이지에서 q²B²r⊥²/8m이 되어 항상 에너지를 높이고(반자성), 양자점에서는 가둠 진동수를 키운다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "반전층",
+    "en": "inversion layer",
+    "abbr": "",
+    "def": "MOS 구조의 게이트 전압으로 반도체 표면에 다수 운반자와 반대 종류의 운반자가 모여 생긴 얇은 채널. 수 nm 두께의 삼각 우물이라 부띠로 양자화된다.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "버금 르장드르 함수",
+    "en": "associated Legendre functions",
+    "abbr": "",
+    "def": "P_l^m(x) = (1 − x²)^{|m|/2}dᵐP_l/dxᵐ. 구면 조화 함수의 θ 의존 부분으로 Y_l^m ∝ P_l^m(cos θ)e^{imφ}다.",
+    "chapters": [
+     "math-tools#special"
+    ]
+   },
+   {
+    "ko": "베르너 상태",
+    "en": "Werner state",
+    "abbr": "",
+    "def": "ρ = p|Ψ⁻⟩⟨Ψ⁻| + (1 − p)1/4. 벨 상태와 백색 잡음의 혼합으로, p > 1/3이면 얽혀 있고 p > 1/√2이면 CHSH 부등식을 깬다.",
+    "chapters": [
+     "quantum-information#bell"
+    ]
+   },
+   {
+    "ko": "베르트랑 정리",
+    "en": "Bertrand's theorem",
+    "abbr": "",
+    "def": "모든 유계 궤도가 닫힌 중심력은 1/r 퍼텐셜과 r² 퍼텐셜(조화 진동자)뿐이라는 고전역학 정리. 두 경우가 양자역학에서 우연 축퇴를 가지는 것과 대응한다.",
+    "chapters": [
+     "central-potentials#hydrogen"
+    ]
+   },
+   {
+    "ko": "베리 위상",
+    "en": "Berry phase",
+    "abbr": "",
+    "def": "해밀토니언의 매개변수를 천천히 닫힌 경로로 돌릴 때 상태가 동역학 위상 외에 얻는 기하학적 위상. 경로가 감싼 '곡률'의 적분이며, 스핀 1/2에서는 입체각의 절반이다.",
+    "chapters": [
+     "em-fields#aharonov-bohm"
+    ]
+   },
+   {
+    "ko": "벡터 모형",
+    "en": "vector model",
+    "abbr": "",
+    "def": "각운동량을 길이 √(l(l+1))ħ, z성분 mħ인 벡터가 z축 둘레 원뿔 위에서 돈다고 그리는 그림. x, y 성분은 정해지지 않고 평균이 0이다.",
+    "chapters": [
+     "angular-momentum#vector-model"
+    ]
+   },
+   {
+    "ko": "벡터 연산자",
+    "en": "vector operator",
+    "abbr": "",
+    "def": "회전할 때 성분이 보통 벡터처럼 바뀌는 연산자 V̂. [Ĵ_i, V̂_j] = iħε_ijkV̂_k를 만족하며 r̂, p̂, L̂이 예다. 행렬 요소가 Δj = 0, ±1 선택 규칙을 따른다.",
+    "chapters": [
+     "angular-momentum#operators"
+    ]
+   },
+   {
+    "ko": "벨 상태",
+    "en": "Bell states",
+    "abbr": "",
+    "def": "두 큐비트의 최대 얽힘 상태 넷 |Φ±⟩ = (|00⟩ ± |11⟩)/√2, |Ψ±⟩ = (|01⟩ ± |10⟩)/√2. 서로 직교해 기저를 이룬다.",
+    "chapters": [
+     "quantum-information#entanglement"
+    ]
+   },
+   {
+    "ko": "변분 매개변수",
+    "en": "variational parameter",
+    "abbr": "",
+    "def": "시험 함수 안의 조절 가능한 수(폭, 유효 전하, 선형 결합 계수 등). 에너지 기댓값을 이것에 대해 최소화한다.",
+    "chapters": [
+     "variational-wkb#variational"
+    ]
+   },
+   {
+    "ko": "변분 원리",
+    "en": "variational principle",
+    "abbr": "",
+    "def": "임의의 정규화된 시험 상태에 대한 에너지 기댓값은 바닥 상태 에너지보다 작아질 수 없다는 원리 ⟨ψ|Ĥ|ψ⟩ ≥ E₀. 기댓값을 최소화하면 E₀의 위쪽 한계와 근사 상태를 얻는다.",
+    "chapters": [
+     "variational-wkb#variational"
+    ]
+   },
+   {
+    "ko": "변위 문턱 에너지",
+    "en": "displacement threshold energy",
+    "abbr": "",
+    "def": "격자 원자를 제자리에서 밀어내 영구적인 빈자리–틈새 쌍을 만드는 데 필요한 최소 전달 에너지. 실리콘에서 약 15–20 eV이며 이온 주입 손상을 판단한다.",
+    "chapters": [
+     "scattering#semiconductor"
+    ]
+   },
+   {
+    "ko": "변위 연산자",
+    "en": "displacement operator",
+    "abbr": "",
+    "def": "D̂(α) = exp(αâ† − α*â). 진공을 결맞음 상태로 옮기며, 위상 공간에서 상태를 (Re α, Im α) 방향으로 평행 이동한다. 고전적 힘이 진동자에 주는 효과다.",
+    "chapters": [
+     "ladder-operators#forced"
+    ]
+   },
+   {
+    "ko": "변형",
+    "en": "strain",
+    "abbr": "",
+    "def": "결정의 늘어남·눌림·전단 ε_ij. 띠 구조를 바꾸는 섭동으로, 실리콘 채널에서 골짜기·가전자대 축퇴를 풀어 이동도를 높이는 변형 공학에 쓴다.",
+    "chapters": [
+     "perturbation#kp"
+    ]
+   },
+   {
+    "ko": "변형 퍼텐셜",
+    "en": "deformation potential",
+    "abbr": "",
+    "def": "결정 변형(strain)에 대한 띠 가장자리 에너지 이동의 비례 계수(Ξ_d, Ξ_u 등). 실리콘에서 단축 변형은 여섯 골짜기의 축퇴를 풀어 이동도를 높이는 데 쓰인다.",
+    "chapters": [
+     "symmetry#valleys"
+    ]
+   },
+   {
+    "ko": "병진 연산자",
+    "en": "translation operator",
+    "abbr": "",
+    "def": "T̂(a) = e^{-iap̂/ħ}. 파동함수를 a만큼 옮겨 T̂(a)ψ(x) = ψ(x − a)로 만든다. 운동량이 생성자이며, 병진 대칭이 있으면 운동량이 보존된다.",
+    "chapters": [
+     "symmetry#transformations"
+    ]
+   },
+   {
+    "ko": "보른 규칙",
+    "en": "Born rule",
+    "abbr": "",
+    "def": "파동함수와 실험을 잇는 공준. 위치를 재서 구간 [a,b]에서 발견할 확률은 ∫|Ψ|²dx이고, 일반적으로 결과 a_n을 얻을 확률은 진폭의 절댓값 제곱 |⟨a_n|ψ⟩|²이다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "보른 근사",
+    "en": "Born approximation",
+    "abbr": "",
+    "def": "리프먼–슈윙거 식에서 오른쪽 ψ를 입사 평면파로 바꾼 1차 근사. 산란 진폭이 퍼텐셜의 푸리에 변환 f = −(m/2πħ²)∫V(r)e^{iq·r}d³r이 된다.",
+    "chapters": [
+     "scattering#born"
+    ]
+   },
+   {
+    "ko": "보른–폰 카르만 경계 조건",
+    "en": "Born–von Karman boundary condition",
+    "abbr": "",
+    "def": "길이 L = Na인 결정의 양 끝을 이어 ψ(x + L) = ψ(x)로 두는 주기 경계 조건. k가 2π/L 간격으로 양자화되어 한 띠에 상태가 원자 수 N개만큼 생긴다.",
+    "chapters": [
+     "symmetry#bloch"
+    ]
+   },
+   {
+    "ko": "보손",
+    "en": "boson",
+    "abbr": "",
+    "def": "정수 스핀을 갖고 교환에 대칭인 파동함수를 갖는 입자(광자, 포논, ⁴He 원자 등). 한 상태에 여러 개가 들어갈 수 있고 저온에서 보스–아인슈타인 응축한다.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "보어–조머펠트 양자화 조건",
+    "en": "Bohr–Sommerfeld quantization condition",
+    "abbr": "",
+    "def": "∮p dx = 2πħ(n + 1/2). 부드러운 두 벽 사이 속박 상태의 WKB 양자화 조건. 수직 벽이 있으면 1/2 대신 다른 상수가 된다.",
+    "chapters": [
+     "variational-wkb#bohr-sommerfeld"
+    ]
+   },
+   {
+    "ko": "보존량",
+    "en": "constant of motion",
+    "abbr": "",
+    "def": "해밀토니언과 교환하는(명시적 시간 의존이 없는) 관측가능량. 하이젠베르크 방정식에서 dÂ/dt = 0이므로 기댓값과 확률 분포가 시간에 따라 변하지 않는다.",
+    "chapters": [
+     "time-evolution#conserved"
+    ]
+   },
+   {
+    "ko": "보편 게이트 집합",
+    "en": "universal gate set",
+    "abbr": "",
+    "def": "그 조합으로 임의의 유니터리를 원하는 정밀도로 근사할 수 있는 게이트 집합. 예: 모든 1큐비트 회전 + CNOT, 또는 {H, T, CNOT}.",
+    "chapters": [
+     "quantum-information#entanglement"
+    ]
+   },
+   {
+    "ko": "복사 재결합 계수",
+    "en": "radiative recombination coefficient",
+    "abbr": "",
+    "def": "B. 복사 재결합 속도를 R = Bnp로 쓴 비례 계수(cm³/s). 직접 간격 GaAs는 10⁻¹⁰, 간접 간격 실리콘은 10⁻¹⁴ 정도로 크게 다르다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "복제 불가 정리",
+    "en": "no-cloning theorem",
+    "abbr": "",
+    "def": "임의의 모르는 양자 상태를 똑같이 복사하는 유니터리 연산은 없다는 정리. 선형성에서 나오며 양자 키 분배의 안전성 근거다.",
+    "chapters": [
+     "quantum-information#no-cloning"
+    ]
+   },
+   {
+    "ko": "본질적 축퇴",
+    "en": "essential degeneracy",
+    "abbr": "",
+    "def": "회전 대칭에서 반드시 생기는 m에 대한 2l+1중 축퇴. 중심력이면 퍼텐셜 모양과 무관하게 생긴다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "부띠 간 전이",
+    "en": "intersubband transition",
+    "abbr": "",
+    "def": "양자 우물의 같은 띠(보통 전도대) 안 부띠 사이 전이. 쌍극자가 우물에 수직(z 편광)이어야 하며 중적외선 광검출기(QWIP)와 양자 폭포 레이저에 쓴다.",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "부분 대각합",
+    "en": "partial trace",
+    "abbr": "",
+    "def": "합성계 밀도 행렬에서 한 부분계의 자유도를 대각합으로 지워 다른 부분계만의 상태를 얻는 연산 ρ_A = tr_B ρ_AB.",
+    "chapters": [
+     "density-matrix#partial-trace"
+    ]
+   },
+   {
+    "ko": "분할 연산자 방법",
+    "en": "split-operator method",
+    "abbr": "",
+    "def": "e^{-iĤΔt/ħ} ≈ e^{-iVΔt/2ħ}e^{-iTΔt/ħ}e^{-iVΔt/2ħ}로 나눠, 퍼텐셜은 위치 공간에서, 운동 에너지는 FFT로 옮긴 운동량 공간에서 곱하는 시간 전개 수치법.",
+    "chapters": [
+     "time-evolution#numerics"
+    ]
+   },
+   {
+    "ko": "불균일 넓어짐",
+    "en": "inhomogeneous broadening",
+    "abbr": "",
+    "def": "앙상블의 각 스핀(원자)마다 공명 진동수가 조금씩 달라 전체 신호의 위상이 흩어지는 효과. T₂*를 T₂보다 짧게 만들며 스핀 에코로 되돌릴 수 있다.",
+    "chapters": [
+     "density-matrix#bloch-equations"
+    ]
+   },
+   {
+    "ko": "불균일 선폭 넓힘",
+    "en": "inhomogeneous broadening",
+    "abbr": "",
+    "def": "원자마다 공명 진동수가 조금씩 달라 전체 스펙트럼이 넓어지는 것. 도플러 이동이나 양자점 크기 분포가 원인이며 보통 가우스 모양이다. 스핀 에코로 되돌릴 수 있다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "불확정도",
+    "en": "uncertainty",
+    "abbr": "",
+    "def": "측정 결과의 표준편차 ΔA = √(⟨A²⟩ − ⟨A⟩²). 같은 상태를 여러 번 잴 때 결과가 퍼지는 정도이며, 측정 기기의 오차와는 다른 상태 고유의 퍼짐이다.",
+    "chapters": [
+     "measurement#uncertainty"
+    ]
+   },
+   {
+    "ko": "브라",
+    "en": "bra",
+    "abbr": "",
+    "def": "켓의 쌍대 벡터 ⟨ψ|. 켓에 작용해 복소수(내적) ⟨ψ|φ⟩를 내는 선형 함수이며, 성분은 켓 성분의 켤레 복소수다.",
+    "chapters": [
+     "state-space#vectors"
+    ]
+   },
+   {
+    "ko": "브라이트–위그너 공식",
+    "en": "Breit–Wigner formula",
+    "abbr": "",
+    "def": "공명 근처의 투과율(또는 단면적)이 T(E) ≈ (Γ/2)²/[(E − E_r)² + (Γ/2)²]로 로렌츠 모양이 된다는 식. 폭 Γ = ħ/τ는 준속박 상태의 수명을 준다.",
+    "chapters": [
+     "one-dimensional#resonance"
+    ]
+   },
+   {
+    "ko": "브라이트–위그너 식",
+    "en": "Breit–Wigner formula",
+    "abbr": "",
+    "def": "공명 근처 부분파 단면적 σ_l = (4π/k²)(2l+1)(Γ/2)²/[(E − E_r)² + (Γ/2)²]. 위상 이동이 π/2를 지날 때 생기며 Γ는 준속박 상태의 수명 폭이다.",
+    "chapters": [
+     "scattering#low-energy"
+    ]
+   },
+   {
+    "ko": "브론스키안",
+    "en": "Wronskian",
+    "abbr": "",
+    "def": "W = ψ₁ψ₂′ − ψ₁′ψ₂. 같은 에너지의 두 해에 대해 x에 무관하므로, 1차원 속박 상태가 축퇴하지 않음과 투과율+반사율 = 1 같은 성질을 증명하는 데 쓴다.",
+    "chapters": [
+     "one-dimensional#bound"
+    ]
+   },
+   {
+    "ko": "브루스 식",
+    "en": "Brus equation",
+    "abbr": "",
+    "def": "E ≈ E_g + (ħ²π²/2R²)(1/m_e + 1/m_h) − 1.786e²/(4πε₀ε_rR). 강한 구속 양자점의 발광 에너지를 반지름 R로 주는 근사식.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "브룩스–헤링 이동도",
+    "en": "Brooks–Herring mobility",
+    "abbr": "",
+    "def": "이온화된 불순물의 차폐 쿨롱 산란을 보른 근사로 계산한 이동도. T^{3/2}/N_I에 대략 비례하며 높은 도핑에서 이동도를 떨어뜨린다.",
+    "chapters": [
+     "scattering#semiconductor"
+    ]
+   },
+   {
+    "ko": "블로흐 공",
+    "en": "Bloch ball",
+    "abbr": "",
+    "def": "큐비트의 모든 상태(순수·혼합)를 담는 단위 공. ρ = (1 + r·σ)/2, |r| ≤ 1이며 표면이 순수 상태, 안쪽이 혼합 상태다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "블로흐 구",
+    "en": "Bloch sphere",
+    "abbr": "",
+    "def": "2준위 순수 상태 cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩를 단위 구 위의 점 (θ, φ)로 나타낸 것. 직교 상태는 정반대 점이고, 유니터리 연산은 구의 회전이다.",
+    "chapters": [
+     "measurement#postulates"
+    ]
+   },
+   {
+    "ko": "블로흐 벡터",
+    "en": "Bloch vector",
+    "abbr": "",
+    "def": "2준위 상태의 ⟨σ⟩ = (⟨σ_x⟩, ⟨σ_y⟩, ⟨σ_z⟩). 순수 상태는 길이 1로 블로흐 구 위에, 혼합 상태는 길이가 1보다 작아 구 안에 놓인다.",
+    "chapters": [
+     "spin#bloch"
+    ]
+   },
+   {
+    "ko": "블로흐 정리",
+    "en": "Bloch theorem",
+    "abbr": "",
+    "def": "주기 퍼텐셜 V(x + a) = V(x) 속 고유 상태는 ψ_k(x) = e^{ikx}u_k(x) (u_k는 격자 주기 함수)로 쓸 수 있다는 정리. 병진 연산자의 고유값 e^{-ika}에서 나온다.",
+    "chapters": [
+     "symmetry#bloch"
+    ]
+   },
+   {
+    "ko": "블로흐–지게르트 이동",
+    "en": "Bloch–Siegert shift",
+    "abbr": "",
+    "def": "회전파 근사에서 버린 반대 회전 성분 때문에 공명 진동수가 약 Ω²/4ω₀만큼 옮겨지는 효과. 구동이 강할 때 나타난다.",
+    "chapters": [
+     "time-dependent#rabi"
+    ]
+   },
+   {
+    "ko": "비결합 기저",
+    "en": "uncoupled basis",
+    "abbr": "",
+    "def": "두 각운동량의 개별 z성분으로 이름 붙인 곱 기저 |j₁m₁⟩|j₂m₂⟩. 상호작용이 없거나 강한 자기장일 때 좋은 기저다.",
+    "chapters": [
+     "spin#addition"
+    ]
+   },
+   {
+    "ko": "비리얼 정리",
+    "en": "virial theorem",
+    "abbr": "",
+    "def": "정상 상태에서 2⟨T⟩ = ⟨x·∇V⟩. 퍼텐셜이 rⁿ에 비례하면 2⟨T⟩ = n⟨V⟩이며, 수소 원자에서 ⟨T⟩ = −E, 조화 진동자에서 ⟨T⟩ = ⟨V⟩다.",
+    "chapters": [
+     "time-evolution#conserved"
+    ]
+   },
+   {
+    "ko": "비섭동 해밀토니언",
+    "en": "unperturbed Hamiltonian",
+    "abbr": "",
+    "def": "섭동 이론에서 정확한 고유값 E_n⁽⁰⁾과 고유 상태 |n⁽⁰⁾⟩를 아는 기준 해밀토니언 Ĥ₀.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "비조화 진동자",
+    "en": "anharmonic oscillator",
+    "abbr": "",
+    "def": "x³, x⁴ 항이 더해져 퍼텐셜이 포물선에서 벗어난 진동자. 준위 간격이 높은 준위로 갈수록 줄어들고(분자 진동), 섭동 이론의 표준 예제다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "비포물선성",
+    "en": "nonparabolicity",
+    "abbr": "",
+    "def": "에너지가 띠 가장자리에서 멀어질수록 E–k 관계가 포물선에서 벗어나 유효 질량이 커지는 효과. 좁은 띠 간격 반도체에서 E(1 + E/E_g) = ħ²k²/2m*로 근사한다.",
+    "chapters": [
+     "perturbation#kp"
+    ]
+   },
+   {
+    "ko": "사격법",
+    "en": "shooting method",
+    "abbr": "",
+    "def": "에너지를 가정하고 한쪽 경계에서 슈뢰딩거 방정식을 적분해, 반대쪽 경계 조건을 만족하도록 에너지를 맞추는 고유값 수치법. 고유값을 지날 때 끝값의 발산 방향이 뒤집힌다.",
+    "chapters": [
+     "one-dimensional#numerics"
+    ]
+   },
+   {
+    "ko": "사다리 연산자",
+    "en": "ladder operators",
+    "abbr": "",
+    "def": "고유 상태를 한 칸씩 위아래로 옮기는 연산자 쌍(â, â† 또는 Ĵ±). 교환 관계만으로 스펙트럼과 행렬 요소를 미분 방정식 없이 구하게 한다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "사영 연산자",
+    "en": "projection operator",
+    "abbr": "",
+    "def": "P̂ = |n⟩⟨n|처럼 P̂² = P̂이고 에르미트인 연산자. 상태에서 한 부분 공간 성분만 남기며, 측정 확률은 ⟨ψ|P̂|ψ⟩, 측정 뒤 상태는 P̂|ψ⟩를 정규화한 것이다.",
+    "chapters": [
+     "state-space#basis"
+    ]
+   },
+   {
+    "ko": "사이클로트론 진동수",
+    "en": "cyclotron frequency",
+    "abbr": "",
+    "def": "ω_c = eB/m*. 자기장 속 전하가 원운동하는 각진동수로 반지름과 무관하다. 란다우 준위 간격 ħω_c를 정한다.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "산란 길이",
+    "en": "scattering length",
+    "abbr": "",
+    "def": "a = −lim_{k→0} tan δ₀/k. 저에너지 s파 산란을 하나의 길이로 요약한 양으로 σ → 4πa²이다. 얕은 속박 상태가 있으면 크고 양수다.",
+    "chapters": [
+     "scattering#low-energy"
+    ]
+   },
+   {
+    "ko": "산란 진폭",
+    "en": "scattering amplitude",
+    "abbr": "",
+    "def": "멀리서 산란파를 f(θ,φ)e^{ikr}/r로 쓸 때의 계수 f. 길이 차원이고 미분 단면적이 |f|²이다.",
+    "chapters": [
+     "scattering#cross-section"
+    ]
+   },
+   {
+    "ko": "산탄 잡음",
+    "en": "shot noise",
+    "abbr": "",
+    "def": "광자나 전자처럼 낱개로 도착하는 입자 수의 푸아송 요동에서 생기는 잡음. N개를 세면 요동이 √N이고, 전류에서는 스펙트럼 밀도 2eI를 준다.",
+    "chapters": [
+     "measurement#quantum-limits"
+    ]
+   },
+   {
+    "ko": "삼중항",
+    "en": "triplet",
+    "abbr": "",
+    "def": "두 스핀 1/2를 합친 S = 1 상태 셋 |↑↑⟩, (|↑↓⟩+|↓↑⟩)/√2, |↓↓⟩. 스핀 교환에 대칭이다.",
+    "chapters": [
+     "spin#addition"
+    ]
+   },
+   {
+    "ko": "상관 에너지",
+    "en": "correlation energy",
+    "abbr": "",
+    "def": "정확한 바닥 상태 에너지와 하트리–포크 에너지의 차. 한 슬레이터 행렬식이 담지 못하는 전자끼리의 순간적인 피함에서 오며 항상 음수다.",
+    "chapters": [
+     "identical-particles#helium"
+    ]
+   },
+   {
+    "ko": "상대 위상",
+    "en": "relative phase",
+    "abbr": "",
+    "def": "중첩된 두 성분 사이의 위상 차. 간섭 항 2Re[e^{iα}ψ₁*ψ₂]로 확률 분포를 바꾸므로 관측된다. 블로흐 구에서는 방위각 φ에 해당한다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "상자성 항",
+    "en": "paramagnetic term",
+    "abbr": "",
+    "def": "해밀토니언 전개에서 −(q/2m)(p·A + A·p) 항. 대칭 게이지에서 −(qB/2m)L_z가 되어 궤도 자기 모멘트의 제만 이동을 준다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "상태 밀도",
+    "en": "density of states",
+    "abbr": "",
+    "def": "ρ(E): 단위 에너지당 상태의 수. 페르미 황금률에서 나중 상태 무리의 크기를 정하며, 3차원 자유 전자는 √E에, 2차원은 상수에 비례한다.",
+    "chapters": [
+     "time-dependent#golden-rule"
+    ]
+   },
+   {
+    "ko": "상태 붕괴",
+    "en": "state collapse, 사영 공준",
+    "abbr": "",
+    "def": "측정 직후 상태가 얻은 결과의 고유 상태(고유 공간으로의 사영을 정규화한 것)로 바뀌는 일. 곧바로 같은 측정을 반복하면 같은 결과가 확률 1로 나온다.",
+    "chapters": [
+     "measurement#postulates"
+    ]
+   },
+   {
+    "ko": "상호작용 묘사",
+    "en": "interaction picture",
+    "abbr": "",
+    "def": "해밀토니언을 Ĥ₀ + V̂(t)로 나누고 Ĥ₀에 의한 빠른 전개는 연산자에, V̂에 의한 느린 변화는 상태에 맡기는 기술 방식. 시간 의존 섭동 이론의 기본 틀이다.",
+    "chapters": [
+     "time-evolution#pictures"
+    ]
+   },
+   {
+    "ko": "생성자",
+    "en": "generator",
+    "abbr": "",
+    "def": "연속 유니터리 변환 Û(a) = e^{-iaĜ/ħ}를 만드는 에르미트 연산자 Ĝ. 해밀토니언은 시간 병진, 운동량은 공간 병진, 각운동량은 회전의 생성자다.",
+    "chapters": [
+     "time-evolution#evolution-operator"
+    ]
+   },
+   {
+    "ko": "선별 키",
+    "en": "sifted key",
+    "abbr": "",
+    "def": "BB84에서 보낸 쪽과 받은 쪽이 같은 기저를 고른 경우만 남긴 비트열. 평균적으로 보낸 비트의 절반이다.",
+    "chapters": [
+     "quantum-information#qkd"
+    ]
+   },
+   {
+    "ko": "선택 규칙",
+    "en": "selection rule",
+    "abbr": "",
+    "def": "행렬 요소가 0이 아닌 상태 쌍을 정하는 규칙. 조화 진동자에서 x̂는 Δn = ±1만 잇고, 원자 쌍극자 전이는 Δl = ±1, Δm = 0, ±1이다. 대칭에서 나온다.",
+    "chapters": [
+     "ladder-operators#number-states"
+    ]
+   },
+   {
+    "ko": "선형 연산자",
+    "en": "linear operator",
+    "abbr": "",
+    "def": "Â(a|ψ⟩ + b|φ⟩) = aÂ|ψ⟩ + bÂ|φ⟩를 만족하는 상태 공간의 사상. 관측가능량·시간 전개·대칭 변환이 모두 선형 연산자로 표현된다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "섭동",
+    "en": "perturbation",
+    "abbr": "",
+    "def": "기준 해밀토니언 Ĥ₀에 더하는 작은 항 V̂. 그 행렬 요소가 준위 간격보다 작아야 급수가 잘 수렴한다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "섭동 이론",
+    "en": "perturbation theory",
+    "abbr": "",
+    "def": "정확히 풀리는 해밀토니언 Ĥ₀에 작은 항 λV̂를 더한 문제의 고유값·고유 상태를 λ의 거듭제곱 급수로 구하는 근사법.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "세로 결맞음 길이",
+    "en": "longitudinal coherence length",
+    "abbr": "",
+    "def": "진행 방향을 따라 간섭이 유지되는 길이. 에너지(파장) 퍼짐에서 오며 대략 λ²/Δλ, 전자에서는 2λE/ΔE 정도다. 전계 방출원이 열전자원보다 길다.",
+    "chapters": [
+     "wave-function#coherence"
+    ]
+   },
+   {
+    "ko": "세로 이완 시간",
+    "en": "longitudinal relaxation time, T₁, 스핀–격자 이완",
+    "abbr": "",
+    "def": "T₁. 점유(블로흐 벡터의 z 성분)가 열평형 값으로 돌아가는 시간. 환경과 에너지를 주고받아 생기며 스핀–격자 이완이라고도 한다.",
+    "chapters": [
+     "density-matrix#bloch-equations"
+    ]
+   },
+   {
+    "ko": "수 상태",
+    "en": "number state",
+    "abbr": "",
+    "def": "수 연산자의 고유 상태 |n⟩ = (â†)ⁿ|0⟩/√n!. 에너지가 ħω(n + 1/2)로 정해지고, 위치·운동량 기댓값은 0이다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "수 연산자",
+    "en": "number operator",
+    "abbr": "",
+    "def": "N̂ = â†â. 고유값이 양자 수 n = 0, 1, 2, …이며 조화 진동자 해밀토니언은 Ĥ = ħω(N̂ + 1/2)이다. 장에서는 광자·포논 수를 센다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "수소꼴 이온",
+    "en": "hydrogen-like ion",
+    "abbr": "",
+    "def": "전자 하나만 남은 원자 이온(He⁺, Li²⁺ …). 에너지 E_n = −Z²Ry/n², 크기 a₀n²/Z로 수소 결과를 Z로 늘려 쓴다.",
+    "chapters": [
+     "central-potentials#rydberg"
+    ]
+   },
+   {
+    "ko": "수송 수명",
+    "en": "transport lifetime",
+    "abbr": "",
+    "def": "운동량 완화 시간 τ_t. 앞방향 산란을 덜 세는 운동량 완화 단면적으로 정해지며 이동도 μ = eτ_t/m*를 준다. 원거리 불순물 산란에서는 양자 수명보다 훨씬 길다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "수직 전이",
+    "en": "vertical transition",
+    "abbr": "",
+    "def": "결정에서 빛 흡수가 거의 같은 k끼리(Δk ≈ 0) 일어나는 것. 광자의 운동량이 브릴루앵 영역 크기에 비해 무시할 만큼 작아서 생긴다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "순도",
+    "en": "purity",
+    "abbr": "",
+    "def": "tr ρ². 순수 상태에서 1, d차원 최대 혼합 상태에서 1/d인 혼합 정도의 척도. 큐비트에서는 (1 + |r|²)/2다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "순수 상태",
+    "en": "pure state",
+    "abbr": "",
+    "def": "한 상태 벡터로 기술되는 상태 ρ = |ψ⟩⟨ψ|. ρ² = ρ, 순도 tr ρ² = 1이며 블로흐 벡터가 구 표면에 있다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "순수 위상 이완 시간",
+    "en": "pure dephasing time",
+    "abbr": "",
+    "def": "T_φ. 에너지 교환 없이 진동수 요동만으로 위상이 흩어지는 시간. T₂에서 T₁ 몫을 뺀 부분이다.",
+    "chapters": [
+     "density-matrix#bloch-equations"
+    ]
+   },
+   {
+    "ko": "슈뢰딩거 묘사",
+    "en": "Schrödinger picture",
+    "abbr": "",
+    "def": "상태가 Û(t)로 시간에 따라 변하고 연산자는 고정된 기술 방식. 기댓값은 하이젠베르크 묘사와 같다.",
+    "chapters": [
+     "time-evolution#pictures"
+    ]
+   },
+   {
+    "ko": "슈미트 분해",
+    "en": "Schmidt decomposition",
+    "abbr": "",
+    "def": "두 부분계의 순수 상태를 |ψ⟩ = Σ√λ_i|a_i⟩|b_i⟩로 쓰는 표준형. 0이 아닌 λ_i가 하나뿐이면 곱 상태, 둘 이상이면 얽힌 상태다.",
+    "chapters": [
+     "density-matrix#partial-trace"
+    ]
+   },
+   {
+    "ko": "슈브니코프–드하스 진동",
+    "en": "Shubnikov–de Haas oscillation",
+    "abbr": "",
+    "def": "자기장을 키울 때 란다우 준위가 페르미 에너지를 차례로 지나면서 세로 저항이 1/B에 대해 주기적으로 진동하는 현상. 운반자 농도와 유효 질량·양자 수명을 재는 데 쓴다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "슈타르크 효과",
+    "en": "Stark effect",
+    "abbr": "",
+    "def": "전기장에 의한 원자·분자 준위의 이동과 갈라짐. 축퇴가 없으면 장의 제곱에 비례(2차, −αE²/2), 수소 n = 2처럼 패리티가 섞이는 축퇴가 있으면 1차로 나타난다.",
+    "chapters": [
+     "perturbation#stark"
+    ]
+   },
+   {
+    "ko": "슈테른–게를라흐 장치",
+    "en": "Stern–Gerlach apparatus",
+    "abbr": "",
+    "def": "비균일 자기장으로 자기 모멘트에 성분에 비례하는 힘을 주어 원자 빔을 스핀 성분별로 가르는 장치. 은 원자 빔이 두 갈래로 나뉜 실험이 스핀 1/2의 양자화를 보였다.",
+    "chapters": [
+     "measurement"
+    ]
+   },
+   {
+    "ko": "스펙트럼 정리",
+    "en": "spectral theorem",
+    "abbr": "",
+    "def": "에르미트(일반적으로 정규) 연산자는 직교 정규 고유 기저로 대각화되어 Â = Σa_n|a_n⟩⟨a_n|로 쓸 수 있다는 정리. 연산자의 함수 f(Â) = Σf(a_n)|a_n⟩⟨a_n|를 정의한다.",
+    "chapters": [
+     "state-space#eigen"
+    ]
+   },
+   {
+    "ko": "스피너",
+    "en": "spinor",
+    "abbr": "",
+    "def": "스핀 1/2 상태를 나타내는 두 성분 열벡터 (a, b)ᵀ. 2π 회전에 부호가 바뀌고 4π 회전해야 제자리로 돌아온다.",
+    "chapters": [
+     "spin#pauli"
+    ]
+   },
+   {
+    "ko": "스핀",
+    "en": "spin",
+    "abbr": "",
+    "def": "공간 운동과 무관한 입자 고유의 각운동량. 같은 교환 관계를 따르지만 반정수 값이 허용되어, 전자는 s = 1/2로 S_z = ±ħ/2 두 상태를 가진다.",
+    "chapters": [
+     "spin#pauli"
+    ]
+   },
+   {
+    "ko": "스핀 결맞음 상태",
+    "en": "spin coherent state",
+    "abbr": "",
+    "def": "큰 스핀 j가 한 방향 n을 최대로 가리키는 상태 |j, m = j⟩_n. 불확정도가 최소인 '고전적' 스핀 방향 상태로, 많은 스핀 1/2가 모두 같은 방향을 향한 상태와 같다.",
+    "chapters": [
+     "spin#general-spin"
+    ]
+   },
+   {
+    "ko": "스핀 분극",
+    "en": "spin polarization",
+    "abbr": "",
+    "def": "P = (n↑ − n↓)/(n↑ + n↓). 스핀 앙상블의 정렬 정도로, 열평형에서 tanh(ħω₀/2k_BT)이다. 핵스핀은 상온에서 10⁻⁵ 정도로 작다.",
+    "chapters": [
+     "density-matrix#thermal"
+    ]
+   },
+   {
+    "ko": "스핀 에코",
+    "en": "spin echo, 한 에코",
+    "abbr": "",
+    "def": "π/2 펄스 뒤 시간 τ에 π 펄스를 주면 정적인 진동수 차로 흩어졌던 위상이 되감겨 2τ에 신호가 다시 모이는 현상(한 에코). 불균일 넓어짐을 지우고 T₂를 잰다.",
+    "chapters": [
+     "density-matrix#spin-echo"
+    ]
+   },
+   {
+    "ko": "스핀 오비탈",
+    "en": "spin orbital",
+    "abbr": "",
+    "def": "공간 오비탈과 스핀 상태의 곱 φ(r)χ(σ). 슬레이터 행렬식의 한 칸에 들어가는 1전자 상태다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "스핀 전달 토크",
+    "en": "spin-transfer torque, STT",
+    "abbr": "",
+    "def": "스핀 분극된 전류가 자성층에 들어가 각운동량을 넘겨 자화에 토크를 주는 효과. 전류만으로 STT-MRAM 자유층을 뒤집는다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "스핀–궤도 결합",
+    "en": "spin–orbit coupling",
+    "abbr": "",
+    "def": "전자가 핵 둘레를 돌며 보는 자기장과 스핀의 상호작용 ξ(r)L·S. j = l ± 1/2 준위를 가르며, 반도체 가전자대의 분리 띠(Si 44 meV, GaAs 0.34 eV)를 만든다.",
+    "chapters": [
+     "spin#spin-orbit"
+    ]
+   },
+   {
+    "ko": "스핀–통계 정리",
+    "en": "spin–statistics theorem",
+    "abbr": "",
+    "def": "상대론적 양자장론에서, 정수 스핀 입자는 보손, 반정수 스핀 입자는 페르미온이어야 한다는 정리.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "슬레이터 행렬식",
+    "en": "Slater determinant",
+    "abbr": "",
+    "def": "N개의 스핀 오비탈로 만든 N×N 행렬식 (1/√N!)det[φ_i(x_j)]. 자동으로 반대칭이며, 두 오비탈이 같으면 0이 되어 파울리 원리를 담는다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "시간 반전 연산자",
+    "en": "time-reversal operator",
+    "abbr": "",
+    "def": "운동의 방향을 뒤집는 반유니터리 연산자 Θ. x는 그대로, p와 스핀·각운동량은 부호가 바뀐다. 스핀 1/2에서는 Θ = −iσ_yK로 Θ² = −1이다.",
+    "chapters": [
+     "symmetry#time-reversal"
+    ]
+   },
+   {
+    "ko": "시간 순서 곱",
+    "en": "time ordering",
+    "abbr": "",
+    "def": "시간 의존 연산자들의 곱을 늦은 시각이 왼쪽에 오도록 늘어놓는 규칙 T. 서로 다른 시각의 해밀토니언이 교환하지 않을 때 다이슨 급수를 간단히 쓰게 한다.",
+    "chapters": [
+     "time-dependent#interaction"
+    ]
+   },
+   {
+    "ko": "시간 전개 연산자",
+    "en": "time-evolution operator",
+    "abbr": "",
+    "def": "|ψ(t)⟩ = Û(t, t₀)|ψ(t₀)⟩로 상태를 시간에 따라 옮기는 유니터리 연산자. 해밀토니언이 시간에 무관하면 Û = e^{-iĤ(t−t₀)/ħ}다.",
+    "chapters": [
+     "time-evolution#evolution-operator"
+    ]
+   },
+   {
+    "ko": "시험 함수",
+    "en": "trial function",
+    "abbr": "",
+    "def": "변분법에서 바닥 상태를 흉내 내도록 고른, 조절 가능한 매개변수를 품은 함수. 경계 조건과 대칭을 맞출수록 결과가 좋다.",
+    "chapters": [
+     "variational-wkb#variational"
+    ]
+   },
+   {
+    "ko": "신호 불가 원리",
+    "en": "no-signaling principle",
+    "abbr": "",
+    "def": "얽힘을 나눠 가져도 한쪽의 측정 선택이 다른 쪽의 축약 밀도 행렬(측정 통계)을 바꾸지 못해 정보를 빛보다 빨리 보낼 수 없다는 원리.",
+    "chapters": [
+     "quantum-information#no-cloning"
+    ]
+   },
+   {
+    "ko": "실수 구면 조화 함수",
+    "en": "real spherical harmonics",
+    "abbr": "",
+    "def": "Y_l^m과 Y_l^{−m}을 더하고 빼 실수로 만든 함수. 화학의 p_x, p_y, d_xy, d_{x²−y²} 오비탈이며, L̂_z의 고유 상태는 아니지만 결정장 계산에 편리하다.",
+    "chapters": [
+     "angular-momentum#harmonics"
+    ]
+   },
+   {
+    "ko": "쌍 상관 함수",
+    "en": "pair correlation function",
+    "abbr": "",
+    "def": "한 입자를 원점에 두었을 때 거리 r에서 다른 입자를 발견할 상대 확률 g(r). 자유 전자 기체에서 같은 스핀끼리는 g(0) = 0이고 멀리서 1이다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "아인슈타인 A 계수",
+    "en": "Einstein A coefficient",
+    "abbr": "",
+    "def": "자발 방출 속도 A₂₁ = ω³|d|²/(3πε₀ħc³). 열평형 논증으로 B와 연결되며, 그 역수가 복사 수명이다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "아인슈타인 B 계수",
+    "en": "Einstein B coefficient",
+    "abbr": "",
+    "def": "흡수와 유도 방출의 속도를 복사 에너지 밀도에 비례하게 쓴 계수 B₁₂, B₂₁. 전이 쌍극자 모멘트로 B = π|d|²/(3ε₀ħ²)(각진동수 기준)이다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "아하로노프–봄 효과",
+    "en": "Aharonov–Bohm effect",
+    "abbr": "",
+    "def": "전자가 자기장이 0인 영역만 지나도 경로가 감싼 자속 Φ 때문에 상대 위상 eΦ/ħ를 얻어 간섭 무늬가 옮겨지는 현상. 벡터 퍼텐셜의 물리적 의미를 보여 준다.",
+    "chapters": [
+     "em-fields#aharonov-bohm"
+    ]
+   },
+   {
+    "ko": "압축 상태",
+    "en": "squeezed state",
+    "abbr": "",
+    "def": "한 직교 성분의 불확정도를 진공보다 작게(다른 성분은 크게) 만든 최소 불확정 상태. 압축광은 표준 양자 한계 아래의 위상·진폭 측정에 쓰인다.",
+    "chapters": [
+     "ladder-operators#squeezed"
+    ]
+   },
+   {
+    "ko": "압축 연산자",
+    "en": "squeeze operator",
+    "abbr": "",
+    "def": "Ŝ(ξ) = exp[(ξ*â² − ξâ†²)/2]. 광자를 쌍으로 만들고 없애며, 위상 공간의 원형 불확정 영역을 넓이를 유지한 채 타원으로 누른다(압축 계수 e^{-r}).",
+    "chapters": [
+     "ladder-operators#squeezed"
+    ]
+   },
+   {
+    "ko": "약한 구속",
+    "en": "weak confinement",
+    "abbr": "",
+    "def": "양자점이 엑시톤 보어 반지름보다 훨씬 큰 경우. 엑시톤이 한 덩어리로 유지된 채 질량 중심 운동만 양자화된다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "양자 게이트",
+    "en": "quantum gate",
+    "abbr": "",
+    "def": "큐비트에 작용하는 유니터리 연산. 1큐비트 게이트는 블로흐 구 회전(X, H, S, T, R_n(θ))이고, 2큐비트 게이트(CNOT, CZ)는 얽힘을 만든다.",
+    "chapters": [
+     "quantum-information#qubits"
+    ]
+   },
+   {
+    "ko": "양자 결손",
+    "en": "quantum defect",
+    "abbr": "",
+    "def": "다전자 원자의 리드베리 준위를 E = −Ry/(n − δ_l)²로 쓸 때의 보정 δ_l. 낮은 l 전자가 내부 껍질을 뚫고 들어가 가려지지 않은 핵 전하를 느끼는 정도를 나타낸다.",
+    "chapters": [
+     "central-potentials#rydberg"
+    ]
+   },
+   {
+    "ko": "양자 구속 슈타르크 효과",
+    "en": "quantum-confined Stark effect, QCSE",
+    "abbr": "",
+    "def": "양자 우물에 수직 전기장을 걸면 전자와 정공이 반대쪽 벽으로 밀려 전이 에너지가 장의 제곱에 비례해 낮아지는 현상(QCSE). 엑시톤이 깨지지 않아 전계 흡수 변조기에 쓴다.",
+    "chapters": [
+     "perturbation#stark"
+    ]
+   },
+   {
+    "ko": "양자 궤적",
+    "en": "quantum trajectory, 몬테카를로 파동함수",
+    "abbr": "",
+    "def": "린드블라드 전개를 무작위 점프가 있는 파동함수의 여러 궤적으로 풀어내는 방법. 궤적들을 평균하면 밀도 행렬이 되고, 각 궤적은 연속 측정의 한 기록에 해당한다.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "양자 맥놀이",
+    "en": "quantum beats",
+    "abbr": "",
+    "def": "에너지가 다른 정상 상태 둘 이상이 중첩되면 간섭 항이 진동수 (E₁ − E₂)/ħ로 진동해 기댓값과 확률이 맥놀이하는 현상. 펨토초 분광에서 준위 간격을 직접 읽는다.",
+    "chapters": [
+     "time-evolution#beats"
+    ]
+   },
+   {
+    "ko": "양자 비트 오류율",
+    "en": "quantum bit error rate, QBER",
+    "abbr": "",
+    "def": "선별 키에서 두 사람의 비트가 다른 비율(QBER). 가로채고 다시 보내는 도청은 25%를 만들며, BB84는 약 11% 이하에서 안전한 키를 뽑을 수 있다.",
+    "chapters": [
+     "quantum-information#qkd"
+    ]
+   },
+   {
+    "ko": "양자 상태 단층 촬영",
+    "en": "quantum state tomography",
+    "abbr": "",
+    "def": "같은 상태로 준비한 많은 사본을 여러 기저(큐비트는 x, y, z)로 측정해 기댓값들로부터 상태(밀도 행렬)를 재구성하는 방법.",
+    "chapters": [
+     "measurement#stern-gerlach"
+    ]
+   },
+   {
+    "ko": "양자 수명",
+    "en": "quantum lifetime",
+    "abbr": "",
+    "def": "산란 사이의 평균 시간 τ_q로 모든 각도의 산란을 똑같이 센다. 란다우 준위를 Γ ≈ ħ/2τ_q로 넓히며 SdH 진동 진폭(딩글 인자)으로 잰다.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "양자 순간이동",
+    "en": "quantum teleportation",
+    "abbr": "",
+    "def": "공유한 벨 쌍과 고전 통신 2비트로 모르는 큐비트 상태를 멀리 옮기는 프로토콜. 원래 상태는 벨 측정으로 지워지므로 복제가 아니고 빛보다 빠른 통신도 아니다.",
+    "chapters": [
+     "quantum-information#no-cloning"
+    ]
+   },
+   {
+    "ko": "양자 재생",
+    "en": "quantum revival",
+    "abbr": "",
+    "def": "에너지가 정수 제곱에 비례하는 계(무한 우물 등)에서 모든 위상 인자가 동시에 1이 되는 시각 T_rev = 4mL²/πħ에 파속이 처음 모양을 정확히 되찾는 현상.",
+    "chapters": [
+     "time-evolution#beats"
+    ]
+   },
+   {
+    "ko": "양자 제논 효과",
+    "en": "quantum Zeno effect",
+    "abbr": "",
+    "def": "상태를 아주 자주 측정하면 매번 처음 상태로 사영되어 전이가 억제되는 현상. 짧은 시간에서 생존 확률이 1 − (t/τ)²로 시간의 제곱으로만 줄기 때문에 생긴다.",
+    "chapters": [
+     "measurement#energy-time"
+    ]
+   },
+   {
+    "ko": "양자 채널",
+    "en": "quantum channel",
+    "abbr": "",
+    "def": "밀도 행렬을 밀도 행렬로 보내는 완전 양성·대각합 보존 선형 사상. 잡음·결어긋남·측정 과정을 모두 표현하며 크라우스 연산자로 쓴다.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "양자 키 분배",
+    "en": "quantum key distribution, QKD",
+    "abbr": "",
+    "def": "양자 상태를 보내 두 사람이 비밀 키를 나누는 방법(QKD). 도청자의 측정이 상태를 흔들어 오류율로 드러나므로 정보 이론적으로 안전하다. BB84가 대표적이다.",
+    "chapters": [
+     "quantum-information#qkd"
+    ]
+   },
+   {
+    "ko": "양자 폭포 레이저",
+    "en": "quantum cascade laser, QCL",
+    "abbr": "",
+    "def": "초격자 우물 안의 부띠 사이 전이(전도대 안 전이)를 쓰고, 전자가 한 주기씩 계단처럼 내려오며 광자를 여러 번 내는 반도체 레이저. 중적외선–테라헤르츠 영역을 층 두께로 설계한다.",
+    "chapters": [
+     "one-dimensional#resonance"
+    ]
+   },
+   {
+    "ko": "양자 효율",
+    "en": "quantum efficiency",
+    "abbr": "",
+    "def": "들어온 광자 하나당 모인 전자 수(광검출기) 또는 주입 전자 하나당 나온 광자 수(발광 소자). 광검출기는 η = (1 − R)(1 − e^{-αW})로 근사한다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "양자점",
+    "en": "quantum dot",
+    "abbr": "",
+    "def": "전자와 정공을 세 방향 모두 나노미터 규모로 가둬 준위가 원자처럼 불연속이 된 구조. 크기로 발광 색을 조절하며, 전하·스핀 큐비트에도 쓴다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "얽힌 상태",
+    "en": "entangled state",
+    "abbr": "",
+    "def": "부분계 상태들의 곱으로 쓸 수 없는 합성계 상태. 각 부분이 따로는 정해진 상태를 갖지 않으며, 측정 결과 사이에 고전적으로 설명할 수 없는 상관이 있다.",
+    "chapters": [
+     "quantum-information#entanglement"
+    ]
+   },
+   {
+    "ko": "얽힘 엔트로피",
+    "en": "entanglement entropy",
+    "abbr": "",
+    "def": "두 부분계로 나눈 순수 상태에서 축약 밀도 행렬의 폰 노이만 엔트로피 S(ρ_A). 곱 상태는 0, 두 큐비트 벨 상태는 1비트다.",
+    "chapters": [
+     "density-matrix#partial-trace"
+    ]
+   },
+   {
+    "ko": "에너지–시간 관계",
+    "en": "energy–time relation",
+    "abbr": "",
+    "def": "ΔE·Δt ~ ħ. 상태가 존재하거나 섭동이 지속된 시간 Δt가 짧을수록 에너지(진동수)가 정해지지 않는다는 관계. 전이 확률의 sinc² 봉우리 폭이 2πħ/t다.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "에렌페스트 정리",
+    "en": "Ehrenfest theorem",
+    "abbr": "",
+    "def": "기댓값이 고전 운동 방정식을 따른다는 정리: d⟨x⟩/dt = ⟨p⟩/m, d⟨p⟩/dt = ⟨−V′(x)⟩. 파속이 퍼텐셜 변화 규모보다 좁을 때 고전 극한이 된다.",
+    "chapters": [
+     "wave-function#ehrenfest"
+    ]
+   },
+   {
+    "ko": "에르미트 다항식",
+    "en": "Hermite polynomials",
+    "abbr": "",
+    "def": "H_n(ξ). 조화 진동자 고유 함수 ψ_n ∝ H_n(ξ)e^{-ξ²/2}에 나오는 다항식으로 H₀ = 1, H₁ = 2ξ, H_{n+1} = 2ξH_n − 2nH_{n−1}이다.",
+    "chapters": [
+     "math-tools#special"
+    ]
+   },
+   {
+    "ko": "에르미트 수반",
+    "en": "Hermitian adjoint",
+    "abbr": "",
+    "def": "⟨φ|Â†ψ⟩ = ⟨Âφ|ψ⟩로 정의되는 연산자 Â†. 행렬로는 전치 켤레이며, (ÂB̂)† = B̂†Â†, (|a⟩⟨b|)† = |b⟩⟨a|다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "에르미트 연산자",
+    "en": "Hermitian operator",
+    "abbr": "",
+    "def": "Â† = Â인 연산자. 고유값이 실수이고 서로 다른 고유값의 고유 벡터가 직교하므로 관측가능량을 나타낸다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "엑시톤",
+    "en": "exciton",
+    "abbr": "",
+    "def": "쿨롱 인력으로 묶인 전자–정공 쌍. 환산 질량과 유전율로 수소 모형을 고쳐 결합 에너지 Ry·μ/(m_eε_r²)을 얻으며, 띠 간격 바로 아래 흡수선으로 보인다.",
+    "chapters": [
+     "central-potentials#effective-mass"
+    ]
+   },
+   {
+    "ko": "엑시톤 보어 반지름",
+    "en": "exciton Bohr radius",
+    "abbr": "",
+    "def": "a_B = ε_r a₀ (m_e/μ). 반도체 속 전자–정공 쌍의 수소꼴 궤도 크기. CdSe 약 5 nm, GaAs 약 12 nm이며 양자점의 구속 영역을 가르는 기준이다.",
+    "chapters": [
+     "central-potentials#spherical-well"
+    ]
+   },
+   {
+    "ko": "연결 공식",
+    "en": "connection formula",
+    "abbr": "",
+    "def": "고전 전환점 근처를 에어리 함수로 풀어, 허용 영역의 진동하는 WKB 해와 금지 영역의 지수 해를 잇는 규칙. 위상 π/4 이동이 나온다.",
+    "chapters": [
+     "variational-wkb#wkb"
+    ]
+   },
+   {
+    "ko": "연속 방정식",
+    "en": "continuity equation",
+    "abbr": "",
+    "def": "∂ρ/∂t + ∂j/∂x = 0. 한 구간의 확률이 줄어든 만큼 경계로 확률 흐름이 빠져나간다는 국소 보존 법칙으로, 실수 퍼텐셜의 슈뢰딩거 방정식에서 나온다.",
+    "chapters": [
+     "wave-function#current"
+    ]
+   },
+   {
+    "ko": "연속 상태",
+    "en": "continuum",
+    "abbr": "",
+    "def": "에너지가 연속적으로 분포한 상태들(자유 전자, 띠 안의 상태, 전자기장 모드). 전이 확률을 상태 밀도로 더해야 하며 그 결과가 페르미 황금률이다.",
+    "chapters": [
+     "time-dependent#golden-rule"
+    ]
+   },
+   {
+    "ko": "열 감쇠 인자",
+    "en": "thermal damping factor",
+    "abbr": "",
+    "def": "X/sinh X, X = 2π²k_BT/ħω_c. 온도가 페르미 분포를 흐려 SdH 진동 진폭을 줄이는 인자로, 온도 의존성에서 유효 질량을 얻는다.",
+    "chapters": [
+     "em-fields#sdh"
+    ]
+   },
+   {
+    "ko": "열평형 상태",
+    "en": "thermal state, 깁스 상태",
+    "abbr": "",
+    "def": "ρ = e^{-Ĥ/k_BT}/Z. 온도 T의 열저장고와 평형인 계의 밀도 행렬(깁스 상태)로, 에너지 고유 기저에서 대각이고 점유가 볼츠만 분포다.",
+    "chapters": [
+     "density-matrix#thermal"
+    ]
+   },
+   {
+    "ko": "영년 방정식",
+    "en": "secular equation",
+    "abbr": "",
+    "def": "det(V_ab − E⁽¹⁾δ_ab) = 0. 축퇴 부분 공간 안에서 섭동 행렬의 고유값(1차 이동)을 주는 방정식.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "영자기장 갈라짐",
+    "en": "zero-field splitting",
+    "abbr": "",
+    "def": "외부 자기장이 없어도 스핀 S ≥ 1의 m_s 준위가 스핀–스핀·결정장 상호작용으로 갈라지는 것. NV 중심 바닥 상태는 m_s = 0과 ±1 사이가 2.87 GHz다.",
+    "chapters": [
+     "spin#general-spin"
+    ]
+   },
+   {
+    "ko": "오라클",
+    "en": "oracle",
+    "abbr": "",
+    "def": "양자 알고리즘에서 함수 f를 |x⟩|y⟩ → |x⟩|y⊕f(x)⟩로 계산하는 블랙박스 유니터리. 호출 횟수로 알고리즘의 복잡도를 잰다.",
+    "chapters": [
+     "quantum-information#algorithms"
+    ]
+   },
+   {
+    "ko": "오일러 각",
+    "en": "Euler angles",
+    "abbr": "",
+    "def": "임의의 회전을 z축 α, 새 y축 β, 새 z축 γ의 세 회전으로 분해하는 세 각. 회전 연산자를 e^{-iαJ_z/ħ}e^{-iβJ_y/ħ}e^{-iγJ_z/ħ}로 쓴다.",
+    "chapters": [
+     "angular-momentum#rotations"
+    ]
+   },
+   {
+    "ko": "올림 연산자",
+    "en": "raising operator",
+    "abbr": "",
+    "def": "â†. 조화 진동자 에너지를 ħω 올리는 연산자로 â†|n⟩ = √(n+1)|n+1⟩. 장의 양자화에서는 광자·포논 하나를 만드는 생성 연산자다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "완비성 관계",
+    "en": "completeness relation",
+    "abbr": "",
+    "def": "Σ|n⟩⟨n| = 1̂ (연속 기저는 ∫|x⟩⟨x|dx = 1̂). 기저가 공간 전체를 덮는다는 표현으로, 아무 곳에나 끼워 넣어 기저를 바꾸거나 행렬로 바꾸는 데 쓴다.",
+    "chapters": [
+     "state-space#basis"
+    ]
+   },
+   {
+    "ko": "완전 양성",
+    "en": "complete positivity",
+    "abbr": "",
+    "def": "사상을 더 큰 계의 일부에 적용해도(다른 계와 얽혀 있어도) 결과가 항상 양의 밀도 행렬이 되는 성질. 물리적 양자 채널의 필수 조건이다.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "우연 축퇴",
+    "en": "accidental degeneracy",
+    "abbr": "",
+    "def": "눈에 보이는 기하 대칭만으로는 설명되지 않는 축퇴. 수소의 l 축퇴는 숨은 SO(4) 대칭(룽게–렌츠 벡터), 3차원 조화 진동자의 축퇴는 SU(3) 대칭에서 온다.",
+    "chapters": [
+     "symmetry#degeneracy"
+    ]
+   },
+   {
+    "ko": "운동 운동량",
+    "en": "kinetic momentum",
+    "abbr": "",
+    "def": "Π = p − qA = mv. 입자의 실제 속도에 해당하는 게이지 불변 운동량. 성분끼리 [Π_x, Π_y] = iħqB로 교환하지 않는다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "운동량 공간 파동함수",
+    "en": "momentum-space wave function",
+    "abbr": "",
+    "def": "φ(p) = (2πħ)^{-1/2}∫ψ(x)e^{-ipx/ħ}dx. 위치 파동함수의 푸리에 변환이며, |φ(p)|²가 운동량을 쟀을 때의 확률 밀도다.",
+    "chapters": [
+     "wave-function#momentum"
+    ]
+   },
+   {
+    "ko": "운동량 완화 단면적",
+    "en": "momentum-transfer cross section",
+    "abbr": "",
+    "def": "σ_m = ∫(1 − cos θ)(dσ/dΩ)dΩ. 산란마다 잃는 앞방향 운동량을 가중한 단면적으로, 앞방향 산란은 덜 세어 이동도와 수송 수명을 정한다.",
+    "chapters": [
+     "scattering#semiconductor"
+    ]
+   },
+   {
+    "ko": "운동량 전달",
+    "en": "momentum transfer",
+    "abbr": "",
+    "def": "ħq = ħ(k − k′). 산란 전후 파수 벡터의 차로, 탄성 산란에서 q = 2k sin(θ/2)다. 보른 진폭은 q만의 함수다.",
+    "chapters": [
+     "scattering#born"
+    ]
+   },
+   {
+    "ko": "운동학 인자",
+    "en": "kinematic factor",
+    "abbr": "",
+    "def": "K = E₁/E₀. 탄성 이체 충돌에서 각 θ로 튕긴 입사 이온의 에너지 비로, 입사·표적 질량과 θ만으로 정해진다. RBS에서 원소를 식별한다.",
+    "chapters": [
+     "scattering#coulomb"
+    ]
+   },
+   {
+    "ko": "원심 뒤틀림",
+    "en": "centrifugal distortion",
+    "abbr": "",
+    "def": "빨리 돌수록 결합이 늘어나 관성 모멘트가 커지는 효과. 회전 에너지에 −DJ²(J+1)² 보정이 붙어 높은 J에서 선 간격이 줄어든다.",
+    "chapters": [
+     "angular-momentum#rotor"
+    ]
+   },
+   {
+    "ko": "원심 장벽",
+    "en": "centrifugal barrier",
+    "abbr": "",
+    "def": "유효 퍼텐셜의 ħ²l(l+1)/2mr² 항. 각운동량이 있는 입자를 중심 근처에서 밀어내 R ∝ r^l로 만들고, 저에너지 산란에서 l ≥ 1 부분파를 막는다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "원자 단위",
+    "en": "atomic units",
+    "abbr": "",
+    "def": "ħ = m_e = e = 4πε₀ = 1로 두는 단위계. 길이는 보어 반지름 a₀ = 0.0529 nm, 에너지는 하트리 27.211 eV이며 원자·분자 계산에 쓴다.",
+    "chapters": [
+     "math-tools#constants"
+    ]
+   },
+   {
+    "ko": "위그너 D 행렬",
+    "en": "Wigner D-matrix",
+    "abbr": "",
+    "def": "D^j_{m′m}(α,β,γ) = ⟨j m′|R̂(α,β,γ)|j m⟩. 오일러 각으로 지정한 회전이 같은 j 다중항 안의 상태를 섞는 방식을 나타내는 (2j+1)×(2j+1) 유니터리 행렬.",
+    "chapters": [
+     "angular-momentum#rotations"
+    ]
+   },
+   {
+    "ko": "위그너 작은 d 행렬",
+    "en": "Wigner small d-matrix",
+    "abbr": "",
+    "def": "d^j_{m′m}(β) = ⟨j m′|e^{-iβĴ_y/ħ}|j m⟩. D 행렬의 핵심인 y축 회전 부분으로, 기운 축으로 각운동량을 쟀을 때의 확률 |d|²를 준다.",
+    "chapters": [
+     "angular-momentum#rotations"
+    ]
+   },
+   {
+    "ko": "위그너 정리",
+    "en": "Wigner's theorem",
+    "abbr": "",
+    "def": "전이 확률을 보존하는 모든 대칭 변환은 유니터리 연산자 또는 반유니터리 연산자로 표현된다는 정리. 연속 대칭은 유니터리, 시간 반전은 반유니터리다.",
+    "chapters": [
+     "symmetry#transformations"
+    ]
+   },
+   {
+    "ko": "위그너 지연 시간",
+    "en": "Wigner time delay",
+    "abbr": "",
+    "def": "τ = ħ dφ/dE. 투과·반사 위상 φ의 에너지 미분으로 정의되는 파속의 지연 시간. 공명에서 최대가 되어 준위 수명 ħ/Γ 정도에 이른다.",
+    "chapters": [
+     "one-dimensional#resonance"
+    ]
+   },
+   {
+    "ko": "위그너 함수",
+    "en": "Wigner function",
+    "abbr": "",
+    "def": "W(x,p) = (1/πħ)∫ψ*(x+y)ψ(x−y)e^{2ipy/ħ}dy. 상태를 위상 공간에서 나타내는 함수로, x나 p로 적분하면 각각의 확률 분포가 되지만 음수가 될 수 있다.",
+    "chapters": [
+     "ladder-operators#wigner"
+    ]
+   },
+   {
+    "ko": "위상",
+    "en": "phase",
+    "abbr": "",
+    "def": "복소 파동함수 Ψ = |Ψ|e^{iθ}에서 크기와 별도로 각 점이 갖는 각 θ. 확률 밀도에는 직접 나타나지 않지만, 공간 변화가 운동량과 확률 흐름을, 성분 사이의 차이가 간섭을 정한다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "위상 되차기",
+    "en": "phase kickback",
+    "abbr": "",
+    "def": "표적 큐비트를 오라클의 고유 상태(|−⟩)로 두면 f(x)가 표적이 아니라 제어 레지스터의 위상 (−1)^{f(x)}로 돌아오는 현상. 도이치–조사·그로버 알고리즘의 핵심이다.",
+    "chapters": [
+     "quantum-information#algorithms"
+    ]
+   },
+   {
+    "ko": "위상 속도",
+    "en": "phase velocity",
+    "abbr": "",
+    "def": "v_p = ω/k. 한 평면파 성분의 마루가 움직이는 속도. 자유 입자에서 ħk/2m으로 군속도의 절반이며 직접 관측되는 양이 아니다.",
+    "chapters": [
+     "wave-function#packet"
+    ]
+   },
+   {
+    "ko": "위상 이동",
+    "en": "phase shift",
+    "abbr": "",
+    "def": "δ_l. 퍼텐셜 때문에 l번째 부분파의 바깥쪽 지름 파동이 자유 파동보다 밀리거나 당겨진 위상. 산란 진폭과 단면적 σ_l = (4π/k²)(2l+1)sin²δ_l을 모두 정한다.",
+    "chapters": [
+     "scattering#partial-waves"
+    ]
+   },
+   {
+    "ko": "유니터리 연산자",
+    "en": "unitary operator",
+    "abbr": "",
+    "def": "Û†Û = 1̂인 연산자. 내적과 확률을 보존하므로 시간 전개·기저 변환·대칭 변환을 나타내며, 에르미트 생성자 Ĝ로 Û = e^{-iĜ}라 쓸 수 있다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "유니터리 한계",
+    "en": "unitarity limit",
+    "abbr": "",
+    "def": "σ_l ≤ (4π/k²)(2l+1). 한 부분파가 줄 수 있는 최대 단면적으로, δ_l = π/2 공명에서 도달한다.",
+    "chapters": [
+     "scattering#partial-waves"
+    ]
+   },
+   {
+    "ko": "유니터리성",
+    "en": "unitarity",
+    "abbr": "",
+    "def": "확률(흐름) 보존 때문에 S 행렬이 유니터리라는 성질. 부분파 S_l = e^{2iδ_l}의 크기가 1이 되어 각 부분파 단면적에 상한이 생긴다.",
+    "chapters": [
+     "scattering#partial-waves"
+    ]
+   },
+   {
+    "ko": "유도 방출",
+    "en": "stimulated emission",
+    "abbr": "",
+    "def": "들어온 광자와 같은 진동수·위상·방향·편광의 광자를 내며 위 준위에서 아래 준위로 전이하는 과정. 흡수와 같은 계수(B₁₂ = B₂₁, 축퇴 같을 때)를 가지며 레이저 증폭의 원리다.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "유한 구형 우물",
+    "en": "finite spherical well",
+    "abbr": "",
+    "def": "r < a에서 −V₀, 밖에서 0인 3차원 퍼텐셜. l = 0 속박 상태는 1차원 유한 우물의 홀 상태와 같아, 깊이가 V₀a² > π²ħ²/8m을 넘어야 첫 속박 상태가 생긴다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "유한 차분법",
+    "en": "finite-difference method",
+    "abbr": "",
+    "def": "미분을 격자점 사이의 차분으로 바꿔 미분 방정식을 행렬 문제로 만드는 수치법. 해밀토니언은 대각 2t+V_j, 이웃 −t (t = ħ²/2mΔx²)인 삼중 대각 행렬이 된다.",
+    "chapters": [
+     "state-space#finite-diff"
+    ]
+   },
+   {
+    "ko": "유효 거리 전개",
+    "en": "effective-range expansion",
+    "abbr": "",
+    "def": "k cot δ₀ = −1/a + r₀k²/2 + …. 저에너지 s파 위상 이동을 산란 길이 a와 유효 거리 r₀ 두 수로 나타내는 전개.",
+    "chapters": [
+     "scattering#low-energy"
+    ]
+   },
+   {
+    "ko": "유효 양자수",
+    "en": "effective quantum number",
+    "abbr": "",
+    "def": "ν = 1/√(−E/Ry). 에너지를 수소 꼴로 다시 쓴 수로, 순수 쿨롱 퍼텐셜에서 정수 n이 된다. 리드베리 원자에서는 n − δ_l로 양자 결손만큼 벗어난다.",
+    "chapters": [
+     "central-potentials#hydrogen"
+    ]
+   },
+   {
+    "ko": "유효 퍼텐셜",
+    "en": "effective potential",
+    "abbr": "",
+    "def": "V_eff(r) = V(r) + ħ²l(l+1)/2mr². 지름 방정식에서 실제 퍼텐셜에 원심 장벽을 더한 것으로, l이 클수록 입자가 중심에서 밀려난다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "유효 핵전하",
+    "en": "effective nuclear charge",
+    "abbr": "",
+    "def": "다른 전자의 가림 때문에 한 전자가 실제로 느끼는 핵전하. 헬륨 변분 계산에서 Z_eff = 27/16 ≈ 1.69를 얻는다.",
+    "chapters": [
+     "variational-wkb#helium"
+    ]
+   },
+   {
+    "ko": "이상 제만 효과",
+    "en": "anomalous Zeeman effect",
+    "abbr": "",
+    "def": "스핀이 있는 원자 준위가 약한 자기장에서 g_J에 따라 준위마다 다른 간격으로 갈라지는 현상. 고전적 세 줄(정상 제만)과 다른 여러 줄이 나온다.",
+    "chapters": [
+     "spin#spin-orbit"
+    ]
+   },
+   {
+    "ko": "이조",
+    "en": "detuning",
+    "abbr": "",
+    "def": "Δ = ω − ω₀. 구동 진동수와 전이 진동수의 차. 회전 좌표계에서 z방향 유효장이 되어 라비 진동의 진폭을 줄이고 진동수를 키운다.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "이체 충돌",
+    "en": "binary collision",
+    "abbr": "",
+    "def": "이온 주입처럼 파장이 원자 간격보다 훨씬 짧은 고에너지 입자의 산란을 두 입자 사이 고전 충돌로 다루는 근사. 운동량·에너지 보존과 고전 궤도로 산란각과 전달 에너지를 구한다.",
+    "chapters": [
+     "scattering#semiconductor"
+    ]
+   },
+   {
+    "ko": "일반화 라게르 다항식",
+    "en": "associated Laguerre polynomials",
+    "abbr": "",
+    "def": "L_k^α(x). 수소 원자 지름 함수 R_nl ∝ ρ^l e^{-ρ/2}L_{n−l−1}^{2l+1}(ρ)와 2차원 조화 진동자에 나오는 직교 다항식.",
+    "chapters": [
+     "math-tools#special"
+    ]
+   },
+   {
+    "ko": "일반화 라비 진동수",
+    "en": "generalized Rabi frequency",
+    "abbr": "",
+    "def": "Ω′ = √(Ω² + Δ²). 이조 Δ가 있을 때 2준위 점유가 진동하는 실제 진동수로, 공명에서 라비 진동수 Ω와 같다.",
+    "chapters": [
+     "time-dependent#rabi"
+    ]
+   },
+   {
+    "ko": "일반화된 고유값 문제",
+    "en": "generalized eigenvalue problem",
+    "abbr": "",
+    "def": "Hc = ESc. 기저가 직교하지 않을 때 나오는 고유값 문제로, S의 촐레스키 분해 등으로 보통 고유값 문제로 바꿔 푼다.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "자기 길이",
+    "en": "magnetic length",
+    "abbr": "",
+    "def": "ℓ_B = √(ħ/eB). 란다우 준위 바닥 상태의 크기로 1 T에서 25.7 nm. 한 상태가 차지하는 넓이 2πℓ_B²에 자속 양자 하나가 지나간다.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "자기 일관장",
+    "en": "self-consistent field",
+    "abbr": "",
+    "def": "가정한 오비탈로 평균 퍼텐셜을 만들고, 그 퍼텐셜로 오비탈을 다시 풀기를 반복해 입력과 출력이 같아질 때까지 수렴시키는 방법(SCF). 하트리–포크와 DFT의 계산 절차다.",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "자기 터널 접합",
+    "en": "magnetic tunnel junction, MTJ",
+    "abbr": "",
+    "def": "두 강자성층 사이에 얇은 절연층(MgO 등)을 둔 구조. 두 층 자화가 평행이면 저항이 낮고 반평행이면 높은 터널 자기 저항(TMR)으로 MRAM의 비트를 저장한다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "자기 회전비",
+    "en": "gyromagnetic ratio",
+    "abbr": "",
+    "def": "γ = μ/J. 자기 모멘트와 각운동량의 비로, 라모어 진동수 ω = γB를 정한다. 전자 스핀은 γ/2π ≈ 28.0 GHz/T, 양성자는 42.58 MHz/T다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "자발 방출 수명",
+    "en": "spontaneous lifetime",
+    "abbr": "",
+    "def": "τ = 1/A. 바깥 빛이 없어도 진공 요동 때문에 들뜬 상태가 광자를 내며 붕괴하는 평균 시간. 수소 2p는 1.6 ns다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "자속 양자",
+    "en": "flux quantum",
+    "abbr": "",
+    "def": "Φ₀ = h/e ≈ 4.14×10⁻¹⁵ Wb. 아하로노프–봄 위상을 2π 만드는 자속이며 란다우 준위 하나의 상태 수는 자속을 Φ₀로 나눈 값이다. 초전도체에서는 h/2e.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "자연 선폭",
+    "en": "natural linewidth",
+    "abbr": "",
+    "def": "들뜬 상태의 유한한 수명 τ만으로 생기는 스펙트럼선의 폭. 에너지로 ΔE = ħ/τ, 진동수로 Δν = 1/(2πτ)이며 모양은 로렌츠형이다.",
+    "chapters": [
+     "measurement#energy-time"
+    ]
+   },
+   {
+    "ko": "자유 유도 감쇠",
+    "en": "free induction decay, FID",
+    "abbr": "",
+    "def": "π/2 펄스 뒤 가로 자화가 세차하면서 감쇠하는 신호(FID). 불균일 넓어짐까지 포함한 시간 T₂*로 줄어든다.",
+    "chapters": [
+     "density-matrix#bloch-equations"
+    ]
+   },
+   {
+    "ko": "전기 쌍극자 근사",
+    "en": "electric dipole approximation",
+    "abbr": "",
+    "def": "빛의 파장이 원자·양자점 크기보다 훨씬 길어 e^{ik·r} ≈ 1로 놓고 상호작용을 −d·E로 쓰는 근사.",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "전기 쌍극자 모멘트",
+    "en": "electric dipole moment",
+    "abbr": "",
+    "def": "d = −e r (전자 하나). 전하 분포의 비대칭을 나타내는 벡터로, 전기 쌍극자 근사에서 빛과의 결합 −d·E를 정한다.",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "전달 행렬",
+    "en": "transfer matrix",
+    "abbr": "",
+    "def": "한 위치의 오른쪽·왼쪽 진행파 진폭(또는 ψ, ψ′)을 다른 위치로 옮기는 2×2 행렬. 여러 층의 행렬을 곱해 다중 장벽의 투과율을 구한다.",
+    "chapters": [
+     "one-dimensional#transfer"
+    ]
+   },
+   {
+    "ko": "전이 쌍극자 모멘트",
+    "en": "transition dipole moment",
+    "abbr": "",
+    "def": "d_fi = ⟨f|−e r|i⟩. 두 상태 사이 쌍극자 연산자의 행렬 요소로, 흡수·방출 속도가 |d_fi|²에 비례하고 0이면 쌍극자 금지 전이다.",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "전이 확률",
+    "en": "transition probability",
+    "abbr": "",
+    "def": "시각 0에 |i⟩에 있던 계가 섭동을 받아 시각 t에 |f⟩에서 발견될 확률 P_{i→f}(t) = |c_f(t)|². 1차 섭동에서는 섭동 행렬 요소의 제곱에 비례한다.",
+    "chapters": [
+     "time-dependent#interaction"
+    ]
+   },
+   {
+    "ko": "전자 스핀 공명",
+    "en": "ESR, electron spin resonance; EPR",
+    "abbr": "",
+    "def": "자기장 속 전자 스핀의 제만 준위 사이를 마이크로파로 공명 전이시켜 흡수를 재는 분광법(ESR, EPR). 반도체·산화막의 댕글링 결합 같은 홀전자 결함을 찾는다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "전체 단면적",
+    "en": "total cross section",
+    "abbr": "",
+    "def": "σ = ∫(dσ/dΩ)dΩ. 산란 중심 하나가 입사 흐름에서 입자를 빼내는 유효 넓이. 평균 자유 행로 1/(Nσ)를 정한다.",
+    "chapters": [
+     "scattering#cross-section"
+    ]
+   },
+   {
+    "ko": "전체 위상",
+    "en": "global phase",
+    "abbr": "",
+    "def": "파동함수 전체에 곱한 상수 위상 인자 e^{iα}. 모든 확률과 기댓값을 바꾸지 않으므로 물리적 의미가 없고, Ψ와 e^{iα}Ψ는 같은 상태다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "전파 인자",
+    "en": "propagator",
+    "abbr": "",
+    "def": "K(x,t; x′,0) = ⟨x|Û(t)|x′⟩. 시각 0에 x′에 있던 입자가 t에 x에서 발견될 진폭으로, ψ(x,t) = ∫K ψ(x′,0)dx′로 임의의 초기 상태를 전개한다.",
+    "chapters": [
+     "time-evolution#kernel"
+    ]
+   },
+   {
+    "ko": "전하 큐비트",
+    "en": "charge qubit",
+    "abbr": "",
+    "def": "이중 양자점에서 여분 전자 하나가 왼쪽 |L⟩ 또는 오른쪽 |R⟩ 점에 있는 상태를 |0⟩, |1⟩로 쓰는 큐비트. 게이트 전압으로 이조 ε와 터널 결합 t_c를 조절한다.",
+    "chapters": [
+     "time-evolution#two-level"
+    ]
+   },
+   {
+    "ko": "점군",
+    "en": "point group",
+    "abbr": "",
+    "def": "한 점을 고정하는 회전·거울·반전 같은 대칭 조작의 군. 분자와 결정의 자리 대칭을 분류하며, 그 표현이 준위의 축퇴와 선택 규칙을 정한다.",
+    "chapters": [
+     "symmetry#degeneracy"
+    ]
+   },
+   {
+    "ko": "점근 급수",
+    "en": "asymptotic series",
+    "abbr": "",
+    "def": "처음 몇 항은 정확한 값에 다가가지만 항을 계속 더하면 결국 발산하는 급수. x⁴ 비조화 진동자의 섭동 급수가 그 예로, 최적 차수에서 끊어 쓴다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "점유 확률",
+    "en": "population",
+    "abbr": "",
+    "def": "밀도 행렬의 대각 원소 ρ_nn. 측정하면 계가 |n⟩에서 발견될 확률이다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "점유수 표현",
+    "en": "occupation-number representation",
+    "abbr": "",
+    "def": "다입자 상태를 각 1입자 상태에 입자가 몇 개 있는지(n₁, n₂, …)로 나타내는 방식. 대칭화가 자동으로 들어가 동일 입자를 다루기 편하다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "점프 연산자",
+    "en": "jump operator, 린드블라드 연산자",
+    "abbr": "",
+    "def": "린드블라드 방정식에서 환경이 일으키는 갑작스러운 변화(자발 방출 σ₋, 위상 뒤집기 σ_z 등)를 나타내는 연산자 L_k.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "정규화",
+    "en": "normalization",
+    "abbr": "",
+    "def": "전체 공간에서 확률을 더하면 1이 되도록 ∫|Ψ|²dx = 1로 상수배를 맞추는 일. 슈뢰딩거 방정식이 유지하므로 한 시각에만 맞추면 된다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "정상 상태",
+    "en": "stationary state",
+    "abbr": "",
+    "def": "해밀토니언의 고유 상태. 시간에 따라 전체 위상 e^{-iEt/ħ}만 돌므로 확률 밀도와 모든 기댓값이 시간에 무관하다.",
+    "chapters": [
+     "time-evolution#evolution-operator"
+    ]
+   },
+   {
+    "ko": "정수 양자 홀 효과",
+    "en": "integer quantum Hall effect",
+    "abbr": "",
+    "def": "저온·강자기장의 2차원 전자계에서 홀 저항이 R_xy = h/(νe²)(ν 정수)의 고원에 정확히 고정되고 그때 세로 저항이 0이 되는 현상. 저항 표준에 쓴다.",
+    "chapters": [
+     "em-fields#quantum-hall"
+    ]
+   },
+   {
+    "ko": "정의 상수",
+    "en": "defining constants",
+    "abbr": "",
+    "def": "2019년 SI 재정의에서 값을 정확히 고정한 상수 c, h, e, k_B, N_A 등. 이들과 그 조합(ħ, h/e², h/2e)은 오차가 없다.",
+    "chapters": [
+     "math-tools#constants"
+    ]
+   },
+   {
+    "ko": "정준 교환 관계",
+    "en": "canonical commutation relation",
+    "abbr": "",
+    "def": "[x̂, p̂] = iħ. 위치와 운동량 연산자가 만족하는 기본 관계로, 위치 표현의 p̂ = −iħ∂/∂x와 불확정성 관계 ΔxΔp ≥ ħ/2가 여기서 나온다.",
+    "chapters": [
+     "wave-function#operators"
+    ]
+   },
+   {
+    "ko": "정준 운동량",
+    "en": "canonical momentum",
+    "abbr": "",
+    "def": "p̂ = −iħ∇. 자기장이 있을 때도 [x, p] = iħ를 만족하는 운동량 연산자이지만 게이지에 따라 값이 달라져 직접 관측되지 않는다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "제2양자화",
+    "en": "second quantization",
+    "abbr": "",
+    "def": "생성·소멸 연산자 ĉ†, ĉ로 다입자계를 기술하는 형식. 페르미온은 반교환 관계 {ĉ_i, ĉ_j†} = δ_ij로 파울리 원리를 담고, 해밀토니언을 1체·2체 항의 합으로 쓴다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "제곱 적분 가능",
+    "en": "square-integrable",
+    "abbr": "",
+    "def": "∫|ψ|²dx가 유한한 함수. 정규화할 수 있어 물리적 상태가 될 수 있는 함수의 조건이며, 평면파처럼 그렇지 않은 함수는 상태들의 극한이나 기저로만 쓴다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "제만 갈라짐",
+    "en": "Zeeman splitting",
+    "abbr": "",
+    "def": "자기장 속에서 자기 모멘트의 방향에 따라 준위가 갈라지는 것. 전자 스핀 1/2은 ΔE = gμ_BB(1 T에서 약 0.116 meV)로 두 준위가 된다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "제만 효과",
+    "en": "Zeeman effect",
+    "abbr": "",
+    "def": "자기장에 의해 원자 준위가 m에 따라 갈라지는 현상. 약한 장에서는 g_Jμ_BBm_J, 강한 장에서는 μ_BB(m_l + 2m_s)이다.",
+    "chapters": [
+     "perturbation#zeeman"
+    ]
+   },
+   {
+    "ko": "제어 NOT",
+    "en": "controlled-NOT, CNOT",
+    "abbr": "",
+    "def": "제어 큐비트가 |1⟩일 때만 표적 큐비트를 뒤집는 2큐비트 게이트(CNOT). 하다마르와 함께 곱 상태에서 벨 상태를 만든다.",
+    "chapters": [
+     "quantum-information#entanglement"
+    ]
+   },
+   {
+    "ko": "조화 섭동",
+    "en": "harmonic perturbation",
+    "abbr": "",
+    "def": "V(t) = Fe^{-iωt} + F†e^{iωt}처럼 진동하는 섭동. 긴 시간에서 E_f = E_i ± ħω인 전이(흡수·방출)만 살아남는다.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "좋은 상태",
+    "en": "good states",
+    "abbr": "",
+    "def": "축퇴 섭동에서 섭동을 0으로 줄일 때 연속적으로 이어지는 0차 상태의 조합. 축퇴 부분 공간에서 V̂를 대각화하는 기저다.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "준속박 상태",
+    "en": "quasi-bound state",
+    "abbr": "",
+    "def": "장벽 안쪽에 갇혀 있지만 터널링으로 천천히 새어 나가 유한한 수명을 갖는 상태. 공명 터널링과 알파 붕괴의 모형이며 너비 Γ = ħ/τ를 갖는다.",
+    "chapters": [
+     "variational-wkb#tunneling"
+    ]
+   },
+   {
+    "ko": "준위 반발",
+    "en": "level repulsion",
+    "abbr": "",
+    "def": "2차 섭동에서 결합된 두 준위가 서로를 밀어내는 경향. 아래 준위는 더 내려가고 위 준위는 올라가므로 바닥 상태의 2차 보정은 항상 음수다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "준축퇴",
+    "en": "quasi-degenerate",
+    "abbr": "",
+    "def": "두 준위가 정확히 같지는 않지만 결합 행렬 요소에 비해 가까운 경우. 비축퇴 섭동의 분모가 작아 발산하므로 두 준위를 함께 대각화한다.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "준확률 분포",
+    "en": "quasi-probability distribution",
+    "abbr": "",
+    "def": "위그너 함수처럼 주변 분포는 올바른 확률을 주지만 그 자체는 음수가 될 수 있어 진짜 확률 분포가 아닌 위상 공간 분포. 음수 영역은 비고전성의 표지다.",
+    "chapters": [
+     "ladder-operators#wigner"
+    ]
+   },
+   {
+    "ko": "중심 세포 보정",
+    "en": "central-cell correction",
+    "abbr": "",
+    "def": "얕은 도펀트의 1s 상태가 불순물 원자 바로 근처에서 유효 질량·유전 차폐 가정이 깨지는 효과를 느껴 생기는 에너지 보정. 도펀트 원소마다 이온화 에너지가 다른 이유다.",
+    "chapters": [
+     "central-potentials#effective-mass"
+    ]
+   },
+   {
+    "ko": "중심력 퍼텐셜",
+    "en": "central potential",
+    "abbr": "",
+    "def": "중심에서의 거리에만 의존하는 퍼텐셜 V(r). 회전 대칭이라 L̂²과 L̂_z가 보존되고, 파동함수가 R(r)Y_l^m(θ,φ)로 분리된다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "중심력장 근사",
+    "en": "central-field approximation",
+    "abbr": "",
+    "def": "다전자 원자의 각 전자가 핵과 다른 전자들의 평균 효과를 합친 구대칭 퍼텐셜 V(r) 안에서 독립적으로 움직인다고 보는 근사. 오비탈과 껍질 구조의 근거다.",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "증후군",
+    "en": "syndrome",
+    "abbr": "",
+    "def": "양자 오류 정정에서 데이터 큐비트를 건드리지 않고 안정자(패리티)를 재서 얻는 결과. 어떤 오류가 어디서 났는지 알려 주되 부호화된 정보는 드러내지 않는다.",
+    "chapters": [
+     "quantum-information#error-correction"
+    ]
+   },
+   {
+    "ko": "지름 방정식",
+    "en": "radial equation",
+    "abbr": "",
+    "def": "u(r) = rR(r)에 대한 1차원 꼴 방정식 −(ħ²/2m)u″ + [V(r) + ħ²l(l+1)/2mr²]u = Eu. 경계 조건 u(0) = 0이 붙는다.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "지름 운동량",
+    "en": "radial momentum",
+    "abbr": "",
+    "def": "p̂_r = −iħ(∂/∂r + 1/r). 운동 에너지를 p̂_r²/2m + L̂²/2mr²로 나눌 때 나오는 지름 성분 연산자.",
+    "chapters": [
+     "central-potentials#radial"
+    ]
+   },
+   {
+    "ko": "지속 전류",
+    "en": "persistent current",
+    "abbr": "",
+    "def": "자속이 꿰뚫는 작은 금속 고리의 바닥 상태에서 전압 없이 흐르는 평형 전류. 에너지가 자속에 대해 주기 Φ₀로 변하므로 I = −∂E/∂Φ가 생긴다.",
+    "chapters": [
+     "em-fields#aharonov-bohm"
+    ]
+   },
+   {
+    "ko": "지표",
+    "en": "character",
+    "abbr": "",
+    "def": "군 표현에서 각 대칭 조작의 표현 행렬 대각합 χ = tr D. 기저 선택과 무관해 표현을 구별하고, 표현을 기약 표현으로 분해하는 데 쓴다.",
+    "chapters": [
+     "symmetry#degeneracy"
+    ]
+   },
+   {
+    "ko": "직교 정규 기저",
+    "en": "orthonormal basis",
+    "abbr": "",
+    "def": "서로 직교하고 길이가 1인 벡터들의 집합 {|n⟩}, ⟨m|n⟩ = δ_mn, 으로 공간 전체를 펼친다. 임의의 상태를 |ψ⟩ = Σc_n|n⟩, c_n = ⟨n|ψ⟩로 전개한다.",
+    "chapters": [
+     "state-space#basis"
+    ]
+   },
+   {
+    "ko": "진동자 세기",
+    "en": "oscillator strength",
+    "abbr": "",
+    "def": "f = (2mω/3ħe²)|d_fi|². 전이의 세기를 고전 전자 진동자 하나의 몇 배인지로 나타낸 무차원 수. 한 상태에서 나가는 모든 전이의 합은 전자 수(토머스–라이헤–쿤 합 규칙)다.",
+    "chapters": [
+     "time-dependent#dipole"
+    ]
+   },
+   {
+    "ko": "채움 인자",
+    "en": "filling factor",
+    "abbr": "",
+    "def": "ν = nh/(eB) = 전자 밀도/란다우 준위의 상태 밀도. 채워진 란다우 준위 수(스핀 포함)이며, 정수일 때 양자 홀 고원이 생긴다.",
+    "chapters": [
+     "em-fields#landau"
+    ]
+   },
+   {
+    "ko": "처프",
+    "en": "chirp",
+    "abbr": "",
+    "def": "파속의 위상이 위치의 제곱에 비례해 휘어(e^{ibx²}) 국소 파수가 자리마다 달라진 상태. 위치 폭은 같아도 운동량이 퍼져 최소 불확정 상태가 아니게 되며, 퍼지는 자유 파속에 생긴다.",
+    "chapters": [
+     "measurement#uncertainty"
+    ]
+   },
+   {
+    "ko": "초격자",
+    "en": "superlattice",
+    "abbr": "",
+    "def": "두 반도체(예: GaAs/AlGaAs)를 수 nm 두께로 번갈아 쌓아 인공적인 주기 퍼텐셜을 만든 구조. 미니띠와 미니갭을 만들어 띠 구조를 설계할 수 있다.",
+    "chapters": [
+     "one-dimensional#transfer"
+    ]
+   },
+   {
+    "ko": "초교환",
+    "en": "superexchange",
+    "abbr": "",
+    "def": "자성 이온이 사이의 비자성 이온(예: O²⁻)을 거친 가상 건너뜀으로 결합되는 간접 교환. 반채움 허바드 모형에서 J = 4t²/U인 반강자성 결합이 나온다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "초미세 상호작용",
+    "en": "hyperfine interaction",
+    "abbr": "",
+    "def": "전자 스핀과 핵 스핀 사이의 자기 상호작용 A I·S. 수소 바닥 상태를 1420 MHz(21 cm)로 가르고, ESR 스펙트럼을 핵 종류별로 갈라 결함의 위치를 알려 준다.",
+    "chapters": [
+     "spin#larmor"
+    ]
+   },
+   {
+    "ko": "초밀집 부호화",
+    "en": "superdense coding",
+    "abbr": "",
+    "def": "미리 공유한 벨 쌍의 한쪽 큐비트 하나만 보내 고전 정보 2비트를 전달하는 프로토콜. 보내는 쪽이 네 가지 파울리 연산으로 벨 상태 넷 중 하나를 만든다.",
+    "chapters": [
+     "quantum-information#no-cloning"
+    ]
+   },
+   {
+    "ko": "최대 혼합 상태",
+    "en": "maximally mixed state",
+    "abbr": "",
+    "def": "ρ = 1/d. 모든 기저 상태가 같은 확률이고 결맞음이 전혀 없어 어떤 측정으로도 정보를 얻을 수 없는 상태. 블로흐 공의 중심이다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "최소 결합",
+    "en": "minimal coupling",
+    "abbr": "",
+    "def": "전하 q 입자의 해밀토니언에서 p를 p − qA로, 에너지에 qφ를 더해 전자기장을 넣는 규칙. 게이지 불변성을 지키는 가장 단순한 결합이다.",
+    "chapters": [
+     "em-fields#minimal-coupling"
+    ]
+   },
+   {
+    "ko": "최소 불확정 상태",
+    "en": "minimum-uncertainty state",
+    "abbr": "",
+    "def": "불확정성 관계의 등호 ΔxΔp = ħ/2를 만족하는 상태. 위상이 휘지 않은 가우스 파속이 유일하며, 조화 진동자의 바닥 상태와 결맞음 상태가 그 예다.",
+    "chapters": [
+     "wave-function#momentum"
+    ]
+   },
+   {
+    "ko": "축약 밀도 행렬",
+    "en": "reduced density matrix",
+    "abbr": "",
+    "def": "부분 대각합으로 얻은 부분계의 밀도 행렬. 그 부분계에 대한 모든 측정 통계를 주며, 전체가 얽힌 순수 상태이면 혼합 상태가 된다.",
+    "chapters": [
+     "density-matrix#partial-trace"
+    ]
+   },
+   {
+    "ko": "축퇴 압력",
+    "en": "degeneracy pressure",
+    "abbr": "",
+    "def": "온도가 0이어도 파울리 원리 때문에 페르미온이 높은 운동 에너지 상태를 채워 생기는 압력. 금속의 압축률과 백색 왜성의 지탱을 설명한다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "출력 넓힘",
+    "en": "power broadening",
+    "abbr": "",
+    "def": "구동 세기가 커질수록 흡수선 폭이 Δω = (2/T₂)√(1 + Ω²T₁T₂)로 넓어지는 현상. 공명 부근이 먼저 포화되어 생긴다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "충돌 변수",
+    "en": "impact parameter",
+    "abbr": "",
+    "def": "입사 입자의 처음 직선 경로가 산란 중심에서 비켜 가는 수직 거리 b. 고전 산란에서 산란각과 b의 관계가 단면적을 정하며, 양자역학에서는 l ≈ kb가 부분파에 해당한다.",
+    "chapters": [
+     "scattering#cross-section"
+    ]
+   },
+   {
+    "ko": "측정 공준",
+    "en": "measurement postulate",
+    "abbr": "",
+    "def": "관측가능량 Â를 재면 결과는 고유값 a_n 중 하나이고, 확률은 |⟨a_n|ψ⟩|²(축퇴면 사영의 기댓값)이라는 공준. 측정 직후 상태는 해당 고유 공간으로 사영된다.",
+    "chapters": [
+     "measurement#postulates"
+    ]
+   },
+   {
+    "ko": "치렐손 한계",
+    "en": "Tsirelson bound",
+    "abbr": "",
+    "def": "양자역학이 허용하는 CHSH 값의 최대 |S| = 2√2 ≈ 2.83. 최대 얽힘 상태와 최적 측정 각도에서 도달한다.",
+    "chapters": [
+     "quantum-information#bell"
+    ]
+   },
+   {
+    "ko": "케인 에너지",
+    "en": "Kane energy",
+    "abbr": "",
+    "def": "E_P = 2|P|²/m. 전도대와 가전자대 사이 운동량 행렬 요소를 에너지로 나타낸 것으로 대부분 반도체에서 20 eV 남짓이다. 직접 간격 반도체의 전자 유효 질량 m/m* ≈ 1 + E_P/E_g를 준다.",
+    "chapters": [
+     "perturbation#kp"
+    ]
+   },
+   {
+    "ko": "켓",
+    "en": "ket",
+    "abbr": "",
+    "def": "상태 벡터 |ψ⟩. 힐베르트 공간의 원소로 계의 모든 정보를 담으며, 특정 기저에 대한 성분(파동함수 ψ(x) = ⟨x|ψ⟩ 등)으로 표현된다.",
+    "chapters": [
+     "state-space#vectors"
+    ]
+   },
+   {
+    "ko": "콘던–쇼틀리 위상",
+    "en": "Condon–Shortley phase",
+    "abbr": "",
+    "def": "구면 조화 함수와 클레브시–고르단 계수의 부호 약속. Y_l^m에 (−1)^m을 넣고 J₊의 행렬 요소를 양의 실수로 고른다. 표마다 부호가 다른 원인이 된다.",
+    "chapters": [
+     "angular-momentum#ladder"
+    ]
+   },
+   {
+    "ko": "쿠퍼 쌍",
+    "en": "Cooper pair",
+    "abbr": "",
+    "def": "초전도체에서 포논 매개 인력으로 짝지은 반대 운동량·반대 스핀 전자 쌍. 전하가 2e라 초전도 고리의 자속 양자가 h/2e다.",
+    "chapters": [
+     "em-fields#flux-quantization"
+    ]
+   },
+   {
+    "ko": "쿨롱 적분",
+    "en": "Coulomb integral",
+    "abbr": "",
+    "def": "J = ∫∫|φ_a(1)|²(e²/4πε₀r₁₂)|φ_b(2)|². 두 전자 분포 사이의 고전적 정전기 반발 에너지.",
+    "chapters": [
+     "identical-particles#helium"
+    ]
+   },
+   {
+    "ko": "큐비트",
+    "en": "qubit",
+    "abbr": "",
+    "def": "양자 정보의 기본 단위인 2준위 양자계. 상태가 α|0⟩ + β|1⟩의 중첩이며 블로흐 구 위의 점으로 나타낸다. 스핀·초전도 회로·이온·광자 등으로 구현한다.",
+    "chapters": [
+     "quantum-information"
+    ]
+   },
+   {
+    "ko": "크라머스 축퇴",
+    "en": "Kramers degeneracy",
+    "abbr": "",
+    "def": "시간 반전 대칭이 있고 전자 수가 홀수(Θ² = −1)이면 모든 에너지 준위가 적어도 이중 축퇴라는 정리. 자기장 같은 시간 반전 깨짐만이 이 축퇴를 푼다.",
+    "chapters": [
+     "symmetry#time-reversal"
+    ]
+   },
+   {
+    "ko": "크라우스 연산자",
+    "en": "Kraus operator",
+    "abbr": "",
+    "def": "양자 채널을 ρ → ΣK_i ρ K_i†, ΣK_i†K_i = 1로 쓸 때의 연산자 K_i. 환경과의 상호작용 뒤 환경을 대각합으로 지운 효과를 나타낸다.",
+    "chapters": [
+     "density-matrix#lindblad"
+    ]
+   },
+   {
+    "ko": "크랭크–니콜슨 방법",
+    "en": "Crank–Nicolson method",
+    "abbr": "",
+    "def": "e^{-iĤΔt/ħ}를 (1 + iĤΔt/2ħ)⁻¹(1 − iĤΔt/2ħ)로 근사하는 시간 전개 수치법. 정확히 유니터리라 노름을 보존하고 무조건 안정하며 Δt²까지 정확하다.",
+    "chapters": [
+     "time-evolution#numerics"
+    ]
+   },
+   {
+    "ko": "클레브시–고르단 계수",
+    "en": "Clebsch–Gordan coefficients",
+    "abbr": "",
+    "def": "⟨j₁m₁; j₂m₂|J M⟩. 비결합 기저에서 결합 기저로 바꾸는 계수로, M = m₁ + m₂일 때만 0이 아니고 |j₁ − j₂| ≤ J ≤ j₁ + j₂다.",
+    "chapters": [
+     "spin#addition"
+    ]
+   },
+   {
+    "ko": "터널 분리",
+    "en": "tunnel splitting",
+    "abbr": "",
+    "def": "대칭 이중 우물에서 장벽 너머 터널링 결합 때문에 각 우물의 같은 준위가 대칭·반대칭 두 상태로 갈라지는 에너지 간격 Δ = 2t. 장벽이 두꺼울수록 지수적으로 작아진다.",
+    "chapters": [
+     "time-evolution#two-level"
+    ]
+   },
+   {
+    "ko": "터널 진동",
+    "en": "tunneling oscillation",
+    "abbr": "",
+    "def": "이중 우물의 한쪽에 준비한 입자가 두 고유 상태의 맥놀이로 주기 h/Δ에 맞춰 양쪽 우물을 오가는 현상. 암모니아 분자 반전과 이중 양자점 전하 진동이 예다.",
+    "chapters": [
+     "time-evolution#two-level"
+    ]
+   },
+   {
+    "ko": "텐서곱",
+    "en": "tensor product",
+    "abbr": "",
+    "def": "두 계의 상태 공간을 합친 공간 H_A ⊗ H_B. 차원은 곱 d_A·d_B이고, 기저는 |i⟩⊗|j⟩, 연산자는 Â⊗B̂로 각자 작용한다.",
+    "chapters": [
+     "state-space#tensor"
+    ]
+   },
+   {
+    "ko": "투과 진폭",
+    "en": "transmission amplitude",
+    "abbr": "",
+    "def": "들어온 파동에 대해 장벽 너머로 나가는 파동의 계수 t. 투과율은 양쪽 속도가 같으면 T = |t|², 다르면 흐름의 비 (k′/k)|t|²다.",
+    "chapters": [
+     "one-dimensional#smatrix"
+    ]
+   },
+   {
+    "ko": "파르스발 정리",
+    "en": "Parseval–Plancherel theorem",
+    "abbr": "",
+    "def": "푸리에 변환이 노름을 보존한다는 정리 ∫|ψ(x)|²dx = ∫|φ(p)|²dp. 위치 공간에서 정규화한 상태는 운동량 공간에서도 자동으로 정규화된다.",
+    "chapters": [
+     "wave-function#momentum"
+    ]
+   },
+   {
+    "ko": "파셴–바크 효과",
+    "en": "Paschen–Back effect",
+    "abbr": "",
+    "def": "자기장이 스핀–궤도 결합보다 강해 L과 S가 각각 장 둘레로 세차하고, 준위가 μ_BB(m_l + 2m_s)로 갈라지는 강한 장 극한.",
+    "chapters": [
+     "spin#spin-orbit"
+    ]
+   },
+   {
+    "ko": "파스발 정리",
+    "en": "Parseval's theorem",
+    "abbr": "",
+    "def": "푸리에 변환이 내적·노름을 보존한다는 정리 ∫|f(x)|²dx = ∫|F(k)|²dk(대칭 규약). 1장의 파르스발 정리와 같은 내용이다.",
+    "chapters": [
+     "math-tools#fourier"
+    ]
+   },
+   {
+    "ko": "파울러–노드하임 터널링",
+    "en": "Fowler–Nordheim tunneling",
+    "abbr": "",
+    "def": "강한 전기장으로 장벽이 삼각형이 되었을 때 전자가 그 삼각 장벽을 뚫는 터널링. 전류 J ∝ E²exp(−b/E)이며 플래시 메모리의 쓰기·지우기와 산화막 누설을 지배한다.",
+    "chapters": [
+     "variational-wkb#fowler-nordheim"
+    ]
+   },
+   {
+    "ko": "파울리 반발",
+    "en": "Pauli repulsion",
+    "abbr": "",
+    "def": "닫힌 껍질 원자나 분자가 가까워질 때 전자 분포가 겹치면 파울리 원리로 전자가 더 높은 상태로 밀려 생기는 짧은 거리의 강한 반발. 원자의 크기와 고체의 비압축성을 정한다.",
+    "chapters": [
+     "identical-particles#bonding"
+    ]
+   },
+   {
+    "ko": "파울리 행렬",
+    "en": "Pauli matrices",
+    "abbr": "",
+    "def": "σ_x = [[0,1],[1,0]], σ_y = [[0,−i],[i,0]], σ_z = [[1,0],[0,−1]]. 스핀 1/2 연산자는 Ŝ = (ħ/2)σ이고, σ_iσ_j = δ_ij + iε_ijkσ_k를 만족한다.",
+    "chapters": [
+     "spin#pauli"
+    ]
+   },
+   {
+    "ko": "팡–하워드 함수",
+    "en": "Fang–Howard function",
+    "abbr": "",
+    "def": "ψ(z) ∝ z e^{-bz/2}. MOSFET 반전층의 가장 낮은 부띠를 기술하는 변분 시험 함수로, 산화막 경계에서 0이 되는 조건을 담는다.",
+    "chapters": [
+     "variational-wkb#rayleigh-ritz"
+    ]
+   },
+   {
+    "ko": "패리티",
+    "en": "parity",
+    "abbr": "",
+    "def": "공간 반전 r → −r에 대한 상태의 부호(±1). 구면 조화 함수 Y_l^m의 패리티는 (−1)^l이라 s, d는 짝, p, f는 홀이다.",
+    "chapters": [
+     "angular-momentum#harmonics"
+    ]
+   },
+   {
+    "ko": "패리티 연산자",
+    "en": "parity operator",
+    "abbr": "",
+    "def": "Π̂ψ(r) = ψ(−r). 공간 반전 연산자로 Π̂² = 1이라 고유값은 ±1(짝·홀)이다. 해밀토니언이 반전 대칭이면 고유 상태를 패리티로 분류할 수 있다.",
+    "chapters": [
+     "symmetry#parity"
+    ]
+   },
+   {
+    "ko": "퍼머넌트",
+    "en": "permanent",
+    "abbr": "",
+    "def": "행렬식과 같은 항을 모두 + 부호로 더한 것. 보손의 대칭화된 다입자 파동함수를 만든다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "페르미 구",
+    "en": "Fermi sphere",
+    "abbr": "",
+    "def": "자유 페르미온 바닥 상태에서 운동량 공간의 반지름 k_F = (3π²n)^{1/3} 안 상태가 모두 채워진 구. 그 표면이 페르미 면이다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "페르미 에너지",
+    "en": "Fermi energy",
+    "abbr": "",
+    "def": "바닥 상태의 페르미온계에서 채워진 가장 높은 1입자 에너지. 3차원 자유 전자 기체에서 E_F = (ħ²/2m)(3π²n)^{2/3}이다.",
+    "chapters": [
+     "identical-particles#pauli"
+    ]
+   },
+   {
+    "ko": "페르미온",
+    "en": "fermion",
+    "abbr": "",
+    "def": "반정수 스핀을 갖고 교환에 반대칭인 파동함수를 갖는 입자(전자, 양성자, 중성자). 파울리 배타 원리를 따라 한 상태에 하나만 들어간다.",
+    "chapters": [
+     "identical-particles#exchange"
+    ]
+   },
+   {
+    "ko": "편극률",
+    "en": "polarizability",
+    "abbr": "",
+    "def": "α. 전기장 E가 유도하는 쌍극자 모멘트 p = αE의 비례 계수로, 2차 슈타르크 이동 −αE²/2를 정한다. 수소 바닥 상태는 α = 4.5·4πε₀a₀³.",
+    "chapters": [
+     "perturbation#stark"
+    ]
+   },
+   {
+    "ko": "편재 상태",
+    "en": "localized state",
+    "abbr": "",
+    "def": "무질서 퍼텐셜 때문에 시료의 한 영역에 갇혀 시료를 가로지르지 못하는 상태. 넓어진 란다우 준위의 꼬리에 있어 전류를 나르지 않으므로 양자 홀 고원을 만든다.",
+    "chapters": [
+     "em-fields#quantum-hall"
+    ]
+   },
+   {
+    "ko": "포논",
+    "en": "phonon",
+    "abbr": "",
+    "def": "결정 격자 진동 한 모드의 양자화된 들뜸. 에너지 ħω(q)의 덩어리이며, 평균 수는 보스–아인슈타인 분포 1/(e^{ħω/kT} − 1)을 따른다.",
+    "chapters": [
+     "ladder-operators#fields"
+    ]
+   },
+   {
+    "ko": "포락 함수",
+    "en": "envelope function",
+    "abbr": "",
+    "def": "유효 질량 근사에서 블로흐 함수에 곱하는 천천히 변하는 함수 F(r). 띠 가장자리 근처 상태를 ψ = F(r)u(r)로 써서 반도체 속 불순물·양자 우물을 수소·상자 문제로 바꾼다.",
+    "chapters": [
+     "central-potentials#effective-mass"
+    ]
+   },
+   {
+    "ko": "포인터 기저",
+    "en": "pointer basis",
+    "abbr": "",
+    "def": "환경과의 상호작용이 결맞음을 깨뜨리지 않고 남기는 안정한 기저. 결어긋남 뒤 밀도 행렬이 이 기저에서 대각이 되어 고전적 결과처럼 보인다.",
+    "chapters": [
+     "density-matrix#decoherence"
+    ]
+   },
+   {
+    "ko": "포지트로늄",
+    "en": "positronium",
+    "abbr": "",
+    "def": "전자와 양전자의 속박 상태. 환산 질량이 m_e/2라 결합 에너지가 6.8 eV로 수소의 절반이고, 단일항은 감마선 둘, 삼중항은 셋으로 소멸한다.",
+    "chapters": [
+     "central-potentials#rydberg"
+    ]
+   },
+   {
+    "ko": "포크 상태",
+    "en": "Fock state",
+    "abbr": "",
+    "def": "수 상태의 다른 이름. 장의 모드마다 들뜸 양자(광자·포논) 수가 정확히 정해진 상태로, 광자 수 요동이 0이다.",
+    "chapters": [
+     "ladder-operators#algebra"
+    ]
+   },
+   {
+    "ko": "포크–다윈 준위",
+    "en": "Fock–Darwin levels",
+    "abbr": "",
+    "def": "자기장 속 2차원 조화 가둠 양자점의 준위 E = ħΩ(2n + |m| + 1) − mħω_c/2, Ω = √(ω₀² + ω_c²/4). 약한 장에서는 양자점, 강한 장에서는 란다우 준위가 된다.",
+    "chapters": [
+     "em-fields#fock-darwin"
+    ]
+   },
+   {
+    "ko": "포화",
+    "en": "saturation",
+    "abbr": "",
+    "def": "구동이 강해져 위·아래 준위 점유가 같아지는 쪽으로 다가가면서 흡수가 더 늘지 않는 현상. 두 준위 계는 강하게 비춰도 N₂/(N₁ + N₂)가 1/2을 넘지 못한다.",
+    "chapters": [
+     "time-dependent#einstein"
+    ]
+   },
+   {
+    "ko": "폰 노이만 방정식",
+    "en": "von Neumann equation",
+    "abbr": "",
+    "def": "iħ dρ/dt = [Ĥ, ρ]. 고립계 밀도 행렬의 시간 전개 방정식으로 슈뢰딩거 방정식과 같은 내용이다(하이젠베르크 방정식과 부호가 반대).",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "폰 노이만 엔트로피",
+    "en": "von Neumann entropy",
+    "abbr": "",
+    "def": "S = −tr(ρ log ρ) = −Σλ_i log λ_i. 밀도 행렬의 혼합 정도를 재는 엔트로피로 순수 상태는 0, d차원 최대 혼합 상태는 log d다.",
+    "chapters": [
+     "density-matrix#thermal"
+    ]
+   },
+   {
+    "ko": "폰 클리칭 상수",
+    "en": "von Klitzing constant",
+    "abbr": "",
+    "def": "R_K = h/e² ≈ 25 812.807 Ω. 양자 홀 고원 저항의 기본 단위로, 2019년 SI 재정의 뒤 정확한 값이다.",
+    "chapters": [
+     "em-fields#quantum-hall"
+    ]
+   },
+   {
+    "ko": "표면 부호",
+    "en": "surface code",
+    "abbr": "",
+    "def": "2차원 격자의 큐비트에서 이웃끼리의 패리티만 재는 위상 양자 오류 정정 부호. 문턱이 약 1%로 높아 초전도 큐비트 같은 평면 소자에 알맞다.",
+    "chapters": [
+     "quantum-information#error-correction"
+    ]
+   },
+   {
+    "ko": "표준 양자 한계",
+    "en": "standard quantum limit, SQL",
+    "abbr": "",
+    "def": "결맞음 상태처럼 고전적 빛이나 서로 독립인 입자 N개로 잴 때 산탄 잡음 때문에 생기는 정밀도 한계. 위상 오차가 1/√N에 비례한다. 압축광이나 얽힘으로 넘을 수 있다.",
+    "chapters": [
+     "measurement#quantum-limits"
+    ]
+   },
+   {
+    "ko": "푸앵카레 구",
+    "en": "Poincaré sphere",
+    "abbr": "",
+    "def": "빛의 편광 상태를 구 위의 점으로 나타낸 것. 극은 원편광, 적도는 선편광이며, 광자 편광이 2준위 계임을 보여 주는 블로흐 구의 광학 판이다.",
+    "chapters": [
+     "measurement#interference"
+    ]
+   },
+   {
+    "ko": "풀린다",
+    "en": "lifted",
+    "abbr": "",
+    "def": "축퇴가 풀린다(lifted): 같은 에너지를 갖던 상태들이 섭동이나 대칭을 깨는 항 때문에 서로 다른 에너지로 갈라지는 것.",
+    "chapters": [
+     "perturbation#degenerate"
+    ]
+   },
+   {
+    "ko": "하이젠베르크 모형",
+    "en": "Heisenberg model",
+    "abbr": "",
+    "def": "Ĥ = −Σ J_ij S_i·S_j. 이웃 스핀 사이의 교환 상호작용만으로 자성을 기술하는 모형. J > 0이면 강자성, J < 0이면 반강자성 정렬을 선호한다.",
+    "chapters": [
+     "identical-particles#bonding"
+    ]
+   },
+   {
+    "ko": "하이젠베르크 묘사",
+    "en": "Heisenberg picture",
+    "abbr": "",
+    "def": "상태는 고정하고 연산자가 Â_H(t) = Û†ÂÛ로 변하는 기술 방식. 운동 방정식 dÂ_H/dt = (i/ħ)[Ĥ, Â_H]가 고전 역학의 해밀턴 방정식과 꼴이 같다.",
+    "chapters": [
+     "time-evolution#pictures"
+    ]
+   },
+   {
+    "ko": "하이틀러–런던 방법",
+    "en": "Heitler–London method",
+    "abbr": "",
+    "def": "수소 분자를 두 원자의 1s 오비탈 곱의 대칭·반대칭 조합으로 기술하는 원자가 결합 방법. 스핀 단일항의 공간 대칭 상태가 결합을 만든다는 것을 처음 보였다.",
+    "chapters": [
+     "identical-particles#bonding"
+    ]
+   },
+   {
+    "ko": "하트리–포크 방법",
+    "en": "Hartree–Fock method",
+    "abbr": "",
+    "def": "다전자 바닥 상태를 슬레이터 행렬식 하나로 놓고 에너지를 최소화하는 변분법. 각 전자가 쿨롱과 교환 평균장을 느끼는 1전자 방정식을 자기 일관되게 푼다.",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "항 기호",
+    "en": "term symbol",
+    "abbr": "",
+    "def": "^{2S+1}L_J. 원자 준위의 전체 스핀 S, 궤도 L(S, P, D, F…), 전체 J를 나타내는 기호. 예: 탄소 바닥 상태 ³P₀.",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "행렬 요소",
+    "en": "matrix element",
+    "abbr": "",
+    "def": "A_mn = ⟨m|Â|n⟩. 기저 {|n⟩}에서 연산자를 행렬로 나타낸 성분으로, 대각 요소는 기댓값, 비대각 요소는 두 상태를 잇는 진폭(전이·결합 세기)이다.",
+    "chapters": [
+     "state-space#operators"
+    ]
+   },
+   {
+    "ko": "허바드 모형",
+    "en": "Hubbard model",
+    "abbr": "",
+    "def": "Ĥ = −tΣ(ĉ_iσ†ĉ_jσ + h.c.) + UΣn_i↑n_i↓. 자리 사이 건너뜀 t와 같은 자리 쿨롱 반발 U만 둔 강상관 전자 모형. U ≫ t인 반채움에서 모트 절연체가 된다.",
+    "chapters": [
+     "identical-particles#second-quant"
+    ]
+   },
+   {
+    "ko": "헬만–파인만 정리",
+    "en": "Hellmann–Feynman theorem",
+    "abbr": "",
+    "def": "dE_n/dλ = ⟨n|∂Ĥ/∂λ|n⟩. 고유값의 매개변수 미분은 해밀토니언 미분의 기댓값과 같다. 힘·쌍극자 모멘트·기댓값 계산에 쓴다.",
+    "chapters": [
+     "perturbation#nondegenerate"
+    ]
+   },
+   {
+    "ko": "혼합 상태",
+    "en": "mixed state",
+    "abbr": "",
+    "def": "여러 순수 상태의 고전적 확률 혼합으로 한 상태 벡터로 쓸 수 없는 상태. tr ρ² < 1이며 큐비트에서는 블로흐 벡터가 구 안에 있다.",
+    "chapters": [
+     "density-matrix#pure-mixed"
+    ]
+   },
+   {
+    "ko": "홀레보 한계",
+    "en": "Holevo bound",
+    "abbr": "",
+    "def": "큐비트 n개에 담은 양자 상태에서 측정으로 꺼낼 수 있는 고전 정보는 많아야 n비트라는 한계. 큐비트의 연속적인 진폭이 곧 정보 저장 용량은 아니다.",
+    "chapters": [
+     "quantum-information#qubits"
+    ]
+   },
+   {
+    "ko": "확률 밀도",
+    "en": "probability density",
+    "abbr": "",
+    "def": "ρ(x,t) = |Ψ(x,t)|². 위치를 쟀을 때 x 근처 단위 길이(3차원에서는 단위 부피)당 입자를 발견할 확률로, 1차원에서 단위는 길이⁻¹이다.",
+    "chapters": [
+     "wave-function#born"
+    ]
+   },
+   {
+    "ko": "확률 진폭",
+    "en": "probability amplitude",
+    "abbr": "",
+    "def": "내적 ⟨a|ψ⟩처럼 그 절댓값 제곱이 확률을 주는 복소수. 서로 구별할 수 없는 경로의 진폭은 먼저 더한 뒤 제곱하므로 간섭이 생긴다.",
+    "chapters": [
+     "state-space#vectors"
+    ]
+   },
+   {
+    "ko": "확률 흐름",
+    "en": "probability current",
+    "abbr": "",
+    "def": "j = (ħ/m) Im(ψ*∂ψ/∂x). 단위 시간에 한 점을 지나가는 확률. 평면파 Ae^{ikx}에서는 |A|²ħk/m이며, 투과율·반사율을 흐름의 비로 정의한다.",
+    "chapters": [
+     "wave-function#current"
+    ]
+   },
+   {
+    "ko": "확장 상태",
+    "en": "extended state",
+    "abbr": "",
+    "def": "시료 전체로 퍼져 전류를 나를 수 있는 상태. 란다우 준위의 한가운데 좁은 에너지 띠에만 있다.",
+    "chapters": [
+     "em-fields#quantum-hall"
+    ]
+   },
+   {
+    "ko": "환산 질량",
+    "en": "reduced mass",
+    "abbr": "",
+    "def": "μ = m₁m₂/(m₁ + m₂). 두 물체 문제를 질량 중심 운동과 상대 운동으로 나눌 때 상대 운동에 쓰는 질량. 수소에서 전자 질량보다 약 0.05% 작다.",
+    "chapters": [
+     "central-potentials#rydberg"
+    ]
+   },
+   {
+    "ko": "회전 상수",
+    "en": "rotational constant",
+    "abbr": "",
+    "def": "B = h/(8π²cI) (cm⁻¹ 단위). 회전 준위 간격을 정하는 분자 상수로, 회전 스펙트럼 선 간격이 2B다. 관성 모멘트 I = μr²에서 결합 길이를 얻는다.",
+    "chapters": [
+     "angular-momentum#rotor"
+    ]
+   },
+   {
+    "ko": "회전 연산자",
+    "en": "rotation operator",
+    "abbr": "",
+    "def": "R̂(n, α) = e^{-iαn·Ĵ/ħ}. 상태를 축 n 둘레로 각 α만큼 돌리는 유니터리 연산자. 스핀 1/2에서는 2π 회전에 부호가 −1이 된다.",
+    "chapters": [
+     "angular-momentum#rotations"
+    ]
+   },
+   {
+    "ko": "회전 온도",
+    "en": "rotational temperature",
+    "abbr": "",
+    "def": "Θ_rot = hcB/k_B. 회전 준위를 열적으로 채우기 시작하는 온도 규모이며, 분광에서 선 세기 분포로 기체의 온도를 거꾸로 구할 때도 쓴다.",
+    "chapters": [
+     "angular-momentum#rotor"
+    ]
+   },
+   {
+    "ko": "회전파 근사",
+    "en": "rotating-wave approximation",
+    "abbr": "",
+    "def": "진동하는 장을 반대로 도는 두 성분으로 나눠, 공명에서 멀리 떨어진(2ω로 빨리 도는) 성분을 버리는 근사. 결합이 이조보다 작을 때 성립한다.",
+    "chapters": [
+     "spin#rabi"
+    ]
+   },
+   {
+    "ko": "회피 교차",
+    "en": "avoided crossing",
+    "abbr": "",
+    "def": "매개변수를 바꿀 때 결합된 두 준위가 교차하지 않고 서로 밀어내는 현상. 2×2 해밀토니언에서 최소 간격은 결합 세기의 두 배 2|W|이고, 그 점에서 고유 상태가 반씩 섞인다.",
+    "chapters": [
+     "state-space#eigen"
+    ]
+   },
+   {
+    "ko": "훈트 규칙",
+    "en": "Hund's rules",
+    "abbr": "",
+    "def": "같은 배치에서 바닥 항을 정하는 경험 규칙: ① S 최대 ② 그다음 L 최대 ③ 껍질이 반 이하면 J = |L − S|, 반 넘게 차면 J = L + S.",
+    "chapters": [
+     "identical-particles#atoms"
+    ]
+   },
+   {
+    "ko": "흡수",
+    "en": "absorption",
+    "abbr": "",
+    "def": "계가 광자(또는 진동장 에너지) ħω를 받아 아래 준위에서 위 준위로 전이하는 과정. 속도는 B₁₂ρ(ω)N₁이다.",
+    "chapters": [
+     "time-dependent#first-order"
+    ]
+   },
+   {
+    "ko": "흡수 계수",
+    "en": "absorption coefficient",
+    "abbr": "",
+    "def": "α. 빛의 세기가 물질 속에서 I = I₀e^{-αx}로 줄 때의 계수(cm⁻¹). 1/α는 흡수 깊이이며 띠 간격 근처에서 급히 커진다.",
+    "chapters": [
+     "time-dependent#interband"
+    ]
+   },
+   {
+    "ko": "힐베르트 공간",
+    "en": "Hilbert space",
+    "abbr": "",
+    "def": "내적이 정의되고 완비된 복소 벡터 공간. 양자 상태는 그 안의 단위 벡터(정확히는 위상을 뺀 광선)이고, 차원은 스핀 1/2의 2에서 입자 위치의 무한대까지 다양하다.",
+    "chapters": [
+     "state-space#vectors"
+    ]
+   }
+  ]
+ }
 });
