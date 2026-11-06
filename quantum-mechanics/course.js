@@ -177,8 +177,7 @@ SB.registerCourse({
      "tags": [
       "변분법",
       "WKB"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "time-dependent",
@@ -189,8 +188,7 @@ SB.registerCourse({
      "tags": [
       "페르미 황금률",
       "선택 규칙"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "scattering",
@@ -230,8 +228,7 @@ SB.registerCourse({
      "tags": [
       "밀도 행렬",
       "결어긋남"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "quantum-information",
@@ -260,8 +257,7 @@ SB.registerCourse({
      "tags": [
       "부록",
       "공식"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "glossary",
@@ -386,9 +382,57 @@ SB.registerCourse({
    "steps": 3,
    "predicts": 5,
    "hero": 1
+  },
+  "variational-wkb": {
+   "problems": 0,
+   "examples": 4,
+   "sims": 3,
+   "figures": 4,
+   "drills": 2,
+   "minis": 2,
+   "tangles": 2,
+   "steps": 0,
+   "predicts": 2,
+   "hero": 1
+  },
+  "time-dependent": {
+   "problems": 0,
+   "examples": 1,
+   "sims": 0,
+   "figures": 2,
+   "drills": 0,
+   "minis": 1,
+   "tangles": 1,
+   "steps": 1,
+   "predicts": 0,
+   "hero": 1
+  },
+  "density-matrix": {
+   "problems": 0,
+   "examples": 8,
+   "sims": 6,
+   "figures": 9,
+   "drills": 3,
+   "minis": 4,
+   "tangles": 4,
+   "steps": 2,
+   "predicts": 4,
+   "hero": 1
+  },
+  "math-tools": {
+   "problems": 10,
+   "examples": 0,
+   "sims": 5,
+   "figures": 1,
+   "drills": 0,
+   "minis": 1,
+   "tangles": 2,
+   "steps": 0,
+   "predicts": 1,
+   "hero": 0
   }
  },
- "published": 9,
+ "published": 13,
  "total": 20,
  "url": "https://science.euiyun.com/quantum-mechanics/"
 });
