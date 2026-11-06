@@ -1,0 +1,1681 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>양자 정보와 큐비트 · 양자역학 · SciBook</title>
+<meta name="description" content="큐비트와 양자 게이트, 다큐비트 얽힘, 벨 부등식(CHSH), 복제 불가 정리와 양자 순간이동, BB84 양자 키 분배, 도이치–조사·그로버 알고리즘, 오류 정정, 초전도·실리콘 스핀·이온·광자 큐비트와 극저온 CMOS를 회로 시뮬레이터로 익힌다.">
+<!-- sb:seo -->
+<link rel="canonical" href="https://science.euiyun.com/quantum-mechanics/chapters/quantum-information.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SciBook">
+<meta property="og:title" content="양자 정보와 큐비트 · 양자역학 · SciBook">
+<meta property="og:description" content="큐비트와 양자 게이트, 다큐비트 얽힘, 벨 부등식(CHSH), 복제 불가 정리와 양자 순간이동, BB84 양자 키 분배, 도이치–조사·그로버 알고리즘, 오류 정정, 초전도·실리콘 스핀·이온·광자 큐비트와 극저온 CMOS를 회로 시뮬레이터로 익힌다.">
+<meta property="og:url" content="https://science.euiyun.com/quantum-mechanics/chapters/quantum-information.html">
+<meta property="og:image" content="https://science.euiyun.com/og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "name": "양자 정보와 큐비트 · 양자역학 · SciBook", "headline": "18 양자 정보와 큐비트", "url": "https://science.euiyun.com/quantum-mechanics/chapters/quantum-information.html", "inLanguage": "ko", "isAccessibleForFree": true, "image": "https://science.euiyun.com/og.png", "description": "큐비트와 양자 게이트, 다큐비트 얽힘, 벨 부등식(CHSH), 복제 불가 정리와 양자 순간이동, BB84 양자 키 분배, 도이치–조사·그로버 알고리즘, 오류 정정, 초전도·실리콘 스핀·이온·광자 큐비트와 극저온 CMOS를 회로 시뮬레이터로 익힌다.", "publisher": {"@type": "Organization", "name": "SciBook", "url": "https://science.euiyun.com/"}, "learningResourceType": "interactive textbook chapter", "position": 18, "dateModified": "2026-11-06", "isPartOf": {"@type": "Book", "@id": "https://science.euiyun.com/quantum-mechanics/#book", "name": "양자역학", "url": "https://science.euiyun.com/quantum-mechanics/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "SciBook", "item": "https://science.euiyun.com/"}, {"@type": "ListItem", "position": 2, "name": "양자역학", "item": "https://science.euiyun.com/quantum-mechanics/"}, {"@type": "ListItem", "position": 3, "name": "18 양자 정보와 큐비트", "item": "https://science.euiyun.com/quantum-mechanics/chapters/quantum-information.html"}]}]}</script>
+<!-- /sb:seo -->
+<link rel="stylesheet" href="../../engine/css/scibook.css">
+<script src="../../engine/js/scibook.js"></script>
+<script src="../course.js"></script>
+<script src="../../engine/lib/qm.js"></script>
+<style>
+  .ket-out { font-family: var(--mono); font-size: 14px; overflow-x: auto; white-space: nowrap; padding: 6px 2px; }
+  .gate-row .btn { min-width: 44px; padding: 4px 9px; font-family: var(--mono); }
+  .sim-controls .ctrl-row + .ctrl-row { margin-top: 2px; }
+</style>
+</head>
+<body data-chapter="quantum-information">
+<main class="chapter">
+  <header class="chapter-hero" data-prereq="spin measurement density-matrix">
+    <div class="eyebrow">Chapter 18</div>
+    <h1>양자 정보와 큐비트</h1>
+    <p class="lead">이 책은 지금까지 상태 벡터·측정·시간 전개·스핀·밀도 행렬을 <em>자연을 설명하는</em> 도구로 썼다. 마지막 장에서는 같은 도구로 <strong>계산하고 통신하는</strong> 기계를 설계한다. 2준위 계 하나가 <span class="term">큐비트</span><span class="en">(qubit)</span>이고, 블로흐 구 위의 회전이 게이트이며, 얽힘은 고전 정보로 흉내 낼 수 없는 자원이 된다. 아래 블로흐 구에서 화살표(큐비트 상태)가 게이트를 하나씩 지날 때마다 구가 돌아간다. 화살표 끝을 끌어 시작 상태를 바꾸고, 빈 곳을 누르면 다음 게이트로 넘어간다.</p>
+    <div class="hero-live" id="hero"><canvas id="cv-hero"></canvas><span class="hint top">화살표 끝을 끌거나 빈 곳을 누르세요</span></div>
+    <ul class="objectives">
+      <li>큐비트 상태를 블로흐 벡터로 나타내고, 단일 큐비트 게이트(X, Y, Z, H, S, T, 회전 게이트)를 블로흐 구의 회전으로 이해하며 측정 확률을 계산한다.</li>
+      <li>텐서곱으로 다큐비트 상태를 쓰고, CNOT로 벨 상태를 만들며, 슈미트 분해·얽힘 엔트로피·공존도로 얽힘의 양을 잰다.</li>
+      <li>CHSH 부등식 \(|S| \le 2\)를 국소 숨은 변수 이론에서 유도하고, 양자역학이 \(S = 2\sqrt2\)까지 위반함을 계산한다.</li>
+      <li>복제 불가 정리를 증명하고, 양자 순간이동 회로를 단계별로 따라가며 왜 빛보다 빨리 정보를 보낼 수 없는지 설명한다.</li>
+      <li>BB84 프로토콜에서 도청이 남기는 오류율(QBER)과 비밀 키 비율 \(1 - 2h(e)\)를 계산한다.</li>
+      <li>도이치–조사와 그로버 알고리즘을 간섭과 회전으로 설명하고, 최적 반복 횟수 \(\approx \tfrac{\pi}{4}\sqrt N\)을 구한다.</li>
+      <li>반복 부호와 증후군 측정으로 오류 정정의 원리를 익히고, 초전도·실리콘 스핀·이온·광자 큐비트와 극저온 CMOS의 공학적 조건(온도·진동수·배선)을 수치로 비교한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="qubits">
+    <h2>큐비트와 단일 큐비트 게이트</h2>
+    <p>고전 비트는 0 아니면 1이다. 양자역학에서 서로 구별되는 두 상태 \(|0\rangle\), \(|1\rangle\)을 가진 계 — 전자 스핀의 위·아래(<a href="spin.html">10장</a>), 광자의 수평·수직 편광(<a href="measurement.html">3장</a>), 원자나 인공 원자의 바닥·들뜬 준위 — 는 둘의 임의의 <em>중첩</em>에 있을 수 있다. 정보 이론에서는 이런 계를 물리적 구현과 상관없이 큐비트라 부른다.</p>
+    <div class="def"><span class="def-k">큐비트</span>
+      <p>2차원 힐베르트 공간의 단위 벡터 \(|\psi\rangle = \alpha|0\rangle + \beta|1\rangle\), \(|\alpha|^2 + |\beta|^2 = 1\). \(|0\rangle\), \(|1\rangle\)을 <span class="term">계산 기저</span><span class="en">(computational basis)</span>라 한다. 전체 위상 \(e^{i\gamma}\)는 관측할 수 없으므로 상태는 실수 두 개로 정해진다.</p>
+    </div>
+    <div class="formula">$$|\psi\rangle = \cos\frac{\theta}{2}\,|0\rangle + e^{i\phi}\sin\frac{\theta}{2}\,|1\rangle, \qquad \mathbf r = (\sin\theta\cos\phi,\ \sin\theta\sin\phi,\ \cos\theta) = \bigl(\langle\sigma_x\rangle, \langle\sigma_y\rangle, \langle\sigma_z\rangle\bigr)$$<div class="where">\(0 \le \theta \le \pi\), \(0 \le \phi \lt 2\pi\). 단위 벡터 \(\mathbf r\)이 <span class="term">블로흐 벡터</span><span class="en">(Bloch vector)</span>이고 그 끝이 <span class="term">블로흐 구</span><span class="en">(Bloch sphere)</span> 위의 점이다(<a href="measurement.html">3장</a>, <a href="spin.html">10장</a>). 북극이 \(|0\rangle\), 남극이 \(|1\rangle\), 적도의 \(+x\), \(+y\)가 \(|+\rangle = (|0\rangle+|1\rangle)/\sqrt2\), \(|{+i}\rangle = (|0\rangle+i|1\rangle)/\sqrt2\)이다. 혼합 상태는 구 안쪽의 점이다(<a href="density-matrix.html">17장</a>).</div></div>
+    <p>계산 기저로 재면 0이 나올 확률은 \(P(0) = |\alpha|^2 = \cos^2(\theta/2) = (1 + r_z)/2\)이다. 측정 후 상태는 \(|0\rangle\) 또는 \(|1\rangle\)로 붕괴하므로, 큐비트 하나를 한 번 재서 얻는 정보는 1비트뿐이다. 연속적인 \(\theta, \phi\)가 "무한한 정보"를 담는 것처럼 보이지만, 큐비트 \(n\)개로 꺼낼 수 있는 고전 정보는 많아야 \(n\)비트다(<span class="term">홀레보 한계</span><span class="en">(Holevo bound)</span>). 양자 정보의 힘은 저장 용량이 아니라 <em>진폭끼리의 간섭</em>에서 나온다.</p>
+    <div class="example" data-title="블로흐 벡터와 측정 확률">
+      <p>큐비트가 \(\theta = 60^\circ\), \(\phi = 90^\circ\)인 상태에 있다. (가) 켓과 블로흐 벡터를 쓰고, (나) 계산 기저로 잴 때 \(P(0)\)을 구하라. (다) 하다마르 게이트 \(H\)를 건 뒤의 블로흐 벡터와 \(P(0)\)은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 블로흐 각을 공식에 넣는다. \(H\)는 블로흐 구에서 \((x, y, z) \to (z, -y, x)\)로 작용한다(아래 표).</div>
+        <div class="step"><b>풀이</b> (가) \(|\psi\rangle = \cos30^\circ|0\rangle + i\sin30^\circ|1\rangle = 0.866|0\rangle + 0.5i|1\rangle\), \(\mathbf r = (0, 0.866, 0.5)\). (나) \(P(0) = \cos^2 30^\circ = 0.75\). (다) \(H|\psi\rangle = \tfrac{1}{\sqrt2}[(0.866 + 0.5i)|0\rangle + (0.866 - 0.5i)|1\rangle]\), 블로흐 벡터 \((0.5, -0.866, 0)\). 두 진폭의 크기가 같아 \(P(0) = 0.5\).</div>
+        <div class="answer">(가) \(\mathbf r = (0, 0.866, 0.5)\) (나) \(P(0) = 0.75\) (다) \(\mathbf r = (0.5, -0.866, 0)\), \(P(0) = 0.5\)</div>
+        <div class="step"><b>검토</b> \(|\mathbf r| = 1\)이 유지된다(순수 상태). 적도 위의 점은 \(z\) 기저로 재면 항상 반반이다 — 위상 \(\phi\)는 \(z\) 측정만으로는 보이지 않고, 다른 기저로 돌려야 드러난다.</div>
+      </details>
+    </div>
+    <p>닫힌 계의 시간 전개는 유니터리다(<a href="time-evolution.html">4장</a>). 큐비트에 거는 연산, 곧 <span class="term">양자 게이트</span><span class="en">(quantum gate)</span>는 \(2\times2\) 유니터리 행렬이고, 전체 위상을 빼면 블로흐 구의 <em>회전</em>이다(<a href="angular-momentum.html">8장</a>의 회전 연산자에서 \(j = \tfrac12\)).</p>
+    <div class="formula">$$\hat U = e^{i\gamma}\,\hat R_{\mathbf n}(\alpha), \qquad \hat R_{\mathbf n}(\alpha) = e^{-i\alpha\,\mathbf n\cdot\boldsymbol\sigma/2} = \cos\frac{\alpha}{2}\,\hat I - i\sin\frac{\alpha}{2}\,(\mathbf n\cdot\boldsymbol\sigma)$$<div class="where">\(\hat R_{\mathbf n}(\alpha)\)는 블로흐 벡터를 축 \(\mathbf n\) 둘레로 각 \(\alpha\)만큼 돌린다. 각이 \(\alpha/2\)로 들어가는 것이 스피너의 성질이다: \(\alpha = 2\pi\) 회전은 상태에 \(-1\)을 곱한다(관측 불가능한 전체 위상).</div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>게이트</th><th>행렬</th><th>블로흐 구에서</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td>\(X\) (NOT)</td><td>\(\begin{pmatrix}0&1\\1&0\end{pmatrix}\)</td><td>\(x\)축 둘레 180°</td><td>\(|0\rangle \leftrightarrow |1\rangle\), 비트 뒤집기</td></tr>
+        <tr><td>\(Z\)</td><td>\(\begin{pmatrix}1&0\\0&-1\end{pmatrix}\)</td><td>\(z\)축 둘레 180°</td><td>\(|1\rangle\)에 \(-1\), 위상 뒤집기</td></tr>
+        <tr><td>\(Y\)</td><td>\(\begin{pmatrix}0&-i\\i&0\end{pmatrix}\)</td><td>\(y\)축 둘레 180°</td><td>\(Y = iXZ\): 비트와 위상을 함께</td></tr>
+        <tr><td>\(H\) (하다마르)</td><td>\(\tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}\)</td><td>\((\hat x + \hat z)/\sqrt2\) 둘레 180°</td><td>\(|0\rangle \to |+\rangle\), \(|1\rangle \to |-\rangle\); \(x \leftrightarrow z\)</td></tr>
+        <tr><td>\(S\)</td><td>\(\begin{pmatrix}1&0\\0&i\end{pmatrix}\)</td><td>\(z\)축 둘레 90°</td><td>\(S^2 = Z\)</td></tr>
+        <tr><td>\(T\)</td><td>\(\begin{pmatrix}1&0\\0&e^{i\pi/4}\end{pmatrix}\)</td><td>\(z\)축 둘레 45°</td><td>\(T^2 = S\)</td></tr>
+      </tbody>
+    </table></div>
+    <p>하다마르 게이트는 \(z\)축과 \(x\)축을 맞바꾼다. 그래서 \(H\)로 감싸면 위상 뒤집기가 비트 뒤집기가 된다. 아래 단계 그림으로 \(HZH = X\)를 따라가 보자.</p>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 270" role="img" aria-label="|0⟩에 H, Z, H를 차례로 걸면 블로흐 벡터가 북극에서 +x, −x를 거쳐 남극으로 가는 과정">
+        <defs><marker id="qi-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker></defs>
+        <g>
+          <line x1="40" y1="40" x2="760" y2="40" class="s-line"/>
+          <text class="t-mono" x="20" y="45" text-anchor="end">q</text>
+          <rect x="190" y="22" width="40" height="36" rx="6" class="f-surface" stroke="var(--border)"/><text class="t-mono" x="210" y="45" text-anchor="middle">H</text>
+          <rect x="390" y="22" width="40" height="36" rx="6" class="f-surface" stroke="var(--border)"/><text class="t-mono" x="410" y="45" text-anchor="middle">Z</text>
+          <rect x="590" y="22" width="40" height="36" rx="6" class="f-surface" stroke="var(--border)"/><text class="t-mono" x="610" y="45" text-anchor="middle">H</text>
+        </g>
+        <g>
+          <circle cx="110" cy="160" r="62" fill="none" stroke="var(--border)"/><ellipse cx="110" cy="160" rx="62" ry="16" fill="none" stroke="var(--border)" stroke-dasharray="3 4"/>
+          <circle cx="310" cy="160" r="62" fill="none" stroke="var(--border)"/><ellipse cx="310" cy="160" rx="62" ry="16" fill="none" stroke="var(--border)" stroke-dasharray="3 4"/>
+          <circle cx="510" cy="160" r="62" fill="none" stroke="var(--border)"/><ellipse cx="510" cy="160" rx="62" ry="16" fill="none" stroke="var(--border)" stroke-dasharray="3 4"/>
+          <circle cx="710" cy="160" r="62" fill="none" stroke="var(--border)"/><ellipse cx="710" cy="160" rx="62" ry="16" fill="none" stroke="var(--border)" stroke-dasharray="3 4"/>
+          <text class="t-dim" x="110" y="90" text-anchor="middle">|0⟩</text><text class="t-dim" x="310" y="90" text-anchor="middle">|0⟩</text><text class="t-dim" x="510" y="90" text-anchor="middle">|0⟩</text><text class="t-dim" x="710" y="90" text-anchor="middle">|0⟩</text>
+          <text class="t-dim" x="110" y="240" text-anchor="middle">|1⟩</text><text class="t-dim" x="310" y="240" text-anchor="middle">|1⟩</text><text class="t-dim" x="510" y="240" text-anchor="middle">|1⟩</text><text class="t-dim" x="710" y="240" text-anchor="middle">|1⟩</text>
+        </g>
+        <g data-step="1"><line x1="110" y1="160" x2="110" y2="104" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-ar)"/><text class="t-acc" x="110" y="262" text-anchor="middle">시작 |0⟩</text></g>
+        <g data-step="2"><line x1="310" y1="160" x2="362" y2="166" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-ar)"/><text class="t-acc" x="310" y="262" text-anchor="middle">H → |+⟩ (+x)</text><path d="M 160 104 Q 205 80 250 104" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/></g>
+        <g data-step="3"><line x1="510" y1="160" x2="458" y2="154" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-ar)"/><text class="t-acc" x="510" y="262" text-anchor="middle">Z → |−⟩ (−x)</text><path d="M 360 104 Q 405 80 450 104" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/></g>
+        <g data-step="4"><line x1="710" y1="160" x2="710" y2="216" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-ar)"/><text class="t-acc" x="710" y="262" text-anchor="middle">H → |1⟩</text><path d="M 560 104 Q 605 80 650 104" fill="none" stroke="var(--accent-2)" stroke-dasharray="4 3"/></g>
+      </svg>
+      <ol class="steps-cap"><li>북극 \(|0\rangle\)에서 시작한다.</li><li>\(H\)는 \(z\)와 \(x\)를 맞바꾼다: 북극이 \(+x\) 방향 \(|+\rangle\)으로 간다.</li><li>\(Z\)는 \(z\)축 둘레 180° 회전: \(+x\)가 \(-x\), 곧 \(|-\rangle\)이 된다. \(z\) 기저 확률은 그대로 반반이다.</li><li>다시 \(H\): \(-x\)가 \(-z\), 곧 \(|1\rangle\). 결과적으로 비트가 뒤집혔다 — \(HZH = X\).</li></ol>
+      <figcaption>\(H\)로 기저를 돌리면 위상 뒤집기(\(Z\))와 비트 뒤집기(\(X\))가 서로 바뀐다. 오류 정정(7절)에서 위상 오류를 비트 오류처럼 다루는 근거가 이것이다.</figcaption>
+    </figure>
+    <div class="example" data-title="하다마르로 감싼 게이트">
+      <p>행렬 곱으로 \(HZH = X\), \(HXH = Z\)를 보이고, \(HYH\)는 무엇인지 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(H = (X + Z)/\sqrt2\)로 쓰고 파울리 행렬의 성질 \(X^2 = Z^2 = I\), \(XZ = -ZX\)를 쓴다.</div>
+        <div class="step"><b>풀이</b> \(HZH = \tfrac12(X + Z)Z(X + Z) = \tfrac12(XZX + XZZ + ZZX + ZZZ) = \tfrac12(-Z + X + X + Z) = X\). 같은 방법으로 \(HXH = \tfrac12(X + Z)X(X+Z) = \tfrac12(X + Z + Z - X) = Z\). \(Y = iXZ\)이므로 \(HYH = i(HXH)(HZH) = iZX = -iXZ = -Y\).</div>
+        <div class="answer">\(HZH = X\), \(HXH = Z\), \(HYH = -Y\)</div>
+        <div class="step"><b>검토</b> \(H\)는 축 \((\hat x + \hat z)/\sqrt2\) 둘레 180° 회전이라 \(x \leftrightarrow z\)를 맞바꾸고 \(y\)는 뒤집는다. 행렬 계산과 그림이 일치한다.</div>
+      </details>
+    </div>
+    <p>실험실에서 게이트는 펄스다. 공진 진동수의 마이크로파(초전도·스핀 큐비트)나 레이저(이온)를 라비 진동수 \(\Omega\)로 시간 \(t\) 동안 걸면 회전각은 \(\alpha = \Omega t\)이다(<a href="time-dependent.html">14장</a>의 라비 공식). 구동의 위상을 바꾸면 회전축이 적도 위에서 돌아가고(\(X\)형, \(Y\)형), \(z\) 회전은 기준 위상만 바꾸면 되므로 공짜에 가깝다("가상 \(Z\)").</p>
+    <div class="tangle" id="tg-rabi">
+      <p>라비 진동수 \(\Omega/2\pi\) = <span class="tn" data-var="f" data-min="0.5" data-max="50" data-step="0.5" data-unit=" MHz">5</span>로 <span class="tn" data-var="t" data-min="1" data-max="400" data-step="1" data-unit=" ns">100</span> 동안 \(x\)축 펄스를 걸면 회전각은 \(\alpha = \Omega t\) = <span class="tn-out" data-out="a"></span>이고, \(|0\rangle\)에서 시작했을 때 \(P(1) = \sin^2(\alpha/2)\) = <span class="tn-out" data-out="p"></span>. \(\pi\) 펄스(X 게이트)에 필요한 시간은 \(1/(2\,\Omega/2\pi)\) = <span class="tn-out" data-out="tpi"></span>. <span data-out="msg"></span></p>
+    </div>
+    <p>어떤 단일 큐비트 유니터리든 \(z\)–\(y\)–\(z\) 오일러 각 회전 \(\hat R_z(\beta)\hat R_y(\gamma)\hat R_z(\delta)\)으로 쓸 수 있다. 실제 양자 컴퓨터는 연속 회전 대신 유한한 게이트 집합 \(\{H, S, T\}\)를 쓰는데, \(H\)와 \(T\)를 이어 붙이면 블로흐 구의 어떤 회전이든 원하는 정밀도로 근사할 수 있다(솔로베이–키타예프 정리). 아래 실험실에서 직접 해 보자.</p>
+    <div class="predict" data-for="sim-gate">
+      <p>\(|0\rangle\)에 \(H\), \(T\), \(H\)를 차례로 걸고 계산 기저로 재면 1이 나올 확률은?</p>
+      <div class="opts"><button class="opt">0</button><button class="opt" data-correct>약 0.15</button><button class="opt">0.5</button><button class="opt">약 0.85</button></div>
+      <div class="quiz-exp">\(H\)가 \(|0\rangle\)을 \(+x\)로, \(T\)가 \(z\)축 둘레로 45° 돌려 \((\cos45^\circ, \sin45^\circ, 0)\)으로, 마지막 \(H\)가 \(x\)와 \(z\)를 바꿔 \(r_z = \cos45^\circ = 0.707\)이 된다. \(P(1) = (1 - 0.707)/2 = 0.146\). 실험실에서 H → T → H 버튼을 눌러 확인하자.</div>
+    </div>
+    <div class="sim" id="sim-gate">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>블로흐 구 게이트 실험실</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-gate"></canvas></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>게이트</span>
+            <div class="ctrl-row gate-row"><button class="btn" data-g="X" type="button">X</button><button class="btn" data-g="Y" type="button">Y</button><button class="btn" data-g="Z" type="button">Z</button><button class="btn" data-g="H" type="button">H</button></div>
+            <div class="ctrl-row gate-row"><button class="btn" data-g="S" type="button">S</button><button class="btn" data-g="Sdg" type="button">S†</button><button class="btn" data-g="T" type="button">T</button><button class="btn" data-g="Tdg" type="button">T†</button></div>
+          </div>
+          <label class="ctrl"><span>회전각 α <output id="gt-a-out"></output></span><input type="range" id="gt-a" min="-180" max="180" step="5" value="90"></label>
+          <div class="ctrl-row gate-row"><button class="btn" data-g="Rx" type="button">Rx(α)</button><button class="btn" data-g="Ry" type="button">Ry(α)</button><button class="btn" data-g="Rz" type="button">Rz(α)</button></div>
+          <div class="ctrl"><span>모드</span><div class="seg" id="gt-mode"><button data-value="free" class="on">자유</button><button data-value="goal">과녁 맞히기</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="gt-reset" type="button">|0⟩으로</button><button class="btn" id="gt-new" type="button">새 과녁</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">상태</span><span class="v" id="gt-ket">—</span></div>
+        <div class="stat"><span class="k">(θ, φ)</span><span class="v" id="gt-ang">—</span></div>
+        <div class="stat"><span class="k">P(0) / P(1)</span><span class="v" id="gt-p">—</span></div>
+        <div class="stat"><span class="k">게이트열</span><span class="v" id="gt-seq">—</span></div>
+        <div class="stat"><span class="k">과녁 충실도</span><span class="v" id="gt-fid">—</span></div>
+      </div>
+      <div class="sim-note">자홍 화살표가 상태, 점선 화살표가 과녁이다. 화살표 끝(흰 원)을 끌면 상태를 직접 놓고, 빈 곳을 끌면 구를 돌려 본다. 게이트를 누르면 회전축(주황 점선)을 따라 화살표가 돌아간다. 과녁 모드에서는 \(\{H, S, T\}\) 몇 개로 만든 상태가 주어진다. 충실도 \(|\langle\text{과녁}|\psi\rangle|^2 \ge 0.99\)이면 성공이고, 적은 게이트로 맞힐수록 좋다. 해볼 것: ① H → T → H로 위의 예측을 확인한다. ② \(S\)를 두 번 누른 것과 \(Z\) 한 번이 같은 회전인지 본다. ③ \(|0\rangle\)에서 \(|{+i}\rangle\)(\(+y\))을 만드는 가장 짧은 게이트열을 찾는다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="entanglement">
+    <h2>다큐비트 상태와 얽힘</h2>
+    <p>두 큐비트의 상태 공간은 각 공간의 텐서곱 \(\mathcal H_A\otimes\mathcal H_B\)이다(<a href="state-space.html">2장</a>). 기저는 \(|00\rangle, |01\rangle, |10\rangle, |11\rangle\) 넷이고(왼쪽이 큐비트 0), 일반 상태는 복소 진폭 네 개로 쓴다. \(n\)큐비트면 진폭이 \(2^n\)개다 — 큐비트를 하나 더할 때마다 고전 컴퓨터로 흉내 내는 데 드는 메모리가 두 배가 된다.</p>
+    <div class="formula">$$|\Psi\rangle = \sum_{x\in\{0,1\}^n} c_x\,|x\rangle, \qquad \sum_x |c_x|^2 = 1, \qquad |a\rangle\otimes|b\rangle = (a_0|0\rangle + a_1|1\rangle)\otimes(b_0|0\rangle + b_1|1\rangle) = \sum_{ij} a_ib_j\,|ij\rangle$$<div class="where">곱 상태는 진폭이 \(c_{ij} = a_ib_j\)로 인수분해되는 특별한 경우다. 그렇게 쓸 수 없는 상태를 <span class="term">얽힌 상태</span><span class="en">(entangled state)</span>라 한다.</div></div>
+    <div class="tangle" id="tg-mem">
+      <p>큐비트 <span class="tn" data-var="n" data-min="1" data-max="60" data-step="1">30</span>개의 상태 벡터를 진폭마다 배정밀도 복소수(16바이트)로 저장하면 진폭 <span class="tn-out" data-out="N"></span>개, 메모리 <span class="tn-out" data-out="M"></span>가 든다. <span data-out="msg"></span></p>
+    </div>
+    <p>두 큐비트 게이트 가운데 가장 중요한 것은 <span class="term">제어 NOT</span><span class="en">(controlled-NOT, CNOT)</span>이다. 제어 큐비트가 \(|1\rangle\)일 때만 표적 큐비트를 뒤집는다: \(|c, t\rangle \to |c, t\oplus c\rangle\). 고전적인 XOR처럼 보이지만, 제어 큐비트가 중첩에 있으면 결과는 얽힘이다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 250" role="img" aria-label="H와 CNOT로 벨 상태를 만드는 회로와 CNOT 진리표">
+        <line x1="60" y1="70" x2="440" y2="70" class="s-line"/><line x1="60" y1="170" x2="440" y2="170" class="s-line"/>
+        <text class="t-mono" x="50" y="75" text-anchor="end">|0⟩</text><text class="t-mono" x="50" y="175" text-anchor="end">|0⟩</text>
+        <rect x="120" y="50" width="44" height="40" rx="6" class="f-surface" stroke="var(--border)"/><text class="t-mono" x="142" y="75" text-anchor="middle">H</text>
+        <circle cx="260" cy="70" r="7" fill="var(--text)"/><line x1="260" y1="70" x2="260" y2="186" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="260" cy="170" r="16" fill="none" stroke="var(--text)" stroke-width="2"/>
+        <text class="t-dim" x="142" y="122" text-anchor="middle">|+⟩|0⟩</text>
+        <text class="t-acc" x="350" y="122" text-anchor="middle">(|00⟩ + |11⟩)/√2</text>
+        <text class="t-dim" x="350" y="142" text-anchor="middle">= |Φ⁺⟩</text>
+        <text class="t-dim" x="142" y="220" text-anchor="middle">① 중첩 만들기</text><text class="t-dim" x="260" y="220" text-anchor="middle">② 얽기</text>
+        <rect x="500" y="30" width="270" height="190" rx="10" class="f-surface" stroke="var(--border)"/>
+        <text class="t" x="635" y="58" text-anchor="middle" style="font-weight:700">CNOT (제어 c, 표적 t)</text>
+        <text class="t-mono" x="580" y="90" text-anchor="middle">|c t⟩ 입력</text><text class="t-mono" x="700" y="90" text-anchor="middle">출력</text>
+        <line x1="520" y1="100" x2="750" y2="100" stroke="var(--border)"/>
+        <text class="t-mono" x="580" y="124" text-anchor="middle">|00⟩</text><text class="t-mono" x="700" y="124" text-anchor="middle">|00⟩</text>
+        <text class="t-mono" x="580" y="148" text-anchor="middle">|01⟩</text><text class="t-mono" x="700" y="148" text-anchor="middle">|01⟩</text>
+        <text class="t-mono" x="580" y="172" text-anchor="middle">|10⟩</text><text class="t-acc" x="700" y="172" text-anchor="middle">|11⟩</text>
+        <text class="t-mono" x="580" y="196" text-anchor="middle">|11⟩</text><text class="t-acc" x="700" y="196" text-anchor="middle">|10⟩</text>
+      </svg>
+      <figcaption>왼쪽: 양자 회로는 왼쪽에서 오른쪽으로 읽는다. 가로선이 큐비트, 상자가 단일 큐비트 게이트, 검은 점(제어)과 ⊕(표적)를 잇는 세로선이 CNOT이다. \(H\)로 만든 중첩 \((|0\rangle + |1\rangle)|0\rangle/\sqrt2\)에 CNOT를 걸면 벨 상태 \(|\Phi^+\rangle\)가 된다. 오른쪽: CNOT 진리표.</figcaption>
+    </figure>
+    <div class="formula">$$|\Phi^\pm\rangle = \frac{|00\rangle \pm |11\rangle}{\sqrt2}, \qquad |\Psi^\pm\rangle = \frac{|01\rangle \pm |10\rangle}{\sqrt2}$$<div class="where">네 <span class="term">벨 상태</span><span class="en">(Bell states)</span>는 2큐비트 공간의 직교 정규 기저다. \(|\Psi^-\rangle\)은 <a href="spin.html">10장</a>의 스핀 단일항이다. 회로 입력을 \(|00\rangle, |01\rangle, |10\rangle, |11\rangle\)로 바꾸면 차례로 \(|\Phi^+\rangle, |\Psi^+\rangle, |\Phi^-\rangle, |\Psi^-\rangle\)가 나오고, 회로를 거꾸로 돌리면(CNOT 뒤 \(H\)) 벨 기저 측정이 된다.</div></div>
+    <div class="example" data-title="벨 상태를 만드는 회로">
+      <p>\(|00\rangle\)에서 시작해 큐비트 0에 \(H\), 이어서 CNOT(제어 0, 표적 1)를 건다. 각 단계의 상태를 쓰고, 이 상태가 곱 상태로 쓰일 수 없음을 보여라. 큐비트 0만 재면 결과는 어떤가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 게이트를 차례로 기저 상태에 적용하고, 곱 상태라면 \(c_{00}c_{11} = c_{01}c_{10}\)이어야 한다는 조건을 쓴다(\(c_{ij} = a_ib_j\)).</div>
+        <div class="step"><b>풀이</b> \(H\): \(|00\rangle \to (|00\rangle + |10\rangle)/\sqrt2\). CNOT: \(|10\rangle \to |11\rangle\)이므로 \((|00\rangle + |11\rangle)/\sqrt2 = |\Phi^+\rangle\). \(c_{00}c_{11} = \tfrac12\)인데 \(c_{01}c_{10} = 0\)이라 인수분해되지 않는다. 큐비트 0을 재면 0과 1이 반반이고, 0이 나오면 큐비트 1은 반드시 0, 1이 나오면 반드시 1이다.</div>
+        <div class="answer">\(|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt2\); 각자는 무작위(반반)지만 둘의 결과는 완전히 같다.</div>
+        <div class="step"><b>검토</b> 큐비트 0의 축약 밀도 행렬은 \(\hat\rho_0 = \operatorname{Tr}_1|\Phi^+\rangle\langle\Phi^+| = \hat I/2\) — 블로흐 벡터 길이 0인 최대 혼합 상태다(<a href="density-matrix.html">17장</a>). 전체는 순수 상태인데 부분은 완전히 무작위라는 것이 얽힘의 표지다.</div>
+      </details>
+    </div>
+    <p>순수한 2큐비트 상태의 얽힘은 한 숫자로 잴 수 있다. 어떤 2큐비트 순수 상태든 국소 기저를 잘 고르면 항이 둘뿐인 <span class="term">슈미트 분해</span><span class="en">(Schmidt decomposition)</span>로 쓸 수 있다.</p>
+    <div class="formula">$$|\Psi\rangle = \sqrt{\lambda}\,|a_1\rangle|b_1\rangle + \sqrt{1-\lambda}\,|a_2\rangle|b_2\rangle, \qquad S_E = -\lambda\log_2\lambda - (1-\lambda)\log_2(1-\lambda), \qquad C = 2\,|c_{00}c_{11} - c_{01}c_{10}|$$<div class="where">\(\lambda\)는 축약 밀도 행렬 \(\hat\rho_A\)의 고유값이다. \(S_E\)는 \(\hat\rho_A\)의 폰 노이만 엔트로피로 <span class="term">얽힘 엔트로피</span><span class="en">(entanglement entropy)</span>라 부르며, 곱 상태면 0, 벨 상태면 최대 1(이른바 1 "ebit")이다. \(C\)는 <span class="term">공존도</span><span class="en">(concurrence)</span>로, 순수 상태에서 \(C = 2\sqrt{\lambda(1-\lambda)}\)이고 \(\hat\rho_A\)의 블로흐 벡터 길이는 \(\sqrt{1 - C^2}\)이다.</div></div>
+    <figure class="mini" id="mini-sch">
+      <div class="mini-view"><canvas id="cv-sch"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>θ <output id="sc-t-out"></output></span><input type="range" id="sc-t" min="0" max="90" step="1" value="30"></label>
+        <span class="readout" id="sc-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(|\Psi\rangle = \cos\theta|00\rangle + \sin\theta|11\rangle\). 왼쪽: 큐비트 A의 축약 상태(블로흐 공 속 화살표). 오른쪽: \(\theta\)에 따른 얽힘 엔트로피(자홍)와 공존도(초록), 점은 지금 값(끌어서 바꿀 수 있다). \(\theta = 45^\circ\)에서 A의 화살표가 사라진다 — 전체를 완전히 알아도 부분은 아무것도 모른다.</figcaption>
+    </figure>
+    <div class="example" data-title="덜 얽힌 상태의 얽힘 엔트로피">
+      <p>\(|\Psi\rangle = \sqrt{0.8}\,|00\rangle + \sqrt{0.2}\,|11\rangle\)의 얽힘 엔트로피와 공존도, 그리고 큐비트 A의 블로흐 벡터를 구하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 이미 슈미트 꼴이므로 \(\lambda = 0.8\). 축약 상태는 \(\hat\rho_A = 0.8|0\rangle\langle0| + 0.2|1\rangle\langle1|\).</div>
+        <div class="step"><b>풀이</b> \(S_E = -0.8\log_2 0.8 - 0.2\log_2 0.2 = 0.2575 + 0.4644 = 0.722\). \(C = 2\sqrt{0.8\times0.2} = 0.8\). \(\hat\rho_A\)의 블로흐 벡터는 \((0, 0, 0.8 - 0.2) = (0, 0, 0.6)\), 길이 \(0.6 = \sqrt{1 - 0.8^2}\).</div>
+        <div class="answer">\(S_E = 0.722\) 비트, \(C = 0.8\), \(\mathbf r_A = (0, 0, 0.6)\)</div>
+        <div class="step"><b>검토</b> 0과 1 사이다. 이런 상태 여러 쌍을 국소 연산과 고전 통신만으로 모으면 쌍당 \(S_E\)개 비율로 벨 쌍을 뽑아낼 수 있다(얽힘 증류) — 엔트로피가 얽힘의 "환율"이다.</div>
+      </details>
+    </div>
+    <p>세 큐비트부터는 얽힘의 종류가 여럿이다. \(|\mathrm{GHZ}\rangle = (|000\rangle + |111\rangle)/\sqrt2\)는 하나만 재도 나머지 둘이 확정되고 남은 둘의 얽힘은 사라지지만, \(|\mathrm W\rangle = (|001\rangle + |010\rangle + |100\rangle)/\sqrt3\)는 하나를 잃어도 남은 둘이 여전히 얽혀 있다. 또 CNOT 하나와 단일 큐비트 게이트만 있으면 어떤 \(n\)큐비트 유니터리도 만들 수 있다(<span class="term">보편 게이트 집합</span><span class="en">(universal gate set)</span>). 아래 회로판에서 직접 얽어 보자.</p>
+    <div class="sim" id="sim-circ">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>3큐비트 회로판: 얽힘 만들기</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-circ"></canvas></div><div><canvas id="cv-amp"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>놓을 게이트 (칸을 누르세요)</span><div class="seg" id="ci-tool"><button data-value="H" class="on">H</button><button data-value="X">X</button><button data-value="Z">Z</button><button data-value="S">S</button><button data-value="T">T</button><button data-value="C">CNOT</button><button data-value="E">지우개</button></div></div>
+          <div class="ctrl"><span>과녁</span><div class="seg" id="ci-goal"><button data-value="none" class="on">자유</button><button data-value="phi">Φ⁺ ⊗ |0⟩</button><button data-value="psi">|0⟩ ⊗ Ψ⁻</button><button data-value="ghz">GHZ</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="ci-shot" type="button">100번 측정</button><button class="btn" id="ci-clear" type="button">모두 지우기</button><button class="btn" id="ci-bell" type="button">예시: 벨 회로</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">상태</span><span class="v" id="ci-ket">—</span></div>
+        <div class="stat"><span class="k">큐비트별 얽힘 S(ρₖ)</span><span class="v" id="ci-ent">—</span></div>
+        <div class="stat"><span class="k">과녁</span><span class="v" id="ci-fid">—</span></div>
+      </div>
+      <div class="sim-note">위: 회로(큐비트 q0, q1, q2, 시간 칸 6개). 아래: 8개 계산 기저의 확률(막대 높이)과 위상(색), 측정하면 표본 수가 점으로 쌓인다. CNOT는 제어 칸을 먼저 누르고 같은 열의 표적 칸을 누른다. 큐비트별 얽힘은 그 큐비트의 축약 상태 엔트로피(0 = 나머지와 무관, 1 = 최대로 얽힘)다. 해볼 것: ① "예시: 벨 회로"를 누르고 q0와 q1의 얽힘이 1, q2는 0인지 본다. ② H 하나와 CNOT 둘로 GHZ를 만든다. ③ 벨 회로 뒤에 같은 열 순서를 거꾸로(CNOT 다음 H) 놓으면 다시 \(|000\rangle\)이 되는지 확인한다 — 얽힘도 유니터리로 풀 수 있다.</div>
+    </div>
+    <div class="drill" id="drill-ent" data-title="공존도 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="bell">
+    <h2>벨 부등식과 CHSH</h2>
+    <p>1935년 아인슈타인·포돌스키·로젠(EPR)은 이렇게 물었다. \(|\Phi^+\rangle\)의 두 큐비트를 멀리 떼어 놓아도 한쪽을 재면 다른 쪽 결과를 확실히 예측할 수 있다. 멀리 떨어진 측정이 서로 영향을 줄 수 없다면(국소성), 결과는 처음부터 정해져 있었어야 하지 않을까? 그렇다면 양자역학은 그 "숨은 변수"를 모르는 불완전한 이론이다. 1964년 벨은 이 질문을 <em>실험으로 판정할 수 있는</em> 부등식으로 바꾸었다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 230" role="img" aria-label="얽힌 쌍 광원에서 앨리스와 밥이 각자 두 설정 중 하나를 골라 측정하고 결과를 비교하는 CHSH 실험 배치">
+        <defs><marker id="qi-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker></defs>
+        <circle cx="400" cy="100" r="34" class="f-acc-soft" stroke="var(--accent)"/><text class="t-acc" x="400" y="98" text-anchor="middle">얽힌 쌍</text><text class="t-dim" x="400" y="116" text-anchor="middle">|Φ⁺⟩</text>
+        <line x1="364" y1="100" x2="220" y2="100" stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#qi-ar2)"/>
+        <line x1="436" y1="100" x2="580" y2="100" stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#qi-ar2)"/>
+        <rect x="120" y="62" width="96" height="76" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="168" y="94" text-anchor="middle" style="font-weight:700">앨리스</text><text class="t-mono" x="168" y="116" text-anchor="middle">a 또는 a′</text>
+        <rect x="584" y="62" width="96" height="76" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="632" y="94" text-anchor="middle" style="font-weight:700">밥</text><text class="t-mono" x="632" y="116" text-anchor="middle">b 또는 b′</text>
+        <text class="t-mono" x="60" y="90" text-anchor="middle">A = ±1</text><line x1="120" y1="100" x2="96" y2="100" stroke="var(--border)"/>
+        <text class="t-mono" x="740" y="90" text-anchor="middle">B = ±1</text><line x1="680" y1="100" x2="704" y2="100" stroke="var(--border)"/>
+        <text class="t-dim" x="168" y="160" text-anchor="middle">설정은 광자가 날아가는 동안 무작위로</text>
+        <text class="t-dim" x="632" y="160" text-anchor="middle">빛 신호가 닿기 전에 측정 완료</text>
+        <rect x="250" y="178" width="300" height="40" rx="8" fill="none" stroke="var(--border)"/>
+        <text class="t-mono" x="400" y="203" text-anchor="middle">S = E(a,b) − E(a,b′) + E(a′,b) + E(a′,b′)</text>
+      </svg>
+      <figcaption>CHSH 실험. 매 쌍마다 앨리스는 두 설정 \(a, a'\) 중 하나, 밥은 \(b, b'\) 중 하나를 무작위로 골라 \(\pm1\) 결과를 얻는다. 네 설정 조합마다 상관 \(E = \langle AB\rangle\)를 모아 \(S\)를 만든다. 두 측정 사이를 빛조차 오갈 수 없게 배치하면 국소성이 보장된다.</figcaption>
+    </figure>
+    <div class="def"><span class="def-k">CHSH 부등식</span>
+      <p>측정 결과가 숨은 변수 \(\lambda\)와 그 자리의 설정만으로 정해진다고 하자: \(A(a, \lambda), B(b, \lambda) = \pm1\) (<span class="term">국소 숨은 변수 이론</span><span class="en">(local hidden variable theory)</span>). 그러면 어떤 분포 \(\rho(\lambda)\)에 대해서도 \(|S| \le 2\)이다(클라우저·혼·시모니·홀트, 1969).</p>
+    </div>
+    <div class="formula">$$S = \int\!\rho(\lambda)\,\Bigl\{A(a)\bigl[B(b) - B(b')\bigr] + A(a')\bigl[B(b) + B(b')\bigr]\Bigr\}\,d\lambda, \qquad |S| \le 2$$<div class="where">증명: 각 \(\lambda\)에서 \(B(b), B(b') = \pm1\)이므로 \(B(b) - B(b')\)와 \(B(b) + B(b')\) 중 하나는 0이고 다른 하나는 \(\pm2\)다. 그러므로 중괄호는 언제나 \(\pm2\)이고, 그 평균의 크기는 2를 넘을 수 없다. 결과가 미리 정해져 있다는 가정과 국소성만 썼다.</div></div>
+    <p>양자역학의 예측을 계산하자. 블로흐 구의 \(x\)–\(z\) 평면에서 각 \(\theta\) 방향 스핀 성분 \(\sigma_\theta = \cos\theta\,\sigma_z + \sin\theta\,\sigma_x\)를 잰다고 하면, \(|\Phi^+\rangle\)에서</p>
+    <div class="formula">$$E(a, b) = \langle\Phi^+|\sigma_a\otimes\sigma_b|\Phi^+\rangle = \cos(a - b), \qquad S_\text{max} = 2\sqrt2 \approx 2.83$$<div class="where">\(\langle\sigma_z\otimes\sigma_z\rangle = \langle\sigma_x\otimes\sigma_x\rangle = 1\), 섞인 항 \(\langle\sigma_z\otimes\sigma_x\rangle = 0\)에서 나온다. 최댓값 \(2\sqrt2\)는 양자역학이 허용하는 상한(<span class="term">치렐손 한계</span><span class="en">(Tsirelson bound)</span>)이다. 광자 편광에서는 블로흐 각이 편광판 각의 두 배이므로 \(E = \cos2(\alpha - \beta)\)로 쓴다.</div></div>
+    <div class="example" data-title="CHSH의 최적 각도">
+      <p>\(a = 0\), \(a' = 90^\circ\), \(b = 45^\circ\), \(b' = 135^\circ\)(블로흐 각)에서 \(|\Phi^+\rangle\)의 \(S\)를 구하라. 광자 편광 실험이라면 편광판을 몇 도로 놓아야 하나?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(E = \cos(a - b)\)를 네 번 계산해 부호대로 더한다.</div>
+        <div class="step"><b>풀이</b> \(E(a,b) = \cos(-45^\circ) = 0.707\), \(E(a,b') = \cos(-135^\circ) = -0.707\), \(E(a',b) = \cos45^\circ = 0.707\), \(E(a',b') = \cos(-45^\circ) = 0.707\). \(S = 0.707 + 0.707 + 0.707 + 0.707 = 2\sqrt2 = 2.83\). 편광판 각은 절반이다: 앨리스 0°, 45°, 밥 22.5°, 67.5°.</div>
+        <div class="answer">\(S = 2\sqrt2 \approx 2.83 > 2\); 편광판 0°, 45° / 22.5°, 67.5°</div>
+        <div class="step"><b>검토</b> 네 설정의 각 차가 모두 \(45^\circ\) 또는 \(135^\circ\)로, 상관이 가장 "어중간한" 곳이다. 국소 모형은 이 지점에서 양자 곡선 \(\cos\Delta\)를 따라갈 수 없다(아래 미니 실험).</div>
+      </details>
+    </div>
+    <figure class="mini" id="mini-corr">
+      <div class="mini-view"><canvas id="cv-corr"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>각 차 Δ = a − b <output id="co-d-out"></output></span><input type="range" id="co-d" min="0" max="180" step="1" value="45"></label>
+        <span class="readout" id="co-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>상관 \(E(\Delta)\): 자홍 = 양자역학 \(\cos\Delta\), 초록 = 가장 단순한 국소 모형(숨은 방향 \(\lambda\)가 무작위, \(A = \operatorname{sign}\cos(a - \lambda)\)) \(1 - 2\Delta/\pi\). \(\Delta = 0, 90^\circ, 180^\circ\)에서는 두 곡선이 같고, 45°·135° 근처에서 가장 크게 벌어진다. CHSH는 그 틈을 네 번 더해 증폭한 것이다.</figcaption>
+    </figure>
+    <p>실제 얽힌 쌍은 완벽하지 않다. 벨 상태에 무작위 잡음이 섞인 <span class="term">베르너 상태</span><span class="en">(Werner state)</span> \(\hat\rho = p\,|\Phi^+\rangle\langle\Phi^+| + (1-p)\,\hat I/4\)에서는 모든 상관이 \(p\)배로 줄어 \(S = 2\sqrt2\,p\)이다. 위반하려면 \(p \gt 1/\sqrt2 \approx 0.707\)이 필요하다.</p>
+    <div class="tangle" id="tg-wer">
+      <p>얽힘 순도(가시도) \(p\) = <span class="tn" data-var="p" data-min="0" data-max="1" data-step="0.01">0.90</span>이면 최적 각도의 \(S = 2\sqrt2\,p\) = <span class="tn-out" data-out="S"></span>이다. 설정마다 <span class="tn" data-var="n" data-min="100" data-max="20000" data-step="100">1000</span>쌍을 재면 \(S\)의 통계 오차는 약 <span class="tn-out" data-out="sig"></span>이므로 <span data-out="msg"></span></p>
+    </div>
+    <div class="predict" data-for="sim-chsh">
+      <p>국소 숨은 변수 모형(미니 실험의 초록 곡선)으로 최적 양자 각도 \(0, 90^\circ / 45^\circ, 135^\circ\)를 쓰면 \(S\)는 얼마일까?</p>
+      <div class="opts"><button class="opt">0</button><button class="opt">1.41</button><button class="opt" data-correct>2 (한계에 딱 닿는다)</button><button class="opt">2.83</button></div>
+      <div class="quiz-exp">국소 모형의 \(E(45^\circ) = 0.5\), \(E(135^\circ) = -0.5\)이므로 \(S = 0.5 + 0.5 + 0.5 + 0.5 = 2\). 어떤 국소 모형도 2를 넘지 못한다. 시뮬레이터에서 광원을 바꿔 실제로 재 보자 — 측정 통계 때문에 2 근처에서 오르내린다.</div>
+    </div>
+    <div class="sim" id="sim-chsh">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>CHSH 벨 실험</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-chsh"></canvas></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>광원</span><div class="seg" id="ch-src"><button data-value="q" class="on">양자 (베르너)</button><button data-value="lhv">국소 숨은 변수</button></div></div>
+          <label class="ctrl"><span>얽힘 순도 p <output id="ch-p-out"></output></span><input type="range" id="ch-p" min="0" max="1" step="0.01" value="1"></label>
+          <label class="ctrl"><span>설정당 쌍 수 <output id="ch-n-out"></output></span><input type="range" id="ch-n" min="2" max="4.3" step="0.1" value="3"></label>
+          <div class="ctrl-row"><button class="btn primary" id="ch-run" type="button">측정 실행</button><button class="btn" id="ch-opt" type="button">최적 각도</button><button class="btn" id="ch-rand" type="button">무작위 각도</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">이론 S</span><span class="v" id="ch-st">—</span></div>
+        <div class="stat"><span class="k">측정 S ± σ</span><span class="v" id="ch-sm">—</span></div>
+        <div class="stat"><span class="k">E(a,b) · E(a,b′) · E(a′,b) · E(a′,b′)</span><span class="v" id="ch-e">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="ch-v">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 원이 앨리스, 오른쪽 원이 밥의 측정 방향(블로흐 구 \(x\)–\(z\) 평면)이다. 화살표 끝 네 개(a, a′, b, b′)를 끌어 돌린다. 오른쪽 막대는 \(S\) 눈금: 회색 띠 \(|S| \le 2\)가 국소 이론의 영역, 점선이 \(2\sqrt2\)다. "측정 실행"은 설정마다 쌍을 실제로 무작위 추출해 \(E\)를 센다. 해볼 것: ① 각도를 끌어 \(S \gt 2.7\)을 만든다(과녁). ② 국소 숨은 변수 광원으로 바꾸고 어떤 각도로도 2를 넘지 못함을 확인한다. ③ 양자 광원에서 \(p\)를 낮춰 위반이 사라지는 \(p\)를 찾는다(\(1/\sqrt2\)).</div>
+    </div>
+    <p>벨 실험은 1970–80년대(클라우저, 아스페)에 시작되었다. 국소성의 빈틈(측정 사이에 신호가 오갈 시간)과 검출의 빈틈(잃어버린 광자가 결과를 왜곡할 가능성)을 <em>동시에</em> 막은 실험은 2015년에야 나왔다 — 1.3 km 떨어진 다이아몬드 NV 중심 전자 스핀(델프트)과, 고효율 검출기를 쓴 광자 실험들(빈, NIST). 2022년 노벨 물리학상이 아스페·클라우저·차일링거에게 돌아갔다. 결론은 분명하다: 자연은 국소 실재론을 따르지 않는다. 그렇다고 신호를 빛보다 빨리 보낼 수 있는 것은 아니다. 다음 절에서 그 이유를 본다.</p>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="no-cloning">
+    <h2>복제 불가 정리와 양자 순간이동</h2>
+    <p>고전 정보는 마음대로 복사할 수 있다. 메모리 셀을 읽고, 증폭기로 신호를 키우고, 백업을 만든다. 양자 정보는 그럴 수 없다. 이 사실이 양자 암호의 안전성, 양자 통신의 거리 한계, 오류 정정의 설계를 모두 결정한다.</p>
+    <div class="def"><span class="def-k">복제 불가 정리</span>
+      <p>임의의 미지 상태 \(|\psi\rangle\)에 대해 \(\hat U(|\psi\rangle|0\rangle) = |\psi\rangle|\psi\rangle\)를 만드는 유니터리 \(\hat U\)는 없다(우터스·주렉, 디크스, 1982). 서로 직교하는 상태들(예: \(|0\rangle\), \(|1\rangle\)만)은 복사할 수 있지만, 직교하지 않는 두 상태를 함께 복사하는 기계는 없다. 이것을 <span class="term">복제 불가 정리</span><span class="en">(no-cloning theorem)</span>라 한다.</p>
+    </div>
+    <div class="example" data-title="복제 불가 정리의 증명">
+      <p>두 상태 \(|\psi\rangle\), \(|\phi\rangle\)을 모두 복사하는 유니터리 \(\hat U\)가 있다고 가정하고 모순을 이끌어 내라. 선형성만으로도 증명해 보라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 유니터리는 내적을 보존한다. 복사 전후의 내적을 비교한다.</div>
+        <div class="step"><b>풀이</b> 복사 전: \((\langle\psi|\langle0|)(|\phi\rangle|0\rangle) = \langle\psi|\phi\rangle\). 복사 후: \((\langle\psi|\langle\psi|)(|\phi\rangle|\phi\rangle) = \langle\psi|\phi\rangle^2\). 유니터리면 둘이 같아야 하므로 \(\langle\psi|\phi\rangle = \langle\psi|\phi\rangle^2\), 곧 \(\langle\psi|\phi\rangle = 0\) 또는 1. <b>선형성</b>: \(|0\rangle \to |00\rangle\), \(|1\rangle \to |11\rangle\)이면 \(|+\rangle|0\rangle \to (|00\rangle + |11\rangle)/\sqrt2\)인데, 원하는 결과는 \(|{+}{+}\rangle = (|00\rangle + |01\rangle + |10\rangle + |11\rangle)/2\)다. 둘은 다르다.</div>
+        <div class="answer">같은 기계로 복사할 수 있는 상태는 서로 같거나 직교해야 한다 — 미지의 일반 상태는 복사할 수 없다.</div>
+        <div class="step"><b>검토</b> 선형성 증명에서 "복사기"는 CNOT다. CNOT는 \(|0\rangle\), \(|1\rangle\)은 완벽히 복사하지만 중첩은 복사 대신 얽힘을 만든다. 2절의 벨 회로가 바로 실패한 복사기였다.</div>
+      </details>
+    </div>
+    <p>완벽한 복사는 불가능하지만 "적당한" 복사는 가능하다. 미지 상태 하나에서 두 사본을 만들 때 각 사본의 충실도는 최대 \(5/6 \approx 0.833\)이다(부제크–힐러리 보편 복제기). 한편 상태를 한 번 재서 그 결과대로 새 상태를 만드는 고전적 방법(측정 후 준비)의 평균 충실도는 \(2/3\)이다. 이 \(2/3\)는 "양자 채널을 썼다"고 주장하려면 넘어야 하는 기준선이다.</p>
+    <p>그러면 큐비트를 멀리 보내려면? 직접 보내는 대신 미리 나눠 가진 얽힘과 고전 통신 2비트로 상태를 옮길 수 있다. 이것이 <span class="term">양자 순간이동</span><span class="en">(quantum teleportation)</span>이다(베넷 등, 1993; 첫 실험 1997). 핵심 항등식은 앨리스의 두 큐비트를 벨 기저로 다시 쓰는 것이다.</p>
+    <div class="formula">$$|\psi\rangle_0\,|\Phi^+\rangle_{12} = \tfrac12\Bigl[\,|\Phi^+\rangle_{01}\,|\psi\rangle_2 + |\Phi^-\rangle_{01}\,Z|\psi\rangle_2 + |\Psi^+\rangle_{01}\,X|\psi\rangle_2 + |\Psi^-\rangle_{01}\,XZ|\psi\rangle_2\,\Bigr]$$<div class="where">\(|\psi\rangle = \alpha|0\rangle + \beta|1\rangle\)는 앨리스가 보낼 미지 상태(큐비트 0), 큐비트 1은 앨리스, 큐비트 2는 밥이 가진 얽힘의 반쪽이다. 앨리스가 벨 측정을 하면 네 결과가 각각 확률 1/4로 나오고, 밥의 큐비트는 \(|\psi\rangle\)에 알려진 파울리 연산이 걸린 상태가 된다.</div></div>
+    <figure class="diagram steps" data-steps="5">
+      <svg viewBox="0 0 800 280" role="img" aria-label="양자 순간이동 회로: 얽힘 생성, 앨리스의 CNOT와 H, 측정, 고전 비트 전송, 밥의 X·Z 보정">
+        <line x1="70" y1="60" x2="560" y2="60" class="s-line"/><line x1="70" y1="140" x2="560" y2="140" class="s-line"/><line x1="70" y1="220" x2="760" y2="220" class="s-line"/>
+        <text class="t-mono" x="60" y="65" text-anchor="end">|ψ⟩</text><text class="t-mono" x="60" y="145" text-anchor="end">|0⟩</text><text class="t-mono" x="60" y="225" text-anchor="end">|0⟩</text>
+        <text class="t-dim" x="600" y="40" text-anchor="middle">앨리스</text><text class="t-dim" x="780" y="250" text-anchor="end">밥</text>
+        <g data-step="1">
+          <rect x="100" y="120" width="40" height="40" rx="6" class="f-acc-soft" stroke="var(--accent)"/><text class="t-mono" x="120" y="145" text-anchor="middle">H</text>
+          <circle cx="180" cy="140" r="6" fill="var(--text)"/><line x1="180" y1="140" x2="180" y2="234" stroke="var(--text)" stroke-width="2"/><circle cx="180" cy="220" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <text class="t-acc" x="150" y="262" text-anchor="middle">① 얽힘 |Φ⁺⟩₁₂ 나누기</text>
+        </g>
+        <g data-step="2">
+          <circle cx="260" cy="60" r="6" fill="var(--text)"/><line x1="260" y1="60" x2="260" y2="154" stroke="var(--text)" stroke-width="2"/><circle cx="260" cy="140" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <rect x="300" y="40" width="40" height="40" rx="6" class="f-acc-soft" stroke="var(--accent)"/><text class="t-mono" x="320" y="65" text-anchor="middle">H</text>
+          <text class="t-acc" x="300" y="105" text-anchor="middle">② 벨 기저로 회전</text>
+        </g>
+        <g data-step="3">
+          <rect x="380" y="42" width="44" height="36" rx="4" class="f-surface" stroke="var(--text-dim)"/><path d="M386,70 Q402,50 418,70" fill="none" stroke="var(--text-dim)"/><line x1="402" y1="72" x2="414" y2="52" stroke="var(--text-dim)"/>
+          <rect x="380" y="122" width="44" height="36" rx="4" class="f-surface" stroke="var(--text-dim)"/><path d="M386,150 Q402,130 418,150" fill="none" stroke="var(--text-dim)"/><line x1="402" y1="152" x2="414" y2="132" stroke="var(--text-dim)"/>
+          <text class="t-acc" x="470" y="105" text-anchor="middle">③ 측정 → m₁, m₂</text>
+        </g>
+        <g data-step="4">
+          <line x1="424" y1="57" x2="680" y2="57" stroke="var(--accent-2)" stroke-width="1.5"/><line x1="424" y1="63" x2="680" y2="63" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <line x1="424" y1="137" x2="600" y2="137" stroke="var(--accent-2)" stroke-width="1.5"/><line x1="424" y1="143" x2="600" y2="143" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <line x1="600" y1="140" x2="600" y2="200" stroke="var(--accent-2)" stroke-width="3"/><line x1="680" y1="60" x2="680" y2="200" stroke="var(--accent-2)" stroke-width="3"/>
+          <text class="t" x="640" y="100" text-anchor="middle" style="fill:var(--accent-2)">④ 고전 2비트</text>
+        </g>
+        <g data-step="5">
+          <rect x="580" y="200" width="40" height="40" rx="6" class="f-acc-soft" stroke="var(--accent)"/><text class="t-mono" x="600" y="225" text-anchor="middle">Xᵐ²</text>
+          <rect x="660" y="200" width="40" height="40" rx="6" class="f-acc-soft" stroke="var(--accent)"/><text class="t-mono" x="680" y="225" text-anchor="middle">Zᵐ¹</text>
+          <text class="t-acc" x="740" y="205" text-anchor="middle">|ψ⟩</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>큐비트 1과 2를 \(H\)와 CNOT로 얽어 \(|\Phi^+\rangle\)을 만들고 2를 밥에게 보낸다. 이 단계는 \(|\psi\rangle\)과 무관하므로 미리 해 둘 수 있다.</li><li>앨리스가 큐비트 0(\(|\psi\rangle\))과 1에 CNOT와 \(H\)를 건다 — 벨 기저를 계산 기저로 돌리는 회로다.</li><li>두 큐비트를 재서 비트 \(m_1\)(큐비트 0), \(m_2\)(큐비트 1)을 얻는다. 네 결과는 각각 확률 1/4로, \(|\psi\rangle\)에 대한 정보가 전혀 없다. \(|\psi\rangle\)은 앨리스 쪽에서 파괴되었다.</li><li>앨리스가 \(m_1 m_2\)를 보통의 고전 통신으로 밥에게 보낸다. 이 신호는 빛보다 빠를 수 없다.</li><li>밥은 \(m_2 = 1\)이면 \(X\), \(m_1 = 1\)이면 \(Z\)를 건다. 이제 그의 큐비트는 정확히 \(|\psi\rangle\)이다.</li></ol>
+      <figcaption>양자 순간이동 회로. 이중선은 고전 비트다. 물질도 에너지도 옮겨지지 않고 <em>상태</em>만 옮겨지며, 원본이 파괴되므로 복제 불가 정리와 모순되지 않는다.</figcaption>
+    </figure>
+    <div class="example" data-title="측정 결과가 11일 때 밥의 보정">
+      <p>앨리스의 측정 결과가 \(m_1 m_2 = 11\)이었다. 밥의 큐비트 상태를 \(\alpha, \beta\)로 쓰고, 보정 후 \(|\psi\rangle\)이 됨을 보여라. 밥이 결과를 받기 전 그의 큐비트의 밀도 행렬은?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 회로 ②의 CNOT·\(H\)는 \(|\Psi^-\rangle\)을 \(|11\rangle\)로 보낸다. 항등식에서 \(|\Psi^-\rangle\)에 붙은 밥의 상태를 읽는다.</div>
+        <div class="step"><b>풀이</b> 밥의 상태는 \(XZ|\psi\rangle = X(\alpha|0\rangle - \beta|1\rangle) = -\beta|0\rangle + \alpha|1\rangle\). 보정: 먼저 \(X\) → \(\alpha|0\rangle - \beta|1\rangle\), 이어서 \(Z\) → \(\alpha|0\rangle + \beta|1\rangle = |\psi\rangle\) (\(ZX\cdot XZ = I\)). 결과를 모르는 밥에게는 네 경우가 1/4씩 섞여 있으므로 \(\hat\rho_B = \tfrac14\sum_{P\in\{I,X,Z,XZ\}} P|\psi\rangle\langle\psi|P^\dagger = \hat I/2\).</div>
+        <div class="answer">보정 전 \(-\beta|0\rangle + \alpha|1\rangle\); \(X\) 후 \(Z\)로 \(|\psi\rangle\) 복원; 결과를 받기 전 \(\hat\rho_B = \hat I/2\)</div>
+        <div class="step"><b>검토</b> 고전 비트가 도착하기 전 밥의 큐비트는 \(|\psi\rangle\)이 무엇이든 최대 혼합 상태라, 어떤 측정으로도 앨리스가 무엇을 보냈는지 알 수 없다. 얽힘은 상관을 주지만 신호를 주지 않는다(<span class="term">신호 불가 원리</span><span class="en">(no-signaling principle)</span>).</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-tele">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>양자 순간이동 단계별 실행</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-tele"></canvas></div>
+        <div class="sim-controls">
+          <div class="ctrl-row"><button class="btn primary" id="tp-next" type="button">다음 단계 ▶</button><button class="btn" id="tp-reset" type="button">처음으로</button><button class="btn" id="tp-many" type="button">200번 반복</button></div>
+          <label class="check"><input type="checkbox" id="tp-skip"> 밥이 보정을 하지 않음</label>
+          <label class="ctrl"><span>얽힘 순도 p <output id="tp-p-out"></output></span><input type="range" id="tp-p" min="0" max="1" step="0.05" value="1"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">단계</span><span class="v" id="tp-step">—</span></div>
+        <div class="stat"><span class="k">측정 m₁m₂</span><span class="v" id="tp-m">—</span></div>
+        <div class="stat"><span class="k">밥의 충실도 |⟨ψ|ρ_B|ψ⟩|</span><span class="v" id="tp-f">—</span></div>
+        <div class="stat"><span class="k">반복 평균 충실도</span><span class="v" id="tp-avg">—</span></div>
+      </div>
+      <div class="sim-note">왼쪽 블로흐 구가 앨리스가 보낼 상태 \(|\psi\rangle\)(흰 원을 끌어 바꾼다), 오른쪽이 밥의 큐비트(축약 상태)다. 위쪽 회로에서 지금 단계가 강조된다. 3단계 직후 밥의 화살표는 \(|\psi\rangle\)을 파울리로 뒤집은 방향이고, 측정 결과를 무시하면 평균은 구의 중심(최대 혼합)이다. 해볼 것: ① 여러 번 실행해 네 결과가 고루 나오고 보정 후 충실도가 항상 1임을 본다. ② "보정을 하지 않음"으로 200번 반복하면 평균 충실도가 0.5로 떨어진다. ③ 얽힘 순도 \(p\)를 낮추면 평균 충실도가 \((1+p)/2\)를 따르고, 고전 한계 2/3 아래로 내려가는 \(p\)를 찾는다.</div>
+    </div>
+    <figure class="mini" id="mini-fid">
+      <div class="mini-view"><canvas id="cv-fid"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>얽힘 순도 p <output id="fd-p-out"></output></span><input type="range" id="fd-p" min="0" max="1" step="0.01" value="0.6"></label>
+        <span class="readout" id="fd-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>베르너 상태로 순간이동할 때 평균 충실도 \(F = (1 + p)/2\)(자홍 직선, 점을 끌 수 있다). 점선은 측정 후 준비의 고전 한계 \(2/3\)와 최적 복제기 \(5/6\). \(p \gt 1/3\)이면 고전 방법보다 낫고, \(p \gt 2/3\)이면 최적 복제기보다도 낫다. CHSH 위반에 필요한 \(p \gt 0.707\)과 비교해 보라.</figcaption>
+    </figure>
+    <p>같은 자원을 거꾸로 쓰면 <span class="term">초밀집 부호화</span><span class="en">(superdense coding)</span>가 된다: 미리 나눈 벨 쌍이 있으면 앨리스가 자기 큐비트에 \(I, X, Z, XZ\) 중 하나를 걸어 보내는 것만으로 밥에게 고전 2비트를 전한다. 순간이동은 "벨 쌍 + 2비트 = 큐비트 1개", 초밀집 부호화는 "벨 쌍 + 큐비트 1개 = 2비트"다. 거리가 먼 양자 통신은 광섬유 손실 때문에 직접 보낼 수 없고, 복제 불가 정리 때문에 증폭할 수도 없다. 그래서 중간 마디에서 순간이동을 이어 붙이는 <em>얽힘 교환</em>으로 거리를 늘리는 양자 중계기가 연구되고 있다.</p>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="qkd">
+    <h2>양자 키 분배: BB84</h2>
+    <p>암호 통신의 가장 확실한 방법은 메시지만큼 긴 무작위 키를 한 번만 쓰는 일회용 암호다. 문제는 키를 어떻게 안전하게 나눠 갖느냐다. <span class="term">양자 키 분배</span><span class="en">(quantum key distribution, QKD)</span>는 "엿보면 흔적이 남는다"는 양자역학의 성질로 이 문제를 푼다. 첫 프로토콜은 베넷과 브라사르의 BB84(1984)이다.</p>
+    <ol>
+      <li><b>전송</b>: 앨리스는 광자마다 무작위 비트와 무작위 기저(+: \(|0\rangle, |1\rangle\) = 수평·수직, ×: \(|+\rangle, |-\rangle\) = ±45°)를 골라 편광 광자를 보낸다.</li>
+      <li><b>측정</b>: 밥은 광자마다 무작위 기저를 골라 잰다. 기저가 맞으면 비트가 그대로, 틀리면 반반 무작위로 나온다.</li>
+      <li><b>선별</b>: 공개 채널로 <em>기저만</em> 비교하고 기저가 같은 것만 남긴다(평균 절반). 이것이 <span class="term">선별 키</span><span class="en">(sifted key)</span>다.</li>
+      <li><b>오류 추정</b>: 선별 키 일부를 공개해 비교하고 <span class="term">양자 비트 오류율</span><span class="en">(quantum bit error rate, QBER)</span> \(e\)를 잰다.</li>
+      <li><b>후처리</b>: 오류를 고치고(정보 조정), 도청자가 알 수 있는 정보만큼 키를 줄인다(비밀 증폭).</li>
+    </ol>
+    <p>도청자 이브가 광자를 가로채 무작위 기저로 재고 그 결과대로 새 광자를 보내면(가로채기–재전송), 이브의 기저가 틀린 절반의 경우 광자 상태가 바뀌고, 그중 절반에서 밥의 비트가 틀린다. 복제 불가 정리 때문에 이브는 원본을 남겨 두고 사본만 잴 수 없다.</p>
+    <div class="formula">$$e_\text{Eve} = f\times\tfrac12\times\tfrac12 = \frac{f}{4}, \qquad r = 1 - 2h(e), \qquad h(e) = -e\log_2 e - (1-e)\log_2(1-e)$$<div class="where">\(f\)는 이브가 가로챈 비율이다. 전부 가로채면 QBER 25%. \(r\)은 선별 키 1비트당 남길 수 있는 비밀 키 비율(쇼어–프레스킬 한계)로, \(h(e)\)는 이진 엔트로피(<a href="../../probability-statistics/chapters/discrete.html">확률과 통계</a>의 베르누이 분포에서 정의한 정보량의 평균)다. \(e\)만큼의 비트를 고치는 데 \(h(e)\), 이브의 정보를 지우는 데 다시 \(h(e)\)를 쓴다. \(r = 0\)이 되는 \(e \approx 11.0\%\)를 넘으면 키를 만들 수 없다.</div></div>
+    <div class="predict" data-for="sim-bb84">
+      <p>이브가 모든 광자를 가로채 무작위 기저로 재고 다시 보낸다. 선별 키의 오류율은?</p>
+      <div class="opts"><button class="opt">0% — 이브가 재전송하므로 흔적이 없다</button><button class="opt">12.5%</button><button class="opt" data-correct>25%</button><button class="opt">50%</button></div>
+      <div class="quiz-exp">이브의 기저가 틀릴 확률 1/2 × 그 경우 밥이 틀릴 확률 1/2 = 1/4. 시뮬레이터에서 이브를 100%로 놓고 확인하자. 11% 한계를 훨씬 넘으므로 앨리스와 밥은 키를 버린다.</div>
+    </div>
+    <div class="sim" id="sim-bb84">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>BB84 키 분배와 도청 탐지</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><canvas id="cv-bb84"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>이브가 가로채는 비율 f <output id="bb-f-out"></output></span><input type="range" id="bb-f" min="0" max="100" step="5" value="0"></label>
+          <label class="ctrl"><span>채널 고유 오류 <output id="bb-e0-out"></output></span><input type="range" id="bb-e0" min="0" max="10" step="0.5" value="1"></label>
+          <label class="ctrl"><span>보내는 광자 수 <output id="bb-n-out"></output></span><input type="range" id="bb-n" min="2" max="5" step="0.1" value="4"></label>
+          <div class="ctrl-row"><button class="btn primary" id="bb-run" type="button">전송</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">선별 비율</span><span class="v" id="bb-sift">—</span></div>
+        <div class="stat"><span class="k">측정 QBER</span><span class="v" id="bb-q">—</span></div>
+        <div class="stat"><span class="k">비밀 키 비율 1 − 2h(e)</span><span class="v" id="bb-r">—</span></div>
+        <div class="stat"><span class="k">최종 비밀 키</span><span class="v" id="bb-k">—</span></div>
+      </div>
+      <div class="sim-note">위 표는 처음 16개 광자다. 줄마다 앨리스의 비트·기저(+, ×)와 편광 방향, 이브의 기저(가로챈 경우), 밥의 기저·비트이고, 아래 칸은 선별 결과(✓ 일치, ✗ 오류, 빈칸 = 기저 불일치로 버림)다. 아래 막대는 측정 QBER와 11% 한계. 선별 키의 1/5을 공개해 QBER를 추정하고, 나머지에 \(1 - 2h(e)\)를 곱한다. 해볼 것: ① \(f = 0\)에서 오류는 채널 고유 오류뿐이다. ② \(f\)를 키우며 QBER가 \(e_0 + f/4\) 정도로 늘어 11%를 넘는 \(f\)를 찾는다. ③ 광자 수를 줄이면 QBER 추정의 들쭉날쭉이 커진다 — 짧은 키는 통계적으로 덜 안전하다.</div>
+    </div>
+    <div class="example" data-title="BB84 키 예산">
+      <p>앨리스가 광자 10000개를 보내 모두 검출되었다. 기저가 맞은 5000비트 중 1000비트를 공개해 QBER 3.0%를 얻었다. 쇼어–프레스킬 비율로 남길 수 있는 비밀 키는 몇 비트인가? 이브가 가로채기–재전송만 했다면 가로챈 비율은 최대 얼마인가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 공개한 비트는 버린다. 남은 4000비트에 \(r = 1 - 2h(0.03)\)을 곱한다. 오류가 모두 이브 탓이라 보면 \(f = 4e\).</div>
+        <div class="step"><b>풀이</b> \(h(0.03) = -0.03\log_2 0.03 - 0.97\log_2 0.97 = 0.1518 + 0.0426 = 0.1944\). \(r = 1 - 0.3888 = 0.611\). 비밀 키 \(4000\times0.611 = 2445\)비트. \(f \le 4\times0.03 = 0.12\).</div>
+        <div class="answer">약 2440비트(보낸 광자의 약 24%); 이브가 가로챘다면 최대 12%</div>
+        <div class="step"><b>검토</b> 실제로는 유한 표본 보정과 검출 효율 때문에 더 줄어든다. 중요한 것은 "오류가 있어도 키를 만들 수 있다"는 점이다 — 이브가 얻을 수 있는 정보를 \(e\)로 상한 짓고 그만큼 지우기 때문이다.</div>
+      </details>
+    </div>
+    <figure class="mini" id="mini-key">
+      <div class="mini-view"><canvas id="cv-key"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>QBER e <output id="ky-e-out"></output></span><input type="range" id="ky-e" min="0" max="15" step="0.1" value="3"></label>
+        <span class="readout" id="ky-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>비밀 키 비율 \(r(e) = 1 - 2h(e)\) (자홍)과 오류 정정에 드는 비율 \(h(e)\)(초록). 점을 끌어 \(e\)를 바꾼다. 위쪽 눈금은 \(e\)를 가로채기–재전송만으로 만들 때의 가로챈 비율 \(f = 4e\)다. \(e = 11.0\%\)(\(f = 44\%\))에서 \(r = 0\).</figcaption>
+    </figure>
+    <div class="callout semi"><strong>단일 광자 검출기와 양자 내성 암호</strong><p>광섬유 QKD는 손실이 가장 작은 1550 nm 대역을 쓴다. 표준 광섬유 손실은 약 0.2 dB/km라 100 km면 광자의 1%만 도착하고, 복제 불가 정리 때문에 증폭기로 키울 수도 없다. 그래서 검출기가 성능을 가른다. 실리콘 SPAD는 1550 nm 광자를 흡수하지 못하므로 InGaAs/InP 애벌런치 다이오드(가이거 모드, 냉각)나 수 K에서 동작하는 초전도 나노선 검출기(SNSPD)를 쓴다. 실제 광원은 약한 레이저 펄스라 가끔 광자가 둘 들어 있고, 이브가 하나를 빼 가는 공격을 막으려고 세기를 바꿔 섞는 "미끼 상태" 방법을 쓴다 → <a href="https://semi.euiyun.com/sensor/chapters/photodiode.html">SensorBook · 포토다이오드</a>. 한편 대부분의 시스템은 QKD 대신 양자 컴퓨터에도 견디도록 설계된 수학적 암호(양자 내성 암호, PQC)로 옮겨 가고 있다. 칩 설계에서는 서명 크기와 검증 시간이 늘어나는 것이 문제다 → <a href="https://semi.euiyun.com/soc/chapters/security.html">SoCBook · 보안</a>.</p></div>
+    <p>BB84의 안전성은 "측정하면 상태가 흐트러진다"는 데서 온다. 3절의 얽힘으로도 키를 나눌 수 있다: 벨 쌍의 두 반쪽을 앨리스와 밥이 재면 같은 기저에서 결과가 완전히 상관되고, 남은 설정으로 CHSH 값을 재서 도청자가 끼어들었는지 확인한다(에커트의 E91, 1991). \(S\)가 \(2\sqrt2\)에 가까울수록 제3자와 공유된 상관이 없다는 뜻이라, 장치 내부를 믿지 않고도 안전성을 보이는 길이 열린다.</p>
+    <div class="drill" id="drill-qber" data-title="QBER와 키 비율 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="algorithms">
+    <h2>양자 알고리즘: 도이치–조사와 그로버</h2>
+    <p>\(n\)큐비트에 \(H\)를 하나씩 걸면 \(2^n\)개 입력의 균등 중첩이 된다. 함수 \(f\)를 계산하는 회로를 이 중첩에 한 번 걸면 모든 \(f(x)\)가 "동시에" 계산된다. 하지만 측정하면 하나만 나오므로 이것만으로는 쓸모가 없다. 양자 알고리즘의 기술은 답이 아닌 진폭들은 상쇄 간섭으로 지우고 답만 보강 간섭으로 키우는 데 있다.</p>
+    <div class="formula">$$\hat U_f|x\rangle|y\rangle = |x\rangle|y\oplus f(x)\rangle \;\Longrightarrow\; \hat U_f|x\rangle|-\rangle = (-1)^{f(x)}\,|x\rangle|-\rangle$$<div class="where">\(\hat U_f\)는 함수 \(f: \{0,1\}^n \to \{0,1\}\)를 계산하는 가역 회로, 곧 <span class="term">오라클</span><span class="en">(oracle)</span>이다. 보조 큐비트를 \(|-\rangle\)에 두면 \(f(x)\)가 보조 큐비트가 아니라 입력의 <em>위상</em>으로 돌아온다(<span class="term">위상 되차기</span><span class="en">(phase kickback)</span>). 이제 \(f\)의 정보가 진폭의 부호에 실렸고, 간섭으로 읽을 수 있다.</div></div>
+    <p><b>도이치–조사 문제</b>(1992): \(f\)가 상수(모두 0 또는 모두 1)이거나 균형(정확히 절반이 1)이라는 약속이 있다. 어느 쪽인지 판정하라. 고전 결정론적 알고리즘은 최악의 경우 \(2^{n-1} + 1\)번 물어야 하지만, 양자 회로는 한 번이면 된다: \(H^{\otimes n}\) → 오라클 → \(H^{\otimes n}\) 뒤에 \(|0\cdots0\rangle\)의 진폭은</p>
+    <div class="formula">$$\langle 0^n|H^{\otimes n}\hat U_f H^{\otimes n}|0^n\rangle = \frac{1}{2^n}\sum_x (-1)^{f(x)} = \begin{cases}\pm1 & \text{상수}\\ 0 & \text{균형}\end{cases}$$<div class="where">상수면 모든 항이 같은 부호로 더해져 \(|0^n\rangle\)이 확실히 나오고, 균형이면 정확히 상쇄되어 절대 나오지 않는다. 모두 0을 재면 "상수", 하나라도 1이면 "균형".</div></div>
+    <figure class="mini" id="mini-dj">
+      <div class="mini-view"><canvas id="cv-dj"></canvas></div>
+      <div class="mini-ctrl">
+        <div class="ctrl"><span>함수</span><div class="seg" id="dj-f"><button data-value="c0" class="on">상수 0</button><button data-value="c1">상수 1</button><button data-value="bal">균형(무작위)</button></div></div>
+        <span class="readout" id="dj-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(n = 3\)의 함수표 \(f(000), \dots, f(111)\). 칸을 눌러 값을 뒤집을 수 있다. 막대는 \((-1)^{f(x)}\)(오라클 뒤의 위상), 오른쪽 수치는 마지막에 \(|000\rangle\)이 나올 확률 \(|\sum(-1)^{f}/8|^2\)이다. 상수·균형이면 1 또는 0으로 딱 떨어지고, 약속을 어긴 함수(1이 1·2·3개)는 그 사이 값이 나온다 — 알고리즘은 약속 덕분에 확실하다.</figcaption>
+    </figure>
+    <p><b>그로버 검색</b>(1996): 정렬되지 않은 \(N = 2^n\)개 항목 중 \(f(w) = 1\)인 하나 \(w\)를 찾는다. 고전적으로는 평균 \(N/2\)번 확인해야 한다. 그로버 알고리즘은 균등 중첩 \(|s\rangle\)에서 시작해 두 반사를 번갈아 건다.</p>
+    <div class="formula">$$\hat G = \underbrace{(2|s\rangle\langle s| - \hat I)}_{\text{확산: 평균에 대한 반전}}\;\underbrace{(\hat I - 2|w\rangle\langle w|)}_{\text{오라클: } w\text{의 부호 뒤집기}}, \qquad P_k = \sin^2\bigl[(2k+1)\theta\bigr], \quad \sin\theta = \frac{1}{\sqrt N}$$<div class="where">\(k\)번 반복한 뒤 \(w\)를 찾을 확률이 \(P_k\)다. 두 반사의 곱은 \(|w\rangle\)과 \(|s\rangle\)이 펼치는 평면에서의 \(2\theta\) 회전이다. 최적 반복 횟수는 \((2k+1)\theta \approx \pi/2\)에서 \(k_\text{opt} \approx \frac{\pi}{4}\sqrt N\). 진폭은 \(\sqrt N\)번 만에 키워지므로 제곱근 속도 향상이고, 이보다 빠른 양자 검색은 없음이 증명되어 있다.</div></div>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 290" role="img" aria-label="그로버 알고리즘의 기하: 오라클 반사와 확산 반사가 합쳐 상태 벡터를 2θ씩 |w⟩ 쪽으로 돌린다">
+        <defs>
+          <marker id="qi-gv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--accent)"/></marker>
+          <marker id="qi-gd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="var(--text-dim)"/></marker>
+        </defs>
+        <line x1="260" y1="210" x2="560" y2="210" class="s-axis" marker-end="url(#qi-gd)"/><text class="t" x="568" y="215">|s′⟩ (답이 아닌 것들)</text>
+        <line x1="260" y1="210" x2="260" y2="14" class="s-axis" marker-end="url(#qi-gd)"/><text class="t" x="272" y="22">|w⟩ (답)</text>
+        <g data-only="1"><line x1="260" y1="210" x2="433" y2="145" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-gv)"/><text class="t-acc" x="443" y="142">|s⟩</text><path d="M330,210 A70,70 0 0 0 325.5,185.3" fill="none" stroke="var(--accent-2)" stroke-width="2"/><text class="t" x="340" y="200" style="fill:var(--accent-2)">θ</text></g>
+        <g data-only="2"><line x1="260" y1="210" x2="433" y2="145" stroke="var(--text-faint)" stroke-width="2" stroke-dasharray="5 4"/><line x1="260" y1="210" x2="433" y2="275" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-gv)"/><text class="t-acc" x="640" y="270" text-anchor="middle">오라클: |s′⟩에 대해 반사 → −θ</text></g>
+        <g data-only="3"><line x1="260" y1="210" x2="433" y2="145" stroke="var(--text-faint)" stroke-width="2" stroke-dasharray="5 4"/><line x1="260" y1="210" x2="346" y2="47" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-gv)"/><text class="t-acc" x="356" y="52">G|s⟩ : 3θ</text><text class="t-dim" x="640" y="120" text-anchor="middle">확산: |s⟩에 대해 반사</text><text class="t-dim" x="640" y="140" text-anchor="middle">→ 두 반사 = 2θ 회전</text></g>
+        <g data-only="4"><line x1="260" y1="210" x2="433" y2="145" stroke="var(--text-faint)" stroke-width="1.5" stroke-dasharray="5 4"/><line x1="260" y1="210" x2="346" y2="47" stroke="var(--text-faint)" stroke-width="1.5" stroke-dasharray="5 4"/><line x1="260" y1="210" x2="217" y2="30" stroke="var(--accent)" stroke-width="3" marker-end="url(#qi-gv)"/><text class="t-acc" x="208" y="60" text-anchor="end">G²|s⟩ : 5θ = 103.5°</text><text class="t-dim" x="640" y="120" text-anchor="middle">N = 8이면 θ = 20.7°</text><text class="t-dim" x="640" y="140" text-anchor="middle">두 번 반복 후 P = sin²(5θ) = 0.945</text></g>
+      </svg>
+      <ol class="steps-cap"><li>균등 중첩 \(|s\rangle\)은 답 \(|w\rangle\)과 거의 수직이다: \(\sin\theta = 1/\sqrt N\). 그림은 \(N = 8\)(\(\theta = 20.7^\circ\))이다.</li><li>오라클은 \(|w\rangle\) 성분의 부호를 뒤집는다 — 가로축 \(|s'\rangle\)에 대한 거울 반사다.</li><li>확산 연산자는 \(|s\rangle\)에 대한 거울 반사다. 두 반사를 합치면 처음보다 \(2\theta\) 더 돌아간 \(3\theta\) 방향이 된다.</li><li>한 번 더 하면 \(5\theta = 103.5^\circ\)로 \(|w\rangle\)에 가장 가깝다. 더 돌리면 지나쳐서 확률이 다시 줄어든다.</li></ol>
+      <figcaption>그로버 반복은 \(|s'\rangle\)–\(|w\rangle\) 평면의 회전이다. 각은 \(N = 8\)의 실제 비율로 그렸다. 단계를 넘기며 벡터가 \(|w\rangle\)으로 다가가고, 두 번째 반복에서 살짝 지나치는 것을 본다.</figcaption>
+    </figure>
+    <div class="example" data-title="N = 8에서 그로버 반복">
+      <p>3큐비트(\(N = 8\))에서 표시된 항목 하나를 찾는다. 반복마다 표시된 항목의 진폭과 찾을 확률을 구하고, 최적 반복 횟수를 정하라.</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 진폭으로 직접 계산한다: 오라클은 \(a_w \to -a_w\), 확산은 모든 진폭을 \(a \to 2\bar a - a\)(평균에 대한 반전)로 바꾼다. 공식 \(P_k = \sin^2[(2k+1)\theta]\)로 검산한다.</div>
+        <div class="step"><b>풀이</b> 처음 모든 진폭 \(1/\sqrt8 = 0.354\). 1회: 오라클 후 평균 \(\bar a = (7\times0.354 - 0.354)/8 = 0.265\), 확산 후 \(a_w = 2(0.265) + 0.354 = 0.884\), 나머지 \(2(0.265) - 0.354 = 0.177\). \(P_1 = 0.781\). 2회: \(a_w = 0.972\), \(P_2 = 0.945\). 3회: \(a_w = 0.575\), \(P_3 = 0.330\). \(\theta = \arcsin(1/\sqrt8) = 0.3614\) rad, \(\tfrac{\pi}{4\theta} - \tfrac12 = 1.67\) → \(k = 2\).</div>
+        <div class="answer">\(k_\text{opt} = 2\), 성공 확률 \(0.945\) (1회 0.781, 3회 0.330)</div>
+        <div class="step"><b>검토</b> 고전적으로 무작위로 두 번 확인하면 성공 확률은 \(2/8 = 0.25\)다. 세 번째 반복에서 확률이 떨어지는 것은 회전이 \(|w\rangle\)을 지나쳤기 때문이다. 알고리즘은 "많이 돌릴수록 좋은" 것이 아니라 정확히 멈춰야 한다.</div>
+      </details>
+    </div>
+    <div class="tangle" id="tg-grv">
+      <p>큐비트 <span class="tn" data-var="n" data-min="2" data-max="40" data-step="1">20</span>개(\(N = 2^n\) = <span class="tn-out" data-out="N"></span>)에서 하나를 찾을 때 최적 그로버 반복은 <span class="tn-out" data-out="k"></span>회, 성공 확률 <span class="tn-out" data-out="P"></span>이다. 고전 검색의 평균 질의 수 \(N/2\) = <span class="tn-out" data-out="cl"></span>와 비교하면 <span class="tn-out" data-out="gain"></span>배 적다.</p>
+    </div>
+    <div class="predict" data-for="sim-grover">
+      <p>\(N = 16\)에서 그로버 반복을 최적 횟수(3회)보다 3회 더, 곧 6회 하면 찾을 확률은 어떻게 될까?</p>
+      <div class="opts"><button class="opt">1에 더 가까워진다</button><button class="opt">0.96 근처에서 변하지 않는다</button><button class="opt" data-correct>크게 떨어진다(0.1 아래)</button><button class="opt">정확히 0.5가 된다</button></div>
+      <div class="quiz-exp">\(\theta = 14.5^\circ\)라 6회 후 각은 \(13\theta = 188^\circ\) — \(|w\rangle\)을 지나 반대편 가로축 근처다. \(P_6 = \sin^2 188^\circ = 0.02\). 시뮬레이터 오른쪽 아래 그래프에서 점이 사인 곡선을 따라 내려오는 것을 확인하자.</div>
+    </div>
+    <div class="sim" id="sim-grover">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>그로버 검색: 진폭 증폭</h3></div>
+      <div class="sim-body">
+        <div class="sim-view"><div class="sim-split"><div><canvas id="cv-grv"></canvas></div><div><canvas id="cv-grv2"></canvas></div></div></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>큐비트 수 n</span><div class="seg" id="gr-n"><button data-value="2">2</button><button data-value="3">3</button><button data-value="4" class="on">4</button><button data-value="5">5</button><button data-value="6">6</button><button data-value="7">7</button></div></div>
+          <div class="ctrl-row"><button class="btn" id="gr-o" type="button">오라클</button><button class="btn" id="gr-d" type="button">확산</button><button class="btn primary" id="gr-g" type="button">G 한 번</button><button class="btn" id="gr-m" type="button">측정</button><button class="btn" id="gr-r" type="button">처음으로</button></div>
+          <div class="ctrl"><span>모드</span><div class="seg" id="gr-mode"><button data-value="free" class="on">자유</button><button data-value="hide">숨은 답 찾기</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">반복 k</span><span class="v" id="gr-k">—</span></div>
+        <div class="stat"><span class="k">P(답)</span><span class="v" id="gr-p">—</span></div>
+        <div class="stat"><span class="k">최적 k</span><span class="v" id="gr-ko">—</span></div>
+        <div class="stat"><span class="k">기록</span><span class="v" id="gr-msg">—</span></div>
+      </div>
+      <div class="sim-note">위: \(N\)개 기저 상태의 진폭(위아래 막대, 음수는 아래)과 평균(점선). 막대를 누르면 그 항목이 답 \(w\)가 된다(자유 모드). 오라클은 답의 막대를 뒤집고, 확산은 모든 막대를 평균선에 대해 뒤집는다. 아래: 반복 횟수에 따른 \(P_k\) 곡선과 지금 점, 왼쪽 원은 \(|s'\rangle\)–\(|w\rangle\) 평면의 상태 벡터. 숨은 답 모드에서는 답이 가려지고, 측정 한 번으로 맞히면 성공이다. 해볼 것: ① \(n = 2\)에서 G 한 번이면 확률이 정확히 1임을 본다. ② 오라클만 두 번 누르면 원래대로 — 반사는 두 번 하면 항등이다. ③ 숨은 답 모드에서 최적 횟수에 멈춰 측정하고, 여러 판의 성공률을 기록과 비교한다.</div>
+    </div>
+    <p>그로버의 \(\sqrt N\) 속도 향상은 범용이지만 제곱근에 그친다. 지수적 속도 향상은 문제에 숨은 구조가 있을 때 나온다. 쇼어 알고리즘(1994)은 큰 수의 소인수 분해를 주기 찾기로 바꾸고, 양자 푸리에 변환으로 주기를 간섭 무늬처럼 읽어 낸다. RSA 같은 공개 키 암호의 안전성이 여기에 걸려 있어 5절의 양자 내성 암호로의 전환이 시작되었다. 또 하나의 유망한 응용은 파인먼이 처음 제안한 대로 분자·재료 같은 <em>양자계 자체의 시뮬레이션</em>이다 — 고전 컴퓨터에서 \(2^n\)으로 커지는 상태 벡터를 큐비트 \(n\)개가 그대로 담는다.</p>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="error-correction">
+    <h2>오류와 오류 정정 맛보기</h2>
+    <p>큐비트는 환경과 얽히며 결맞음을 잃는다(<a href="density-matrix.html">17장</a>의 \(T_1\), \(T_2\)). 게이트 시간 \(t_g\) 동안의 오류는 대략 \(t_g/T_2\)이다. 예를 들어 \(t_g = 20\) ns, \(T_2 = 100\) µs면 \(1 - e^{-t_g/T_2} \approx 2\times10^{-4}\)다. 쓸모 있는 알고리즘은 수백만 번 이상의 게이트가 필요하므로, 물리 큐비트를 아무리 좋게 만들어도 오류를 <em>고치는</em> 방법이 있어야 한다.</p>
+    <p>그런데 양자 오류 정정에는 세 가지 장애가 있어 보인다. 복제 불가 정리 때문에 큐비트를 여러 벌 복사해 다수결을 할 수 없고, 측정하면 중첩이 무너지며, 오류가 연속적이다(조금 돌아간 상태). 세 가지 모두 피해 갈 수 있다.</p>
+    <ul>
+      <li><b>복사 대신 얽힘</b>: \(\alpha|0\rangle + \beta|1\rangle \to \alpha|000\rangle + \beta|111\rangle\). CNOT 두 개로 만든다. 이것은 \(|\psi\rangle^{\otimes3}\)이 아니므로 복제 불가 정리와 모순되지 않는다.</li>
+      <li><b>값 대신 패리티를 잰다</b>: \(Z_1Z_2\), \(Z_2Z_3\)(이웃한 두 큐비트가 같은지)만 재면 어느 큐비트가 뒤집혔는지 알 수 있지만, \(\alpha\), \(\beta\)에 대해서는 아무것도 알 수 없다. 이 결과를 <span class="term">증후군</span><span class="en">(syndrome)</span>이라 한다.</li>
+      <li><b>오류의 이산화</b>: 작은 회전 \(\cos\epsilon\,I - i\sin\epsilon\,X\)도 증후군을 재는 순간 "오류 없음"(확률 \(\cos^2\epsilon\)) 또는 "X 오류"(확률 \(\sin^2\epsilon\))로 확정된다. 그래서 파울리 오류 \(X, Y, Z\)만 고칠 수 있으면 모든 오류를 고칠 수 있다.</li>
+    </ul>
+    <figure class="diagram steps" data-steps="4">
+      <svg viewBox="0 0 800 260" role="img" aria-label="3큐비트 비트 반전 부호: 부호화, 큐비트 2의 비트 반전, 패리티 측정으로 증후군 11, 큐비트 2 보정">
+        <g>
+          <line x1="80" y1="60" x2="760" y2="60" class="s-line"/><line x1="80" y1="120" x2="760" y2="120" class="s-line"/><line x1="80" y1="180" x2="760" y2="180" class="s-line"/>
+          <text class="t-mono" x="70" y="65" text-anchor="end">|ψ⟩</text><text class="t-mono" x="70" y="125" text-anchor="end">|0⟩</text><text class="t-mono" x="70" y="185" text-anchor="end">|0⟩</text>
+          <text class="t-dim" x="40" y="95" text-anchor="middle">1</text><text class="t-dim" x="40" y="150" text-anchor="middle">2</text><text class="t-dim" x="40" y="210" text-anchor="middle">3</text>
+        </g>
+        <g data-step="1">
+          <circle cx="130" cy="60" r="6" fill="var(--text)"/><line x1="130" y1="60" x2="130" y2="134" stroke="var(--text)" stroke-width="2"/><circle cx="130" cy="120" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <circle cx="180" cy="60" r="6" fill="var(--text)"/><line x1="180" y1="60" x2="180" y2="194" stroke="var(--text)" stroke-width="2"/><circle cx="180" cy="180" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+          <text class="t-acc" x="155" y="240" text-anchor="middle">α|000⟩ + β|111⟩</text>
+        </g>
+        <g data-step="2">
+          <rect x="270" y="100" width="40" height="40" rx="6" fill="var(--bad)" opacity="0.18" stroke="var(--bad)"/><text class="t-mono" x="290" y="125" text-anchor="middle" style="fill:var(--bad)">X</text>
+          <text class="t" x="290" y="240" text-anchor="middle" style="fill:var(--bad)">오류: α|010⟩ + β|101⟩</text>
+        </g>
+        <g data-step="3">
+          <rect x="380" y="40" width="150" height="100" rx="8" fill="none" stroke="var(--accent-2)" stroke-dasharray="5 4"/><text class="t" x="455" y="34" text-anchor="middle" style="fill:var(--accent-2)">Z₁Z₂ = −1 → s₁ = 1</text>
+          <rect x="400" y="100" width="150" height="100" rx="8" fill="none" stroke="var(--accent-2)"/><text class="t" x="475" y="222" text-anchor="middle" style="fill:var(--accent-2)">Z₂Z₃ = −1 → s₂ = 1</text>
+          <text class="t-dim" x="620" y="30" text-anchor="middle">증후군 표: 00 없음 · 10 큐비트1</text><text class="t-dim" x="620" y="48" text-anchor="middle">11 큐비트2 · 01 큐비트3</text>
+        </g>
+        <g data-step="4">
+          <rect x="620" y="100" width="40" height="40" rx="6" class="f-acc-soft" stroke="var(--accent)"/><text class="t-mono" x="640" y="125" text-anchor="middle">X</text>
+          <text class="t-acc" x="660" y="240" text-anchor="middle">복원: α|000⟩ + β|111⟩</text>
+        </g>
+      </svg>
+      <ol class="steps-cap"><li>CNOT 두 개로 논리 큐비트를 세 물리 큐비트에 펼친다: \(|0_L\rangle = |000\rangle\), \(|1_L\rangle = |111\rangle\).</li><li>잡음이 큐비트 2를 뒤집었다. 두 항이 똑같이 영향을 받으므로 중첩 계수 \(\alpha, \beta\)는 그대로다.</li><li>보조 큐비트로 \(Z_1Z_2\)와 \(Z_2Z_3\)만 잰다. 둘 다 −1(증후군 11)이면 가운데가 범인이다. 이 측정은 \(|010\rangle\)과 \(|101\rangle\)을 구별하지 않으므로 중첩이 깨지지 않는다.</li><li>큐비트 2에 \(X\)를 걸어 원래 부호 상태로 돌린다. 오류가 두 개 이상이면 증후군이 엉뚱한 큐비트를 가리켜 논리 오류가 된다.</li></ol>
+      <figcaption>3큐비트 비트 반전 부호. 측정하는 것은 "어디가 틀렸나"뿐이고 "무엇이 저장되어 있나"는 끝까지 모른다. 이것이 양자 오류 정정의 핵심 요령이다.</figcaption>
+    </figure>
+    <p>각 큐비트가 독립적으로 확률 \(p\)로 뒤집힌다면, 3큐비트 부호가 실패하는 것은 두 개 이상 뒤집힐 때다. 거리 \(d\)(홀수) 반복 부호로 일반화하면 \((d+1)/2\)개 이상 뒤집힐 때 실패한다(<a href="../../probability-statistics/chapters/discrete.html">이항 분포</a>).</p>
+    <div class="formula">$$P_L^{(3)} = 3p^2(1-p) + p^3 = 3p^2 - 2p^3, \qquad P_L^{(d)} = \sum_{k=(d+1)/2}^{d}\binom{d}{k}p^k(1-p)^{d-k}$$<div class="where">\(p \lt 1/2\)이면 \(P_L^{(3)} \lt p\)로 이득이다. \(p\)가 작으면 \(P_L \approx \binom{d}{(d+1)/2}p^{(d+1)/2}\) — 거리를 2 늘릴 때마다 오류가 \(p\)배씩 줄어든다.</div></div>
+    <div class="example" data-title="3큐비트 부호의 논리 오류율">
+      <p>물리 비트 반전 확률이 \(p = 0.01\)일 때 3큐비트 부호의 논리 오류율은? 거리 5로 늘리면? 위상 반전 오류 \(Z\)는 이 부호로 고칠 수 있는가?</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> 이항 분포에서 과반이 뒤집힐 확률을 더한다.</div>
+        <div class="step"><b>풀이</b> \(d = 3\): \(3(0.01)^2 - 2(0.01)^3 = 3.0\times10^{-4} - 2\times10^{-6} = 2.98\times10^{-4}\). \(d = 5\): \(10p^3(1-p)^2 + 5p^4(1-p) + p^5 = 9.70\times10^{-6} + 4.95\times10^{-8} + 10^{-10} = 9.85\times10^{-6}\). 위상 반전: \(Z\)는 \(|000\rangle\), \(|111\rangle\)에 각각 \(+1, -1\)을 곱해 \(\alpha|000\rangle - \beta|111\rangle\)을 만드는데, 증후군 \(Z_iZ_j\)에는 아무 변화가 없어 탐지되지 않는다.</div>
+        <div class="answer">\(d = 3\): \(2.98\times10^{-4}\) (34배 개선), \(d = 5\): \(9.85\times10^{-6}\); \(Z\) 오류는 고칠 수 없다</div>
+        <div class="step"><b>검토</b> 위상 오류는 1절의 \(HZH = X\)를 쓴다: \(|{+}{+}{+}\rangle\), \(|{-}{-}{-}\rangle\)으로 부호화하면 \(Z\)가 비트 반전처럼 보인다. 두 부호를 겹친 것이 쇼어의 9큐비트 부호(1995)로, 임의의 단일 큐비트 오류를 고친다.</div>
+      </details>
+    </div>
+    <div class="sim" id="sim-qec">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>반복 부호 몬테카를로</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-qec"></canvas></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>부호 거리 d</span><div class="seg" id="qe-d"><button data-value="1">1 (부호 없음)</button><button data-value="3" class="on">3</button><button data-value="5">5</button><button data-value="7">7</button><button data-value="9">9</button></div></div>
+          <label class="ctrl"><span>물리 오류 p <output id="qe-p-out"></output></span><input type="range" id="qe-p" min="-3" max="-0.31" step="0.01" value="-1.3"></label>
+          <div class="ctrl-row"><button class="btn" id="qe-one" type="button">한 번 시도</button><button class="btn primary" id="qe-many" type="button">20000번</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">이론 P_L</span><span class="v" id="qe-th">—</span></div>
+        <div class="stat"><span class="k">측정 P_L</span><span class="v" id="qe-mc">—</span></div>
+        <div class="stat"><span class="k">개선 p / P_L</span><span class="v" id="qe-g">—</span></div>
+        <div class="stat"><span class="k">과녁: P_L ≤ p/100</span><span class="v" id="qe-goal">—</span></div>
+      </div>
+      <div class="sim-note">위: 이번 시도의 물리 큐비트(빨강 = 뒤집힘), 이웃 패리티 증후군(주황 = −1), 다수결 복호 결과. 아래: \(P_L\)–\(p\) 로그 그래프, 곡선은 \(d = 1, 3, 5, 7, 9\)의 이론값, 흰 점(끌 수 있다)이 지금 \(p\)이고 자홍 점은 몬테카를로 측정값이다. 해볼 것: ① 곡선들이 모두 \(p = 0.5\)에서 만나는 것을 본다 — 그보다 나쁜 큐비트로는 부호가 오히려 해롭다. ② \(p = 0.05\)에서 \(P_L \le p/100\)을 만드는 가장 작은 \(d\)를 찾는다. ③ \(p\)가 작을 때 몬테카를로 점이 이론선을 따르는지, 20000번으로 부족해지는 \(P_L\)은 어디부터인지 본다.</div>
+    </div>
+    <p>실제 양자 컴퓨터에서는 증후군을 재는 회로 자체도 틀린다. 그래도 물리 오류율이 어떤 문턱보다 낮으면 부호를 키울수록 논리 오류를 원하는 만큼 줄일 수 있다(<span class="term">문턱 정리</span><span class="en">(threshold theorem)</span>). 오늘날 가장 유력한 <span class="term">표면 부호</span><span class="en">(surface code)</span>는 2차원 격자에서 이웃끼리만 패리티를 재고, 문턱이 약 1% 수준이며, 거리 \(d\) 패치 하나에 물리 큐비트 \(2d^2 - 1\)개(데이터 \(d^2\) + 측정 \(d^2 - 1\))가 든다. 논리 오류는 어림으로 \(P_L \approx A\,(p/p_\text{th})^{(d+1)/2}\)를 따른다.</p>
+    <div class="tangle" id="tg-sc">
+      <p>물리 오류가 문턱의 <span class="tn" data-var="r" data-min="0.05" data-max="0.95" data-step="0.05">0.1</span>배이고 거리 \(d\) = <span class="tn" data-var="d" data-min="3" data-max="31" data-step="2">7</span>인 표면 부호를 쓰면(모형 계수 \(A = 0.1\)), 논리 오류는 \(P_L \approx\) <span class="tn-out" data-out="PL"></span>, 논리 큐비트 하나에 물리 큐비트 <span class="tn-out" data-out="nq"></span>개가 든다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>메모리 ECC와 양자 오류 정정</strong><p>DRAM의 SECDED, NAND의 BCH·LDPC도 "여분의 패리티를 저장하고 증후군으로 위치를 찾는다"는 같은 원리다. 다른 점은 셋이다. 양자 부호는 비트 반전과 위상 반전을 함께 막아야 하고, 데이터를 읽지 않은 채 패리티만 재야 하며, 증후군 측정을 마이크로초 주기로 쉬지 않고 반복해 실시간으로 복호해야 한다. 그래서 극저온 근처에 놓일 복호 전용 ASIC·FPGA가 큐비트 제어기와 함께 설계되고 있다 → <a href="https://semi.euiyun.com/memory/chapters/reliability.html">MemoryBook · 신뢰성과 ECC</a></p></div>
+    <div class="drill" id="drill-pl" data-title="반복 부호 논리 오류 반복 연습"></div>
+  </section>
+
+  <!-- ============================================================ 8 -->
+  <section id="platforms">
+    <h2>큐비트 구현: 초전도·실리콘 스핀·이온·광자</h2>
+    <p>무엇이 좋은 큐비트인가? 디빈첸조(2000)는 조건을 이렇게 정리했다. ① 잘 정의된 큐비트가 있고 확장 가능할 것, ② 바닥 상태로 초기화할 수 있을 것, ③ 결맞음 시간이 게이트 시간보다 훨씬 길 것, ④ 보편 게이트 집합을 구현할 것, ⑤ 큐비트를 골라 측정할 수 있을 것. 통신을 위해서는 ⑥ 정지 큐비트와 날아가는 큐비트(광자)를 서로 바꾸고 ⑦ 멀리 보낼 수 있어야 한다. 이 장의 앞 절과 이 책의 앞 장들이 각 조건에 대응한다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>플랫폼</th><th>큐비트 \(|0\rangle, |1\rangle\)</th><th>게이트</th><th>읽기</th><th>동작 환경</th><th>강점 / 과제</th></tr></thead>
+      <tbody>
+        <tr><td>초전도 (트랜스몬)</td><td>조지프슨 회로의 바닥·첫 들뜬 준위, 4–8 GHz</td><td>마이크로파 펄스(수십 ns), 결합기</td><td>공진기 분산 읽기 + 저잡음 증폭</td><td>희석 냉동기, 약 10 mK</td><td>리소그래피로 제작, 빠른 게이트 / 재료 결함의 TLS 손실, 수백 µm급 소자, 배선</td></tr>
+        <tr><td>실리콘 스핀</td><td>양자점·도너에 갇힌 전자(정공) 스핀의 제만 준위, 약 28 GHz/T</td><td>ESR·EDSR 마이크로파, 교환 결합 \(J\) 펄스</td><td>스핀–전하 변환 + 전하 센서(SET)</td><td>0.1–1 K, 자기장 0.1–1 T</td><td>100 nm급 크기, CMOS 공정, ²⁸Si의 긴 결맞음 / 소자 편차, 골짜기 분리, 배선 밀도</td></tr>
+        <tr><td>이온 포획</td><td>이온의 초미세 준위(예: ¹⁷¹Yb⁺ 12.6 GHz)·광학 준위</td><td>레이저·마이크로파, 공유 진동 모드로 얽힘</td><td>상태에 따른 형광</td><td>초고진공, 레이저 냉각</td><td>모든 큐비트가 같은 원자, 매우 긴 결맞음 / 느린 게이트(µs 이상), 많은 이온의 제어</td></tr>
+        <tr><td>광자</td><td>편광·시간 구간·경로</td><td>선형 광학 소자 + 측정으로 유도</td><td>단일 광자 검출기</td><td>상온 광학(검출기는 극저온일 수 있음)</td><td>통신과 직결, 환경과 약한 결합 / 광자끼리 상호작용이 약함, 손실</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>초전도 큐비트.</b> 초전도 고리의 전하와 위상은 거시적인 양자 변수다(<a href="em-fields.html">16장</a>의 자속 양자화). 조지프슨 접합은 손실 없는 <em>비선형</em> 인덕터로, \(LC\) 진동자의 준위 간격을 고르지 않게 만들어 맨 아래 두 준위만 골라 쓸 수 있게 한다. 트랜스몬의 해밀토니언은 전하 수 \(\hat n\)과 위상 \(\hat\varphi\)로</p>
+    <div class="formula">$$\hat H = 4E_C(\hat n - n_g)^2 - E_J\cos\hat\varphi, \qquad hf_{01} \approx \sqrt{8E_JE_C} - E_C, \qquad \alpha = f_{12} - f_{01} \approx -E_C/h$$<div class="where">\(E_C = e^2/2C_\Sigma\)는 쿠퍼 쌍 하나를 섬에 더하는 충전 에너지, \(E_J\)는 조지프슨 에너지, \(n_g\)는 게이트 전하(주변 전하 잡음이 흔드는 양)다. \(E_J/E_C \sim 50\)이면 준위가 \(n_g\)에 거의 무관해지고(전하 분산이 지수적으로 작아짐), 비조화성 \(\alpha\)는 \(-E_C\) 정도로 남는다. 이것이 2007년 제안된 트랜스몬이다.</div></div>
+    <div class="sim" id="sim-tm">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>트랜스몬: 전하 분산과 비조화성</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-tm"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>E<sub>J</sub>/E<sub>C</sub> <output id="tm-r-out"></output></span><input type="range" id="tm-r" min="-0.3" max="2" step="0.02" value="0.3"></label>
+          <label class="ctrl"><span>E<sub>C</sub>/h <output id="tm-ec-out"></output></span><input type="range" id="tm-ec" min="0.1" max="0.4" step="0.01" value="0.25"></label>
+          <div class="ctrl-row"><button class="btn" id="tm-cpb" type="button">쿠퍼 쌍 상자 (1)</button><button class="btn" id="tm-tr" type="button">트랜스몬 (50)</button></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">f₀₁ (n_g 지점)</span><span class="v" id="tm-f">—</span></div>
+        <div class="stat"><span class="k">비조화성 α</span><span class="v" id="tm-a">—</span></div>
+        <div class="stat"><span class="k">f₀₁ 전하 분산 폭</span><span class="v" id="tm-d">—</span></div>
+        <div class="stat"><span class="k">근사 √(8E_JE_C) − E_C</span><span class="v" id="tm-ap">—</span></div>
+      </div>
+      <div class="sim-note">전하 기저 \(|n\rangle\)(\(n = -12 \dots 12\))에서 해밀토니언을 대각화해 맨 아래 네 준위를 게이트 전하 \(n_g\)의 함수로 그렸다(바닥 준위의 평균을 0으로). 흰 원을 끌어 \(n_g\)를 바꾸고, 세로 화살표는 \(f_{01}\), \(f_{12}\)이다. \(E_J/E_C\) 슬라이더는 로그 눈금(0.5–100). 해볼 것: ① \(E_J/E_C = 1\)(쿠퍼 쌍 상자)에서 준위가 \(n_g\)에 따라 크게 출렁인다 — 주변 전하가 조금만 움직여도 진동수가 바뀐다. ② 50으로 올리면 띠가 평평해지는데 비조화성은 여전히 수백 MHz 남는다. ③ \(f_{01}\)을 5 GHz 근처로 맞추는 \(E_J/E_C\)를 찾는다.</div>
+    </div>
+    <p>큐비트 진동수 \(f\)가 정해지면 동작 온도의 조건도 정해진다. 열평형에서 들뜬 상태에 있을 확률은 \(P_\text{exc} = 1/(1 + e^{hf/k_BT})\)이다(<a href="../../thermal-physics/chapters/boltzmann.html">볼츠만 분포</a>). 5 GHz 큐비트는 \(hf/k_B = 0.24\) K이므로, 초기화 오류를 1% 아래로 낮추려면 \(T \lt hf/(k_B\ln 99) = 52\) mK가 필요하다. 같은 이유로 마이크로파 배선의 열잡음 광자 \(\bar n = 1/(e^{hf/k_BT} - 1)\)도 냉동기의 각 단에서 감쇠기로 걸러야 한다(300 K에서 5 GHz 모드의 \(\bar n \approx 1250\)).</p>
+    <div class="sim" id="sim-th">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>열 들뜸과 희석 냉동기의 온도 단</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-th"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>큐비트 진동수 f <output id="th-f-out"></output></span><input type="range" id="th-f" min="0" max="1.6" step="0.001" value="0.699"></label>
+          <div class="ctrl"><span>예시</span><div class="seg" id="th-pre"><button data-value="5" class="on">트랜스몬 5 GHz</button><button data-value="14">Si 스핀 0.5 T</button><button data-value="28">Si 스핀 1 T</button></div></div>
+          <div class="ctrl"><span>과녁 (P<sub>exc</sub> 이하)</span><div class="seg" id="th-goal"><button data-value="0.01" class="on">1%</button><button data-value="0.001">0.1%</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">온도 T</span><span class="v" id="th-T">—</span></div>
+        <div class="stat"><span class="k">hf / k_BT</span><span class="v" id="th-x">—</span></div>
+        <div class="stat"><span class="k">P_exc · n̄</span><span class="v" id="th-p">—</span></div>
+        <div class="stat"><span class="k">과녁 온도 이하?</span><span class="v" id="th-ok">—</span></div>
+      </div>
+      <div class="sim-note">가로축은 온도(로그, 5 mK–300 K), 세로축은 들뜬 상태 확률 \(P_\text{exc}\)(로그). 회색 세로띠는 희석 냉동기의 대표 단(상온, 약 50 K, 4 K, 스틸 약 0.8 K, 냉판 약 0.1 K, 혼합실 약 10 mK)이다. 흰 원을 곡선 따라 끌어 온도를 정한다. 해볼 것: ① 트랜스몬 5 GHz가 4 K에서는 들뜸 확률이 거의 1/2 — 4 K에 둘 수 없는 이유다. ② 같은 1% 과녁에서 실리콘 스핀(0.5 T, 14 GHz)의 허용 온도가 약 3배 높은 것을 본다. ③ 진동수 슬라이더로 1 K에서 1% 과녁을 맞추는 진동수를 찾는다.</div>
+    </div>
+    <p><b>실리콘 스핀 큐비트.</b> 실리콘 MOS 구조나 Si/SiGe 이종 구조 위에 촘촘한 게이트 전극으로 정전 퍼텐셜 우물(양자점)을 만들고 전자 하나를 가둔다(1998년 로스–디빈첸조 제안). 도너 핵스핀과 전자 스핀을 쓰는 방식(1998년 케인 제안)도 있다. 큐비트는 자기장 속 전자 스핀의 두 제만 준위다(<a href="spin.html">10장</a>).</p>
+    <div class="formula">$$hf = g\mu_BB, \qquad \frac{g\mu_B}{h} \approx 28.0\ \text{GHz/T}\ (g \approx 2), \qquad E_Z(1\ \text{T}) = 116\ \mu\text{eV} \;\leftrightarrow\; 1.34\ \text{K}$$<div class="where">실리콘 전도띠 전자의 \(g\)는 2에 매우 가깝다. 한 큐비트 게이트는 마이크로파 안테나의 교류 자기장(ESR)이나, 미세 자석의 기울어진 자기장 속에서 전자를 전기장으로 흔드는 EDSR로 만든다. 두 큐비트 게이트는 두 양자점 사이 장벽 게이트로 교환 결합 \(J\)를 켜고 끈다(<a href="identical-particles.html">11장</a>).</div></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="실리콘 MOS 양자점 스핀 큐비트 단면: 게이트 전극, 산화막, 실리콘 계면의 두 양자점 전자, 장벽 게이트와 교환 결합, 전하 센서">
+        <rect x="40" y="190" width="720" height="90" class="f-surface" stroke="var(--border)"/><text class="t-dim" x="700" y="268" text-anchor="end">²⁸Si 에피층 (핵스핀 없는 동위원소)</text>
+        <rect x="40" y="168" width="720" height="22" fill="var(--accent-2)" opacity="0.16" stroke="var(--border)"/><text class="t-dim" x="56" y="183">SiO₂ (수 nm)</text>
+        <rect x="150" y="120" width="70" height="48" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="185" y="148" text-anchor="middle">P1</text>
+        <rect x="250" y="100" width="56" height="68" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="278" y="138" text-anchor="middle">J</text>
+        <rect x="336" y="120" width="70" height="48" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="371" y="148" text-anchor="middle">P2</text>
+        <rect x="90" y="132" width="40" height="36" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="110" y="155" text-anchor="middle">B</text>
+        <rect x="426" y="132" width="40" height="36" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="446" y="155" text-anchor="middle">B</text>
+        <rect x="560" y="120" width="150" height="48" rx="4" class="f-elev" stroke="var(--border)"/><text class="t-mono" x="635" y="148" text-anchor="middle">SET 전하 센서</text>
+        <ellipse cx="185" cy="200" rx="34" ry="8" class="f-acc-soft" stroke="var(--accent)"/><ellipse cx="371" cy="200" rx="34" ry="8" class="f-acc-soft" stroke="var(--accent)"/>
+        <circle cx="185" cy="200" r="5" fill="var(--accent)"/><circle cx="371" cy="200" r="5" fill="var(--accent)"/>
+        <line x1="185" y1="214" x2="185" y2="242" stroke="var(--accent)" stroke-width="2.5"/><path d="M180,236 L185,244 L190,236" fill="var(--accent)"/>
+        <line x1="371" y1="242" x2="371" y2="214" stroke="var(--accent)" stroke-width="2.5"/><path d="M366,220 L371,212 L376,220" fill="var(--accent)"/>
+        <path d="M 220 228 Q 278 252 336 228" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="5 4"/><text class="t" x="278" y="262" text-anchor="middle" style="fill:var(--accent-2)">교환 J(V_J)</text>
+        <ellipse cx="635" cy="200" rx="60" ry="8" fill="none" stroke="var(--text-dim)" stroke-dasharray="3 3"/><text class="t-dim" x="635" y="232" text-anchor="middle">전자 하나가 터널하면 전류가 바뀐다</text>
+        <rect x="150" y="40" width="256" height="30" rx="6" fill="none" stroke="var(--warn)"/><text class="t" x="278" y="60" text-anchor="middle" style="fill:var(--warn)">미세 자석 / ESR 안테나 (큐비트 구동)</text>
+        <line x1="40" y1="20" x2="120" y2="20" stroke="var(--text-dim)" stroke-width="2"/><path d="M114,15 L122,20 L114,25" fill="var(--text-dim)"/><text class="t-dim" x="130" y="25">B₀ (0.1–1 T)</text>
+        <text class="t-dim" x="520" y="60">게이트 피치 수십 nm</text><text class="t-dim" x="520" y="78">= 첨단 CMOS 게이트 스택</text>
+      </svg>
+      <figcaption>실리콘 MOS 양자점 스핀 큐비트의 단면(개념도). 플런저 게이트 P1, P2가 계면 바로 아래에 전자 하나씩 가두고, 장벽 게이트 J가 두 양자점 사이의 터널 결합과 교환 에너지를 조절한다. 읽기는 스핀에 따라 전자가 터널할 수 있는지(스핀–전하 변환)를 옆의 전하 센서로 본다. 전자의 포락 함수는 <a href="central-potentials.html">9장</a>의 유효 질량 모형으로, 계면에서 갈라지는 골짜기 준위는 <a href="symmetry.html">7장</a>에서 다뤘다.</figcaption>
+    </figure>
+    <div class="tangle" id="tg-zee">
+      <p>자기장 \(B_0\) = <span class="tn" data-var="B" data-min="0.05" data-max="2" data-step="0.05" data-unit=" T">0.5</span>에서 \(g = 2\)인 전자 스핀 큐비트의 진동수는 <span class="tn-out" data-out="f"></span>, 제만 에너지는 <span class="tn-out" data-out="E"></span>(온도로 <span class="tn-out" data-out="TK"></span>)이다. 들뜸 확률 1% 이하의 조건은 \(T \lt\) <span class="tn-out" data-out="T1"></span>. <span data-out="msg"></span></p>
+    </div>
+    <div class="example" data-title="실리콘 스핀 큐비트의 동작 조건">
+      <p>\(B_0 = 0.50\) T에서 \(g = 2.00\)인 전자 스핀 큐비트가 있다. (가) 큐비트 진동수와 제만 에너지, (나) 전자 온도 100 mK에서 열평형 들뜸 확률, (다) 들뜸 확률을 1% 이하로 하는 최고 온도를 구하라. (\(\mu_B/h = 13.996\) GHz/T, \(\mu_B = 57.88\ \mu\text{eV/T}\), \(k_B = 86.17\ \mu\text{eV/K}\))</p>
+      <details><summary>풀이 보기</summary>
+        <div class="step"><b>전략</b> \(hf = g\mu_BB\), \(P_\text{exc} = 1/(1 + e^{E_Z/k_BT})\), \(T_\text{max} = E_Z/(k_B\ln99)\).</div>
+        <div class="step"><b>풀이</b> (가) \(f = 2\times13.996\times0.5 = 14.0\) GHz, \(E_Z = 2\times57.88\times0.5 = 57.9\ \mu\text{eV}\). (나) \(E_Z/k_BT = 57.9/8.617 = 6.72\), \(P_\text{exc} = 1/(1 + e^{6.72}) = 1.21\times10^{-3}\). (다) \(T_\text{max} = 57.9/(86.17\times4.595) = 0.146\) K.</div>
+        <div class="answer">(가) 14.0 GHz, 57.9 µeV (나) \(1.2\times10^{-3}\) (다) 약 146 mK</div>
+        <div class="step"><b>검토</b> 같은 1% 기준이 5 GHz 트랜스몬에는 52 mK였다. 진동수가 높을수록 따뜻한 곳에서 동작할 수 있다 — 실리콘 스핀 큐비트가 1 K 안팎에서도 동작함을 보인 실험들(2020년)이 나온 이유다. 다만 1 K에서 1%를 맞추려면 \(f \gt 96\) GHz, 곧 수 T가 필요하므로, 실제로는 측정 직전 큐비트를 바닥 상태로 다시 준비하는 방법을 함께 쓴다.</div>
+      </details>
+    </div>
+    <p>두 스핀 사이의 교환 결합 \(\hat H = J\,\hat{\mathbf S}_1\cdot\hat{\mathbf S}_2/\hbar^2\)는 \(|{\uparrow\downarrow}\rangle\)과 \(|{\downarrow\uparrow}\rangle\)을 맞바꾼다. 두 양자점의 제만 에너지 차 \(\Delta E_Z\)가 없으면 시간 \(t = h/2J\)에 완전한 SWAP, 그 절반에 얽힘을 만드는 \(\sqrt{\text{SWAP}}\)이 된다. \(\Delta E_Z \gg J\)이면 교환은 대신 조건부 위상(CZ 게이트)으로 작동한다.</p>
+    <figure class="mini" id="mini-swap">
+      <div class="mini-view"><canvas id="cv-swap"></canvas></div>
+      <div class="mini-ctrl">
+        <label class="ctrl"><span>J/h <output id="sw-j-out"></output></span><input type="range" id="sw-j" min="1" max="40" step="1" value="10"></label>
+        <label class="ctrl"><span>ΔE<sub>Z</sub>/h <output id="sw-d-out"></output></span><input type="range" id="sw-d" min="0" max="40" step="1" value="0"></label>
+        <button class="btn" id="sw-play" type="button"></button>
+        <span class="readout" id="sw-r"></span>
+      </div>
+      <figcaption><span class="mini-tag">MINI LAB</span>\(|{\uparrow\downarrow}\rangle\)에서 출발한 두 스핀이 교환으로 \(|{\downarrow\uparrow}\rangle\)로 넘어갈 확률 \(P = \frac{J^2}{J^2 + \Delta E_Z^2}\sin^2\!\bigl(\pi\sqrt{J^2 + \Delta E_Z^2}\,t/h\bigr)\). 왼쪽 두 화살표가 두 양자점의 스핀(\(z\) 성분), 오른쪽이 시간 그래프다. \(\Delta E_Z = 0\)이면 \(t = h/2J\)에서 완전 SWAP(점선), \(\Delta E_Z\)를 키우면 맞바꿈이 억제된다 — 미세 자석이 만드는 \(\Delta E_Z\)가 큐비트를 서로 구별하게 해 주는 대신 SWAP를 막는다.</figcaption>
+    </figure>
+    <p><b>이온과 중성 원자.</b> 전기장 덫(이온)이나 광학 집게(중성 원자)로 붙잡은 원자의 초미세 준위는 자연이 만든 완벽히 똑같은 큐비트다. 이온들은 쿨롱 반발로 사슬을 이루고, 공유된 진동 모드(<a href="ladder-operators.html">6장</a>의 포논)를 매개로 레이저가 얽힘 게이트를 만든다. 중성 원자는 한 원자를 리드베리 상태로 들뜨게 하면 이웃이 들뜨지 못하는 리드베리 봉쇄(<a href="central-potentials.html">9장</a>)를 쓴다. 둘 다 결맞음이 매우 길지만 게이트가 느리고, 레이저·광학계의 규모가 확장의 과제다.</p>
+    <p><b>광자.</b> 광자는 상온에서도 결맞음을 오래 지키고 광섬유로 멀리 간다 — 통신의 자연스러운 큐비트다. 대신 광자끼리는 거의 상호작용하지 않으므로, 두 큐비트 게이트를 측정과 앞먹임(측정 결과에 따라 다음 연산을 바꾸기)으로 유도한다. 큰 규모의 광 양자 계산에는 손실이 적은 실리콘 광집적 회로와 고효율 단일 광자 광원·검출기가 필요하다.</p>
+    <div class="callout semi"><strong>극저온 CMOS: 큐비트 옆에 둘 제어 칩</strong><p>큐비트마다 상온에서 동축선 여러 가닥을 끌어 내리는 방식은 수천 큐비트에서 벽에 부딪힌다. 희석 냉동기의 냉각 능력은 4 K 단에서 와트 수준이지만 혼합실(약 10 mK)에서는 마이크로와트 수준이라, 선 하나하나가 열 부하다. 그래서 펄스 생성·다중화·읽기 증폭을 4 K 단에 놓을 CMOS 칩(극저온 CMOS)이 개발되고 있다. 4 K의 MOSFET은 상온과 다르다: 포논 산란이 줄어 이동도가 오르고, 문턱 전압이 올라가며, 이상적인 문턱 아래 기울기 \(\ln10\,k_BT/q\)는 0.8 mV/dec까지 내려가야 하지만 실제로는 계면·띠 꼬리 상태 때문에 10 mV/dec 안팎에서 포화한다. 저농도 영역의 도펀트는 얼어붙는다(<a href="central-potentials.html">9장</a>의 동결). 소자 모형(BSIM 등)을 극저온에서 다시 맞춰야 하고, 칩의 소비 전력이 큐비트를 데우지 않도록 mW 단위로 예산을 짠다 → <a href="https://semi.euiyun.com/device/chapters/mosfet.html">DeviceBook · MOSFET</a>, <a href="https://semi.euiyun.com/analog/chapters/noise.html">AnalogBook · 잡음</a></p></div>
+    <div class="tangle" id="tg-ss">
+      <p>온도 <span class="tn" data-var="T" data-min="1" data-max="400" data-step="1" data-unit=" K">4</span>에서 이상적인 MOSFET의 문턱 아래 기울기는 \(\ln10\,k_BT/q\) = <span class="tn-out" data-out="ss"></span>, 상온(300 K)의 <span class="tn-out" data-out="ratio"></span>이다. 같은 열잡음 기준으로 보면 5 GHz 모드의 열 광자 수는 <span class="tn-out" data-out="nth"></span>개다. <span data-out="msg"></span></p>
+    </div>
+    <div class="callout semi"><strong>300 mm 공정에서 만드는 큐비트</strong><p>실리콘 스핀 큐비트의 가장 큰 매력은 이미 있는 반도체 공장이다. 게이트 스택(고유전율 절연막·금속 게이트), 수십 nm 피치의 다층 게이트, 전자빔 대신 액침·EUV 리소그래피 — 모두 첨단 로직 공정의 도구다. 300 mm 웨이퍼 공정 라인에서 스핀 큐비트 소자를 만들고 웨이퍼 단위로 극저온 측정해 소자 편차를 통계로 관리하는 연구가 진행 중이다. 문제는 고전 소자보다 훨씬 엄격한 요구다: 산화막 전하 트랩과 계면 거칠기는 전하 잡음과 골짜기 분리 편차가 되고, ²⁹Si 핵스핀은 결맞음을 깎는다(<a href="density-matrix.html">17장</a>). 결함 하나가 트랜지스터의 문턱 전압을 수 mV 바꾸는 것은 견딜 수 있지만, 큐비트 진동수를 MHz 단위로 흔드는 것은 그렇지 않다 → <a href="https://semi.euiyun.com/device/chapters/scaling.html">DeviceBook · 스케일링</a></p></div>
+  </section>
+
+  <!-- ============================================================ 9 -->
+  <section id="epilogue">
+    <h2>에필로그: 이 책을 돌아보며</h2>
+    <p>이 책은 파동함수의 확률 해석에서 출발해 상태 공간, 측정, 시간 전개라는 틀을 세우고(제1부), 정확히 풀리는 계와 대칭으로 그 틀을 채웠으며(제2부), 각운동량·수소 원자·스핀·동일 입자로 원자의 구조를 읽고(제3부), 섭동·변분·WKB·산란으로 풀리지 않는 문제에 다가갔다(제4부). 마지막 부는 장 속의 전자, 밀도 행렬과 결어긋남, 그리고 이 장의 큐비트였다. 아래 단계 그림은 실리콘 스핀 큐비트 하나를 설명하는 데 이 책의 어느 장이 쓰이는지 보여 준다.</p>
+    <figure class="diagram steps" data-steps="5">
+      <svg viewBox="0 0 800 280" role="img" aria-label="실리콘 스핀 큐비트 한 개를 설명하는 데 쓰이는 이 책의 다섯 부">
+        <rect x="300" y="100" width="200" height="80" rx="14" class="f-acc-soft" stroke="var(--accent)"/><text class="t-acc" x="400" y="136" text-anchor="middle" style="font-weight:700">실리콘 스핀 큐비트</text><text class="t-dim" x="400" y="158" text-anchor="middle">|↑⟩, |↓⟩ in ²⁸Si</text>
+        <g data-step="1"><rect x="20" y="20" width="230" height="64" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="135" y="44" text-anchor="middle" style="font-weight:700">제1부 틀 (1–4장)</text><text class="t-dim" x="135" y="66" text-anchor="middle">중첩·측정 확률·유니터리 전개</text><line x1="250" y1="60" x2="300" y2="110" stroke="var(--accent)" stroke-width="2"/></g>
+        <g data-step="2"><rect x="20" y="196" width="230" height="64" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="135" y="220" text-anchor="middle" style="font-weight:700">제2부 계와 대칭 (5–7장)</text><text class="t-dim" x="135" y="242" text-anchor="middle">양자점 우물·포논·골짜기 축퇴</text><line x1="250" y1="220" x2="300" y2="170" stroke="var(--accent)" stroke-width="2"/></g>
+        <g data-step="3"><rect x="550" y="20" width="230" height="64" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="665" y="44" text-anchor="middle" style="font-weight:700">제3부 각운동량 (8–11장)</text><text class="t-dim" x="665" y="66" text-anchor="middle">유효 질량 수소·스핀·교환 J</text><line x1="550" y1="60" x2="500" y2="110" stroke="var(--accent)" stroke-width="2"/></g>
+        <g data-step="4"><rect x="550" y="196" width="230" height="64" rx="10" class="f-surface" stroke="var(--border)"/><text class="t" x="665" y="220" text-anchor="middle" style="font-weight:700">제4부 근사법 (12–15장)</text><text class="t-dim" x="665" y="242" text-anchor="middle">g 인자·라비 펄스·터널 읽기</text><line x1="550" y1="220" x2="500" y2="170" stroke="var(--accent)" stroke-width="2"/></g>
+        <g data-step="5"><rect x="285" y="214" width="230" height="56" rx="10" class="f-surface" stroke="var(--accent-2)"/><text class="t" x="400" y="236" text-anchor="middle" style="font-weight:700;fill:var(--accent-2)">제5부 현대 (16–18장)</text><text class="t-dim" x="400" y="256" text-anchor="middle">T₂·스핀 에코·게이트·오류 정정</text><line x1="400" y1="214" x2="400" y2="180" stroke="var(--accent-2)" stroke-width="2"/></g>
+      </svg>
+      <ol class="steps-cap"><li>제1부: 큐비트의 중첩, 측정의 보른 규칙, 게이트가 유니터리라는 사실은 모두 1–4장의 공준이다.</li><li>제2부: 게이트 전극이 만든 퍼텐셜 우물(5장), 전자를 흔드는 포논(6장), 실리콘 전도띠의 여섯 골짜기와 계면에서의 분리(7장).</li><li>제3부: 도너·양자점 전자의 유효 질량 수소 모형(9장), 스핀 1/2과 블로흐 구(10장), 두 전자의 교환 상호작용(11장).</li><li>제4부: 스핀–궤도 결합이 바꾸는 \(g\) 인자(12장), 라비 펄스(14장), 스핀–전하 변환의 터널링(13장).</li><li>제5부: 미세 자석과 게이지(16장), \(T_1\)·\(T_2\)와 스핀 에코(17장), 그리고 게이트·얽힘·오류 정정(18장). 하나의 소자가 책 전체를 요구한다.</li></ol>
+      <figcaption>큐비트 하나를 이해하는 데 이 책의 모든 부가 쓰인다. 반도체 소자 공학과 양자역학은 이제 같은 언어로 이야기한다.</figcaption>
+    </figure>
+    <p>양자역학은 100년 전에는 원자 스펙트럼을 설명하는 이론이었고, 50년 전에는 트랜지스터·레이저·MRI를 설계하는 도구였으며, 이제는 얽힘과 중첩 그 자체를 자원으로 쓰는 공학이 되었다. 측정 공준, 복제 불가, 신호 불가 — 처음에는 철학적 수수께끼였던 원리들이 이 장에서는 암호의 안전성과 오류 정정의 설계 규칙이 되었다. 어느 길로 가든, 이 책에서 계산해 본 행렬과 파동함수와 블로흐 벡터가 출발점이 될 것이다.</p>
+    <div class="quiz-q"><p>이 책의 도구 가운데 "결맞음 시간 \(T_2\)를 늘리는 방법"과 가장 직접 관련된 것은?</p><div class="opts">
+      <button class="opt">수소 원자의 우연 축퇴</button>
+      <button class="opt" data-correct>스핀 에코와 ²⁸Si 동위원소 정제(17장)</button>
+      <button class="opt">러더퍼드 산란 단면적</button>
+      <button class="opt">란다우 준위의 축퇴도</button>
+    </div><div class="quiz-exp">\(T_2\)는 위상이 흩어지는 시간이다. 느린 잡음은 스핀 에코·동적 결합 끊기로 되돌리고, 잡음원(²⁹Si 핵스핀)은 동위원소 정제로 없앤다. 둘 다 17장에서 다룬 밀도 행렬과 블로흐 방정식의 응용이다.</div></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>큐비트 \(\cos\frac\theta2|0\rangle + e^{i\phi}\sin\frac\theta2|1\rangle\)은 블로흐 구의 점이고, 단일 큐비트 게이트는 블로흐 구의 회전 \(e^{-i\alpha\,\mathbf n\cdot\boldsymbol\sigma/2}\)이다. \(H\)는 \(x \leftrightarrow z\)를 바꿔 \(HZH = X\)이며, \(\{H, T\}\)와 CNOT는 보편 게이트 집합이다. 측정은 \(P(0) = (1 + r_z)/2\)이고 큐비트 \(n\)개로 꺼낼 수 있는 고전 정보는 \(n\)비트뿐이다.</li>
+      <li>\(n\)큐비트 상태는 진폭 \(2^n\)개다. 곱으로 인수분해되지 않으면 얽힌 상태이고, 순수 2큐비트 상태의 얽힘은 슈미트 계수의 엔트로피 \(S_E\)나 공존도 \(C = 2|c_{00}c_{11} - c_{01}c_{10}|\)로 잰다. \(H\) + CNOT가 벨 상태를 만든다.</li>
+      <li>국소 숨은 변수 이론은 \(|S| \le 2\)(CHSH)를 지키지만, 벨 상태는 \(E = \cos(a-b)\)로 \(S = 2\sqrt2\)까지 위반한다. 베르너 상태는 \(S = 2\sqrt2\,p\)라 \(p \gt 1/\sqrt2\)가 필요하다. 빈틈 없는 실험(2015)이 국소 실재론을 배제했다.</li>
+      <li>미지의 상태는 복제할 수 없다(내적 보존). 순간이동은 벨 쌍 + 고전 2비트로 큐비트를 옮기고 원본을 파괴하며, 고전 비트가 오기 전 밥의 상태는 \(\hat I/2\)라 신호를 빛보다 빨리 보낼 수 없다. 베르너 자원의 순간이동 충실도는 \((1+p)/2\), 고전 한계는 2/3이다.</li>
+      <li>BB84에서 가로채기–재전송은 QBER \(f/4\)를 남기고, 비밀 키 비율은 \(1 - 2h(e)\)로 \(e \approx 11\%\)에서 0이 된다. 안전성은 복제 불가와 측정 교란에서 온다.</li>
+      <li>도이치–조사는 위상 되차기와 간섭으로 한 번의 질의로 상수/균형을 판정하고, 그로버는 두 반사의 곱인 \(2\theta\) 회전(\(\sin\theta = 1/\sqrt N\))으로 \(\approx\frac\pi4\sqrt N\)번 만에 답을 찾는다 — 지나치게 돌리면 확률이 다시 준다.</li>
+      <li>오류 정정은 얽힘으로 정보를 펼치고 패리티(증후군)만 재서 오류를 고친다. 반복 부호는 \(P_L = 3p^2 - 2p^3\)(거리 3), 표면 부호는 문턱 약 1%, 패치당 \(2d^2 - 1\)큐비트다. 플랫폼마다 진동수와 온도가 \(P_\text{exc} = 1/(1 + e^{hf/k_BT})\)로 묶이며(5 GHz 트랜스몬 → 수십 mK, Si 스핀 \(28\) GHz/T), 극저온 CMOS와 300 mm 공정이 실리콘 큐비트 확장의 열쇠다.</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="problems" id="problems">
+    <h2>연습문제</h2>
+    <p>필요하면 \(h = 6.626\times10^{-34}\) J·s, \(k_B = 1.381\times10^{-23}\) J/K \(= 86.17\ \mu\text{eV/K}\), \(\mu_B/h = 13.996\) GHz/T, \(h(e) = -e\log_2e - (1-e)\log_2(1-e)\)를 쓴다. 블로흐 각과 측정 각은 \(x\)–\(z\) 평면 기준이다.</p>
+    <div class="problem-set">
+      <div class="problem" data-level="1" data-topic="블로흐 구" data-answer="0.587" data-label="P(1) =">
+        <div class="prob-q"><p>블로흐 각 \(\theta = 100^\circ\), \(\phi = 30^\circ\)인 큐비트를 계산 기저로 잴 때 1이 나올 확률은?</p></div>
+        <div class="prob-hint">\(P(1) = \sin^2(\theta/2)\). \(\phi\)는 상관없다.</div>
+        <div class="prob-sol"><p>\(P(1) = \sin^2 50^\circ = 0.766^2 = 0.587\). 같은 값을 \((1 - \cos100^\circ)/2 = (1 + 0.174)/2 = 0.587\)로도 얻는다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="게이트" data-answer="0.854" data-label="P(0) =">
+        <div class="prob-q"><p>\(|0\rangle\)에 \(H\), \(T\), \(H\)를 차례로 건 뒤 계산 기저로 잴 때 0이 나올 확률은?</p></div>
+        <div class="prob-hint">블로흐 벡터로 따라간다: \(H\) → \(+x\), \(T\) → \(z\)축 둘레 45°, \(H\) → \(x\)와 \(z\) 교환.</div>
+        <div class="prob-sol"><p>\((0,0,1) \to (1,0,0) \to (\cos45^\circ, \sin45^\circ, 0) \to (0, -\sin45^\circ, \cos45^\circ)\). \(P(0) = (1 + 0.707)/2 = 0.854 = \cos^2(\pi/8)\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="얽힘 판정">
+        <div class="prob-q"><p>다음 중 얽힌 상태는?</p></div>
+        <div class="prob-choices"><button>\((|00\rangle + |01\rangle + |10\rangle + |11\rangle)/2\)</button><button>\((|00\rangle - |01\rangle + |10\rangle - |11\rangle)/2\)</button><button data-correct>\((|00\rangle + |01\rangle + |10\rangle - |11\rangle)/2\)</button><button>\((|00\rangle + |10\rangle)/\sqrt2\)</button></div>
+        <div class="prob-sol"><p>곱 상태 조건 \(c_{00}c_{11} = c_{01}c_{10}\)을 확인한다. 셋째만 \((1)(-1) \ne (1)(1)\)이고 공존도 \(C = 2|{-\tfrac14} - \tfrac14| = 1\)로 최대 얽힘이다. 첫째는 \(|+\rangle|+\rangle\), 둘째는 \(|+\rangle|-\rangle\), 넷째는 \(|+\rangle|0\rangle\).</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="상태 벡터 메모리" data-answer="17.6" data-label="메모리 =" data-unit="TB">
+        <div class="prob-q"><p>큐비트 40개의 상태 벡터를 진폭당 16바이트(배정밀도 복소수)로 저장하면 몇 TB(\(10^{12}\) 바이트)가 필요한가?</p></div>
+        <div class="prob-hint">\(2^{40} = 1.0995\times10^{12}\).</div>
+        <div class="prob-sol"><p>\(2^{40}\times16 = 1.759\times10^{13}\) 바이트 \(= 17.6\) TB. 큐비트 하나를 더하면 35.2 TB가 된다.</p></div>
+      </div>
+      <div class="problem" data-level="1" data-topic="도이치–조사" data-answer="513" data-label="질의 수 =" data-unit="번">
+        <div class="prob-q"><p>입력이 10비트인 함수가 상수이거나 균형이라는 약속이 있다. 고전 결정론적 알고리즘이 최악의 경우 확실히 판정하려면 몇 번 물어야 하나? (양자 알고리즘은 1번)</p></div>
+        <div class="prob-hint">절반(\(2^9\))까지 같은 값이 나와도 아직 균형일 수 있다.</div>
+        <div class="prob-sol"><p>\(2^{10}/2 + 1 = 512 + 1 = 513\)번. 512번 연속 같은 값이면 균형일 수 없으므로 한 번 더 보면 확정된다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="얽힘 엔트로피" data-answer="0.469; 0.600" data-label="S_E =; C =" data-unit="비트; ">
+        <div class="prob-q"><p>\(|\Psi\rangle = \sqrt{0.9}\,|00\rangle + \sqrt{0.1}\,|11\rangle\)의 얽힘 엔트로피와 공존도를 구하라.</p></div>
+        <div class="prob-hint">슈미트 계수 \(\lambda = 0.9\). \(C = 2\sqrt{\lambda(1-\lambda)}\).</div>
+        <div class="prob-sol"><p>\(S_E = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.1368 + 0.3322 = 0.469\) 비트. \(C = 2\sqrt{0.09} = 0.600\). 축약 상태의 블로흐 벡터 길이는 \(\sqrt{1 - 0.36} = 0.8\).</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="CHSH" data-answer="2.60" data-label="S =">
+        <div class="prob-q"><p>\(|\Phi^+\rangle\)에서 \(a = 0\), \(a' = 60^\circ\), \(b = 30^\circ\), \(b' = 90^\circ\)(블로흐 각)로 잴 때 \(S = E(a,b) - E(a,b') + E(a',b) + E(a',b')\)는?</p></div>
+        <div class="prob-hint">\(E(a, b) = \cos(a - b)\).</div>
+        <div class="prob-sol"><p>\(\cos30^\circ - \cos90^\circ + \cos30^\circ + \cos30^\circ = 0.866 - 0 + 0.866 + 0.866 = 2.60\). 2를 넘지만 최적값 2.83보다는 작다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="베르너 상태" data-answer="2.26" data-label="S =">
+        <div class="prob-q"><p>얽힌 광자 쌍 광원의 가시도(베르너 순도)가 \(p = 0.80\)이다. 최적 각도에서 기대되는 CHSH 값은?</p></div>
+        <div class="prob-hint">모든 상관이 \(p\)배.</div>
+        <div class="prob-sol"><p>\(S = 2\sqrt2\times0.80 = 2.26\). 위반 여유 0.26을 통계적으로 확인하려면 \(\sigma_S \approx 2/\sqrt{N}\)이 그보다 충분히 작도록 설정당 수백 쌍 이상이 필요하다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="순간이동 충실도" data-answer="0.800" data-label="F =">
+        <div class="prob-q"><p>순도 \(p = 0.60\)인 베르너 상태를 자원으로 순간이동하면 평균 충실도는? 이 값은 고전 한계 2/3보다 큰가?</p></div>
+        <div class="prob-hint">밥의 상태는 \(p|\psi\rangle\langle\psi| + (1-p)\hat I/2\)가 된다.</div>
+        <div class="prob-sol"><p>\(F = p + (1-p)/2 = (1 + p)/2 = 0.800 \gt 0.667\). 같은 자원은 CHSH는 위반하지 못하지만(\(S = 1.70\)) 순간이동에는 쓸모가 있다 — 얽힘의 쓸모는 과제마다 다르다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="BB84" data-answer="0.100; 0.0620" data-label="e =; r =">
+        <div class="prob-q"><p>잡음이 없는 BB84 채널에서 이브가 광자의 40%를 가로채기–재전송한다. 선별 키의 QBER와 쇼어–프레스킬 비밀 키 비율 \(r = 1 - 2h(e)\)은?</p></div>
+        <div class="prob-hint">\(e = f/4\).</div>
+        <div class="prob-sol"><p>\(e = 0.40/4 = 0.100\). \(h(0.1) = 0.1\times3.322 + 0.9\times0.152 = 0.469\), \(r = 1 - 0.938 = 0.0620\). 키는 만들 수 있지만 선별 키의 6%만 남는다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="그로버" data-answer="25" data-label="k =" data-unit="회">
+        <div class="prob-q"><p>10큐비트(\(N = 1024\))에서 표시된 항목 하나를 찾는 그로버 알고리즘의 최적 반복 횟수는? (\(k = \text{round}[\pi/(4\theta) - 1/2]\), \(\sin\theta = 1/\sqrt N\))</p></div>
+        <div class="prob-hint">\(\theta = \arcsin(1/32)\).</div>
+        <div class="prob-sol"><p>\(\theta = 0.031255\) rad, \(\pi/(4\theta) - 0.5 = 24.63\) → \(k = 25\). 성공 확률 \(\sin^2(51\theta) = 0.9995\). 고전 평균 512번에 비해 약 20배 적다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="반복 부호" data-answer="1.18e-3" data-label="P_L =">
+        <div class="prob-q"><p>물리 비트 반전 확률이 \(p = 0.020\)일 때 3큐비트 반복 부호의 논리 오류율은?</p></div>
+        <div class="prob-hint">\(P_L = 3p^2 - 2p^3\).</div>
+        <div class="prob-sol"><p>\(3(4.0\times10^{-4}) - 2(8.0\times10^{-6}) = 1.200\times10^{-3} - 1.6\times10^{-5} = 1.18\times10^{-3}\). 약 17배 개선이다.</p></div>
+      </div>
+      <div class="problem" data-level="2" data-topic="스핀 큐비트" data-answer="0.714" data-label="B₀ =" data-unit="T">
+        <div class="prob-q"><p>\(g = 2.00\)인 실리콘 전자 스핀 큐비트의 진동수를 20.0 GHz로 맞추려면 자기장이 얼마여야 하나?</p></div>
+        <div class="prob-hint">\(f = g(\mu_B/h)B\).</div>
+        <div class="prob-sol"><p>\(B = 20.0/(2\times13.996) = 0.714\) T. 제만 에너지 \(hf = 82.7\ \mu\text{eV}\)에 해당한다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="열 들뜸" data-answer="3.14e-3" data-label="P_exc =">
+        <div class="prob-q"><p>6.0 GHz 트랜스몬의 유효 온도가 50 mK이다. 열평형 들뜸 확률은? (2준위로 근사)</p></div>
+        <div class="prob-hint">\(x = hf/k_BT\), \(P_\text{exc} = 1/(1 + e^x)\).</div>
+        <div class="prob-sol"><p>\(x = (6.626\times10^{-34}\times6.0\times10^9)/(1.381\times10^{-23}\times0.050) = 5.76\). \(P_\text{exc} = 1/(1 + e^{5.76}) = 3.14\times10^{-3}\). 초기화 오류 0.3%는 오류 정정 문턱에 비해 작지 않아, 측정 후 조건부 리셋 등으로 더 낮춘다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="교환 SWAP" data-answer="100; 0.500" data-label="t_SWAP =; P_max =" data-unit="ns; ">
+        <div class="prob-q"><p>두 스핀 큐비트 사이의 교환을 \(J/h = 5.0\) MHz로 켠다. (가) \(\Delta E_Z = 0\)일 때 완전한 SWAP에 걸리는 시간은? (나) 미세 자석 때문에 \(\Delta E_Z/h = 5.0\) MHz이면 \(|{\uparrow\downarrow}\rangle \to |{\downarrow\uparrow}\rangle\)의 최대 확률은?</p></div>
+        <div class="prob-hint">\(P = \frac{J^2}{J^2 + \Delta E_Z^2}\sin^2(\pi\sqrt{J^2 + \Delta E_Z^2}\,t/h)\).</div>
+        <div class="prob-sol"><p>(가) \(\pi Jt/h = \pi/2\) → \(t = h/2J = 1/(2\times5.0\ \text{MHz}) = 100\) ns. (나) \(J^2/(J^2 + \Delta E_Z^2) = 25/50 = 0.500\). 그래서 SWAP를 쓰려면 \(\Delta E_Z \ll J\), CZ를 쓰려면 \(\Delta E_Z \gg J\)로 설계한다.</p></div>
+      </div>
+      <div class="problem" data-level="3" data-topic="신호 불가">
+        <div class="prob-q"><p>앨리스와 밥이 \(|\Phi^+\rangle\)을 나눠 가졌다. 앨리스가 자기 큐비트를 \(z\) 기저로 재느냐 \(x\) 기저로 재느냐를 골라 밥에게 1비트를 보내려 한다. 옳은 것은?</p></div>
+        <div class="prob-choices"><button>밥이 \(z\) 기저로 재면 앨리스의 선택을 알 수 있다</button><button>여러 쌍을 쓰면 통계적으로 알 수 있다</button><button data-correct>어떤 경우에도 밥의 축약 상태는 \(\hat I/2\)라 앨리스의 선택을 알 수 없다</button><button>앨리스가 측정하는 순간 밥의 큐비트가 순수 상태로 바뀌므로 밥은 바로 안다</button></div>
+        <div class="prob-sol"><p>앨리스가 \(z\)로 재면 밥은 \(|0\rangle\), \(|1\rangle\)의 반반 혼합, \(x\)로 재면 \(|+\rangle\), \(|-\rangle\)의 반반 혼합을 갖는다. 둘 다 \(\hat I/2\)로 같은 밀도 행렬이라 어떤 측정 통계도 같다. 앨리스의 결과를 고전 통신으로 받아야 비로소 상관이 보인다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="quiz-sec" id="quiz">
+    <h2>개념 확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>큐비트 하나에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">연속적인 \(\theta, \phi\)를 담으므로 한 번의 측정으로 무한한 비트를 꺼낼 수 있다</button>
+        <button class="opt" data-correct>측정 한 번으로 얻는 고전 정보는 1비트이고, 쓸모는 진폭 사이의 간섭에서 나온다</button>
+        <button class="opt">전체 위상 \(e^{i\gamma}\)를 바꾸면 측정 확률이 바뀐다</button>
+        <button class="opt">\(Z\) 게이트는 계산 기저의 측정 확률을 바꾼다</button>
+      </div><div class="quiz-exp">홀레보 한계: \(n\)큐비트로는 최대 \(n\)비트. 전체 위상은 관측되지 않고, \(Z\)는 상대 위상만 바꿔 \(z\) 측정 확률은 그대로다.</div></div>
+      <div class="quiz-q"><p>CHSH 값 \(S = 2.4\)를 측정했다. 이 결과가 배제하는 것은?</p><div class="opts">
+        <button class="opt">양자역학</button>
+        <button class="opt" data-correct>측정 결과가 국소적인 숨은 변수로 미리 정해져 있다는 모든 이론</button>
+        <button class="opt">빛보다 느린 고전 통신</button>
+        <button class="opt">얽힌 상태의 존재</button>
+      </div><div class="quiz-exp">\(|S| \le 2\)는 국소성과 실재성(결과의 사전 결정)만으로 유도된다. 2.4는 양자역학의 한계 \(2\sqrt2\) 안이다. 신호를 보낼 수 있다는 뜻도 아니다.</div></div>
+      <div class="quiz-q"><p>양자 순간이동이 복제 불가 정리와 모순되지 않는 이유는?</p><div class="opts">
+        <button class="opt">순간이동은 직교 상태만 보낼 수 있으므로</button>
+        <button class="opt" data-correct>앨리스의 벨 측정이 원본 상태를 파괴하므로, 어느 순간에도 사본은 하나뿐이다</button>
+        <button class="opt">밥의 상태가 원본보다 충실도가 낮으므로</button>
+        <button class="opt">고전 비트에 상태가 완전히 기록되므로</button>
+      </div><div class="quiz-exp">측정 뒤 앨리스의 큐비트들은 \(|\psi\rangle\)과 무관한 계산 기저 상태다. 고전 2비트에도 \(\alpha, \beta\)는 담기지 않는다(네 결과가 각 1/4).</div></div>
+      <div class="quiz-q"><p>그로버 알고리즘에 대한 설명으로 옳지 않은 것은?</p><div class="opts">
+        <button class="opt">한 번의 반복은 2차원 평면에서 \(2\theta\)만큼의 회전이다</button>
+        <button class="opt">최적 반복 횟수는 \(\sqrt N\)에 비례한다</button>
+        <button class="opt" data-correct>반복을 많이 할수록 성공 확률이 계속 1에 다가간다</button>
+        <button class="opt">\(N = 4\)에서 한 번 반복하면 확률 1로 답을 찾는다</button>
+      </div><div class="quiz-exp">\(P_k = \sin^2[(2k+1)\theta]\)는 진동한다. 최적점을 지나면 확률이 다시 떨어진다. \(N = 4\)이면 \(\theta = 30^\circ\), \(3\theta = 90^\circ\)라 한 번에 정확히 1이다.</div></div>
+      <div class="quiz-q"><p>5 GHz 트랜스몬을 4 K에 두면 안 되는 가장 직접적인 이유는?</p><div class="opts">
+        <button class="opt">4 K에서는 큐비트 진동수가 0으로 떨어지므로</button>
+        <button class="opt" data-correct>\(hf/k_BT \approx 0.06\)이라 열 들뜸 확률이 거의 1/2이고 열 광자가 마이크로파 모드를 채우므로</button>
+        <button class="opt">조지프슨 에너지가 음수가 되므로</button>
+        <button class="opt">4 K에서는 마이크로파가 동축선을 지나지 못하므로</button>
+      </div><div class="quiz-exp">\(hf/k_B = 0.24\) K이므로 4 K에서는 큐비트가 열적으로 거의 섞인 상태다(\(\bar n \approx 16\)). 게다가 알루미늄 접합은 \(T_c \approx 1.2\) K 아래에서만 초전도다. 수십 mK가 필요하고, 그래서 제어 전자 회로만 4 K 단에 둔다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const pal = () => SB.palette();
+  const TAU = 2 * Math.PI, DEG = Math.PI / 180, S2 = Math.SQRT1_2, PI = Math.PI;
+  const K = QM.K, MUBH = 13.996244936, KBUEV = 86.17333262, HK = K.h / K.kB; // h/kB (K·s)
+  const handle = (ctx, x, y, col, r = 9) => { ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke(); ctx.restore(); };
+  const fx = (x, d = 2) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(d);
+  const SUPD = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  const sup = (e) => String(e).replace(/-/g, "⁻").replace(/\d/g, (d) => SUPD[d]);
+  const sci = (x, d = 2) => { if (x === 0) return "0"; if (!isFinite(x)) return "—"; const s = x < 0 ? "−" : ""; x = Math.abs(x); const e = Math.floor(Math.log10(x)); if (e >= -2 && e <= 3) return s + x.toPrecision(d + 1).replace(/\.?0+$/, (m) => (m.includes(".") ? "" : m)); const m = x / Math.pow(10, e); return `${s}${m.toFixed(d)}×10${sup(e)}`; };
+  const H2 = (e) => (e <= 0 || e >= 1 ? 0 : -(e * Math.log2(e) + (1 - e) * Math.log2(1 - e)));
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const mono = () => SB.color("mono"), font = () => SB.color("font");
+  const deg = (r) => (r / DEG).toFixed(0) + "°";
+  // 게이트 = 블로흐 구 회전 (축, 각)
+  const GA = { X: [[1, 0, 0], PI], Y: [[0, 1, 0], PI], Z: [[0, 0, 1], PI], H: [[S2, 0, S2], PI], S: [[0, 0, 1], PI / 2], Sdg: [[0, 0, 1], -PI / 2], T: [[0, 0, 1], PI / 4], Tdg: [[0, 0, 1], -PI / 4] };
+  const GNAME = { X: "X", Y: "Y", Z: "Z", H: "H", S: "S", Sdg: "S†", T: "T", Tdg: "T†" };
+  const GDESC = { X: "x축 둘레 180°", Y: "y축 둘레 180°", Z: "z축 둘레 180°", H: "(x+z)/√2 둘레 180°", S: "z축 둘레 90°", Sdg: "z축 둘레 −90°", T: "z축 둘레 45°", Tdg: "z축 둘레 −45°" };
+  const ease = (s) => (s < 0.5 ? 2 * s * s : 1 - 2 * (1 - s) * (1 - s));
+  const pickState = (view, cx, cy, R, x, y) => { const v = QM.blochPick(view, cx, cy, R, x, y), a = QM.blochAngles(v); return QM.blochState(a.theta, a.phi); };
+  /** 전체 위상을 α ≥ 0 실수로 맞춘 켓 문자열 */
+  const ket1 = (v, d = 3) => {
+    const a = QM.c.abs(QM.get(v, 0)) > 1e-9 ? QM.get(v, 0) : QM.get(v, 1), ph = Math.atan2(a[1], a[0]);
+    const w = QM.scale(v, [Math.cos(-ph), Math.sin(-ph)]), c0 = QM.get(w, 0), c1 = QM.get(w, 1), parts = [];
+    const f = (z) => { const s = QM.c.fmt(z, d); return Math.abs(z[0]) > 1e-9 && Math.abs(z[1]) > 1e-9 ? `(${s})` : s; };
+    if (QM.c.abs(c0) > 1e-6) parts.push(`${f(c0)}|0⟩`);
+    if (QM.c.abs(c1) > 1e-6) parts.push(`${f(c1)}|1⟩`);
+    return parts.join(" + ").replace(/\+ −/g, "− ").replace(/\+ \(−/g, "+ (−");
+  };
+  const probBars = (ctx, x, y, w, p0, P) => {
+    ctx.save(); ctx.font = "12px " + mono(); ctx.textBaseline = "middle"; ctx.textAlign = "left";
+    [[p0, "P(0)"], [1 - p0, "P(1)"]].forEach(([p, lab], i) => {
+      const yy = y + i * 22; ctx.fillStyle = P.dim; ctx.fillText(lab, x, yy);
+      ctx.fillStyle = P.grid; ctx.fillRect(x + 40, yy - 6, w - 40, 12);
+      ctx.fillStyle = i ? P.accent2 : P.accent; ctx.fillRect(x + 40, yy - 6, (w - 40) * SB.clamp(p, 0, 1), 12);
+      SB.label(ctx, p.toFixed(w < 160 ? 2 : 3), x + 40 + Math.min(w - (w < 160 ? 70 : 82), (w - 40) * p + 4), yy, { align: "left", size: 11, mono: true });
+    });
+    ctx.restore();
+  };
+
+  /* ---------------------------------------------------------- 머리: 게이트를 지나는 블로흐 화살표 */
+  {
+    const view = { yaw: -0.55, pitch: 0.32 };
+    const seq = ["H", "T", "H", "S", "H", "Z", "X", "H", "T", "T", "H", "Y", "S", "H"];
+    let psi = QM.vec([1, 0]), k = 0, anim = null, trail = [], idle = 0, dragging = false, last = null;
+    const next = () => {
+      const g = seq[k % seq.length]; k++;
+      const [n, a] = GA[g], r0 = QM.bloch(psi);
+      anim = { g, n, a, r0, cur: r0, t: 0, psi1: QM.mul(QM.gates[g], psi) }; trail = [r0]; last = g; idle = 0;
+    };
+    const cv = SB.canvas("cv-hero", (ctx, w, h, self) => {
+      const P = pal(), nar = w < 480, R = nar ? Math.min(h * 0.3, w * 0.22) : Math.min(h * 0.33, w * 0.26), cx = nar ? R + 16 : Math.max(R + 18, w * 0.3), cy = h * 0.5 - 6;
+      const r = anim ? anim.cur : QM.bloch(psi);
+      QM.drawBloch(ctx, cx, cy, R, { view, vectors: [{ v: r, color: P.accent, width: 3.2 }], trail, field: anim ? anim.n.map((c) => c * 1.2) : null });
+      const q = QM.blochProject(view, r); self._g = { cx, cy, R }; self._tip = [cx + R * q[0], cy - R * q[1]];
+      if (!anim) handle(ctx, self._tip[0], self._tip[1], P.accent, 8);
+      // 오른쪽 글
+      const x0 = cx + R + (nar ? 18 : 30), tw = Math.min(260, w - x0 - 10);
+      const g = anim ? anim.g : last;
+      if (g) { SB.label(ctx, GNAME[g], x0, cy - 62, { align: "left", bold: true, size: 26, mono: true, color: P.accent }); SB.label(ctx, GDESC[g], x0, cy - 34, { align: "left", size: 12, color: P.dim }); }
+      else SB.label(ctx, "|0⟩에서 시작", x0, cy - 48, { align: "left", size: 14, bold: true });
+      probBars(ctx, x0, cy - 2, tw, (1 + r[2]) / 2, P);
+      SB.label(ctx, nar ? `r=(${fx(r[0], 1)},${fx(r[1], 1)},${fx(r[2], 1)})` : `r = (${fx(r[0])}, ${fx(r[1])}, ${fx(r[2])})`, x0, cy + 46, { align: "left", size: nar ? 10 : 11, mono: true, color: P.dim });
+      // 아래 회로 띠
+      const bw = 30, gap = 8, nShow = Math.max(3, Math.min(14, Math.floor((w - 40) / (bw + gap)))), y0 = h - 30, start = Math.max(0, k - Math.ceil(nShow / 2));
+      ctx.save(); ctx.strokeStyle = P.border; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(14, y0); ctx.lineTo(w - 14, y0); ctx.stroke();
+      ctx.font = "13px " + mono(); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      for (let i = 0; i < nShow; i++) {
+        const j = start + i, gg = seq[j % seq.length], bx = 20 + i * (bw + gap) + bw / 2, cur = anim ? j === k - 1 : false, done = j < k;
+        ctx.fillStyle = cur ? SB.color("accent-soft") : P.surface || P.bg; ctx.strokeStyle = cur ? P.accent : P.border; ctx.globalAlpha = done && !cur ? 0.55 : 1;
+        ctx.beginPath(); ctx.rect(bx - bw / 2, y0 - 13, bw, 26); ctx.fill(); ctx.stroke(); ctx.fillStyle = cur ? P.accent : P.text; ctx.fillText(GNAME[gg], bx, y0 + 1);
+      }
+      ctx.restore();
+    }, { aspect: 0.46, minHeight: 280, maxHeight: 360 });
+    let downXY = null;
+    SB.drag(cv, {
+      free: true,
+      handles: () => (anim || !cv._tip ? [] : [{ id: "tip", x: cv._tip[0], y: cv._tip[1], r: 14 }]),
+      down: (id, x, y) => { if (id === "tip") dragging = true; else downXY = [x, y]; },
+      move: (id, x, y) => { if (id !== "tip") return; const g = cv._g; psi = pickState(view, g.cx, g.cy, g.R, x, y); trail = []; idle = 0; },
+      up: (id) => { if (id === "tip") dragging = false; else if (downXY) { if (anim) { psi = anim.psi1; anim = null; } next(); } downXY = null; },
+    });
+    SB.loop("hero", (dt) => {
+      if (anim) {
+        anim.t = Math.min(1, anim.t + dt / 0.9);
+        anim.cur = QM.v3.rotate(anim.r0, anim.n, anim.a * ease(anim.t)); trail.push(anim.cur); if (trail.length > 120) trail.shift();
+        if (anim.t >= 1) { psi = anim.psi1; anim = null; idle = 0; }
+      } else if (!dragging) { idle += dt; if (idle > 1.8) next(); }
+      cv.redraw();
+    });
+  }
+
+  /* ---------------------------------------------------------- 1. 라비 각 (tangle) */
+  SB.tangle("tg-rabi", (v) => {
+    const a = TAU * v.f * 1e6 * v.t * 1e-9, p = Math.sin(a / 2) ** 2, tpi = 1e3 / (2 * v.f);
+    const ad = ((a / DEG) % 360 + 360) % 360;
+    let msg = "";
+    if (Math.abs(p - 1) < 0.005) msg = "정확히 π 펄스, 곧 X 게이트다.";
+    else if (Math.abs(p - 0.5) < 0.01) msg = "π/2 펄스: |0⟩을 적도 위의 중첩으로 보낸다.";
+    else if (p < 0.005) msg = "2π의 배수만큼 돌아 제자리로 왔다(전체 위상 −1이 붙었을 수 있다).";
+    return { a: `${(a / DEG).toFixed(0)}° (한 바퀴 기준 ${ad.toFixed(0)}°)`, p: p.toFixed(3), tpi: tpi >= 1000 ? (tpi / 1000).toFixed(2) + " µs" : tpi.toFixed(1) + " ns", msg };
+  });
+
+  /* ---------------------------------------------------------- 1. 블로흐 구 게이트 실험실 */
+  {
+    const view = { yaw: -0.6, pitch: 0.34 };
+    let psi = QM.vec([1, 0]), seq = [], anim = null, trail = [], target = null, targetSol = 0, won = false, dragTip = false, rot = null;
+    const mode = SB.seg("gt-mode", () => { if (mode() === "goal") newGoal(); else { target = null; update(); } });
+    const ga = SB.range("gt-a", (v) => v + "°");
+    const fid = () => (target ? QM.fidelity(target, psi) : NaN);
+    function newGoal() {
+      let t, sol;
+      do { t = QM.vec([1, 0]); sol = []; const L = randInt(3, 5); for (let i = 0; i < L; i++) { const g = pick(["H", "S", "T"]); sol.push(g); t = QM.mul(QM.gates[g], t); } }
+      while (QM.fidelity(t, QM.vec([1, 0])) > 0.9 || QM.fidelity(t, psi) > 0.95);
+      target = t; targetSol = sol.length; won = false; seq = []; psi = QM.vec([1, 0]); trail = []; update();
+    }
+    function apply(name) {
+      if (anim) { psi = anim.psi1; anim = null; }
+      let G, n, a, lab;
+      if (name[0] === "R") { const al = ga() * DEG; n = { Rx: [1, 0, 0], Ry: [0, 1, 0], Rz: [0, 0, 1] }[name]; a = al; G = QM.gates[name](al); lab = `${name}(${ga()}°)`; }
+      else { [n, a] = GA[name]; G = QM.gates[name]; lab = GNAME[name]; }
+      const r0 = QM.bloch(psi);
+      anim = { n, a, r0, cur: r0, t: 0, psi1: QM.mul(G, psi) }; trail = [r0]; seq.push(lab); if (seq.length > 14) seq.shift();
+      loop.start();
+    }
+    const cv = SB.canvas("cv-gate", (ctx, w, h, self) => {
+      const P = pal(), R = Math.min(w, h) * 0.38, cx = w / 2, cy = h / 2 + 4;
+      const r = anim ? anim.cur : QM.bloch(psi), vecs = [];
+      if (target) vecs.push({ v: QM.bloch(target), color: P.accent2, width: 2, label: "과녁", dot: true });
+      vecs.push({ v: r, color: P.accent, width: 3.2 });
+      QM.drawBloch(ctx, cx, cy, R, { view, vectors: vecs, trail, field: anim ? anim.n.map((c) => c * 1.25) : null });
+      const q = QM.blochProject(view, r); self._g = { cx, cy, R }; self._tip = [cx + R * q[0], cy - R * q[1], q[2]];
+      if (!anim) handle(ctx, self._tip[0], self._tip[1], P.accent, 8);
+      if (won) SB.label(ctx, "성공!", 14, 20, { align: "left", bold: true, size: 15, color: P.ok });
+      SB.label(ctx, "빈 곳을 끌면 구가 돈다", w - 10, h - 12, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 0.92, minHeight: 280, maxHeight: 440 });
+    SB.drag(cv, {
+      free: true,
+      handles: () => (anim || !cv._tip ? [] : [{ id: "tip", x: cv._tip[0], y: cv._tip[1], r: 14 }]),
+      down: (id, x, y) => { if (id === "tip") dragTip = true; else rot = { x, y, yaw: view.yaw, pitch: view.pitch }; },
+      move: (id, x, y) => {
+        if (id === "tip") { const g = cv._g; psi = pickState(view, g.cx, g.cy, g.R, x, y); trail = []; seq = ["(끌어 놓음)"]; update(); }
+        else if (rot) { view.yaw = rot.yaw + (x - rot.x) * 0.012; view.pitch = SB.clamp(rot.pitch + (y - rot.y) * 0.01, -1.4, 1.4); }
+      },
+      up: () => { dragTip = false; rot = null; },
+    });
+    const loop = SB.loop("sim-gate", (dt) => {
+      if (!anim) { loop.stop(); return; }
+      anim.t = Math.min(1, anim.t + dt / 0.7);
+      anim.cur = QM.v3.rotate(anim.r0, anim.n, anim.a * ease(anim.t)); trail.push(anim.cur);
+      if (anim.t >= 1) { psi = anim.psi1; anim = null; update(); }
+      cv.redraw();
+    });
+    function update() {
+      const r = QM.bloch(psi), A = QM.blochAngles(r), p0 = (1 + r[2]) / 2;
+      SB.stat("gt-ket", ket1(psi));
+      SB.stat("gt-ang", `(${(A.theta / DEG).toFixed(1)}°, ${(((A.phi / DEG) + 360) % 360).toFixed(1)}°)`);
+      SB.stat("gt-p", `${p0.toFixed(3)} / ${(1 - p0).toFixed(3)}`);
+      SB.stat("gt-seq", seq.length ? seq.join(" → ") : "—");
+      if (target) {
+        const F = fid(); if (F >= 0.99 && !won && seq.length && seq[0] !== "(끌어 놓음)") won = true;
+        SB.stat("gt-fid", `${F.toFixed(3)}${won ? ` ✓ 성공 (${seq.length}개, 예시 해답 ${targetSol}개 이하)` : F >= 0.99 ? " (끌어 놓기는 무효)" : ""}`);
+      } else SB.stat("gt-fid", "자유 모드");
+      cv.redraw();
+    }
+    document.querySelectorAll("#sim-gate [data-g]").forEach((b) => b.addEventListener("click", () => apply(b.dataset.g)));
+    document.getElementById("gt-reset").addEventListener("click", () => { anim = null; psi = QM.vec([1, 0]); seq = []; trail = []; won = false; update(); });
+    document.getElementById("gt-new").addEventListener("click", () => { mode.set("goal", false); newGoal(); });
+    update();
+  }
+
+  /* ---------------------------------------------------------- 2. 메모리 (tangle) */
+  SB.tangle("tg-mem", (v) => {
+    const N = Math.pow(2, v.n), B = 16 * N, units = ["바이트", "KB", "MB", "GB", "TB", "PB", "EB", "ZB"];
+    let u = 0, x = B; while (x >= 1000 && u < units.length - 1) { x /= 1000; u++; }
+    const msg = B < 3.2e10 ? "노트북 메모리로 충분하다." : B < 2e16 ? "가장 큰 슈퍼컴퓨터급 메모리가 필요하다." : "지구상의 어떤 고전 컴퓨터로도 상태 벡터 전체를 저장할 수 없다.";
+    return { N: N < 1e6 ? N.toLocaleString("en-US") : sci(N, 2), M: `${x < 10 ? x.toFixed(2) : x.toFixed(1)} ${units[u]}`, msg };
+  });
+
+  /* ---------------------------------------------------------- 2. 슈미트 미니 */
+  {
+    let cv = null;
+    const gt = SB.range("sc-t", (v) => v + "°", () => cv && cv.redraw());
+    const rd = document.getElementById("sc-r");
+    cv = SB.canvas("cv-sch", (ctx, w, h, self) => {
+      const P = pal(), th = gt() * DEG, rz = Math.cos(2 * th), S = H2(Math.cos(th) ** 2), Cc = Math.abs(Math.sin(2 * th));
+      const lw = Math.min(w * 0.36, h * 1.0), R = Math.min(lw * 0.36, h * 0.34), cx = lw / 2 + 6, cy = h / 2;
+      QM.drawBloch(ctx, cx, cy, R, { view: { yaw: -0.6, pitch: 0.3 }, vectors: Math.abs(rz) > 0.02 ? [{ v: [0, 0, rz], color: P.accent, width: 3 }] : [], axisLabels: ["x", "y", "|0⟩", "|1⟩"] });
+      SB.label(ctx, `ρ_A: |r| = ${Math.abs(rz).toFixed(2)}`, cx, h - 12, { size: 11, mono: true, color: P.dim });
+      const ch = SB.chart(ctx, { x: lw + 40, y: 14, w: w - lw - 56, h: h - 60 }, { x: [0, 90], y: [0, 1.05], xLabel: "θ (°)", xTicks: [0, 30, 45, 60, 90], yTicks: [0, 0.5, 1],
+        series: [{ data: Array.from({ length: 91 }, (_, i) => [i, H2(Math.cos(i * DEG) ** 2)]), color: P.accent, width: 2.4 }, { data: Array.from({ length: 91 }, (_, i) => [i, Math.abs(Math.sin(2 * i * DEG))]), color: P.accent2, width: 2, dash: [6, 4] }],
+        vlines: [{ x: 45, color: P.faint }] });
+      self._ch = ch; self._pt = [ch.X(gt()), ch.Y(S)];
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(gt()), ch.Y(Cc), 4, 0, TAU); ctx.fill();
+      handle(ctx, ch.X(gt()), ch.Y(S), P.accent, 8);
+      SB.label(ctx, "S_E", ch.box.x + 8, ch.box.y + 10, { align: "left", size: 11, color: P.accent }); SB.label(ctx, "C", ch.box.x + 40, ch.box.y + 10, { align: "left", size: 11, color: P.accent2 });
+      rd.textContent = `S_E = ${S.toFixed(3)} 비트 · C = ${Cc.toFixed(3)}`;
+    }, { aspect: 0.4, minHeight: 200, maxHeight: 260 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "p", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; const t = Math.round(SB.clamp(((x - ch.box.x) / ch.box.w) * 90, 0, 90)); gt.set(t, true); } });
+  }
+
+  /* ---------------------------------------------------------- 2. 3큐비트 회로판 */
+  {
+    const NC = 6, NQ = 3;
+    let cols = Array.from({ length: NC }, () => ({ g: [null, null, null], cx: null })), pending = null, shots = null;
+    const tool = SB.seg("ci-tool", () => { pending = null; cvc.redraw(); });
+    const goal = SB.seg("ci-goal", () => refresh());
+    const GOALS = { phi: [[0, S2], [6, S2]], psi: [[1, S2], [2, -S2]], ghz: [[0, S2], [7, S2]] };
+    const GLAB = { phi: "Φ⁺ ⊗ |0⟩", psi: "|0⟩ ⊗ Ψ⁻", ghz: "GHZ" };
+    const run = () => { const R = QM.register(NQ); cols.forEach((c) => { if (c.cx) R.cnot(c.cx[0], c.cx[1]); else c.g.forEach((g, q) => g && R.apply(QM.gates[g], q)); }); return R; };
+    let Rg = run();
+    const cvc = SB.canvas("cv-circ", (ctx, w, h, self) => {
+      const P = pal(), x0 = 56, top = 14, rh = (h - top - 10) / NQ, cw = (w - x0 - 12) / NC;
+      self._L = { x0, top, rh, cw };
+      ctx.save(); ctx.font = "12px " + mono(); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      for (let q = 0; q < NQ; q++) { const y = top + (q + 0.5) * rh; ctx.fillStyle = P.dim; ctx.fillText(`q${q} |0⟩`, x0 - 6, y); ctx.strokeStyle = P.border; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(w - 8, y); ctx.stroke(); }
+      for (let c = 0; c < NC; c++) {
+        const xc = x0 + (c + 0.5) * cw, col = cols[c];
+        ctx.strokeStyle = P.grid; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(x0 + c * cw, top); ctx.lineTo(x0 + c * cw, h - 8); ctx.stroke(); ctx.setLineDash([]);
+        if (col.cx) {
+          const [a, b] = col.cx, ya = top + (a + 0.5) * rh, yb = top + (b + 0.5) * rh;
+          ctx.strokeStyle = P.text; ctx.fillStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xc, ya); ctx.lineTo(xc, yb + Math.sign(yb - ya) * 12); ctx.stroke();
+          ctx.beginPath(); ctx.arc(xc, ya, 5.5, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(xc, yb, 12, 0, TAU); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(xc - 12, yb); ctx.lineTo(xc + 12, yb); ctx.stroke();
+        } else col.g.forEach((g, q) => {
+          if (!g) return; const y = top + (q + 0.5) * rh, s = Math.min(30, cw - 8, rh - 8);
+          ctx.fillStyle = SB.color("accent-soft"); ctx.strokeStyle = P.accent; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.rect(xc - s / 2, y - s / 2, s, s); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = P.text; ctx.textAlign = "center"; ctx.font = "13px " + mono(); ctx.fillText(g, xc, y + 1);
+        });
+        if (pending && pending[0] === c) { const y = top + (pending[1] + 0.5) * rh; ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(xc, y, 7, 0, TAU); ctx.fill(); SB.label(ctx, "표적은?", xc, y - 16, { size: 11, color: P.warn }); }
+      }
+      ctx.restore();
+    }, { aspect: 0.42, minHeight: 170, maxHeight: 220 });
+    const cva = SB.canvas("cv-amp", (ctx, w, h) => {
+      const P = pal(), pr = Rg.probs();
+      const ch = SB.chart(ctx, { x: 44, y: 14, w: w - 56, h: h - 60 }, { x: [-0.5, 7.5], y: [0, 1], xTicks: [], yTicks: [0, 0.5, 1] });
+      const bw = (ch.box.w / 8) * 0.62;
+      for (let k = 0; k < 8; k++) {
+        const x = ch.X(k), y = ch.Y(pr[k]);
+        if (pr[k] > 1e-9) { ctx.fillStyle = QM.phaseColor(Rg.re[k], Rg.im[k], 0.9, SB.isDark() ? 58 : 48); ctx.fillRect(x - bw / 2, y, bw, ch.Y(0) - y); }
+        if (shots) { const f = shots[k] / 100; ctx.strokeStyle = P.text; ctx.lineWidth = 1.5; ctx.setLineDash([3, 2]); ctx.strokeRect(x - bw / 2 - 3, ch.Y(f), bw + 6, ch.Y(0) - ch.Y(f)); ctx.setLineDash([]); }
+        SB.label(ctx, "|" + k.toString(2).padStart(3, "0") + "⟩", x, ch.Y(0) + 14, { size: w < 420 ? 9 : 11, mono: true, color: P.dim });
+      }
+      if (shots) SB.label(ctx, "점선 = 100번 측정의 빈도", ch.box.x + ch.box.w - 32, ch.box.y + 6, { align: "right", size: 11, color: P.dim });
+      QM.drawPhaseWheel(ctx, ch.box.x + ch.box.w - 14, ch.box.y + 16, 11);
+    }, { aspect: 0.42, minHeight: 170, maxHeight: 220 });
+    function refresh() {
+      Rg = run();
+      SB.stat("ci-ket", Rg.ket(3));
+      const ent = [0, 1, 2].map((q) => QM.entropy(QM.ptrace(Rg.vec(), [2, 2, 2], [q])));
+      SB.stat("ci-ent", ent.map((s, q) => `q${q}: ${Math.max(0, s).toFixed(2)}`).join(" · "));
+      const g = goal();
+      if (g === "none") SB.stat("ci-fid", "자유");
+      else { let r = 0, i = 0; GOALS[g].forEach(([k, a]) => { r += a * Rg.re[k]; i += a * Rg.im[k]; }); const F = r * r + i * i; SB.stat("ci-fid", `${GLAB[g]}: 충실도 ${F.toFixed(3)}${F > 0.999 ? " ✓ 성공" : ""}`); }
+      cvc.redraw(); cva.redraw();
+    }
+    SB.drag(cvc, {
+      free: true, handles: () => [],
+      down: (id, x, y) => {
+        const L = cvc._L; if (!L) return; const c = Math.floor((x - L.x0) / L.cw), q = Math.floor((y - L.top) / L.rh);
+        if (c < 0 || c >= NC || q < 0 || q >= NQ) return;
+        const t = tool(), col = cols[c]; shots = null;
+        if (t === "E") { if (col.cx) col.cx = null; else col.g[q] = null; pending = null; }
+        else if (t === "C") {
+          if (pending && pending[0] === c && pending[1] !== q) { cols[c] = { g: [null, null, null], cx: [pending[1], q] }; pending = null; }
+          else if (pending && pending[0] === c && pending[1] === q) pending = null;
+          else pending = [c, q];
+        } else { if (col.cx) col.cx = null; col.g[q] = col.g[q] === t ? null : t; pending = null; }
+        refresh();
+      },
+    });
+    document.getElementById("ci-clear").addEventListener("click", () => { cols = cols.map(() => ({ g: [null, null, null], cx: null })); pending = null; shots = null; refresh(); });
+    document.getElementById("ci-bell").addEventListener("click", () => { cols = cols.map(() => ({ g: [null, null, null], cx: null })); cols[0].g[0] = "H"; cols[1].cx = [0, 1]; pending = null; shots = null; refresh(); });
+    document.getElementById("ci-shot").addEventListener("click", () => { const pr = Rg.probs(); shots = new Array(8).fill(0); for (let s = 0; s < 100; s++) { let u = Math.random(), k = 0; while (k < 7 && u >= pr[k]) { u -= pr[k]; k++; } shots[k]++; } cva.redraw(); });
+    cols[0].g[0] = "H"; cols[1].cx = [0, 1];
+    refresh();
+  }
+
+  /* ---------------------------------------------------------- 2. 공존도 드릴 */
+  SB.drill("drill-ent", () => {
+    let c, n2, det;
+    do { c = [0, 0, 0, 0].map(() => pick([-3, -2, -1, 0, 1, 1, 2, 3])); n2 = c.reduce((s, x) => s + x * x, 0); det = c[0] * c[3] - c[1] * c[2]; } while (n2 === 0 || det === 0);
+    const lab = ["00", "01", "10", "11"]; let s = "";
+    c.forEach((x, k) => { if (!x) return; const a = Math.abs(x); s += (s ? (x < 0 ? " - " : " + ") : x < 0 ? "-" : "") + (a === 1 ? "" : a) + `|${lab[k]}\\rangle`; });
+    const C = (2 * Math.abs(det)) / n2;
+    return { q: `<p>\\(|\\Psi\\rangle = (${s})/\\sqrt{${n2}}\\)의 공존도 \\(C = 2|c_{00}c_{11} - c_{01}c_{10}|\\)를 구하라.</p>`, answer: C, label: "C =", tol: "1%",
+      sol: `\\(c_{00}c_{11} - c_{01}c_{10} = (${c[0]})(${c[3]}) - (${c[1]})(${c[2]}) = ${det}\\)을 규격화 \\(${n2}\\)로 나누면 \\(C = 2\\times${Math.abs(det)}/${n2} = ${C.toFixed(3)}\\). ${C > 0.999 ? "최대로 얽힌 상태다." : ""}` };
+  });
+
+  /* ---------------------------------------------------------- 3. 상관 미니 */
+  const Elhv = (d) => { let x = Math.abs(((d + PI) % TAU + TAU) % TAU - PI); return 1 - (2 * x) / PI; };
+  {
+    let cv = null;
+    const gd = SB.range("co-d", (v) => v + "°", () => cv && cv.redraw());
+    const rd = document.getElementById("co-r");
+    cv = SB.canvas("cv-corr", (ctx, w, h, self) => {
+      const P = pal(), d = gd();
+      const ch = SB.chart(ctx, { x: 50, y: 12, w: w - 66, h: h - 58 }, { x: [0, 180], y: [-1.05, 1.05], xLabel: "Δ (°)", yLabel: "E", xTicks: [0, 45, 90, 135, 180], yTicks: [-1, 0, 1],
+        series: [{ data: Array.from({ length: 181 }, (_, i) => [i, Math.cos(i * DEG)]), color: P.accent, width: 2.6 }, { data: [[0, 1], [180, -1]], color: P.accent2, width: 2, dash: [6, 4] }],
+        vlines: [{ x: 45, color: P.faint }, { x: 135, color: P.faint }] });
+      const eq = Math.cos(d * DEG), el = Elhv(d * DEG);
+      ctx.strokeStyle = P.warn; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ch.X(d), ch.Y(eq)); ctx.lineTo(ch.X(d), ch.Y(el)); ctx.stroke();
+      ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(ch.X(d), ch.Y(el), 4.5, 0, TAU); ctx.fill();
+      handle(ctx, ch.X(d), ch.Y(eq), P.accent, 8); self._ch = ch; self._pt = [ch.X(d), ch.Y(eq)];
+      rd.textContent = `양자 ${fx(eq, 3)} · 국소 모형 ${fx(el, 3)} · 차 ${fx(eq - el, 3)}`;
+    }, { aspect: 0.36, minHeight: 190, maxHeight: 250 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "p", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; gd.set(Math.round(SB.clamp(((x - ch.box.x) / ch.box.w) * 180, 0, 180)), true); } });
+  }
+  SB.tangle("tg-wer", (v) => {
+    const S = 2 * Math.SQRT2 * v.p, sig = Math.sqrt((4 * (1 - (v.p * v.p) / 2)) / v.n), z = (S - 2) / sig;
+    return { S: S.toFixed(3), sig: sig.toFixed(3), msg: S <= 2 ? "아무리 많이 재도 국소 이론을 배제할 수 없다(\\(p \\le 0.707\\))." : z >= 5 ? `국소 한계 2를 약 ${z.toFixed(0)}σ로 넘어 확실히 배제한다.` : `국소 한계와의 차이가 ${z.toFixed(1)}σ라 더 많이 재야 확실하다.` };
+  });
+
+  /* ---------------------------------------------------------- 3. CHSH 시뮬레이터 */
+  {
+    const ang = { a: 0, a2: 90 * DEG, b: 45 * DEG, b2: 135 * DEG };
+    let meas = null, hit = false;
+    const src = SB.seg("ch-src", () => { meas = null; update(); });
+    const gp = SB.range("ch-p", (v) => v.toFixed(2), () => { meas = null; update(); });
+    const gn = SB.range("ch-n", (v) => Math.round(Math.pow(10, v)).toLocaleString("en-US"));
+    const Eth = (x, y) => (src() === "q" ? gp() * Math.cos(x - y) : Elhv(x - y));
+    const Sth = () => Eth(ang.a, ang.b) - Eth(ang.a, ang.b2) + Eth(ang.a2, ang.b) + Eth(ang.a2, ang.b2);
+    const COL = () => { const P = pal(); return { a: P.accent, a2: P.warn, b: P.accent2, b2: P.blue || P.accent2 }; };
+    const cv = SB.canvas("cv-chsh", (ctx, w, h, self) => {
+      const P = pal(), gw = 92, lw = w - gw, Rr = Math.min(h * 0.3, lw * (w < 480 ? 0.17 : 0.2)), cy = h * 0.47, cxA = lw * 0.27, cxB = lw * 0.74, col = COL();
+      self._G = { cxA, cxB, cy, Rr };
+      SB.label(ctx, "앨리스", cxA, cy + Rr + 34, { bold: true, size: 13 }); SB.label(ctx, "밥", cxB, cy + Rr + 34, { bold: true, size: 13 });
+      [[cxA, ["a", "a2"]], [cxB, ["b", "b2"]]].forEach(([cx, ks]) => {
+        ctx.strokeStyle = P.border; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, Rr, 0, TAU); ctx.stroke();
+        SB.dashLine(ctx, cx, cy - Rr - 8, cx, cy + Rr + 8, P.faint); SB.dashLine(ctx, cx - Rr - 8, cy, cx + Rr + 8, cy, P.faint);
+        SB.label(ctx, "z", cx + 8, cy - Rr - 10, { size: 10, color: P.dim }); SB.label(ctx, "x", cx + Rr + 12, cy + 9, { size: 10, color: P.dim });
+        ks.forEach((k) => { const t = ang[k], x = cx + Rr * Math.sin(t), y = cy - Rr * Math.cos(t); SB.arrow(ctx, cx, cy, x, y, { color: col[k], width: 2.6 }); handle(ctx, x, y, col[k], 8); { const lr = Rr + 16, lx = cx + lr * Math.sin(t), ly = cy - lr * Math.cos(t); SB.label(ctx, (k.length > 1 ? k[0] + "′" : k) + " " + deg(t), lx, ly + (Math.abs(Math.sin(t)) > 0.7 ? -14 : 0), { size: 11, bold: true, color: col[k] }); } });
+      });
+      // 연결선: 각 차
+      SB.label(ctx, "|Φ⁺⟩ 쌍", (cxA + cxB) / 2, cy + Rr + 34, { size: 11, color: P.dim });
+      // S 눈금
+      const gx = lw + 30, top = 30, bot = h - 24, Y = (s) => bot - ((s + 3) / 6) * (bot - top);
+      ctx.fillStyle = P.grid; ctx.fillRect(gx - 12, Y(2), 24, Y(-2) - Y(2));
+      ctx.strokeStyle = P.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(gx, top); ctx.lineTo(gx, bot); ctx.stroke();
+      [-2, 0, 2].forEach((s) => SB.label(ctx, String(s), gx + 26, Y(s), { size: 11, mono: true, color: P.dim }));
+      [2 * Math.SQRT2, -2 * Math.SQRT2].forEach((s) => { SB.dashLine(ctx, gx - 16, Y(s), gx + 16, Y(s), P.accent, [3, 3]); });
+      SB.label(ctx, "2√2", gx + 30, Y(2 * Math.SQRT2), { size: 11, mono: true, color: P.accent });
+      const st = Sth(); ctx.strokeStyle = P.text; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(gx, Y(st), 7, 0, TAU); ctx.stroke();
+      if (meas) { ctx.strokeStyle = P.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx, Y(meas.S - 2 * meas.sig)); ctx.lineTo(gx, Y(meas.S + 2 * meas.sig)); ctx.stroke(); ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(gx, Y(meas.S), 5, 0, TAU); ctx.fill(); }
+      SB.label(ctx, "S", gx, top - 18, { bold: true, size: 12 });
+      if (hit) SB.label(ctx, "과녁 S > 2.7 달성!", 12, h - 12, { align: "left", size: 12, bold: true, color: P.ok });
+    }, { aspect: 0.6, minHeight: 250, maxHeight: 380 });
+    let act = null;
+    SB.drag(cv, {
+      handles: () => { const G = cv._G; if (!G) return []; return ["a", "a2", "b", "b2"].map((k) => { const cx = k[0] === "a" ? G.cxA : G.cxB; return { id: k, x: cx + G.Rr * Math.sin(ang[k]), y: G.cy - G.Rr * Math.cos(ang[k]), r: 14 }; }); },
+      move: (id, x, y) => { if (!id) return; const G = cv._G, cx = id[0] === "a" ? G.cxA : G.cxB; let t = Math.atan2(x - cx, -(y - G.cy)); t = Math.round(t / (5 * DEG)) * 5 * DEG; ang[id] = ((t % TAU) + TAU) % TAU; meas = null; update(); },
+    });
+    function measure() {
+      const N = Math.round(Math.pow(10, gn())), q = src() === "q", p = gp(), pairs = [["a", "b"], ["a", "b2"], ["a2", "b"], ["a2", "b2"]], E = [];
+      pairs.forEach(([x, y]) => {
+        let s = 0; const ax = ang[x], by = ang[y], pe = (1 + p * Math.cos(ax - by)) / 2;
+        for (let i = 0; i < N; i++) { if (q) s += Math.random() < pe ? 1 : -1; else { const l = Math.random() * TAU; s += Math.sign(Math.cos(ax - l)) * Math.sign(Math.cos(by - l)) || 1; } }
+        E.push(s / N);
+      });
+      const S = E[0] - E[1] + E[2] + E[3], sig = Math.sqrt(E.reduce((t, e) => t + (1 - e * e), 0) / N);
+      meas = { E, S, sig }; update();
+    }
+    function update() {
+      const st = Sth(); if (st > 2.7) hit = true;
+      SB.stat("ch-st", st.toFixed(3));
+      if (meas) {
+        SB.stat("ch-sm", `${meas.S.toFixed(3)} ± ${meas.sig.toFixed(3)}`);
+        SB.stat("ch-e", meas.E.map((e) => fx(e, 2)).join(" · "));
+        const z = (Math.abs(meas.S) - 2) / meas.sig;
+        SB.stat("ch-v", z > 3 ? `국소 한계 위반 (${z.toFixed(1)}σ)` : z > 0 ? `2를 넘었지만 ${z.toFixed(1)}σ — 통계 부족` : "국소 한계 안");
+      } else { SB.stat("ch-sm", "측정 전"); SB.stat("ch-e", [["a", "b"], ["a", "b2"], ["a2", "b"], ["a2", "b2"]].map(([x, y]) => fx(Eth(ang[x], ang[y]), 2)).join(" · ") + " (이론)"); SB.stat("ch-v", Math.abs(st) > 2 + 1e-9 ? "이론상 위반" : "이론상 국소 한계 안"); }
+      cv.redraw();
+    }
+    document.getElementById("ch-run").addEventListener("click", measure);
+    document.getElementById("ch-opt").addEventListener("click", () => { Object.assign(ang, { a: 0, a2: 90 * DEG, b: 45 * DEG, b2: 135 * DEG }); meas = null; update(); });
+    document.getElementById("ch-rand").addEventListener("click", () => { ["a", "a2", "b", "b2"].forEach((k) => (ang[k] = randInt(0, 71) * 5 * DEG)); meas = null; hit = false; update(); });
+    update();
+  }
+
+  /* ---------------------------------------------------------- 4. 순간이동 */
+  {
+    const vA = { yaw: -0.6, pitch: 0.32 };
+    let th = 60 * DEG, ph = 100 * DEG, step = 0, m = null, avg = null;
+    const gp = SB.range("tp-p", (v) => v.toFixed(2), () => { avg = null; update(); });
+    const skip = document.getElementById("tp-skip");
+    const STEPS = ["0 준비", "1 얽힘 나누기", "2 CNOT·H", "3 벨 측정", "4 고전 2비트 전송", "5 밥의 보정"];
+    const psiV = () => QM.blochState(th, ph);
+    const pauliB = (r, mm) => { let v = r.slice(); if (mm[0]) v = [-v[0], -v[1], v[2]]; if (mm[1]) v = [v[0], -v[1], -v[2]]; return v; };
+    // QM.register로 실제 회로를 돌려 밥의 블로흐 벡터를 얻는다 (p = 1), 베르너 잡음은 p배
+    function bob() {
+      const p = gp(), r = QM.bloch(psiV());
+      if (step === 0) return [0, 0, 1];
+      if (step < 3) return [0, 0, 0];
+      const R = QM.register(3); R.apply(QM.gates.Ry(th), 0); R.apply(QM.gates.Rz(ph), 0); R.apply(QM.gates.H, 1); R.cnot(1, 2); R.cnot(0, 1); R.apply(QM.gates.H, 0);
+      // 측정 결과 m에 맞게 사영
+      const proj = (q, out) => { const b = 1 << (2 - q); for (let k = 0; k < 8; k++) if (!!(k & b) !== !!out) { R.re[k] = 0; R.im[k] = 0; } };
+      proj(0, m[0]); proj(1, m[1]);
+      const nrm = Math.sqrt(R.probs().reduce((s, x) => s + x, 0)); for (let k = 0; k < 8; k++) { R.re[k] /= nrm; R.im[k] /= nrm; }
+      if (step >= 5 && !skip.checked) { if (m[1]) R.apply(QM.gates.X, 2); if (m[0]) R.apply(QM.gates.Z, 2); }
+      const rb = R.blochOf(2); void r;
+      return rb.map((c) => c * p);
+    }
+    const cv = SB.canvas("cv-tele", (ctx, w, h, self) => {
+      const P = pal(), hc = Math.min(118, h * 0.34), x0 = 40, x1 = w - 14, ys = [22, 22 + (hc - 30) / 2, hc - 8];
+      // 회로
+      const cols = [0.12, 0.24, 0.38, 0.5, 0.64, 0.8, 0.9].map((f) => x0 + f * (x1 - x0));
+      const box = (x, y, t, on) => { const s = 22; ctx.fillStyle = on ? SB.color("accent-soft") : P.surface || P.bg; ctx.strokeStyle = on ? P.accent : P.border; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.rect(x - s / 2, y - s / 2, s, s); ctx.fill(); ctx.stroke(); ctx.fillStyle = P.text; ctx.font = "12px " + mono(); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(t, x, y + 1); };
+      const cnot = (x, yc, yt, on) => { ctx.strokeStyle = on ? P.accent : P.text; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x, yc); ctx.lineTo(x, yt + 9); ctx.stroke(); ctx.beginPath(); ctx.arc(x, yc, 4.5, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(x, yt, 9, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x - 9, yt); ctx.lineTo(x + 9, yt); ctx.stroke(); };
+      const hl = (xa, xb, on) => { if (!on) return; ctx.fillStyle = SB.color("accent-soft"); ctx.globalAlpha = 0.6; ctx.fillRect(xa, 8, xb - xa, hc - 2); ctx.globalAlpha = 1; };
+      hl(cols[0] - 16, cols[1] + 16, step === 1); hl(cols[2] - 16, cols[3] + 16, step === 2); hl(cols[4] - 16, cols[4] + 16, step === 3); hl(cols[4] + 16, cols[5] - 4, step === 4); hl(cols[5] - 16, cols[6] + 16, step === 5);
+      ctx.font = "11px " + mono(); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      ["ψ", "0", "0"].forEach((t, q) => { ctx.fillStyle = P.dim; ctx.fillText(q ? "|0⟩" : "|ψ⟩", x0 - 4, ys[q]); ctx.strokeStyle = P.border; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x0, ys[q]); ctx.lineTo(q < 2 ? cols[4] : x1, ys[q]); ctx.stroke(); });
+      box(cols[0], ys[1], "H", step === 1); cnot(cols[1], ys[1], ys[2], step === 1);
+      cnot(cols[2], ys[0], ys[1], step === 2); box(cols[3], ys[0], "H", step === 2);
+      [0, 1].forEach((q) => { box(cols[4], ys[q], m && step >= 3 ? String(m[q]) : "M", step === 3); });
+      ctx.strokeStyle = P.accent2; ctx.lineWidth = 1.2; [0, 1].forEach((q) => { const xe = q ? cols[5] : cols[6]; [-2, 2].forEach((o) => { ctx.beginPath(); ctx.moveTo(cols[4] + 11, ys[q] + o); ctx.lineTo(xe + o, ys[q] + o); ctx.lineTo(xe + o, ys[2] - 11); ctx.stroke(); }); });
+      box(cols[5], ys[2], "X", step === 5); box(cols[6], ys[2], "Z", step === 5);
+      // 블로흐 구 둘
+      const by = hc + (h - hc) / 2 - 4, R = Math.min((h - hc) * 0.32, w * 0.19), cxA = w * 0.27, cxB = w * 0.73;
+      self._A = { cx: cxA, cy: by, R };
+      const rA = QM.bloch(psiV()), rB = bob(), destroyed = step >= 3;
+      QM.drawBloch(ctx, cxA, by, R, { view: vA, vectors: destroyed ? [{ v: [0, 0, m[0] ? -1 : 1], color: P.dim, width: 2 }] : [{ v: rA, color: P.accent, width: 3 }], labels: R > 50 });
+      if (!destroyed) { const q = QM.blochProject(vA, rA); self._tip = [cxA + R * q[0], by - R * q[1]]; handle(ctx, self._tip[0], self._tip[1], P.accent, 8); } else self._tip = null;
+      QM.drawBloch(ctx, cxB, by, R, { view: vA, vectors: [{ v: rA, color: P.faint || P.dim, width: 1.5, dot: false }, ...(Math.hypot(...rB) > 0.02 ? [{ v: rB, color: P.accent2, width: 3 }] : [])], labels: R > 50 });
+      if (Math.hypot(...rB) <= 0.02) { ctx.fillStyle = P.accent2; ctx.beginPath(); ctx.arc(cxB, by, 5, 0, TAU); ctx.fill(); }
+      SB.label(ctx, destroyed ? `앨리스 큐비트 0: |${m[0]}⟩ (원본 파괴)` : "앨리스: 보낼 |ψ⟩", cxA, by + R + 30, { size: 12, bold: true });
+      SB.label(ctx, step >= 5 ? (skip.checked ? "밥: 보정 없음" : "밥: 보정 완료") : step >= 3 ? "밥: 파울리가 걸린 ψ" : step >= 1 ? "밥: 최대 혼합(중심)" : "밥: |0⟩", cxB, by + R + 30, { size: 12, bold: true, color: P.accent2 });
+    }, { aspect: 0.62, minHeight: 360, maxHeight: 480 });
+    SB.drag(cv, { handles: () => (cv._tip ? [{ id: "t", x: cv._tip[0], y: cv._tip[1], r: 14 }] : []), move: (id, x, y) => { if (!id) return; const A = cv._A, a = QM.blochAngles(QM.blochPick(vA, A.cx, A.cy, A.R, x, y)); th = a.theta; ph = a.phi; avg = null; update(); } });
+    function update() {
+      SB.stat("tp-step", STEPS[step]);
+      SB.stat("tp-m", m && step >= 3 ? `${m[0]}${m[1]} (${["I", "X", "Z", "XZ"][m[0] * 2 + m[1]]}가 걸림)` : "—");
+      const rA = QM.bloch(psiV()), rB = bob(), F = (1 + rA[0] * rB[0] + rA[1] * rB[1] + rA[2] * rB[2]) / 2;
+      SB.stat("tp-f", F.toFixed(3));
+      SB.stat("tp-avg", avg ? `${avg.F.toFixed(3)} (${avg.n}회; 이론 ${avg.th.toFixed(3)})` : "—");
+      cv.redraw();
+    }
+    document.getElementById("tp-next").addEventListener("click", () => { if (step >= 5) { step = 0; m = null; } else { step++; if (step === 3) m = [Math.random() < 0.5 ? 1 : 0, Math.random() < 0.5 ? 1 : 0]; } update(); });
+    document.getElementById("tp-reset").addEventListener("click", () => { step = 0; m = null; update(); });
+    skip.addEventListener("change", () => { avg = null; update(); });
+    document.getElementById("tp-many").addEventListener("click", () => {
+      const keep = [step, m], n = 200, p = gp(), rA = QM.bloch(psiV()); let s = 0;
+      step = 5; for (let i = 0; i < n; i++) { m = [Math.random() < 0.5 ? 1 : 0, Math.random() < 0.5 ? 1 : 0]; const rB = bob(); s += (1 + rA[0] * rB[0] + rA[1] * rB[1] + rA[2] * rB[2]) / 2; }
+      [step, m] = keep; avg = { F: s / n, n, th: skip.checked ? 0.5 : (1 + p) / 2 }; void pauliB; update();
+    });
+    update();
+  }
+  {
+    let cv = null;
+    const gp = SB.range("fd-p", (v) => v.toFixed(2), () => cv && cv.redraw());
+    const rd = document.getElementById("fd-r");
+    cv = SB.canvas("cv-fid", (ctx, w, h, self) => {
+      const P = pal(), p = gp(), F = (1 + p) / 2;
+      const ch = SB.chart(ctx, { x: 50, y: 12, w: w - 66, h: h - 58 }, { x: [0, 1], y: [0.45, 1.02], xLabel: "얽힘 순도 p", yLabel: "평균 충실도", yTicks: [0.5, 0.667, 0.833, 1], yFmt: (v) => v.toFixed(2),
+        series: [{ data: [[0, 0.5], [1, 1]], color: P.accent, width: 2.6 }],
+        hlines: [{ y: 2 / 3, color: P.accent2, label: "고전 한계 2/3" }, { y: 5 / 6, color: P.warn, label: "최적 복제기 5/6" }],
+        vlines: [{ x: 1 / Math.SQRT2, color: P.faint, label: "CHSH 위반 p > 0.707", row: 0 }] });
+      handle(ctx, ch.X(p), ch.Y(F), P.accent, 8); self._ch = ch; self._pt = [ch.X(p), ch.Y(F)];
+      rd.textContent = `F = ${F.toFixed(3)} — ${F > 5 / 6 ? "최적 복제기보다 낫다" : F > 2 / 3 ? "고전 방법보다 낫다" : "고전 측정 후 준비로도 이만큼 한다"}`;
+    }, { aspect: 0.38, minHeight: 200, maxHeight: 260 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "p", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; gp.set(Math.round(SB.clamp((x - ch.box.x) / ch.box.w, 0, 1) * 100) / 100, true); } });
+  }
+
+  /* ---------------------------------------------------------- 5. BB84 */
+  {
+    const gf = SB.range("bb-f", (v) => v + "%");
+    const ge = SB.range("bb-e0", (v) => v.toFixed(1) + "%");
+    const gn = SB.range("bb-n", (v) => Math.round(Math.pow(10, v)).toLocaleString("en-US"));
+    let rows = [], res = null;
+    function run() {
+      const N = Math.round(Math.pow(10, gn())), f = gf() / 100, e0 = ge() / 100; rows = [];
+      let sift = 0, sample = 0, sampleErr = 0, errAll = 0;
+      for (let i = 0; i < N; i++) {
+        const ab = Math.random() < 0.5 ? 1 : 0, aB = Math.random() < 0.5 ? 1 : 0;
+        let sb = ab, sB = aB, eB = null;
+        if (Math.random() < f) { eB = Math.random() < 0.5 ? 1 : 0; const eb = eB === sB ? sb : Math.random() < 0.5 ? 1 : 0; sb = eb; sB = eB; }
+        const bB = Math.random() < 0.5 ? 1 : 0; let bb = bB === sB ? sb : Math.random() < 0.5 ? 1 : 0;
+        if (Math.random() < e0) bb ^= 1;
+        const kept = aB === bB, err = kept && bb !== ab;
+        if (kept) { sift++; if (err) errAll++; if (Math.random() < 0.2) { sample++; if (err) sampleErr++; } }
+        if (i < 16) rows.push({ ab, aB, eB, bB, bb, kept, err });
+      }
+      const q = sample ? sampleErr / sample : 0, r = Math.max(0, 1 - 2 * H2(q));
+      res = { N, sift, sample, q, qTrue: sift ? errAll / sift : 0, r, key: Math.floor((sift - sample) * r) };
+      SB.stat("bb-sift", `${sift.toLocaleString("en-US")} / ${N.toLocaleString("en-US")} (${((100 * sift) / N).toFixed(1)}%)`);
+      SB.stat("bb-q", `${(100 * q).toFixed(2)}% (표본 ${sample}비트)`);
+      SB.stat("bb-r", q >= 0.11 ? "0 — 키 폐기" : r.toFixed(3));
+      SB.stat("bb-k", q >= 0.11 ? "도청 의심: 키 없음" : `${res.key.toLocaleString("en-US")} 비트`);
+      cv.redraw();
+    }
+    const cv = SB.canvas("cv-bb84", (ctx, w, h) => {
+      const P = pal(), nC = w < 480 ? 10 : 16, lx = w < 480 ? 54 : 74, cw = (w - lx - 8) / nC, rh = 22, top = 10;
+      const labs = ["앨리스 비트", "앨리스 기저", "편광", "이브 기저", "밥 기저", "밥 비트", "선별"];
+      ctx.save(); ctx.font = (w < 480 ? "10px " : "12px ") + font(); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      labs.forEach((l, i) => { ctx.fillStyle = P.dim; ctx.fillText(w < 480 ? l.replace("앨리스 ", "A ").replace("이브 ", "E ").replace("밥 ", "B ") : l, lx - 6, top + (i + 0.5) * rh); });
+      ctx.font = "12px " + mono(); ctx.textAlign = "center";
+      const polar = (x, y, basis, bit, col) => { const a = basis ? (bit ? -45 : 45) * DEG : bit ? 90 * DEG : 0, L = Math.min(8, cw * 0.36); ctx.strokeStyle = col; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(x - L * Math.cos(a), y + L * Math.sin(a)); ctx.lineTo(x + L * Math.cos(a), y - L * Math.sin(a)); ctx.stroke(); };
+      for (let i = 0; i < nC; i++) {
+        const r = rows[i], x = lx + (i + 0.5) * cw; if (!r) continue;
+        const Y = (k) => top + (k + 0.5) * rh;
+        if (i % 2 === 0) { ctx.fillStyle = P.grid; ctx.globalAlpha = 0.35; ctx.fillRect(lx + i * cw, top, cw, rh * 7); ctx.globalAlpha = 1; }
+        ctx.fillStyle = P.text; ctx.fillText(r.ab, x, Y(0)); ctx.fillText(r.aB ? "×" : "+", x, Y(1));
+        polar(x, Y(2), r.aB, r.ab, P.accent);
+        ctx.fillStyle = r.eB === null ? P.faint : P.bad; ctx.fillText(r.eB === null ? "·" : r.eB ? "×" : "+", x, Y(3));
+        ctx.fillStyle = P.text; ctx.fillText(r.bB ? "×" : "+", x, Y(4)); ctx.fillText(r.bb, x, Y(5));
+        ctx.fillStyle = r.kept ? (r.err ? P.bad : P.ok) : P.faint; ctx.fillText(r.kept ? (r.err ? "✗" : "✓") : "", x, Y(6));
+      }
+      // QBER 막대
+      const by = top + 7 * rh + 22, bx0 = lx, bx1 = w - 18, X = (q) => bx0 + (q / 0.3) * (bx1 - bx0);
+      ctx.fillStyle = P.grid; ctx.fillRect(bx0, by, bx1 - bx0, 14);
+      if (res) { ctx.fillStyle = res.q >= 0.11 ? P.bad : P.accent; ctx.fillRect(bx0, by, Math.max(2, X(Math.min(0.3, res.q)) - bx0), 14); }
+      ctx.strokeStyle = P.bad; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0.11), by - 6); ctx.lineTo(X(0.11), by + 20); ctx.stroke();
+      ctx.restore();
+      SB.label(ctx, "11% 한계", X(0.11), by + 30, { size: 11, color: P.bad });
+      [0, 0.1, 0.2, 0.3].forEach((q) => SB.label(ctx, (q * 100).toFixed(0) + "%", X(q), by - 10, { size: 10, color: P.dim, mono: true }));
+      SB.label(ctx, "QBER", lx - 6, by + 7, { align: "right", size: 11, color: P.dim });
+      if (res) SB.label(ctx, `기대값 ≈ ${(100 * (ge() / 100 + (gf() / 400) * (1 - 2 * ge() / 100))).toFixed(1)}%`, bx1, by + 30, { align: "right", size: 11, color: P.dim });
+    }, { aspect: 0.42, minHeight: 240, maxHeight: 280 });
+    document.getElementById("bb-run").addEventListener("click", run);
+    run();
+  }
+  {
+    let cv = null;
+    const ge = SB.range("ky-e", (v) => v.toFixed(1) + "%", () => cv && cv.redraw());
+    const rd = document.getElementById("ky-r");
+    cv = SB.canvas("cv-key", (ctx, w, h, self) => {
+      const P = pal(), e = ge() / 100, r = 1 - 2 * H2(e);
+      const ch = SB.chart(ctx, { x: 50, y: 26, w: w - 66, h: h - 72 }, { x: [0, 15], y: [-0.2, 1], xLabel: "QBER e (%)", xTicks: [0, 3, 6, 9, 11, 15], yTicks: [0, 0.5, 1],
+        series: [{ data: Array.from({ length: 151 }, (_, i) => [i / 10, 1 - 2 * H2(i / 1000)]), color: P.accent, width: 2.6 }, { data: Array.from({ length: 151 }, (_, i) => [i / 10, H2(i / 1000)]), color: P.accent2, width: 2, dash: [6, 4] }],
+        hlines: [{ y: 0, color: P.axis, dash: [] }], vlines: [{ x: 11.0, color: P.bad }] });
+      [0, 20, 40, 60].forEach((f) => { const x = ch.X(f / 4); SB.label(ctx, "f " + f + "%", x, 12, { size: 10, color: P.dim, mono: true }); });
+      handle(ctx, ch.X(e * 100), ch.Y(Math.max(-0.2, r)), P.accent, 8); self._ch = ch; self._pt = [ch.X(e * 100), ch.Y(Math.max(-0.2, r))];
+      rd.textContent = `h(e) = ${H2(e).toFixed(3)} · r = ${r > 0 ? r.toFixed(3) : "0 (키 없음)"}`;
+    }, { aspect: 0.38, minHeight: 210, maxHeight: 270 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "p", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; ge.set(Math.round(SB.clamp(((x - ch.box.x) / ch.box.w) * 15, 0, 15) * 10) / 10, true); } });
+  }
+  SB.drill("drill-qber", () => {
+    const f = pick([8, 12, 16, 20, 24, 28, 32, 36, 40]), e = f / 400, r = 1 - 2 * H2(e);
+    return { q: `<p>잡음 없는 BB84 채널에서 이브가 광자의 ${f}%를 가로채기–재전송했다. 선별 키의 QBER \\(e\\)와 비밀 키 비율 \\(r = 1 - 2h(e)\\)를 구하라.</p>`, answer: [e, r], label: ["e =", "r ="], tol: "2%",
+      sol: `\\(e = f/4 = ${f / 100}/4 = ${e.toFixed(3)}\\). \\(h(${e.toFixed(3)}) = ${H2(e).toFixed(4)}\\)이므로 \\(r = 1 - 2(${H2(e).toFixed(4)}) = ${r.toFixed(3)}\\).` };
+  });
+
+  /* ---------------------------------------------------------- 6. 도이치–조사 미니 */
+  {
+    let fv = [0, 0, 0, 0, 0, 0, 0, 0], cv = null;
+    const rd = document.getElementById("dj-r");
+    const fsel = SB.seg("dj-f", (v) => { if (v === "c0") fv = fv.map(() => 0); else if (v === "c1") fv = fv.map(() => 1); else { const idx = [0, 1, 2, 3, 4, 5, 6, 7].sort(() => Math.random() - 0.5); fv = fv.map((_, k) => (idx.indexOf(k) < 4 ? 1 : 0)); } cv.redraw(); });
+    cv = SB.canvas("cv-dj", (ctx, w, h, self) => {
+      const P = pal(), nar = w < 480, rw = nar ? 92 : 150, x0 = nar ? 40 : 46, cw = (w - x0 - rw) / 8, y0 = 18, ch = 30, mid = h * 0.66;
+      self._L = { x0, cw, y0, ch };
+      const ones = fv.reduce((s, x) => s + x, 0), amp = fv.reduce((s, x) => s + (x ? -1 : 1), 0) / 8, P0 = amp * amp;
+      SB.label(ctx, "f(x)", x0 - 6, y0 + ch / 2, { align: "right", size: 12, color: P.dim });
+      SB.label(ctx, "(−1)ᶠ", x0 - 6, mid, { align: "right", size: 12, color: P.dim });
+      ctx.strokeStyle = P.axis; ctx.beginPath(); ctx.moveTo(x0, mid); ctx.lineTo(x0 + 8 * cw, mid); ctx.stroke();
+      for (let k = 0; k < 8; k++) {
+        const x = x0 + k * cw;
+        ctx.fillStyle = fv[k] ? SB.color("accent-soft") : P.surface || P.bg; ctx.strokeStyle = fv[k] ? P.accent : P.border; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.rect(x + 3, y0, cw - 6, ch); ctx.fill(); ctx.stroke();
+        SB.label(ctx, String(fv[k]), x + cw / 2, y0 + ch / 2, { size: nar ? 12 : 14, bold: true, mono: true });
+        SB.label(ctx, k.toString(2).padStart(3, "0"), x + cw / 2, y0 + ch + 12, { size: nar ? 7 : 10, mono: true, color: P.dim });
+        const bh = (h - mid - 14) * 0.9, yy = fv[k] ? mid : mid - bh;
+        ctx.fillStyle = fv[k] ? P.accent2 : P.accent; ctx.fillRect(x + cw * 0.25, yy, cw * 0.5, bh);
+      }
+      const xr = w - rw / 2 - 64;
+      SB.label(ctx, "P(|000⟩)", xr + 60, y0 + 12, { size: 12, color: P.dim });
+      SB.label(ctx, P0.toFixed(3), xr + 60, y0 + 40, { size: nar ? 17 : 22, bold: true, mono: true, color: P0 > 0.999 ? P.ok : P0 < 1e-9 ? P.accent2 : P.warn });
+      SB.label(ctx, ones === 0 || ones === 8 ? "상수" : ones === 4 ? "균형" : "약속 위반", xr + 60, y0 + 70, { size: 13, bold: true });
+      SB.label(ctx, `1의 개수 ${ones}`, xr + 60, y0 + 92, { size: 11, color: P.dim });
+      rd.textContent = ones === 0 || ones === 8 ? "모두 0을 잰다 → 상수" : ones === 4 ? "0이 아닌 것을 잰다 → 균형" : "결과가 확률적: 판정 불가";
+    }, { aspect: 0.34, minHeight: 190, maxHeight: 230 });
+    SB.drag(cv, { free: true, handles: () => [], down: (id, x, y) => { const L = cv._L; const k = Math.floor((x - L.x0) / L.cw); if (k >= 0 && k < 8 && y >= L.y0 - 4 && y <= L.y0 + L.ch + 16) { fv[k] ^= 1; } } });
+    void fsel;
+  }
+
+  /* ---------------------------------------------------------- 6. 그로버 tangle */
+  SB.tangle("tg-grv", (v) => {
+    const N = Math.pow(2, v.n), t = Math.asin(1 / Math.sqrt(N)), k = Math.max(0, Math.round(PI / (4 * t) - 0.5)), P = Math.sin((2 * k + 1) * t) ** 2;
+    const f = (x) => (x < 1e6 ? Math.round(x).toLocaleString("en-US") : sci(x, 2));
+    return { N: f(N), k: f(k), P: P > 0.9999 ? P.toFixed(6) : P.toFixed(4), cl: f(N / 2), gain: k ? f(N / 2 / k) : "—" };
+  });
+
+  /* ---------------------------------------------------------- 6. 그로버 시뮬레이터 */
+  {
+    let n = 4, N = 16, w0 = 5, a = [], k = 0, half = false, hist = [], plays = 0, wins = 0, measured = null;
+    const mode = SB.seg("gr-mode", () => { reset(true); });
+    const ns = SB.seg("gr-n", (v) => { n = +v; N = 1 << n; reset(true); });
+    const theta = () => Math.asin(1 / Math.sqrt(N));
+    const kopt = () => Math.max(1, Math.round(PI / (4 * theta()) - 0.5));
+    function reset(newW) { if (newW || w0 >= N) w0 = Math.floor(Math.random() * N); a = new Array(N).fill(1 / Math.sqrt(N)); k = 0; half = false; hist = [[0, a[w0] ** 2]]; measured = null; update(); }
+    const oracle = () => { a[w0] = -a[w0]; half = !half; measured = null; update(); };
+    const diffuse = () => { const m = a.reduce((s, x) => s + x, 0) / N; a = a.map((x) => 2 * m - x); if (half) { k++; half = false; hist.push([k, a[w0] ** 2]); } measured = null; update(); };
+    const cv1 = SB.canvas("cv-grv", (ctx, w, h, self) => {
+      const P = pal(), hide = mode() === "hide", amax = 1;
+      const ch = SB.chart(ctx, { x: 44, y: 14, w: w - 56, h: h - 60 }, { x: [-0.5, N - 0.5], y: [-amax, amax], xTicks: [], yTicks: [-1, -0.5, 0, 0.5, 1] });
+      self._ch = ch; const bw = Math.max(1.5, (ch.box.w / N) * 0.7), m = a.reduce((s, x) => s + x, 0) / N;
+      for (let j = 0; j < N; j++) {
+        const x = ch.X(j), y = ch.Y(a[j]), y0 = ch.Y(0);
+        ctx.fillStyle = hide ? P.faint : j === w0 ? P.accent : P.accent2; if (measured === j) ctx.fillStyle = P.warn;
+        if (hide) { ctx.globalAlpha = 0.5; ctx.fillRect(x - bw / 2, ch.Y(0.25), bw, y0 - ch.Y(0.25)); ctx.globalAlpha = 1; }
+        else ctx.fillRect(x - bw / 2, Math.min(y, y0), bw, Math.abs(y - y0));
+      }
+      if (!hide) { SB.dashLine(ctx, ch.box.x, ch.Y(m), ch.box.x + ch.box.w, ch.Y(m), P.warn, [5, 4]); SB.label(ctx, "평균", ch.box.x + ch.box.w - 4, ch.Y(m) - 9, { align: "right", size: 11, color: P.warn }); }
+      if (hide) SB.label(ctx, "답이 가려져 있다 — 언제 측정할지 정하라", ch.box.x + ch.box.w / 2, ch.box.y + 16, { size: 12, color: P.dim });
+      if (measured !== null) SB.label(ctx, `측정 결과 |${measured.toString(2).padStart(n, "0")}⟩`, ch.box.x + 6, ch.box.y + ch.box.h - 10, { align: "left", size: 12, bold: true, color: P.warn });
+      if (!hide && N <= 16) for (let j = 0; j < N; j++) SB.label(ctx, j.toString(2).padStart(n, "0"), ch.X(j), h - 14, { size: 9, mono: true, color: j === w0 ? P.accent : P.dim });
+    }, { aspect: 0.5, minHeight: 200, maxHeight: 260 });
+    const cv2 = SB.canvas("cv-grv2", (ctx, w, h) => {
+      const P = pal(), t = theta(), ko = kopt(), kmax = Math.max(2 * ko + 2, 4);
+      // 왼쪽 원
+      const R = Math.min(h * 0.36, w * 0.18), cx = R + 22, cy = h * 0.52;
+      ctx.strokeStyle = P.border; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+      SB.dashLine(ctx, cx - R, cy, cx + R + 6, cy, P.faint); SB.dashLine(ctx, cx, cy + R, cx, cy - R - 6, P.faint);
+      SB.label(ctx, "|w⟩", cx, cy - R - 14, { size: 11, color: P.accent }); SB.label(ctx, "|s′⟩", cx + R + 4, cy + 12, { size: 11, color: P.dim, align: "left" });
+      const other = a[(w0 + 1) % N] * Math.sqrt(N - 1), ang = Math.atan2(a[w0], other);
+      SB.arrow(ctx, cx, cy, cx + R * Math.cos(ang), cy - R * Math.sin(ang), { color: P.accent, width: 2.6 });
+      SB.label(ctx, `${(ang / DEG).toFixed(1)}°`, cx, cy + R + 14, { size: 11, mono: true, color: P.dim });
+      // P_k 곡선
+      const ch = SB.chart(ctx, { x: 2 * R + 76, y: 12, w: w - 2 * R - 90, h: h - 58 }, { x: [0, kmax], y: [0, 1.02], xLabel: "반복 k", yTicks: [0, 0.5, 1], xTicks: kmax <= 12 ? Array.from({ length: kmax + 1 }, (_, i) => i) : null,
+        series: [{ data: Array.from({ length: 200 }, (_, i) => { const x = (kmax * i) / 199; return [x, Math.sin((2 * x + 1) * t) ** 2]; }), color: P.faint, width: 1.5, dash: [4, 3] }],
+        vlines: [{ x: ko, color: P.ok, label: "최적" }] });
+      ctx.fillStyle = P.accent2; hist.forEach(([x, y]) => { if (x <= kmax) { ctx.beginPath(); ctx.arc(ch.X(x), ch.Y(y), 3.5, 0, TAU); ctx.fill(); } });
+      if (k <= kmax) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(k + (half ? 0.5 : 0)), ch.Y(a[w0] ** 2), 6, 0, TAU); ctx.fill(); }
+    }, { aspect: 0.5, minHeight: 200, maxHeight: 260 });
+    SB.drag(cv1, { free: true, handles: () => [], down: (id, x) => { if (mode() === "hide") return; const ch = cv1._ch; const j = Math.round(((x - ch.box.x) / ch.box.w) * N - 0.5); if (j >= 0 && j < N) { w0 = j; a = new Array(N).fill(1 / Math.sqrt(N)); k = 0; half = false; hist = [[0, 1 / N]]; measured = null; update(); } } });
+    function update() {
+      const P = a[w0] ** 2, hide = mode() === "hide";
+      SB.stat("gr-k", `${k}${half ? " + 오라클" : ""}`);
+      SB.stat("gr-p", P.toFixed(4));
+      SB.stat("gr-ko", `${kopt()} (θ = ${(theta() / DEG).toFixed(2)}°, P = ${(Math.sin((2 * kopt() + 1) * theta()) ** 2).toFixed(3)})`);
+      SB.stat("gr-msg", hide ? `숨은 답 모드 ${wins}/${plays} 성공` : measured !== null ? (measured === w0 ? "답을 찾았다" : "다른 항목이 나왔다") : "막대를 눌러 답을 고른다");
+      cv1.redraw(); cv2.redraw();
+    }
+    document.getElementById("gr-o").addEventListener("click", oracle);
+    document.getElementById("gr-d").addEventListener("click", diffuse);
+    document.getElementById("gr-g").addEventListener("click", () => { if (half) diffuse(); else { oracle(); diffuse(); } });
+    document.getElementById("gr-r").addEventListener("click", () => reset(mode() === "hide"));
+    document.getElementById("gr-m").addEventListener("click", () => {
+      let u = Math.random(), j = 0; for (; j < N - 1; j++) { u -= a[j] ** 2; if (u < 0) break; }
+      measured = j; if (mode() === "hide") { plays++; if (j === w0) wins++; }
+      SB.stat("gr-msg", mode() === "hide" ? `${j === w0 ? "성공!" : "실패"} (k = ${k}) · ${wins}/${plays} 성공` : j === w0 ? "답을 찾았다" : "다른 항목이 나왔다");
+      cv1.redraw();
+      if (mode() === "hide") setTimeout(() => { w0 = Math.floor(Math.random() * N); a = new Array(N).fill(1 / Math.sqrt(N)); k = 0; half = false; hist = [[0, 1 / N]]; measured = null; cv1.redraw(); cv2.redraw(); SB.stat("gr-k", "0"); }, 1400);
+    });
+    void ns; reset(false);
+  }
+
+  /* ---------------------------------------------------------- 7. 반복 부호 */
+  const binom = (n, r) => { let c = 1; for (let i = 1; i <= r; i++) c = (c * (n - r + i)) / i; return c; };
+  const PLd = (d, p) => { let s = 0; for (let k2 = (d + 1) / 2; k2 <= d; k2++) s += binom(d, k2) * p ** k2 * (1 - p) ** (d - k2); return s; };
+  {
+    let errs = null, mc = null;
+    const dsel = SB.seg("qe-d", () => { errs = null; mc = null; update(); });
+    const gp = SB.range("qe-p", (v) => Math.pow(10, v).toPrecision(2), () => { mc = null; update(); });
+    const p = () => Math.pow(10, gp());
+    const cv = SB.canvas("cv-qec", (ctx, w, h, self) => {
+      const P = pal(), d = +dsel(), top = 36, sp = Math.min(40, (w - 60) / Math.max(d, 3));
+      const x0 = w / 2 - ((d - 1) * sp) / 2;
+      SB.label(ctx, "물리 큐비트", 10, 14, { align: "left", size: 11, color: P.dim });
+      for (let i = 0; i < d; i++) {
+        const x = x0 + i * sp, e = errs && errs[i];
+        ctx.fillStyle = e ? P.bad : SB.color("accent-soft"); ctx.strokeStyle = e ? P.bad : P.accent; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, top, 11, 0, TAU); ctx.fill(); ctx.stroke();
+        SB.label(ctx, e ? "1" : "0", x, top, { size: 12, bold: true, mono: true, color: e ? "#fff" : P.text, bg: e ? P.bad : SB.color("canvas-bg") });
+        if (i < d - 1) { const s = errs && errs[i] !== errs[i + 1]; ctx.fillStyle = s ? P.warn : P.grid; ctx.beginPath(); ctx.rect(x + sp / 2 - 5, top + 18, 10, 10); ctx.fill(); }
+      }
+      if (errs) { const ne = errs.reduce((s, x) => s + x, 0), fail = ne > (d - 1) / 2; SB.label(ctx, `오류 ${ne}개 → 다수결 ${fail ? "실패 ✗" : "복원 ✓"}`, w / 2, top + 44, { size: 12, bold: true, color: fail ? P.bad : P.ok }); }
+      const ch = SB.chart(ctx, { x: 58, y: top + 62, w: w - 74, h: h - top - 62 - 44 }, { x: [1e-3, 0.5], y: [1e-9, 1], logX: true, logY: true, xLabel: "물리 오류 p", yLabel: "논리 오류 P_L",
+        series: [1, 3, 5, 7, 9].map((dd) => ({ data: Array.from({ length: 80 }, (_, i) => { const pp = Math.pow(10, -3 + (i * (Math.log10(0.5) + 3)) / 79); return [pp, PLd(dd, pp)]; }), color: dd === d ? P.accent : P.faint, width: dd === d ? 2.6 : 1.2 })) });
+      [1, 3, 5, 7, 9].forEach((dd) => { const pp = 2e-3; const y = PLd(dd, pp); if (y > 1e-9) SB.label(ctx, "d=" + dd, ch.X(pp), ch.Y(y) - 8, { size: 10, color: dd === d ? P.accent : P.dim, align: "left" }); });
+      const pl = PLd(d, p()); self._ch = ch; self._pt = [ch.X(p()), ch.Y(Math.max(1e-9, pl))];
+      if (mc && mc.fail > 0) { ctx.fillStyle = P.accent; ctx.beginPath(); ctx.arc(ch.X(p()), ch.Y(mc.fail / mc.n), 5, 0, TAU); ctx.fill(); }
+      handle(ctx, self._pt[0], self._pt[1], P.accent, 8);
+    }, { aspect: 0.9, minHeight: 330, maxHeight: 440 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "p", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; const lp = SB.clamp(-3 + ((x - ch.box.x) / ch.box.w) * (Math.log10(0.5) + 3), -3, -0.31); gp.set(Math.round(lp * 100) / 100, true); mc = null; update(); } });
+    function update() {
+      const d = +dsel(), pp = p(), pl = PLd(d, pp);
+      SB.stat("qe-th", sci(pl, 2));
+      SB.stat("qe-mc", mc ? `${mc.fail}/${mc.n} = ${sci(mc.fail / mc.n, 2)}` : "—");
+      SB.stat("qe-g", (pp / pl).toFixed(pp / pl < 10 ? 2 : 0) + "배");
+      SB.stat("qe-goal", pl <= pp / 100 ? "✓ 달성" : "아직");
+      cv.redraw();
+    }
+    document.getElementById("qe-one").addEventListener("click", () => { const d = +dsel(); errs = Array.from({ length: d }, () => (Math.random() < p() ? 1 : 0)); update(); });
+    document.getElementById("qe-many").addEventListener("click", () => { const d = +dsel(), pp = p(), n = 20000; let fail = 0; for (let t = 0; t < n; t++) { let ne = 0; for (let i = 0; i < d; i++) if (Math.random() < pp) ne++; if (ne > (d - 1) / 2) fail++; } mc = { n, fail }; update(); });
+    update();
+  }
+  SB.tangle("tg-sc", (v) => {
+    const PL = 0.1 * Math.pow(v.r, (v.d + 1) / 2), nq = 2 * v.d * v.d - 1;
+    return { PL: sci(PL, 1), nq: nq.toLocaleString("en-US"), msg: PL < 1e-12 ? "10⁻¹² 아래 — 수십억 번의 논리 연산을 거의 틀리지 않는 수준이다." : v.r > 0.7 ? "문턱에 가까우면 거리를 키워도 이득이 더디다. 물리 오류를 줄이는 것이 먼저다." : "" };
+  });
+  SB.drill("drill-pl", () => {
+    const p = pick([0.005, 0.01, 0.02, 0.03, 0.05, 0.08, 0.1]), d = pick([3, 5]), PL = PLd(d, p);
+    const terms = []; for (let k2 = (d + 1) / 2; k2 <= d; k2++) terms.push(`\\binom{${d}}{${k2}}p^{${k2}}(1-p)^{${d - k2}}`);
+    return { q: `<p>각 물리 큐비트가 독립적으로 \\(p = ${p}\\)로 뒤집힐 때 거리 \\(d = ${d}\\) 반복 부호의 논리 오류율 \\(P_L\\)은?</p>`, answer: PL, label: "P_L =", tol: "1%",
+      sol: `과반 \\(${(d + 1) / 2}\\)개 이상이 뒤집히면 실패한다: \\(P_L = ${terms.join(" + ")} = ${PL.toExponential(3).replace("e", "\\times10^{") + "}"}\\). 개선 \\(p/P_L = ${(p / PL).toFixed(1)}\\)배.` };
+  });
+
+  /* ---------------------------------------------------------- 8. 트랜스몬 */
+  {
+    const cache = {};
+    const levels = (r, ec) => {
+      const key = r.toFixed(3) + "," + ec.toFixed(3); if (cache[key]) return cache[key];
+      const Nc = 12, M = 2 * Nc + 1, ngs = [], E = [[], [], [], []], EJ = r * ec;
+      for (let i = 0; i <= 60; i++) {
+        const ng = -1 + i / 30, H = QM.zeros(M);
+        for (let j = 0; j < M; j++) { H.re[j * M + j] = 4 * ec * (j - Nc - ng) ** 2; if (j + 1 < M) { H.re[j * M + j + 1] = -EJ / 2; H.re[(j + 1) * M + j] = -EJ / 2; } }
+        const ev = QM.eigh(H).E.slice().sort((x, y) => x - y); ngs.push(ng); for (let l = 0; l < 4; l++) E[l].push(ev[l]);
+      }
+      const m0 = E[0].reduce((s, x) => s + x, 0) / E[0].length; for (let l = 0; l < 4; l++) E[l] = E[l].map((x) => x - m0);
+      return (cache[key] = { ngs, E });
+    };
+    let ng = 0.25, cv = null;
+    const gr = SB.range("tm-r", (v) => Math.pow(10, v).toFixed(Math.pow(10, v) < 10 ? 2 : 0), () => { update(); });
+    const gec = SB.range("tm-ec", (v) => (v * 1000).toFixed(0) + " MHz", () => { update(); });
+    const idx = () => Math.round((ng + 1) * 30);
+    cv = SB.canvas("cv-tm", (ctx, w, h, self) => {
+      const P = pal(), L = levels(Math.pow(10, gr()), gec()), all = L.E.flat(), ymin = Math.min(...all), ymax = Math.max(...L.E[3]);
+      const pad = (ymax - ymin) * 0.06;
+      const ch = SB.chart(ctx, { x: 56, y: 12, w: w - 72, h: h - 58 }, { x: [-1, 1], y: [ymin - pad, ymax + pad], xLabel: "게이트 전하 n_g", yLabel: "E/h (GHz)", xTicks: [-1, -0.5, 0, 0.5, 1],
+        series: L.E.map((e, l) => ({ data: L.ngs.map((x, i) => [x, e[i]]), color: [P.accent, P.accent2, P.warn, P.dim][l], width: l < 2 ? 2.6 : 1.8 })) });
+      const i = idx(), x = ch.X(L.ngs[i]);
+      SB.dashLine(ctx, x, ch.box.y, x, ch.box.y + ch.box.h, P.faint);
+      SB.arrow(ctx, x + 10, ch.Y(L.E[0][i]), x + 10, ch.Y(L.E[1][i]), { color: P.accent, width: 2, label: "f₀₁" });
+      SB.arrow(ctx, x - 10, ch.Y(L.E[1][i]), x - 10, ch.Y(L.E[2][i]), { color: P.accent2, width: 2, label: "f₁₂", labelSide: -1 });
+      self._ch = ch; self._pt = [x, ch.box.y + ch.box.h - 4];
+      handle(ctx, x, ch.box.y + ch.box.h - 4, P.accent, 8);
+    }, { aspect: 0.75, minHeight: 280, maxHeight: 400 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "g", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; ng = Math.round(SB.clamp(-1 + (2 * (x - ch.box.x)) / ch.box.w, -1, 1) * 30) / 30; update(); } });
+    function update() {
+      const r = Math.pow(10, gr()), ec = gec(), L = levels(r, ec), i = idx();
+      const f01 = L.E[1][i] - L.E[0][i], f12 = L.E[2][i] - L.E[1][i], f01s = L.E[1].map((e, j) => e - L.E[0][j]), disp = Math.max(...f01s) - Math.min(...f01s);
+      const fm = (g) => (Math.abs(g) >= 1 ? fx(g, 3) + " GHz" : Math.abs(g) >= 1e-3 ? fx(g * 1e3, 1) + " MHz" : Math.abs(g) >= 1e-6 ? fx(g * 1e6, 1) + " kHz" : sci(g * 1e9, 1) + " Hz");
+      SB.stat("tm-f", `${fm(f01)} (n_g = ${ng.toFixed(2)})`); SB.stat("tm-a", fm(f12 - f01)); SB.stat("tm-d", fm(disp)); SB.stat("tm-ap", fm(Math.sqrt(8 * r * ec * ec) - ec));
+      cv.redraw();
+    }
+    document.getElementById("tm-cpb").addEventListener("click", () => gr.set(0));
+    document.getElementById("tm-tr").addEventListener("click", () => gr.set(Math.log10(50)));
+    update();
+  }
+
+  /* ---------------------------------------------------------- 8. 열 들뜸 */
+  {
+    let lT = -1, cv = null;
+    const pexc = (f, T) => 1 / (1 + Math.exp((HK * f * 1e9) / T)), nbar = (f, T) => 1 / Math.expm1((HK * f * 1e9) / T);
+    const gf = SB.range("th-f", (v) => Math.pow(10, v).toFixed(Math.pow(10, v) < 10 ? 2 : 1) + " GHz", () => update());
+    const pre = SB.seg("th-pre", (v) => gf.set(Math.log10(+v)));
+    const goal = SB.seg("th-goal", () => update());
+    const STG = [[300, "300 K"], [50, "50 K"], [4, "4 K"], [0.8, "스틸"], [0.1, "냉판"], [0.01, "혼합실"]];
+    cv = SB.canvas("cv-th", (ctx, w, h, self) => {
+      const P = pal(), f = Math.pow(10, gf()), T = Math.pow(10, lT), g = +goal();
+      const ch = SB.chart(ctx, { x: 56, y: 14, w: w - 70, h: h - 60 }, { x: [5e-3, 300], y: [1e-8, 1], logX: true, logY: true, xLabel: "온도 T (K)", yLabel: "P_exc",
+        xFmt: (v) => (v >= 1 ? String(v) : v >= 0.01 ? v * 1000 + "m" : v * 1000 + "m"),
+        series: [{ data: Array.from({ length: 160 }, (_, i) => { const t = Math.pow(10, -2.3 + (i * 4.78) / 159); return [t, pexc(f, t)]; }), color: P.accent, width: 2.6 }],
+        hlines: [{ y: g, color: P.bad, label: (g * 100) + "%" }],
+        vlines: STG.map(([t, l], i) => ({ x: t, color: P.faint, label: l, row: i % 2 })) });
+      const pe = pexc(f, T); self._ch = ch; self._pt = [ch.X(T), ch.Y(Math.max(1e-8, pe))];
+      handle(ctx, self._pt[0], self._pt[1], pe <= g ? P.ok : P.accent, 8);
+    }, { aspect: 0.75, minHeight: 280, maxHeight: 400 });
+    SB.drag(cv, { handles: () => (cv._pt ? [{ id: "T", x: cv._pt[0], y: cv._pt[1], r: 14 }] : []), move: (id, x) => { const ch = cv._ch; lT = SB.clamp(Math.log10(5e-3) + ((x - ch.box.x) / ch.box.w) * (Math.log10(300) - Math.log10(5e-3)), -2.3, 2.477); update(); } });
+    function update() {
+      const f = Math.pow(10, gf()), T = Math.pow(10, lT), x = (HK * f * 1e9) / T, pe = pexc(f, T), g = +goal(), Tg = (HK * f * 1e9) / Math.log(1 / g - 1);
+      SB.stat("th-T", T >= 1 ? T.toFixed(T < 10 ? 2 : 0) + " K" : (T * 1000).toFixed(T < 0.1 ? 1 : 0) + " mK");
+      SB.stat("th-x", x < 0.01 ? x.toExponential(2) : x.toFixed(2));
+      SB.stat("th-p", `${sci(pe, 2)} · ${sci(nbar(f, T), 2)}`);
+      SB.stat("th-ok", `${pe <= g ? "✓" : "✗"} (필요 T ≤ ${Tg >= 1 ? Tg.toFixed(2) + " K" : (Tg * 1000).toFixed(0) + " mK"})`);
+      cv.redraw();
+    }
+    void pre; update();
+  }
+
+  /* ---------------------------------------------------------- 8. 제만·문턱 아래 기울기 (tangle) */
+  SB.tangle("tg-zee", (v) => {
+    const f = 2 * MUBH * v.B, E = 2 * K.muB * 1e6 * v.B, TK = E / KBUEV, T1 = E / (KBUEV * Math.log(99));
+    return { f: f.toFixed(1) + " GHz", E: E.toFixed(1) + " µeV", TK: TK.toFixed(2) + " K", T1: T1 >= 1 ? T1.toFixed(2) + " K" : (T1 * 1000).toFixed(0) + " mK", msg: T1 > 0.052 ? `5 GHz 트랜스몬(52 mK)보다 ${(T1 / 0.0522).toFixed(1)}배 따뜻한 곳에서도 된다.` : "트랜스몬보다 더 차갑게 해야 한다." };
+  });
+  SB.tangle("tg-ss", (v) => {
+    const ss = (Math.log(10) * K.kB * v.T) / K.e * 1e3, nth = 1 / Math.expm1((HK * 5e9) / v.T);
+    return { ss: ss.toFixed(ss < 10 ? 2 : 1) + " mV/dec", ratio: (v.T / 300).toFixed(3) + "배", nth: sci(nth, 2), msg: v.T <= 20 ? "실제 소자는 띠 꼬리 상태 때문에 이 값보다 훨씬 큰 10 mV/dec 안팎에서 포화한다." : "" };
+  });
+
+  /* ---------------------------------------------------------- 8. 교환 SWAP 미니 */
+  {
+    let t = 0, cv = null;
+    const gj = SB.range("sw-j", (v) => v + " MHz", () => { t = 0; cv && cv.redraw(); });
+    const gd = SB.range("sw-d", (v) => v + " MHz", () => { t = 0; cv && cv.redraw(); });
+    const rd = document.getElementById("sw-r");
+    const Pt = (J, D, tt) => { const W = Math.hypot(J, D); return W ? ((J * J) / (W * W)) * Math.sin(PI * W * tt) ** 2 : 0; }; // J, D in MHz, t in µs
+    cv = SB.canvas("cv-swap", (ctx, w, h) => {
+      const P = pal(), J = gj(), D = gd(), tsw = 1 / (2 * J), Tw = 2.5 * tsw, tt = t % Tw, p = Pt(J, D, tt);
+      const lx = 90, cy = h / 2;
+      [[30, 1 - 2 * p], [66, -(1 - 2 * p)]].forEach(([x, z], i) => { ctx.strokeStyle = P.border; ctx.beginPath(); ctx.arc(x, cy, 14, 0, TAU); ctx.stroke(); SB.arrow(ctx, x, cy, x, cy - z * 34, { color: i ? P.accent2 : P.accent, width: 3 }); SB.label(ctx, i ? "점 2" : "점 1", x, cy + 52, { size: 11, color: P.dim }); });
+      const ch = SB.chart(ctx, { x: lx + 40, y: 12, w: w - lx - 56, h: h - 58 }, { x: [0, Tw * 1000], y: [0, 1.02], xLabel: "t (ns)", yTicks: [0, 0.5, 1],
+        series: [{ data: Array.from({ length: 200 }, (_, i) => { const x = (Tw * i) / 199; return [x * 1000, Pt(J, D, x)]; }), color: P.accent, width: 2.4 }],
+        vlines: [{ x: tsw * 1000, color: P.ok, label: "h/2J" }, { x: tsw * 500, color: P.faint, label: "√SWAP", row: 1 }] });
+      ctx.fillStyle = P.warn; ctx.beginPath(); ctx.arc(ch.X(tt * 1000), ch.Y(p), 5, 0, TAU); ctx.fill();
+      rd.textContent = `t_SWAP = ${(tsw * 1000).toFixed(1)} ns · 최대 전이 ${((J * J) / (J * J + D * D)).toFixed(3)}`;
+    }, { aspect: 0.34, minHeight: 190, maxHeight: 240 });
+    const lp = SB.loop("mini-swap", (dt) => { t += dt * 0.25 * (1 / (2 * gj())); cv.redraw(); });
+    SB.play("sw-play", lp);
+  }
+})();
+</script>
+</body>
+</html>
