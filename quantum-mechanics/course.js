@@ -136,8 +136,7 @@ SB.registerCourse({
      "tags": [
       "파울리 행렬",
       "클레브시–고르단"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "identical-particles",
@@ -148,8 +147,7 @@ SB.registerCourse({
      "tags": [
       "교환 대칭",
       "슬레이터 행렬식"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -165,8 +163,7 @@ SB.registerCourse({
      "tags": [
       "섭동 이론",
       "슈타르크 효과"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "variational-wkb",
@@ -199,8 +196,7 @@ SB.registerCourse({
      "tags": [
       "보른 근사",
       "위상 이동"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -216,8 +212,7 @@ SB.registerCourse({
      "tags": [
       "란다우 준위",
       "양자 홀 효과"
-     ],
-     "status": "planned"
+     ]
     },
     {
      "slug": "density-matrix",
@@ -239,8 +234,7 @@ SB.registerCourse({
      "tags": [
       "얽힘",
       "양자 게이트"
-     ],
-     "status": "planned"
+     ]
     }
    ]
   },
@@ -383,39 +377,111 @@ SB.registerCourse({
    "predicts": 5,
    "hero": 1
   },
+  "spin": {
+   "problems": 16,
+   "examples": 10,
+   "sims": 9,
+   "figures": 12,
+   "drills": 5,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "identical-particles": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "perturbation": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 12,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 3,
+   "hero": 1
+  },
   "variational-wkb": {
-   "problems": 0,
-   "examples": 4,
-   "sims": 3,
-   "figures": 4,
-   "drills": 2,
-   "minis": 2,
-   "tangles": 2,
-   "steps": 0,
-   "predicts": 2,
+   "problems": 16,
+   "examples": 11,
+   "sims": 7,
+   "figures": 11,
+   "drills": 4,
+   "minis": 5,
+   "tangles": 6,
+   "steps": 3,
+   "predicts": 7,
    "hero": 1
   },
   "time-dependent": {
-   "problems": 0,
-   "examples": 1,
-   "sims": 0,
-   "figures": 2,
-   "drills": 0,
-   "minis": 1,
-   "tangles": 1,
-   "steps": 1,
-   "predicts": 0,
+   "problems": 15,
+   "examples": 8,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 7,
+   "tangles": 5,
+   "steps": 3,
+   "predicts": 4,
+   "hero": 1
+  },
+  "scattering": {
+   "problems": 16,
+   "examples": 10,
+   "sims": 7,
+   "figures": 13,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 3,
+   "predicts": 6,
+   "hero": 1
+  },
+  "em-fields": {
+   "problems": 15,
+   "examples": 8,
+   "sims": 6,
+   "figures": 13,
+   "drills": 2,
+   "minis": 5,
+   "tangles": 5,
+   "steps": 4,
+   "predicts": 5,
    "hero": 1
   },
   "density-matrix": {
-   "problems": 0,
-   "examples": 8,
-   "sims": 6,
-   "figures": 9,
+   "problems": 15,
+   "examples": 13,
+   "sims": 8,
+   "figures": 12,
    "drills": 3,
-   "minis": 4,
-   "tangles": 4,
+   "minis": 7,
+   "tangles": 6,
    "steps": 2,
+   "predicts": 6,
+   "hero": 1
+  },
+  "quantum-information": {
+   "problems": 16,
+   "examples": 11,
+   "sims": 9,
+   "figures": 14,
+   "drills": 3,
+   "minis": 6,
+   "tangles": 7,
+   "steps": 5,
    "predicts": 4,
    "hero": 1
   },
@@ -432,7 +498,7 @@ SB.registerCourse({
    "hero": 0
   }
  },
- "published": 13,
+ "published": 19,
  "total": 20,
  "url": "https://science.euiyun.com/quantum-mechanics/"
 });
