@@ -781,7 +781,7 @@
     const getU = SB.range("rn-u", (v) => v.toFixed(1) + " m/s", () => upd());
     function upd() { document.getElementById("rn-ang").textContent = `빗줄기 각도 α = ${Phys.rad2deg(Math.atan2(getV(), getU())).toFixed(1)}°`; }
     const cv = SB.canvas("cv-rain", (ctx, w, h) => {
-      const P = pal(), vx = -getV(), vy = -getU(), L = 0.06;
+      const P = pal(), vx = -getV(), vy = getU(), L = 0.06;
       ctx.save(); ctx.strokeStyle = SB.isDark() ? "rgba(140,190,255,.7)" : "rgba(47,111,224,.6)"; ctx.lineWidth = 1.6;
       drops.forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(x * w, y * h); ctx.lineTo(x * w - (vx * L * h) / 8, y * h - (vy * L * h) / 8); ctx.stroke(); });
       ctx.restore();
@@ -789,11 +789,12 @@
       const ox = w - 70, oy = 40, k = 3;
       SB.arrow(ctx, ox, oy, ox, oy + getU() * k, { color: P.accent, width: 2, head: 6 });
       SB.arrow(ctx, ox, oy + getU() * k, ox - getV() * k, oy + getU() * k, { color: P.warn, width: 2, head: 6 });
+      SB.arrow(ctx, ox, oy, ox - getV() * k, oy + getU() * k, { color: P.text, width: 1.5, head: 6, dash: [4, 3] });
       SB.label(ctx, "차 안에서 본 창밖", 90, 24, { size: 11, color: P.dim });
     }, { aspect: 0.4, minHeight: 160, maxHeight: 240 });
     SB.loop("mini-rain", (dt) => {
       const vx = -getV(), vy = getU();
-      drops.forEach((d) => { d[0] += (vx * dt) / 25; d[1] += (vy * dt) / 25 * (cv.w / cv.h) * 0.4; if (d[1] > 1) { d[1] -= 1; d[0] = Math.random(); } if (d[0] < 0) d[0] += 1; });
+      drops.forEach((d) => { d[0] += (vx * dt) / 25; d[1] += (vy * dt) / 25 * (cv.w / cv.h); if (d[1] > 1) { d[1] -= 1; d[0] = Math.random(); } if (d[0] < 0) d[0] += 1; });
       cv.redraw();
     });
     upd();
