@@ -273,6 +273,22 @@ for entry in catalog["courses"]:
 write(ROOT / "catalog.js", "/* 생성 파일 — catalog.json·course.json을 고치고 python3 tools/build.py 를 실행하세요. */\n"
       f"SB.registerCatalog({json.dumps({'site': catalog['site'], 'fields': catalog['fields'], 'courses': courses}, ensure_ascii=False, indent=1)});\n")
 
+# ---- shelf.json: books.euiyun.com(tools/sync-books.py)이 읽는 표준 서가 카탈로그(euiyun-shelf/1).
+# 이름이 catalog.json(이 저장소의 원본)과 겹치지 않게 shelf.json으로 둔다. 표지·코드·지도는 허브가 관리한다.
+shelf_books = []
+for c in courses:
+    if "url" not in c:
+        continue
+    entry = {"id": c["id"], "slug": c["url"][len(SITE):].strip("/") or c["id"], "title": c["title"],
+             "description": c.get("description"), "status": c.get("status", "planned"),
+             "url": c["url"], "chapters": c.get("published"), "simulators": c.get("sims")}
+    shelf_books.append({k: v for k, v in entry.items() if v is not None})
+write(ROOT / "shelf.json", json.dumps({
+    "format": "euiyun-shelf/1",
+    "shelf": {"id": "scibook", "title": catalog["site"]["name"], "url": SITE, "field": "science"},
+    "books": shelf_books,
+}, ensure_ascii=False, indent=1) + "\n")
+
 # ---- site home shelf: 세로 표지 책장(분야 필터·검색·표지 그림은 home.js가 덧붙인다)
 home = ROOT / "index.html"
 if home.exists():

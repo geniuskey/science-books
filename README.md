@@ -24,6 +24,7 @@ general-chemistry/      과목 = 교과서 한 권
   chapters/*.html       장 본문
 color/                  가져온 책(옛 colorbook.euiyun.com). 자체 css/js를 그대로 쓰며 catalog.json의 "standalone" 항목
 catalog.json            플랫폼의 과목 목록
+shelf.json              생성 파일: books.euiyun.com이 읽는 표준 서가 목록(euiyun-shelf/1, 직접 수정하지 않음)
 index.html              플랫폼 홈(서가·대표 실험·읽는 순서)
 home.css, home.js       플랫폼 홈 전용 스타일·책장 필터·표지 그림
 img/sims/               홈의 대표 실험 카드 스크린샷
