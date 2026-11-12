@@ -280,12 +280,23 @@ for c in courses:
     if "url" not in c:
         continue
     entry = {"id": c["id"], "slug": c["url"][len(SITE):].strip("/") or c["id"], "title": c["title"],
-             "description": c.get("description"), "status": c.get("status", "planned"),
+             "description": c.get("description"), "status": c.get("status", "planned"), "stage": c["field"],
              "url": c["url"], "chapters": c.get("published"), "simulators": c.get("sims")}
     shelf_books.append({k: v for k, v in entry.items() if v is not None})
+# 지식 지도: 묶음은 catalog.json의 fields(이름·영문) 순서에 map.groups의 설명을 붙이고, 연결은 map.links(과목 ID)다.
+smap = catalog.get("map", {})
+shelf_map = {"title": smap.get("title"), "desc": smap.get("desc"),
+             "groups": [{"id": f["id"], "name": f["name"], "en": f["en"], "desc": smap.get("groups", {}).get(f["id"], "")}
+                        for f in catalog["fields"] if any(c["field"] == f["id"] for c in courses)],
+             "links": smap.get("links", [])}
+known = {c["id"] for c in courses}
+for a, b, why in shelf_map["links"]:
+    if a not in known or b not in known or a == b or not why.strip():
+        errors.append(f"catalog.json map.links: 잘못된 연결 {a} → {b}")
 write(ROOT / "shelf.json", json.dumps({
     "format": "euiyun-shelf/1",
     "shelf": {"id": "scibook", "title": catalog["site"]["name"], "url": SITE, "field": "science"},
+    "map": shelf_map,
     "books": shelf_books,
 }, ensure_ascii=False, indent=1) + "\n")
 
