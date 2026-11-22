@@ -900,7 +900,7 @@
     foot.className = "sb-foot";
     const lic = SB.SITE.repo + "/blob/main/";
     foot.innerHTML = `${C ? esc(C.title) + " — " : ""}${SB.SITE.name} · 대학 과목 하나가 교과서 한 권이 되는 인터랙티브 과학 교과서. 시뮬레이터 수치는 교육용 모델입니다.
-      <br>© 2026 <a href="https://github.com/geniuskey">geniuskey</a> ·
+      <br>© 2026 <a href="https://euiyun.com">Euiyun Lab</a> ·
       콘텐츠 <a href="https://creativecommons.org/licenses/by/4.0/deed.ko" rel="license">CC BY 4.0</a> ·
       코드 <a href="${lic}LICENSE-MIT">MIT</a> ·
       <a href="${lic}LICENSE.md">라이선스 안내</a> ·
