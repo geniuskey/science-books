@@ -22,13 +22,14 @@
     { slug: "measurement",  num: "11", title: "색 측정과 계측기",         desc: "분광광도계·색채계·분광복사계, 측정 기하, SCI/SCE, 형광, 교정과 불확도.", tags: ["계측", "sim"] },
     { slug: "camera",       num: "12", title: "카메라 색 재현",           desc: "분광 감도와 루터 조건, CCM 최적화, 화이트 밸런스 추정, RAW→XYZ.", tags: ["이미징", "sim"] },
     { slug: "display",      num: "13", title: "디스플레이 색",            desc: "LCD·OLED·QD 원색 스펙트럼, 가산 모델, 특성화(GOG), 교정과 3D LUT.", tags: ["디스플레이", "sim"] },
-    { slug: "hdr",          num: "14", title: "HDR과 광색역 영상",        desc: "PQ·HLG, 절대 휘도(nit), 톤 매핑, ICtCp, BT.2100과 메타데이터.", tags: ["영상", "sim"] },
-    { slug: "encoding",     num: "15", title: "영상 신호의 색 인코딩",     desc: "Y′CbCr 행렬(BT.601/709/2020), 풀·리미티드 레인지, 크로마 서브샘플링.", tags: ["영상", "sim"] },
-    { slug: "management",   num: "16", title: "색 관리 시스템",           desc: "ICC 프로파일과 PCS, 렌더링 인텐트, 소프트 프루핑, ACES·OCIO 파이프라인.", tags: ["워크플로", "sim"] },
-    { slug: "print",        num: "17", title: "감산 혼합과 인쇄",         desc: "베르-람베르트, 쿠벨카-뭉크, 노이게바우어, 하프톤과 도트 게인, CMYK 분해.", tags: ["재료", "sim"] },
-    { slug: "dataviz",      num: "18", title: "UI와 데이터 시각화의 색",   desc: "WCAG·APCA 대비, 지각 균일 컬러맵, 색각 이상 시뮬레이션, 팔레트 설계.", tags: ["응용", "sim"] },
-    { slug: "workbench",    num: "19", title: "컬러 엔지니어링 워크벤치",  desc: "스펙트럼에서 모든 색 좌표까지 — 변환·색차·가멋을 한 화면에서 계산한다.", tags: ["종합", "sim"] },
-    { slug: "glossary",     num: "20", title: "용어집 & 종합 퀴즈",       desc: "핵심 용어를 검색하고, 실력을 점검하자.", tags: ["정리"] },
+    { slug: "motion",       num: "14", title: "시간과 움직임의 시각",      desc: "눈 운동(단속·추종·고정), 시간 대비 감도와 CFF, PWM 플리커, 홀드형 모션 블러, 색 분리.", tags: ["생리", "sim"] },
+    { slug: "hdr",          num: "15", title: "HDR과 광색역 영상",        desc: "PQ·HLG, 절대 휘도(nit), 톤 매핑, ICtCp, BT.2100과 메타데이터.", tags: ["영상", "sim"] },
+    { slug: "encoding",     num: "16", title: "영상 신호의 색 인코딩",     desc: "Y′CbCr 행렬(BT.601/709/2020), 풀·리미티드 레인지, 크로마 서브샘플링.", tags: ["영상", "sim"] },
+    { slug: "management",   num: "17", title: "색 관리 시스템",           desc: "ICC 프로파일과 PCS, 렌더링 인텐트, 소프트 프루핑, ACES·OCIO 파이프라인.", tags: ["워크플로", "sim"] },
+    { slug: "print",        num: "18", title: "감산 혼합과 인쇄",         desc: "베르-람베르트, 쿠벨카-뭉크, 노이게바우어, 하프톤과 도트 게인, CMYK 분해.", tags: ["재료", "sim"] },
+    { slug: "dataviz",      num: "19", title: "UI와 데이터 시각화의 색",   desc: "WCAG·APCA 대비, 지각 균일 컬러맵, 색각 이상 시뮬레이션, 팔레트 설계.", tags: ["응용", "sim"] },
+    { slug: "workbench",    num: "20", title: "컬러 엔지니어링 워크벤치",  desc: "스펙트럼에서 모든 색 좌표까지 — 변환·색차·가멋을 한 화면에서 계산한다.", tags: ["종합", "sim"] },
+    { slug: "glossary",     num: "21", title: "용어집 & 종합 퀴즈",       desc: "핵심 용어를 검색하고, 실력을 점검하자.", tags: ["정리"] },
   ];
 
 

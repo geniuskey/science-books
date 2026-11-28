@@ -231,10 +231,10 @@ SB.registerCatalog({
    "color": "#c2255c",
    "colorDark": "#f783ac",
    "url": "https://science.euiyun.com/color/",
-   "published": 20,
-   "total": 20,
-   "sims": 117,
-   "problems": 183
+   "published": 21,
+   "total": 21,
+   "sims": 123,
+   "problems": 192
   }
  ]
 });

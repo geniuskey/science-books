@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>시간과 움직임의 시각 · ColorBook</title>
+<meta name="description" content="단속 운동(saccade)·원활 추종(smooth pursuit)·고정 미세 운동·전정안 반사의 특성과 시간 대비 감도, CFF, PWM 플리커와 팬텀 어레이, 필드 순차 색 분리, 홀드형 모션 블러와 MPRT, 이색 플리커 측광을 시뮬레이터로 다룬다.">
+<link rel="canonical" href="https://science.euiyun.com/color/chapters/motion.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ColorBook">
+<meta property="og:title" content="시간과 움직임의 시각 · ColorBook">
+<meta property="og:description" content="단속 운동(saccade)·원활 추종(smooth pursuit)·고정 미세 운동·전정안 반사의 특성과 시간 대비 감도, CFF, PWM 플리커와 팬텀 어레이, 필드 순차 색 분리, 홀드형 모션 블러와 MPRT, 이색 플리커 측광을 시뮬레이터로 다룬다.">
+<meta property="og:url" content="https://science.euiyun.com/color/chapters/motion.html">
+<meta property="og:image" content="https://science.euiyun.com/color/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"시간과 움직임의 시각","name":"시간과 움직임의 시각 · ColorBook","url":"https://science.euiyun.com/color/chapters/motion.html","mainEntityOfPage":"https://science.euiyun.com/color/chapters/motion.html","inLanguage":"ko","isAccessibleForFree":true,"learningResourceType":"interactive textbook chapter","position":14,"image":"https://science.euiyun.com/color/og.png","dateModified":"2026-11-28","isPartOf":{"@type":"Book","@id":"https://science.euiyun.com/color/#book","name":"ColorBook — 인터랙티브 색채공학 교과서","url":"https://science.euiyun.com/color/"},"publisher":{"@type":"Organization","name":"ColorBook","url":"https://science.euiyun.com/color/"},"description":"단속 운동(saccade)·원활 추종(smooth pursuit)·고정 미세 운동·전정안 반사의 특성과 시간 대비 감도, CFF, PWM 플리커와 팬텀 어레이, 필드 순차 색 분리, 홀드형 모션 블러와 MPRT, 이색 플리커 측광을 시뮬레이터로 다룬다."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ColorBook","item":"https://science.euiyun.com/color/"},{"@type":"ListItem","position":2,"name":"14 시간과 움직임의 시각","item":"https://science.euiyun.com/color/chapters/motion.html"}]}]}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/common.js"></script>
+<style>
+  .sim-view canvas + canvas { border-top: 1px solid var(--border); }
+  .sim-view canvas { touch-action: pan-y; }
+  .sw { display:inline-block; width:.9em; height:.9em; border-radius:3px; vertical-align:-.08em; margin-right:4px; border:1px solid var(--border); }
+</style>
+</head>
+<body data-chapter="motion">
+<main class="chapter">
+  <header class="chapter-hero">
+    <div class="eyebrow">Chapter 14</div>
+    <h1>시간과 움직임의 시각</h1>
+    <p class="lead">앞 장들의 측색은 <strong>고정된 눈이 정지한 색 패치를 충분히 오래 보는</strong> 상황을 가정했다. 실제로 사람은 1초에 서너 번 시선을 튕기듯 옮기고(단속 운동), 움직이는 물체를 눈으로 따라가며(원활 추종), 한 점을 응시하는 동안에도 눈이 미세하게 떨린다. 시각계는 시간 축에서도 대역 제한된 필터다. 이 장에서는 눈 운동과 시간 응답의 특성을 수치로 정리하고, 그것이 PWM 플리커, DLP 색 분리, 홀드형 모션 블러 같은 디스플레이·조명 문제로 어떻게 이어지는지 계산한다.</p>
+    <ul class="objectives">
+      <li>단속 운동, 원활 추종, 전정안 반사, 이향 운동, 고정 미세 운동을 속도·지연·크기로 구분한다.</li>
+      <li>시간 대비 감도 함수(TCSF)와 CFF, 페리–포터 법칙, 탤벗–플라토 법칙으로 플리커가 보이는 조건을 판정한다.</li>
+      <li>단속 운동의 주 계열(main sequence)과 단속 억제를 이해하고, 단속 중 PWM 광원이 만드는 팬텀 어레이 간격 \( \dot\theta/f \)를 계산한다.</li>
+      <li>필드 순차 색(DLP·FSC LCoS)의 색 분리 폭 \( v\,\tau_\text{sub} \)과 홀드형 디스플레이의 모션 블러 폭 \( v\,t_\text{p} \)를 계산하고, 주사율·지속 시간·응답 시간의 트레이드오프를 비교한다.</li>
+      <li>색 채널의 시간 응답이 휘도 채널보다 느리다는 사실이 이색 플리커 측광과 \( V(\lambda) \)의 정의로 이어지는 과정을 설명한다.</li>
+    </ul>
+  </header>
+
+  <!-- ============================================================ 1 -->
+  <section id="overview">
+    <h2>눈은 가만히 있지 않는다: 눈 운동의 종류</h2>
+    <p>고해상도 시각은 중심와<span class="en">(fovea)</span> 1–2° 안에서만 가능하다(<a href="vision.html">2장</a>). 그래서 눈은 보고 싶은 것을 중심와로 가져오고, 그것이 움직이면 따라가고, 머리가 흔들리면 반대로 돌아 영상을 붙잡는다. 이 일을 맡는 눈 운동은 목적과 제어 방식이 다른 여러 계통으로 나뉜다. 디스플레이 공학에서 특히 중요한 것은 <span class="term">단속 운동</span><span class="en">(saccade)</span>과 <span class="term">원활 추종 운동</span><span class="en">(smooth pursuit)</span>이다. 앞의 것은 망막 위 영상을 수백 °/s로 쓸고 지나가고, 뒤의 것은 화면 위에서 움직이는 물체를 망막에 고정한다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>눈 운동</th><th>역할</th><th>전형적 속도</th><th>지연(잠복기)</th><th>크기·빈도</th></tr></thead>
+      <tbody>
+        <tr><td><b>단속 운동</b><span class="en">(saccade)</span></td><td>시선을 새 목표로 빠르게 옮김</td><td>최고 속도 수십 ~ 600 °/s 이상</td><td>약 150–250 ms</td><td>0.1° ~ 수십°, 초당 약 3회</td></tr>
+        <tr><td><b>원활 추종</b><span class="en">(smooth pursuit)</span></td><td>움직이는 목표를 중심와에 유지</td><td>약 30 °/s까지 이득 0.9 이상, 그 이상은 이득 저하</td><td>약 100–150 ms</td><td>움직이는 목표가 있어야 시작됨</td></tr>
+        <tr><td><b>전정안 반사</b><span class="en">(VOR)</span></td><td>머리 회전을 반대 방향 눈 회전으로 보상</td><td>수백 °/s</td><td>약 10 ms</td><td>이득 ≈ 1, 어둠 속에서도 동작</td></tr>
+        <tr><td><b>시운동성 반응</b><span class="en">(OKN)</span></td><td>넓은 시야의 흐름을 따라가고 빠르게 복귀</td><td>추종 + 단속 반복</td><td>—</td><td>달리는 기차 창밖을 볼 때</td></tr>
+        <tr><td><b>이향 운동</b><span class="en">(vergence)</span></td><td>두 눈의 시선을 깊이 방향으로 모음·벌림</td><td>수 ~ 수십 °/s(느림)</td><td>약 150–200 ms</td><td>원근 조절과 연동</td></tr>
+        <tr><td><b>고정 미세 운동</b><span class="en">(fixational eye movements)</span></td><td>응시 중에도 영상을 조금씩 움직여 소실을 막음</td><td>표류: 수 ~ 수십 arcmin/s</td><td>—</td><td>미세 단속 0.1–1°(초당 1–2회), 떨림 약 40–100 Hz·1 arcmin 미만</td></tr>
+      </tbody>
+    </table></div>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="고정, 단속 운동, 원활 추종의 시간에 따른 눈 위치 궤적 개념도">
+        <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--text-dim)"/></marker></defs>
+        <!-- panel frames -->
+        <g>
+          <text x="135" y="24" text-anchor="middle" class="t-acc">고정 (fixation)</text>
+          <line x1="20" y1="240" x2="250" y2="240" class="s-axis" marker-end="url(#ar1)"/><line x1="20" y1="240" x2="20" y2="40" class="s-axis" marker-end="url(#ar1)"/>
+          <path d="M20 140 C30 136 38 145 48 138 S62 128 72 126 S86 120 92 118 L95 141 C104 144 112 136 122 132 S140 124 150 121 L153 143 C162 140 170 146 180 140 S200 130 212 128 S230 122 245 120" fill="none" class="s-acc" stroke-width="2"/>
+          <text x="94" y="108" text-anchor="middle" class="t-dim">미세 단속</text>
+          <text x="200" y="160" text-anchor="middle" class="t-dim">표류(drift)</text>
+          <text x="135" y="262" text-anchor="middle" class="t-dim">시간 → (약 1 s)</text>
+          <text x="135" y="282" text-anchor="middle" class="t-mono">진폭 ≲ 1°</text>
+        </g>
+        <g>
+          <text x="400" y="24" text-anchor="middle" class="t-acc">단속 운동 (saccade)</text>
+          <line x1="285" y1="240" x2="515" y2="240" class="s-axis" marker-end="url(#ar1)"/><line x1="285" y1="240" x2="285" y2="40" class="s-axis" marker-end="url(#ar1)"/>
+          <path d="M285 200 H340 V70 H510" fill="none" class="s-line" stroke-dasharray="5 4"/>
+          <path d="M285 200 H392 C398 200 400 190 403 150 C406 100 409 72 416 68 C420 66 424 71 428 70 H510" fill="none" class="s-acc" stroke-width="2.4"/>
+          <line x1="340" y1="214" x2="392" y2="214" class="s-line" marker-end="url(#ar1)"/><text x="366" y="230" text-anchor="middle" class="t-dim">지연 ≈ 200 ms</text>
+          <text x="455" y="60" text-anchor="middle" class="t-dim">목표(점선)</text>
+          <text x="452" y="130" text-anchor="middle" class="t-dim">지속 ≈ 20–100 ms</text>
+          <text x="400" y="282" text-anchor="middle" class="t-mono">최고 속도 ≈ 600 °/s</text>
+        </g>
+        <g>
+          <text x="665" y="24" text-anchor="middle" class="t-acc">원활 추종 (pursuit)</text>
+          <line x1="550" y1="240" x2="780" y2="240" class="s-axis" marker-end="url(#ar1)"/><line x1="550" y1="240" x2="550" y2="40" class="s-axis" marker-end="url(#ar1)"/>
+          <path d="M550 200 H590 L775 55" fill="none" class="s-line" stroke-dasharray="5 4"/>
+          <path d="M550 200 H618 C630 200 642 192 660 180 L664 152 C690 134 720 111 775 68" fill="none" class="s-acc" stroke-width="2.4"/>
+          <text x="690" y="196" text-anchor="middle" class="t-dim">따라잡기 단속</text>
+          <line x1="672" y1="186" x2="664" y2="168" class="s-line" marker-end="url(#ar1)"/>
+          <text x="604" y="226" text-anchor="middle" class="t-dim">지연 ≈ 120 ms</text>
+          <text x="665" y="282" text-anchor="middle" class="t-mono">이득 = 눈 속도 / 목표 속도</text>
+        </g>
+        <text x="12" y="140" class="t-dim" transform="rotate(-90 12 140)" text-anchor="middle">눈 위치</text>
+      </svg>
+      <figcaption><b>그림 14-1.</b> 세 가지 눈 운동의 위치–시간 궤적(개념도, 축척 다름). 단속 운동은 계단, 원활 추종은 기울기, 고정은 작은 표류와 미세 단속의 연속이다. 추종이 늦게 시작해 생긴 위치 오차는 따라잡기 단속<span class="en">(catch-up saccade)</span>으로 메운다.</figcaption>
+    </figure>
+    <p>이 차이가 공학적으로 중요한 이유는 <b>망막 위 영상의 속도</b>가 눈 운동에 따라 정반대가 되기 때문이다. 정지한 화면을 단속 운동으로 훑으면, 망막에서는 화면 전체가 수백 °/s로 미끄러진다. 반대로 화면 위에서 움직이는 물체를 추종하면, 그 물체는 망막에서 거의 멈추고 배경이 미끄러진다. 화면은 연속적인 빛이 아니라 <em>시간적으로 샘플링된</em> 빛을 내므로, 이 상대 운동이 샘플링 구조를 망막 위 공간 패턴으로 바꿔 놓는다. 이 장의 디스플레이 문제는 모두 다음 한 줄로 요약된다.</p>
+    <div class="formula">$$x_\text{retina}(t) = x_\text{screen}(t) - x_\text{eye}(t),\qquad \Delta x_\text{retina} = v_\text{rel}\,\Delta t$$
+      <div class="where">\( v_\text{rel} \)은 화면 위 자극과 시선의 상대 속도, \( \Delta t \)는 빛이 나오는 시간 구간(서브필드, 프레임 유지 시간, PWM 주기)이다. 시간 구간 \( \Delta t \) 동안 나온 빛은 망막 위에서 \( v_\text{rel}\Delta t \)만큼 번진다. 시간 차이가 공간 차이로 바뀌는 것이다. 각도 1°는 시청 거리와 화소 밀도에 따라 화면에서 수십 화소에 해당한다(예: 27″ QHD를 60 cm에서 보면 약 45 px/°).</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 2 -->
+  <section id="temporal">
+    <h2>시간 대비 감도와 임계 융합 주파수</h2>
+    <p>공간 주파수에 대한 대비 감도 함수(CSF, <a href="vision.html#opponent">2장</a>)가 있듯이, 시간 주파수에 대한 감도도 있다. 균일한 시야의 휘도를 \( \bar L\,[1 + m\sin(2\pi f t)] \)로 정현파 변조하고, 깜박임이 겨우 보이는 변조도 \( m_\text{th} \)를 주파수마다 측정한 것이 <span class="term">시간 대비 감도 함수</span><span class="en">(temporal CSF, de Lange 곡선)</span> \( S(f) = 1/m_\text{th}(f) \)다(de Lange, 1958; Kelly, 1961). 밝은 조건에서 이 곡선은 8–10 Hz 부근에서 최대(변조 0.5% 안팎이면 보임)인 대역 통과형이고, 고주파 쪽은 지수적으로 떨어진다.</p>
+    <p>\( m = 1 \)(완전 변조)에서도 깜박임이 사라지는 주파수가 <span class="term">임계 융합 주파수</span><span class="en">(critical flicker fusion frequency, CFF)</span>다. CFF는 고정값이 아니다.</p>
+    <ul>
+      <li><b>휘도</b>: 페리–포터 법칙<span class="en">(Ferry–Porter law)</span>에 따라 CFF는 휘도의 로그에 비례해 오른다. 중심와에서는 휘도가 10배 늘 때마다 약 10 Hz씩 오르며, 밝은 화면에서는 50–60 Hz를 넘는다.</li>
+      <li><b>면적과 이심률</b>: 그라니트–하퍼 법칙<span class="en">(Granit–Harper law)</span>에 따라 자극 면적의 로그에 비례해 오른다. 밝고 넓은 자극을 주변 시야로 보면 CFF가 80–90 Hz에 이르기도 한다. 50 Hz CRT의 깜박임이 정면보다 곁눈으로 더 잘 보였던 이유다.</li>
+      <li><b>색</b>: 등휘도 색 변조의 융합 주파수는 휘도 CFF의 절반 이하로 낮다(<a href="#chromatic">8절</a>).</li>
+    </ul>
+    <div class="formula">$$\text{CFF} \approx a\log_{10}\bar L + b,\qquad \bar L_\text{perceived} = \frac{1}{T}\int_0^{T} L(t)\,dt\quad (f > \text{CFF})$$
+      <div class="where">왼쪽은 페리–포터 법칙, 오른쪽은 <span class="term">탤벗–플라토 법칙</span><span class="en">(Talbot–Plateau law)</span>이다. CFF보다 빠르게 변하는 빛은 시간 평균과 같은 밝기로 보인다. PWM 밝기 조절, 시간 디더링, DLP의 비트플레인 계조, 필드 순차 색 혼합이 모두 이 법칙에 기대고 있다. 반대로 매우 짧은 시간(수십 ms 이하) 안에서는 블로흐 법칙<span class="en">(Bloch's law)</span>에 따라 세기 × 지속 시간의 곱이 문턱을 정한다.</div>
+    </div>
+    <div class="callout warn">
+      <strong>CFF 이상이면 안전하다는 오해</strong>
+      <p>CFF는 <em>눈이 고정된 상태에서 균일한 시야</em>가 깜박여 보이는지를 잰 값이다. 눈이 움직이면 시간 변조가 망막 위 공간 패턴으로 바뀌므로, CFF를 훨씬 넘는 수백 Hz~kHz 변조도 점선 모양의 잔상(팬텀 어레이)이나 회전체의 정지 착시(스트로보 효과)로 보일 수 있다. 플리커 평가에서 <b>직접 플리커</b>(고정 시야)와 <b>스트로보·팬텀 어레이</b>(눈이나 물체가 움직일 때)를 따로 다루는 이유다.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 3 -->
+  <section id="pwm">
+    <h2>PWM 플리커와 팬텀 어레이</h2>
+    <p>OLED 패널과 LED 조명은 밝기를 낮출 때 흔히 <span class="term">PWM</span><span class="en">(pulse-width modulation)</span>을 쓴다. 전류는 그대로 두고 켜져 있는 시간 비율(듀티 \( D \))만 줄이므로 색도가 거의 변하지 않는다는 장점이 있다(전류를 줄이는 DC 조광은 저계조에서 색 이동과 불균일이 커지기 쉽다). 사각파의 푸리에 계수로 각 고조파의 변조도를 구하면 TCSF와 바로 비교할 수 있다.</p>
+    <div class="formula">$$m_k = \frac{2\,(L_{\max} - L_{\min})}{\pi k\,\bar L}\,\bigl|\sin(\pi k D)\bigr|,\qquad \bar L = L_{\min} + D\,(L_{\max} - L_{\min}),\qquad \text{Mod\%} = 100\,\frac{L_{\max} - L_{\min}}{L_{\max} + L_{\min}}$$
+      <div class="where">\( k \)번째 고조파(주파수 \( kf \))가 \( m_k\,S(kf) > 1 \)이면 직접 플리커로 보인다. 듀티가 작을수록 \( \bar L \)이 작아져 상대 변조가 커진다. 밝기를 낮출수록 PWM 깜박임이 더 잘 보이는 이유다. Mod%는 IEEE 1789-2015와 조명 업계에서 쓰는 변조 깊이(퍼센트 플리커)다.</div>
+    </div>
+    <p>단속 운동 중에는 사정이 달라진다. 눈이 각속도 \( \dot\theta \)로 움직이는 동안 점광원이 주파수 \( f \)로 켜졌다 꺼지면, 켜진 순간마다 망막의 다른 위치에 점이 찍혀 점선이 생긴다. 이것이 <span class="term">팬텀 어레이</span><span class="en">(phantom array)</span>다. 점선 간격은 다음과 같다.</p>
+    <div class="formula">$$\Delta\theta = \frac{\dot\theta}{f}\qquad\text{예: } \frac{300\ ^\circ/\text{s}}{240\ \text{Hz}} = 1.25^\circ = 75\ \text{arcmin}$$
+      <div class="where">시력의 공간 분해능(약 1 arcmin)보다 훨씬 크므로, CFF의 네 배인 240 Hz에서도 점선이 또렷이 분리된다. 간격이 수 arcmin으로 줄어드는 수 kHz에서야 연속선에 가까워진다. 단속 억제(<a href="#saccade">4절</a>)가 이 잔상을 상당 부분 가리지만, 어두운 배경 위의 밝은 점광원(자동차 LED 후미등, 어두운 방의 스마트폰 화면)처럼 대비가 큰 경우에는 1 kHz 이상에서도 보인다는 보고가 있다.</div>
+    </div>
+    <div class="sim" id="sim-flicker">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>PWM 변조 — 직접 플리커, IEEE 1789 영역, 팬텀 어레이</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-fl-tcsf"></canvas><canvas id="cv-fl-ieee"></canvas><canvas id="cv-fl-pa"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>PWM 주파수 f <output id="fl-f-out"></output></span><input type="range" id="fl-f" min="0" max="100" step="any" value="34.06"></label>
+          <label class="ctrl"><span>듀티 D <output id="fl-d-out"></output></span><input type="range" id="fl-d" min="2" max="100" step="1" value="30"></label>
+          <label class="ctrl"><span>변조 깊이 Mod% <output id="fl-m-out"></output></span><input type="range" id="fl-m" min="0" max="100" step="1" value="100"></label>
+          <label class="ctrl"><span>평균 휘도 L̄ <output id="fl-l-out"></output></span><input type="range" id="fl-l" min="0" max="3" step="0.05" value="2"></label>
+          <label class="ctrl"><span>단속 속도 θ̇ <output id="fl-v-out"></output></span><input type="range" id="fl-v" min="50" max="600" step="10" value="300"></label>
+          <div class="ctrl"><span>예시</span><div class="seg" id="fl-pre"><button data-value="none" class="on">직접 조정</button><button data-value="oled">OLED 240 Hz</button><button data-value="hf">고주파 PWM 1920 Hz</button><button data-value="dc">DC 조광</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">CFF (모델, 이 휘도)</span><span class="v" id="o-fl-cff">—</span></div>
+        <div class="stat"><span class="k">직접 플리커 max mₖS(kf)</span><span class="v" id="o-fl-vis">—</span></div>
+        <div class="stat"><span class="k">IEEE 1789 판정</span><span class="v" id="o-fl-ieee">—</span></div>
+        <div class="stat"><span class="k">팬텀 어레이 간격 θ̇/f</span><span class="v" id="o-fl-pa">—</span></div>
+        <div class="stat"><span class="k">켜짐 시간 / 주기</span><span class="v" id="o-fl-on">—</span></div>
+      </div>
+      <div class="sim-note">위 그래프: 실선은 문턱 변조 \( 1/S(f) \)(교육용 TCSF 모델, 2° 내외 시야), 점은 PWM 고조파의 변조도 \( m_k \)다. 점이 곡선 위에 있으면 그 고조파가 보인다. 가운데: IEEE 1789-2015 권고의 저위험·무영향 경계와 현재 조건. 아래: 단속 운동 중 점광원이 망막에 남기는 궤적(10° 구간, 대비 무시). 해볼 것: ① 240 Hz, D = 30%, 100 cd/m²에서 직접 플리커는 보이지 않지만(값 ≪ 1) 팬텀 어레이 간격은 1.25°다. ② 주파수를 1920 Hz로 올리면 간격이 9.4 arcmin으로 줄고 IEEE 1789 저위험 영역(1250 Hz 초과)에 들어간다. ③ 60 Hz로 내리고 듀티를 줄이면 직접 플리커가 문턱을 넘는다. ④ 변조 깊이를 낮추면(DC 조광에 가까워지면) 세 지표가 모두 개선된다.</div>
+    </div>
+    <p>조명 분야는 이 문제를 지표로 정리해 두었다. IEC 61000-4-15의 \( P_\text{st}^\text{LM} \)은 직접 플리커를, CIE TN 006:2016의 SVM<span class="en">(stroboscopic visibility measure)</span>은 움직이는 물체의 스트로보 효과를 정량화하고(둘 다 1이 가시 문턱), IEEE 1789-2015는 주파수별 변조 깊이 한도를 권고한다. 1,250 Hz 이상은 변조 깊이에 관계없이 저위험으로 본다. 스마트폰 OLED의 PWM 주파수가 수백 Hz에서 1–2 kHz 이상으로 올라가는 추세도 같은 맥락이다. 단, 팬텀 어레이는 이 지표들로 완전히 포착되지 않는다.</p>
+  </section>
+
+  <!-- ============================================================ 4 -->
+  <section id="saccade">
+    <h2>단속 운동: 주 계열과 단속 억제</h2>
+    <p>단속 운동은 한번 시작되면 도중에 궤적을 바꾸기 어려운 탄도형 운동이다. 진폭이 클수록 최고 속도와 지속 시간이 함께 커지는데, 이 관계가 매우 일정해서 <span class="term">주 계열</span><span class="en">(main sequence)</span>이라 부른다(Bahill, Clark &amp; Stark, 1975). 흔히 쓰는 근사식은 다음과 같다.</p>
+    <div class="formula">$$V_p = V_{\max}\bigl(1 - e^{-A/C}\bigr),\qquad D \approx 2.2\,A + 21\ \text{ms}$$
+      <div class="where">\( A \)는 진폭[°], \( V_p \)는 최고 각속도[°/s], \( D \)는 지속 시간이다. 이 장에서는 \( V_{\max} = 600\ ^\circ/\text{s} \), \( C = 10^\circ \)를 쓴다. 개인차와 측정 방법에 따라 \( V_{\max} \)는 400–700 °/s 범위로 보고된다. 지속 시간 식(Carpenter, 1988)은 대략 5–50° 범위에서 맞는다. 10° 단속은 약 43 ms 동안 최고 380 °/s에 이른다.</div>
+    </div>
+    <div class="sim" id="sim-sacc">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>단속 운동의 주 계열과 속도 프로파일</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-sac-ms"></canvas><canvas id="cv-sac-prof"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>진폭 A <output id="sac-a-out"></output></span><input type="range" id="sac-a" min="0.5" max="40" step="0.5" value="10"></label>
+          <div class="ctrl"><span>화면 주사율</span><div class="seg" id="sac-fr"><button data-value="60" class="on">60 Hz</button><button data-value="120">120 Hz</button><button data-value="240">240 Hz</button></div></div>
+          <label class="ctrl"><span>화소 밀도 <output id="sac-ppd-out"></output></span><input type="range" id="sac-ppd" min="10" max="80" step="1" value="45"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">최고 속도 V_p</span><span class="v" id="o-sac-vp">—</span></div>
+        <div class="stat"><span class="k">지속 시간 D</span><span class="v" id="o-sac-d">—</span></div>
+        <div class="stat"><span class="k">평균 속도 / 최고·평균 비</span><span class="v" id="o-sac-mean">—</span></div>
+        <div class="stat"><span class="k">단속 중 화면 갱신 횟수</span><span class="v" id="o-sac-frames">—</span></div>
+        <div class="stat"><span class="k">최고 속도에서 1프레임 망막 이동</span><span class="v" id="o-sac-shift">—</span></div>
+      </div>
+      <div class="sim-note">속도 프로파일은 \( v(t) = V_p\sin^n(\pi t/D) \)로 근사하고, 적분값이 진폭 \( A \)가 되도록 \( n \)을 정했다(실제 큰 단속은 가속이 감속보다 짧은 비대칭형). 세로 점선은 화면 갱신 시점이다. 해볼 것: ① 10°, 60 Hz에서 단속은 약 2.6프레임 동안 일어나고, 최고 속도에서 한 프레임 사이에 망막 영상이 6.3°(45 px/° 기준 284 px) 이동한다. ② 진폭 2°의 작은 단속도 최고 속도가 100 °/s를 넘는다. 추종으로는 도달할 수 없는 속도다.</div>
+    </div>
+    <p>이렇게 빠른 운동 중에 망막 영상은 심하게 번지지만, 우리는 시선을 옮길 때마다 세상이 휙 흐려지는 것을 느끼지 못한다. 단속 직전 약 50 ms부터 직후 약 50 ms까지 시각 감도가 떨어지기 때문이다. 이를 <span class="term">단속 억제</span><span class="en">(saccadic suppression)</span>라 한다. 억제는 선택적이다. Burr, Morrone &amp; Ross(1994)는 <b>낮은 공간 주파수의 휘도 격자</b>에 대한 감도는 크게(수 배 이상) 떨어지지만, <b>등휘도 색 격자</b>에 대한 감도는 거의 줄지 않는다는 것을 보였다. 빠른 움직임을 담당하는 대세포<span class="en">(magnocellular)</span> 경로가 주로 억제된다는 해석이다.</p>
+    <div class="callout tip">
+      <strong>공학적 함의: 시선 기반 렌더링과 색 분리</strong>
+      <p>① 시선 추적으로 중심와만 고해상도로 그리는 <b>포비티드 렌더링</b>은, 단속이 끝난 뒤 억제가 풀리기 전(수십 ms 안)에 새 시선 위치의 고해상도 영상을 내야 들키지 않는다. 시선 추적 지연과 렌더링 지연을 합친 시스템 지연 예산이 여기서 나온다. ② 단속 억제가 색보다 휘도에 강하게 걸린다는 사실은, 단속 중 생기는 <b>색 줄무늬</b>(다음 절의 색 분리)가 휘도 줄무늬보다 덜 가려진다는 뜻이기도 하다.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 5 -->
+  <section id="breakup">
+    <h2>필드 순차 색과 색 분리</h2>
+    <p>단판 DLP 프로젝터와 일부 LCoS·AR 마이크로디스플레이는 한 프레임을 R, G, B <span class="term">서브필드</span><span class="en">(subfield)</span>로 나누어 차례로 보여 준다. 이것이 <span class="term">필드 순차 색</span><span class="en">(field-sequential color, FSC)</span>이다. 눈이 고정되어 있으면 탤벗–플라토 법칙에 따라 세 색이 시간 평균되어 흰색으로 보인다(시간 가산 혼합, <a href="display.html#additive">13장</a>). 그러나 눈이 화면에 대해 움직이면 서브필드마다 망막 위치가 달라져, 흰 물체의 가장자리에 무지개 같은 색 테두리가 생긴다. 이것이 <span class="term">색 분리</span><span class="en">(color breakup, CBU, 레인보 효과)</span>다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="필드 순차 색 디스플레이에서 눈이 움직일 때 서브필드별 망막 위치가 어긋나 색 테두리가 생기는 시공간 도식">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--text-dim)"/></marker></defs>
+        <text x="200" y="22" text-anchor="middle" class="t-acc">화면 좌표: 정지한 흰 막대, 한 프레임 = R·G·B 서브필드</text>
+        <line x1="60" y1="40" x2="360" y2="40" class="s-axis" marker-end="url(#ar2)"/><text x="364" y="44" class="t-dim">x</text>
+        <line x1="60" y1="40" x2="60" y2="230" class="s-axis" marker-end="url(#ar2)"/><text x="54" y="244" class="t-dim">t</text>
+        <rect x="160" y="60" width="80" height="50" fill="#e0443e"/>
+        <rect x="160" y="110" width="80" height="50" fill="#2f9e4a"/>
+        <rect x="160" y="160" width="80" height="50" fill="#2f6fe0"/>
+        <text x="150" y="90" text-anchor="end" class="t-dim">R 서브필드</text><text x="150" y="140" text-anchor="end" class="t-dim">G</text><text x="150" y="190" text-anchor="end" class="t-dim">B</text>
+        <line x1="200" y1="60" x2="320" y2="210" class="s-acc" stroke-width="2.4"/>
+        <text x="318" y="140" class="t-acc">시선 (속도 v)</text>
+        <text x="250" y="262" text-anchor="middle" class="t-mono">서브필드마다 시선이 v·τ 이동</text>
+        <!-- retina result -->
+        <text x="590" y="22" text-anchor="middle" class="t-acc">망막 좌표: 서브필드가 v·τ씩 어긋남</text>
+        <rect x="440" y="60" width="320" height="150" fill="#141414" rx="4"/>
+        <rect x="560" y="70" width="80" height="34" fill="#e0443e" opacity=".95"/><text x="652" y="92" class="t-mono" style="fill:#ddd">R</text>
+        <rect x="520" y="118" width="80" height="34" fill="#2f9e4a" opacity=".95"/><text x="612" y="140" class="t-mono" style="fill:#ddd">G</text>
+        <rect x="480" y="166" width="80" height="34" fill="#2f6fe0" opacity=".95"/><text x="572" y="188" class="t-mono" style="fill:#ddd">B</text>
+        <!-- integrated -->
+        <rect x="480" y="236" width="40" height="22" fill="#2f6fe0"/>
+        <rect x="520" y="236" width="40" height="22" fill="#1fd0d0"/>
+        <rect x="560" y="236" width="40" height="22" fill="#f2f2f2"/>
+        <rect x="600" y="236" width="40" height="22" fill="#e8d23a"/>
+        <rect x="640" y="236" width="40" height="22" fill="#e0443e"/>
+        <text x="580" y="282" text-anchor="middle" class="t-dim">합쳐 보이는 상: 청–청록–흰–황–적 테두리</text>
+      </svg>
+      <figcaption><b>그림 14-2.</b> 색 분리의 시공간 도식(개념도). 눈이 오른쪽으로 움직이면 망막 좌표에서 물체는 왼쪽으로 밀린다. 나중에 켜진 서브필드일수록 더 많이 밀리므로, 흰 막대의 앞뒤 가장자리에 서로 다른 원색이 남는다. 각 서브필드 안의 연속 번짐은 생략했다.</figcaption>
+    </figure>
+    <div class="formula">$$\Delta x_\text{sub} = v\,\tau_\text{sub} = \frac{v}{N\,f_\text{frame}},\qquad N = 3k\ (\text{RGB를 프레임당 } k\text{번 반복})$$
+      <div class="where">60 Hz 프레임, 색 휠 1배속(\( N = 3 \), \( \tau_\text{sub} = 5.6 \) ms)에서 10 °/s 추종이면 3.3 arcmin, 300 °/s 단속이면 100 arcmin(1.7°)이다. 색 휠 속도를 올리거나(2×, 4×, 6×) RGBRGB 순서로 서브필드를 쪼개면 간격이 줄고 색 줄무늬가 더 촘촘해져 서로 섞인다. LED·레이저 광원 DLP는 기계식 휠 없이 서브필드 순서를 자유롭게 바꿀 수 있어 이 점에서 유리하다.</div>
+    </div>
+    <div class="sim" id="sim-cbu">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>색 분리 — 서브필드 속도와 시선 속도</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-cbu-strip"></canvas><canvas id="cv-cbu-prof"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>상대 속도 v <output id="cbu-v-out"></output></span><input type="range" id="cbu-v" min="0" max="100" step="any" value="40"></label>
+          <div class="ctrl"><span>색 휠 배속 (60 Hz 프레임)</span><div class="seg" id="cbu-k"><button data-value="1" class="on">1× (180 Hz)</button><button data-value="2">2×</button><button data-value="4">4×</button><button data-value="6">6×</button></div></div>
+          <label class="ctrl"><span>막대 폭 <output id="cbu-w-out"></output></span><input type="range" id="cbu-w" min="2" max="60" step="1" value="20"></label>
+          <div class="ctrl"><span>예시</span><div class="seg" id="cbu-pre"><button data-value="none" class="on">직접 조정</button><button data-value="pur">추종 15 °/s</button><button data-value="sac">단속 300 °/s</button></div></div>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">서브필드 시간 τ_sub / 주파수</span><span class="v" id="o-cbu-tau">—</span></div>
+        <div class="stat"><span class="k">서브필드 간 어긋남 v·τ_sub</span><span class="v" id="o-cbu-dx">—</span></div>
+        <div class="stat"><span class="k">한 프레임 동안 이동 v·T</span><span class="v" id="o-cbu-vt">—</span></div>
+        <div class="stat"><span class="k">판정</span><span class="v" id="o-cbu-j">—</span></div>
+      </div>
+      <div class="sim-note">한 프레임(16.7 ms) 동안 망막에 쌓인 빛을 계산했다. 위에서부터 필드 순차 색(FSC), 같은 프레임 시간 동안 RGB를 동시에 내는 홀드형 화면, 정지 상태다. 아래 그래프는 FSC의 R·G·B 채널 프로파일이다. 분해능 기준으로 약 1 arcmin을 쓴다. 해볼 것: ① 추종 15 °/s, 1×에서 서브필드 간 어긋남이 5 arcmin, R과 B 사이가 약 10 arcmin이다. ② 6×로 올리면 서브필드 간 어긋남이 0.8 arcmin으로 줄어 거의 흰색이 된다. 홀드형 화면에서 생기는 회색 번짐(모션 블러, 다음 절)은 그대로 남는다. ③ 단속 300 °/s에서는 6×에서도 어긋남이 17 arcmin이어서 색 줄무늬가 남는다. 실제로는 단속 억제가 이를 상당 부분 가린다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 6 -->
+  <section id="pursuit">
+    <h2>원활 추종과 홀드형 모션 블러</h2>
+    <p>원활 추종은 움직이는 목표가 있어야만 일어난다. 목표 없이 눈을 매끄럽게 움직이려 하면 단속 운동의 계단이 된다. 약 100–150 ms 지연 뒤 시작해 목표 속도에 맞춰지며, 목표 속도 약 30 °/s까지는 이득(눈 속도/목표 속도)이 0.9 이상이다. 더 빨라지면 이득이 떨어지고 따라잡기 단속이 끼어든다. 움직임이 예측 가능하면(일정 속도, 반복 운동) 지연이 거의 사라지기도 한다. 추종 중 목표는 망막에서 거의 정지하므로 날카롭게 보이고, 대신 배경이 망막 위를 흐른다.</p>
+    <p>이제 화면 위 물체를 추종하는 경우를 보자. LCD와 대부분의 OLED는 한 프레임 동안 같은 영상을 계속 띄워 두는 <span class="term">홀드형</span><span class="en">(sample-and-hold)</span> 디스플레이다. 물체의 화면 위치는 프레임마다 계단식으로 바뀌지만, 눈은 연속적으로 움직인다. 그래서 한 프레임 동안 화면에 멈춰 있는 영상이 망막 위에서 한 프레임 이동 거리만큼 미끄러진다. 이렇게 생기는 번짐이 <span class="term">홀드형 모션 블러</span><span class="en">(hold-type motion blur)</span>다. 카메라나 패널 응답이 아니라 <b>눈의 추종과 영상 유지 시간</b>이 만든다.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 800 300" role="img" aria-label="연속 운동, 홀드형, 저지속 임펄스형 디스플레이에서 물체 위치와 시선 궤적의 시공간 도식">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--text-dim)"/></marker></defs>
+        <g>
+          <text x="135" y="22" text-anchor="middle" class="t-acc">실제 물체 (연속 운동)</text>
+          <line x1="30" y1="40" x2="250" y2="40" class="s-axis" marker-end="url(#ar3)"/><line x1="30" y1="40" x2="30" y2="250" class="s-axis" marker-end="url(#ar3)"/>
+          <text x="254" y="44" class="t-dim">x</text><text x="24" y="262" class="t-dim">t</text>
+          <line x1="60" y1="50" x2="220" y2="240" class="s-acc" stroke-width="5" opacity=".55"/>
+          <line x1="60" y1="50" x2="220" y2="240" class="s-line" stroke-dasharray="5 4"/>
+          <text x="135" y="282" text-anchor="middle" class="t-dim">눈(점선)과 물체가 일치 → 번짐 0</text>
+        </g>
+        <g>
+          <text x="400" y="22" text-anchor="middle" class="t-acc">홀드형 (지속 100%)</text>
+          <line x1="295" y1="40" x2="515" y2="40" class="s-axis" marker-end="url(#ar3)"/><line x1="295" y1="40" x2="295" y2="250" class="s-axis" marker-end="url(#ar3)"/>
+          <path d="M325 50 V97.5 M365 97.5 V145 M405 145 V192.5 M445 192.5 V240" class="s-acc" stroke-width="5" opacity=".75"/>
+          <line x1="325" y1="50" x2="485" y2="240" class="s-line" stroke-dasharray="5 4"/>
+          <line x1="405" y1="200" x2="445" y2="200" class="s-line" marker-end="url(#ar3)" marker-start="url(#ar3)"/>
+          <text x="470" y="204" class="t-mono">v·T</text>
+          <text x="400" y="282" text-anchor="middle" class="t-dim">프레임마다 망막 위에서 0 → v·T 미끄러짐</text>
+        </g>
+        <g>
+          <text x="665" y="22" text-anchor="middle" class="t-acc">임펄스형 (지속 25%)</text>
+          <line x1="560" y1="40" x2="780" y2="40" class="s-axis" marker-end="url(#ar3)"/><line x1="560" y1="40" x2="560" y2="250" class="s-axis" marker-end="url(#ar3)"/>
+          <path d="M590 50 V61.9 M630 97.5 V109.4 M670 145 V156.9 M710 192.5 V204.4" class="s-acc" stroke-width="5" opacity=".75"/>
+          <line x1="590" y1="50" x2="750" y2="240" class="s-line" stroke-dasharray="5 4"/>
+          <text x="665" y="282" text-anchor="middle" class="t-dim">번짐 v·T/4, 대신 깜박임과 휘도 손실</text>
+        </g>
+      </svg>
+      <figcaption><b>그림 14-3.</b> 추종하는 눈(점선)과 화면 위 물체 위치(굵은 선)의 시공간 도식. 홀드형은 프레임 내내 물체가 멈춰 있어, 연속적으로 움직이는 시선과의 거리가 0에서 \( vT \)까지 벌어진다. 이 거리 분포가 망막 위 번짐 폭이다. 빛을 프레임 일부에만 내면 번짐이 지속 비율만큼 줄어든다.</figcaption>
+    </figure>
+    <div class="formula">$$w = v\,t_\text{p} = v\,\frac{d}{f_\text{r}},\qquad \text{BEW}_{10\text{–}90} \approx 0.8\,w\quad(\text{이상적 상자형 번짐})$$
+      <div class="where">\( v \)는 화면 위 속도[px/s], \( t_\text{p} \)는 한 프레임 안에서 빛이 나오는 <span class="term">지속 시간</span><span class="en">(persistence)</span>, \( d \)는 지속 비율, \( f_\text{r} \)은 주사율이다. 60 Hz 홀드형에서 960 px/s(45 px/°에서 약 21 °/s, 편안한 추종 속도)로 움직이는 물체는 16 px 번진다. 같은 영상을 120 Hz로 그리면 8 px, 60 Hz에서 지속 25%로 깜박이면 4 px이다. 패널 응답 시간(LCD 수 ms)은 이 상자형 번짐에 지수형 꼬리를 더한다. 측정 지표 MPRT<span class="en">(motion picture response time)</span>와 BEW<span class="en">(blur edge width)</span>는 추종 카메라나 그 등가 계산으로 이 번짐을 잰다. 정의(10–90% 폭인지, 정규화 방식)가 문서마다 달라서 수치를 비교할 때는 정의를 확인해야 한다.</div>
+    </div>
+    <div class="sim" id="sim-blur">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>홀드형 모션 블러 — 주사율, 지속 시간, 응답 시간, 풀다운</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-bl-strip"></canvas><canvas id="cv-bl-prof"></canvas></div>
+        <div class="sim-controls">
+          <div class="ctrl"><span>콘텐츠 프레임률</span><div class="seg" id="bl-fc"><button data-value="24">24</button><button data-value="30">30</button><button data-value="60" class="on">60</button><button data-value="120">120</button><button data-value="240">240</button></div></div>
+          <div class="ctrl"><span>패널 주사율</span><div class="seg" id="bl-fr"><button data-value="60" class="on">60 Hz</button><button data-value="120">120 Hz</button><button data-value="240">240 Hz</button></div></div>
+          <label class="ctrl"><span>화면 속도 v <output id="bl-v-out"></output></span><input type="range" id="bl-v" min="0" max="3000" step="20" value="960"></label>
+          <label class="ctrl"><span>지속 비율 d <output id="bl-d-out"></output></span><input type="range" id="bl-d" min="5" max="100" step="1" value="100"></label>
+          <label class="ctrl"><span>패널 응답 τ <output id="bl-tau-out"></output></span><input type="range" id="bl-tau" min="0" max="10" step="0.1" value="0.1"></label>
+          <div class="ctrl"><span>눈</span><div class="seg" id="bl-eye"><button data-value="pursuit" class="on">물체를 추종</button><button data-value="fix">한 점에 고정</button></div></div>
+          <label class="ctrl"><span>추종 이득 g <output id="bl-g-out"></output></span><input type="range" id="bl-g" min="0.5" max="1" step="0.01" value="1"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">각속도 (45 px/°)</span><span class="v" id="o-bl-deg">—</span></div>
+        <div class="stat"><span class="k">지속 시간 t_p</span><span class="v" id="o-bl-tp">—</span></div>
+        <div class="stat"><span class="k">이론 번짐 폭 v·t_p</span><span class="v" id="o-bl-w">—</span></div>
+        <div class="stat"><span class="k">계산된 10–90% 경계 폭</span><span class="v" id="o-bl-bew">—</span></div>
+        <div class="stat"><span class="k">같은 평균 밝기에 필요한 피크</span><span class="v" id="o-bl-peak">—</span></div>
+        <div class="stat"><span class="k">깜박임 주파수</span><span class="v" id="o-bl-flk">—</span></div>
+      </div>
+      <div class="sim-note">폭 60 px의 흰 막대가 화면을 가로지를 때 망막에 쌓인 빛을 계산했다(시간 적분 창은 패턴 한 주기 이상, 최소 50 ms). 위 띠는 실제 물체가 연속으로 움직일 때, 아래 띠는 디스플레이다. 빛은 각 주사 주기의 끝부분 \( d \)에서 나오고(스트로브 백라이트·흑화면 삽입), 화소는 시정수 τ의 1차 응답으로 목표값을 따라간다. 해볼 것: ① 60/60 Hz, 960 px/s, 홀드형: 번짐 16 px, 10–90% 경계 폭 약 13 px(이론값 0.8 × 16 = 12.8 px). ② 지속 비율 25%: 4 px. 깜박임 주파수 60 Hz이므로 직접 플리커가 보일 수 있는 영역이다. ③ 콘텐츠 24, 주사율 60(3:2 풀다운): 같은 프레임이 3회·2회 번갈아 유지되어 경계가 고르지 않게 번지는 저더<span class="en">(judder)</span>가 생긴다. ④ 콘텐츠 60, 주사율 120, 지속 25%: 같은 프레임을 두 번 깜박이므로 추종 중 <b>이중상</b>이 생긴다. 흑화면 삽입은 콘텐츠 프레임률이 주사율과 같을 때만 효과가 깔끔하다. ⑤ ‘한 점에 고정’으로 바꾸면 실제 물체도 번져 보이고, 저지속 화면에서는 끊긴 여러 상(스트로보)이 보인다.</div>
+    </div>
+    <p>홀드형 블러를 줄이는 방법은 결국 \( t_\text{p} \)를 줄이는 것이고, 대가가 하나씩 따른다.</p>
+    <ul>
+      <li><b>높은 프레임률</b>(120/240 Hz): 번짐이 프레임률에 반비례해 줄고 깜박임도 없다. 다만 콘텐츠가 실제로 그 프레임률로 렌더링되어야 한다. 프레임 보간<span class="en">(motion interpolation)</span>으로 중간 프레임을 만들면 영화가 비디오처럼 매끄러워 보이는 ‘연속극 효과’와 보간 오류가 생긴다.</li>
+      <li><b>흑화면 삽입·스트로브 백라이트</b><span class="en">(BFI, backlight strobing)</span>: 지속 비율 \( d \)만큼 번짐이 준다. 평균 밝기를 유지하려면 피크를 \( 1/d \)배로 올려야 하고, 깜박임 주파수가 주사율과 같아지므로 60 Hz에서는 직접 플리커가 문제가 된다(<a href="#temporal">2절</a>).</li>
+      <li><b>응답 시간 단축</b>: LCD의 오버드라이브는 지수형 꼬리를 줄이지만 홀드형 번짐 자체는 없애지 못한다. 응답이 0.1 ms 수준인 OLED도 홀드형이면 같은 프레임률의 LCD와 MPRT가 크게 다르지 않다.</li>
+    </ul>
+    <div class="callout deep">
+      <strong>심화: VR 헤드셋이 저지속 디스플레이를 쓰는 이유</strong>
+      <p>머리를 돌리면 전정안 반사가 약 10 ms 지연으로 눈을 반대로 돌려, 세상(가상 장면)에 시선을 붙잡는다. 헤드셋 화면은 머리와 함께 돌기 때문에, 장면이 세상에 고정되어 보이려면 화면 위 영상이 머리 회전과 반대로 움직여야 한다. 즉 눈이 화면 위 영상을 ‘추종’하는 상황과 같다. 머리 회전 100 °/s, 20 px/°, 90 Hz 홀드형(11.1 ms)이면 번짐이 1.1°(약 22 px)나 된다. 지속 시간을 2 ms로 줄이면 0.2°(4 px)다. VR 패널이 프레임의 일부에만 빛을 내는 저지속<span class="en">(low persistence)</span> 구동을 쓰고, 움직임에서 화면 갱신까지의 지연<span class="en">(motion-to-photon latency)</span>을 대략 20 ms 이하로 관리하는 이유다.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 7 -->
+  <section id="fixation">
+    <h2>고정 중 미세 운동과 트록슬러 소실</h2>
+    <p>한 점을 응시하는 동안에도 눈은 멈추지 않는다. 느린 <b>표류</b><span class="en">(drift)</span>, 수십 Hz의 <b>떨림</b><span class="en">(tremor)</span>, 초당 1–2회의 <span class="term">미세 단속 운동</span><span class="en">(microsaccade, 대략 1° 미만)</span>이 섞여 있다. 이 움직임은 잡음이 아니라 필요한 신호다. 광수용체와 신경절세포는 <b>변화</b>에 반응하므로, 광학 장치로 망막 영상을 눈 운동과 함께 움직여 망막에 완전히 고정하면 수 초 안에 영상이 희미해지고 사라진다(안정화 망막 영상 실험, Ditchburn &amp; Riggs, 1952). 경계가 흐릿한 주변 시야의 자극은 일반적인 응시만으로도 사라지는데, 이를 <span class="term">트록슬러 소실</span><span class="en">(Troxler fading, 1804)</span>이라 한다. 미세 단속이 일어나는 순간 사라졌던 자극이 되살아난다는 것도 측정되었다(Martinez-Conde 등, 2006).</p>
+    <p>트록슬러 소실과 색순응(<a href="adaptation.html">8장</a>)이 함께 작용하면 재미있는 착시가 생긴다. 회색 바탕 위 흐릿한 색 원판들을 응시하면 원판이 바탕과 섞여 사라지고, 원판 하나가 꺼진 자리에는 순응으로 생긴 <b>보색 잔상</b>이 나타난다. 원판이 차례로 꺼지면 보색 원판이 원을 따라 도는 것처럼 보인다(J. Hinton의 ‘라일락 체이서’로 알려진 착시).</p>
+    <div class="sim" id="sim-trox">
+      <div class="sim-head"><span class="sim-tag">DEMO</span><h3>트록슬러 소실과 보색 잔상 — 중앙 십자를 20초 이상 응시</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-trox"></canvas></div>
+        <div class="sim-controls">
+          <button class="btn primary" id="trox-run">시작</button>
+          <div class="ctrl"><span>원판 색</span><div class="seg" id="trox-col"><button data-value="mag" class="on">마젠타</button><button data-value="cyan">청록</button><button data-value="yel">노랑</button></div></div>
+          <label class="check"><input type="checkbox" id="trox-seq" checked> 하나씩 차례로 꺼짐</label>
+          <label class="ctrl"><span>흐림 정도 <output id="trox-blur-out"></output></span><input type="range" id="trox-blur" min="0" max="100" step="1" value="80"></label>
+        </div>
+      </div>
+      <div class="sim-note">화면 전체가 깜박이는 자극은 없다(원판 하나가 0.1초씩 꺼질 뿐이다). 해볼 것: ① 십자를 응시하면 10–20초 안에 원판이 회색 바탕과 섞여 흐려지고, 꺼지는 자리에 녹색(마젠타의 보색) 원판이 돌아다닌다. ② 흐림을 0으로 하면 경계가 선명해져 소실이 거의 일어나지 않는다. 선명한 경계는 미세 운동만으로도 큰 신호 변화를 만들기 때문이다. ③ 시선을 원판으로 옮기면 즉시 원래 색이 돌아온다. 화면 색 보정과 무관하게 지각이 시간에 따라 변한다는 점을 기억하자.</div>
+    </div>
+    <div class="callout tip">
+      <strong>시각 평가 실험에 주는 교훈</strong>
+      <p>색 견본을 오래 응시하면 순응과 소실로 판단이 흔들린다. ISO 3664 같은 관찰 조건 표준과 시각 평가 지침이 무채색 주변, 일정한 순응 시간, 짧은 비교를 권하는 이유다. 반대로 디스플레이의 <b>잔상</b><span class="en">(image retention)</span>이나 <b>무라</b>를 찾을 때는 시선을 움직이며 보는 것이 유리하다. 고정 응시만으로는 흐릿한 저대비 결함이 소실되어 보이지 않을 수 있다.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 8 -->
+  <section id="chromatic">
+    <h2>색 채널의 시간 특성과 이색 플리커 측광</h2>
+    <p>공간에서 그랬듯이 시간에서도 색 채널은 휘도 채널보다 느리다. 등휘도 적–녹 변조의 시간 대비 감도는 저역 통과형이고, 대략 20 Hz 안팎에서 깜박임이 융합된다. 휘도 CFF(밝은 조건 50–60 Hz)의 절반에도 못 미친다(Kelly, 1983). 이 차이는 우연이 아니라 측광학의 기초가 되었다. 색이 다른 두 빛의 ‘밝기’를 비교하는 대표적 방법인 <span class="term">이색 플리커 측광</span><span class="en">(heterochromatic flicker photometry, HFP)</span>이 바로 이 차이를 이용한다.</p>
+    <div class="flow">
+      <div><b>1. 교대</b> 같은 자리에 빨강과 초록을 약 15–25 Hz로 번갈아 띄운다.</div>
+      <div><b>2. 색 융합</b> 이 주파수에서는 색 채널이 따라오지 못해 색 깜박임이 사라진다.</div>
+      <div><b>3. 휘도 깜박임 최소화</b> 휘도 채널은 여전히 반응하므로, 한쪽의 복사량을 조절해 깜박임이 최소가 되는 점을 찾는다.</div>
+      <div><b>4. 등휘도</b> 그 점에서 두 빛은 그 관찰자에게 ‘휘도가 같다’. 파장별로 반복하면 시감 효율 함수가 나온다.</div>
+    </div>
+    <p>CIE 1924 \( V(\lambda) \)는 플리커 측광과 단계 비교법 데이터를 모아 만든 것이고, CIE가 2008년 이후 정리한 원추 기본함수 기반 시감 효율 \( V^*(\lambda) \approx 1.55\,\bar l(\lambda) + \bar m(\lambda) \)(피크 정규화 전, Sharpe 등, 2005)도 HFP 측정에서 나왔다. 휘도가 L과 M 원추의 <b>가중합</b>이라는 사실(<a href="vision.html#opponent">2장 반대색 채널</a>)이 HFP로 측정되는 것이다. 가중치 \( a \)는 관찰자의 L:M 원추 비율 등에 따라 개인차가 있어서, 빨강–초록 쌍의 등휘도 점은 사람마다 수십 %까지 다를 수 있다.</p>
+    <div class="formula">$$Y_i(\lambda) \propto a\,\bar l(\lambda) + \bar m(\lambda),\qquad F = \sqrt{\bigl(m_\text{lum}\,S_\text{lum}(f)\bigr)^2 + \bigl(m_\text{chr}\,S_\text{chr}(f)\bigr)^2}$$
+      <div class="where">\( F \)는 깜박임 가시도(1이 문턱)의 교육용 모델이다. \( m_\text{lum} \)은 관찰자 휘도 \( Y_i \)의 변조도, \( m_\text{chr} \)은 L, M 원추 대비 차의 절반(L−M 채널 변조), \( S_\text{lum} \)은 대역 통과형 휘도 TCSF, \( S_\text{chr} \)은 저역 통과형 색 TCSF다. 등휘도 점에서 \( m_\text{lum} = 0 \)이 되어도 \( f \)가 낮으면 색 항이 남아 깜박임이 사라지지 않는다.</div>
+    </div>
+    <div class="sim" id="sim-hfp">
+      <div class="sim-head"><span class="sim-tag">SIMULATOR</span><h3>이색 플리커 측광 — 주파수와 관찰자의 L:M 가중치</h3></div>
+      <div class="sim-body side">
+        <div class="sim-view"><canvas id="cv-hfp"></canvas></div>
+        <div class="sim-controls">
+          <label class="ctrl"><span>교대 주파수 f <output id="hfp-f-out"></output></span><input type="range" id="hfp-f" min="2" max="40" step="0.5" value="20"></label>
+          <label class="ctrl"><span>초록 복사량 / 빨강 <output id="hfp-r-out"></output></span><input type="range" id="hfp-r" min="-1.5" max="0.7" step="0.01" value="-0.3"></label>
+          <label class="ctrl"><span>관찰자 L 가중치 a <output id="hfp-a-out"></output></span><input type="range" id="hfp-a" min="0.5" max="4" step="0.05" value="1.55"></label>
+          <label class="ctrl"><span>빨강 파장 <output id="hfp-lr-out"></output></span><input type="range" id="hfp-lr" min="600" max="660" step="1" value="630"></label>
+          <label class="ctrl"><span>초록 파장 <output id="hfp-lg-out"></output></span><input type="range" id="hfp-lg" min="500" max="570" step="1" value="540"></label>
+        </div>
+      </div>
+      <div class="sim-readout">
+        <div class="stat"><span class="k">현재 깜박임 F (문턱 = 1)</span><span class="v" id="o-hfp-f">—</span></div>
+        <div class="stat"><span class="k">관찰자 등휘도 점</span><span class="v" id="o-hfp-null">—</span></div>
+        <div class="stat"><span class="k">CIE V(λ) 기준 등휘도 점</span><span class="v" id="o-hfp-cie">—</span></div>
+        <div class="stat"><span class="k">등휘도 점의 잔여 깜박임</span><span class="v" id="o-hfp-min">—</span></div>
+      </div>
+      <div class="sim-note">이 시뮬레이터는 실제로 화면을 깜박이지 않고 모델로 계산만 한다(광과민성 발작 위험 때문에 15–25 Hz 적–녹 교대 자극은 화면에 띄우지 않는다). 빛은 FWHM 20 nm 가우시안, 평균 휘도 약 50 cd/m², 시야 2°를 가정했다. 해볼 것: ① 20 Hz에서 초록 복사량을 움직이면 등휘도 점에서 깜박임이 문턱 아래로 떨어지는 좁은 골이 생긴다. ② 5 Hz로 낮추면 골이 얕아져 어디서도 깜박임이 사라지지 않는다. 색 깜박임이 남기 때문이다. ③ 가중치 a를 1.55에서 3으로 바꾸면 등휘도 점이 옮겨 간다. 이 관찰자에게는 CIE \( V(\lambda) \)로 같은 휘도인 두 빛이 같은 밝기가 아니다.</div>
+    </div>
+    <div class="callout warn">
+      <strong>안전: 플리커 자극을 만들 때</strong>
+      <p>3 Hz 이상 깜박이는 큰 면적의 자극, 특히 채도 높은 빨강이 섞인 깜박임은 광과민성 발작을 일으킬 수 있다. WCAG 2.x는 초당 3회를 넘는 일반·적색 섬광을 제한하고, 방송에는 ITU-R BT.1702 같은 지침이 있다. 시각 실험이나 화질 평가에서 플리커 자극을 쓸 때는 면적과 대비를 제한하고 참가자에게 미리 알려야 한다.</p>
+    </div>
+  </section>
+
+  <section class="keypoints" id="summary">
+    <h2>핵심 정리</h2>
+    <ol>
+      <li>눈은 단속 운동(최고 ~600 °/s, 지연 ~200 ms), 원활 추종(~30 °/s까지 이득 ≥ 0.9, 지연 ~120 ms), 전정안 반사(지연 ~10 ms), 이향 운동, 고정 미세 운동으로 움직인다. 시간적으로 샘플링된 화면에서는 상대 속도 × 발광 시간 \( v\,\Delta t \)가 망막 위 공간 패턴이 된다.</li>
+      <li>시간 대비 감도는 밝은 조건에서 8–10 Hz에 최대인 대역 통과형이다. CFF는 휘도의 로그(페리–포터)와 면적의 로그(그라니트–하퍼)에 따라 오르며, 밝고 넓은 주변 시야에서 가장 높다. CFF 이상에서는 시간 평균 밝기로 보인다(탤벗–플라토).</li>
+      <li>PWM은 고조파 변조도 \( m_k \)와 TCSF로 직접 플리커를 판정한다. CFF 이상이라도 단속 중에는 간격 \( \dot\theta/f \)의 팬텀 어레이가 생기므로(300 °/s, 240 Hz → 1.25°) kHz급 주파수나 얕은 변조가 필요하다.</li>
+      <li>단속 운동은 주 계열 \( V_p = V_{\max}(1-e^{-A/C}) \), \( D \approx 2.2A + 21 \) ms를 따른다. 단속 억제는 낮은 공간 주파수의 휘도 자극에 강하고 등휘도 색 자극에는 약하다.</li>
+      <li>필드 순차 색은 서브필드 간 어긋남 \( v/(N f_\text{frame}) \)만큼 색 분리를 만든다. 색 휠 배속과 서브필드 분할로 줄이지만 단속 속도에서는 완전히 없애기 어렵다.</li>
+      <li>홀드형 모션 블러는 추종하는 눈과 유지되는 영상의 상대 운동이 만들며 폭은 \( v\,t_\text{p} \)다(60 Hz, 960 px/s → 16 px). 고프레임률, 흑화면 삽입·스트로브, 저지속 구동으로 줄이고, 그 대가는 렌더링 부하, 깜박임, 피크 휘도다. 풀다운과 반복 점멸은 저더와 이중상을 만든다.</li>
+      <li>망막에 고정된 영상은 사라진다(트록슬러 소실). 고정 미세 운동은 시각 유지에 필요하며, 오래 응시하면 순응과 소실이 색 판단을 흔든다.</li>
+      <li>색 채널의 시간 응답은 휘도보다 느려(~20 Hz 융합) 이색 플리커 측광이 가능하고, 이것이 \( V(\lambda) \)와 \( V^*(\lambda) \approx 1.55\bar l + \bar m \) 같은 시감 효율 함수를 정의하는 방법이 되었다.</li>
+    </ol>
+  </section>
+
+  <section class="quiz-sec" id="quiz">
+    <h2>확인 퀴즈</h2>
+    <div class="quiz">
+      <div class="quiz-q"><p>1. 화면 위에서 움직이는 물체를 눈으로 따라갈 때 주로 쓰이는 눈 운동과, 그때 망막 위 물체 영상의 속도는?</p><div class="opts">
+        <button class="opt">단속 운동, 수백 °/s</button><button class="opt" data-correct>원활 추종, 거의 0</button><button class="opt">전정안 반사, 물체 속도와 같음</button><button class="opt">이향 운동, 물체 속도의 절반</button>
+      </div><div class="quiz-exp">원활 추종은 목표를 중심와에 유지하므로 목표의 망막 속도는 거의 0이 되고 배경이 흐른다. 홀드형 모션 블러가 생기는 조건이 바로 이 상황이다.</div></div>
+      <div class="quiz-q"><p>2. 평균 휘도가 같을 때, PWM 듀티를 50%에서 10%로 줄이면 기본파 변조도 \( m_1 \)은 어떻게 되는가? (완전 변조)</p><div class="opts">
+        <button class="opt">1.27에서 0.25로 준다</button><button class="opt">변하지 않는다</button><button class="opt" data-correct>1.27에서 약 1.97로 커진다</button><button class="opt">0이 된다</button>
+      </div><div class="quiz-exp">\( m_1 = 2\sin(\pi D)/(\pi D) \)다. D = 0.5에서 4/π ≈ 1.27, D = 0.1에서 2 × 0.309/0.314 ≈ 1.97이다. 밝기를 낮출수록 PWM 깜박임이 더 잘 보인다.</div></div>
+      <div class="quiz-q"><p>3. 500 Hz PWM 점광원을 400 °/s 단속 운동으로 지나칠 때 팬텀 어레이 점 간격은?</p><div class="opts">
+        <button class="opt">0.08 arcmin</button><button class="opt">1.25°</button><button class="opt" data-correct>0.8° (48 arcmin)</button><button class="opt">점선이 생기지 않는다(CFF 이상이므로)</button>
+      </div><div class="quiz-exp">\( \Delta\theta = \dot\theta/f = 400/500 = 0.8^\circ \)다. CFF보다 훨씬 높은 주파수여도 눈이 움직이면 시간 변조가 공간 패턴이 된다.</div></div>
+      <div class="quiz-q"><p>4. 주 계열 근사(\( V_{\max} = 600 \) °/s, \( C = 10^\circ \), \( D = 2.2A + 21 \) ms)로 20° 단속의 최고 속도와 지속 시간을 구하면?</p><div class="opts">
+        <button class="opt">약 200 °/s, 21 ms</button><button class="opt" data-correct>약 520 °/s, 65 ms</button><button class="opt">600 °/s, 44 ms</button><button class="opt">약 380 °/s, 43 ms</button>
+      </div><div class="quiz-exp">\( V_p = 600(1 - e^{-2}) = 519 \) °/s, \( D = 2.2 \times 20 + 21 = 65 \) ms다. 약 380 °/s, 43 ms는 10° 단속의 값이다.</div></div>
+      <div class="quiz-q"><p>5. 단속 억제에 대한 설명으로 옳은 것은?</p><div class="opts">
+        <button class="opt">단속 중 모든 시각 정보가 완전히 차단된다</button><button class="opt">등휘도 색 자극이 가장 강하게 억제된다</button><button class="opt" data-correct>낮은 공간 주파수의 휘도 자극에 대한 감도가 크게 떨어지고, 등휘도 색 자극은 거의 억제되지 않는다</button><button class="opt">단속이 끝난 뒤 수 초 동안 지속된다</button>
+      </div><div class="quiz-exp">Burr, Morrone &amp; Ross(1994)의 결과다. 억제는 단속 전후 수십 ms에 걸치고 대세포 경로(휘도, 저공간주파수)에 선택적이다.</div></div>
+      <div class="quiz-q"><p>6. 60 Hz 프레임, 색 휠 2배속(RGBRGB) DLP에서 시선이 20 °/s로 움직일 때 서브필드 간 어긋남은?</p><div class="opts">
+        <button class="opt">20 arcmin</button><button class="opt">6.7 arcmin</button><button class="opt" data-correct>약 3.3 arcmin</button><button class="opt">0 (시간 평균되므로)</button>
+      </div><div class="quiz-exp">\( N = 6 \), \( \tau_\text{sub} = 1/360 \) s = 2.78 ms. \( 20\ ^\circ/\text{s} \times 2.78 \) ms = 0.056° = 3.3 arcmin이다. 시간 평균은 눈이 고정되어 있을 때만 성립한다.</div></div>
+      <div class="quiz-q"><p>7. 60 Hz 홀드형 OLED(응답 0.1 ms)와 60 Hz 홀드형 LCD(응답 4 ms)에서 1,200 px/s로 움직이는 물체를 추종할 때 옳은 것은?</p><div class="opts">
+        <button class="opt">OLED는 응답이 빨라 번짐이 거의 없다</button><button class="opt" data-correct>둘 다 약 20 px의 홀드형 번짐이 있고, LCD는 여기에 응답 시간에 따른 꼬리가 더해진다</button><button class="opt">LCD만 번진다</button><button class="opt">번짐은 패널 응답 시간에만 비례한다</button>
+      </div><div class="quiz-exp">홀드형 번짐 폭은 \( v\,t_\text{p} = 1200/60 = 20 \) px로 패널 종류와 무관하다. 응답 시간은 지수형 꼬리를 더할 뿐이다. OLED도 줄이려면 프레임률을 높이거나 지속 시간을 줄여야 한다.</div></div>
+      <div class="quiz-q"><p>8. 60 fps 콘텐츠를 120 Hz 패널에서 지속 25%로 두 번 깜박여 보여 주면 추종하는 눈에 무엇이 보이는가?</p><div class="opts">
+        <button class="opt">번짐이 4 px로 줄어든 깨끗한 상</button><button class="opt" data-correct>한 프레임 이동 거리의 절반만큼 떨어진 이중상</button><button class="opt">색 분리</button><button class="opt">아무 변화 없음</button>
+      </div><div class="quiz-exp">같은 위치의 영상이 1/120 s 간격으로 두 번 켜지는 동안 눈은 \( v/120 \)만큼 움직인다. 그래서 두 상이 망막에서 그만큼 떨어진다. 흑화면 삽입은 콘텐츠 프레임마다 한 번만 깜박일 때 효과적이다.</div></div>
+      <div class="quiz-q"><p>9. 이색 플리커 측광을 3 Hz가 아니라 15–25 Hz에서 하는 이유는?</p><div class="opts">
+        <button class="opt">휘도 채널이 그 주파수에서 반응하지 않아서</button><button class="opt" data-correct>색 채널은 융합되어 색 깜박임이 사라지고, 휘도 채널은 여전히 반응해 휘도 차이만 깜박임으로 남기 때문</button><button class="opt">CFF보다 높아야 해서</button><button class="opt">원추세포가 그 주파수에서만 반응해서</button>
+      </div><div class="quiz-exp">색 TCSF는 저역 통과형으로 20 Hz 안팎에서 융합되고, 휘도 TCSF는 8–10 Hz 부근에서 최대이며 50 Hz 이상까지 반응한다. 그 사이 주파수에서는 깜박임이 사라지는 점이 곧 등휘도 점이다.</div></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const log10 = Math.log10;
+
+  /* ---------- 교육용 휘도 TCSF 모델: 대역 통과, 고주파 지수 감쇠 ----------
+     S(f; L) = Smax·x^0.6·e^{0.6(1−x)} (x<1), Smax·e^{−(x−1)/W} (x≥1), x = f/fp
+     Smax = 220·L/(L+3), fp = 5 + 1.6·log10 L [Hz], W = 1.13
+     → CFF = fp(1 + W ln Smax): 1 cd/m² 28 Hz, 100 cd/m² 58 Hz, 1000 cd/m² 70 Hz (페리–포터형) */
+  const TC = { W: 1.13 };
+  const tcSmax = (L) => (220 * L) / (L + 3);
+  const tcFp = (L) => Math.max(2, 5 + 1.6 * log10(L));
+  function tcsf(f, L) {
+    const x = f / tcFp(L), S = tcSmax(L);
+    return x < 1 ? S * Math.pow(x, 0.6) * Math.exp(0.6 * (1 - x)) : S * Math.exp(-(x - 1) / TC.W);
+  }
+  const cffOf = (L) => tcFp(L) * (1 + TC.W * Math.log(Math.max(1.0001, tcSmax(L))));
+  /** 색(L−M) TCSF: 저역 통과 */
+  const tcsfChr = (f) => 400 * Math.exp(-f / 3.5);
+  const fmtAng = (deg) => (Math.abs(deg) >= 1 ? deg.toFixed(2) + "°" : (deg * 60).toFixed(1) + " arcmin");
+
+  /* =================================================== 1. PWM 플리커 */
+  (function () {
+    const fFromSlider = (v) => 50 * Math.pow(100, v / 100);
+    const fG = CB.range("fl-f", (v) => Math.round(fFromSlider(v)) + " Hz", () => { pre.set("none", false); upd(); });
+    const dG = CB.range("fl-d", (v) => v + "%", () => { pre.set("none", false); upd(); });
+    const mG = CB.range("fl-m", (v) => v + "%", () => { pre.set("none", false); upd(); });
+    const lG = CB.range("fl-l", (v) => CB.fmt(Math.pow(10, v), 3) + " cd/m²", () => upd());
+    const vG = CB.range("fl-v", (v) => v + " °/s", () => upd());
+    const sliderOf = (f) => (100 * log10(f / 50)) / 2;
+    const pre = CB.seg("fl-pre", (v) => {
+      if (v === "oled") { fG.el.value = sliderOf(240); dG.el.value = 30; mG.el.value = 100; }
+      if (v === "hf") { fG.el.value = sliderOf(1920); dG.el.value = 30; mG.el.value = 100; }
+      if (v === "dc") { mG.el.value = 4; }
+      [fG, dG, mG].forEach((g) => g.set(Number(g.el.value)));
+      pre.set(v, false); upd();
+    });
+    let st = {};
+    function compute() {
+      const f = fFromSlider(fG()), D = dG() / 100, M = mG() / 100, L = Math.pow(10, lG()), v = vG();
+      const mean = 1 - M + 2 * M * D;
+      const harm = [];
+      for (let k = 1; k <= 40; k++) {
+        const mk = D >= 1 ? 0 : ((2 * 2 * M) / (Math.PI * k * mean)) * Math.abs(Math.sin(Math.PI * k * D));
+        harm.push({ k, f: k * f, m: mk, vis: mk * tcsf(k * f, L) });
+      }
+      const vis = Math.max(...harm.map((h) => h.vis));
+      const modPct = D >= 1 ? 0 : 100 * M;
+      const lowRisk = f < 90 ? 0.025 * f : f <= 1250 ? 0.08 * f : Infinity;
+      const noe = f < 90 ? 0.01 * f : f <= 3000 ? 0.0333 * f : Infinity;
+      st = { f, D, M, L, v, harm, vis, modPct, lowRisk, noe };
+    }
+    function upd() {
+      compute();
+      const { f, D, L, v, vis, modPct, lowRisk, noe } = st;
+      CB.stat("o-fl-cff", cffOf(L).toFixed(1) + " Hz");
+      CB.stat("o-fl-vis", (vis < 0.01 ? "&lt; 0.01" : vis.toPrecision(2)) + (vis > 1 ? " · <b style='color:var(--bad)'>보임</b>" : " · 안 보임"));
+      CB.stat("o-fl-ieee", modPct <= noe ? "무영향(NOE) 영역" : modPct <= lowRisk ? "저위험 영역" : "<b style='color:var(--warn)'>저위험 한도 초과</b>");
+      CB.stat("o-fl-pa", modPct < 1 ? "— (변조 거의 없음)" : fmtAng(v / f));
+      CB.stat("o-fl-on", CB.fmt((D * 1000) / f, 3) + " ms / " + CB.fmt(1000 / f, 3) + " ms");
+      cvT.redraw(); cvI.redraw(); cvP.redraw();
+    }
+    const cvT = CB.canvas($("cv-fl-tcsf"), (ctx, w, h) => {
+      const P = CB.palette(), L = st.L;
+      const curve = []; for (let lf = 0; lf <= 3.0001; lf += 0.01) { const f = Math.pow(10, lf); curve.push([f, Math.min(1e3, 1 / tcsf(f, L))]); }
+      const pts = st.harm.filter((h) => h.f <= 1000 && h.m > 1e-4).slice(0, 12).map((h) => ({ x: h.f, y: Math.max(1.2e-3, h.m), color: h.vis > 1 ? P.bad : P.accent, r: h.k === 1 ? 5 : 3.5 }));
+      CB.chart(ctx, null, { x: [1, 1000], y: [1e-3, 3], logX: true, logY: true, xLabel: "시간 주파수 [Hz]", yLabel: "변조도",
+        series: [{ data: curve, color: P.text, width: 2 }], vlines: [{ x: cffOf(L), label: "CFF", color: P.dim }], hlines: [{ y: 1, color: P.faint }], points: pts });
+    }, { aspect: 0.5, minHeight: 230, maxHeight: 300 });
+    const cvI = CB.canvas($("cv-fl-ieee"), (ctx, w, h) => {
+      const P = CB.palette();
+      const lr = [], ne = [];
+      for (let lf = 0; lf <= 4.0001; lf += 0.01) { const f = Math.pow(10, lf); lr.push([f, f < 90 ? 0.025 * f : f <= 1250 ? 0.08 * f : 1e4]); ne.push([f, f < 90 ? 0.01 * f : f <= 3000 ? 0.0333 * f : 1e4]); }
+      CB.chart(ctx, null, { x: [10, 10000], y: [0.1, 100], logX: true, logY: true, xLabel: "변조 주파수 [Hz]", yLabel: "Mod%",
+        series: [{ data: lr, color: P.warn, width: 2 }, { data: ne, color: P.ok, width: 2, dash: [5, 4] }],
+        points: [{ x: st.f, y: Math.max(0.11, st.modPct), color: st.modPct > st.lowRisk ? P.bad : P.accent, r: 6, label: "현재" }],
+        vlines: [{ x: 1250, color: P.faint, label: "1250 Hz" }] });
+      ctx.fillStyle = P.warn; ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font");
+      ctx.textAlign = "left"; ctx.fillText("— 저위험 한도", 66, 24); ctx.fillStyle = P.ok; ctx.fillText("- - 무영향(NOE) 한도", 66, 40);
+    }, { aspect: 0.42, minHeight: 230, maxHeight: 260 });
+    const cvP = CB.canvas($("cv-fl-pa"), (ctx, w, h) => {
+      const P = CB.palette();
+      const span = 10, x0 = 20, x1 = w - 20, px = (x1 - x0) / span, y = h / 2;
+      ctx.fillStyle = P.dim; ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font");
+      ctx.textAlign = "left"; ctx.fillText("단속 중 망막 위 점광원의 궤적 (10° 구간, θ̇ = " + st.v + " °/s)", x0, 18);
+      ctx.strokeStyle = P.grid; ctx.beginPath(); ctx.moveTo(x0, y + 14); ctx.lineTo(x1, y + 14); ctx.stroke();
+      for (let d = 0; d <= span; d++) { ctx.fillText(d + "°", x0 + d * px - 4, y + 30); }
+      const tTot = span / st.v, T = 1 / st.f, L0 = 1 - st.M, L1 = 1 + st.M;
+      const n = Math.ceil(tTot / T);
+      ctx.lineCap = "butt"; ctx.lineWidth = 6;
+      if (n > 4000 || st.modPct < 1) {
+        ctx.strokeStyle = P.text; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.globalAlpha = 1;
+      } else {
+        // 바탕(L_min)과 켜진 구간(L_max)
+        ctx.strokeStyle = P.text; ctx.globalAlpha = (0.85 * L0) / L1; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+        ctx.globalAlpha = 0.9;
+        for (let i = 0; i < n; i++) {
+          const a = i * T * st.v, b = Math.min(span, a + st.D * T * st.v);
+          const xa = x0 + a * px, xb = Math.max(xa + 1, x0 + b * px);
+          ctx.beginPath(); ctx.moveTo(xa, y); ctx.lineTo(xb, y); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+    }, { height: 84 });
+    upd();
+  })();
+
+  /* =================================================== 2. 단속 운동 주 계열 */
+  (function () {
+    const Vmax = 600, C = 10;
+    const vp = (A) => Vmax * (1 - Math.exp(-A / C));
+    const dur = (A) => 2.2 * A + 21;
+    const meanSin = (n) => { let s = 0; const N = 400; for (let i = 0; i < N; i++) s += Math.pow(Math.sin((Math.PI * (i + 0.5)) / N), n); return s / N; };
+    function profile(A) {
+      const Vp = vp(A), D = dur(A) / 1000, target = CB.clamp(A / (Vp * D), meanSin(8), 0.98);
+      let lo = 0.02, hi = 8;
+      for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; meanSin(m) > target ? (lo = m) : (hi = m); }
+      const n = (lo + hi) / 2, scale = A / (Vp * D * meanSin(n));
+      return { Vp, D, n, v: (t) => (t < 0 || t > D ? 0 : Vp * scale * Math.pow(Math.sin((Math.PI * t) / D), n)) };
+    }
+    const aG = CB.range("sac-a", (v) => v + "°", () => upd());
+    const ppd = CB.range("sac-ppd", (v) => v + " px/°", () => upd());
+    const fr = CB.seg("sac-fr", () => upd());
+    let pr;
+    function upd() {
+      const A = aG(); pr = profile(A);
+      const F = Number(fr()), Dms = pr.D * 1000;
+      CB.stat("o-sac-vp", Math.round(pr.Vp) + " °/s");
+      CB.stat("o-sac-d", Dms.toFixed(1) + " ms");
+      const mean = A / pr.D;
+      CB.stat("o-sac-mean", Math.round(mean) + " °/s · " + (pr.Vp / mean).toFixed(2));
+      CB.stat("o-sac-frames", (pr.D * F).toFixed(1) + " 프레임");
+      const sh = pr.Vp / F;
+      CB.stat("o-sac-shift", sh.toFixed(2) + "° = " + Math.round(sh * ppd()) + " px");
+      cvM.redraw(); cvP.redraw();
+    }
+    const cvM = CB.canvas($("cv-sac-ms"), (ctx) => {
+      const P = CB.palette(), A = aG();
+      const s = [], d = []; for (let a = 0; a <= 40.001; a += 0.25) { s.push([a, vp(a)]); d.push([a, dur(a) * 6]); }
+      CB.chart(ctx, null, { x: [0, 40], y: [0, 700], xLabel: "진폭 A [°]", yLabel: "최고 속도 [°/s]",
+        series: [{ data: s, color: P.accent, width: 2.2 }, { data: d, color: P.accent2, width: 1.6, dash: [5, 4] }],
+        points: [{ x: A, y: vp(A), color: P.accent, r: 5, label: Math.round(vp(A)) + " °/s" }, { x: A, y: dur(A) * 6, color: P.accent2, r: 4, label: dur(A).toFixed(0) + " ms" }] });
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = P.accent; ctx.fillText("— 최고 속도 V_p", 66, 26); ctx.fillStyle = P.accent2; ctx.fillText("- - 지속 시간 D (세로축 값 ÷ 6 = ms)", 66, 42);
+    }, { aspect: 0.48, minHeight: 230, maxHeight: 280 });
+    const cvP = CB.canvas($("cv-sac-prof"), (ctx) => {
+      const P = CB.palette(), A = aG(), F = Number(fr());
+      const tMax = Math.max(60, pr.D * 1000 + 20), v = [], pos = []; let x = 0, last = 0;
+      for (let tm = -5; tm <= tMax; tm += 0.25) { const t = tm / 1000, vv = pr.v(t); if (tm > -5) x += ((vv + last) / 2) * 0.00025; last = vv; v.push([tm, vv]); pos.push([tm, (x / A) * pr.Vp]); }
+      const vl = []; for (let k = 0; (k * 1000) / F <= tMax; k++) vl.push({ x: (k * 1000) / F, color: P.faint });
+      CB.chart(ctx, null, { x: [-5, tMax], y: [0, Math.max(100, pr.Vp * 1.15)], xLabel: "시간 [ms] (세로 점선 = 화면 갱신)", yLabel: "속도 [°/s]",
+        series: [{ data: v, color: P.accent, width: 2.2 }, { data: pos, color: P.dim, width: 1.5, dash: [5, 4] }], vlines: vl });
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font"); ctx.textAlign = "right";
+      ctx.fillStyle = P.dim; ctx.fillText("- - 위치 (A에 대한 비율)", ctx.canvas.width / (ctx.getTransform().a || 1) - 24, 26);
+    }, { aspect: 0.48, minHeight: 230, maxHeight: 280 });
+    upd();
+  })();
+
+  /* =================================================== 3. 색 분리 (FSC) */
+  (function () {
+    const vFrom = (s) => (s <= 0 ? 0 : Math.pow(10, -0.5 + (3.3 * s) / 100)); // 0.32 – 630 °/s
+    const toS = (v) => ((log10(v) + 0.5) * 100) / 3.3;
+    const vG = CB.range("cbu-v", (s) => CB.fmt(vFrom(s), 3) + " °/s", () => { pre.set("none", false); upd(); });
+    const wG = CB.range("cbu-w", (v) => v + " arcmin", () => upd());
+    const kG = CB.seg("cbu-k", () => upd());
+    const pre = CB.seg("cbu-pre", (p) => { if (p === "pur") vG.set(toS(15)); if (p === "sac") vG.set(toS(300)); pre.set(p, false); upd(); });
+    const T = 1 / 60;
+    let res;
+    /** 한 프레임 동안 망막(arcmin)에 쌓인 채널별 빛. 막대 [0, W], 망막 좌표 r = x − v·t */
+    function compute() {
+      const v = vFrom(vG()) * 60, W = wG(), k = Number(kG()), N = 3 * k; // v: arcmin/s
+      const spread = v * T, lo = -spread - 0.15 * (W + spread) - 2, hi = W + 0.15 * (W + spread) + 2;
+      const nb = 600, dx = (hi - lo) / nb;
+      const fsc = [new Float64Array(nb), new Float64Array(nb), new Float64Array(nb)], hold = new Float64Array(nb);
+      const steps = 1800, dt = T / steps;
+      for (let s = 0; s < steps; s++) {
+        const t = (s + 0.5) * dt, off = -v * t, ch = Math.floor((t / T) * N) % 3;
+        const a = (0 + off - lo) / dx, b = (W + off - lo) / dx;
+        const ia = Math.max(0, Math.floor(a)), ib = Math.min(nb - 1, Math.floor(b));
+        for (let i = ia; i <= ib; i++) {
+          const cov = Math.min(i + 1, b) - Math.max(i, a); if (cov <= 0) continue;
+          fsc[ch][i] += cov * dt; hold[i] += cov * dt;
+        }
+      }
+      for (let i = 0; i < nb; i++) { for (let c = 0; c < 3; c++) fsc[c][i] /= T / 3; hold[i] /= T; }
+      res = { v, W, k, N, lo, hi, dx, nb, fsc, hold, tau: T / N };
+    }
+    function upd() {
+      compute();
+      const dxs = res.v * res.tau;
+      CB.stat("o-cbu-tau", CB.fmt(res.tau * 1000, 3) + " ms / " + Math.round(1 / res.tau) + " Hz");
+      CB.stat("o-cbu-dx", CB.fmt(dxs, 3) + " arcmin");
+      CB.stat("o-cbu-vt", fmtAng((res.v * T) / 60));
+      CB.stat("o-cbu-j", dxs < 1 ? "색 분리 거의 안 보임" : dxs < 3 ? "가장자리에 약한 색 테두리" : "<b style='color:var(--warn)'>색 테두리 뚜렷</b>");
+      cvS.redraw(); cvP.redraw();
+    }
+    const enc = (v) => Math.round(255 * CB.srgbEncode(CB.clamp(v, 0, 1)));
+    const cvS = CB.canvas($("cv-cbu-strip"), (ctx, w, h) => {
+      const P = CB.palette(), rows = [["필드 순차 색", "fsc"], ["RGB 동시 · 홀드형", "hold"], ["정지", "static"]];
+      const lx = 8, x0 = 8, x1 = w - 8, rh = (h - 18) / 3 - 6;
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font");
+      rows.forEach(([name, key], r) => {
+        const y = 16 + r * (rh + 6) + 4;
+        ctx.fillStyle = "#101010"; ctx.fillRect(x0, y, x1 - x0, rh);
+        for (let px = 0; px < x1 - x0; px++) {
+          const rr = res.lo + ((px + 0.5) / (x1 - x0)) * (res.hi - res.lo);
+          const i = Math.floor((rr - res.lo) / res.dx);
+          let c = [0, 0, 0];
+          if (key === "fsc" && i >= 0 && i < res.nb) c = [res.fsc[0][i], res.fsc[1][i], res.fsc[2][i]];
+          if (key === "hold" && i >= 0 && i < res.nb) c = [res.hold[i], res.hold[i], res.hold[i]];
+          if (key === "static" && rr >= 0 && rr <= res.W) c = [1, 1, 1];
+          if (c[0] + c[1] + c[2] <= 0) continue;
+          ctx.fillStyle = "rgb(" + enc(c[0]) + "," + enc(c[1]) + "," + enc(c[2]) + ")";
+          ctx.fillRect(x0 + px, y, 1, rh);
+        }
+        ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(name, lx + 6, y + 4);
+      });
+      ctx.fillStyle = P.dim; ctx.textAlign = "right"; ctx.textBaseline = "top";
+      ctx.fillText("망막 좌표 범위 " + CB.fmt(res.hi - res.lo, 3) + " arcmin", w - 10, 2);
+    }, { aspect: 0.32, minHeight: 150, maxHeight: 220 });
+    const cvP = CB.canvas($("cv-cbu-prof"), (ctx) => {
+      const P = CB.palette();
+      const cols = ["#e0443e", "#2f9e4a", "#2f6fe0"], series = [];
+      for (let c = 0; c < 3; c++) { const d = []; for (let i = 0; i < res.nb; i += 1) d.push([res.lo + (i + 0.5) * res.dx, res.fsc[c][i]]); series.push({ data: d, color: cols[c], width: 2 }); }
+      CB.chart(ctx, null, { x: [res.lo, res.hi], y: [0, 1.1], xLabel: "망막 위치 [arcmin]", yLabel: "채널 세기", series });
+    }, { aspect: 0.38, minHeight: 230, maxHeight: 230 });
+    upd();
+  })();
+
+  /* =================================================== 4. 홀드형 모션 블러 */
+  (function () {
+    const PPD = 45, BW = 60;
+    const fcG = CB.seg("bl-fc", () => upd()), frG = CB.seg("bl-fr", () => upd()), eyeG = CB.seg("bl-eye", () => upd());
+    const vG = CB.range("bl-v", (v) => v + " px/s", () => upd());
+    const dG = CB.range("bl-d", (v) => v + "%", () => upd());
+    const tG = CB.range("bl-tau", (v) => v.toFixed(1) + " ms", () => upd());
+    const gG = CB.range("bl-g", (v) => v.toFixed(2), () => upd());
+    const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+    /** 화면 시뮬레이션 → 망막 위 누적 프로파일 */
+    function simulate(p) {
+      const { fc, fr, v, d, tau, eye, g, ideal } = p;
+      const period = 1 / gcd(fr, fc);
+      const win = period * Math.ceil(0.05 / period - 1e-9);
+      const warm = ideal ? 0 : period * Math.ceil(Math.max(0.03, 6 * tau) / period - 1e-9);
+      const total = warm + win;
+      const dt = ideal ? 1e-4 : Math.min(1 / (fr * 120), 1e-4);
+      const dxs = 0.5, xmax = v * total + BW + 4, nx = Math.ceil(xmax / dxs) + 2;
+      const Lp = new Float64Array(nx);
+      const rlo = -(v * total) - 8, rhi = v * total + BW + 8, rdx = 0.5, nr = Math.ceil((rhi - rlo) / rdx) + 1;
+      const acc = new Float64Array(nr);
+      const kLag = tau > 0 ? 1 - Math.exp(-dt / tau) : 1;
+      // 초기 상태: 첫 프레임 목표값으로 정착
+      const target = (x, t) => {
+        const pos = ideal ? v * t : v * Math.floor(Math.floor(t * fr + 1e-9) * fc / fr + 1e-9) / fc;
+        return x >= pos && x < pos + BW ? 1 : 0;
+      };
+      for (let i = 0; i < nx; i++) Lp[i] = target(i * dxs, 0);
+      for (let t = 0; t < total; t += dt) {
+        const tm = t + dt / 2;
+        const ph = tm * fr - Math.floor(tm * fr);
+        const on = ideal || ph >= 1 - d;
+        const e = eye === "pursuit" ? g * v * tm : 0;
+        for (let i = 0; i < nx; i++) {
+          const T = target(i * dxs, tm);
+          Lp[i] += (T - Lp[i]) * kLag;
+          if (on && tm >= warm && Lp[i] > 1e-5) {
+            const r = i * dxs - e - (eye === "pursuit" ? 0 : 0);
+            const j = Math.floor((r - rlo) / rdx);
+            if (j >= 0 && j < nr) acc[j] += Lp[i] * dt * (dxs / rdx);
+          }
+        }
+      }
+      const norm = (ideal ? 1 : d) * win;
+      for (let j = 0; j < nr; j++) acc[j] /= norm;
+      return { acc, rlo, rdx, nr, win };
+    }
+    function edgeWidth(prof) {
+      const { acc, rlo, rdx, nr } = prof; let mx = 0; for (let j = 0; j < nr; j++) mx = Math.max(mx, acc[j]);
+      let a = -1, b = -1;
+      for (let j = 0; j < nr; j++) { if (a < 0 && acc[j] >= 0.1 * mx) a = j; if (b < 0 && acc[j] >= 0.9 * mx) { b = j; break; } }
+      return a >= 0 && b >= 0 ? (b - a) * rdx : 0;
+    }
+    let R;
+    function upd() {
+      const fr = Number(frG()), fcSel = Number(fcG()), fc = Math.min(fcSel, fr);
+      const v = vG(), d = dG() / 100, tau = tG() / 1000, eye = eyeG(), g = eye === "pursuit" ? gG() : 0;
+      gG.el.disabled = eye !== "pursuit";
+      const disp = simulate({ fc, fr, v, d, tau, eye, g, ideal: false });
+      const ref = simulate({ fc, fr, v, d: 1, tau: 0, eye, g, ideal: true });
+      R = { disp, ref, fc, fr, v, d, eye, fcSel };
+      const tp = d / fr;
+      CB.stat("o-bl-deg", CB.fmt(v / PPD, 3) + " °/s" + (eye === "pursuit" && v / PPD > 30 ? " · 추종 이득 저하 구간" : ""));
+      const rep = fr / fc, repTxt = fc >= fr ? "" : Number.isInteger(rep) ? " · 같은 프레임 " + rep + "회 표시" : rep === 2.5 ? " · 3:2 풀다운" : " · 평균 " + CB.fmt(rep, 3) + "회 표시";
+      CB.stat("o-bl-tp", CB.fmt(tp * 1000, 3) + " ms" + repTxt + (fcSel > fr ? " (콘텐츠 " + fcSel + " → " + fr + "로 제한)" : ""));
+      CB.stat("o-bl-w", CB.fmt(v * tp, 3) + " px" + (fc < fr && eye === "pursuit" ? " · 반복 상 간격 " + CB.fmt(v / fr, 3) + " px" : ""));
+      CB.stat("o-bl-bew", CB.fmt(edgeWidth(disp), 3) + " px (실제 물체: " + CB.fmt(edgeWidth(ref), 3) + " px)");
+      CB.stat("o-bl-peak", "×" + (1 / d).toFixed(2));
+      CB.stat("o-bl-flk", d < 1 ? fr + " Hz" + (fr < 90 ? " · <b style='color:var(--warn)'>직접 플리커 주의</b>" : "") : "없음 (홀드형)");
+      cvS.redraw(); cvP.redraw();
+    }
+    function range() {
+      const ext = (p) => { let a = p.nr, b = 0; for (let j = 0; j < p.nr; j++) if (p.acc[j] > 1e-3) { a = Math.min(a, j); b = Math.max(b, j); } return [p.rlo + a * p.rdx, p.rlo + b * p.rdx]; };
+      const e1 = ext(R.disp), e2 = ext(R.ref); const lo = Math.min(e1[0], e2[0]), hi = Math.max(e1[1], e2[1]);
+      const pad = 0.08 * (hi - lo) + 6; return [lo - pad, hi + pad];
+    }
+    const enc = (v) => Math.round(255 * CB.srgbEncode(CB.clamp(v, 0, 1)));
+    const cvS = CB.canvas($("cv-bl-strip"), (ctx, w, h) => {
+      const [lo, hi] = range(), rows = [["실제 물체", R.ref], ["디스플레이", R.disp]];
+      const x0 = 8, x1 = w - 8, rh = (h - 12) / 2 - 6;
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font");
+      rows.forEach(([name, p], r) => {
+        const y = 6 + r * (rh + 8);
+        ctx.fillStyle = "#101010"; ctx.fillRect(x0, y, x1 - x0, rh);
+        for (let px = 0; px < x1 - x0; px++) {
+          const rr = lo + ((px + 0.5) / (x1 - x0)) * (hi - lo), j = Math.floor((rr - p.rlo) / p.rdx);
+          const val = j >= 0 && j < p.nr ? p.acc[j] : 0; if (val <= 1e-3) continue;
+          const c = enc(val); ctx.fillStyle = "rgb(" + c + "," + c + "," + c + ")"; ctx.fillRect(x0 + px, y, 1, rh);
+        }
+        ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.fillText(name, x0 + 6, y + 4);
+      });
+    }, { aspect: 0.22, minHeight: 110, maxHeight: 160 });
+    const cvP = CB.canvas($("cv-bl-prof"), (ctx) => {
+      const P = CB.palette(), [lo, hi] = range();
+      const ser = (p) => { const d = []; const step = Math.max(1, Math.floor((hi - lo) / p.rdx / 700)); for (let j = 0; j < p.nr; j += step) { const x = p.rlo + (j + 0.5) * p.rdx; if (x >= lo && x <= hi) d.push([x, p.acc[j]]); } return d; };
+      let mx = 1; for (let j = 0; j < R.disp.nr; j++) mx = Math.max(mx, R.disp.acc[j]);
+      CB.chart(ctx, null, { x: [lo, hi], y: [0, Math.max(1.1, mx * 1.05)], xLabel: "망막 위치 [px]", yLabel: "상대 휘도",
+        series: [{ data: ser(R.ref), color: P.dim, width: 1.6, dash: [5, 4] }, { data: ser(R.disp), color: P.accent, width: 2.2 }] });
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = P.accent; ctx.fillText("— 디스플레이", 66, 26); ctx.fillStyle = P.dim; ctx.fillText("- - 실제 물체", 66, 42);
+    }, { aspect: 0.4, minHeight: 230, maxHeight: 240 });
+    upd();
+  })();
+
+  /* =================================================== 5. 트록슬러 소실 데모 */
+  (function () {
+    const COL = { mag: [214, 120, 214], cyan: [90, 200, 210], yel: [215, 205, 80] };
+    const colG = CB.seg("trox-col", () => cv.redraw());
+    const blurG = CB.range("trox-blur", (v) => v + "%", () => cv.redraw());
+    const seqEl = $("trox-seq"); seqEl.addEventListener("change", () => cv.redraw());
+    let step = -1, acc = 0;
+    const cv = CB.canvas($("cv-trox"), (ctx, w, h) => {
+      ctx.fillStyle = "#808080"; ctx.fillRect(0, 0, w, h); // 물리적 회색 바탕(테마 무관)
+      const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.36, r = Math.min(w, h) * 0.075, c = COL[colG()], bl = blurG() / 100;
+      for (let i = 0; i < 12; i++) {
+        if (seqEl.checked && i === step) continue;
+        const a = (i / 12) * Math.PI * 2 - Math.PI / 2, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+        const g = ctx.createRadialGradient(x, y, r * (1 - bl) * 0.9, x, y, r * (1 + bl * 0.9));
+        g.addColorStop(0, "rgba(" + c.join(",") + ",1)"); g.addColorStop(1, "rgba(" + c.join(",") + ",0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * (1 + bl * 0.9), 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = "#111"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - 9, cy); ctx.lineTo(cx + 9, cy); ctx.moveTo(cx, cy - 9); ctx.lineTo(cx, cy + 9); ctx.stroke();
+    }, { aspect: 0.75, maxHeight: 420 });
+    const loop = CB.loop($("cv-trox"), (dt) => { acc += dt; if (acc >= 0.1) { acc = 0; step = (step + 1) % 12; cv.redraw(); } });
+    loop.stop();
+    const btn = $("trox-run");
+    btn.addEventListener("click", () => { const on = loop.toggle(); btn.textContent = on ? "정지" : "시작"; if (!on) { step = -1; cv.redraw(); } });
+  })();
+
+  /* =================================================== 6. 이색 플리커 측광 */
+  (function () {
+    const fG = CB.range("hfp-f", (v) => v + " Hz", () => upd());
+    const rG = CB.range("hfp-r", (v) => CB.fmt(Math.pow(10, v), 3) + "×", () => upd());
+    const aG = CB.range("hfp-a", (v) => v.toFixed(2), () => upd());
+    const lrG = CB.range("hfp-lr", (v) => v + " nm", () => upd());
+    const lgG = CB.range("hfp-lg", (v) => v + " nm", () => upd());
+    const Lmean = 50;
+    /** 협대역 빛의 L, M, V 적분 (단위 복사량) */
+    function band(c) {
+      let L = 0, M = 0, V = 0;
+      for (let l = 380; l <= 780; l += 1) { const s = CB.gauss(l, c, 20), q = CB.lms(l); L += s * q[0]; M += s * q[1]; V += s * CB.V(l); }
+      return { L, M, V };
+    }
+    function flicker(R, rd, gr, a, f) {
+      const Yr = a * rd.L + rd.M, Yg = R * (a * gr.L + gr.M);
+      const mL = Math.abs(Yr - Yg) / (Yr + Yg);
+      const cL = (rd.L - R * gr.L) / (rd.L + R * gr.L), cM = (rd.M - R * gr.M) / (rd.M + R * gr.M);
+      const mC = Math.abs(cL - cM) / 2;
+      return Math.hypot(mL * tcsf(f, Lmean), mC * tcsfChr(f));
+    }
+    let S;
+    function upd() {
+      const rd = band(lrG()), gr = band(lgG()), a = aG(), f = fG(), R = Math.pow(10, rG());
+      const nullI = (a * rd.L + rd.M) / (a * gr.L + gr.M), nullC = rd.V / gr.V;
+      S = { rd, gr, a, f, R, nullI, nullC, F: flicker(R, rd, gr, a, f), Fmin: flicker(nullI, rd, gr, a, f) };
+      CB.stat("o-hfp-f", S.F.toPrecision(3) + (S.F > 1 ? " · 깜박임 보임" : " · 안 보임"));
+      CB.stat("o-hfp-null", CB.fmt(nullI, 3) + "×");
+      CB.stat("o-hfp-cie", CB.fmt(nullC, 3) + "× (차이 " + ((nullI / nullC - 1) * 100).toFixed(1) + "%)");
+      CB.stat("o-hfp-min", S.Fmin.toPrecision(2) + (S.Fmin > 1 ? " · <b style='color:var(--warn)'>색 깜박임 남음</b>" : " · 깜박임 사라짐"));
+      cv.redraw();
+    }
+    const cv = CB.canvas($("cv-hfp"), (ctx) => {
+      const P = CB.palette(), d = [];
+      for (let lr = -1.5; lr <= 0.7001; lr += 0.005) { const R = Math.pow(10, lr); d.push([R, flicker(R, S.rd, S.gr, S.a, S.f)]); }
+      CB.chart(ctx, null, { x: [Math.pow(10, -1.5), Math.pow(10, 0.7)], y: [0.05, 300], logX: true, logY: true, xLabel: "초록 복사량 / 빨강 복사량", yLabel: "깜박임 F (문턱 = 1)",
+        series: [{ data: d, color: P.accent, width: 2.2 }], hlines: [{ y: 1, color: P.faint, label: "문턱" }],
+        vlines: [{ x: S.nullI, color: P.accent2 }, { x: S.nullC, color: P.dim }],
+        points: [{ x: S.R, y: Math.max(0.055, S.F), color: S.F > 1 ? P.bad : P.ok, r: 6 }] });
+      ctx.font = "12px " + getComputedStyle(document.body).getPropertyValue("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = P.accent2; ctx.fillText("- - 관찰자 등휘도 점", 66, 26); ctx.fillStyle = P.dim; ctx.fillText("- - CIE V(λ) 등휘도 점", 66, 42);
+    }, { aspect: 0.55, minHeight: 230, maxHeight: 340 });
+    upd();
+  })();
+})();
+</script>
+</body>
+</html>

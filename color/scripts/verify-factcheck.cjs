@@ -62,4 +62,4 @@ for(const file of fs.readdirSync(path.join(root,'chapters')).filter(x=>x.endsWit
     blocks++;
   }
 }
-console.log(`PASS: ${checks} numerical reference checks; ${blocks} script/JSON blocks in all 20 chapters.`);
+console.log(`PASS: ${checks} numerical reference checks; ${blocks} script/JSON blocks in all ${fs.readdirSync(path.join(root,"chapters")).filter(x=>x.endsWith(".html")).length} chapters.`);
